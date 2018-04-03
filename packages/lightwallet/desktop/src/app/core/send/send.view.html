@@ -1,126 +1,155 @@
 <app-lock-screen fullScreen *ngIf="!hasUnlockedWallet"></app-lock-screen>
 <div class="{{injected ? 'sendMerit--injected' : 'sendMerit'}}">
-  <div class="container--inner">
-    <div class="{{injected ? 'wallet-details__content__title' : 'sendMerit__header title--primary'}}">
-      <p>Send Merit</p>
-    </div>
-
-    <error-message *ngIf="error">{{ error }}</error-message>
-
-    <div class="sendMerit__content">
-
-      <form [formGroup]="formData" class="sendMerit__form">
-          <div class="sendMerit__form__group">
-            <label for="" class="ui-label">Amount</label>
-            <div class="ui-input__wrapper ui-input__wrapper--mrt">
-              <input type="text" name="" formControlName="amount"
-                     class="ui-input ui-input--form ui-input--text">
-              <div class="ui-input__addon">MRT</div>
-            </div>
-            <div class="ui-input__wrapper ui-input__wrapper--currency" [hidden]="!fiatAmountAvailable">
-              <input type="text" name="" value="{{fiatAmount}}" disabled
-                     class="ui-input ui-input--form ui-input--text">
-              <div class="ui-input__addon">
-                <app-select
-                  (selectionEvent)="selectCurrency($event)"
-                  [selected]="selectedCurrency"
-                  [input]="availableCurrencies"
-                  style="ui-button ui-button--transparent ui-button--select-currency ui-button--md ui-button--with-caret"></app-select>
-              </div>
-            </div>
-          </div>
-          <div class="sendMerit__form__group">
-            <div class="sendMerit__form__group__column sendMerit__form_group__column--70">
-              <label for="feeIncluded" class="ui-label">Include fee in the amount:</label>
-            </div>
-            <div class="sendMerit__form__group__column sendMerit__form_group__column--30">
-              <div class="ui-checkbox">
-                <input type="checkbox" name="feeIncluded" id="feeIncluded" formControlName="feeIncluded">
-                <span class="ui-checkbox__switcher"></span>
-              </div>
-            </div>
-          </div>
-          <div class="sendMerit__form__group">
-            <label for="" class="ui-label">Send from</label>
-            <app-select
-              (selectionEvent)="selectWallet($event)"
-              [selected]="selectedWallet"
-              [input]="wallets$ | async"
-              style="ui-input ui-input--select ui-input--form"></app-select>
-          </div>
-          <div *ngIf="getType() === 'classic'; else classicSend">
-            <div class="sendMerit__form__group">
-              <label for="" class="ui-label">Send to address / alias</label>
-              <input type="text" name="" value="" placeholder="Paste address / alias here"
-                     class="ui-input ui-input--form ui-input--text" formControlName="toAddress" (ngModelChange)="onAddressChange($event)">
-
-            </div>
-            <div class="sendMerit__form__group">
-              <div class="switch-type">
-                <br>
-                Not sure if they have a Merit address?
-                <div>
-                  <a (click)="setType('easy')">Send via EasySend</a>.
-                </div>
-              </div>
-            </div>
-          </div>
-          <ng-template #classicSend>
-            <div class="sendMerit__form__group">
-              <label class="ui-label">Sending via EasySend</label>
-              <p>You will see a link after confirming the transaction that you can share with your recipient.</p>
-            </div>
-            <div class="sendMerit__form__group">
-              <div class="switch-type">
-                <br>
-                Want to send to a Merit address?
-                <div>
-                  <a (click)="setType('classic')">Send via ClassicSend</a>.
-                </div>
-              </div>
-            </div>
-          </ng-template>
-          <div class="sendMerit__form__group">
-            <button type="button" name="button" class="ui-button ui-button--blue" (click)="send()">Send Merit</button>
-          </div>
-      </form>
-
-      <div class="sendMerit__totals">
-        <div class="sendMerit__form__group">
-          <div class="sendMerit__totals__table" *ngIf="receipt$ | async as receipt">
-            <loading-spinner-small *ngIf="receipt.loading; else hasData"></loading-spinner-small>
-            <ng-template #hasData>
-              <div class="sendMerit__totals__table--top">
-                <label for="" class="ui-label">Receipt</label>
-                <div class="sendMerit__totals__table__row">
-                  <div class="sendMerit__totals__table__column">Amount</div>
-                  <div class="sendMerit__totals__table__column">{{ receipt.amount | toUnit }} MRT</div>
-                </div>
-                <div class="sendMerit__totals__table__row">
-                  <div class="sendMerit__totals__table__column">Fees</div>
-                  <div class="sendMerit__totals__table__column">{{ receipt.fee | toUnit }} MRT</div>
-                </div>
-                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
-                  <div class="sendMerit__totals__table__column">Total</div>
-                  <div class="sendMerit__totals__table__column">{{ receipt.total | toUnit }} MRT</div>
-                </div>
-              </div>
-              <div class="sendMerit__totals__table--bottom">
-                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--devider">
-                </div>
-                <div class="sendMerit__totals__table__row">
-                  <div class="sendMerit__totals__table__column">In Wallet</div>
-                  <div class="sendMerit__totals__table__column">{{ (selectedWallet?.totalBalanceMicros || 0) | toUnit }} MRT</div>
-                </div>
-                <div class="sendMerit__totals__table__row">
-                  <div class="sendMerit__totals__table__column">Total Remaining</div>
-                  <div class="sendMerit__totals__table__column">{{ ((selectedWallet?.totalBalanceMicros || 0) - receipt.total) | toUnit }} MRT</div>
-                </div>
-              </div>
-            </ng-template>
-          </div>
+    <div class="container--inner">
+        <div class="{{injected ? 'wallet-details__content__title' : 'sendMerit__header title--primary'}}">
+            <p>Send Merit</p>
         </div>
-      </div>
+
+        <error-message *ngIf="error">{{ error }}</error-message>
+        <error-message *ngIf="success" class="success">
+            Transaction successfully sent
+            <div *ngIf="!receipt?.easySendUrl">
+                Your global send URL is ready, now you can share it:
+                <a [href]="receipt.easySendUrl">{{ receipt.easySendUrl }}</a>
+            </div>
+        </error-message>
+
+        <loading-spinner *ngIf="sending"></loading-spinner>
+
+        <div class="sendMerit__content">
+
+            <div class="sendMerit__form">
+                <div class="sendMerit__form__group">
+                    <label for="" class="ui-label">Amount</label>
+                    <div class="ui-input__wrapper ui-input__wrapper--mrt">
+                        <input type="text" name="" [(ngModel)]="formData.amountMrt" (ngModelChange)="updateTx($event)" placeholder="0"
+                               class="ui-input ui-input--form ui-input--text" >
+                        <div class="ui-input__addon">MRT</div>
+                    </div>
+                    <div class="ui-input__wrapper ui-input__wrapper--currency" *ngIf="availableCurrencies?.length">
+                        <input type="text" name="" [(ngModel)]="formData.amountFiat" disabled
+                               class="ui-input ui-input--form ui-input--text">
+                        <div class="ui-input__addon">
+                            <app-select
+
+                                    (selectionEvent)="selectCurrency($event)"
+                                    [selected]="selectedCurrency"
+                                    [input]="availableCurrencies"
+                                    style="ui-button ui-button--transparent ui-button--select-currency ui-button--md ui-button--with-caret"></app-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="sendMerit__form__group">
+                    <div class="sendMerit__form__group__column sendMerit__form_group__column--70">
+                        <label for="feeIncluded" class="ui-label">Include fee in the amount:</label>
+                    </div>
+                    <div class="sendMerit__form__group__column sendMerit__form_group__column--30">
+                        <div class="ui-checkbox">
+                            <input type="checkbox" name="feeIncluded" id="feeIncluded"
+                                   [(ngModel)]="formData.feeIncluded"  (ngModelChange)="updateTx($event)" >
+                            <span class="ui-checkbox__switcher"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="sendMerit__form__group">
+                    <label for="" class="ui-label">Send from</label>
+                    <app-select
+                            (selectionEvent)="selectWallet($event)"
+                            [selected]="formData.wallet"
+                            [input]="wallets$ | async"
+                            style="ui-input ui-input--select ui-input--form"></app-select>
+                    <label class="ui-label available-amount-label" *ngIf="formData?.wallet">
+                        {{ formData.wallet.status.spendableAmount | toMRT }}, {{ formData.wallet.invites  }} invites available
+                    </label>
+                </div>
+
+                <div *ngIf="formData.type === 'classic'; else easySend">
+                    <div class="sendMerit__form__group">
+                        <label for="" class="ui-label">Send to address / alias</label>
+                        <input type="text" name="" value="" placeholder="Paste address / alias here"
+                               class="ui-input ui-input--form ui-input--text"
+                               [(ngModel)]="formData.address" (ngModelChange)="updateAddress($event)">
+                    </div>
+
+                    <div class="sendMerit__form__group">
+                        <div class="switch-type">
+                            <br>
+                            Not sure if they have a Merit address?
+                            <div>
+                                <a (click)="updateTxType('easy')">Send via GlobalSend</a>. (You need an active invite to use EasySend)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ng-template #easySend>
+                    <div class="sendMerit__form__group">
+                        <label class="ui-label">Sending via EasySend</label>
+                        <p>You will see a link after confirming the transaction that you can share with your recipient.</p>
+                    </div>
+                    <div class="sendMerit__form__group">
+                        <div class="switch-type">
+                            <br>
+                            Want to send to a Merit address?
+                            <div>
+                                <a (click)="updateTxType('classic')">Send via ClassicSend</a>.
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+                <div class="sendMerit__form__group">
+                    <button type="button" name="button"
+                            class="ui-button ui-button--blue" (click)="send()" [disabled]="!receipt.calculated">
+                        Send Merit
+                    </button>
+                </div>
+            </div>
+
+            <div class="sendMerit__totals">
+                <div class="sendMerit__form__group">
+                    <div class="sendMerit__totals__table" *ngIf="receipt">
+                        <loading-spinner-small *ngIf="receipt.loading; else hasData"></loading-spinner-small>
+                        <ng-template #hasData>
+                            <div class="sendMerit__totals__table--top">
+                                <label for="" class="ui-label">Receipt</label>
+                                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
+                                    <div class="sendMerit__totals__table__column">Send to</div>
+                                    <div class="sendMerit__totals__table__column" *ngIf="formData.type == 'classic'">
+                                        <span *ngIf="formData.validatedAlias">@{{formData.validatedAlias}}</span>
+                                        <span *ngIf="!formData.validatedAlias">{{formData.validatedAddress | slice:0:5}}...</span>
+                                    </div>
+                                    <div class="sendMerit__totals__table__column" *ngIf="formData.type == 'easy'">GlobalSend</div>
+                                </div>
+                                <div class="sendMerit__totals__table__row">
+                                    <div class="sendMerit__totals__table__column">Amount</div>
+                                    <div class="sendMerit__totals__table__column">{{ receipt.amount | toUnit }} MRT</div>
+                                </div>
+                                <div class="sendMerit__totals__table__row">
+                                    <div class="sendMerit__totals__table__column">Fees</div>
+                                    <div class="sendMerit__totals__table__column">{{ receipt.fee | toUnit }} MRT</div>
+                                </div>
+                                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
+                                    <div class="sendMerit__totals__table__column">Total</div>
+                                    <div class="sendMerit__totals__table__column">{{ receipt.total | toUnit }} MRT</div>
+                                </div>
+                            </div>
+
+
+                            <div class="sendMerit__totals__table--bottom">
+                                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--devider">
+                                </div>
+                                <div class="sendMerit__totals__table__row">
+                                    <div class="sendMerit__totals__table__column">In Wallet</div>
+                                    <div class="sendMerit__totals__table__column">{{ (formData.wallet?.status.spendableAmount|| 0) | toMRT }}</div>
+                                </div>
+                                <div class="sendMerit__totals__table__row">
+                                    <div class="sendMerit__totals__table__column">Total Remaining</div>
+                                    <div class="sendMerit__totals__table__column">{{ ((formData.wallet?.status.spendableAmount || 0) - receipt.total) | toMRT }}</div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
