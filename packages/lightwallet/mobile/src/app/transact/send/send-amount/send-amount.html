@@ -96,6 +96,7 @@
 
   </ion-list>
 
+  <p *ngIf="feeCalcError" class="feeCalcError">{{feeCalcError}}</p>
   <button class="send-button" (click)="toConfirm()" [disabled]="!isSendAllowed()">
     <div *ngIf="!feeLoading">Send Merit</div>
     <ion-spinner *ngIf="feeLoading" color="light"></ion-spinner>
