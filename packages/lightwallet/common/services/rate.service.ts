@@ -1,65 +1,100 @@
 import { Injectable } from '@angular/core';
-import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import * as _ from 'lodash';
+import 'rxjs/add/observable/fromPromise';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/timeout';
+import 'rxjs/add/operator/toPromise';
+import { Observable } from 'rxjs/Observable';
+import { ENV } from '@app/env';
+import { LoggerService } from '@merit/common/services/logger.service';
+import * as request from 'superagent';
 
+/* TODOS:
+* - Not use superagent
+* - Not be dependency injected
+* - Cache the value of the exchange rate for a reasonable period of time
+*/ 
+@Injectable()
 export class RateService {
 
-  private readonly CACHE_TIME = 120000; //2min
-  public mwClient: MeritWalletClient;
+  private _rates: Object;
+  private _alternatives: Array<any>;
+  private _ratesBCH: Object;
   private MRT_TO_MIC = 1e8;
+  private _isAvailable: boolean = false;
 
-  private cache: {
-    updatedTs: number,
-    rates: Array<{
-      code: string,
-      name: string,
-      rate: number
-    }>
-  };
+  private rateServiceUrl = ENV.rateUrl;
 
-  /**
-   * setting mwClient 'cause we receive rates from MWS
-   * @param mwcService
-   */
-  constructor(
-  ) {
-    this.cache = {updatedTs: 0, rates: []};
-    this.mwClient = MeritWalletClient.getInstance({});
-    this.loadRates();
+  constructor(private logger: LoggerService) {
+    this.logger.info('Hello RateService Service');
+    this._rates = {};
+    this._alternatives = [];
+    this.updateRates();
   }
 
-  /**
-   * loads rates and saves them to cache
-   * @returns {*}
-   */
-  async loadRates() {
-    const rates = await this.mwClient.getRates();
-    this.cache = {updatedTs: Date.now(), rates};
-    return rates;
-  }
+  async updateRates(): Promise<any> {
+    try {
+      const dataBTC = await Observable.fromPromise(this.getBTC())
+        .timeout(1000)
+        .toPromise();
 
-  /**
-   * gets rate for provided currency, loads fresh rates if needed
-   * @param code - fiat code; example: USD
-   * @returns {number}
-   */
-  async getRate(code, forceLoad = false) {
-    let rates = this.cache.rates;
-    if (forceLoad || this.cache.updatedTs + this.CACHE_TIME < Date.now()) {
-      rates = await this.loadRates();
+      if (_.isEmpty(dataBTC)) {
+        this.logger.warn('Could not update rates from rate Service');
+      } else {
+        _.each(dataBTC, (currency) => {
+          this._rates[currency.code] = currency.rate;
+          this._alternatives.push({
+            name: currency.name,
+            isoCode: currency.code,
+            rate: currency.rate
+          });
+        });
+      }
+    } catch (errorBTC) {
+      this.logger.warn('Error applying rates to wallet: ', errorBTC);
     }
-    let unit = rates.find(l => l.code == code);
-    return unit ? unit.rate : 0;
   }
 
-  /**
-   * list available fiat currencies
-   */
-  async getAvailableFiats() {
-    let rates = this.cache.rates;
-    if (this.cache.updatedTs + this.CACHE_TIME < Date.now()) {
-      rates = await this.loadRates();
+  async getBTC() {
+    let res;
+    try {
+      res = await request['get'](this.rateServiceUrl);
+    } catch (errorBTC) {
+      this.logger.warn('Error connecting to rate service: ', errorBTC);
+      return;
     }
-    return rates.filter(r => r.rate > 0);
+
+    if (res && res.body) {
+      return res.body;
+    } else {
+      throw new Error('Error connecting to rate service.');
+    }
+  }
+
+  getRate(code: string) {
+    return this._rates[code];
+  }
+
+  getAlternatives() {
+    return this._alternatives;
+  }
+
+  fromMicrosToFiat(micros: number, code: string) {
+    return this.microsToMrt(micros) * this.getRate(code);
+  }
+
+  fromFiatToMicros(amount: number, code: string) {
+    return Math.ceil(amount / this.getRate(code) * this.MRT_TO_MIC);
+  }
+
+  fromMeritToFiat(merit: number, code: string) {
+    let micros = this.mrtToMicro(merit);
+    return this.fromMicrosToFiat(micros, code);
+  }
+
+  fromFiatToMerit(amount: number, code: string) {
+    let micros = this.fromFiatToMicros(amount, code);
+    return this.microsToMrt(micros);
   }
 
   mrtToMicro(mrt) {
@@ -70,40 +105,34 @@ export class RateService {
     return parseFloat((micros/this.MRT_TO_MIC).toFixed(8));
   }
 
-  async microsToFiat(micros: number, code: string) {
-    const rate = await this.getRate(code);
-    return this.microsToMrt(micros) * rate;
+  listAlternatives(sort: boolean) {
+    let alternatives = _.map(this.getAlternatives(), (item) => {
+      return {
+        name: item.name,
+        isoCode: item.isoCode
+      }
+    });
+
+    if (sort) {
+      alternatives.sort((a, b) => {
+        return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+      });
+    }
+
+    return _.uniqBy(alternatives, 'isoCode');
   }
 
-  async fiatToMicros(amount: number, code: string) {
-    const rate = await this.getRate(code);
-    return Math.ceil(amount /rate * this.MRT_TO_MIC);
-  }
-
-
-  /**
-   * @OBSOLETE Remove this after removing usages of this method
-   *
-   * @param micros
-   * @param code
-   * @returns {number}
-   */
-  fromMicrosToFiat(micros: number, code: string) {
-    const r = this.cache.rates.find(l => l.code == code) || {rate: 0};
-    return this.microsToMrt(micros) * r.rate;
-  }
-
-  /**
-   * @OBSOLETE Remove this after removing usages of this method
-   *
-   * @param amount
-   * @param code
-   * @returns {number}
-   */
-  fromFiatToMicros(amount: number, code: string) {
-    const r = this.cache.rates.find(l => l.code == code) || {rate: 0};
-    return Math.ceil(amount /r.rate * this.MRT_TO_MIC);
+  //TODO IMPROVE WHEN AVAILABLE
+  async whenAvailable(): Promise<any> {
+    if (this._isAvailable) {
+      return;
+    } else {
+      try {
+        await this.updateRates();
+      } catch (e) {
+        this.logger.warn('Could not update rates: ' + e);
+      }
+    }
   }
 
 }
-
