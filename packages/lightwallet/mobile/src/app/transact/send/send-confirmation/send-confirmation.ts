@@ -83,6 +83,18 @@ export class SendConfirmationView {
     let fiatAvailale = this.rateService.getRate(viewData.fiatCode) > 0;
     const convert = amount => fiatAvailale ? this.formatService.toFiatStr(amount, viewData.fiatCode) : '';
 
+    const amountMrtLength = (this.rateService.microsToMrt(viewData.amount)+'').length;
+    console.log(amountMrtLength, 'MERIT LENGTG');
+    if (amountMrtLength < 5) {
+      viewData.priceReviewClass = 'big';
+    } else if  (amountMrtLength < 9) {
+      viewData.priceReviewClass = 'medium';
+    } else if (amountMrtLength < 12) {
+      viewData.priceReviewClass = 'small';
+    } else {
+      viewData.priceReviewClass = 'tiny';
+    }
+
     this.viewData = viewData;
   }
 

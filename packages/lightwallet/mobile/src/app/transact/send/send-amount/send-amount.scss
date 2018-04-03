@@ -1,8 +1,10 @@
 view-send-amount {
-  .label p.feeCalcError {
+  .feeCalcError {
     white-space: normal;
+    text-align: center;
     color: color($colors, danger) !important;
     font-weight: normal !important;
+    padding-top: 20px;
   }
 
   ion-avatar {
@@ -89,7 +91,12 @@ view-send-amount {
           display: inline-block;
 
           &::placeholder {
-            font-size: 18px;
+            text-align: center;
+            font-size: 40px;
+            color: rgb(70, 85, 111);
+            letter-spacing: -1.3px;
+            font-weight: normal;
+            display: inline-block;
           }
         }
       }
@@ -179,6 +186,9 @@ view-send-amount {
   .header-ios .toolbar-ios:last-child .toolbar-background-ios {
     border-color: rgba(255,255,255, .17);
   }
+  ion-list {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
 
   .view-send-amount .amount-area .main-amount ion-item.item ion-input {
     width: 100%;
@@ -206,14 +216,36 @@ view-send-amount {
   .amount-area .main-amount ion-item.item input.text-input {
     color: #FFF;
     text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
-    letter-spacing: 4.8px;
-    font-size: 80px;
     width: 100%;
+    font-size: 80px;
+    letter-spacing: 4.8px;
 
     &::placeholder {
-      letter-spacing: normal;
       color: #FFF;
+      text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
+      letter-spacing: 4.8px;
+      font-size: 80px;
+      width: 100%;
     }
+  }
+
+  .amount-area .main-amount {
+    .amount-big input.text-input  {
+    font-size: 80px !important;
+    letter-spacing: 4.8px !important;
+  }
+  .amount-medium input.text-input {
+    font-size: 70px !important;
+    letter-spacing: 2px !important;
+  }
+  .amount-small input.text-input {
+    font-size: 60px !important;
+    letter-spacing: 1px !important;
+  }
+  .amount-tiny input.text-input {
+    font-size: 40px !important;
+    letter-spacing: 1px !important;
+  }
   }
 
   .amount-area {
@@ -249,24 +281,31 @@ view-send-amount {
   .item-ios [item-right] {
     margin: 30px;
   }
+
+  .send-button {
+    display: block;
+    border-radius: 50px;
+    padding: 0;
+    text-align: center;
+    max-width: 244px;
+    padding: 18px 20px 16px;
+    width: 100%;
+    margin: 30px auto;
+    box-shadow: none;
+    font-size: 15px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.84px;
+    line-height: 14px;
+    box-shadow: 0 3px 12px rgba(45, 59, 80, 0.22);
+    background-image: linear-gradient(100deg, #106dda 0%, #00b1de 100%);
+    div {
+      height: 30px;
+      line-height: 30px;
+    }
+  }
+
 }
 
-.send-button {
-  display: block;
-  border-radius: 50px;
-  padding: 0;
-  text-align: center;
-  max-width: 244px;
-  padding: 18px 20px 16px;
-  width: 100%;
-  margin: 30px auto;
-  box-shadow: none;
-  font-size: 15px;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.84px;
-  line-height: 14px;
-  box-shadow: 0 3px 12px rgba(45, 59, 80, 0.22);
-  background-image: linear-gradient(100deg, #106dda 0%, #00b1de 100%);
-}
+

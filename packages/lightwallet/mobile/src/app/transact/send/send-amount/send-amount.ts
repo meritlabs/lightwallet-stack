@@ -42,8 +42,8 @@ export class SendAmountView {
   public feeCalcError: string;
   public feeLoading: boolean;
 
-  public amount = { micros: 0, mrt: 0, mrtStr: '0.00', fiat: 0, fiatStr: '0.00' };
-  public formData = { amount: '0.00', password: '', confirmPassword: '', nbBlocks: 1008, validTill: '' };
+  public amount =  { micros: 0, mrt: 0, fiat: 0};
+  public formData = { amount: '', password: '', confirmPassword: '', nbBlocks: 1008, validTill: '' };
 
   public readonly CURRENCY_TYPE_MRT = 'mrt';
   public readonly CURRENCY_TYPE_FIAT = 'fiat';
@@ -103,8 +103,8 @@ export class SendAmountView {
       });
     }
     this.selectedCurrency = this.availableUnits[0];
-    let passedAmount = this.navParams.get('amount') || 0;
-    this.formData.amount = String(this.rateService.microsToMrt(passedAmount));
+    let passedAmount = this.navParams.get('amount');
+    if (passedAmount) this.formData.amount = String(this.rateService.microsToMrt(passedAmount));
     await this.updateAmount();
 
     // todo add smart common amounts receive
@@ -192,7 +192,11 @@ export class SendAmountView {
   }
 
   amountKeypress(key) {
-    if (key == 13) return this.amountInput['_native']['_elementRef']['nativeElement'].blur();
+    if (key == 13) return this.amountInput['_native']['nativeElement'].blur();
+  }
+
+  focusInput() {
+    this.amountInput['_native']['nativeElement'].focus();
   }
 
   async processAmount(value) {
@@ -215,8 +219,8 @@ if (value != this.lastAmount) {
       this.amount.micros = this.rateService.fromFiatToMicros(this.amount.fiat, this.availableUnits[1].name);
       this.amount.mrt = this.rateService.fromFiatToMerit(this.amount.fiat, this.availableUnits[1].name);
     }
-    this.amount.mrtStr = this.txFormatService.formatAmountStr(this.amount.micros) + ' MRT';
-    this.amount.fiatStr = await this.txFormatService.formatAlternativeStr(this.amount.micros);
+    //this.amount.mrtStr = this.txFormatService.formatAmountStr(this.amount.micros) + ' MRT';
+    //this.amount.fiatStr = await this.txFormatService.formatAlternativeStr(this.amount.micros);
 
     if (this.selectedWallet) {
       if (this.amount.micros == this.selectedWallet.balance.spendableAmount)  {
@@ -236,6 +240,14 @@ if (value != this.lastAmount) {
       && !_.isNil(this.txData)
       && !_.isNil(this.txData.txp)
     );
+  }
+
+  public getAmountClass() {
+    let length = this.formData.amount.length;
+    if (length < 6) return 'amount-big';
+    if (length < 8) return 'amount-medium';
+    if (length < 11) return 'amount-small';
+    return 'amount-tiny';
   }
 
   public async toConfirm() {
