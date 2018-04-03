@@ -12,15 +12,17 @@
 </div>
   <div *ngIf="viewData">
     <ion-list class="priceReview_list">
-      <ion-item text-wrap class="destination" *ngIf="viewData.destination">
+
+        <ion-item text-wrap class="destination" >
         <ion-avatar item-start img-icon>
             <img src="assets/img/icons/wallet.svg">
         </ion-avatar>
         <ion-label>
           <p>SENDING TO</p>
-          <p><strong>{{ viewData.destination }}</strong></p>
+          <p><strong>{{ viewData.destination ?  viewData.destination : 'Global Send'}}</strong></p>
         </ion-label>
       </ion-item>
+
       <ion-item>
         <ion-avatar item-start img-icon>
             <img src="assets/img/icons/wallet.svg">
@@ -49,18 +51,18 @@
 
     </ion-list>
 
-    <ion-list>
-      <ion-item *ngIf="viewData.password">
-        <ion-avatar item-start img-icon>
-          <img src="assets/img/icons/unlock.svg">
-        </ion-avatar>
-        <ion-label stacked>Password</ion-label>
-        <ion-input [(ngModel)]="viewData.password" [type]="showPassword? 'text' : 'password'" disabled></ion-input>
-        <button ion-button clear color="primary" item-end (click)="showPassword = !showPassword">{{ showPassword? 'Hide'
-          : 'Show' }}
-        </button>
-      </ion-item>
-    </ion-list>
+    <!--<ion-list>-->
+      <!--<ion-item *ngIf="viewData.password">-->
+        <!--<ion-avatar item-start img-icon>-->
+          <!--<img src="assets/img/icons/unlock.svg">-->
+        <!--</ion-avatar>-->
+        <!--<ion-label stacked>Password</ion-label>-->
+        <!--<ion-input [(ngModel)]="viewData.password" [type]="showPassword? 'text' : 'password'" disabled></ion-input>-->
+        <!--<button ion-button clear color="primary" item-end (click)="showPassword = !showPassword">{{ showPassword? 'Hide'-->
+          <!--: 'Show' }}-->
+        <!--</button>-->
+      <!--</ion-item>-->
+    <!--</ion-list>-->
   </div>
 
 </ion-content>
