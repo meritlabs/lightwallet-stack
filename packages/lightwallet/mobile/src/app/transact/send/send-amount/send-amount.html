@@ -50,7 +50,7 @@
 
     </div>
   </div>
-  <div *ngIf="!loading">
+  <ion-list *ngIf="!loading">
     <button ion-item (click)="selectWallet()" detail-none>
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/wallet.svg">
@@ -60,28 +60,15 @@
       <p>{{selectedWallet.balance.spendableAmount | toMRT}}</p>
       <ion-icon name="ios-arrow-down" item-end></ion-icon>
     </button>
-    <button ion-item no-lines detail-none>
+    <ion-item no-lines detail-none>
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/percent.svg">
       </ion-avatar>
       <p>Fee</p>
-      <h2 *ngIf="!txData?.txp?.fee">
-        <span *ngIf="!feeLoading">Not calculated</span>
-        <ion-spinner *ngIf="feeLoading"></ion-spinner>
-      </h2>
-      <p *ngIf="feeCalcError" class="feeCalcError">{{feeCalcError}}</p>
-      <p *ngIf="feePercent">{{feePercent}}</p>
-      <div item-end *ngIf="txData?.txp?.fee">
-        {{ txData?.txp?.fee + txData.easyFee | toMRT}}
-        <ion-icon name="ios-arrow-down"></ion-icon>
-      </div>
-    </button>
-    <ion-item>
-      <ion-avatar item-start></ion-avatar>
       <ion-label>
         Recipient pays fee
         <button ion-button clear (click)="showFeeIncludedTooltip()" class="tooltip-button">
-          <ion-icon name="ios-information-circle-outline"></ion-icon>
+            <ion-icon name="ios-information-circle-outline"></ion-icon>
         </button>
       </ion-label>
       <ion-toggle [(ngModel)]="feeIncluded" [disabled]="!feeTogglerEnabled" (ngModelChange)="updateTxData()"></ion-toggle>
@@ -107,9 +94,10 @@
       </ion-item>
     </ion-list>
 
-  </div>
+  </ion-list>
 
   <button class="send-button" (click)="toConfirm()" [disabled]="!isSendAllowed()">
-    Send Merit
+    <div *ngIf="!feeLoading">Send Merit</div>
+    <ion-spinner *ngIf="feeLoading" color="light"></ion-spinner>
   </button>
 </ion-content>
