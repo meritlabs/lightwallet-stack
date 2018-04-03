@@ -281,28 +281,31 @@ view-send-amount {
   .item-ios [item-right] {
     margin: 30px;
   }
+
+  .send-button {
+    display: block;
+    border-radius: 50px;
+    padding: 0;
+    text-align: center;
+    max-width: 244px;
+    padding: 18px 20px 16px;
+    width: 100%;
+    margin: 30px auto;
+    box-shadow: none;
+    font-size: 15px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.84px;
+    line-height: 14px;
+    box-shadow: 0 3px 12px rgba(45, 59, 80, 0.22);
+    background-image: linear-gradient(100deg, #106dda 0%, #00b1de 100%);
+    div {
+      height: 30px;
+      line-height: 30px;
+    }
+  }
+
 }
 
-.send-button {
-  display: block;
-  border-radius: 50px;
-  padding: 0;
-  text-align: center;
-  max-width: 244px;
-  padding: 18px 20px 16px;
-  width: 100%;
-  margin: 30px auto;
-  box-shadow: none;
-  font-size: 15px;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.84px;
-  line-height: 14px;
-  box-shadow: 0 3px 12px rgba(45, 59, 80, 0.22);
-  background-image: linear-gradient(100deg, #106dda 0%, #00b1de 100%);
-  div {
-    height: 30px;
-    line-height: 30px;
-  }
-}
+
