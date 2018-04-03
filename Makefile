@@ -33,6 +33,16 @@ clean-lightwallet:
 
 ### lightwallet-stack ###
 
+.PHONY: test-build
+test-build: clean-stack \
+	prepare-stack \
+	build-lw-ww
+
+.PHONY: build-lw-ww
+build-lw-ww:  
+	cd ./packages/lightwallet && npm run build 
+	cd ./packages/lightwallet/desktop && npm run build
+
 .PHONY: start-mongo
 start-mongo:
 	mongod --fork --syslog
