@@ -56,27 +56,17 @@ export class SendView {
     private addressScanner: AddressScannerService,
     private persistenceService: PersistenceService
   ) {
-    // WARNING: EXAMPLE OF THE DATA OBJECT
-    // this.navCtrl.push('EasySendShareView', {txData: {
-    //   "easySendUrl": "http://localhost:8100/#/transact/send/send-amounttransact/send/send-amounttransact/send/send-amount",
-    //   "details": {
-    //     "amountMRT": "3.00",
-    //     "from": "Personal Wallet",
-    //     "method": "Invite & Send",
-    //     "password": "123",
-    //     "fee": "0.001",
-    //     "total": "2.999"
-    //   }
-    // }});
   }
 
   private async updateHasUnlocked() {
     const wallets = await this.profileService.getWallets();
     this.hasUnlockedWallets = wallets.some(w => w.confirmed);
+    this.hasUnlockedWallets = true;
     this.hasActiveInvites = wallets.some(w => w.availableInvites > 0);
 
     let pagesVisited = await this.persistenceService.getPagesVisited();
     this.showSlider = (pagesVisited.indexOf('send') == -1);
+    this.showSlider = false; // temporary disabled
   }
 
   async hideSlider() {
