@@ -282,8 +282,8 @@ export class SendView {
         amount: this.amount,
         suggestedMethod: {
           type: SendMethodType.Classic,
-          destination: contact.meritAddresses[0].address,
-          value: SendMethodDestination.Address,
+          destination: SendMethodDestination.Address,
+          value: contact.meritAddresses[0].address,
           alias: contact.meritAddresses[0].alias
         }
       });
@@ -316,7 +316,6 @@ export class SendView {
     this.searchQuery = await this.addressScanner.scanAddress();
     this.parseSearch();
   }
-
 
   easySend() {
     this.navCtrl.push('SendAmountView', {
