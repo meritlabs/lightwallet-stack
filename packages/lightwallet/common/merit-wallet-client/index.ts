@@ -5,10 +5,11 @@ import * as BwcError from './lib/errors';
 export class MeritWalletClient extends MeritClient {
   private static _instance: MeritWalletClient;
   public errors;
-  color: string = '#327eff';
+
   private constructor(opts:any = {}) {
     super(opts);
     this.errors = BwcError;
+    this.color = this.color || '#00B0DD';
   }
 
   public static getInstance(opts:any = {}): MeritWalletClient {

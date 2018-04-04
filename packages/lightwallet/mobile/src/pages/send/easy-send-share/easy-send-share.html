@@ -23,7 +23,7 @@
                     <div>Copy</div>
                 </button>
             </ion-col>
-            <ion-col [hidden]="!showShareButton()">
+            <ion-col [hidden]="!showShareButton">
                 <button ion-button icon-left clear small (click)="share(txData.easySendUrl)">
                     <ion-icon name="share"></ion-icon>
                     <div>Share</div>
@@ -87,8 +87,8 @@
       </div>
     </div>
     <div class="footer">
-      <button class="back-button" color="primary" (click)="toWallets()">
-          Back to Wallets
+      <button ion-button class="action-button" (click)="toWallets()">
+        Back to wallets
       </button>
     </div>
 </ion-content>
