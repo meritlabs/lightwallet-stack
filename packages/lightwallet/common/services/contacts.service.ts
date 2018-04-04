@@ -54,9 +54,9 @@ export class ContactsService {
 
     let existingContact: MeritContact;
     if (!_.isEmpty(contact.meritAddresses)) {
-      _.some(contact.meritAddresses, (mAddress) => {
+      contact.meritAddresses.some(mAddress => {
         existingContact = addressBook[mAddress.address];
-        return existingContact;
+        return !!existingContact;
       });
     }
     if (existingContact) {
@@ -66,7 +66,9 @@ export class ContactsService {
       addressBook[address] = contact;
     }
 
-    return this.persistenceService.setAddressbook(ENV.network, addressBook);
+    await this.persistenceService.setAddressbook(ENV.network, addressBook);
+    console.log(addressBook);
+    return existingContact || contact;
   }
 
   get(addr: string): MeritContact {
