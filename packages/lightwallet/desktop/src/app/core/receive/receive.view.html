@@ -48,7 +48,7 @@
           <ng-container  *ngIf="qrAddress && address; else qrLoading">
             <qr-code [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
           </ng-container>
-          <ng-template #qrLoading>
+          <ng-template #qrLoading *ngIf="!hasUnlockedWallet">
             <loading-spinner></loading-spinner>
           </ng-template>
         </div>
