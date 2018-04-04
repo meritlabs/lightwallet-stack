@@ -67,6 +67,7 @@ export class ContactsService {
     }
 
     await this.persistenceService.setAddressbook(ENV.network, addressBook);
+    console.log(addressBook);
     return existingContact || contact;
   }
 
