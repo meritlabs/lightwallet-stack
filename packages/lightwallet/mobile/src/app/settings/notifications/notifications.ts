@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { ConfigService } from '@merit/common/services/config.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { PlatformService } from '@merit/common/services/platform.service';
@@ -32,7 +32,9 @@ export class NotificationsView {
               private appService: AppSettingsService,
               private platformService: PlatformService,
               private pushService: PushNotificationsService,
-              private emailService: EmailNotificationsService) {
+              private emailService: EmailNotificationsService,
+              private loadingCtrl: LoadingController
+  ) {
     this.emailForm = this.formBuilder.group({
       email: ['', Validators.compose([Validators.required, <any>(new EmailValidator().isValid(configService, emailService))])]
     });
@@ -64,11 +66,17 @@ export class NotificationsView {
   };
 
   public async saveEmail() {
+    let loader = this.loadingCtrl.create({
+      content: 'Saving changes...',
+      dismissOnPageChange: true
+    });
+    loader.present();
     await this.emailService.updateEmail({
       enabled: this.emailNotifications,
       email: this.emailForm.value.email
     });
-    this.navCtrl.pop(); 
+    loader.dismiss();
+    this.navCtrl.pop();
   };
 
   private updateConfig() {
