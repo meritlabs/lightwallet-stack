@@ -94,13 +94,15 @@ EmailService.prototype.start = function(opts, cb) {
   function _readDirectories(basePath, cb) {
     fs.readdir(basePath, function(err, files) {
       if (err) return cb(err);
-      async.filter(files, function(file, next) {
-        fs.stat(path.join(basePath, file), function(err, stats) {
-          return next(!err && stats.isDirectory());
-        });
-      }, function(dirs) {
-        return cb(null, dirs);
-      });
+
+      const dirs = _.reduce(files, function(dirs, file) {
+        if (fs.lstatSync(path.join(basePath, file)).isDirectory()) {
+          dirs.push(file);
+        }
+        return dirs;
+      }, []);
+
+      return cb(null, dirs);
     });
   };
 
@@ -290,6 +292,7 @@ EmailService.prototype._getDataForTemplate = function(notification, recipient, c
       }
     }
 
+    log.error('_getDataForTemplate', data);
     return cb(null, data);
   });
 };
@@ -322,11 +325,12 @@ EmailService.prototype._readAndApplyTemplates = function(notification, emailType
 
   async.map(recipientsList, function(recipient, next) {
     async.waterfall([
-
+      () => { log.error('_readAndApplyTemplates', recipient); next(); },
       function(next) {
         self._getDataForTemplate(notification, recipient, next);
       },
       function(data, next) {
+        log.error('_readAndApplyTemplates data', data);
         async.map(['plain', 'html'], function(type, next) {
           self._loadTemplate(emailType, recipient, '.' + type, function(err, template) {
             if (err && type == 'html') return next();
@@ -340,6 +344,7 @@ EmailService.prototype._readAndApplyTemplates = function(notification, emailType
         });
       },
       function(result, next) {
+        log.error('_readAndApplyTemplates result', result);
         next(null, result);
       },
     ], function(err, res) {
@@ -388,8 +393,12 @@ EmailService.prototype.sendEmail = function(notification, cb) {
               self._readAndApplyTemplates(notification, emailType, recipientsList, next);
             },
             function(contents, next) {
+
               async.map(recipientsList, function(recipient, next) {
                 var content = contents[recipient.language];
+                log.error('contents', contents);
+                log.error('recipient.language', recipient.language);
+                log.error('content', content);
                 var email = Model.Email.create({
                   walletId: notification.walletId,
                   copayerId: recipient.copayerId,
