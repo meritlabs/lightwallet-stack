@@ -33,8 +33,6 @@ export class NotificationsView {
               private platformService: PlatformService,
               private pushService: PushNotificationsService,
               private emailService: EmailNotificationsService) {
-
-    console.log(configService, this.configService);
     this.emailForm = this.formBuilder.group({
       email: ['', Validators.compose([Validators.required, <any>(new EmailValidator().isValid(configService, emailService))])]
     });
