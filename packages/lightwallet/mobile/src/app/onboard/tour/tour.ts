@@ -18,7 +18,12 @@ export class TourView {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private rateService: RateService) {
-    this.rateData.usdPerMerit = this.rateService.fromFiatToMerit(1e8, 'USD');
+  }
+
+  async ionViewDidLoad() {
+    this.rateData.usdPerMerit = this.rateService.microsToMrt(
+      await this.rateService.fiatToMicros(1e8, 'USD')
+    );
   }
 
   ionViewDidEnter() {
