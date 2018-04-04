@@ -574,7 +574,7 @@ Storage.prototype.storeAddressAndWallet = function(wallet, addresses, cb) {
     if (newAddresses.length < addresses.length) {
       log.warn('Attempted to store already existing addresses on wallet ' + wallet.id);
     }
-    saveAddresses(newAddresses, function(err) {
+    saveAddresses(addresses, function(err) {
       if (err) return cb(err);
       self.storeWallet(wallet, cb);
     });
