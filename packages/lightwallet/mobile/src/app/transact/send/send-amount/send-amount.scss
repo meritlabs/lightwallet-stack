@@ -91,12 +91,11 @@ view-send-amount {
           display: inline-block;
 
           &::placeholder {
-            text-align: center;
-            font-size: 20px;
-            color: rgb(70, 85, 111);
-            letter-spacing: -1.3px;
-            font-weight: normal;
-            display: inline-block;
+            color: #FFF;
+            text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
+            width: 100%;
+            font-size: 80px;
+            letter-spacing: 4.8px;
           }
         }
       }
@@ -190,6 +189,10 @@ view-send-amount {
   //  border-bottom: 1px solid rgba(0,0,0,0.1);
   //}
 
+  .big-header {
+    background: #69b0dd;
+  }
+
   .view-send-amount .amount-area .main-amount ion-item.item ion-input {
     width: 100%;
   }
@@ -206,13 +209,6 @@ view-send-amount {
     font-size: 80px;
     letter-spacing: 4.8px;
 
-    &::placeholder {
-      color: rgba(255,255,255,.8);
-      letter-spacing: .67px;
-      text-shadow: none;
-      //text-shadow: 0 3px 16px rgba(0, 0, 0, 0.13);
-      width: 100%;
-    }
   }
 
   .amount-area .main-amount {
