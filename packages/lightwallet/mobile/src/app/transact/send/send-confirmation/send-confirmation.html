@@ -1,77 +1,65 @@
-<ion-header class="confirmTitle">
-  <ion-navbar>
-    <ion-title>Review Invite & Send</ion-title>
+<ion-header no-border>
+  <ion-navbar color="light">
+    <ion-title>Confirm Transaction</ion-title>
   </ion-navbar>
 </ion-header>
-<ion-content *ngIf="viewData">
-<div class="priceReview">
-  <div class="priceReview_info">
-    <div class="priceReview_icon"></div>
-    <div class="priceReview_mrt" [class]="viewData?.priceReviewClass">{{ viewData.amount | toMRT}}</div>
-  </div>
-</div>
-  <div *ngIf="viewData">
-    <ion-list class="priceReview_list">
-
-        <ion-item text-wrap class="destination" >
-        <ion-avatar item-start img-icon>
-            <img src="assets/img/icons/wallet.svg">
+<ion-content>
+  <ng-container *ngIf="viewData">
+    <div class="big-header" text-center>
+      <h2>{{ viewData.amount | toMRT:null:true}} <small>MRT</small></h2>
+    </div>
+    <ion-list>
+      <ion-item text-wrap class="destination">
+        <ion-avatar item-start>
         </ion-avatar>
         <ion-label>
-          <p>SENDING TO</p>
-          <p><strong>{{ viewData.destination ?  viewData.destination : 'Global Send'}}</strong></p>
+          <p>Sending to</p>
+          <h2>{{ viewData.destination ? viewData.destination : 'Global Send'}}</h2>
         </ion-label>
       </ion-item>
 
       <ion-item>
         <ion-avatar item-start img-icon>
-            <img src="assets/img/icons/wallet.svg">
+          <img src="assets/img/icons/wallet.svg">
         </ion-avatar>
         <ion-label>
-          <p>FROM</p>
-          <p><strong>{{ viewData.walletName }}</strong></p>
+          <p>Sending from</p>
+          <h2>{{ viewData.walletName }}</h2>
         </ion-label>
       </ion-item>
 
       <ion-item *ngIf="viewData.password">
         <ion-avatar item-start img-icon>
-            <img src="assets/img/icons/unlock.svg">
+          <img src="assets/img/icons/unlock.svg">
         </ion-avatar>
 
-        <div class="ion-item-half" *ngIf="!showPassword">
-           <p><strong>Password set</strong></p>
-        </div>
-        <div class="ion-item-half" *ngIf="showPassword">
-           <p><strong>{{viewData.password}}</strong></p>
-        </div>
-        <button ion-button clear color="primary" item-end (click)="showPassword = !showPassword">
-            {{ showPassword? 'Hide' : 'Show' }}
+        <ion-label stacked>
+          <p>Password set</p>
+        </ion-label>
+        <ion-input [type]="showPassword? 'text' : 'password'" disabled [value]="viewData.password"></ion-input>
+
+        <button ion-button item-end (click)="showPassword = !showPassword" clear>
+          {{ showPassword? 'Hide' : 'Show' }}
         </button>
       </ion-item>
 
-      <ion-item class="ion-item-halfs">
-        <div class="ion-item-half">
-          <p><strong>Fee</strong></p>
-        </div>
-        <div class="ion-item-half">
-          <p><strong class="amount">{{ viewData.fee  | toMRT }}</strong></p>
-        </div>
-      </ion-item>
-      <ion-item class="ion-item-halfs">
-        <div class="ion-item-half">
-          <p><strong>Total</strong></p>
-        </div>
-        <div class="ion-item-half">
-          <p><strong class="amount blue">{{ viewData.totalAmount  | toMRT }}</strong></p>
-        </div>
+      <ion-item>
+        <ion-label>
+          <p>Fee</p>
+          <h2>{{ viewData.fee | toMRT }}</h2>
+        </ion-label>
       </ion-item>
 
+      <ion-item>
+        <ion-label>
+          <p>Total</p>
+          <h2>{{ viewData.totalAmount | toMRT }}</h2>
+        </ion-label>
+      </ion-item>
     </ion-list>
-
-  </div>
-
+  </ng-container>
 </ion-content>
 
-<ion-footer >
+<ion-footer>
   <slide-to-action text="Slide to Send" (confirm)="send()"></slide-to-action>
 </ion-footer>
