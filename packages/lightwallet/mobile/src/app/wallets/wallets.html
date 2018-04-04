@@ -11,7 +11,7 @@
       <h2 *ngIf="allBalancesHidden; else balancesNotHidden"></h2>
       <ng-template #balancesNotHidden>
         <h2 class="amount">
-          {{ ( totalAmount || '0.00') | toMRT:8 }} 
+          {{ ( totalAmount || '0.00') | toMRT:8:true }} <small>MRT</small>
         </h2>
         <h3 class="detail-fiat">{{ totalWalletsValueFiat }}</h3>
         <h3 class="detail-fiat">{{ totalInvites }} Invites</h3>

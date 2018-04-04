@@ -1,7 +1,7 @@
 <ion-header no-border>
-  <ion-navbar color="primary">
-    <ion-title smaller-title>
-      Sending To: {{ recipient?.name?.formatted? recipient.name.formatted : sendMethod.type == 'easy' ? 'Global Send' : 'Sending To: @' + sendMethod.alias}}
+  <ion-navbar color="light">
+    <ion-title>
+      <span>Sending to:</span> {{ recipient?.name?.formatted? recipient.name.formatted : sendMethod.type == 'easy' ? 'Global Send' : 'Sending To: @' + sendMethod.alias}}
     </ion-title>
   </ion-navbar>
   <div class="big-header">
@@ -25,7 +25,7 @@
             pattern="[0-9\.]"
             [(ngModel)]="formData.amount"
             (ngModelChange)="processAmount(formData.amount)"
-            placeholder="0"
+            placeholder="Enter amount to send"
             (keypress)="amountKeypress($event.keyCode)"
             [class]="getAmountClass()"
           ></ion-input>

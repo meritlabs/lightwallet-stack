@@ -16,11 +16,7 @@ view-send-amount {
     border-radius: 50%;
   }
 
-  ion-header {
-    ion-navbar {
-      height: 70px;
-    }
-
+  ion-header.header {
     h2 {
       margin: 0;
       font-size: 20px;
@@ -86,11 +82,11 @@ view-send-amount {
           display: inline-block;
 
           &::placeholder {
-            color: #FFF;
-            text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
+            color: transparentize(white, .47);
+            text-shadow: none;
             width: 100%;
-            font-size: 80px;
-            letter-spacing: 4.8px;
+            font-size: 20px;
+            letter-spacing: -1.3px;
           }
         }
       }
@@ -171,23 +167,7 @@ view-send-amount {
   }
 }
 
-.ios view-send-amount ion-header ion-title.title h2,
-.ios view-send-via ion-header ion-title.title h2 {
-  font-size: 18px;
-}
-
 view-send-amount {
-  //.header-ios .toolbar-ios:last-child .toolbar-background-ios {
-  //  border-color: rgba(255,255,255, .17);
-  //}
-  //ion-list {
-  //  border-bottom: 1px solid rgba(0,0,0,0.1);
-  //}
-
-  .big-header {
-    background: #69b0dd;
-  }
-
   .view-send-amount .amount-area .main-amount ion-item.item ion-input {
     width: 100%;
   }
@@ -207,22 +187,22 @@ view-send-amount {
   }
 
   .amount-area .main-amount {
-    .amount-big input.text-input  {
-    font-size: 80px !important;
-    letter-spacing: 4.8px !important;
-  }
-  .amount-medium input.text-input {
-    font-size: 70px !important;
-    letter-spacing: 2px !important;
-  }
-  .amount-small input.text-input {
-    font-size: 60px !important;
-    letter-spacing: 1px !important;
-  }
-  .amount-tiny input.text-input {
-    font-size: 40px !important;
-    letter-spacing: 1px !important;
-  }
+    .amount-big input.text-input {
+      font-size: 80px !important;
+      letter-spacing: 4.8px !important;
+    }
+    .amount-medium input.text-input {
+      font-size: 70px !important;
+      letter-spacing: 2px !important;
+    }
+    .amount-small input.text-input {
+      font-size: 60px !important;
+      letter-spacing: 1px !important;
+    }
+    .amount-tiny input.text-input {
+      font-size: 40px !important;
+      letter-spacing: 1px !important;
+    }
   }
 
   .amount-area {
@@ -248,10 +228,6 @@ view-send-amount {
 
   .text-input-ios {
     width: 100%;
-  }
-
-  ion-header.header-ios ion-navbar button[ion-button].back-button ion-icon.icon {
-    font-size: 24px;
   }
 
   .item-ios [item-end],

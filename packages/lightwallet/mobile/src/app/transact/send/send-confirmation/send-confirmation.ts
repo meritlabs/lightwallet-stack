@@ -19,14 +19,11 @@ import { MeritToastController, ToastConfig } from '@merit/common/services/toast.
 })
 export class SendConfirmationView {
 
-  // Statics
-  private readonly CONFIRM_LIMIT_USD = 20;
-
   txData: {
     amount: number; // micros
     totalAmount: number; // micros
     feeIncluded: boolean;
-    easyFee: number, 
+    easyFee: number,
     password: string;
     recipient: {
       label: string;
@@ -65,10 +62,10 @@ export class SendConfirmationView {
     const viewData: any = {
       recipient: this.txData.recipient,
       amount:  this.txData.amount,
-      totalAmount: this.txData.feeIncluded ? this.txData.amount : this.txData.amount + this.txData.txp.fee + this.txData.easyFee, 
+      totalAmount: this.txData.feeIncluded ? this.txData.amount : this.txData.amount + this.txData.txp.fee + this.txData.easyFee,
       password: this.txData.password,
       feePercent: this.txData.txp.feePercent,
-      fee: this.txData.txp.fee + this.txData.easyFee, 
+      fee: this.txData.txp.fee + this.txData.easyFee,
       walletName: this.txData.wallet.name || this.txData.wallet.id,
       walletColor: this.txData.wallet.color,
       walletCurrentBalance: this.txData.wallet.balance.totalAmount,
@@ -80,12 +77,8 @@ export class SendConfirmationView {
 
     viewData.walletRemainingBalance =  this.txData.wallet.balance.totalAmount - viewData.totalAmount;
 
-    const rate = await this.rateService.getRate(viewData.fiatCode);
-    let fiatAvailale = rate > 0;
-    const convert = amount => fiatAvailale ? this.formatService.toFiatStr(amount, viewData.fiatCode) : '';
-
     const amountMrtLength = (this.rateService.microsToMrt(viewData.amount)+'').length;
-    console.log(amountMrtLength, 'MERIT LENGTG');
+
     if (amountMrtLength < 5) {
       viewData.priceReviewClass = 'big';
     } else if  (amountMrtLength < 9) {
@@ -100,7 +93,7 @@ export class SendConfirmationView {
   }
 
   sendAllowed() {
-    return this.txData && !_.isEmpty(this.txData.txp); 
+    return this.txData && !_.isEmpty(this.txData.txp);
   }
 
   approve() {
@@ -193,9 +186,9 @@ export class SendConfirmationView {
     if (this.walletService.isEncrypted(this.txData.wallet)) {
       return showPassPrompt();
     } else {
-      
+
       // if (parseInt(this.txData.amountUSD) >= this.CONFIRM_LIMIT_USD) {
-        if (this.touchIdService.isAvailable()) { 
+        if (this.touchIdService.isAvailable()) {
           return showTouchIDPrompt();
         } else {
           return showNoPassPrompt();
@@ -239,7 +232,7 @@ export class SendConfirmationView {
       }).present();
     } finally {
       loadingSpinner.dismiss();
-      this.txData.referralsToSign = []; 
+      this.txData.referralsToSign = [];
     }
   }
 
