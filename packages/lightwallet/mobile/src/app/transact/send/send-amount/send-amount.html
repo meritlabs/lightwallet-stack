@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-navbar color="light">
+  <ion-navbar color="primary">
     <ion-title smaller-title>
       Sending To: {{ recipient?.name?.formatted? recipient.name.formatted : sendMethod.type == 'easy' ? 'Global Send' : 'Sending To: @' + sendMethod.alias}}
     </ion-title>
@@ -25,7 +25,7 @@
             pattern="[0-9\.]"
             [(ngModel)]="formData.amount"
             (ngModelChange)="processAmount(formData.amount)"
-            placeholder="Enter amount to send"
+            placeholder="0"
             (keypress)="amountKeypress($event.keyCode)"
             [class]="getAmountClass()"
           ></ion-input>
@@ -49,11 +49,10 @@
       <p>{{selectedWallet.balance.spendableAmount | toMRT}}</p>
       <ion-icon name="ios-arrow-down" item-end></ion-icon>
     </button>
-    <ion-item no-lines detail-none>
+    <ion-item detail-none>
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/percent.svg">
       </ion-avatar>
-      <p>Fee</p>
       <ion-label>
         Recipient pays fee
         <button ion-button clear (click)="showFeeIncludedTooltip()" class="tooltip-button">
@@ -63,25 +62,24 @@
       <ion-toggle [(ngModel)]="feeIncluded" [disabled]="!feeTogglerEnabled" (ngModelChange)="updateTxData()"></ion-toggle>
     </ion-item>
 
-    <!--<ion-list *ngIf="sendMethod.type == 'easy'">-->
-      <!--<ion-item>-->
-        <!--<ion-avatar item-start img-icon>-->
-          <!--<img src="assets/img/icons/unlock.svg">-->
-        <!--</ion-avatar>-->
-        <!--<ion-label stacked>Add Password (Optional)</ion-label>-->
-        <!--<ion-input type="password" [(ngModel)]="formData.password" placeholder="Type it here"-->
-                   <!--autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>-->
-      <!--</ion-item>-->
-    <!--</ion-list>-->
+      <ion-item *ngIf="sendMethod.type == 'easy'">
+        <ion-avatar item-start img-icon>
+          <img src="assets/img/icons/unlock.svg">
+        </ion-avatar>
+        <ion-label stacked>Add Password (Optional)</ion-label>
+        <ion-input type="password" [(ngModel)]="formData.password" placeholder="Type it here"
+                   autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
+      </ion-item>
 
-    <!--<ion-list *ngIf="formData.password">-->
-      <!--<ion-item>-->
-        <!--<ion-avatar item-start></ion-avatar>-->
-        <!--<ion-label stacked>Confirm Password</ion-label>-->
-        <!--<ion-input type="password" [(ngModel)]="formData.confirmPassword" placeholder="Repeat password"-->
-                   <!--autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>-->
-      <!--</ion-item>-->
-    <!--</ion-list>-->
+      <ion-item *ngIf="formData.password">
+        <ion-avatar item-start img-icon>
+           <img src="assets/img/icons/unlock.svg">
+        </ion-avatar>
+        <ion-label stacked>Confirm Password</ion-label>
+        <ion-input type="password" [(ngModel)]="formData.confirmPassword" placeholder="Repeat password"
+                   (ngModelChange)="updateTxData()"
+                   autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
+      </ion-item>
 
   </ion-list>
 

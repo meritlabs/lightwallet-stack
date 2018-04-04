@@ -32,6 +32,23 @@
           <p><strong>{{ viewData.walletName }}</strong></p>
         </ion-label>
       </ion-item>
+
+      <ion-item *ngIf="viewData.password">
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/unlock.svg">
+        </ion-avatar>
+
+        <div class="ion-item-half" *ngIf="!showPassword">
+           <p><strong>Password set</strong></p>
+        </div>
+        <div class="ion-item-half" *ngIf="showPassword">
+           <p><strong>{{viewData.password}}</strong></p>
+        </div>
+        <button ion-button clear color="primary" item-end (click)="showPassword = !showPassword">
+            {{ showPassword? 'Hide' : 'Show' }}
+        </button>
+      </ion-item>
+
       <ion-item class="ion-item-halfs">
         <div class="ion-item-half">
           <p><strong>Fee</strong></p>
@@ -51,18 +68,6 @@
 
     </ion-list>
 
-    <!--<ion-list>-->
-      <!--<ion-item *ngIf="viewData.password">-->
-        <!--<ion-avatar item-start img-icon>-->
-          <!--<img src="assets/img/icons/unlock.svg">-->
-        <!--</ion-avatar>-->
-        <!--<ion-label stacked>Password</ion-label>-->
-        <!--<ion-input [(ngModel)]="viewData.password" [type]="showPassword? 'text' : 'password'" disabled></ion-input>-->
-        <!--<button ion-button clear color="primary" item-end (click)="showPassword = !showPassword">{{ showPassword? 'Hide'-->
-          <!--: 'Show' }}-->
-        <!--</button>-->
-      <!--</ion-item>-->
-    <!--</ion-list>-->
   </div>
 
 </ion-content>

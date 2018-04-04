@@ -3,6 +3,8 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AlertController, App, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { ProfileService } from '@merit/common/services/profile.service';
 
 @IonicPage()
 @Component({
@@ -19,6 +21,8 @@ export class SettingsView {
   availableAlternateCurrencies = [];
   emailNotificationsEnabled;
 
+  wallets: Array<MeritWalletClient>;
+
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private app: App,
@@ -26,15 +30,32 @@ export class SettingsView {
               private inAppBrowser: InAppBrowser,
               private modalCtrl: ModalController,
               private configService: ConfigService,
-              private logger: LoggerService) {
+              private logger: LoggerService,
+              private profileService: ProfileService,
+  ) {
     let config = this.configService.get();
     this.currentUnitName = config.wallet.settings.unitName;
     this.currentAlternativeName = config.wallet.settings.alternativeName;
     this.emailNotificationsEnabled = config.emailNotifications.enabled;
+    this.wallets = this.navParams.get('wallets');
   }
 
-  logout() {
-    this.app.getRootNavs()[0].setRoot('OnboardingView');
+  async logout() {
+
+    this.alertCtrl.create({
+      title: 'Have you backed up your wallets?',
+      message: 'This action will delete all Merit data on your device, so if you have no backup, you will lose your wallets for good',
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        { text: 'Logout', handler: () => {
+          Promise.all(this.wallets.map( w => this.profileService.deleteWallet(w) )).then(() => {
+            this.app.getRootNavs()[0].setRoot('OnboardingView');
+          });
+          }
+        }
+      ]
+    }).present();
+
   }
 
   toLanguageSelect() {

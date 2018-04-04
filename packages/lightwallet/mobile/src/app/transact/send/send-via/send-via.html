@@ -17,11 +17,9 @@
               (click)="select('classic', 'address', meritAddress.address, meritAddress.alias)"
               [class.selected]="highlightedMethod?.value == meritAddress.address && highlightedMethod?.type == 'classic'">
 
-        <ion-avatar img-icon item-start *ngIf="i == 0">
+        <ion-avatar img-icon item-start >
           <img src="assets/img/icons/merit.svg">
         </ion-avatar>
-        <ion-avatar item-start *ngIf="i != 0"></ion-avatar>
-
         <ion-label class="address-label">
           <p>Merit Address</p>
           <h2 [class.address]="!meritAddress.alias">{{meritAddress.alias ? '@'+meritAddress.alias :
