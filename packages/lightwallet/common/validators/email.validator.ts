@@ -4,19 +4,19 @@ import { EmailNotificationsService } from '@merit/common/services/email-notifica
 
 export class EmailValidator {
 
-  constructor(private cnf: ConfigService, private eml: EmailNotificationsService) {}
+  isValid(cnf: ConfigService, eml: EmailNotificationsService): (control: AbstractControl) => ValidationErrors | null {
+    return function (control: AbstractControl): ValidationErrors | null {
+      const config = cnf.get();
+      const latestEmail = eml.getEmailIfEnabled(config);
 
-  isValid(control: AbstractControl): ValidationErrors | null {
-    let config = this.cnf.get();
-    let latestEmail = this.eml.getEmailIfEnabled(config);
+      const validEmail = (/^[a-zA-Z0-9.!#$%&*+=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/).test(control.value);
+      if (validEmail && control.value != latestEmail) {
+        return null;
+      }
 
-    let validEmail = (/^[a-zA-Z0-9.!#$%&*+=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/).test(control.value);
-    if (validEmail && control.value != latestEmail) {
-      return null;
+      return {
+        'Invalid Email': true
+      };
     }
-
-    return {
-      'Invalid Email': true
-    };
   }
 }
