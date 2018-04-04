@@ -1,15 +1,10 @@
-<ion-content>
-  <div class="globalSendHeader">
-    <ion-header class="globalSendInner">
-      <ion-navbar>
-        <ion-title *ngIf="recipient?.name?.formatted">
-          <h2>Sending To: {{recipient.name.formatted}}</h2>
-        </ion-title>
-        <ion-title *ngIf="!recipient?.name?.formatted">
-          <h2>{{ sendMethod.type == 'easy' ? 'Global Send' : 'Sending To: @' + sendMethod.alias }}</h2>
-        </ion-title>
-      </ion-navbar>
-    </ion-header>
+<ion-header no-border>
+  <ion-navbar color="light">
+    <ion-title smaller-title>
+      Sending To: {{ recipient?.name?.formatted? recipient.name.formatted : sendMethod.type == 'easy' ? 'Global Send' : 'Sending To: @' + sendMethod.alias}}
+    </ion-title>
+  </ion-navbar>
+  <div class="big-header">
     <div class="amount-area" *ngIf="!loading" (click)="focusInput()">
       <div class="currency-bar">
         <div *ngIf="availableUnits?.length > 1">
@@ -21,8 +16,8 @@
         </div>
       </div>
       <div class="main-amount">
-        <div class="amount-sm amount-converted" *ngIf="formData.amount">
-        </div>
+        <!--<div class="amount-sm amount-converted" *ngIf="formData.amount">-->
+        <!--</div>-->
         <ion-item no-lines>
           <ion-input
             #amount
@@ -30,7 +25,7 @@
             pattern="[0-9\.]"
             [(ngModel)]="formData.amount"
             (ngModelChange)="processAmount(formData.amount)"
-            [placeholder]="0"
+            placeholder="Enter amount to send"
             (keypress)="amountKeypress($event.keyCode)"
             [class]="getAmountClass()"
           ></ion-input>
@@ -40,16 +35,10 @@
       <div class="alternative-amount">
         {{selectedCurrency.type == 'mrt' ? amount.fiatStr : amount.mrtStr}}
       </div>
-
-      <!-- <div class="suggested-amounts">
-        <button ion-button outline *ngFor="let amount of suggestedAmounts[selectedCurrency.type]"
-                (click)="selectAmount(amount)">
-          {{amount}}
-        </button>
-      </div> -->
-
     </div>
   </div>
+</ion-header>
+<ion-content no-bounce>
   <ion-list *ngIf="!loading">
     <button ion-item (click)="selectWallet()" detail-none>
       <ion-avatar item-start img-icon>
@@ -96,8 +85,8 @@
 
   </ion-list>
 
-  <p *ngIf="feeCalcError" class="feeCalcError">{{feeCalcError}}</p>
-  <button class="send-button" (click)="toConfirm()" [disabled]="!isSendAllowed()">
+  <p [hidden]="!feeCalcError" class="feeCalcError">{{ feeCalcError }}</p>
+  <button ion-button class="action-button" (click)="toConfirm()" [disabled]="!isSendAllowed()">
     <div *ngIf="!feeLoading">Send Merit</div>
     <ion-spinner *ngIf="feeLoading" color="light"></ion-spinner>
   </button>
