@@ -114,6 +114,7 @@ EmailService.prototype.start = function(opts, cb) {
   self.publicTxUrlTemplate = opts.emailOpts.publicTxUrlTemplate || {};
   self.subjectPrefix = opts.emailOpts.subjectPrefix || '[Wallet service]';
   self.from = opts.emailOpts.from;
+  self.types = ['plain', 'html'];
 
   async.parallel([
 
@@ -244,8 +245,7 @@ EmailService.prototype._getDataForTemplate = function(notification, recipient, c
 
   // TODO: Declare these in BWU
   var UNIT_LABELS = {
-    mrt: 'MRT',
-    bit: 'bits'
+    mrt: 'MRT'
   };
 
   var data = _.cloneDeep(notification.data);
@@ -258,8 +258,10 @@ EmailService.prototype._getDataForTemplate = function(notification, recipient, c
       return cb(new Error('Could not format amount', ex));
     }
   }
+
   self.storage.fetchWallet(notification.walletId, function(err, wallet) {
     if (err) return cb(err);
+
     data.walletId = wallet.id;
     data.walletName = wallet.name;
     data.walletM = wallet.m;
@@ -292,7 +294,6 @@ EmailService.prototype._getDataForTemplate = function(notification, recipient, c
       }
     }
 
-    log.error('_getDataForTemplate', data);
     return cb(null, data);
   });
 };
@@ -319,39 +320,35 @@ EmailService.prototype._send = function(email, cb) {
   });
 };
 
-
 EmailService.prototype._readAndApplyTemplates = function(notification, emailType, recipientsList, cb) {
   var self = this;
 
   async.map(recipientsList, function(recipient, next) {
     async.waterfall([
-      () => { log.error('_readAndApplyTemplates', recipient); next(); },
       function(next) {
         self._getDataForTemplate(notification, recipient, next);
       },
       function(data, next) {
-        log.error('_readAndApplyTemplates data', data);
-        async.map(['plain', 'html'], function(type, next) {
-          self._loadTemplate(emailType, recipient, '.' + type, function(err, template) {
-            if (err && type == 'html') return next();
-            if (err) return next(err);
-            self._applyTemplate(template, data, function(err, res) {
-              return next(err, [type, res]);
+        async.map(self.types,
+          function(type, mapNext) {
+            self._loadTemplate(emailType, recipient, '.' + type, function(err, template) {
+              if (err && type === 'html') return mapNext();
+              if (err) return mapNext(err);
+
+              self._applyTemplate(template, data, function(err, res) {
+                return mapNext(err, { [type]: res });
+              });
             });
-          });
-        }, function(err, res) {
-          return next(err, _.zipObject(res));
-        });
-      },
-      function(result, next) {
-        log.error('_readAndApplyTemplates result', result);
-        next(null, result);
-      },
-    ], function(err, res) {
-      next(err, [recipient.language, res]);
+          }, function(err, res) {
+            return next(err, _.merge(_.compact(res)));
+          }
+        );
+      }
+    ], function(err, result) {
+      next(err, { [recipient.language]: result });
     });
   }, function(err, res) {
-    return cb(err, _.zipObject(res));
+    return cb(err, res[0]); // ToDo: get rid of this aync hell, it's not needed here and creates a lot of useless wrappers around data
   });
 };
 
@@ -396,21 +393,21 @@ EmailService.prototype.sendEmail = function(notification, cb) {
 
               async.map(recipientsList, function(recipient, next) {
                 var content = contents[recipient.language];
-                log.error('contents', contents);
-                log.error('recipient.language', recipient.language);
-                log.error('content', content);
-                var email = Model.Email.create({
-                  walletId: notification.walletId,
-                  copayerId: recipient.copayerId,
-                  from: self.from,
-                  to: recipient.emailAddress,
-                  subject: content.plain.subject,
-                  bodyPlain: content.plain.body,
-                  bodyHtml: content.html ? content.html.body : null,
-                  notificationId: notification.id,
-                });
-                self.storage.storeEmail(email, function(err) {
-                  return next(err, email);
+                // ToDo; improve it too, it's the result of asyncs in _readAndApplyTemplates
+                _.map(content, function(instance) {
+                  var email = Model.Email.create({
+                    walletId: notification.walletId,
+                    copayerId: recipient.copayerId,
+                    from: self.from,
+                    to: recipient.emailAddress,
+                    subject: instance.plain.subject,
+                    bodyPlain: instance.plain.body,
+                    bodyHtml: instance.html ? instance.html.body : null,
+                    notificationId: notification.id,
+                  });
+                  self.storage.storeEmail(email, function(err) {
+                    return next(err, email);
+                  });
                 });
               }, next);
             },
