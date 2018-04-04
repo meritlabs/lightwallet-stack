@@ -11,7 +11,9 @@ import { PlatformService } from '@merit/common/services/platform.service';
 })
 export class EasySendShareView {
 
-  private txData:any;
+  private txData: any;
+
+  showShareButton: boolean;
 
   constructor(
     private navCtrl: NavController,
@@ -22,6 +24,7 @@ export class EasySendShareView {
     private tabs: Tabs
   ) {
     this.txData = this.navParams.get('txData');
+    this.showShareButton = this.platformService.isCordova && SocialSharing.installed();
   }
 
 
@@ -42,11 +45,4 @@ export class EasySendShareView {
       return this.tabs.select(0);
     } catch (e) {}
   }
-
-  showShareButton() {
-    return (
-      this.platformService.isCordova
-    );
-  }
-
 }
