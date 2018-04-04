@@ -1,6 +1,7 @@
 <ion-header>
   <div class="big-header">
-    <button ion-button clear icon-only class="header-action-button" navPush="SettingsView"> 
+    <button ion-button clear icon-only class="header-action-button"
+            navPush="SettingsView" [navParams]="{ wallets: wallets }">
       <ion-icon name="settings" merit-icon></ion-icon>
     </button>
     <ion-spinner *ngIf="refreshing" class="refresh-spinner"></ion-spinner>
@@ -77,7 +78,9 @@
       </button>
 
       <ng-template #notConfirmed>
-        <div *ngIf="!wallet.confirmed" class="wallet">
+        <div *ngIf="!wallet.confirmed" class="wallet"
+             navPush="EditWalletView"
+             [navParams]="{ wallet: wallet, walletId: wallet.id }">
           <div class="unlock-backdrop"></div>
 
           <div class="unlock-popup">

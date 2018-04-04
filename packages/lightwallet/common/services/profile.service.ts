@@ -195,7 +195,6 @@ export class ProfileService {
       credentials: this.wallets.map(w => w.export())
     };
 
-    console.log('storing profile', profile, this.wallets);
     this.persistenceService.storeProfile(profile);
   }
 }

@@ -276,7 +276,6 @@ export class SendAmountView {
     } finally {
       loadingSpinner.dismiss();
     }
-
   }
 
   selectExpirationDate() {
@@ -288,7 +287,7 @@ export class SendAmountView {
     });
   }
 
-  private updateTxData() {
+  public updateTxData() {
     this.feeLoading = true;
     this.feeCalcError = null;
     this.feePercent = null;
@@ -331,6 +330,8 @@ export class SendAmountView {
     if (this.amount.micros == this.selectedWallet.balance.spendableAmount) this.feeIncluded = true;
 
     try {
+
+      if (this.formData.password != this.formData.confirmPassword) throw new Error('Passwords does not match');
 
       if (this.sendMethod.type == SendMethodType.Easy) {
 
