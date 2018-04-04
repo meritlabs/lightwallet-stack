@@ -571,13 +571,14 @@ Storage.prototype.storeAddressAndWallet = function(wallet, addresses, cb) {
       return next(false);
     });
   }, function(newAddresses) {
-    if (newAddresses.length < addresses.length) {
-      log.warn('Attempted to store already existing addresses on wallet ' + wallet.id);
+    if (newAddresses) {
+        saveAddresses(addresses, function(err) {
+            if (err) return cb(err);
+            self.storeWallet(wallet, cb);
+        });
+    } else {
+      return cb(null);
     }
-    saveAddresses(newAddresses, function(err) {
-      if (err) return cb(err);
-      self.storeWallet(wallet, cb);
-    });
   });
 };
 

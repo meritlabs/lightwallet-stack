@@ -248,7 +248,7 @@ export class SendView {
     let modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
     modal.onDidDismiss((contact) => {
       if (contact) {
-        this.navCtrl.push('SendViaView', {
+        this.navCtrl.push('SendAmountView', {
           contact: contact,
           amount: this.amount,
           isEasyEnabled: this.hasActiveInvites,
@@ -276,25 +276,28 @@ export class SendView {
   }
 
   sendToContact(contact) {
-    const modal = this.modalCtrl.create('SendViaView', {
-      contact: contact,
-      amount: this.amount
-    }, MERIT_MODAL_OPTS
-    );
-    modal.onDidDismiss((contact) => {
-      if (contact) {
-        this.navCtrl.push('SendViaView', {
+    if (contact.meritAddresses.length == 1) {
+      return this.navCtrl.push('SendAmountView', {
+        contact: contact,
+        amount: this.amount,
+        suggestedMethod: {
+          type: SendMethodType.Classic,
+          destination: SendMethodDestination.Address,
+          value: contact.meritAddresses[0].address,
+          alias: contact.meritAddresses[0].alias
+        }
+      });
+    } else {
+      this.modalCtrl.create('SendViaView', {
           contact: contact,
-          amount: this.amount,
-          suggestedMethod: this.suggestedMethod,
-          isEasyEnabled: this.hasActiveInvites
-        });
-      }
-    });
-    modal.present();
+          amount: this.amount
+        }, MERIT_MODAL_OPTS
+      ).present();
+    }
   }
-  editContact() {
-
+  editContact(contact, $event) {
+    $event.stopPropagation();
+    this.modalCtrl.create('SendEditContactView', { contact }).present();
   }
   sendToEntity(entity) {
     this.navCtrl.push('SendAmountView', {
@@ -313,7 +316,6 @@ export class SendView {
     this.searchQuery = await this.addressScanner.scanAddress();
     this.parseSearch();
   }
-
 
   easySend() {
     this.navCtrl.push('SendAmountView', {

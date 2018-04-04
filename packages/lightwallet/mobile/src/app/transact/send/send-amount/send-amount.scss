@@ -16,11 +16,6 @@ view-send-amount {
     border-radius: 50%;
   }
 
-  .item-divider,
-  ion-item {
-    border: none;
-  }
-
   ion-header {
     ion-navbar {
       height: 70px;
@@ -91,12 +86,11 @@ view-send-amount {
           display: inline-block;
 
           &::placeholder {
-            text-align: center;
-            font-size: 40px;
-            color: rgb(70, 85, 111);
-            letter-spacing: -1.3px;
-            font-weight: normal;
-            display: inline-block;
+            color: #FFF;
+            text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
+            width: 100%;
+            font-size: 80px;
+            letter-spacing: 4.8px;
           }
         }
       }
@@ -183,11 +177,15 @@ view-send-amount {
 }
 
 view-send-amount {
-  .header-ios .toolbar-ios:last-child .toolbar-background-ios {
-    border-color: rgba(255,255,255, .17);
-  }
-  ion-list {
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+  //.header-ios .toolbar-ios:last-child .toolbar-background-ios {
+  //  border-color: rgba(255,255,255, .17);
+  //}
+  //ion-list {
+  //  border-bottom: 1px solid rgba(0,0,0,0.1);
+  //}
+
+  .big-header {
+    background: #69b0dd;
   }
 
   .view-send-amount .amount-area .main-amount ion-item.item ion-input {
@@ -199,20 +197,6 @@ view-send-amount {
     padding-right: 0 !important;
   }
 
-  .back-button.show-back-button {
-    position: relative;
-
-    &::after {
-      content: "";
-      position: absolute;
-      height: 2px;
-      width: 15px;
-      background: #FFF;
-      left: 15px;
-      top: 46%;
-    }
-  }
-
   .amount-area .main-amount ion-item.item input.text-input {
     color: #FFF;
     text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
@@ -220,13 +204,6 @@ view-send-amount {
     font-size: 80px;
     letter-spacing: 4.8px;
 
-    &::placeholder {
-      color: #FFF;
-      text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
-      letter-spacing: 4.8px;
-      font-size: 80px;
-      width: 100%;
-    }
   }
 
   .amount-area .main-amount {
@@ -249,8 +226,8 @@ view-send-amount {
   }
 
   .amount-area {
-    padding-top: 50px;
-    height: 50vh;
+    //padding-top: 50px;
+    height: 30vh;
     max-height: 300px;
     display: flex;
     align-items: center;
@@ -285,14 +262,11 @@ view-send-amount {
   .send-button {
     display: block;
     border-radius: 50px;
-    padding: 0;
     text-align: center;
     max-width: 244px;
     padding: 18px 20px 16px;
     width: 100%;
     margin: 30px auto;
-    box-shadow: none;
-    font-size: 15px;
     color: #ffffff;
     font-size: 14px;
     font-weight: 600;
@@ -305,7 +279,6 @@ view-send-amount {
       line-height: 30px;
     }
   }
-
 }
 
 
