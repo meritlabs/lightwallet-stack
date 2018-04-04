@@ -1,4 +1,21 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { ENV } from '@app/env';
+import { EasyReceipt } from '@merit/common/models/easy-receipt';
+import { getEasySendURL } from '@merit/common/models/easy-send';
+import { MeritContact } from '@merit/common/models/merit-contact';
+import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
+import { ConfigService } from '@merit/common/services/config.service';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
+import { EasySendService } from '@merit/common/services/easy-send.service';
+import { FeeService } from '@merit/common/services/fee.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { SendService } from '@merit/common/services/send.service';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import {
   AlertController,
   IonicPage,
@@ -8,28 +25,11 @@ import {
   NavParams
 } from 'ionic-angular';
 import * as _ from 'lodash';
-import { MeritContact } from '@merit/common/models/merit-contact';
-import { EasyReceipt } from '@merit/common/models/easy-receipt';
-import { ConfigService } from '@merit/common/services/config.service';
-import { RateService } from '@merit/common/services/rate.service';
-import { FeeService } from '@merit/common/services/fee.service';
-import { ProfileService } from '@merit/common/services/profile.service';
-import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { EasySendService } from '@merit/common/services/easy-send.service';
-import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
-import { SendService } from '@merit/common/services/send.service';
-import { WalletService } from '@merit/common/services/wallet.service';
-import { LoggerService } from '@merit/common/services/logger.service';
-import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
-import { getEasySendURL } from '@merit/common/models/easy-send';
-import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
-import { ENV } from '@app/env';
 
 @IonicPage()
 @Component({
   selector: 'view-send-amount',
-  templateUrl: 'send-amount.html',
+  templateUrl: 'send-amount.html'
 })
 export class SendAmountView {
   public recipient: MeritContact;
@@ -42,7 +42,7 @@ export class SendAmountView {
   public feeCalcError: string;
   public feeLoading: boolean;
 
-  public amount =  { micros: 0, mrt: 0, fiat: 0};
+  public amount = { micros: 0, mrt: 0, fiat: 0 };
   public formData = { amount: '', password: '', confirmPassword: '', nbBlocks: 1008, validTill: '' };
 
   public readonly CURRENCY_TYPE_MRT = 'mrt';
@@ -58,15 +58,15 @@ export class SendAmountView {
   public suggestedAmounts = {};
   public lastAmount: string;
 
-  public feePercent: number; 
+  public feePercent: number;
   public feeIncluded: boolean = false;
-  public feeTogglerEnabled: boolean = true; 
+  public feeTogglerEnabled: boolean = true;
   private referralsToSign: Array<any>;
 
 
   private allowUnconfirmed: boolean = true;
 
-  private loading: boolean;
+  private loading: boolean = true;
 
   @ViewChild('amount') amountInput: ElementRef;
 
@@ -85,14 +85,13 @@ export class SendAmountView {
               private walletService: WalletService,
               private loadingCtrl: LoadingController,
               private logger: LoggerService,
-              private sendService: SendService
-            ) {
+              private sendService: SendService) {
     this.recipient = this.navParams.get('contact');
     this.sendMethod = this.navParams.get('suggestedMethod');
     this.loading = true;
   }
 
-  async ionViewDidLoad() {
+  async ngOnInit() {
     this.availableUnits = [
       { type: this.CURRENCY_TYPE_MRT, name: this.configService.get().wallet.settings.unitCode.toUpperCase() }
     ];
@@ -141,10 +140,10 @@ export class SendAmountView {
     modal.present();
     modal.onDidDismiss(async (wallet) => {
       if (wallet) {
-        this.selectedWallet = wallet; 
+        this.selectedWallet = wallet;
         if (wallet.balance.spendableAmount < this.amount.micros) {
           this.formData.amount = this.rateService.microsToMrt(wallet.balance.spendableAmount).toString();
-          this.updateAmount(); 
+          this.updateAmount();
         }
       }
       this.updateTxData();
@@ -155,7 +154,8 @@ export class SendAmountView {
   showFeeIncludedTooltip() {
     this.alertCtrl.create({
       title: 'Include fee',
-      message: 'If you choose this option, amount size that recipient receives will be reduced by fee size. Otherwise fee will be charged from your balance'
+      message: 'If you choose this option, amount size that recipient receives will be reduced by fee size. Otherwise fee will be charged from your balance',
+      buttons: ['Got it']
     }).present();
   }
 
@@ -201,7 +201,7 @@ export class SendAmountView {
   }
 
   async processAmount(value) {
-if (value != this.lastAmount) {
+    if (value != this.lastAmount) {
       this.lastAmount = value;
       await this.updateAmount();
       await this.updateTxData();
@@ -224,11 +224,11 @@ if (value != this.lastAmount) {
     }
 
     if (this.selectedWallet) {
-      if (this.amount.micros == this.selectedWallet.balance.spendableAmount)  {
-        this.feeIncluded = true; 
-        this.feeTogglerEnabled = false; 
+      if (this.amount.micros == this.selectedWallet.balance.spendableAmount) {
+        this.feeIncluded = true;
+        this.feeTogglerEnabled = false;
       } else {
-        this.feeTogglerEnabled = true; 
+        this.feeTogglerEnabled = true;
       }
     }
 
@@ -291,7 +291,7 @@ if (value != this.lastAmount) {
   private updateTxData() {
     this.feeLoading = true;
     this.feeCalcError = null;
-    this.feePercent = null; 
+    this.feePercent = null;
 
     if (!this.amount.micros) {
       this.txData = null;
@@ -326,40 +326,40 @@ if (value != this.lastAmount) {
     this.createTxp();
   }, 1000);
 
-  private async createTxp() { 
+  private async createTxp() {
 
     if (this.amount.micros == this.selectedWallet.balance.spendableAmount) this.feeIncluded = true;
 
     try {
 
-        if (this.sendMethod.type == SendMethodType.Easy) {
+      if (this.sendMethod.type == SendMethodType.Easy) {
 
-          const easySend = await  this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password);
-          this.txData.easySend = easySend;
-          this.txData.txp = await this.easySendService.prepareTxp(this.txData.wallet, this.amount.micros, easySend);
-          this.txData.easySendUrl = getEasySendURL(easySend);
-          this.txData.referralsToSign = [easySend.scriptReferralOpts];
+        const easySend = await  this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password);
+        this.txData.easySend = easySend;
+        this.txData.txp = await this.easySendService.prepareTxp(this.txData.wallet, this.amount.micros, easySend);
+        this.txData.easySendUrl = getEasySendURL(easySend);
+        this.txData.referralsToSign = [easySend.scriptReferralOpts];
 
-          if (!this.feeIncluded) { //if fee is included we pay also easyreceive tx, so recipient can have the exact amount that is displayed 
-            this.txData.easyFee  = await this.feeService.getEasyReceiveFee();
-          }
-        
-        } else {
-          this.txData.txp = await this.sendService.prepareTxp(this.txData.wallet, this.amount.micros, this.sendMethod.value);
+        if (!this.feeIncluded) { //if fee is included we pay also easyreceive tx, so recipient can have the exact amount that is displayed
+          this.txData.easyFee = await this.feeService.getEasyReceiveFee();
         }
-        
-      } catch (err) {
-        this.txData.txp = null;
-        this.logger.warn(err);
-        if (err.message) this.feeCalcError = err.message; 
-        return this.toastCtrl.create({
-          message: err.message || 'Unknown error',
-          cssClass: ToastConfig.CLASS_ERROR
-        }).present();
-      } finally {
-        this.feeLoading = false; 
+
+      } else {
+        this.txData.txp = await this.sendService.prepareTxp(this.txData.wallet, this.amount.micros, this.sendMethod.value);
       }
 
-  } 
+    } catch (err) {
+      this.txData.txp = null;
+      this.logger.warn(err);
+      if (err.message) this.feeCalcError = err.message;
+      return this.toastCtrl.create({
+        message: err.message || 'Unknown error',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
+    } finally {
+      this.feeLoading = false;
+    }
+
+  }
 
 }
