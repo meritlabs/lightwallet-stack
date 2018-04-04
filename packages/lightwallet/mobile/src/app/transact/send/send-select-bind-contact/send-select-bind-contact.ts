@@ -42,7 +42,7 @@ export class SendSelectBindContactView {
         {
           text: 'Bind', handler: () => {
           this.contactsService.bindAddressToContact(contact, this.meritAddress.address, this.meritAddress.alias)
-            .then(() => {
+            .then((contact) => {
               this.viewCtrl.dismiss(contact);
             });
         }
