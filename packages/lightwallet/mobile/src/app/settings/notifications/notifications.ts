@@ -63,12 +63,12 @@ export class NotificationsView {
     this.emailService.updateEmail(opts);
   };
 
-  public saveEmail() {
-    this.emailService.updateEmail({
+  public async saveEmail() {
+    await this.emailService.updateEmail({
       enabled: this.emailNotifications,
       email: this.emailForm.value.email
     });
-
+    this.navCtrl.pop(); 
   };
 
   private updateConfig() {
