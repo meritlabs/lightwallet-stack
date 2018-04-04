@@ -6,3 +6,5 @@
     Looks like your transactions history is empty (
   </div>
 </div>
+<div [routerLink]='"/history"' *ngIf="transactions.length > 9 && widget"
+  class="ui-button ui-button--blue">SHOW FULL HISTORY</div>
