@@ -1,3 +1,10 @@
+.ios view-send-confirmation {
+  ion-footer.footer slide-to-action .container {
+    padding-bottom: const(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
 view-send-confirmation {
 
   ion-list.list {

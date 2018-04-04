@@ -1,3 +1,12 @@
+.ios {
+  view-unlock, view-alias, view-onboarding {
+    .scroll-content {
+      padding: const(safe-area-inset-top) const(safe-area-inset-right) const(safe-area-inset-bottom) const(safe-area-inset-left);
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+  }
+}
+
 view-unlock, view-alias {
   .scroll-content {
     height: 100vh;

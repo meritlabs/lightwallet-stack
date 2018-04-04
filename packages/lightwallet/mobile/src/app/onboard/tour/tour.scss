@@ -1,6 +1,28 @@
 .ios view-tour {
   ion-header {
     top: 20px;
+    top: calc(20px + const(safe-area-inset-top));
+    top: calc(20px + env(safe-area-inset-top));
+  }
+
+  ion-footer.footer {
+    bottom: const(safe-area-inset-bottom);
+    bottom: env(safe-area-inset-bottom);
+  }
+
+  .scroll-content .swiper-pagination {
+    bottom: calc(20px + const(safe-area-inset-bottom));
+    bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+
+  .scroll-content {
+    .slide-zoom {
+      .slide-content {
+        padding-bottom: 38px;
+        padding-bottom: calc(38px + const(safe-area-inset-bottom));
+        padding-bottom: calc(38px + env(safe-area-inset-bottom));
+      }
+    }
   }
 }
 
@@ -84,10 +106,6 @@ view-tour {
     background: map_get($colors, secondary);
     height: 100%;
     padding: 0 !important;
-
-    ion-slides.slides-ios .swiper-pagination {
-      bottom: 15px;
-    }
 
     .swiper-pagination {
       button.swiper-pagination-bullet {
