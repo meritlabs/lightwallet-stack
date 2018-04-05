@@ -6,9 +6,9 @@
         </div>
 
         <error-message *ngIf="error">{{ error }}</error-message>
-        <error-message *ngIf="success" class="success">
+        <error-message *ngIf="success" class="success"> <!-- TODO create success-message & info-message components... or just a global message component with different styles -->
             Transaction successfully sent
-            <div *ngIf="!receipt?.easySendUrl">
+            <div *ngIf="receipt?.easySendUrl">
                 Your global send URL is ready, now you can share it:
                 <a [href]="receipt.easySendUrl">{{ receipt.easySendUrl }}</a>
             </div>
@@ -31,7 +31,6 @@
                                class="ui-input ui-input--form ui-input--text">
                         <div class="ui-input__addon">
                             <app-select
-
                                     (selectionEvent)="selectCurrency($event)"
                                     [selected]="selectedCurrency"
                                     [input]="availableCurrencies"
@@ -59,7 +58,7 @@
                             [input]="wallets$ | async"
                             style="ui-input ui-input--select ui-input--form"></app-select>
                     <label class="ui-label available-amount-label" *ngIf="formData?.wallet">
-                        {{ formData.wallet.status.spendableAmount | toMRT }}, {{ formData.wallet.invites  }} invites available
+                        {{ formData.wallet.status.spendableAmount | toMRT }}, {{ formData.wallet.invites || 0 }} invites available
                     </label>
                 </div>
 
