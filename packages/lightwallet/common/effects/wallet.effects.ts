@@ -46,18 +46,16 @@ export class WalletEffects {
   );
 
   // TODO(ibby): update totals only if the numbers we depend on changed --> use distinct/distinctUntilChanged operators
-  // TODO(ibby): investigate why Typescript doesn't like [action: Action, wallets: DisplayWallets[]] as args in map
-  // function
   @Effect()
   updateTotals$: Observable<UpdateWalletTotalsAction> = this.actions$.pipe(
-    ofType(WalletsActionType.Update, WalletsActionType.UpdateOne),
+    ofType(WalletsActionType.Update, WalletsActionType.UpdateOne, WalletsActionType.Add),
     withLatestFrom(this.store.select(selectWallets)),
-    map((args: any[]) => new UpdateWalletTotalsAction(this.calculateTotals(args[1])))
+    map(([action, wallets]) => new UpdateWalletTotalsAction(this.calculateTotals(wallets)))
   );
 
   @Effect()
   updateInviteRequests$: Observable<UpdateInviteRequestsAction> = this.actions$.pipe(
-    ofType(WalletsActionType.UpdateOne, WalletsActionType.Update),
+    ofType(WalletsActionType.UpdateOne, WalletsActionType.Update, WalletsActionType.Add),
     withLatestFrom(this.store.select(selectWallets)),
     map(([action, wallets]) => wallets.reduce((requests, wallet) => requests.concat(wallet.inviteRequests), [])),
     map((inviteRequests: any[]) => new UpdateInviteRequestsAction(inviteRequests))
@@ -66,7 +64,7 @@ export class WalletEffects {
   // TODO(ibby): only update preferences for the wallet that had a change, not all wallets
   @Effect({ dispatch: false })
   savePreferences$: Observable<any> = this.actions$.pipe(
-    ofType(WalletsActionType.Update, WalletsActionType.UpdateOne),
+    ofType(WalletsActionType.Update, WalletsActionType.UpdateOne, WalletsActionType.Add),
     withLatestFrom(this.store.select(selectWallets)),
     map((args: any[]) => args[1].map((wallet: DisplayWallet) => wallet.exportPreferences())),
     distinctUntilChanged(),
