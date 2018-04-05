@@ -28,6 +28,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { Platform } from 'ionic-angular/platform/platform';
 import { Events } from 'ionic-angular/util/events';
 import 'rxjs/add/operator/toPromise';
+import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 import { filter, take } from 'rxjs/operators';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -97,7 +98,8 @@ export function getProviders() {
       WalletEffects,
       TransactionEffects
     ]),
-    SharedComponentsModule.forRoot()
+    SharedComponentsModule.forRoot(),
+    Ng4LoadingSpinnerModule.forRoot()
   ],
   providers: [
     ...getProviders(),
