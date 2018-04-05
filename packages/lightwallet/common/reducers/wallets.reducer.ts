@@ -111,6 +111,7 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
       const newWallet: DisplayWallet = action.wallet;
       return {
         ...state,
+        loading: false,
         walletsMap: {
           ...state.walletsMap,
           [newWallet.id]: newWallet
