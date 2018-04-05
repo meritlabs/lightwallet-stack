@@ -18,6 +18,8 @@ export class ImportRoutingModule {}
 @NgModule({
   entryComponents: [ImportWalletView],
   declarations: [ImportWalletView],
-  imports: [ImportRoutingModule]
+  imports: [
+    ImportRoutingModule
+  ]
 })
 export class ImportModule {}

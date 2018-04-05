@@ -47,8 +47,11 @@ export class DisplayWallet {
   // We will only have one icon type to start.
   iconUrl: string = '/assets/v1/icons/ui/wallets/wallet-ico-grey.svg';
 
+  get totalBalanceMicros() {
+    return this.balance.spendableAmount;
+  }
+
   totalBalanceStr?: string;
-  totalBalanceMicros?: number;
   cachedBalanceUpdatedOn: string; // only available if we're using cached balance
   totalBalanceFiat?: string;
 

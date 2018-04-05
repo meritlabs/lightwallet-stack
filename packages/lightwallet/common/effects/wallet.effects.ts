@@ -22,7 +22,7 @@ import { Store } from '@ngrx/store';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { distinctUntilChanged, filter, map, skip, switchMap, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, skip, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class WalletEffects {
