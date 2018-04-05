@@ -1,4 +1,20 @@
 view-easy-send-share {
+
+  .flexbox {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    .inner-container {
+      display: block;
+      max-height: 100%;
+      max-width: 100%;
+    }
+  }
+
   background-color: #f7f7fa;
   text-align: center;
 
