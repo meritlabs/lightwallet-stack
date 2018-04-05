@@ -15,7 +15,7 @@ import { TransactView } from '@merit/mobile/app/transact/transact';
 import { FingerprintLockView } from '@merit/mobile/app/utilities/fingerprint-lock/fingerprint-lock';
 import { PinLockView } from '@merit/mobile/app/utilities/pin-lock/pin-lock';
 import { Events, ModalController, Nav, Platform } from 'ionic-angular';
-import * as _ from 'lodash';
+import { isEmpty } from 'lodash';
 
 @Component({
   templateUrl: 'app.html'
@@ -105,14 +105,14 @@ export class MeritLightWallet {
       this.logger.info('Got Profile....');
       // If the user has credentials and a profile, then let's send them to the transact
       // view
-      
+
       const isAuthorized = await this.profileService.isAuthorized();
       return new Promise<boolean>((resolve) => {
         this.deepLinkService.initBranch(async (data) => {
           this.logger.info('Branch Data: ', data);
           // If the branch params contain the minimum params needed for an easyReceipt, then
           // let's validate and save them.
-          if (data && !_.isEmpty(data) && data.sk && data.se) {
+          if (data && !isEmpty(data) && data.sk && data.se) {
             this.logger.info('About to Validate and Save.');
 
             try {
@@ -122,7 +122,7 @@ export class MeritLightWallet {
               // We have an easyReceipt, let's handle the cases of being a new user or an
               // existing user.
               if (easyReceipt) {
-                
+
                 if (!isAuthorized) {
                   // User received easySend, but has no wallets yet.
                   // Skip to unlock view.
@@ -164,30 +164,32 @@ export class MeritLightWallet {
 
     const receivedEasySend: boolean = await this.loadProfileAndEasySend();
 
-    const authorized = await this.profileService.isAuthorized();
-    this.nav.setRoot( authorized ? 'TransactView' : 'OnboardingView');
+    if (!receivedEasySend) {
+      const authorized = await this.profileService.isAuthorized();
+      await this.nav.setRoot( authorized ? 'TransactView' : 'OnboardingView');
+    }
 
     // wait until we have a root view before hiding splash screen
     this.splashScreen.hide();
   }
 
-  private openLockModal() {
-    let config: any = this.configService.get();
-    let lockMethod = config.lock.method;
-    if (!lockMethod) return;
-    if (lockMethod == 'PIN') this.openPINModal('checkPin');
-    if (lockMethod == 'Fingerprint') this.openFingerprintModal();
-  }
-
-  private openPINModal(action) {
-    let modal = this.modalCtrl.create(PinLockView, { action }, { showBackdrop: false, enableBackdropDismiss: false });
-    modal.present();
-  }
-
-  private openFingerprintModal() {
-    let modal = this.modalCtrl.create(FingerprintLockView, {}, { showBackdrop: false, enableBackdropDismiss: false });
-    modal.present();
-  }
+  // private openLockModal() {
+  //   let config: any = this.configService.get();
+  //   let lockMethod = config.lock.method;
+  //   if (!lockMethod) return;
+  //   if (lockMethod == 'PIN') this.openPINModal('checkPin');
+  //   if (lockMethod == 'Fingerprint') this.openFingerprintModal();
+  // }
+  //
+  // private openPINModal(action) {
+  //   let modal = this.modalCtrl.create(PinLockView, { action }, { showBackdrop: false, enableBackdropDismiss: false });
+  //   modal.present();
+  // }
+  //
+  // private openFingerprintModal() {
+  //   let modal = this.modalCtrl.create(FingerprintLockView, {}, { showBackdrop: false, enableBackdropDismiss: false });
+  //   modal.present();
+  // }
 
   private registerMwcErrorHandler() {
     this.events.subscribe(MWCErrors.AUTHENTICATION_ERROR.name, () => {
