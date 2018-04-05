@@ -114,6 +114,7 @@ export class API {
 
   public rootAddress: any;
   public rootAlias: string;
+  communitySize: number;
 
   public balance: any;
   public invitesBalance: any;

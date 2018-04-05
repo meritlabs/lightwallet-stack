@@ -21,6 +21,7 @@ export class NetworkView {
   wallets: Array<MeritWalletClient>;
 
   network:{
+    communitySize: number,
     networkValue: number,
     miningRewards: number,
     ambassadorRewards: number
@@ -33,6 +34,12 @@ export class NetworkView {
       miningRewards: number,
       ambassadorRewards: number
     }>
+  } = {
+    communitySize: 0,
+    networkValue: 0,
+    miningRewards: 0,
+    ambassadorRewards: 0,
+    wallets: []
   };
 
   activeUnlockRequests: number;
@@ -48,12 +55,6 @@ export class NetworkView {
     platformService: PlatformService
   ) {
     this.shareButtonAvailable = platformService.isCordova;
-    this.network = {
-      networkValue: 0,
-      miningRewards: 0,
-      ambassadorRewards: 0,
-      wallets: []
-    };
   }
 
   async ionViewDidLoad() {
@@ -93,6 +94,7 @@ export class NetworkView {
       this.wallets = await this.profileService.getWallets();
 
       let network = {
+        communitySize: 0,
         networkValue: 0,
         miningRewards: 0,
         ambassadorRewards: 0,
@@ -115,11 +117,18 @@ export class NetworkView {
 
       if (addresses.length) {
 
-        const getAnvMethods = () => addresses.map(async (a) => {
-          const anv = await this.wallets[0].getANV(a);
+        // const getAnvMethods = () => addresses.map(async (a) => {
+        //   const anv = await this.wallets[0].getANV(a);
+        //   let w = network.wallets.find(w => w.referralAddress == a);
+        //   w.networkValue = anv;
+        //   network.networkValue += anv;
+        // });
+
+        const getCommunitySizes = () => addresses.map(async (a) => {
+          const { referralcount } = await this.wallets[0].getCommunityInfo(a);
           let w = network.wallets.find(w => w.referralAddress == a);
-          w.networkValue = anv;
-          network.networkValue += anv;
+          w.communitySize = referralcount;
+          network.communitySize += referralcount;
         });
 
         const getStatuses = () => this.wallets.map((w) => {
@@ -137,7 +146,7 @@ export class NetworkView {
           });
         };
 
-        await Promise.all([getRewards()].concat(getAnvMethods()).concat(getStatuses()));
+        await Promise.all([getRewards()].concat(getCommunitySizes()).concat(getStatuses()));
       }
 
       this.network = network;
