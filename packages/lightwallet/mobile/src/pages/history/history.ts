@@ -16,6 +16,8 @@ import { formatWalletHistory } from '@merit/common/utils/transactions';
 })
 export class HistoryView {
   transactions: any[];
+  loading: boolean;
+  refreshing: boolean;
 
   constructor(private walletService: WalletService,
               private profileService: ProfileService,
@@ -23,16 +25,26 @@ export class HistoryView {
               private contactsService: ContactsService) {
   }
 
-  ionViewWillEnter() {
-    return this.loadData();
+  async ionViewDidLoad() {
+    this.loading = true;
+    await this.loadData();
+    this.loading = false;
+  }
+
+  async ionViewWillEnter() {
+    this.refreshing = true;
+    await this.loadData();
+    this.refreshing = false;
   }
 
   async refresh(refresher: any) {
+    this.refreshing = true;
     try {
       await this.loadData(true);
     } catch (e) {
     }
     refresher.complete();
+    this.refreshing = false;
   }
 
   async loadData(force?: boolean) {
