@@ -6,21 +6,19 @@ declare const Branch: any;
 
 @Injectable()
 export class DeepLinkService {
-  constructor(private logger: LoggerService,
-              private platform: Platform) {
+  constructor(private logger: LoggerService) {
     this.logger.info('Hello Deep Link Service');
   }
 
   async initBranch(handler: (data: any) => Promise<void>) {
-    if (!this.platform.is('cordova')) {
-      this.logger.warn('branch deeplinking is available on native devices only');
-      return;
-    }
-
     if (typeof Branch !== 'undefined') {
       this.logger.info('Initing branch');
+      debugger;
       Branch.setDebug(true);
       Branch.initSession(handler);
+    } else {
+      this.logger.info('Branch is undefined');
+      handler(null);
     }
   }
 }
