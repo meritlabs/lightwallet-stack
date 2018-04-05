@@ -15,6 +15,7 @@
         <ion-spinner [hidden]="!loading"></ion-spinner>
         <span class="merit-amount" [hidden]="loading">
           {{ (network?.networkValue || 0)  | toMRT:8:true}}
+          <small>People</small>
         </span>
       </ion-col>
       <ion-col col-4>
