@@ -10,6 +10,7 @@ import { IDisplayTransaction } from '@merit/common/models/transaction';
 export class HistoryListComponent {
   @Input() transactions: IDisplayTransaction[];
   @Input() loading: boolean;
+  @Input() widget: boolean = false;
   activeIndex: number;
 
   toggleClass(i: number) {

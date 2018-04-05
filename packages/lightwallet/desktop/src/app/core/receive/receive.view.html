@@ -11,12 +11,13 @@
           <input type="text" name="" id="receiveAmount" value="" (keyup)="changeAmount($event)" class="ui-input ui-input--form ui-input--text">
           <div class="ui-input__addon">MRT</div>
         </div>
-        <div class="ui-input__wrapper ui-input__wrapper--currency">
+        <!-- NOTE: Uncoment for return currency switcher -->
+        <!-- <div class="ui-input__wrapper ui-input__wrapper--currency">
           <input type="text" name="" value="{{amountInFiat}}" disabled class="ui-input ui-input--form ui-input--text">
           <div class="ui-input__addon">
             <app-select (selectionEvent)="selectCurrency($event)" [selected]="selectedCurrency" [input]="availableCurrencies" style="ui-button ui-button--transparent ui-button--md ui-button--with-caret"></app-select>
           </div>
-        </div>
+        </div> -->
       </div>
       <div *ngIf="wallets$ | async as wallets; else empty">
         <div class="receiveMerit__form__group">
@@ -48,7 +49,7 @@
           <ng-container  *ngIf="qrAddress && address; else qrLoading">
             <qr-code [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
           </ng-container>
-          <ng-template #qrLoading>
+          <ng-template #qrLoading *ngIf="!hasUnlockedWallet">
             <loading-spinner></loading-spinner>
           </ng-template>
         </div>

@@ -20,9 +20,8 @@
         <div class="title--primary">
           <p>Latest transactions</p>
         </div>
-        <history-list [transactions]="transactions$ | async" [loading]="transactionsLoading$ | async"></history-list>
-        <div [routerLink]='"/history"'
-          class="ui-button ui-button--blue">SHOW FULL HISTORY</div>
+        <history-list [widget]=true [transactions]="transactions$ | async"
+          [loading]="transactionsLoading$ | async"></history-list>
       </div>
     </div>
   </div>

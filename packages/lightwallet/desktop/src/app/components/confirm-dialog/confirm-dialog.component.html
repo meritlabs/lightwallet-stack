@@ -1,6 +1,9 @@
 <div class="ui-prompt">
   <h2 class="title">{{ title }}</h2>
   <div class="message">{{ message }}</div>
-  <button *ngFor="let button of buttons" (click)="dismiss(button.value)" [class]="button.class">{{ button.text }}</button>
+  <div class="controls">
+    <button *ngFor="let button of buttons" (click)="dismiss(button.value)"
+      class="ui-button ui-button--md {{button.class}}">{{ button.text }}</button>
+  </div>
 </div>
 <app-backdrop (click)="onBackdropClick()"></app-backdrop>

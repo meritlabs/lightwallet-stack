@@ -28,11 +28,13 @@ export class InviteRequestsView {
     const dialog = this.confirmDialogCtrl.create('Confirm action', 'Are you sure you would like to send an invite to this address?', [
       {
         text: 'Yes',
-        value: 'yes'
+        value: 'yes',
+        class: 'ui-button--blue'
       },
       {
         text: 'No',
-        value: 'no'
+        value: 'no',
+        class: 'ui-button--white'
       }
     ]);
 

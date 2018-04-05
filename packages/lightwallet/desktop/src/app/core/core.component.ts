@@ -50,7 +50,7 @@ export class CoreView {
     {
       name: 'Help & Support',
       icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
-      link: 'https://www.merit.me/'
+      link: 'https://www.merit.me/get-involved/#join-the-conversation'
     }
   ];
 

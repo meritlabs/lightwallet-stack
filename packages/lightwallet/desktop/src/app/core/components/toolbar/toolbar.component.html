@@ -1,9 +1,9 @@
 <div class="dashboard__toolbar__currency-selector">
-  <app-select
+  <!-- <app-select
     (selectionEvent)="receiveSelection($event)"
     [selected]="selectedCurrency"
     [input]="availableCurrencies"
-    style="ui-button ui-button--white ui-button--md ui-button--with-caret ui-button--wallet-icon"></app-select>
+    style="ui-button ui-button--white ui-button--md ui-button--with-caret ui-button--wallet-icon"></app-select> -->
 </div>
 <div class="balance">
   <ng-container *ngIf="loading$ | async">
@@ -16,7 +16,7 @@
 </div>
 <div class="divider"></div>
 <div class="buy-merit">
-  <button class="ui-button ui-button--blue ui-button--md">
-    Buy Merit
-  </button>
+  <a href="https://www.merit.me/get-started/#learn-the-basics" target="_blank" class="ui-button ui-button--blue ui-button--md">
+    Get started
+  </a>
 </div>
