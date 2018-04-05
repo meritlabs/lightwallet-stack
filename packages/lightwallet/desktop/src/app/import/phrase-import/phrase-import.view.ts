@@ -81,11 +81,6 @@ export class PhraseImportView {
 
         console.log('Done importing wallet!');
 
-        if (!wallet.name) {
-          wallet.name = 'Personal wallet';
-        }
-
-
         this.store.dispatch(
           new AddWalletAction(
             await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)
