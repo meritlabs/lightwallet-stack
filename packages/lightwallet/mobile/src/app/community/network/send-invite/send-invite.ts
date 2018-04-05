@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
@@ -41,7 +41,9 @@ export class SendInviteView {
               private modalCtrl: ModalController,
               private addressScanner: AddressScannerService,
               private walletService: WalletService,
-              private toastCtrl: MeritToastController) {
+              private toastCtrl: MeritToastController,
+              private loadCtrl: LoadingController
+  ) {
   }
 
   async ionViewWillEnter() {
@@ -172,7 +174,9 @@ export class SendInviteView {
       }).present();
     }
 
+    let loader = this.loadCtrl.create({ content: 'Sending invite...' });
     try {
+      loader.present();
       await this.walletService.sendInvite(wallet, toAddress);
       return this.navCtrl.pop();
     } catch (e) {
@@ -181,6 +185,9 @@ export class SendInviteView {
         message: 'Failed to send invite',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
+    } finally {
+      loader.dismiss();
     }
+
   }
 }
