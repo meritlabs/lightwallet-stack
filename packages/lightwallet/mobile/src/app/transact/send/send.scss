@@ -1,5 +1,11 @@
 // *** IOS ***
 .ios view-send {
+
+  .scroll-content {
+    padding-top: const(safe-area-inset-top);
+    padding-top: env(safe-area-inset-top);
+  }
+
   ion-searchbar.searchbar-ios {
     background: transparent;
     display: initial;
@@ -38,6 +44,7 @@
 }
 
 view-send {
+
   .global-send-button {
     height: 40px;
     line-height: 40px;
