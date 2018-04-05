@@ -1,106 +1,109 @@
 <ion-content>
 
-    <div *ngIf="loadingContacts" class="loader">
-        <ion-spinner></ion-spinner>
+  <div *ngIf="loadingContacts" class="loader">
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <div *ngIf="!loadingContacts && !hasUnlockedWallets" class="unlock-screen">
+    <div class="unlock-backdrop" *ngIf="!hasUnlockedWallets"></div>
+
+    <div class="unlock-popup">
+      <div class="top-label">Before you start...</div>
+      <img src="assets/img/icons/confirm.svg">
+      <h2>Waiting for unlock</h2>
+      <div class="bottom-label">You cannot send Merit until your wallet unlock request is confirmed</div>
     </div>
 
-    <div *ngIf="!loadingContacts && !hasUnlockedWallets" class="unlock-screen">
-        <div class="unlock-backdrop" *ngIf="!hasUnlockedWallets"></div>
+    <ion-list>
+      <ion-item *ngFor="let idx of [0,1,2,3,4,5,6,7,8,9,10]" class="contact-stub">
+        <ion-avatar item-start img-icon></ion-avatar>
+        <h2></h2>
+        <p></p>
+      </ion-item>
+    </ion-list>
+  </div>
 
-        <div class="unlock-popup">
-            <div class="top-label">Before you start...</div>
-            <img src="assets/img/icons/confirm.svg">
-            <h2>Waiting for unlock</h2>
-            <div class="bottom-label">You cannot send Merit until your wallet unlock request is confirmed</div>
-        </div>
 
-        <ion-list>
-            <ion-item *ngFor="let idx of [0,1,2,3,4,5,6,7,8,9,10]" class="contact-stub">
-                <ion-avatar item-start img-icon></ion-avatar>
-                <h2></h2>
-                <p></p>
-            </ion-item>
-        </ion-list>
+  <div *ngIf="!loadingContacts && searchResult && hasUnlockedWallets && !showSlider" class="content">
+
+    <button ion-button full primary (click)="easySend()" [disabled]="!hasActiveInvites" class="global-send-button">
+      Global send
+      <img src="assets/img/icons/send.svg">
+    </button>
+
+    <div class="or-line">
+      <div class="hr"></div>
+      <div class="or">or</div>
+      <div class="hr"></div>
+    </div>
+
+    <div class="searchbar-wrapper">
+      <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
+                     (ionCancel)="clearSearch()" placeholder="Enter @alias/address"></ion-searchbar>
+      <button ion-button clear item-end (click)="openScanner()" class="scan-button" *ngIf="!searchQuery">
+        <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
+      </button>
+    </div>
+
+    <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
+      <h2>What is Global Send?</h2>
+      <p>Invite your friends by sending them Merit. Just copy URL that you will receive at process end.</p>
+      <p>You need a free invite to do send Global Send.</p>
+      <img src="assets/img/easysend.png" color="primary" item-end>
     </div>
 
 
-    <div *ngIf="!loadingContacts && searchResult && hasUnlockedWallets && !showSlider" class="content">
+    <div class="no-results" *ngIf="!searchResult.withMerit.length && searchQuery" padding-top>
 
-        <button ion-button full primary (click)="easySend()" [disabled]="!hasActiveInvites" class="global-send-button">
-            Global send
-            <img src="assets/img/icons/send.svg">
+      <div class="no-results-label" *ngIf="!searchResult.error">
+        No results
+        <div *ngIf="!couldBeAlias(searchQuery)">Type '@' at the beginning to send to alias</div>
+      </div>
+      <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
+        Address is not confirmed yet
+      </div>
+      <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
+        Alias not found
+      </div>
+
+      <div *ngIf="searchResult.toNewEntity" margin-top>
+
+        <button primary ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()"
+                class="send-button">
+          Create New Contact
         </button>
-
-        <div class="or-line">
-            <div class="hr"></div>
-            <div class="or">or</div>
-            <div class="hr"></div>
-        </div>
-
-        <div class="searchbar-wrapper">
-            <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
-                           (ionCancel)="clearSearch()" placeholder="Enter @alias/address"></ion-searchbar>
-            <button ion-button clear item-end (click)="openScanner()" class="scan-button" *ngIf="!searchQuery">
-                <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
-            </button>
-        </div>
-
-        <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
-            <h2>What is Global Send?</h2>
-            <p>Invite your friends by sending them Merit. Just copy URL that you will receive at process end.</p>
-            <p>You need a free invite to do send Global Send.</p>
-            <img src="assets/img/easysend.png" color="primary" item-end>
-        </div>
-
-
-        <div class="no-results" *ngIf="!searchResult.withMerit.length && searchQuery" padding-top>
-
-            <div class="no-results-label" *ngIf="!searchResult.error">
-                No results
-                <div *ngIf="!couldBeAlias(searchQuery)">Type '@' at the beginning to send to alias</div>
-            </div>
-            <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
-                Address is not confirmed yet
-            </div>
-            <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
-                Alias not found
-            </div>
-
-            <div *ngIf="searchResult.toNewEntity" margin-top>
-
-               <button primary ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()"
-                        class="send-button" >
-                    Create New Contact
-                </button>
-                <button primary ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length" (click)="bindAddressToContact()"
-                        class="send-button" >
-                    Bind to existing contact
-                </button>
-                <button light ion-button padding (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
-                    <div *ngIf="searchResult.toNewEntity.destination == 'address'">Send To This {{ couldBeAlias(searchQuery) ? 'Alias' : 'Address' }}</div>
-                </button>
-                <div class="address">{{searchQuery}}</div>
-            </div>
-
-        </div>
-
-        <div [hidden]="showRecent" class="contacts-list">
-            <ion-list *ngIf="searchResult.withMerit.length" class="list-with-merit">
-                <ion-item-divider>Friends with Merit
-                    <!--<button ion-button clear item-end (click)="showRecent = true">Recent</button>-->
-                </ion-item-divider>
-                <ion-item *ngFor="let contact of searchResult.withMerit" (click)="sendToContact(contact)" class="contact">
-                    <contact-avatar [contact]="contact" item-start></contact-avatar>
-                    {{ contact.name.formatted }}
-                    <button ion-button icon-only clear item-end (click)="editContact(contact, $event)">
-                        <ion-icon name="settings"></ion-icon>
-                    </button>
-                </ion-item>
-            </ion-list>
-
-        </div>
-
+        <button primary ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length"
+                (click)="bindAddressToContact()"
+                class="send-button">
+          Bind to existing contact
+        </button>
+        <button light ion-button padding (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
+          <div *ngIf="searchResult.toNewEntity.destination == 'address'">Send To This {{ couldBeAlias(searchQuery) ?
+            'Alias' : 'Address' }}
+          </div>
+        </button>
+        <div class="address">{{searchQuery}}</div>
+      </div>
 
     </div>
+
+    <div [hidden]="showRecent" class="contacts-list">
+      <ion-list *ngIf="searchResult.withMerit.length" class="list-with-merit">
+        <ion-item-divider>Friends with Merit
+          <!--<button ion-button clear item-end (click)="showRecent = true">Recent</button>-->
+        </ion-item-divider>
+        <ion-item *ngFor="let contact of searchResult.withMerit" (click)="sendToContact(contact)" class="contact">
+          <contact-avatar [contact]="contact" item-start></contact-avatar>
+          {{ contact.name.formatted }}
+          <button ion-button icon-only clear item-end (click)="editContact(contact, $event)">
+            <ion-icon name="settings"></ion-icon>
+          </button>
+        </ion-item>
+      </ion-list>
+
+    </div>
+
+
+  </div>
 
 </ion-content>

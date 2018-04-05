@@ -27,6 +27,13 @@ export class EasySendShareView {
     this.showShareButton = this.platformService.isCordova && SocialSharing.installed();
   }
 
+  ionViewDidEnter() {
+    this.navCtrl.swipeBackEnabled = false;
+  }
+
+  ionViewWillLeave() {
+    this.navCtrl.swipeBackEnabled = true;
+  }
 
   copyToClipboard() {
     this.toastCtrl.create({
