@@ -110,7 +110,7 @@ Mnemonic.isValidImport = function(mnemonic, wordlist) {
   mnemonic = unorm.nfkd(mnemonic);
   var words = mnemonic.split(' ');
 
-  return this.isValidSize(words) && this.hasValidWords(mnemonic, wordlist);
+  return this.isValidSize(mnomonic) && this.hasValidWords(mnemonic, wordlist);
 };
 
 /**
