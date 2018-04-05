@@ -47,6 +47,10 @@ export class WalletSettingsView implements OnInit, OnDestroy {
       color: '#53b9e8'
     },
     {
+      name: 'Merit blue',
+      color: '#00B0DD'
+    },
+    {
       name: 'Viking',
       color: '#4ccdde'
     },
