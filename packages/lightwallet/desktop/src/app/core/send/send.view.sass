@@ -1,0 +1,26 @@
+@import '~styles/v1/common/variables'
+error-message.success
+  .easysend-url-container
+    cursor: pointer
+    display: block
+    word-wrap: break-word
+    padding: 30px 5px
+    border: 2px solid rgba(255,255,255,.4)
+    margin-top: 20px
+    background: rgb(255, 255, 255)
+    border-radius: 5px
+    position: relative
+    text-align: center
+    font-size: 16px
+    color: rgba(0, 0, 0, 0.77)
+
+    &:hover
+      small.click_to_copy
+        opacity: 0.999
+    small.click_to_copy
+      position: absolute
+      top: 5px
+      left: calc(50% - 35px)
+      opacity: 0
+      color: $blue
+      transition: opacity .3s ease-in-out

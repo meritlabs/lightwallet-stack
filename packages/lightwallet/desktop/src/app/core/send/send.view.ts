@@ -21,8 +21,7 @@ import { FeeService } from '@merit/common/services/fee.service';
 @Component({
   selector: 'view-send',
   templateUrl: './send.view.html',
-  styleUrls: ['./send.view.sass'],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['./send.view.sass']
 })
 export class SendView implements OnInit {
 
