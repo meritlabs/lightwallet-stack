@@ -724,87 +724,78 @@ WalletService.prototype.getStatus = function(opts, cb) {
   const self = this;
 
   opts = opts || {};
+  let status = {};
+  self.storage.fetchAddresses(self.walletId, function (err, addresses) {
+      if (err) return cb(err);
 
-  self.getWallet({}, function(err, wallet) {
-      //workaround to make sure that we always have an address for a wallet
-      var address = wallet.createAddress(false);
-      address.signed = true;
-      self.storage.storeAddressAndWallet(wallet, [address], function() {
+      async.parallel([
 
-          let status = {};
-          self.storage.fetchAddresses(self.walletId, function (err, addresses) {
-              if (err) return cb(err);
+          function (next) {
+              self.getWallet({}, function (err, wallet) {
+                  if (err) return next(err);
 
-              async.parallel([
+                  const walletExtendedKeys = ['publicKeyRing', 'pubKey', 'addressManager'];
+                  const copayerExtendedKeys = ['xPubKey', 'requestPubKey', 'signature', 'addressManager', 'customData'];
 
-                  function (next) {
-                      self.getWallet({}, function (err, wallet) {
-                          if (err) return next(err);
-
-                          const walletExtendedKeys = ['publicKeyRing', 'pubKey', 'addressManager'];
-                          const copayerExtendedKeys = ['xPubKey', 'requestPubKey', 'signature', 'addressManager', 'customData'];
-
-                          wallet.copayers = _.map(wallet.copayers, function (copayer) {
-                              if (copayer.id == self.copayerId) return copayer;
-                              return _.omit(copayer, 'customData');
-                          });
-                          if (!opts.includeExtendedInfo) {
-                              wallet = _.omit(wallet, walletExtendedKeys);
-                              wallet.copayers = _.map(wallet.copayers, function (copayer) {
-                                  return _.omit(copayer, copayerExtendedKeys);
-                              });
-                          }
-                          status.wallet = wallet;
-
-                          next();
+                  wallet.copayers = _.map(wallet.copayers, function (copayer) {
+                      if (copayer.id == self.copayerId) return copayer;
+                      return _.omit(copayer, 'customData');
+                  });
+                  if (!opts.includeExtendedInfo) {
+                      wallet = _.omit(wallet, walletExtendedKeys);
+                      wallet.copayers = _.map(wallet.copayers, function (copayer) {
+                          return _.omit(copayer, copayerExtendedKeys);
                       });
-                  },
-                  function (next) {
-                      self.getBalance(addresses, opts, function (err, balance) {
-                          if (err) return next(err);
-                          status.balance = balance;
+                  }
+                  status.wallet = wallet;
 
-                          next();
-                      });
-                  },
-                  function (next) {
-                      self.getInvitesBalance(addresses, opts, function (err, balance) {
-                          if (err) return next(err);
-                          status.invitesBalance = balance;
-                          next();
-                      });
-                  },
-                  function (next) {
-                      self.getPendingTxs({}, function (err, pendingTxps) {
-                          if (err) return next(err);
-                          status.pendingTxps = pendingTxps;
-
-                          next();
-                      });
-                  },
-                  function (next) {
-                      self.getPreferences({}, function (err, preferences) {
-                          if (err) return next(err);
-                          status.preferences = preferences;
-
-                          next();
-                      });
-                  },
-              ], function (err) {
-                  if (err) return cb(err);
-
-                  setTimeout(() => {
-                      self.storage.cleanActiveAddresses(self.walletId, () => {
-                          const activeCoinAddresses = _.map(status.balance.byAddress, 'address');
-                          const activeInviteAddresses = _.map(status.invitesBalance.byAddress, 'address');
-                          const active = _.union(activeCoinAddresses, activeInviteAddresses);
-                          self.storage.storeActiveAddresses(self.walletId, active);
-                      });
-                  }, 0);
-
-                  return cb(null, status);
+                  next();
               });
-          });
+          },
+          function (next) {
+              self.getBalance(addresses, opts, function (err, balance) {
+                  if (err) return next(err);
+                  status.balance = balance;
+
+                  next();
+              });
+          },
+          function (next) {
+              self.getInvitesBalance(addresses, opts, function (err, balance) {
+                  if (err) return next(err);
+                  status.invitesBalance = balance;
+                  next();
+              });
+          },
+          function (next) {
+              self.getPendingTxs({}, function (err, pendingTxps) {
+                  if (err) return next(err);
+                  status.pendingTxps = pendingTxps;
+
+                  next();
+              });
+          },
+          function (next) {
+              self.getPreferences({}, function (err, preferences) {
+                  if (err) return next(err);
+                  status.preferences = preferences;
+
+                  next();
+              });
+          },
+      ], function (err) {
+          if (err) return cb(err);
+
+          setTimeout(() => {
+              self.storage.cleanActiveAddresses(self.walletId, () => {
+                  const activeCoinAddresses = _.map(status.balance.byAddress, 'address');
+                  const activeInviteAddresses = _.map(status.invitesBalance.byAddress, 'address');
+                  const active = _.union(activeCoinAddresses, activeInviteAddresses);
+                  self.storage.storeActiveAddresses(self.walletId, active);
+              });
+          }, 0);
+
+          return cb(null, status);
       });
   });
 };
