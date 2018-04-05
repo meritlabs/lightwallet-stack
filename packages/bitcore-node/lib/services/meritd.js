@@ -1635,6 +1635,7 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
             finish(referrals);
         } else {
             loadFromBc(function(err, bcReferrals) {
+              var referrals = [];
               if (!err) {
                 self.referralsCache.set(cacheKey, bcReferrals);
                 referrals = mempoolReferrals.concat(bcReferrals);
