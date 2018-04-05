@@ -10,7 +10,10 @@
             Transaction successfully sent
             <div *ngIf="receipt?.easySendUrl">
                 Your global send URL is ready, now you can share it:
-                <a [href]="receipt.easySendUrl">{{ receipt.easySendUrl }}</a>
+              <div class="easysend-url-container" [clip]="receipt.easySendUrl">
+                <small class="click_to_copy">Click to copy</small>
+                {{ receipt.easySendUrl }}
+              </div>
             </div>
         </error-message>
 
