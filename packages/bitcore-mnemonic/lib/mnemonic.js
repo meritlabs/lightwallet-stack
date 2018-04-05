@@ -73,7 +73,9 @@ var Mnemonic = function(data, wordlist) {
 
 
   // validate phrase and ent
-  if (phrase && !Mnemonic.isValid(phrase, wordlist)) {
+  // TODO: Investigate the permanent removal of mnemonic sub-dictionary. 
+  // A smaller word-space feels like it would make things less secure.  Though there will be some added convenience
+  if (phrase && !Mnemonic.isValidGeneration(phrase, wordlist)) {
     throw new errors.InvalidMnemonic(phrase);
   }
   if (ent % 32 !== 0 || ent < 128) {
@@ -95,8 +97,25 @@ var Mnemonic = function(data, wordlist) {
 
 Mnemonic.Words = require('./words');
 
+
 /**
- * Will return a boolean if the mnemonic is valid
+ * Will return a boolean if the mnemonic is valid for import.
+ * This is a looser check because mnemonics can be generated more loosely on other clients
+ *
+ * @param {String} mnemonic - The mnemonic string
+ * @param {String} [wordlist] - The wordlist used
+ * @returns {boolean}
+ */
+Mnemonic.isValidImport = function(mnemonic, wordlist) {
+  mnemonic = unorm.nfkd(mnemonic);
+  var words = mnemonic.split(' ');
+
+  return this.isValidSize(words) && this.hasValidWords(mnemonic, wordlist);
+};
+
+/**
+ * Will return a boolean if the mnemonic was generated in a valid way. 
+ * This is a stricter check because we can control the generation locally
  *
  * @example
  *
@@ -107,15 +126,51 @@ Mnemonic.Words = require('./words');
  * @param {String} [wordlist] - The wordlist used
  * @returns {boolean}
  */
-Mnemonic.isValid = function(mnemonic, wordlist) {
+ Mnemonic.isValidGeneration = function(mnemonic, wordlist) {
   mnemonic = unorm.nfkd(mnemonic);
-  wordlist = wordlist || Mnemonic._getDictionary(mnemonic);
+  var words = mnemonic.split(' ');
 
+  // We don't call hasValidWords() because this check is already done in hasValidEntropy!
+  return this.isValidSize(words) && this.hasValidEntropy(words);
+};
+
+/**
+ * Will return a boolean if the mnemonic is the right size, in words.
+ * We currently use 12 words for the mnemonic in the DLW, WLW, and QT wallets.
+ */
+Mnemonic.isValidSize = function(mnemonic) {
+  if (mnemonic.split(' ').length != 12) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Checks to be sure that the mnemonic is generated from the relevant 
+ * dictionary of words.
+ * 
+ */
+Mnemonic.hasValidWords = function(mnemonic, wordlist) {
+  wordlist = wordlist || Mnemonic._getDictionary(mnemonic);
   if (!wordlist) {
     return false;
   }
-
   var words = mnemonic.split(' ');
+  
+  for (var i = 0; i < words.length; i++) {
+    var ind = wordlist.indexOf(words[i]);
+    if (ind < 0) return false;
+  }
+
+  return true;
+}
+
+/**
+ * Checks to be sure that the mnemonic is generated from the relevant 
+ * dictionary of words.
+ * 
+ */
+Mnemonic.hasValidEntropy = function(words) {
   var bin = '';
   for (var i = 0; i < words.length; i++) {
     var ind = wordlist.indexOf(words[i]);
@@ -132,7 +187,7 @@ Mnemonic.isValid = function(mnemonic, wordlist) {
   }
   var expected_hash_bits = Mnemonic._entropyChecksum(buf);
   return expected_hash_bits === hash_bits;
-};
+}
 
 /**
  * Internal function to check if a mnemonic belongs to a wordlist.
