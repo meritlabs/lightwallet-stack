@@ -1635,12 +1635,17 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
             finish(referrals);
         } else {
             loadFromBc(function(err, bcReferrals) {
+              if (!err) {
                 self.referralsCache.set(cacheKey, bcReferrals);
                 referrals = mempoolReferrals.concat(bcReferrals);
-                referrals = _.uniqBy(referrals, 'refid');
-                console.log(bcReferrals.length+' referrals read from  bc + '+mempoolReferrals.length+' from mempool');
-                finish(referrals);
-            })
+                log.info(bcReferrals.length +' referrals read from  bc + ');
+                log.info(mempoolReferrals.length + ' from mempool');
+              } else {
+                log.info('error in loadFromBc: ', err);
+              }
+              referrals = _.uniqBy(referrals, 'refid');
+              finish(referrals);
+            });
         }
     });
 };
