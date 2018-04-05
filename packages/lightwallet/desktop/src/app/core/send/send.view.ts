@@ -29,7 +29,6 @@ export class SendView implements OnInit {
 
   hasUnlockedWallet: boolean;
   hasAvailableInvites: boolean;
-  fiatAmountAvailable: boolean;
 
   availableCurrencies: Array<{ code: string; name: string; rate: number; }>;
   selectedCurrency: { code: string };
