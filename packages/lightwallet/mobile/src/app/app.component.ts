@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { Keyboard } from '@ionic-native/keyboard';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
@@ -37,6 +38,7 @@ export class MeritLightWallet {
               private deepLinkService: DeepLinkService,
               private easyReceiveService: EasyReceiveService,
               private events: Events,
+              private keyboard: Keyboard,
               pushNotificationService: PushNotificationsService) {
   }
 
@@ -47,6 +49,8 @@ export class MeritLightWallet {
     });
 
     const readySource = await this.platform.ready();
+
+    this.keyboard.hideKeyboardAccessoryBar(false);
 
     const appInfo: any = await this.appService.getInfo();
     this.logger.info(`
