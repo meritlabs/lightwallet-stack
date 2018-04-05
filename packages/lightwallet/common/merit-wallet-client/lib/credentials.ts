@@ -110,7 +110,7 @@ export class Credentials {
     $.shouldBeNumber(account);
 
     let m = new Mnemonic(this.wordsForLang[language]);
-    while (!Mnemonic.isValid(m.toString())) {
+    while (!Mnemonic.isValidImport(m.toString())) {
       m = new Mnemonic(this.wordsForLang[language])
     };
     let x = new Credentials();
