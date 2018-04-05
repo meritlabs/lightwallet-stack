@@ -10,6 +10,7 @@ export class MeritWalletClient extends MeritClient {
     super(opts);
     this.errors = BwcError;
     this.color = this.color || '#00B0DD';
+    this.name = this.name || 'Personal wallet';
   }
 
   public static getInstance(opts:any = {}): MeritWalletClient {
