@@ -15,6 +15,7 @@ import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { Store } from '@ngrx/store';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
 @Component({
   selector: 'view-import-with-file',
@@ -45,7 +46,8 @@ export class ImportWithFileView {
               private txFormatService: TxFormatService,
               private router: Router,
               private toastCtrl: ToastControllerService,
-              private pushNotificationsService: PushNotificationsService) {
+              private pushNotificationsService: PushNotificationsService,
+              private loadingCtrl: Ng4LoadingSpinnerService) {
   }
 
   fileChangeListener($event) {
@@ -62,12 +64,15 @@ export class ImportWithFileView {
   }
 
   async importBlob() {
+    this.loadingCtrl.show();
+
     let decrypted;
     try {
       decrypted = this.sjcl.decrypt(this.formData.filePassword, this.formData.backupFileBlob);
     } catch (e) {
 
       this.logger.warn(e);
+      this.loadingCtrl.hide();
       return this.toastCtrl.create({
         title: 'Error',
         status: 'error',
@@ -95,11 +100,13 @@ export class ImportWithFileView {
         authorized: true
       }));
 
+      this.loadingCtrl.hide();
       return this.router.navigateByUrl('/wallets');
 
     } catch (err) {
       // loader.dismiss();
       this.logger.warn(err);
+      this.loadingCtrl.hide();
       return this.toastCtrl.create({
         title: 'Error',
         status: 'error',

@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
-import { LoggerService } from '@merit/common/services/logger.service';
-import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
-import { EasyReceipt } from '@merit/common/models/easy-receipt';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
-import { ProfileService } from '@merit/common/services/profile.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IVault } from '@merit/common/models/vault';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { AlertController, IonicPage, NavController, Platform } from 'ionic-angular';
 
 @IonicPage()
 @Component({
   selector: 'view-wallets',
-  templateUrl: 'wallets.html',
+  templateUrl: 'wallets.html'
 })
 export class WalletsView {
 
@@ -24,15 +24,13 @@ export class WalletsView {
   loading: boolean; //initial load, no data displayed
   refreshing: boolean; //soft data refresh
 
-  constructor(
-              private navCtrl: NavController,
+  constructor(private navCtrl: NavController,
               private logger: LoggerService,
               private easyReceiveService: EasyReceiveService,
               private toastCtrl: MeritToastController,
               private profileService: ProfileService,
               private alertController: AlertController,
-              private platform: Platform
-  ) {
+              private platform: Platform) {
     this.logger.debug('WalletsView constructor!');
   }
 
@@ -64,7 +62,7 @@ export class WalletsView {
       this.loading = false;
       this.refreshing = true;
       await this.updateAllInfo();
-    } catch (e) {} finally  {
+    } catch (e) {} finally {
       this.loading = false;
       this.refreshing = true;
     }
@@ -189,20 +187,21 @@ export class WalletsView {
       buttons: [
         {
           text: 'Ignore', role: 'cancel', handler: () => {
-          this.logger.info('You have declined easy receive');
-          this.easyReceiveService.deletePendingReceipt(receipt).then(() =>
-            this.processPendingEasyReceipts()
-          );
-        }
+            this.logger.info('You have declined easy receive');
+            this.easyReceiveService.deletePendingReceipt(receipt).then(() =>
+              this.processPendingEasyReceipts()
+            );
+          }
         },
         {
           text: 'Validate', handler: (data) => {
-          if (!data || !data.password) {
-            this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the moment
-          } else {
-            this.processEasyReceipt(receipt, true);
+            if (!data || !data.password) {
+              this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the
+                                                                 // moment
+            } else {
+              this.processEasyReceipt(receipt, true);
+            }
           }
-        }
         }
       ]
     }).present();
@@ -222,17 +221,17 @@ export class WalletsView {
       buttons: [
         {
           text: 'Reject', role: 'cancel', handler: () => {
-          this.rejectEasyReceipt(receipt, data).then(() =>
-            this.processPendingEasyReceipts()
-          );
-        }
+            this.rejectEasyReceipt(receipt, data).then(() =>
+              this.processPendingEasyReceipts()
+            );
+          }
         },
         {
           text: 'Accept', handler: () => {
-          this.acceptEasyReceipt(receipt, data).then(() =>
-            this.processPendingEasyReceipts()
-          );
-        }
+            this.acceptEasyReceipt(receipt, data).then(() =>
+              this.processPendingEasyReceipts()
+            );
+          }
         }
       ]
     }).present();
