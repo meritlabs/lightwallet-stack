@@ -713,6 +713,16 @@ WalletService.prototype.sendReferral = function(rawReferral, cb) {
   }
 };
 
+WalletService.prototype.getRootAddress = function(cb) {
+    this.getWallet({}, (err, wallet) => {
+        if (err) return cb(err);
+        if (!wallet.copayers || !wallet.copayers[0]) return cb("Wallet is not completed");
+        const xpub = new Bitcore.HDPublicKey(wallet.copayers[0].xPubKey);
+        let address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, wallet.network);
+        return cb(null, address);
+    });
+};
+
 /**
  * Retrieves wallet status.
  * @param {Object} opts
@@ -725,8 +735,11 @@ WalletService.prototype.getStatus = function(opts, cb) {
 
   opts = opts || {};
   let status = {};
-  self.storage.fetchAddresses(self.walletId, function (err, addresses) {
+
+
+  self.getRootAddress(function (err, address) {
       if (err) return cb(err);
+      let addresses = [{address: address.toString()}];
 
       async.parallel([
 
