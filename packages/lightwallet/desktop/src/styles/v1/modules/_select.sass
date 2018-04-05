@@ -32,3 +32,10 @@
   &__selected
     display: flex
     align-items: center
+  &--disabled
+    opacity: .7
+    cursor: not-allowed
+    .ui-input
+      cursor: not-allowed
+      &:focus
+        border-color: $light-blue-grey

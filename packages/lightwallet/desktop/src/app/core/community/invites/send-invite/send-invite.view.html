@@ -35,6 +35,9 @@
   </form>
 
 
-  <history-list [loading]="historyLoading$ | async" [transactions]="history$ | async"></history-list>
+  <div class="latestInvites_history">
+    <div class="title--primary">Invites history</div>
+    <history-list [loading]="historyLoading$ | async" [transactions]="history$ | async"></history-list>
+  </div>
 
 </div>
