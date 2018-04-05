@@ -18,11 +18,10 @@ export class NetworkView {
   loading: boolean;
   refreshing: boolean;
 
-  wallets: Array<MeritWalletClient>;
+  wallets: MeritWalletClient[];
 
   network:{
     communitySize: number,
-    networkValue: number,
     miningRewards: number,
     ambassadorRewards: number
     wallets: Array<{
@@ -30,13 +29,12 @@ export class NetworkView {
       referralAddress: string,
       alias: string,
       confirmed: boolean,
-      networkValue: number
+      communitySize: number
       miningRewards: number,
       ambassadorRewards: number
     }>
   } = {
     communitySize: 0,
-    networkValue: 0,
     miningRewards: 0,
     ambassadorRewards: 0,
     wallets: []
@@ -103,7 +101,7 @@ export class NetworkView {
           alias: w.rootAlias,
           referralAddress: w.rootAddress.toString(),
           confirmed: w.confirmed,
-          networkValue: 0,
+          communitySize: 0,
           miningRewards: 0,
           ambassadorRewards: 0
         }})
