@@ -13,9 +13,8 @@ export class DeepLinkService {
   async initBranch(handler: (data: any) => Promise<void>) {
     if (typeof Branch !== 'undefined') {
       this.logger.info('Initing branch');
-      debugger;
-      Branch.setDebug(true);
-      Branch.initSession(handler);
+      await Branch.setDebug(true);
+      return Branch.initSession(handler);
     } else {
       this.logger.info('Branch is undefined');
       handler(null);

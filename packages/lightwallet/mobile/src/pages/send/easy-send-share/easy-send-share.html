@@ -1,94 +1,45 @@
 <ion-content>
 
-    <h2> Global send is ready </h2>
+  <div class="flexbox">
+    <div class="inner-container">
+      <h2> Global send is ready </h2>
 
-    <div class="send-ready">
+      <div class="send-ready">
         <div class="send-ready-inner">
-            <img src="/assets/img/global-send/easy-send.svg" alt="">
+          <img src="assets/img/global-send/easy-send.svg" alt="">
         </div>
-    </div>
+      </div>
 
-    <ion-card>
+      <ion-card>
         <ion-card-header>
-            Your link
+          Your link
         </ion-card-header>
         <ion-card-content>
-            <a (click)="copyToClipboard(txData.easySendUrl)" [clip]="txData.easySendUrl">{{ txData.easySendUrl }}</a>
+          <a (click)="copyToClipboard(txData.easySendUrl)" [clip]="txData.easySendUrl">{{ txData.easySendUrl }}</a>
         </ion-card-content>
 
         <ion-row>
-            <ion-col>
-                <button ion-button icon-left clear small (click)="copyToClipboard(txData.easySendUrl)" [clip]="txData.easySendUrl">
-                    <ion-icon name="clipboard"></ion-icon>
-                    <div>Copy</div>
-                </button>
-            </ion-col>
-            <ion-col [hidden]="!showShareButton">
-                <button ion-button icon-left clear small (click)="share(txData.easySendUrl)">
-                    <ion-icon name="share"></ion-icon>
-                    <div>Share</div>
-                </button>
-            </ion-col>
+          <ion-col>
+            <button ion-button icon-left clear small (click)="copyToClipboard(txData.easySendUrl)" [clip]="txData.easySendUrl">
+              <ion-icon name="clipboard"></ion-icon>
+              <div>Copy</div>
+            </button>
+          </ion-col>
+          <ion-col [hidden]="!showShareButton">
+            <button ion-button icon-left clear small (click)="share(txData.easySendUrl)">
+              <ion-icon name="share"></ion-icon>
+              <div>Share</div>
+            </button>
+          </ion-col>
         </ion-row>
+      </ion-card>
 
-    </ion-card>
-    <div class="transactionDetails" *ngIf="txData.details">
-      <div class="transactionDetails_header">
-        <p class="heading">TRANSACTION DETAILS</p>
-        <p class="mrt">{{ txData.details.amountMRT }} MRT</p>
-        <p class="usd">$ {{ txData.details.amountMRT * 0.15 }} USD</p>
-      </div>
-      <div class="transactionDetails_group">
-        <div class="transactionDetails_row">
-          <div class="transactionDetails_column">
-            From
-          </div>
-          <div class="transactionDetails_column grey">
-            {{ txData.details.from }}
-          </div>
-        </div>
-        <div class="transactionDetails_row">
-          <div class="transactionDetails_column">
-            Method
-          </div>
-          <div class="transactionDetails_column grey">
-            {{ txData.details.method }}
-          </div>
-        </div>
-        <div class="transactionDetails_row">
-          <div class="transactionDetails_column">
-            Password
-          </div>
-          <div class="transactionDetails_column grey w-input">
-            <input type="{{show ? 'text' : 'password'}}" name="" value="{{txData.details.password}}">
-            <div class="eye eye-{{show}}" (click)="show=!show">
-              <img src="assets/img/icons/visible.svg" alt="">
-            </div>
-          </div>
-        </div>
-        <div class="transactionDetails_row">
-          <div class="transactionDetails_column">
-            Fee
-          </div>
-          <div class="transactionDetails_column grey">
-            <p>{{ txData.details.fee }} MRT</p>
-            <p><small>$ {{ txData.details.fee }} USD</small></p>
-          </div>
-        </div>
-        <div class="transactionDetails_row">
-          <div class="transactionDetails_column">
-            Total
-          </div>
-          <div class="transactionDetails_column">
-            <p class="blue">{{ txData.details.total }} MRT</p>
-            <p class="grey"><small>$ {{ txData.details.total }} USD</small></p>
-          </div>
-        </div>
+      <div class="footer">
+        <button ion-button class="action-button" (click)="toWallets()">
+          Back to wallets
+        </button>
       </div>
     </div>
-    <div class="footer">
-      <button ion-button class="action-button" (click)="toWallets()">
-        Back to wallets
-      </button>
-    </div>
+  </div>
+
 </ion-content>
