@@ -47,6 +47,10 @@ export class WalletSettingsView implements OnInit, OnDestroy {
       color: '#53b9e8'
     },
     {
+      name: 'Merit blue',
+      color: '#00B0DD'
+    },
+    {
       name: 'Viking',
       color: '#4ccdde'
     },
@@ -126,7 +130,6 @@ export class WalletSettingsView implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subs.push(this.route.parent.params.pipe(
-      tap(params => console.log('Params are ', params)),
       switchMap(({ id }) => this.store.select(selectWalletById(id)))
     ).subscribe((wallet: DisplayWallet) => {
       this.wallet = wallet;
