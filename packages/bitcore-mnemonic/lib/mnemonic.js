@@ -131,7 +131,7 @@ Mnemonic.isValidImport = function(mnemonic, wordlist) {
   var words = mnemonic.split(' ');
 
   // We don't call hasValidWords() because this check is already done in hasValidEntropy!
-  return this.isValidSize(mnemonic) && this.hasValidEntropy(words);
+  return this.isValidSize(mnemonic) && this.hasValidEntropy(words, wordlist);
 };
 
 /**
@@ -170,7 +170,7 @@ Mnemonic.hasValidWords = function(mnemonic, wordlist) {
  * dictionary of words.
  * 
  */
-Mnemonic.hasValidEntropy = function(words) {
+Mnemonic.hasValidEntropy = function(words, wordlist) {
   var bin = '';
   for (var i = 0; i < words.length; i++) {
     var ind = wordlist.indexOf(words[i]);
