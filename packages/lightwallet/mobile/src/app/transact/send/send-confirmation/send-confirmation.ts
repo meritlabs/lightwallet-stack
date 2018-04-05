@@ -57,6 +57,14 @@ export class SendConfirmationView {
     this.txData = navParams.get('txData');
   }
 
+  ionViewDidEnter() {
+    this.navCtrl.swipeBackEnabled = false;
+  }
+
+  ionViewWillLeave() {
+    this.navCtrl.swipeBackEnabled = true;
+  }
+
   async ngOnInit() {
 
     const viewData: any = {

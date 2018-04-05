@@ -785,7 +785,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       keys: req.query.keys.split(',')
     };
 
-    getServerWithAuth(req, req, server => {
+    getServerWithAuth(req, res, server => {
       server.getCommunityInfo(opts, (err, response) => {
         if (err) return returnError(err, res, req);
         res.json(response);

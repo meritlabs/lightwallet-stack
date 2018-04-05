@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { Keyboard } from '@ionic-native/keyboard';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
@@ -37,6 +38,7 @@ export class MeritLightWallet {
               private deepLinkService: DeepLinkService,
               private easyReceiveService: EasyReceiveService,
               private events: Events,
+              private keyboard: Keyboard,
               pushNotificationService: PushNotificationsService) {
   }
 
@@ -47,6 +49,8 @@ export class MeritLightWallet {
     });
 
     const readySource = await this.platform.ready();
+
+    this.keyboard.hideKeyboardAccessoryBar(false);
 
     const appInfo: any = await this.appService.getInfo();
     this.logger.info(`
@@ -105,42 +109,36 @@ export class MeritLightWallet {
       this.logger.info('Got Profile....');
       // If the user has credentials and a profile, then let's send them to the transact
       // view
-
       const isAuthorized = await this.profileService.isAuthorized();
-      return new Promise<boolean>((resolve) => {
-        this.deepLinkService.initBranch(async (data) => {
-          this.logger.info('Branch Data: ', data);
-          // If the branch params contain the minimum params needed for an easyReceipt, then
-          // let's validate and save them.
-          if (data && !isEmpty(data) && data.sk && data.se) {
-            this.logger.info('About to Validate and Save.');
 
-            try {
-              const easyReceipt: EasyReceipt = await this.easyReceiveService.validateAndSaveParams(data);
-              this.logger.info('Returned from validate with: ', easyReceipt);
+      this.deepLinkService.initBranch(async (data) => {
+        this.logger.info('Branch Data: ', data);
+        // If the branch params contain the minimum params needed for an easyReceipt, then
+        // let's validate and save them.
+        if (data && !isEmpty(data) && data.sk && data.se) {
+          this.logger.info('About to Validate and Save.');
 
-              // We have an easyReceipt, let's handle the cases of being a new user or an
-              // existing user.
-              if (easyReceipt) {
+          try {
+            const easyReceipt: EasyReceipt = await this.easyReceiveService.validateAndSaveParams(data);
+            this.logger.info('Returned from validate with: ', easyReceipt);
 
-                if (!isAuthorized) {
-                  // User received easySend, but has no wallets yet.
-                  // Skip to unlock view.
-                  await this.nav.setRoot('UnlockView');
-                } else {
-                  // User is a normal user and needs to be thrown an easyReceive modal.
-                  await this.nav.setRoot('TransactView');
-                }
+            // We have an easyReceipt, let's handle the cases of being a new user or an
+            // existing user.
+            if (easyReceipt) {
 
-                return resolve(true);
+              if (!isAuthorized) {
+                // User received easySend, but has no wallets yet.
+                // Skip to unlock view.
+                await this.nav.setRoot('UnlockView');
+              } else {
+                // User is a normal user and needs to be thrown an easyReceive modal.
+                await this.nav.setRoot('TransactView');
               }
-            } catch (err) {
-              this.logger.warn('Error validating and saving easySend params: ', err);
             }
+          } catch (err) {
+            this.logger.warn('Error validating and saving easySend params: ', err);
           }
-
-          resolve(false);
-        });
+        }
       });
 
     } catch (err) {
@@ -162,13 +160,10 @@ export class MeritLightWallet {
       }
     }
 
-    const receivedEasySend: boolean = await this.loadProfileAndEasySend();
+    this.loadProfileAndEasySend();
 
-    if (!receivedEasySend) {
-      const authorized = await this.profileService.isAuthorized();
-      await this.nav.setRoot( authorized ? 'TransactView' : 'OnboardingView');
-    }
-
+    const authorized = await this.profileService.isAuthorized();
+    await this.nav.setRoot(authorized ? 'TransactView' : 'OnboardingView');
     // wait until we have a root view before hiding splash screen
     this.splashScreen.hide();
   }
@@ -182,14 +177,9 @@ export class MeritLightWallet {
   // }
   //
   // private openPINModal(action) {
-  //   let modal = this.modalCtrl.create(PinLockView, { action }, { showBackdrop: false, enableBackdropDismiss: false });
-  //   modal.present();
-  // }
-  //
-  // private openFingerprintModal() {
-  //   let modal = this.modalCtrl.create(FingerprintLockView, {}, { showBackdrop: false, enableBackdropDismiss: false });
-  //   modal.present();
-  // }
+  //   let modal = this.modalCtrl.create(PinLockView, { action }, { showBackdrop: false, enableBackdropDismiss: false
+  // }); modal.present(); }  private openFingerprintModal() { let modal = this.modalCtrl.create(FingerprintLockView,
+  // {}, { showBackdrop: false, enableBackdropDismiss: false }); modal.present(); }
 
   private registerMwcErrorHandler() {
     this.events.subscribe(MWCErrors.AUTHENTICATION_ERROR.name, () => {
