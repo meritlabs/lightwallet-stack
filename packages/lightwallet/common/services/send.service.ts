@@ -33,10 +33,10 @@ export class SendService {
 
     let txp = await wallet.createTxProposal(txpData);
     txp.sendMax = txpData.sendMax;
-    return txp;  
+    return txp;
   }
 
-  finalizeTxp(wallet, preparedTxp, feeIncluded) {
+  finalizeTxp(wallet: MeritWalletClient, preparedTxp: any, feeIncluded: boolean = true) {
 
     let txp:any = {
       outputs: preparedTxp.outputs,
@@ -49,9 +49,9 @@ export class SendService {
 
     if (preparedTxp.sendMax || !feeIncluded) {
       txp.outputs[0].amount = preparedTxp.amount;
-    } else { 
+    } else {
       txp.outputs[0].amount = preparedTxp.amount - preparedTxp.fee;
-      
+
     }
 
     return wallet.createTxProposal(txp);
