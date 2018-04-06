@@ -1,9 +1,9 @@
 <loading-spinner-small [hidden]="!loading"></loading-spinner-small>
 <history-item *ngFor="let tx of transactions" [tx]="tx"></history-item>
-<div class="noItems" *ngIf="transactions.length === 0">
+<div class="noItems" *ngIf="transactions?.length === 0">
   <div class="noItems_description">
     You currently have no transactions.
   </div>
 </div>
-<div [routerLink]='"/history"' *ngIf="transactions.length > 9 && widget"
+<div [routerLink]='"/history"' *ngIf="transactions?.length > 9 && widget"
   class="ui-button ui-button--blue">SHOW FULL HISTORY</div>
