@@ -144,7 +144,19 @@ export class Credentials {
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
 
-    let m = new Mnemonic(words);
+    var m:any; 
+    if(Object.prototype.hasOwnProperty.call(opts, 'isImport')) {
+      if (opts.isImport == true) {
+        console.log("Import is true in FromMnemonic");
+        m = new Mnemonic(words, null, opts.isImport);      
+        //m = new Mnemonic(words);
+        
+      } 
+     } else {
+        console.log("Import is FALSE in FromMnemonic");        
+        m = new Mnemonic(words);
+      }
+    
     let x = new Credentials();
     x.xPrivKey = m.toHDPrivateKey(passphrase, network).toString();
     x.mnemonic = words;
@@ -219,7 +231,7 @@ export class Credentials {
     opts = opts || {};
 
     let m = new Mnemonic(this.wordsForLang[language]);
-    while (!Mnemonic.isValid(m.toString())) {
+    while (!Mnemonic.isValidGeneration(m.toString())) {
       m = new Mnemonic(this.wordsForLang[language])
     };
     let x = new Credentials();

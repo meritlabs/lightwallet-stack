@@ -689,11 +689,13 @@ export class API {
    */
   importFromMnemonic(words: string, opts: any = {}): Promise<any> {
     this.log.debug('Importing from 12 Words');
+    console.log("Importing 12 words in api.ts");
 
     function derive(nonCompliantDerivation) {
       return Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, {
         nonCompliantDerivation: nonCompliantDerivation,
-        entropySourcePath: opts.entropySourcePath
+        entropySourcePath: opts.entropySourcePath,
+        isImport: true
       });
     };
 

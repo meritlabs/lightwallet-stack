@@ -35,9 +35,12 @@ var $ = bitcore.util.preconditions;
  * @returns {Mnemonic} A new instance of Mnemonic
  * @constructor
  */
-var Mnemonic = function(data, wordlist) {
+var Mnemonic = function(data, wordlist, isImport = false) {
+  console.log("Top of mnemonic new");
+  console.log("isImport: ", isImport);
+  
   if (!(this instanceof Mnemonic)) {
-    return new Mnemonic(data, wordlist);
+    return new Mnemonic(data, wordlist, isImport);
   }
 
   if (_.isArray(data)) {
@@ -71,12 +74,21 @@ var Mnemonic = function(data, wordlist) {
     phrase = Mnemonic._entropy2mnemonic(seed, wordlist);
   }
 
-
-  // validate phrase and ent
-  // TODO: Investigate the permanent removal of mnemonic sub-dictionary. 
-  // A smaller word-space feels like it would make things less secure.  Though there will be some added convenience
-  if (phrase && !Mnemonic.isValidGeneration(phrase, wordlist)) {
-    throw new errors.InvalidMnemonic(phrase);
+  if (isImport) {
+    console.log("Yes, it's am import!");  
+    if (!Mnemonic.isValidImport) {
+      console.log("BUT IT FAILS!");        
+      throw new errors.InvalidMnemonic(phrase);    
+    } 
+  } else {
+    console.log("No, it's not am import!");  
+    
+    // validate phrase and ent
+    if (phrase && !Mnemonic.isValidGeneration(phrase, wordlist)) {
+      console.log("Aaaand.. it fails!");  
+      
+      throw new errors.InvalidMnemonic(phrase);
+    }
   }
   if (ent % 32 !== 0 || ent < 128) {
     throw new bitcore.errors.InvalidArgument('ENT', 'Values must be ENT > 128 and ENT % 32 == 0');
@@ -140,6 +152,7 @@ Mnemonic.isValidImport = function(mnemonic, wordlist) {
  */
 Mnemonic.isValidSize = function(mnemonic) {
   if (mnemonic.split(' ').length != 12) {
+    console.log("Failed size");
     return false;
   }
   return true;
@@ -153,12 +166,15 @@ Mnemonic.isValidSize = function(mnemonic) {
 Mnemonic.hasValidWords = function(mnemonic, wordlist) {
   wordlist = wordlist || Mnemonic._getDictionary(mnemonic);
   if (!wordlist) {
+    console.log("Failed wordlist");    
     return false;
   }
   var words = mnemonic.split(' ');
   
   for (var i = 0; i < words.length; i++) {
     var ind = wordlist.indexOf(words[i]);
+    console.log("Failed words");
+    
     if (ind < 0) return false;
   }
 
@@ -171,9 +187,12 @@ Mnemonic.hasValidWords = function(mnemonic, wordlist) {
  * 
  */
 Mnemonic.hasValidEntropy = function(words, wordlist) {
+  console.log("CHEKING ENTROPY");
+  
   var bin = '';
   for (var i = 0; i < words.length; i++) {
     var ind = wordlist.indexOf(words[i]);
+    console.log("Failed entropy");    
     if (ind < 0) return false;
     bin = bin + ('00000000000' + ind.toString(2)).slice(-11);
   }
@@ -186,7 +205,10 @@ Mnemonic.hasValidEntropy = function(words, wordlist) {
     buf.writeUInt8(parseInt(bin.slice(i * 8, (i + 1) * 8), 2), i);
   }
   var expected_hash_bits = Mnemonic._entropyChecksum(buf);
-  return expected_hash_bits === hash_bits;
+  
+  var entropyValid = (expected_hash_bits === hash_bits);
+  console.log("ENTROPY IS: ", entropyValid);
+  return entropyValid;
 }
 
 /**
