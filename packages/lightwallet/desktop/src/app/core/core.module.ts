@@ -8,6 +8,7 @@ import { CoreComponentsModule } from '@merit/desktop/app/core/components/core-co
 import { WalletPasswordGuard } from '@merit/desktop/app/guards/wallet-password.guard';
 import { MomentModule } from 'angular2-moment';
 import { QRCodeModule } from 'angular2-qrcode';
+import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 import { BackupView } from './backup/backup.view';
 import { MnemonicPhraseView } from './backup/mnemonic-phrase/mnemonic-phrase.view';
 import { QrCodeBackupView } from './backup/qr-code-backup/qr-code-backup.view';
@@ -73,7 +74,8 @@ export function getPages() {
     CoreComponentsModule,
     FormsModule,
     MomentModule,
-    ClipModule
+    ClipModule,
+    Ng4LoadingSpinnerModule
   ],
   declarations: [
     CoreView,
