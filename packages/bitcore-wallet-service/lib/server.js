@@ -1421,10 +1421,14 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
       }, function(err, txs) {
         if (err) return next(err);
 
-        const spentInputs = _.map(_.flatten(_.map(txs, 'inputs')), utxoKey);
-
-        allUtxos = _.reject(allUtxos, (utxo) => {
-          return _.includes(spentInputs, utxoKey(utxo));
+        let spentInputs = _.map(_.flatten(_.map(txs, 'inputs')), utxoKey);
+        _.each(spentInputs, function(input) {
+          if (utxoIndex[input]) {
+            utxoIndex[input].spent = true;
+          }
+        });
+        allUtxos = _.reject(allUtxos, {
+          spent: true
         });
 
         return next();
