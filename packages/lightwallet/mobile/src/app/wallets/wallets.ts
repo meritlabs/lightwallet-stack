@@ -130,8 +130,8 @@ export class WalletsView {
    * @returns {Promise<void>}
    * @memberof WalletsView
    */
-  private async processEasyReceipt(receipt: EasyReceipt, isRetry: boolean): Promise<void> {
-    const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, '');
+  private async processEasyReceipt(receipt: EasyReceipt, isRetry: boolean, password: string = ''): Promise<void> {
+    const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, password);
     let txs = data.txs;
 
     if (!txs) return await this.easyReceiveService.deletePendingReceipt(receipt);
@@ -199,7 +199,7 @@ export class WalletsView {
               this.showPasswordEasyReceivePrompt(receipt, true); //the only way we can validate password input by the
                                                                  // moment
             } else {
-              this.processEasyReceipt(receipt, true);
+              this.processEasyReceipt(receipt, true, data.password);
             }
           }
         }
