@@ -104,10 +104,10 @@ export class ReceiveView {
 
     try {
       this.address = this.wallet.getRootAddress().toString();
-      let info = await this.addressService.getAddressInfo(this.address);
-      this.alias = info.alias;
       this.addressGenerationInProgress = false;
       this.formatAddress();
+      let info = await this.addressService.getAddressInfo(this.address);
+      this.alias = info.alias;
     } catch (err) {
       if (err.code == MWCErrors.MAIN_ADDRESS_GAP_REACHED.code) {
         this.mainAddressGapReached = true;
