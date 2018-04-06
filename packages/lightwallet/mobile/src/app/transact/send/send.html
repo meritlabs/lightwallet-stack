@@ -43,6 +43,8 @@
       <button ion-button clear item-end (click)="openScanner()" class="scan-button" *ngIf="!searchQuery">
         <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
       </button>
+
+      <ion-spinner color="primary"  *ngIf="searchQuery && searchInProgress"></ion-spinner>
     </div>
 
     <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">

@@ -48,6 +48,8 @@ export class SendView {
   hasActiveInvites: boolean;
   showSlider: boolean;
 
+  searchInProgress: boolean;
+
   constructor(private navCtrl: NavController,
     private contactsService: ContactsService,
     private profileService: ProfileService,
@@ -111,6 +113,7 @@ export class SendView {
   }
 
   async parseSearch() {
+    this.searchInProgress = true;
     const result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
 
     if (!this.searchQuery || !this.searchQuery.length) {
@@ -208,6 +211,7 @@ export class SendView {
     }
 
     this.searchResult = result;
+    this.searchInProgress = false;
   }
 
 
