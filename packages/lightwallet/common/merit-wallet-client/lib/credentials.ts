@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as Bitcore from 'bitcore-lib';
 import * as Mnemonic from 'bitcore-mnemonic';
 import * as sjcl from 'sjcl';
+import { Mnemonic as MnemonicTS } from '@merit/common/mnemonic'; 
 
 const $ = preconditions.singleton();
 
@@ -148,7 +149,7 @@ export class Credentials {
     if(Object.prototype.hasOwnProperty.call(opts, 'isImport')) {
       if (opts.isImport == true) {
         console.log("Import is true in FromMnemonic");
-        m = new Mnemonic(words, null, opts.isImport);      
+        m = create(words, null, opts.isImport);      
         //m = new Mnemonic(words);
         
       } 
