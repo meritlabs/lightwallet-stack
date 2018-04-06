@@ -3,7 +3,7 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import {
   AddWalletAction,
   selectWalletById,
-  selectWallets,
+  selectWallets, WalletsAction,
   WalletsActionType
 } from '@merit/common/reducers/wallets.reducer';
 import { Observable } from 'rxjs/Observable';
@@ -14,7 +14,7 @@ import {
   UpdateOneWalletTransactions,
   UpdateTransactionsAction
 } from '@merit/common/reducers/transactions.reducer';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
@@ -28,13 +28,14 @@ import 'rxjs/add/observable/fromPromise';
 export class TransactionEffects {
   @Effect()
   refreshOnWalletRefresh$: Observable<RefreshOneWalletTransactions> = this.actions$.pipe(
-    ofType(WalletsActionType.Add),
+    ofType(WalletsActionType.Add, WalletsActionType.RefreshOne),
+    filter((action: WalletsAction) => action.type != WalletsActionType.RefreshOne || !action.opts.skipStatus),
     map((action: AddWalletAction) => new RefreshOneWalletTransactions(action.wallet.id))
   );
 
   @Effect()
   refreshOnWalletsRefresh$: Observable<RefreshTransactionsAction> = this.actions$.pipe(
-    ofType(WalletsActionType.Update),
+    ofType(WalletsActionType.Refresh),
     map(() => new RefreshTransactionsAction())
   );
 
