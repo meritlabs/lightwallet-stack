@@ -254,9 +254,13 @@ export class SendView implements OnInit {
 
   async send() {
 
+    this.error = null;
     this.sending = true;
 
     if (this.txData.easyFee) this.txData.txp.amount += this.txData.easyFee;
+
+    if (!this.txData.txp) await this.createTx();
+
     this.txData.txp = await this.sendService.finalizeTxp(this.formData.wallet.client, this.txData.txp, this.formData.feeIncluded);
 
     try {
