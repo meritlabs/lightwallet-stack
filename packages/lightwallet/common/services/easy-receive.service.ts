@@ -89,21 +89,16 @@ export class EasyReceiveService {
 
       const txs = await walletClient.validateEasyScript(scriptAddress);
 
-      if (!txs.result.length) {
-        this.logger.warn('Could not validate easyScript on the blockchain.');
-        return false
-      } else {
-        return {
-          senderPublicKey: receipt.senderPublicKey,
-          txs: txs.result,
-          privateKey: scriptData.privateKey,
-          publicKey: scriptData.publicKey,
-          script: scriptData.script,
-          scriptId: scriptAddress,
-        };
-      }
+      return {
+        senderPublicKey: receipt.senderPublicKey,
+        txs: txs.result,
+        privateKey: scriptData.privateKey,
+        publicKey: scriptData.publicKey,
+        script: scriptData.script,
+        scriptId: scriptAddress,
+      };
     } catch (err) {
-      this.logger.warn('Could not validate easyScript on the blockchain.', err);
+      this.logger.error('Could not validate easyScript on the blockchain.', err);
       throw err;
     }
   }
