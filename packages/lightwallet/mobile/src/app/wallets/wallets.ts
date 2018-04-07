@@ -127,6 +127,7 @@ export class WalletsView {
    * @private
    * @param {EasyReceipt} receipt
    * @param {boolean} isRetry
+   * @param {string} password
    * @returns {Promise<void>}
    * @memberof WalletsView
    */
