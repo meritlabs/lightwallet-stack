@@ -1,12 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
-import {
-  AddWalletAction,
-  selectWalletById,
-  selectWallets, WalletsAction,
-  WalletsActionType
-} from '@merit/common/reducers/wallets.reducer';
-import { Observable } from 'rxjs/Observable';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { IRootAppState } from '@merit/common/reducers';
 import {
   RefreshOneWalletTransactions,
   RefreshTransactionsAction,
@@ -14,23 +9,29 @@ import {
   UpdateOneWalletTransactions,
   UpdateTransactionsAction
 } from '@merit/common/reducers/transactions.reducer';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import {
+  AddWalletAction,
+  RefreshOneWalletAction,
+  selectWalletById,
+  selectWallets,
+  WalletsActionType
+} from '@merit/common/reducers/wallets.reducer';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { IRootAppState } from '@merit/common/reducers';
-import { Store } from '@ngrx/store';
-import { IDisplayTransaction } from '@merit/common/models/transaction';
-import { flatten } from 'lodash';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { flatten } from 'lodash';
 import 'rxjs/add/observable/fromPromise';
+import { Observable } from 'rxjs/Observable';
+import { filter, map, switchMap } from 'rxjs/operators';
 
 @Injectable()
 export class TransactionEffects {
   @Effect()
   refreshOnWalletRefresh$: Observable<RefreshOneWalletTransactions> = this.actions$.pipe(
     ofType(WalletsActionType.Add, WalletsActionType.RefreshOne),
-    filter((action: WalletsAction) => action.type != WalletsActionType.RefreshOne || !action.opts.skipStatus),
-    map((action: AddWalletAction) => new RefreshOneWalletTransactions(action.wallet.id))
+    filter((action: AddWalletAction & RefreshOneWalletAction) => action.type != WalletsActionType.RefreshOne || !action.opts.skipStatus),
+    map((action: AddWalletAction & RefreshOneWalletAction) => new RefreshOneWalletTransactions(action.wallet ? action.wallet.id : action.walletId))
   );
 
   @Effect()
