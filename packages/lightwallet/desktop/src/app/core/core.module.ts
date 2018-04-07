@@ -71,11 +71,11 @@ export function getPages() {
     QRCodeModule,
     CommonPipesModule,
     SharedComponentsModule,
-    CoreComponentsModule,
     FormsModule,
     MomentModule,
     ClipModule,
-    Ng4LoadingSpinnerModule
+    Ng4LoadingSpinnerModule,
+    CoreComponentsModule
   ],
   declarations: [
     CoreView,

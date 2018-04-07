@@ -279,7 +279,7 @@ export class SendView implements OnInit {
       }
 
       if (this.formData.type == 'easy') {
-        this.receipt.easySendUrl = this.txData.easySendUrl;
+        this.easySendUrl = this.txData.easySendUrl;
       }
       this.success = true;
 
