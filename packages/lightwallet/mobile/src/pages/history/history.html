@@ -1,6 +1,9 @@
 <ion-header no-border>
   <ion-navbar color="light">
     <ion-title>History</ion-title>
+    <ion-buttons end *ngIf="refreshing">
+        <ion-spinner></ion-spinner>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
@@ -9,8 +12,12 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <div class="no-transactions" *ngIf="!transactions?.length">
+  <div class="no-transactions" *ngIf="!transactions?.length && !loading">
     You do not have any transactions
+  </div>
+
+  <div class="no-transactions" *ngIf="loading">
+    Loading transactions history...
   </div>
 
   <transaction-history [transactions]="transactions"></transaction-history>

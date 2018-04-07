@@ -16,6 +16,7 @@ import { DerivationPath } from '@merit/common/utils/derivation-path';
 import { Store } from '@ngrx/store';
 import { startsWith } from 'lodash';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
 @Component({
   selector: 'view-phrase-import',
@@ -43,10 +44,12 @@ export class PhraseImportView {
               private txFormatService: TxFormatService,
               private router: Router,
               private pushNotificationsService: PushNotificationsService,
-              private toastCtrl: ToastControllerService) {}
+              private toastCtrl: ToastControllerService,
+              private loadingCtrl: Ng4LoadingSpinnerService) {}
 
 
   async importMnemonic() {
+    this.loadingCtrl.show();
     // const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
     // loader.present();
 
@@ -93,6 +96,8 @@ export class PhraseImportView {
           authorized: true
         }));
 
+        this.loadingCtrl.hide();
+
         return this.router.navigateByUrl('/wallets');
       }
 
@@ -107,6 +112,7 @@ export class PhraseImportView {
         errorMsg = err;
       }
 
+      this.loadingCtrl.hide();
 
       return this.toastCtrl.create({
         title: 'Error',

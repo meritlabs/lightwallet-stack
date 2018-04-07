@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 const LOGGING_ENABLED = true;
-const TRACE_ENABLED = false;
+const TRACE_ENABLED = true;
 
 export enum LogLevel {
   ERROR = 0,
