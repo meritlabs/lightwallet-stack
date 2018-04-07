@@ -76,6 +76,10 @@ export class WalletsView {
     this.refreshing = false;
   }
 
+  ionViewDidEnter() {
+    this.processPendingEasyReceipts();
+  }
+
   async doRefresh(refresher) {
     this.refreshing = true;
     await this.updateAllInfo();
@@ -131,7 +135,7 @@ export class WalletsView {
    * @returns {Promise<void>}
    * @memberof WalletsView
    */
-  private async processEasyReceipt(receipt: EasyReceipt, isRetry: boolean, password: string = ''): Promise<void> {
+  private async processEasyReceipt(receipt: EasyReceipt, isRetry: boolean, password: string = '') {
     const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, password);
     let txs = data.txs;
 
