@@ -69,11 +69,6 @@ export function hasValidEntropy(mnemonic: string, wordlist: string[] = EnglishWo
 
 export function mnemonicToHDPrivateKey(mnemonic, passphrase, network) {
   var seed = mnemonicToSeed(mnemonic, passphrase);
-  console.log("MTHDPK 1: ", mnemonic);
-  console.log("MTHDPK 2: ", passphrase);
-  console.log("MTHDPK 3: ", network);
-  console.log("MTHDPK 4: ", seed);  
-    
   return HDPrivateKey.fromSeed(seed, network);
 };
 
