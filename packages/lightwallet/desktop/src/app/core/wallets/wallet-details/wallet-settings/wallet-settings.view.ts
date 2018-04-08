@@ -1,13 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
-import { selectWalletById, UpdateOneWalletAction } from '@merit/common/reducers/wallets.reducer';
+import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
+import { DeleteWalletAction, selectWalletById, UpdateOneWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { WalletService } from '@merit/common/services/wallet.service';
+import { isWalletEncrypted } from '@merit/common/utils/wallet';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
+import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
+import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
+import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { debounceTime, filter, switchMap, tap } from 'rxjs/operators';
 
@@ -126,20 +131,24 @@ export class WalletSettingsView implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private formBuilder: FormBuilder,
               private logger: LoggerService,
-              private walletService: WalletService) {}
+              private walletService: WalletService,
+              private passwordPromptCtrl: PasswordPromptController,
+              private confirmDialogCtrl: ConfirmDialogControllerService,
+              private router: Router,
+              private toastCtrl: ToastControllerService) {}
 
   ngOnInit() {
     this.subs.push(this.route.parent.params.pipe(
       switchMap(({ id }) => this.store.select(selectWalletById(id)))
     ).subscribe((wallet: DisplayWallet) => {
+      if (!wallet) return this.router.navigateByUrl('/wallets');
+
       this.wallet = wallet;
 
       const isEncrypted: boolean = wallet.client.isPrivKeyEncrypted();
 
       if (isEncrypted) {
-        // wallet is encrypted and we need a password to decrypt before setting a new password
-        this.passwordChangeForm.addControl('currentPassword', this.formBuilder.control('', [Validators.required, PasswordValidator.VerifyWalletPassword(wallet.client)]));
-        this.isWalletEncrypted = true;
+        this.setWalletAsEncrypted();
       }
 
       this.settingsForm.get('name').setValue(wallet.name);
@@ -162,6 +171,12 @@ export class WalletSettingsView implements OnInit, OnDestroy {
     }));
   }
 
+  private setWalletAsEncrypted() {
+    // wallet is encrypted and we need a password to decrypt before setting a new password
+    this.passwordChangeForm.addControl('currentPassword', this.formBuilder.control('', [Validators.required, PasswordValidator.VerifyWalletPassword(this.wallet.client)]));
+    this.isWalletEncrypted = true;
+  }
+
   async savePassword() {
     const { currentPassword, password } = this.passwordChangeForm.getRawValue();
 
@@ -171,9 +186,10 @@ export class WalletSettingsView implements OnInit, OnDestroy {
       }
 
       await this.walletService.encrypt(this.wallet.client, password);
+      this.setWalletAsEncrypted();
 
       this.logger.info('Encrypted wallet!');
-      // TODO(ibby): show toast/notification informing the user that the passwrod is now set
+      this.toastCtrl.success('Your wallet is now encrypted!');
     } catch (e) {
       this.logger.error('Unable to set wallet password', e);
     }
@@ -189,5 +205,45 @@ export class WalletSettingsView implements OnInit, OnDestroy {
     this.selectedColor = selectedColor;
     this.wallet.color = selectedColor.color;
     this.store.dispatch(new UpdateOneWalletAction(this.wallet));
+  }
+
+  deleteWallet() {
+    const confirmDialog = this.confirmDialogCtrl.create(
+      'Confirm action',
+      'Are you sure you would like to delete this wallet? This action can not be reversed.',
+      [
+        {
+          text: 'Yes',
+          value: 'yes',
+          class: 'primary danger'
+        },
+        {
+          text: 'No',
+          value: 'no'
+        }
+      ]
+    );
+
+    confirmDialog.onDismiss(async (value: string) => {
+      if (value === 'yes') {
+        try {
+          // check if encrypted & prompt for password first
+          if (this.isWalletEncrypted) {
+            await new Promise<void>((resolve, reject) => {
+              this.passwordPromptCtrl.createForWallet(this.wallet)
+                .onDismiss((password: string) => {
+                  if (password) resolve();
+                  else reject('You must decrypt you wallet before deleting it.');
+                });
+            });
+          }
+
+          this.store.dispatch(new DeleteWalletAction(this.wallet.id));
+          this.router.navigateByUrl('/wallets');
+        } catch (err) {
+          this.toastCtrl.error(err);
+        }
+      }
+    });
   }
 }
