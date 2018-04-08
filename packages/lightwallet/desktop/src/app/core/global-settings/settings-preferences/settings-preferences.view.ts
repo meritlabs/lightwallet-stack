@@ -1,13 +1,22 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { State } from '@ngrx/store';
+import { Router } from '@angular/router';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
-import { PersistenceService2 } from '@merit/common/services/persistence2.service';
-import { isEmpty } from 'lodash';
-import { debounceTime, filter, tap } from 'rxjs/operators';
-import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { DeleteWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { isWalletEncrypted } from '@merit/common/utils/wallet';
+import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
+import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
+import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
+import { State, Store } from '@ngrx/store';
+import { isEmpty } from 'lodash';
+import 'rxjs/add/operator/toPromise';
 import { merge } from 'rxjs/observable/merge';
+import { debounceTime, filter, take, tap } from 'rxjs/operators';
 
 declare const WEBPACK_CONFIG: any;
 
@@ -38,7 +47,13 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
               private state: State<IRootAppState>,
               private persistenceService: PersistenceService2,
               private emailNotificationsService: EmailNotificationsService,
-              private pushNotificationsService: PushNotificationsService) {
+              private pushNotificationsService: PushNotificationsService,
+              private toastCtrl: ToastControllerService,
+              private confirmDialogCtrl: ConfirmDialogControllerService,
+              private passwordPromptCtrl: PasswordPromptController,
+              private profileService: ProfileService,
+              private store: Store<IRootAppState>,
+              private router: Router) {
     if (typeof WEBPACK_CONFIG !== 'undefined') {
       this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
       this.version = WEBPACK_CONFIG.VERSION;
@@ -96,5 +111,49 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
       this.subs.forEach(sub => sub.unsubscribe());
     } catch (e) {
     }
+  }
+
+  logout() {
+    const dialog = this.confirmDialogCtrl.create(
+      'Have you backed up your wallets?',
+      'This action will delete all Merit data on your device, so if you have no backup, you will lose your wallets for good.',
+      [
+        {
+          text: 'Delete',
+          value: 'delete'
+        },
+        {
+          text: 'Cancel'
+        }
+      ]
+    );
+
+    dialog.onDismiss(async (value: string) => {
+      if (value === 'delete') {
+        // TODO delete vaults
+        try {
+          const wallets = await this.store.select(selectWallets).pipe(take(1)).toPromise();
+          await Promise.all(wallets.map(async (wallet: DisplayWallet) => {
+            if (isWalletEncrypted(wallet.client)) {
+              await new Promise<void>((resolve, reject) => {
+                this.passwordPromptCtrl.createForWallet(wallet)
+                  .onDismiss((password: string) => {
+                    if (password) resolve();
+                    else reject('You must decrypt you wallet before deleting it.');
+                  });
+              });
+
+              await this.profileService.deleteWallet(wallet.client);
+              this.store.dispatch(new DeleteWalletAction(wallet.id));
+            }
+          }));
+
+          this.toastCtrl.success('All wallets are now deleted!');
+          return this.router.navigateByUrl('/');
+        } catch (e) {
+          this.toastCtrl.error(e);
+        }
+      }
+    });
   }
 }

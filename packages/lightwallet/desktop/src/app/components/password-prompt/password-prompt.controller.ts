@@ -20,6 +20,6 @@ export class PasswordPromptController {
       validators.push(PasswordValidator.VerifyWalletPassword(wallet.client));
     }
 
-    return this.create('Enter wallet password', validators);
+    return this.create('Enter password for wallet: ' + wallet.name, validators);
   }
 }
