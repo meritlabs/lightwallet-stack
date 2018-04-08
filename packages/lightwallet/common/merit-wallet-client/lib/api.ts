@@ -1,7 +1,7 @@
 import { ENV } from '@app/env';
 import * as Bip38 from 'bip38';
 import * as Bitcore from 'bitcore-lib';
-import * as Mnemonic from 'bitcore-mnemonic';
+import { mnemonicToHDPrivateKey, validateImportMnemonic, generateMnemonic } from '@merit/common/utils/mnemonic';
 import * as EventEmitter from 'eventemitter3';
 import * as _ from 'lodash';
 import * as preconditions from 'preconditions';
@@ -361,7 +361,7 @@ export class API {
 
       function testHardcodedKeys() {
         let words = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
-        let xpriv = Mnemonic(words).toHDPrivateKey();
+        let xpriv = mnemonicToHDPrivateKey(words, '', c.network).toHDPrivateKey();
 
         if (xpriv.toString() != 'xprv9s21ZrQH143K2jHFB1HM4GNbVaBSSnjHDQP8uBtKKTvusxMirfmKEmaUS4fkwqeoLqVVT2ShayUSmnEZNV1AKqTSESqyAFCBW8nvEqKfvGy') return false;
 
@@ -381,8 +381,8 @@ export class API {
 
         let xpriv;
         if (words && (!c.mnemonicHasPassphrase || opts.passphrase)) {
-          let m = new Mnemonic(words);
-          xpriv = m.toHDPrivateKey(opts.passphrase, c.network);
+          let m: string  = generateMnemonic();
+          xpriv = mnemonicToHDPrivateKey(m, opts.passphrase, c.network).toString();
         }
         if (!xpriv) {
           xpriv = new Bitcore.HDPrivateKey(c.xPrivKey);
@@ -438,7 +438,7 @@ export class API {
   }
 
   getNewMnemonic(data: any): any {
-    return new Mnemonic(data, Mnemonic.Words.ENGLISH);
+    return generateMnemonic();
   }
 
   /**
@@ -666,7 +666,7 @@ export class API {
     try {
       this.credentials = derive(false);
     } catch (e) {
-      this.log.error('Mnemonic error:', e);
+      this.log.error('Mnemonic error !:', e.Error);
       return Promise.reject(MWCErrors.INVALID_BACKUP);
     }
 
