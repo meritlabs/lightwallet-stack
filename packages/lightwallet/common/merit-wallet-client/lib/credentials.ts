@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as Bitcore from 'bitcore-lib';
 import * as Mnemonic from 'bitcore-mnemonic';
 import * as sjcl from 'sjcl';
-import { Mnemonic as MnemonicTS } from '@merit/common/mnemonic'; 
+import { mnemonicToHDPrivateKey, validateImportMnemonic } from '@merit/common/utils/mnemonic'; 
 
 const $ = preconditions.singleton();
 
@@ -110,18 +110,32 @@ export class Credentials {
     if (!this.wordsForLang[language]) throw new Error('Unsupported language');
     $.shouldBeNumber(account);
 
-    let m = new Mnemonic(this.wordsForLang[language]);
-    while (!Mnemonic.isValidImport(m.toString())) {
-      m = new Mnemonic(this.wordsForLang[language])
-    };
+    let m:any; 
+    let tries:number = 0;
+    function retryGeneration(m) {
+      //TODO: NO MORE M
+      m = new Mnemonic(this.wordsForLang[language]);
+      if(!validateImportMnemonic(m.phrase)){
+        tries++
+        if (tries < 5) {
+          retryGeneration(m)
+        } else {
+          throw new Error("Error generating valid mnemonic")
+        }
+      }
+    }
+    // while (!validateImportMnemonic() && i < 5) {
+    //   m = new Mnemonic(this.wordsForLang[language])
+    //   throw new Error('Invalid mnemonic')
+    // };
     let x = new Credentials();
 
     x.network = network;
     x.account = account;
-    x.xPrivKey = m.toHDPrivateKey(passphrase, network).toString();
+    x.xPrivKey = mnemonicToHDPrivateKey(passphrase, network).toString();
     x.compliantDerivation = true;
     x._expand();
-    x.mnemonic = m.phrase;
+    x.mnemonic = m.normalize('nfkd');
     x.mnemonicHasPassphrase = !!passphrase;
 
     return x;
@@ -145,21 +159,21 @@ export class Credentials {
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
 
-    var m:any; 
+  //  var m:any; 
     if(Object.prototype.hasOwnProperty.call(opts, 'isImport')) {
       if (opts.isImport == true) {
         console.log("Import is true in FromMnemonic");
-        m = create(words, null, opts.isImport);      
+        //m = create(words, null, opts.isImport);      
         //m = new Mnemonic(words);
         
       } 
      } else {
         console.log("Import is FALSE in FromMnemonic");        
-        m = new Mnemonic(words);
+        //let m = new Mnemonic(words);
       }
     
     let x = new Credentials();
-    x.xPrivKey = m.toHDPrivateKey(passphrase, network).toString();
+    x.xPrivKey = Bitcore.toHDPrivateKey(passphrase, network).toString();
     x.mnemonic = words;
     x.mnemonicHasPassphrase = !!passphrase;
     x.account = account;

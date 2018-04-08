@@ -1,6 +1,8 @@
 import EnglishWordlist from './wordlists/english';
+import * as Bitcore from 'bitcore-lib';
 import { BigNumber } from 'bignumber.js';
 import { createHash, pbkdf2Sync } from 'crypto';
+
 
 export function mnemonicToSeed(mnemonic: string, passphrase?: string) {
   return pbkdf2Sync(mnemonic.normalize('nfkd'), 'mnemonic' + passphrase, 2048, 64, 'sha512');
@@ -69,6 +71,11 @@ export function hasValidEntropy(mnemonic: string, wordlist: string[] = EnglishWo
   const expected_hash_bits = entropyChecksum(buf);
   return expected_hash_bits === hash_bits;
 }
+
+export function mnemonicToHDPrivateKey(passphrase, network) {
+  var seed = mnemonicToSeed(passphrase);
+  return Bitcore.HDPrivateKey.fromSeed(seed, network);
+};
 
 function entropyChecksum(entropy: Buffer): string {
   const hash = createHash('sha256').update(entropy).digest(),
