@@ -113,17 +113,17 @@ export class Credentials {
         throw new Error("Error generating valid mnemonic")
       }
     }
+    return m;
   }
 
 
   public static createWithMnemonic = function(network, passphrase, language, account, opts: any = {}): Credentials {
     _checkNetwork(network);
-    if (!this.wordsForLang[language]) throw new Error('Unsupported language');
     $.shouldBeNumber(account);
 
     let m: string  = this.createMnemonicWithRetries(null, 5);
     let x = new Credentials();
-
+    console.log("What is m?: ", m);
     x.network = network;
     x.account = account;
     x.xPrivKey = mnemonicToHDPrivateKey(m, passphrase, network).toString();
@@ -221,7 +221,6 @@ export class Credentials {
   }
 
    public Mnemonic = function(network, passphrase, language, account, opts): Credentials {
-    if (!this.wordsForLang[language]) throw new Error('Unsupported language');
     $.shouldBeNumber(account);
 
     opts = opts || {};

@@ -25,30 +25,12 @@ export function mnemonicToEntropy(mnemonic: string, wordlist: string[] = English
 
 }
 
-export function createMnemonic(data?: string | Buffer | number, wordlist: string[] = EnglishWordlist) {
-  let ent, phrase, seed;
-
-  if (!wordlist)
-    throw new Error('Invalid wordlist provided.');
-
-  if (typeof data === 'string') {
-    phrase = data.normalize('NFKD');
-  } else if (Buffer.isBuffer(data)) {
-    seed = data;
-    phrase = entropyToMnemonic(data, wordlist);
-  } else if (typeof data === 'number')
-    ent = data;
-  else
-    throw new Error('data must be a Buffer, string, or a number.');
-
-}
-
 export function validateMnemonic(mnemonic: string) {
-  return this.isValidSize(mnemonic) && hasValidWords(mnemonic) && hasValidEntropy(mnemonic)
+  return isValidSize(mnemonic) && hasValidWords(mnemonic) && hasValidEntropy(mnemonic)
 }
 
 export function validateImportMnemonic(mnemonic: string) {
-  return this.isValidSize(mnemonic) && hasValidWords(mnemonic)
+  return isValidSize(mnemonic) && hasValidWords(mnemonic)
 }
 
 export function isValidSize(mnemonic: string) {
@@ -87,6 +69,11 @@ export function hasValidEntropy(mnemonic: string, wordlist: string[] = EnglishWo
 
 export function mnemonicToHDPrivateKey(mnemonic, passphrase, network) {
   var seed = mnemonicToSeed(mnemonic, passphrase);
+  console.log("MTHDPK 1: ", mnemonic);
+  console.log("MTHDPK 2: ", passphrase);
+  console.log("MTHDPK 3: ", network);
+  console.log("MTHDPK 4: ", seed);  
+    
   return HDPrivateKey.fromSeed(seed, network);
 };
 
