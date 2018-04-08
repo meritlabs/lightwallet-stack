@@ -120,7 +120,8 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
       [
         {
           text: 'Delete',
-          value: 'delete'
+          value: 'delete',
+          class: 'primary danger'
         },
         {
           text: 'Cancel'
@@ -142,14 +143,12 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
                     else reject('You must decrypt you wallet before deleting it.');
                   });
               });
-
-              await this.profileService.deleteWallet(wallet.client);
-              this.store.dispatch(new DeleteWalletAction(wallet.id));
             }
+
+            this.store.dispatch(new DeleteWalletAction(wallet.id));
           }));
 
           this.toastCtrl.success('All wallets are now deleted!');
-          return this.router.navigateByUrl('/');
         } catch (e) {
           this.toastCtrl.error(e);
         }

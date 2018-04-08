@@ -49,7 +49,8 @@ export enum WalletsActionType {
   RefreshTotals = '[Wallets] Refresh totals',
   UpdateTotals = '[Wallets] Update totals',
   UpdateInviteRequests = '[Wallets] Update Invite Requests',
-  DeleteWallet = '[Wallets] Delete wallet'
+  DeleteWallet = '[Wallets] Delete wallet',
+  DeleteWalletCompleted = '[Wallets] Delete wallet completed'
 }
 
 export class AddWalletAction implements Action {
@@ -102,6 +103,11 @@ export class DeleteWalletAction implements Action {
   constructor(public walletId: string) {}
 }
 
+export class DeleteWalletCompletedAction implements Action {
+  type = WalletsActionType.DeleteWalletCompleted;
+  constructor(public walletId: string) {}
+}
+
 export type WalletsAction =
   AddWalletAction
   & UpdateWalletsAction
@@ -110,7 +116,8 @@ export type WalletsAction =
   & RefreshOneWalletAction
   & UpdateWalletTotalsAction
   & UpdateInviteRequestsAction
-  & DeleteWalletAction;
+  & DeleteWalletAction
+  & DeleteWalletCompletedAction;
 
 export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
@@ -175,8 +182,7 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
         inviteRequests: action.inviteRequests
       };
 
-    case WalletsActionType.DeleteWallet:
-
+    case WalletsActionType.DeleteWalletCompleted:
       return {
         ...state,
         wallets: state.wallets.filter(wallet => wallet.id !== action.walletId),
