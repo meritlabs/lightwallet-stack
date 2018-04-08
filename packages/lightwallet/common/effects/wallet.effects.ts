@@ -25,7 +25,7 @@ import { Store } from '@ngrx/store';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { distinctUntilChanged, map, mergeMap, skip, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, map, skip, mergeMap, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class WalletEffects {
@@ -42,8 +42,8 @@ export class WalletEffects {
     switchMap((action: RefreshOneWalletAction) =>
       this.store.select(selectWalletById(action.walletId))
         .pipe(
-          switchMap((wallet: DisplayWallet) => fromPromise(updateDisplayWallet(wallet, action.opts))),
-          take(1)
+          take(1),
+          switchMap((wallet: DisplayWallet) => fromPromise(updateDisplayWallet(wallet, action.opts)))
         )
     ),
     map((wallet: DisplayWallet) => new UpdateOneWalletAction(wallet))

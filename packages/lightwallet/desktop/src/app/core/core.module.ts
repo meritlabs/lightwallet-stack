@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
+import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { FileBackupView } from '@merit/desktop/app/core/backup/file-backup/file-backup.view';
 import { CoreComponentsModule } from '@merit/desktop/app/core/components/core-components.module';

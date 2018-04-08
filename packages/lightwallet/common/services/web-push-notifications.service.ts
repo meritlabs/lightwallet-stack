@@ -1,16 +1,18 @@
-import { Injectable } from '@angular/core';
-import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { HttpClient } from '@angular/common/http';
-import { PersistenceService2 } from '@merit/common/services/persistence2.service';
-import { LoggerService } from '@merit/common/services/logger.service';
+import { Injectable } from '@angular/core';
 import firebase from '@firebase/app';
-import { filter, map, take } from 'rxjs/operators';
 import '@firebase/messaging';
 import { NotificationData } from '@ionic-native/fcm';
-import { Store } from '@ngrx/store';
-import { IRootAppState } from '@merit/common/reducers';
-import { selectWallets } from '@merit/common/reducers/wallets.reducer';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { IRootAppState } from '@merit/common/reducers';
+import { RefreshOneWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
+import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { Store } from '@ngrx/store';
+import { filter, map, take } from 'rxjs/operators';
 
 const FirebaseAppConfig = {
   apiKey: 'APIKEY',
@@ -37,11 +39,14 @@ export class WebPushNotificationsService extends PushNotificationsService {
 
   constructor(http: HttpClient,
               logger: LoggerService,
+              private pollingNotificationService: PollingNotificationsService,
               private persistenceService: PersistenceService2,
               private store: Store<IRootAppState>) {
     super(http, logger);
     this.init();
     this.logger.info('Web PushNotifications service is alive!');
+    this.platform = 'web';
+    this.packageName = location.origin;
   }
 
   getWallets() {
@@ -54,12 +59,18 @@ export class WebPushNotificationsService extends PushNotificationsService {
       .toPromise();
   }
 
+  enablePolling() {
+    this.logger.info('Enabling polling notifications');
+    this.pollingNotificationService.enable();
+  }
+
+  disablePolling() {
+    this.pollingNotificationService.disable();
+  }
+
   private async registerSW() {
     try {
       const sw = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-      sw.addEventListener('message', event => {
-        console.log('Got a message from our SW =]', event);
-      });
       this.firebaseMessaging.useServiceWorker(sw);
     } catch (e) {
       this.logger.error('Unable to register FCM Service Worker', e && e.message ? e.message : e);
@@ -71,20 +82,26 @@ export class WebPushNotificationsService extends PushNotificationsService {
     this._pushNotificationsEnabled = Boolean(settings.pushNotifications);
 
     if (this.pushNotificationsEnabled) {
-      this.firebaseApp = firebase.initializeApp(FirebaseAppConfig);
-      this.firebaseMessaging = firebase.messaging(this.firebaseApp);
-      await this.registerSW();
-      try {
-        await this.requestPermission();
-        this._hasPermission = true;
-      } catch (e) {
-        console.log(e);
-        this.logger.info('Push notifications permission was denied');
+      if (!this.token) {
+        this.firebaseApp = firebase.initializeApp(FirebaseAppConfig);
+        this.firebaseMessaging = firebase.messaging(this.firebaseApp);
+        await this.registerSW();
+        try {
+          await this.requestPermission();
+          this._hasPermission = true;
+        } catch (e) {
+          this.logger.error(e);
+          this.logger.info('Push notifications permission was denied');
+        }
+
+        await this.getToken();
+        this.subscribeToEvents();
       }
 
-      await this.getToken();
-      this.subscribeToEvents();
       this.enable();
+    } else {
+      this.logger.info('Push notifications are disabled or not supported');
+      this.enablePolling();
     }
   }
 
@@ -101,7 +118,12 @@ export class WebPushNotificationsService extends PushNotificationsService {
 
   async subscribeToEvents() {
     this.firebaseMessaging.onMessage((data: NotificationData) => {
-      console.log('~~ Got a new notification: ', data);
+      if (data.data && data.data.walletId) {
+        this.store.dispatch(new RefreshOneWalletAction(data.data.walletId, {
+          skipAlias: true,
+          skipShareCode: true
+        }));
+      }
     });
 
     this.firebaseMessaging.onTokenRefresh((token: string) => {

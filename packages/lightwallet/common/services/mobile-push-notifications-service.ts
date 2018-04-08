@@ -1,21 +1,17 @@
-import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { ProfileService } from '@merit/common/services/profile.service';
-import { AppSettingsService } from '@merit/common/services/app-settings.service';
-import { AddressService } from '@merit/common/services/address.service';
-import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
-import * as _ from 'lodash';
-import { FCM } from '@ionic-native/fcm';
-import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { MWCService } from '@merit/common/services/mwc.service';
-import { PlatformService } from '@merit/common/services/platform.service';
-import { App, Platform } from 'ionic-angular';
-import { LoggerService } from '@merit/common/services/logger.service';
-import { WalletService } from '@merit/common/services/wallet.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, NgZone, Optional } from '@angular/core';
+import { FCM } from '@ionic-native/fcm';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { ConfigService } from '@merit/common/services/config.service';
-import { createDisplayWallet } from '@merit/common/models/display-wallet';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { PlatformService } from '@merit/common/services/platform.service';
+import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
+import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { App, Platform } from 'ionic-angular';
+import * as _ from 'lodash';
 
 @Injectable()
 export class MobilePushNotificationsService extends PushNotificationsService {
@@ -32,27 +28,25 @@ export class MobilePushNotificationsService extends PushNotificationsService {
               public appService: AppSettingsService,
               private app: App,
               private mwcService: MWCService,
-              private platform: Platform,
-              @Optional() private pollingNotificationService: PollingNotificationsService,
+              platform: Platform,
               private FCM: FCM,
-              private ngZone: NgZone,
-              private walletService: WalletService,
-              private txFormatService: TxFormatService,
-              private addressService: AddressService
-  ) {
+              private ngZone: NgZone) {
     super(http, logger);
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
     this.isAndroid = this.platformService.isAndroid;
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;
+    this.platform = this.isIOS ? 'iOS' : 'Android';
+    this.packageName = 'mws.merit.me';
 
     if (this.usePushNotifications) {
-      this.platform.ready().then((readySource) => {
+      platform.ready().then(() => {
         this.init();
       });
     } else {
       this.logger.info('Push notifications are disabled, enabling long polling.');
-      this.pollingNotificationService.enable();
+      // TODO: enable this when we're making use of it on mobile side
+      // this.pollingNotificationService.enable();
     }
   }
 
@@ -134,7 +128,7 @@ export class MobilePushNotificationsService extends PushNotificationsService {
     return super.enable();
   };
 
-  async  disable() {
+  async disable() {
     if (!this.usePushNotifications) {
       this.logger.warn('Push notification service inactive: cordova not available');
       return;
