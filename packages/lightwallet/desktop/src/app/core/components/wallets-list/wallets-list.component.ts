@@ -4,14 +4,10 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 @Component({
   selector: 'wallets-list',
   templateUrl: './wallets-list.component.html',
-  styleUrls: ['./wallets-list.component.sass'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./wallets-list.component.sass']
 })
 export class WalletsListComponent {
   @Input() showButton: boolean = true;
   @Input() wallets: DisplayWallet[];
   @Input() loading: boolean;
-  log(item) {
-    console.log(item)
-  }
 }

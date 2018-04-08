@@ -5,7 +5,7 @@ import '@firebase/messaging';
 import { NotificationData } from '@ionic-native/fcm';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
-import { RefreshOneWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
+import { RefreshOneWalletAction, selectWallets, selectWalletsState } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
@@ -70,19 +70,22 @@ export class WebPushNotificationsService extends PushNotificationsService {
     this._pushNotificationsEnabled = Boolean(settings.pushNotifications);
 
     if (this.pushNotificationsEnabled) {
-      this.firebaseApp = firebase.initializeApp(FirebaseAppConfig);
-      this.firebaseMessaging = firebase.messaging(this.firebaseApp);
-      await this.registerSW();
-      try {
-        await this.requestPermission();
-        this._hasPermission = true;
-      } catch (e) {
-        console.log(e);
-        this.logger.info('Push notifications permission was denied');
+      if (!this.token) {
+        this.firebaseApp = firebase.initializeApp(FirebaseAppConfig);
+        this.firebaseMessaging = firebase.messaging(this.firebaseApp);
+        await this.registerSW();
+        try {
+          await this.requestPermission();
+          this._hasPermission = true;
+        } catch (e) {
+          this.logger.error(e);
+          this.logger.info('Push notifications permission was denied');
+        }
+
+        await this.getToken();
+        this.subscribeToEvents();
       }
 
-      await this.getToken();
-      this.subscribeToEvents();
       this.enable();
     }
   }
@@ -101,8 +104,8 @@ export class WebPushNotificationsService extends PushNotificationsService {
   async subscribeToEvents() {
     this.firebaseMessaging.onMessage((data: NotificationData) => {
       console.log('~~ Got a new notification: ', data);
-      if (data.notification && data.notification.walletId) {
-        this.store.dispatch(new RefreshOneWalletAction(data.notification.walletId, {
+      if (data.data && data.data.walletId) {
+        this.store.dispatch(new RefreshOneWalletAction(data.data.walletId, {
           skipAlias: true,
           skipShareCode: true
         }));

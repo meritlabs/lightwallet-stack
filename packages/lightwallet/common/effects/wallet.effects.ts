@@ -3,8 +3,10 @@ import { createDisplayWallet, DisplayWallet, updateDisplayWallet } from '@merit/
 import { IRootAppState } from '@merit/common/reducers';
 import {
   IWalletTotals,
-  RefreshOneWalletAction, selectWalletById,
-  selectWallets, UpdateInviteRequestsAction,
+  RefreshOneWalletAction,
+  selectWalletById,
+  selectWallets,
+  UpdateInviteRequestsAction,
   UpdateOneWalletAction,
   UpdateWalletsAction,
   UpdateWalletTotalsAction,
@@ -22,7 +24,7 @@ import { Store } from '@ngrx/store';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { distinctUntilChanged, filter, map, skip, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, map, skip, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class WalletEffects {
@@ -39,6 +41,7 @@ export class WalletEffects {
     switchMap((action: RefreshOneWalletAction) =>
       this.store.select(selectWalletById(action.walletId))
         .pipe(
+          take(1),
           switchMap((wallet: DisplayWallet) => fromPromise(updateDisplayWallet(wallet, action.opts)))
         )
     ),

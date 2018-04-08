@@ -51,7 +51,6 @@ export class PushNotificationsService {
       // this.pollingNotificationService.enablePolling(walletClient);
       // TODO(ibby): Handle this elsewhere if possible
     });
-    this.token = void 0;
   }
 
   async subscribe(walletClient: MeritWalletClient) {
