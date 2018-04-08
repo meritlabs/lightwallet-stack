@@ -46,7 +46,7 @@ export class TransactionEffects {
   @Effect()
   refresh$: Observable<UpdateTransactionsAction> = this.actions$.pipe(
     ofType(TransactionActionType.Refresh),
-    switchMap(() => this.wallets$),
+    switchMap(() => this.wallets$.pipe(take(1))),
     switchMap((wallets: DisplayWallet[]) => Observable.fromPromise(Promise.all(wallets.map(w => this.getWalletHistory(w))))),
     map((transactionsList: IDisplayTransaction[][]) => new UpdateTransactionsAction(flatten(transactionsList)))
   );
@@ -57,6 +57,7 @@ export class TransactionEffects {
     switchMap((action: RefreshOneWalletTransactions) =>
       this.store.select(selectWalletById(action.walletId))
         .pipe(
+          take(1),
           switchMap((wallet: DisplayWallet) => Observable.fromPromise(this.getWalletHistory(wallet))),
           map((transactions: IDisplayTransaction[]) => new UpdateOneWalletTransactions(action.walletId, transactions))
         )

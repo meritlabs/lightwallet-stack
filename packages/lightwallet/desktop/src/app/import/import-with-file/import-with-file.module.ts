@@ -11,8 +11,7 @@ import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
         path: '',
         component: ImportWithFileView
       }
-    ]),
-    Ng4LoadingSpinnerModule
+    ])
   ],
   exports: [
     RouterModule
@@ -26,7 +25,8 @@ export class ImportWithFileRoutingModule {}
   imports: [
     ImportWithFileRoutingModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    Ng4LoadingSpinnerModule
   ]
 })
 export class ImportWithFileModule {}

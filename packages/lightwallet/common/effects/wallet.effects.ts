@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { createDisplayWallet, DisplayWallet, updateDisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
+import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
 import {
+  DeleteWalletAction, DeleteWalletCompletedAction,
   IWalletTotals,
   RefreshOneWalletAction,
   selectWalletById,
@@ -16,7 +18,6 @@ import { AddressService } from '@merit/common/services/address.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { formatAmount } from '@merit/common/utils/format';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -24,7 +25,7 @@ import { Store } from '@ngrx/store';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { distinctUntilChanged, map, skip, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, map, skip, mergeMap, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class WalletEffects {
@@ -77,14 +78,31 @@ export class WalletEffects {
     ))
   );
 
+  @Effect()
+  deleteWallet$: Observable<any> = this.actions$.pipe(
+    ofType(WalletsActionType.DeleteWallet),
+    switchMap((action: DeleteWalletAction) => this.store.select(selectWalletById(action.walletId)).pipe(take(1))),
+    switchMap((wallet: DisplayWallet) =>
+      fromPromise(
+        this.profileService.deleteWallet(wallet.client)
+          .then(() => this.profileService.isAuthorized())
+      )
+        .pipe(
+          mergeMap((authorized: boolean) => [
+            new UpdateAppAction({ authorized }),
+            new DeleteWalletCompletedAction(wallet.id)
+          ])
+        )
+    )
+  );
+
   constructor(private actions$: Actions,
               private walletService: WalletService,
               private addressService: AddressService,
               private profileService: ProfileService,
               private txFormatService: TxFormatService,
               private store: Store<IRootAppState>,
-              private persistenceService: PersistenceService2,
-              private unlockRequestsService: UnlockRequestService) {
+              private persistenceService: PersistenceService2) {
   }
 
   private async updateAllWallets(): Promise<DisplayWallet[]> {
