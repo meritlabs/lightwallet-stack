@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { OnboardingRootComponent } from '@merit/desktop/app/onboarding/onboarding-root/onboarding-root.component';
-import { UnlockComponent } from './unlock/unlock.component';
+import { UnlockComponent } from './unlock/unlock.view';
 import { OnboardComponent} from './onboard/onboard.component';
 
 const routes: Routes = [

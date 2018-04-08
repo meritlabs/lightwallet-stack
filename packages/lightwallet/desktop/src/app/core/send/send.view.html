@@ -8,11 +8,11 @@
         <error-message *ngIf="error">{{ error }}</error-message>
         <error-message *ngIf="success" class="success"> <!-- TODO create success-message & info-message components... or just a global message component with different styles -->
             Transaction successfully sent
-            <div *ngIf="receipt?.easySendUrl">
+            <div *ngIf="easySendUrl">
                 Your global send URL is ready, now you can share it:
-              <div class="easysend-url-container" [clip]="receipt.easySendUrl">
+              <div class="easysend-url-container" [clip]="easySendUrl">
                 <small class="click_to_copy">Click to copy</small>
-                {{ receipt.easySendUrl }}
+                {{ easySendUrl }}
               </div>
             </div>
         </error-message>
@@ -61,7 +61,7 @@
                             [input]="wallets$ | async"
                             style="ui-input ui-input--select ui-input--form"></app-select>
                     <label class="ui-label available-amount-label" *ngIf="formData?.wallet">
-                        {{ formData.wallet.status.spendableAmount | toMRT }}, {{ formData.wallet.invites || 0 }} invites available
+                        {{ formData.wallet.status.spendableAmount | toMRT }}, {{ formData.wallet.status.availableInvites || 0 }} invites available
                     </label>
                 </div>
 
@@ -78,16 +78,25 @@
                             <br>
                             Not sure if they have a Merit address?
                             <div>
-                                <a (click)="updateTxType('easy')">Send via GlobalSend</a>. (You need an available invite to use GlobalSend)
+                                <a (click)="updateTxType('easy')">Send via GlobalSend</a>.
+                              <br>
+                              You need an available invite to use GlobalSend.
                             </div>
                         </div>
                     </div>
                 </div>
                 <ng-template #easySend>
+                  <error-message [hidden]="formData.wallet.status.availableInvites > 0">
+                    You don't have an available invite to use GlobalSend, please select another wallet or use ClassicSend.
+                  </error-message>
                     <div class="sendMerit__form__group">
-                        <label class="ui-label">Sending via EasySend</label>
+                        <label class="ui-label">Sending via GlobalSend</label>
                         <p>You will see a link after confirming the transaction that you can share with your recipient.</p>
                     </div>
+                  <div class="sendMerit__form__group">
+                    <label for="" class="ui-label">Password &nbsp;<small>(optional)</small></label>
+                    <input type="password" class="ui-input ui-input--form ui-input--text" [(ngModel)]="formData.password">
+                  </div>
                     <div class="sendMerit__form__group">
                         <div class="switch-type">
                             <br>
@@ -100,7 +109,7 @@
                 </ng-template>
                 <div class="sendMerit__form__group">
                     <button type="button" name="button"
-                            class="ui-button ui-button--blue" (click)="send()" [disabled]="!receipt.calculated">
+                            class="ui-button ui-button--blue" (click)="send()" [disabled]="!receipt.calculated || (formData.type === 'easy' && formData.wallet.status.availableInvites === 0)">
                         Send Merit
                     </button>
                 </div>
