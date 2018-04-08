@@ -95,7 +95,7 @@
                     </div>
                   <div class="sendMerit__form__group">
                     <label for="" class="ui-label">Password &nbsp;<small>(optional)</small></label>
-                    <input type="password" class="ui-input ui-input--form ui-input--text" [(ngModel)]="formData.password">
+                    <input type="password" class="ui-input ui-input--form ui-input--text" (ngModelChange)="updateTx($event)" [(ngModel)]="formData.password">
                   </div>
                     <div class="sendMerit__form__group">
                         <div class="switch-type">
