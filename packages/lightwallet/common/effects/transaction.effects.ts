@@ -13,7 +13,7 @@ import {
   AddWalletAction,
   RefreshOneWalletAction,
   selectWalletById,
-  selectWallets,
+  selectWallets, UpdateOneWalletAction,
   WalletsActionType
 } from '@merit/common/reducers/wallets.reducer';
 import { WalletService } from '@merit/common/services/wallet.service';
@@ -23,7 +23,10 @@ import { Store } from '@ngrx/store';
 import { flatten } from 'lodash';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
-import { filter, map, switchMap } from 'rxjs/operators';
+import {
+  distinctUntilChanged, distinctUntilKeyChanged, filter, map, switchMap, take,
+  withLatestFrom
+} from 'rxjs/operators';
 
 @Injectable()
 export class TransactionEffects {
@@ -58,6 +61,15 @@ export class TransactionEffects {
           map((transactions: IDisplayTransaction[]) => new UpdateOneWalletTransactions(action.walletId, transactions))
         )
     )
+  );
+
+  @Effect()
+  refreshOnStatusRefresh$: Observable<RefreshOneWalletTransactions> = this.actions$.pipe(
+    ofType(WalletsActionType.UpdateOne),
+    filter((action: UpdateOneWalletAction) => !action.opts.skipStatus),
+    map((action: UpdateOneWalletAction) => action.wallet),
+    distinctUntilKeyChanged('status'),
+    map((wallet: DisplayWallet) => new RefreshOneWalletTransactions(wallet.id))
   );
 
   private wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
