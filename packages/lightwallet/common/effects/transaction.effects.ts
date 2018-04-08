@@ -23,7 +23,7 @@ import { Store } from '@ngrx/store';
 import { flatten } from 'lodash';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { filter, map, switchMap, take } from 'rxjs/operators';
 
 @Injectable()
 export class TransactionEffects {
@@ -43,7 +43,7 @@ export class TransactionEffects {
   @Effect()
   refresh$: Observable<UpdateTransactionsAction> = this.actions$.pipe(
     ofType(TransactionActionType.Refresh),
-    switchMap(() => this.wallets$),
+    switchMap(() => this.wallets$.pipe(take(1))),
     switchMap((wallets: DisplayWallet[]) => Observable.fromPromise(Promise.all(wallets.map(w => this.getWalletHistory(w))))),
     map((transactionsList: IDisplayTransaction[][]) => new UpdateTransactionsAction(flatten(transactionsList)))
   );
@@ -54,6 +54,7 @@ export class TransactionEffects {
     switchMap((action: RefreshOneWalletTransactions) =>
       this.store.select(selectWalletById(action.walletId))
         .pipe(
+          take(1),
           switchMap((wallet: DisplayWallet) => Observable.fromPromise(this.getWalletHistory(wallet))),
           map((transactions: IDisplayTransaction[]) => new UpdateOneWalletTransactions(action.walletId, transactions))
         )
