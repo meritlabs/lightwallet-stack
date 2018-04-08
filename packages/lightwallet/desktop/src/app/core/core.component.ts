@@ -69,7 +69,6 @@ export class CoreView {
   constructor(pushNotificationsService: PushNotificationsService,
               private easyReceiveService: EasyReceiveService,
               private logger: LoggerService,
-              private easyReceivePromptCtrl: EasyReceivePromptController,
               private confirmDialogCtrl: ConfirmDialogControllerService,
               private passwordPromptCtrl: PasswordPromptController,
               private toastCtrl: ToastControllerService,
