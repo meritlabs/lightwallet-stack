@@ -1,3 +1,3 @@
-import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
-export const isWalletEncrypted = (wallet: DisplayWallet) => wallet.client.isPrivKeyEncrypted();
+export const isWalletEncrypted = (wallet: MeritWalletClient) => wallet.isPrivKeyEncrypted();
