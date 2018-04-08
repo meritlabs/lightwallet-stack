@@ -5,7 +5,9 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @Injectable()
 export class PushNotificationsService {
-  protected token;
+  protected token: string;
+  protected platform: string;
+  protected packageName: string;
 
   constructor(
     public http: HttpClient,
@@ -53,10 +55,13 @@ export class PushNotificationsService {
   }
 
   async subscribe(walletClient: MeritWalletClient) {
-    console.log('Subscribing to push notifications of wallet ', walletClient, this.pushNotificationsEnabled, this.token);
     if (this.pushNotificationsEnabled && this.token) {
       try {
-        await walletClient.pushNotificationsSubscribe({ token: this.token })
+        await walletClient.pushNotificationsSubscribe({
+          token: this.token,
+          platform: this.platform,
+          packageName: this.packageName
+        })
       } catch(err) {
         if (err) {
           this.logger.error(walletClient.name + ': Subscription Push Notifications error. ', JSON.stringify(err));

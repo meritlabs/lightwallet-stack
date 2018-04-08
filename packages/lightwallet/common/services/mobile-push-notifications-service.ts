@@ -32,7 +32,7 @@ export class MobilePushNotificationsService extends PushNotificationsService {
               public appService: AppSettingsService,
               private app: App,
               private mwcService: MWCService,
-              private platform: Platform,
+              platform: Platform,
               @Optional() private pollingNotificationService: PollingNotificationsService,
               private FCM: FCM,
               private ngZone: NgZone,
@@ -45,9 +45,11 @@ export class MobilePushNotificationsService extends PushNotificationsService {
     this.isIOS = this.platformService.isIOS;
     this.isAndroid = this.platformService.isAndroid;
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;
+    this.platform = this.isIOS? 'iOS' : 'Android';
+    this.packageName = 'mws.merit.me';
 
     if (this.usePushNotifications) {
-      this.platform.ready().then((readySource) => {
+      platform.ready().then(() => {
         this.init();
       });
     } else {

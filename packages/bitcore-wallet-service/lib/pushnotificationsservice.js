@@ -166,21 +166,15 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
         },
         function(contents, next) {
           async.map(recipientsList, function(recipient, next) {
-            var content = contents[recipient.language];
+            const content = contents[recipient.language];
 
             self.storage.fetchPushNotificationSubs(recipient.copayerId, function(err, subs) {
               if (err) return next(err);
 
-              var notifications = _.map(subs, function(sub) {
-                var returnData = {
-                  walletId: notification.walletId,
-                  copayerId: recipient.copayerId
-                }
-                _.assign(returnData, notification.data, {type: notification.type});
-                return {
+              const notifications = _.map(subs, function(sub) {
+                const pushNotification = {
                   to: sub.token,
                   priority: 'high',
-                  restricted_package_name: sub.packageName,
                   notification: {
                     title: content.plain.subject,
                     body: content.plain.body,
@@ -188,8 +182,21 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
                     click_action: "FCM_PLUGIN_ACTIVITY",
                     icon: "fcm_push_icon",
                   },
-                  data: returnData
+                  data: {
+                    walletId: notification.walletId,
+                    copayerId: recipient.copayerId,
+                    type: notification.type,
+                    ...notification.data
+                  }
                 };
+
+                if (sub.platform === 'web') {
+                  pushNotification.notification.click_action = sub.packageName;
+                } else if (sub.packageName) {
+                  pushNotification.restricted_package_name = sub.packageName
+                }
+
+                return pushNotification;
               });
               return next(err, notifications);
             });
