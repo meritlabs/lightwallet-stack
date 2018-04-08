@@ -14,6 +14,7 @@ import { IRootAppState, reducer } from '@merit/common/reducers';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
 import { RefreshWalletsAction, selectWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
+import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { WebPushNotificationsService } from '@merit/common/services/web-push-notifications.service';
@@ -63,6 +64,7 @@ export function loadConfigs(appService: AppSettingsService, profileService: Prof
 
 export function getProviders() {
   return [
+    PollingNotificationsService,
     { provide: PushNotificationsService, useClass: WebPushNotificationsService },
     Events,
     Platform,

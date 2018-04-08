@@ -69,6 +69,12 @@ export class TransactionEffects {
     filter((action: UpdateOneWalletAction) => !action.opts.skipStatus),
     map((action: UpdateOneWalletAction) => action.wallet),
     distinctUntilKeyChanged('status'),
+    distinctUntilChanged((x, y) => {
+      console.log('X is ', x);
+      console.log('Y is ', y);
+
+      return true;
+    }),
     map((wallet: DisplayWallet) => new RefreshOneWalletTransactions(wallet.id))
   );
 

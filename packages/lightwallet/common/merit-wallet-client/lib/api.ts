@@ -6,6 +6,10 @@ import * as EventEmitter from 'eventemitter3';
 import * as _ from 'lodash';
 import * as preconditions from 'preconditions';
 import * as querystring from 'querystring';
+import { Observable } from 'rxjs/Observable';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { interval } from 'rxjs/observable/interval';
+import { catchError, map, mergeMap, retryWhen, switchMap, tap } from 'rxjs/operators';
 import * as request from 'superagent';
 import * as util from 'util';
 import { EasyReceiptResult } from '../../models/easy-receipt';
@@ -15,6 +19,8 @@ import { MWCErrors } from './errors';
 import { Logger } from './log';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
+import 'rxjs/add/observable/fromPromise';
+import 'rxjs/add/observable/interval';
 
 const $ = preconditions.singleton();
 const { Constants, Utils } = Common;
@@ -140,11 +146,6 @@ export class API {
     this.notificationIncludeOwn = notificationIncludeOwn;
   }
 
-  dispose(): any {
-    this._disposeNotifications();
-    this._logout();
-  }
-
   setOnConnectionError(cb: any) {
     this.onConnectionError = cb;
   }
@@ -157,7 +158,7 @@ export class API {
     this.onConnectionRestored = cb;
   }
 
-  _fetchLatestNotifications(interval): Promise<any> {
+  async _fetchLatestNotifications(interval: number): Promise<any[]> {
     this.log.info('_fetchLatestNotifications called.');
     let opts: any = {
       lastNotificationId: this.lastNotificationId,
@@ -168,54 +169,26 @@ export class API {
       opts.timeSpan = interval + 1;
     }
 
-    return this.getNotifications(opts).then((notifications: any) => {
-      if (notifications && notifications.length > 0) {
-        this.lastNotificationId = (_.last(notifications) as any).id;
-      }
+    const notifications = await this.getNotifications(opts);
 
-      return Promise.all(notifications.map(async (notification) => {
-        this.eventEmitter.emit('notification', notification);
-      }));
-    });
+    if (notifications && notifications.length > 0) {
+      this.lastNotificationId = notifications[notifications.length - 1].id;
+    }
 
+    return notifications;
   }
 
-  _initNotifications(opts: any = {}): any {
-    const interval = opts.notificationIntervalSeconds || 10; // TODO: Be able to turn this off during development mode;
-                                                             // pollutes request stream..
-    this.notificationsIntervalId = setInterval(() => {
-      this._fetchLatestNotifications(interval).then(() => {
-        this.log.warn('Init Notifications done');
-      }).catch((err) => {
-        if (err) {
-          if (err == MWCErrors.NOT_FOUND || err == MWCErrors.NOT_AUTHORIZED) {
-            this._disposeNotifications();
-          }
-        }
-      });
-    }, interval * 1000);
-  };
-
-  _disposeNotifications(): void {
-    if (this.notificationsIntervalId) {
-      clearInterval(this.notificationsIntervalId);
-      this.notificationsIntervalId = null;
-    }
-  };
-
-  /**
-   * Reset notification polling with new interval
-   * @param {Numeric} notificationIntervalSeconds - use 0 to pause notifications
-   */
-  setNotificationsInterval(notificationIntervalSeconds): any {
-    this._disposeNotifications();
-    if (notificationIntervalSeconds > 0) {
-      this._initNotifications({
-        notificationIntervalSeconds: notificationIntervalSeconds
-      });
-    }
-  };
-
+  initNotifications(int: number = 10): Observable<any[]> {
+    return interval(int * 1000)
+      .pipe(
+        switchMap(() => fromPromise(this._fetchLatestNotifications(int))),
+        retryWhen(err =>
+          err.pipe(
+            map((err) => !err || err !== MWCErrors.NOT_FOUND && err !== MWCErrors.NOT_AUTHORIZED)
+          )
+        )
+      );
+  }
 
   /**
    * Encrypt a message
@@ -228,7 +201,7 @@ export class API {
   private _encryptMessage(message, encryptingKey) {
     if (!message) return null;
     return Utils.encryptMessage(message, encryptingKey);
-  };
+  }
 
   /**
    * Decrypt a message
@@ -245,7 +218,7 @@ export class API {
     } catch (ex) {
       return '<ECANNOTDECRYPT>';
     }
-  };
+  }
 
   _processTxNotes(notes): void {
     if (!notes) return;
@@ -256,7 +229,7 @@ export class API {
       note.encryptedEditedByName = note.editedByName;
       note.editedByName = this._decryptMessage(note.editedByName, encryptingKey);
     });
-  };
+  }
 
   /**
    * Decrypt text fields in transaction proposals
@@ -294,7 +267,7 @@ export class API {
       });
       return resolve();
     });
-  };
+  }
 
   /**
    * Parse errors
@@ -328,7 +301,7 @@ export class API {
     }
     this.log.error(ret);
     return ret;
-  };
+  }
 
   /**
    * Sign an HTTP request
@@ -343,7 +316,7 @@ export class API {
   private _signRequest = function (method, url, args, privKey) {
     let message = [method.toLowerCase(), url, JSON.stringify(args)].join('|');
     return Utils.signMessage(message, privKey);
-  };
+  }
 
 
   /**
@@ -358,7 +331,7 @@ export class API {
 
     opts = opts || {};
     this.credentials = Credentials.create(opts.network || 'livenet');
-  };
+  }
 
 
   /**
@@ -384,7 +357,7 @@ export class API {
         let signature = Utils.signMessage(message, priv);
         let pub = xpub.deriveChild(nonHardenedPath).publicKey;
         return Utils.verifyMessage(message, signature, pub);
-      };
+      }
 
       function testHardcodedKeys() {
         let words = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
@@ -397,7 +370,7 @@ export class API {
 
         let xpub = Bitcore.HDPublicKey.fromString('xpub6Cmr5KkqZs1xBtEoJNM4bdEgMp7nCgkxb2QMYG8hiRTwQ7LfEdrUxHi7XrjNxkeuRrNSqHLXHAuwZvqoeASrp5jxjnpMa4d8PFpA9TRxVCd');
         return testMessageSigning(xpriv, xpub);
-      };
+      }
 
       function testLiveKeys() {
         let words;
@@ -418,7 +391,7 @@ export class API {
         let xpub = new Bitcore.HDPublicKey(c.xPubKey);
 
         return testMessageSigning(xpriv, xpub);
-      };
+      }
 
       let hardcodedOk = true;
       if (!_deviceValidated && !opts.skipDeviceValidation) {
@@ -448,21 +421,21 @@ export class API {
     $.checkArgument(_.isUndefined(opts) || _.isObject(opts), 'DEPRECATED: argument should be an options object.');
 
     this.credentials = Credentials.createWithMnemonic(opts.network || 'livenet', opts.passphrase, opts.language || 'en', opts.account || 0);
-    ;
-  };
+
+  }
 
   getMnemonic(): any {
     return this.credentials.getMnemonic();
-  };
+  }
 
   mnemonicHasPassphrase(): any {
     return this.credentials.mnemonicHasPassphrase;
-  };
+  }
 
 
   clearMnemonic(): any {
     return this.credentials.clearMnemonic();
-  };
+  }
 
   getNewMnemonic(data: any): any {
     return new Mnemonic(data, Mnemonic.Words.ENGLISH);
@@ -482,7 +455,6 @@ export class API {
     return xpub.deriveChild('m/0/0').publicKey;
   }
 
-
   /**
    * Seed from extended private key
    *
@@ -492,8 +464,7 @@ export class API {
    */
   seedFromExtendedPrivateKey(xPrivKey: any, opts: any = {}): void {
     this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, opts);
-  };
-
+  }
 
   /**
    * Seed from Mnemonics (language autodetected)
@@ -508,7 +479,7 @@ export class API {
    */
   seedFromMnemonic(words: Array<string>, opts: any = {}): any {
     this.credentials = Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, opts);
-  };
+  }
 
   /**
    * Seed from external wallet public key
@@ -523,8 +494,7 @@ export class API {
    */
   seedFromExtendedPublicKey(xPubKey: any, source: any, entropySourceHex: any, opts: any = {}): any {
     this.credentials = Credentials.fromExtendedPublicKey(xPubKey, source, entropySourceHex, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
-  };
-
+  }
 
   static fromObj(obj) {
     let wallet = new this({
@@ -601,8 +571,7 @@ export class API {
     output = JSON.stringify(c.toObj());
 
     return output;
-  };
-
+  }
 
   /**
    * Import wallets
@@ -618,7 +587,7 @@ export class API {
     } catch (ex) {
       throw MWCErrors.INVALID_BACKUP;
     }
-  };
+  }
 
   async _import(): Promise<any> {
 
@@ -667,12 +636,9 @@ export class API {
         } else {
           throw new Error('failed to recreate wallet');
         }
-
       }
-
     }
-
-  };
+  }
 
   /**
    * Import from Mnemonics (language autodetected)
@@ -695,7 +661,7 @@ export class API {
         nonCompliantDerivation: nonCompliantDerivation,
         entropySourcePath: opts.entropySourcePath
       });
-    };
+    }
 
     try {
       this.credentials = derive(false);
@@ -716,7 +682,7 @@ export class API {
       return Promise.reject(err);
     });
 
-  };
+  }
 
   /*
    * Import from extended private key
@@ -737,10 +703,9 @@ export class API {
         return reject(MWCErrors.INVALID_BACKUP);
       });
     }
-    ;
 
     return this._import();
-  };
+  }
 
   /**
    * Import from Extended Public Key
@@ -765,7 +730,6 @@ export class API {
         return reject(MWCErrors.INVALID_BACKUP);
       });
     }
-    ;
 
     return this._import();
   };
@@ -1849,13 +1813,7 @@ export class API {
       url += '?timeSpan=' + opts.timeSpan;
     }
 
-    return this._doGetRequestWithLogin(url).then((result) => {
-      let notifications = _.filter(result, function (notification: any) {
-        return opts.includeOwn || (notification.creatorId != this.credentials.copayerId);
-      });
-
-      return notifications;
-    });
+    return this._doGetRequestWithLogin(url);
   };
 
   /**
