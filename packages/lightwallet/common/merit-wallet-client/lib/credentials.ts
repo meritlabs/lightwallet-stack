@@ -1,8 +1,8 @@
 import * as preconditions from 'preconditions';
 import * as _ from 'lodash';
 import * as Bitcore from 'bitcore-lib';
-import * as Mnemonic from 'bitcore-mnemonic';
 import * as sjcl from 'sjcl';
+import { mnemonicToHDPrivateKey, validateImportMnemonic, generateMnemonic } from '@merit/common/utils/mnemonic';
 
 const $ = preconditions.singleton();
 
@@ -56,7 +56,7 @@ export class Credentials {
   public xPubKey: string;
   public compliantDerivation: boolean;
   public account: any;
-  public mnemonic: any;
+  public mnemonic: string;
   public mnemonicHasPassphrase: boolean;
   public derivationStrategy: any;
   public entropySourcePath: any;
@@ -83,14 +83,7 @@ export class Credentials {
 
 
 
-  private static wordsForLang = {
-    'en': Mnemonic.Words.ENGLISH,
-    'es': Mnemonic.Words.SPANISH,
-    'ja': Mnemonic.Words.JAPANESE,
-    'zh': Mnemonic.Words.CHINESE,
-    'fr': Mnemonic.Words.FRENCH,
-    'it': Mnemonic.Words.ITALIAN,
-  };
+
 
   public static create = function(network): Credentials {
     _checkNetwork(network);
@@ -104,23 +97,38 @@ export class Credentials {
     return x;
   };
 
+  /**
+   * retryGeneration will attempt to generate a mnemonic up to a maximum number
+   * n times.
+   * @param {string} m - Space-separated mnemonic
+   * @param {number} tries - maximum number of times to attempt generation
+   */
+  private static createMnemonicWithRetries(m?: string, tries?: number) {
+    m = m || generateMnemonic();
+    tries = tries || 5;
+    if(!validateImportMnemonic(m)){
+      if (--tries > 0) {
+        this.createMnemonicWithRetries(m, tries)
+      } else {
+        throw new Error("Error generating valid mnemonic")
+      }
+    }
+    return m;
+  }
+
+
   public static createWithMnemonic = function(network, passphrase, language, account, opts: any = {}): Credentials {
     _checkNetwork(network);
-    if (!this.wordsForLang[language]) throw new Error('Unsupported language');
     $.shouldBeNumber(account);
 
-    let m = new Mnemonic(this.wordsForLang[language]);
-    while (!Mnemonic.isValid(m.toString())) {
-      m = new Mnemonic(this.wordsForLang[language])
-    };
+    let m: string  = this.createMnemonicWithRetries(null, 5);
     let x = new Credentials();
-
     x.network = network;
     x.account = account;
-    x.xPrivKey = m.toHDPrivateKey(passphrase, network).toString();
+    x.xPrivKey = mnemonicToHDPrivateKey(m, passphrase, network).toString();
     x.compliantDerivation = true;
     x._expand();
-    x.mnemonic = m.phrase;
+    x.mnemonic = m.normalize('NFKD');
     x.mnemonicHasPassphrase = !!passphrase;
 
     return x;
@@ -144,9 +152,8 @@ export class Credentials {
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
 
-    let m = new Mnemonic(words);
     let x = new Credentials();
-    x.xPrivKey = m.toHDPrivateKey(passphrase, network).toString();
+    x.xPrivKey = mnemonicToHDPrivateKey(words, passphrase, network).toString();
     x.mnemonic = words;
     x.mnemonicHasPassphrase = !!passphrase;
     x.account = account;
@@ -213,20 +220,16 @@ export class Credentials {
   }
 
    public Mnemonic = function(network, passphrase, language, account, opts): Credentials {
-    if (!this.wordsForLang[language]) throw new Error('Unsupported language');
     $.shouldBeNumber(account);
 
     opts = opts || {};
 
-    let m = new Mnemonic(this.wordsForLang[language]);
-    while (!Mnemonic.isValid(m.toString())) {
-      m = new Mnemonic(this.wordsForLang[language])
-    };
+    let m = this.createMnemonicWithRetries(null, 5);
     let x = new Credentials();
 
     x.network = network;
     x.account = account;
-    x.xPrivKey = m.toHDPrivateKey(passphrase, network).toString();
+    x.xPrivKey = mnemonicToHDPrivateKey(m, passphrase, network).toString();
     x.compliantDerivation = true;
     x._expand();
     x.mnemonic = m.phrase;
@@ -253,9 +256,9 @@ export class Credentials {
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
 
-    let m = new Mnemonic(words);
+    let m = this.createMnemonicWithRetries(null, 5);
     let x = new Credentials();
-    x.xPrivKey = m.toHDPrivateKey(passphrase, network).toString();
+    x.xPrivKey = mnemonicToHDPrivateKey(m, passphrase, network).toString();
     x.mnemonic = words;
     x.mnemonicHasPassphrase = !!passphrase;
     x.account = account;

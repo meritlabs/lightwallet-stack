@@ -110,10 +110,6 @@ clean-bitcore-lib:
 clean-bitcoin-rpc:
 	rm -rf ./packages/bitcoin-rpc/node_modules
 
-.PHONY: clean-bitcore-mnemonic
-clean-bitcore-mnemonic:
-	rm -rf ./packages/bitcore-mnemonic/node_modules
-
 .PHONY: clean-insight-api
 clean-insight-api:
 	rm -rf ./packages/insight-api/node_modules
@@ -150,7 +146,6 @@ clean-bitcore-payment-protocol:
 clean-stack: clean-npm \
 	clean-bitcore-lib \
 	clean-bitcoin-rpc \
-	clean-bitcore-mnemonic \
 	clean-insight-api \
 	clean-insight-ui \
 	clean-bitcore-wallet-service \
@@ -172,10 +167,6 @@ test-bitcore-lib:
 .PHONY: test-bitcore-message
 test-bitcore-message:
 	cd packages/bitcore-message && npm test
-
-.PHONY: test-bitcore-mnemonic
-test-bitcore-mnemonic:
-	cd packages/bitcore-mnemonic && npm test
 
 .PHONY: test-bitcore-node
 test-bitcore-node:
@@ -205,7 +196,6 @@ test-insight-api:
 test-all: test-bitcoin-rpc \
 	test-bitcore-lib \
 	test-bitcore-message \
-	test-bitcore-mnemonic \
 	test-bitcore-node \
 	test-bitcore-p2p \
 	test-bitcore-payment-protocol \

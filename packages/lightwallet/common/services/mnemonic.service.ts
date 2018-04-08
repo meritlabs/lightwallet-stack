@@ -14,7 +14,6 @@ export class MnemonicService {
   }
 
   async importMnemonic(words: string, opts: any): Promise<MeritWalletClient> {
-
     const walletClient = this.mwcService.getClient(null, opts);
 
     this.logger.debug('Importing Wallet Mnemonic');
@@ -31,7 +30,7 @@ export class MnemonicService {
     return this.profileService.addWallet(walletClient);
   }
 
-  // TODO: Create an interface for BWC, and use it to type
+  // TODO: Create an interface for MWC, and use it to type
   // it as it is sent around.
   async seedFromMnemonic(opts: any, walletClient: MeritWalletClient): Promise<MeritWalletClient> {
     try {

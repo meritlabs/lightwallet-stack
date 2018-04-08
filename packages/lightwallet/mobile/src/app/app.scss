@@ -141,6 +141,16 @@ ion-item textarea {
   }
 }
 
+.ios .toast-container {
+  border-radius: 6px;
+}
+
+.ios .toast-ios.toast-success {
+  .toast-message:before {
+    top: 5px;
+  }
+}
+
 .toast-success {
   .toast-container {
     background: #53be6d;
