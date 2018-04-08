@@ -4,8 +4,9 @@ import { BigNumber } from 'bignumber.js';
 import { createHash, pbkdf2Sync } from 'crypto';
 
 
-export function mnemonicToSeed(mnemonic: string, passphrase?: string) {
-  return pbkdf2Sync(mnemonic.normalize('nfkd'), 'mnemonic' + passphrase, 2048, 64, 'sha512');
+
+export function mnemonicToSeed(mnemonic: string, passphrase: string = '') {
+  return pbkdf2Sync(mnemonic.normalize('NFKD'), 'mnemonic' + passphrase, 2048, 64, 'sha512');
 }
 
 export function mnemonicToEntropy(mnemonic: string, wordlist: string[] = EnglishWordlist) {
