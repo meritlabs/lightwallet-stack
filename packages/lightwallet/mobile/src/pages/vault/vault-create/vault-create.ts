@@ -3,6 +3,7 @@ import { IonicPage, NavParams, NavController, ModalController } from 'ionic-angu
 import { RateService } from "@merit/common/services/rate.service";
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { mnemonicToHDPrivateKey } from '@merit/common/utils/mnemonic';
 import { ENV } from '@app/env';
 
 
@@ -80,7 +81,7 @@ export class VaultCreateView {
     console.log(this.wallet);
 
     let phrase = this.wallet.getNewMnemonic(null);
-    let key = phrase.toHDPrivateKey('', network);
+    let key = mnemonicToHDPrivateKey(phrase, '', network);
 
     this.navCtrl.push('VaultCreateConfirmView', {vaultData: {
       vaultName: this.vaultName,
