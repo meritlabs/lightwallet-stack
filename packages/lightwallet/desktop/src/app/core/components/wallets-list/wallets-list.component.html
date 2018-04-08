@@ -14,7 +14,7 @@
   </div>
   <div class="wallets__group__content">
     <loading-spinner [hidden]="!loading"></loading-spinner>
-    <div class="wallets__group__wallet" *ngFor="let wallet of wallets; trackBy: wallet?.id" [class.locked]="!wallet.client.confirmed" [routerLink]="wallet.client.confirmed? ['/wallets', wallet.id] : null">
+    <div class="wallets__group__wallet" *ngFor="let wallet of wallets; trackBy: wallet?.id" [routerLink]="['/wallets', wallet.id]">
       <div class="wallets__group__wallet__info">
         <div class="wallets__group__wallet__icon">
           <wallet-icon [strokeColor]=wallet.color></wallet-icon>
@@ -29,7 +29,6 @@
           </div>
         </div>
       </div>
-      <app-lock-screen *ngIf="!wallet.client.confirmed"></app-lock-screen>
     </div>
   </div>
 </div>
