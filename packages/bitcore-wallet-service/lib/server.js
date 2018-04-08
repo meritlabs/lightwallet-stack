@@ -2758,14 +2758,7 @@ WalletService.prototype.signTx = function(opts, cb) {
 
       try {
         if (!txp.sign(self.copayerId, opts.signatures, copayer.xPubKey)) {
-          log.warn('Error signing transaction (BAD_SIGNATURES)');
-          log.warn('Wallet id:', self.walletId);
-          log.warn('Copayer id:', self.copayerId);
-          log.warn('Client version:', self.clientVersion);
-          log.warn('Arguments:', JSON.stringify(opts));
-          log.warn('Transaction proposal:', JSON.stringify(txp));
           var raw = txp.getBitcoreTx().uncheckedSerialize();
-          log.warn('Raw tx:', raw);
           return cb(Errors.BAD_SIGNATURES);
         }
       } catch (ex) {
@@ -3340,8 +3333,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         var bc = self._getBlockchainExplorer(network);
         if (!bc) return next(new Error('Could not get blockchain explorer instance'));
 
-        log.info('Querying txs for: %s addrs', addresses.length);
-
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
@@ -3436,8 +3427,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           return getNormalizedTxs(addresses, from, to, next);
         },
         function(txs, next) {
-          log.warn("Show me the juice of a spruce goose.");
-
           if (_.isEmpty(txs.items)) {
             return next(null, []);
           }
@@ -3471,9 +3460,6 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         },
       ], function(err, res) {
         if (err) return cb(err);
-
-        log.warn("What happened after parallel?");
-
         if (!res.txs) {
           var finalTxs = decorate(wallet, [], addresses, [], []);
           res.txs = {
@@ -3731,10 +3717,7 @@ WalletService.prototype.getReferral = function (refid, cb) {
  * Validate that an EasyScript is on the blockchain, and that it can be unlocked.
  */
 WalletService.prototype.validateEasyScript = function(scriptId, cb) {
-  log.debug("About to call localMeritDaemon");
   localMeritDaemon.getInputForEasySend(scriptId, function(errMsg, result) {
-    log.debug("Called LocalMerit Daemon with result: ", result);
-    log.debug("Called LocalMerit Daemon with errMsg: ", errMsg);
     if (errMsg) {
       return cb("Could not find easyScript on BlockChain.")
     }
@@ -3905,8 +3888,6 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
           if (err) return next(err);
           if (!res || !res[0]) return next();
 
-          log.warn("GNT: getTxHistoryCache");
-          log.warn(res);
           txs = res;
           fromCache = true;
 
@@ -3920,14 +3901,10 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
         var bc = self._getBlockchainExplorer(network);
         if (!bc) return next(new Error('Could not get blockchain explorer instance'));
 
-        log.info('Querying txs for: %s addrs', addresses.length);
-
         bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
           if (err) return next(err);
 
-          log.warn("GNT: getTransaction, raw");
           txs = self._normalizeTxHistory(rawTxs);
-          log.warn("GNT: getTransaction, after normalization");
 
           totalItems = total;
           return next();
@@ -3958,7 +3935,6 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
               tx.confirmations = height - tx.blockheight + 1;
             }
           });
-          log.warn("After blockHeight check");
           next();
         });
       },
@@ -4017,8 +3993,6 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
           getNormalizedTxs(addresses, from, to, next);
         },
         function(txs, next) {
-          log.warn("Show me the juice of a spruce goose.");
-
           if (_.isEmpty(txs.items)) {
             return next(null, []);
           }
@@ -4052,8 +4026,6 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
         },
       ], function(err, res) {
         if (err) return cb(err);
-
-        log.warn("What happened after parallel?");
 
         if (!res.txs) {
           var finalTxs = decorate(vault, []);
