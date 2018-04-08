@@ -51,10 +51,6 @@ export class DisplayWallet {
     return this.balance.spendableAmount;
   }
 
-  totalBalanceStr?: string;
-  cachedBalanceUpdatedOn: string; // only available if we're using cached balance
-  totalBalanceFiat?: string;
-
   totalNetworkValueMicro: number;
   totalNetworkValueMerit: string;
   totalNetworkValueFiat: string;
