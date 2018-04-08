@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IDynamicComponent } from '../dom.controller';
 
 export interface IPasswordPromptConfig {
-  wallet: DisplayWallet;
+  // wallet: DisplayWallet;
+  title: string;
+  validators: ValidatorFn[];
+  asyncValidators: AsyncValidatorFn[];
 }
 
 @Component({
@@ -17,26 +20,17 @@ export class PasswordPromptComponent implements IDynamicComponent {
   private _onDismiss: Function;
   formData: FormGroup;
   ready: boolean;
+  title: string;
 
   get password(): AbstractControl { return this.formData.get('password'); }
-
-  private wallet: DisplayWallet;
 
   constructor(private formBuilder: FormBuilder) {}
 
   init(config?: IPasswordPromptConfig) {
-    if (config && config.wallet) {
-      this.wallet = config.wallet;
-    }
-
-    const validators = [Validators.required];
-
-    if (this.wallet) {
-      // TODO(ibby): validate wallet password
-    }
+    this.title = config.title;
 
     this.formData = this.formBuilder.group({
-      password: ['', validators]
+      password: ['', config.validators, config.asyncValidators]
     });
 
     this.ready = true;

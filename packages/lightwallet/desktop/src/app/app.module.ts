@@ -12,7 +12,7 @@ import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState, reducer } from '@merit/common/reducers';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
-import { RefreshWalletsAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
+import { RefreshWalletsAction, selectWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
@@ -51,9 +51,9 @@ export function loadConfigs(appService: AppSettingsService, profileService: Prof
     if (authorized) {
       store.dispatch(new RefreshWalletsAction());
 
-      await store.select(selectWallets)
+      await store.select(selectWalletsLoading)
         .pipe(
-          filter((wallets: DisplayWallet[]) => wallets.length === profileService.wallets.length),
+          filter((loading: boolean) => !loading),
           take(1)
         )
         .toPromise();
