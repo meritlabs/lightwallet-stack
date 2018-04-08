@@ -3,7 +3,7 @@ import { IDynamicComponent } from '@merit/desktop/app/components/dom.controller'
 
 export interface IConfirmDialogButton {
   text: string;
-  value: any;
+  value?: any;
   class?: string;
 }
 
@@ -36,7 +36,11 @@ export class ConfirmDialogComponent implements IDynamicComponent {
     this._onDismiss = callback;
   }
 
-  dismiss(val: any) {
+  onBackdropClick() {
+    this.dismiss();
+  }
+
+  dismiss(val?: any) {
     if (typeof this._onDismiss === 'function') {
       this._onDismiss(val);
     }
