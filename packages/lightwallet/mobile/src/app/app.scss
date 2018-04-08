@@ -751,10 +751,6 @@ ion-avatar[img-icon] {
   mask-image: url("../assets/img/icons/qr-code.svg");
 }
 
-.merit-icon-wallet {
-  mask-image: url("../assets/img/icon-wallet.svg");
-}
-
 .merit-icon-wallet-add {
   mask-image: url("../assets/img/icons/wallet-add.svg");
 }
@@ -767,13 +763,6 @@ ion-avatar[img-icon] {
   mask-image: url("../assets/img/icons/wallet-lock.svg");
 }
 
-.merit-icon-vault {
-  mask-image: url("../assets/img/icon-lock-white.svg");
-}
-
-.merit-icon-sent {
-  mask-image: url("../assets/img/icon-icon-tx-sent-outline.svg");
-}
 // Variables
 $v-dark-gray: #445 !default;
 $v-tab-send-icon: url("../img/tab-icons/ico-send.svg") !default;
