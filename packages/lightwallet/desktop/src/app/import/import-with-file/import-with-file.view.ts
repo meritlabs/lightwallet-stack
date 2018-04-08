@@ -100,7 +100,6 @@ export class ImportWithFileView {
         authorized: true
       }));
 
-      this.loadingCtrl.hide();
       return this.router.navigateByUrl('/wallets');
 
     } catch (err) {

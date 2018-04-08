@@ -32,7 +32,7 @@ export class WalletPasswordGuard implements CanActivate {
         .take(1)
         .toPromise();
 
-      if (!isWalletEncrypted(wallet)) return resolve(true);
+      if (!isWalletEncrypted(wallet.client)) return resolve(true);
 
       const passwordPrompt = this.passwordPromptCtrl.createForWallet(wallet);
       passwordPrompt.onDismiss((password: string) => {
