@@ -3,11 +3,13 @@ import { Injectable } from '@angular/core';
 import firebase from '@firebase/app';
 import '@firebase/messaging';
 import { NotificationData } from '@ionic-native/fcm';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
-import { RefreshOneWalletAction, selectWallets, selectWalletsState } from '@merit/common/reducers/wallets.reducer';
+import { RefreshOneWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { Store } from '@ngrx/store';
 import { filter, map, take } from 'rxjs/operators';
@@ -37,6 +39,7 @@ export class WebPushNotificationsService extends PushNotificationsService {
 
   constructor(http: HttpClient,
               logger: LoggerService,
+              private pollingNotificationService: PollingNotificationsService,
               private persistenceService: PersistenceService2,
               private store: Store<IRootAppState>) {
     super(http, logger);
@@ -54,6 +57,15 @@ export class WebPushNotificationsService extends PushNotificationsService {
         map((wallets: DisplayWallet[]) => wallets.map(wallet => wallet.client))
       )
       .toPromise();
+  }
+
+  enablePolling() {
+    this.logger.info('Enabling polling notifications');
+    this.pollingNotificationService.enable();
+  }
+
+  disablePolling() {
+    this.pollingNotificationService.disable();
   }
 
   private async registerSW() {
@@ -87,6 +99,9 @@ export class WebPushNotificationsService extends PushNotificationsService {
       }
 
       this.enable();
+    } else {
+      this.logger.info('Push notifications are disabled or not supported');
+      this.enablePolling();
     }
   }
 
@@ -103,7 +118,6 @@ export class WebPushNotificationsService extends PushNotificationsService {
 
   async subscribeToEvents() {
     this.firebaseMessaging.onMessage((data: NotificationData) => {
-      console.log('~~ Got a new notification: ', data);
       if (data.data && data.data.walletId) {
         this.store.dispatch(new RefreshOneWalletAction(data.data.walletId, {
           skipAlias: true,
