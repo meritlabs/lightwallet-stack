@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 
 import { OnboardingRoutingModule } from './onboarding-routing.module';
 import { OnboardComponent } from './onboard/onboard.component';
-import { UnlockComponent } from './unlock/unlock.component';
+import { UnlockComponent } from './unlock/unlock.view';
 import { OnboardingRootComponent } from './onboarding-root/onboarding-root.component';
 import { NgxCarouselModule } from 'ngx-carousel';
 
