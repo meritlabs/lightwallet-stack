@@ -13,13 +13,9 @@ export class PasswordPromptController {
     return this.domCtrl.create(PasswordPromptComponent, { title, validators, asyncValidators });
   }
 
-  createForWallet(wallet?: DisplayWallet) {
+  createForWallet(wallet: DisplayWallet) {
     const validators: ValidatorFn[] = [Validators.required];
-
-    if (wallet) {
-      validators.push(PasswordValidator.VerifyWalletPassword(wallet.client));
-    }
-
-    return this.create('Enter wallet password', validators);
+    validators.push(PasswordValidator.VerifyWalletPassword(wallet.client));
+    return this.create('Enter password for wallet: ' + wallet.name, validators);
   }
 }
