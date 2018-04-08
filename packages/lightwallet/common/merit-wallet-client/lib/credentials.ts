@@ -123,7 +123,6 @@ export class Credentials {
 
     let m: string  = this.createMnemonicWithRetries(null, 5);
     let x = new Credentials();
-    console.log("What is m?: ", m);
     x.network = network;
     x.account = account;
     x.xPrivKey = mnemonicToHDPrivateKey(m, passphrase, network).toString();
