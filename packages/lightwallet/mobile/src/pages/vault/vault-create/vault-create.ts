@@ -78,8 +78,6 @@ export class VaultCreateView {
   toConfirm() {
     let network = this.wallet.credentials.network || ENV.network;
 
-    console.log(this.wallet);
-
     let phrase = this.wallet.getNewMnemonic(null);
     let key = mnemonicToHDPrivateKey(phrase, '', network);
 
