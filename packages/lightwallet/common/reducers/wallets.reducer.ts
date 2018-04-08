@@ -48,7 +48,8 @@ export enum WalletsActionType {
   RefreshOne = '[Wallets] Refresh one',
   RefreshTotals = '[Wallets] Refresh totals',
   UpdateTotals = '[Wallets] Update totals',
-  UpdateInviteRequests = '[Wallets] Update Invite Requests'
+  UpdateInviteRequests = '[Wallets] Update Invite Requests',
+  DeleteWallet = '[Wallets] Delete wallet'
 }
 
 export class AddWalletAction implements Action {
@@ -96,6 +97,11 @@ export class UpdateInviteRequestsAction implements Action {
   constructor(public inviteRequests: IUnlockRequest[]) {}
 }
 
+export class DeleteWalletAction implements Action {
+  type = WalletsActionType.DeleteWallet;
+  constructor(public walletId: string) {}
+}
+
 export type WalletsAction =
   AddWalletAction
   & UpdateWalletsAction
@@ -103,7 +109,8 @@ export type WalletsAction =
   & UpdateOneWalletAction
   & RefreshOneWalletAction
   & UpdateWalletTotalsAction
-  & UpdateInviteRequestsAction;
+  & UpdateInviteRequestsAction
+  & DeleteWalletAction;
 
 export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
@@ -166,6 +173,17 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
       return {
         ...state,
         inviteRequests: action.inviteRequests
+      };
+
+    case WalletsActionType.DeleteWallet:
+
+      return {
+        ...state,
+        wallets: state.wallets.filter(wallet => wallet.id !== action.walletId),
+        walletsMap: {
+          ...state.walletsMap,
+          [action.walletId]: undefined
+        }
       };
 
     default:
