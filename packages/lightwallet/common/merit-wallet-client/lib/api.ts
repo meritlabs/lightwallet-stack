@@ -702,7 +702,8 @@ export class API {
     try {
       this.credentials = derive(false);
     } catch (e) {
-      this.log.error('Mnemonic error:', e);
+      console.log("Catchcatch###");
+      this.log.error('Mnemonic error !:', e.Error);
       return Promise.reject(MWCErrors.INVALID_BACKUP);
     }
 

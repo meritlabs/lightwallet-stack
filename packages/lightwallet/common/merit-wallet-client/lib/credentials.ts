@@ -173,7 +173,7 @@ export class Credentials {
       }
     
     let x = new Credentials();
-    x.xPrivKey = Bitcore.toHDPrivateKey(passphrase, network).toString();
+    x.xPrivKey = mnemonicToHDPrivateKey(words, passphrase, network).toString();
     x.mnemonic = words;
     x.mnemonicHasPassphrase = !!passphrase;
     x.account = account;

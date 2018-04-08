@@ -35,7 +35,7 @@ export function validateMnemonic(mnemonic: string) {
 }
 
 export function validateImportMnemonic(mnemonic: string) {
-  return this.isValidSize(mnemonic) && hasValidWords(mnemonic)  
+  return this.isValidSize(mnemonic) && hasValidWords(mnemonic)
 }
 
 export function isValidSize(mnemonic: string) {
@@ -72,8 +72,8 @@ export function hasValidEntropy(mnemonic: string, wordlist: string[] = EnglishWo
   return expected_hash_bits === hash_bits;
 }
 
-export function mnemonicToHDPrivateKey(passphrase, network) {
-  var seed = mnemonicToSeed(passphrase);
+export function mnemonicToHDPrivateKey(mnemonic, passphrase, network) {
+  var seed = mnemonicToSeed(mnemonic, passphrase);
   return Bitcore.HDPrivateKey.fromSeed(seed, network);
 };
 
