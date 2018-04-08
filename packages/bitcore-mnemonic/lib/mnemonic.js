@@ -35,12 +35,9 @@ var $ = bitcore.util.preconditions;
  * @returns {Mnemonic} A new instance of Mnemonic
  * @constructor
  */
-var Mnemonic = function(data, wordlist, isImport = false) {
-  console.log("Top of mnemonic new");
-  console.log("isImport: ", isImport);
-  
+var Mnemonic = function(data, wordlist) {
   if (!(this instanceof Mnemonic)) {
-    return new Mnemonic(data, wordlist, isImport);
+    return new Mnemonic(data, wordlist);
   }
 
   if (_.isArray(data)) {
@@ -74,25 +71,16 @@ var Mnemonic = function(data, wordlist, isImport = false) {
     phrase = Mnemonic._entropy2mnemonic(seed, wordlist);
   }
 
-  if (isImport) {
-    console.log("Yes, it's am import!");  
-    if (!Mnemonic.isValidImport) {
-      console.log("BUT IT FAILS!");        
-      throw new errors.InvalidMnemonic(phrase);    
-    } 
-  } else {
-    console.log("No, it's not am import!");  
-    
-    // validate phrase and ent
-    if (phrase && !Mnemonic.isValidGeneration(phrase, wordlist)) {
-      console.log("Aaaand.. it fails!");  
-      
-      throw new errors.InvalidMnemonic(phrase);
-    }
-  }
+
+  // validate phrase and ent
+  // if (phrase && !Mnemonic.isValid(phrase, wordlist)) {
+  //   throw new errors.InvalidMnemonic(phrase);
+  // }
+  console.log("First");
   if (ent % 32 !== 0 || ent < 128) {
     throw new bitcore.errors.InvalidArgument('ENT', 'Values must be ENT > 128 and ENT % 32 == 0');
   }
+  console.log("Second");
 
   phrase = phrase || Mnemonic._mnemonic(ent, wordlist);
 
@@ -109,25 +97,8 @@ var Mnemonic = function(data, wordlist, isImport = false) {
 
 Mnemonic.Words = require('./words');
 
-
 /**
- * Will return a boolean if the mnemonic is valid for import.
- * This is a looser check because mnemonics can be generated more loosely on other clients
- *
- * @param {String} mnemonic - The mnemonic string
- * @param {String} [wordlist] - The wordlist used
- * @returns {boolean}
- */
-Mnemonic.isValidImport = function(mnemonic, wordlist) {
-  mnemonic = unorm.nfkd(mnemonic);
-  var words = mnemonic.split(' ');
-
-  return this.isValidSize(mnemonic) && this.hasValidWords(mnemonic, wordlist);
-};
-
-/**
- * Will return a boolean if the mnemonic was generated in a valid way. 
- * This is a stricter check because we can control the generation locally
+ * Will return a boolean if the mnemonic is valid
  *
  * @example
  *
@@ -138,61 +109,18 @@ Mnemonic.isValidImport = function(mnemonic, wordlist) {
  * @param {String} [wordlist] - The wordlist used
  * @returns {boolean}
  */
- Mnemonic.isValidGeneration = function(mnemonic, wordlist) {
+Mnemonic.isValid = function(mnemonic, wordlist) {
   mnemonic = unorm.nfkd(mnemonic);
-  var words = mnemonic.split(' ');
-
-  // We don't call hasValidWords() because this check is already done in hasValidEntropy!
-  return this.isValidSize(mnemonic) && this.hasValidEntropy(words, wordlist);
-};
-
-/**
- * Will return a boolean if the mnemonic is the right size, in words.
- * We currently use 12 words for the mnemonic in the DLW, WLW, and QT wallets.
- */
-Mnemonic.isValidSize = function(mnemonic) {
-  if (mnemonic.split(' ').length != 12) {
-    console.log("Failed size");
-    return false;
-  }
-  return true;
-}
-
-/**
- * Checks to be sure that the mnemonic is generated from the relevant 
- * dictionary of words.
- * 
- */
-Mnemonic.hasValidWords = function(mnemonic, wordlist) {
   wordlist = wordlist || Mnemonic._getDictionary(mnemonic);
+
   if (!wordlist) {
-    console.log("Failed wordlist");    
     return false;
   }
+
   var words = mnemonic.split(' ');
-  
-  for (var i = 0; i < words.length; i++) {
-    var ind = wordlist.indexOf(words[i]);
-    console.log("Failed words");
-    
-    if (ind < 0) return false;
-  }
-
-  return true;
-}
-
-/**
- * Checks to be sure that the mnemonic is generated from the relevant 
- * dictionary of words.
- * 
- */
-Mnemonic.hasValidEntropy = function(words, wordlist) {
-  console.log("CHEKING ENTROPY");
-  
   var bin = '';
   for (var i = 0; i < words.length; i++) {
     var ind = wordlist.indexOf(words[i]);
-    console.log("Failed entropy");    
     if (ind < 0) return false;
     bin = bin + ('00000000000' + ind.toString(2)).slice(-11);
   }
@@ -205,11 +133,8 @@ Mnemonic.hasValidEntropy = function(words, wordlist) {
     buf.writeUInt8(parseInt(bin.slice(i * 8, (i + 1) * 8), 2), i);
   }
   var expected_hash_bits = Mnemonic._entropyChecksum(buf);
-  
-  var entropyValid = (expected_hash_bits === hash_bits);
-  console.log("ENTROPY IS: ", entropyValid);
-  return entropyValid;
-}
+  return expected_hash_bits === hash_bits;
+};
 
 /**
  * Internal function to check if a mnemonic belongs to a wordlist.
@@ -254,6 +179,7 @@ Mnemonic._getDictionary = function(mnemonic) {
  */
 Mnemonic.prototype.toSeed = function(passphrase) {
   passphrase = passphrase || '';
+  console.log("What is this.phrase? : ", this.phrase);
   return pbkdf2(unorm.nfkd(this.phrase), unorm.nfkd('mnemonic' + passphrase), 2048, 64);
 };
 
