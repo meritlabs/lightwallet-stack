@@ -14,7 +14,7 @@ import { take } from 'rxjs/operators';
 @Component({
   selector: 'view-invite-requests',
   templateUrl: './invite-requests.view.html',
-  styleUrls: ['./invite-requests.view.scss']
+  styleUrls: ['./invite-requests.view.sass']
 })
 export class InviteRequestsView {
   inviteRequests$: Observable<IUnlockRequest[]> = this.store.select(selectInviteRequests);

@@ -41,6 +41,7 @@ export class UnlockView {
               private addressScanner: AddressScannerService) {
   }
 
+  // TODO use ngOnInit or ionViewWillLoad
   async ionViewDidLoad() {
     // An unlock code from a friend sharing the link.
     this.formData.parentAddress = this.navParams.get('unlockCode') || '';

@@ -5,7 +5,12 @@
         <img src="assets/v1/images/unlock/invite.svg" alt="Merit is invite-only network">
       </div>
       <div class="unlock__heading__title title--primary">
-        <h1>Merit is invite-only network</h1>
+        <ng-container *ngIf="easyReceipt; else noEasyReceipt">
+          <h1>{{ easyReceipt.senderName }} sent you Merit!</h1>
+        </ng-container>
+        <ng-template #noEasyReceipt>
+          <h1>Merit is invite-only network</h1>
+        </ng-template>
       </div>
     </div>
     <form class="unlock__form" [formGroup]="formData" (ngSubmit)="onSubmit()">
