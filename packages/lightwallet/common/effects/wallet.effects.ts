@@ -25,7 +25,7 @@ import { Store } from '@ngrx/store';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { distinctUntilChanged, map, mergeMap, skip, switchMap, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, map, mergeMap, skip, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class WalletEffects {
@@ -42,7 +42,8 @@ export class WalletEffects {
     switchMap((action: RefreshOneWalletAction) =>
       this.store.select(selectWalletById(action.walletId))
         .pipe(
-          switchMap((wallet: DisplayWallet) => fromPromise(updateDisplayWallet(wallet, action.opts)))
+          switchMap((wallet: DisplayWallet) => fromPromise(updateDisplayWallet(wallet, action.opts))),
+          take(1)
         )
     ),
     map((wallet: DisplayWallet) => new UpdateOneWalletAction(wallet))
@@ -80,7 +81,7 @@ export class WalletEffects {
   @Effect()
   deleteWallet$: Observable<any> = this.actions$.pipe(
     ofType(WalletsActionType.DeleteWallet),
-    switchMap((action: DeleteWalletAction) => this.store.select(selectWalletById(action.walletId))),
+    switchMap((action: DeleteWalletAction) => this.store.select(selectWalletById(action.walletId)).pipe(take(1))),
     switchMap((wallet: DisplayWallet) =>
       fromPromise(
         this.profileService.deleteWallet(wallet.client)
