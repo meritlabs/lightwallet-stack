@@ -97,7 +97,7 @@
         <ion-item-divider>
           {{ wallet.name }}
           <span class="merit-amount">
-            {{ (wallet.networkValue || 0) | toMRT }}
+            {{ wallet.communitySize || 0 }}
           </span>
         </ion-item-divider>
 
