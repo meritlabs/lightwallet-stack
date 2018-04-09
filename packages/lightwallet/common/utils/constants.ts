@@ -1,4 +1,6 @@
 import { ModalOptions } from 'ionic-angular';
+import { ENV } from '@app/env';
+
 
 export const MERIT_MODAL_OPTS: ModalOptions = {
   leaveAnimation: 'modal-slide-out',
@@ -6,7 +8,7 @@ export const MERIT_MODAL_OPTS: ModalOptions = {
   cssClass: 'merit-modal'
 };
 
-export const COINBASE_CONFIRMATION_THRESHOLD = 6;
+export const COINBASE_CONFIRMATION_THRESHOLD = ENV.network == 'testnet' ? 6 : 100;
 
 export const DEFAULT_WALLET_COLOR: string = '#00B0DD'; // primary color
 
