@@ -30,8 +30,11 @@ export class EditWalletView {
               private logger: LoggerService
   ) {
     this.wallet = this.navParams.get('wallet');
-    this.isWalletEncrypted = this.walletService.isEncrypted(this.wallet);
     this.logger.info(this.wallet);
+  }
+
+  ionViewWillEnter() {
+    this.isWalletEncrypted = this.walletService.isEncrypted(this.wallet);
   }
 
   changeBalanceHidden(isHidden) {
