@@ -43,7 +43,7 @@
                 class="send-button" color="light">
           Create New Contact
         </button>
-        <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="bindAddressToContact()"
+        <button ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length" (click)="bindAddressToContact()"
                 class="send-button" color="light">
           Bind to existing contact
         </button>
