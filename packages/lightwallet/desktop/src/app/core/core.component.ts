@@ -66,7 +66,7 @@ export class CoreView {
     }
   ];
 
-  constructor(pushNotificationsService: PushNotificationsService,
+  constructor(private pushNotificationsService: PushNotificationsService,
               private easyReceiveService: EasyReceiveService,
               private logger: LoggerService,
               private confirmDialogCtrl: ConfirmDialogControllerService,
@@ -77,6 +77,7 @@ export class CoreView {
 
   ngOnInit() {
     this.processPendingEasyReceipts();
+    this.pushNotificationsService.init();
   }
 
   private showPasswordEasyReceivePrompt(receipt: EasyReceipt) {
