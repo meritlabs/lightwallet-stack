@@ -206,7 +206,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
     //checking if address is confirmed
     explorer.getUtxos([out.address], true, function(err, utxos) {
 
-        const isAddressConfirmed = utxos.some(u => u.isInvite);
+        const isAddressConfirmed = _.some(utxos, u => u.isInvite);
 
         self.storage.fetchAddress(out.address, function(err, address) {
           if (err) {
