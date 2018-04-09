@@ -40,9 +40,6 @@ export class ExportWalletView {
               private platform: Platform,
               private logger: LoggerService) {
     this.wallet = this.navParams.get('wallet');
-    if (this.wallet) {
-      this.mnemonic = this.wallet.getMnemonic();
-    }
     this.sjcl = this.bwcService.getSJCL();
   }
 
@@ -79,6 +76,7 @@ export class ExportWalletView {
               } else {
                 try {
                   this.walletsService.decrypt(this.wallet, data.password);
+                  this.mnemonic = this.wallet.getMnemonic();
                   setQrInfo(data.password);
                   this.accessGranted = true;
                 } catch (err) {
@@ -92,6 +90,7 @@ export class ExportWalletView {
       };
       showPrompt();
     } else {
+      this.mnemonic = this.wallet.getMnemonic();
       setQrInfo(null);
       this.accessGranted = true;
     }

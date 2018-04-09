@@ -131,14 +131,12 @@ export class SendConfirmationView {
                 if (!data.password) {
                   showPassPrompt(true);
                 } else {
-                  this.walletService
-                    .decrypt(this.txData.wallet, data.password)
-                    .then(() => {
-                      this.send();
-                    })
-                    .catch(err => {
-                      showPassPrompt(true);
-                    });
+                  try {
+                    this.walletService.decrypt(this.txData.wallet, data.password);
+                    this.send();
+                  } catch (e) {
+                    showPassPrompt(true);
+                  }
                 }
               },
             },
