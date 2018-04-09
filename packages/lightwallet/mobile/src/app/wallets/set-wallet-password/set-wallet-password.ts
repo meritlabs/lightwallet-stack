@@ -28,8 +28,21 @@ export class SetWalletPasswordView {
     this.isWalletEncrypted = this.walletService.isEncrypted(this.wallet);
   }
 
-  async setPassword() {
+  async removePassword() {
 
+    try {
+      await this.walletService.decrypt(this.wallet, this.formData.currentPassword);
+      this.navCtrl.pop();
+    } catch (err) {
+      return this.toastCtrl.create({
+        message: 'Incorrect current password',
+        cssClass: ToastConfig.CLASS_ERROR
+      }).present();
+    }
+
+  }
+
+  async setPassword() {
 
     if (this.formData.password != this.formData.repeatPassword) {
       return this.toastCtrl.create({

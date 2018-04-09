@@ -15,6 +15,8 @@ import { MeritToastController, ToastConfig } from '@merit/common/services/toast.
 export class EditWalletView {
   wallet: MeritWalletClient;
 
+  isWalletEncrypted: boolean;
+
   constructor(
     private navCtrl: NavController,
               private navParams: NavParams,
@@ -29,6 +31,10 @@ export class EditWalletView {
   ) {
     this.wallet = this.navParams.get('wallet');
     this.logger.info(this.wallet);
+  }
+
+  ionViewWillEnter() {
+    this.isWalletEncrypted = this.walletService.isEncrypted(this.wallet);
   }
 
   changeBalanceHidden(isHidden) {
