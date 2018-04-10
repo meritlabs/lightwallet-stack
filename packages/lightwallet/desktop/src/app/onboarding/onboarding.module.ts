@@ -8,6 +8,7 @@ import { OnboardComponent } from './onboard/onboard.component';
 import { UnlockComponent } from './unlock/unlock.view';
 import { OnboardingRootComponent } from './onboarding-root/onboarding-root.component';
 import { NgxCarouselModule } from 'ngx-carousel';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { NgxCarouselModule } from 'ngx-carousel';
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    NgxCarouselModule
+    NgxCarouselModule,
+    CommonPipesModule
   ],
   declarations: [OnboardComponent, UnlockComponent, OnboardingRootComponent]
 })
