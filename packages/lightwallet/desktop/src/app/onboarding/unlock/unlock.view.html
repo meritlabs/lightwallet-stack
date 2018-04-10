@@ -23,8 +23,8 @@
             </span>
           </span>
         </label>
-        {{inviteCode.hasError('required')}}
-        <input type="text" formControlName="inviteCode" class="ui-input ui-input--text ui-input--valid">
+        <input type="text" formControlName="inviteCode" class="ui-input ui-input--text"
+        [ngClass]="{'ui-input--valid': !inviteCode.hasError('required'), 'ui-input--invalid': inviteCode.hasError('required')}">
         <div class="input-errors" [hidden]="!inviteCode.dirty || inviteCode.valid">
           <div [hidden]="!inviteCode.hasError('required')">Invite code is required</div>
           <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('minlength')">Invite code must be at least 3 characters long</div>
