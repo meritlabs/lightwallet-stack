@@ -1,0 +1,78 @@
+#worryFree
+  width: 400px
+  margin-bottom: 50px
+.perspective
+  animation: sending 2s infinite
+  animation-timing-function: ease
+.perspective-1
+  animation: sending 1.5s infinite
+  animation-delay: .5s
+  animation-direction: reverse
+  animation-timing-function: ease-out
+.perspective-2
+  animation: sending 2.5s infinite
+  animation-delay: .1s
+.rotate
+  animation: rotate1 50s infinite
+  animation-timing-function: ease-out
+.jump
+  animation: jump 20s infinite
+  animation-timing-function: ease-out
+.jump-1
+  animation-direction: reverse
+  animation: jump-1 20s infinite
+  animation-timing-function: ease-in
+.floating
+  animation: floating 5s infinite
+  animation-timing-function: ease-in
+@keyframes floating
+  0%
+    transform: translateY(0)
+  50%
+    transform: translateY(2%)
+  100%
+    transform: translateY(0%)
+@keyframes jump
+  0%
+    transform: translate(0)
+    z-index: 2
+  25%
+    transform: translate(5%)
+  50%
+    transform: translate(10%)
+  75%
+    transform: translate(5%)
+  100%
+    transform: translate(0%)
+@keyframes jump-1
+  0%
+    transform: translate(0)
+    z-index: 1
+  25%
+    transform: translate(-5%)
+  50%
+    transform: translate(-10%)
+  75%
+    transform: translate(-5%)
+  100%
+    transform: translate(0%)
+@keyframes rotate1
+  0%
+    transform: rotate(0deg)
+    opacity: 1
+  70%
+    transform: rotate(90deg)
+    opacity: 0
+  75%
+    transform: rotate(290deg)
+    opacity: 1
+  100%
+    transform: rotate(360deg)
+    opacity: 1
+@keyframes sending
+  0%
+    transform: scale(1)
+  30%
+    transform: scale(0.1) translate(639%, 225%)
+  100%
+    transform: scale(1)
