@@ -11,6 +11,7 @@ import { NgxCarouselModule } from 'ngx-carousel';
 import { WorryFreeComponent } from './onboard/illustations/worry-free/worry-free.component';
 import { SendingMeritComponent } from './onboard/illustations/sending-merit/sending-merit.component';
 import { YourWayComponent } from './onboard/illustations/your-way/your-way.component';
+import { ThatsItComponent } from './onboard/illustations/thats-it/thats-it.component';
 
 @NgModule({
   imports: [
@@ -21,6 +22,6 @@ import { YourWayComponent } from './onboard/illustations/your-way/your-way.compo
     RouterModule,
     NgxCarouselModule
   ],
-  declarations: [OnboardComponent, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent]
+  declarations: [OnboardComponent, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent]
 })
 export class OnboardingModule { }
