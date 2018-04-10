@@ -9,6 +9,7 @@ import { UnlockComponent } from './unlock/unlock.view';
 import { OnboardingRootComponent } from './onboarding-root/onboarding-root.component';
 import { NgxCarouselModule } from 'ngx-carousel';
 import { WorryFreeComponent } from './onboard/illustations/worry-free/worry-free.component';
+import { SendingMeritComponent } from './onboard/illustations/sending-merit/sending-merit.component';
 
 @NgModule({
   imports: [
@@ -19,6 +20,6 @@ import { WorryFreeComponent } from './onboard/illustations/worry-free/worry-free
     RouterModule,
     NgxCarouselModule
   ],
-  declarations: [OnboardComponent, UnlockComponent, OnboardingRootComponent, WorryFreeComponent]
+  declarations: [OnboardComponent, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent]
 })
 export class OnboardingModule { }
