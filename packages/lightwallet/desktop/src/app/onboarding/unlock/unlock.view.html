@@ -14,7 +14,7 @@
       </div>
     </div>
     <form class="unlock__form" [formGroup]="formData" (ngSubmit)="onSubmit()">
-      <div class="unlock__form__group">
+      <div class="ui-input__group">
         <label for="" class="ui-label">
           Invite code or username
           <span class="ui-tooltip">
@@ -23,15 +23,33 @@
             </span>
           </span>
         </label>
-        <input type="text" class="ui-input ui-input--text" formControlName="inviteCode">
+        <input type="text" formControlName="inviteCode" class="ui-input ui-input--text"
+        [ngClass]="{'ui-input--valid': !inviteCode.hasError('required') && !inviteCode.hasError('minlength') && !inviteCode.hasError('InvalidFormat') && !inviteCode.hasError('AddressNotFound'),
+          'ui-input--invalid': !inviteCode.hasError('required') }">
         <div class="input-errors" [hidden]="!inviteCode.dirty || inviteCode.valid">
-          <div [hidden]="!inviteCode.hasError('required')">Invite code is required</div>
-          <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('minlength')">Invite code must be at least 3 characters long</div>
-          <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('InvalidFormat')">Invalid address or alias format</div>
-          <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('AddressNotFound')">Address not found</div>
+          <div [hidden]="!inviteCode.hasError('required')">
+            <span class="tooltip-error">
+              <span>Invite code is required</span>
+            </span>
+          </div>
+          <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('minlength')">
+            <span class="tooltip-error">
+              <span>Invite code must be at least 3 characters long</span>
+            </span>
+            </div>
+          <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('InvalidFormat')">
+            <span class="tooltip-error">
+              <span>Invalid address or alias format</span>
+            </span>
+            </div>
+          <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('AddressNotFound')">
+            <span class="tooltip-error">
+              <span>Address not found</span>
+            </span>
+          </div>
         </div>
       </div>
-      <div class="unlock__form__group">
+      <div class="ui-input__group">
         <label for="" class="ui-label">
           Your username (alias)
           <span class="ui-tooltip">
@@ -40,11 +58,25 @@
               </span>
             </span>
         </label>
-        <input type="text" class="ui-input ui-input--text" formControlName="alias">
+        <input type="text" class="ui-input ui-input--text" formControlName="alias"
+        [ngClass]="{'ui-input--valid': alias.dirty && alias.valid,
+          'ui-input--invalid': alias.dirty && !alias.valid}">
         <div class="input-errors" [hidden]="!alias.dirty || alias.valid">
-          <div [hidden]="!alias.hasError('minlength')">Your alias must be at least 3 characters long</div>
-          <div [hidden]="!alias.hasError('InvalidFormat')">Invalid alias format</div>
-          <div [hidden]="!alias.hasError('AliasInUse')">Alias is already in use</div>
+          <div [hidden]="!alias.hasError('minlength')">
+            <span class="tooltip-error">
+              <span>Your alias must be at least 3 characters long</span>
+            </span>
+          </div>
+          <div [hidden]="!alias.hasError('InvalidFormat')">
+            <span class="tooltip-error">
+              <span>Invalid alias format</span>
+            </span>
+          </div>
+          <div [hidden]="!alias.hasError('AliasInUse')">
+            <span class="tooltip-error">
+              <span>Alias is already in use</span>
+            </span>
+          </div>
         </div>
       </div>
       <div class="unlock__form__group">
