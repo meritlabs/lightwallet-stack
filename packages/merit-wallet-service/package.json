@@ -1,0 +1,26 @@
+{
+  "name": "Merit-Wallet-Service",
+  "dependencies": {
+    "async": "^2.6.0",
+    "body-parser": "^1.18.2",
+    "compression": "^1.7.2",
+    "consign": "^0.1.6",
+    "cors": "^2.8.4",
+    "cosign": "^0.2.1",
+    "express": "^4.16.3",
+    "express-async-await": "^1.1.0",
+    "express-load": "^1.1.16",
+    "meritd-rpc": "^0.7.0",
+    "mongoose": "^5.0.11"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "mocha": "^5.0.4",
+    "nodemon": "^1.17.3"
+  },
+  "scripts": {
+    "start": "NODE_ENV=dev nodemon app.js",
+    "test": "mocha --timeout 10000"
+  }
+}
