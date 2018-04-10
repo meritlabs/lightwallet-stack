@@ -9,7 +9,7 @@
     <div *ngIf="easyReceipt; else noReceipt">
 
       <h1 class="title" translate>
-        {{easyReceipt.senderName}} sent you Merit!
+        {{easyReceipt.senderName | unescape}} sent you Merit!
       </h1>
 
       <img src="assets/img/invite.svg" alt="" class="logo" />

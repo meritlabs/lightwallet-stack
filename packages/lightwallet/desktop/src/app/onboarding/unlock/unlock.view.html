@@ -6,7 +6,7 @@
       </div>
       <div class="unlock__heading__title title--primary">
         <ng-container *ngIf="easyReceipt; else noEasyReceipt">
-          <h1>{{ easyReceipt.senderName }} sent you Merit!</h1>
+          <h1>{{ easyReceipt.senderName | unescape }} sent you Merit!</h1>
         </ng-container>
         <ng-template #noEasyReceipt>
           <h1>Merit is invite-only network</h1>

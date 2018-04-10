@@ -12,6 +12,7 @@ import { WorryFreeComponent } from './onboard/illustations/worry-free/worry-free
 import { SendingMeritComponent } from './onboard/illustations/sending-merit/sending-merit.component';
 import { YourWayComponent } from './onboard/illustations/your-way/your-way.component';
 import { ThatsItComponent } from './onboard/illustations/thats-it/thats-it.component';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
   imports: [
@@ -20,7 +21,8 @@ import { ThatsItComponent } from './onboard/illustations/thats-it/thats-it.compo
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    NgxCarouselModule
+    NgxCarouselModule,
+    CommonPipesModule
   ],
   declarations: [OnboardComponent, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent]
 })
