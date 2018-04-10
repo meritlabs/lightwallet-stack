@@ -36,7 +36,7 @@ import { AppSettingsService } from '@merit/common/services/app-settings.service'
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { MeritToastController } from '@merit/common/services/toast.controller.service';
 import { AddressService } from '@merit/common/services/address.service';
-
+import { StoreModule } from '@ngrx/store';
 
 export function getProviders() {
   return [
@@ -90,6 +90,7 @@ export function loadConfigs(appService) {
     MomentModule,
     CommonModule,
     HttpClientModule,
+    StoreModule.forRoot({}),
     IonicModule.forRoot(MeritLightWallet, {
       preloadModules: true,
       tabsHideOnSubPages: true,
