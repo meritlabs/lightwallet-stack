@@ -24,7 +24,7 @@
           </span>
         </label>
         {{inviteCode.hasError('required')}}
-        <input type="text" formControlName="inviteCode" class="ui-input ui-input--text ui-input--invalid">
+        <input type="text" formControlName="inviteCode" class="ui-input ui-input--text ui-input--valid">
         <div class="input-errors" [hidden]="!inviteCode.dirty || inviteCode.valid">
           <div [hidden]="!inviteCode.hasError('required')">Invite code is required</div>
           <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('minlength')">Invite code must be at least 3 characters long</div>
