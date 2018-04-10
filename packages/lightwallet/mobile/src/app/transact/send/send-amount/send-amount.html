@@ -69,7 +69,8 @@
         </ion-avatar>
         <ion-label stacked>Add Password (Optional)</ion-label>
         <ion-input type="password" [(ngModel)]="formData.password" placeholder="Type it here"
-                   autocomplete="off" autocorrect="off" autocapitalize="off" (keypress)="passwordKeypress($event.keyCode)"></ion-input>
+                   autocomplete="off" autocorrect="off" autocapitalize="off"
+                   (keyup)="passwordKeyup($event.keyCode)"></ion-input>
       </ion-item>
 
       <ion-item [hidden]="!formData.password">
