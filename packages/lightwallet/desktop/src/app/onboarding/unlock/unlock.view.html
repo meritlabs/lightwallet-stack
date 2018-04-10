@@ -58,7 +58,9 @@
               </span>
             </span>
         </label>
-        <input type="text" class="ui-input ui-input--text" formControlName="alias">
+        <input type="text" class="ui-input ui-input--text" formControlName="alias"
+        [ngClass]="{'ui-input--valid': alias.dirty && alias.valid,
+          'ui-input--invalid': alias.dirty && !alias.valid}">
         <div class="input-errors" [hidden]="!alias.dirty || alias.valid">
           <div [hidden]="!alias.hasError('minlength')">
             <span class="tooltip-error">
