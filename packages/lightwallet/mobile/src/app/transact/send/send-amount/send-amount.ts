@@ -69,6 +69,7 @@ export class SendAmountView {
   private loading: boolean = true;
 
   @ViewChild('amount') amountInput: ElementRef;
+  @ViewChild('confirmInput') confirmInput: ElementRef;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -198,6 +199,16 @@ export class SendAmountView {
 
   focusInput() {
     this.amountInput['_native']['nativeElement'].focus();
+  }
+
+  passwordKeypress(key) {
+    if (key == 13) {
+      this.confirmInput['_native']['nativeElement'].focus();
+    }
+  }
+
+  confirmPasswordKeypress(key) {
+    return this.updateTxData();
   }
 
   async processAmount(value) {
