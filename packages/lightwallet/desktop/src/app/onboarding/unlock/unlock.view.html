@@ -24,7 +24,8 @@
           </span>
         </label>
         <input type="text" formControlName="inviteCode" class="ui-input ui-input--text"
-        [ngClass]="{'ui-input--valid': !inviteCode.hasError('required'), 'ui-input--invalid': inviteCode.hasError('required')}">
+        [ngClass]="{'ui-input--valid': !inviteCode.hasError('required') && !inviteCode.hasError('minlength') && !inviteCode.hasError('InvalidFormat') && !inviteCode.hasError('AddressNotFound'),
+          'ui-input--invalid': !inviteCode.hasError('required') }">
         <div class="input-errors" [hidden]="!inviteCode.dirty || inviteCode.valid">
           <div [hidden]="!inviteCode.hasError('required')">
             <span class="tooltip-error">
