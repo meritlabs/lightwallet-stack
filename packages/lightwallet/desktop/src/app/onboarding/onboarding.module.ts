@@ -8,6 +8,7 @@ import { OnboardComponent } from './onboard/onboard.component';
 import { UnlockComponent } from './unlock/unlock.view';
 import { OnboardingRootComponent } from './onboarding-root/onboarding-root.component';
 import { NgxCarouselModule } from 'ngx-carousel';
+import { WorryFreeComponent } from './onboard/illustations/worry-free/worry-free.component';
 
 @NgModule({
   imports: [
@@ -18,6 +19,6 @@ import { NgxCarouselModule } from 'ngx-carousel';
     RouterModule,
     NgxCarouselModule
   ],
-  declarations: [OnboardComponent, UnlockComponent, OnboardingRootComponent]
+  declarations: [OnboardComponent, UnlockComponent, OnboardingRootComponent, WorryFreeComponent]
 })
 export class OnboardingModule { }
