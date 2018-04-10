@@ -5,6 +5,18 @@
 <ngx-carousel [inputs]="carouselOne" class="guide_slider">
   <ngx-item NgxCarouselItem>
     <div class="inner">
+      <illustration-your-way></illustration-your-way>
+      <div class="slide_description">
+        <p class="description_title">You control your merit.</p>
+        <p class="description_caption">This app stores your merit with cutting-edge security.
+          Not even Merit Foundation can access it.</p>
+        <button type="button" name="button" class="ui-button ui-button--totalWhite"
+          routerLink="unlock">Get Started</button>
+      </div>
+    </div>
+  </ngx-item>
+  <ngx-item NgxCarouselItem>
+    <div class="inner">
       <illustration-worry-free></illustration-worry-free>
       <div class="slide_description">
         <p class="description_title">Merit is secure, digital money.</p>
@@ -24,18 +36,7 @@
       </div>
     </div>
   </ngx-item>
-  <ngx-item NgxCarouselItem>
-    <div class="inner">
-      <img src="/assets/v1/images/onboard/slider-3.png" alt="" class="slide_image">
-      <div class="slide_description">
-        <p class="description_title">You control your merit.</p>
-        <p class="description_caption">This app stores your merit with cutting-edge security.
-          Not even Merit Foundation can access it.</p>
-        <button type="button" name="button" class="ui-button ui-button--totalWhite"
-          routerLink="unlock">Get Started</button>
-      </div>
-    </div>
-  </ngx-item>
+
   <button NgxCarouselPrev class='leftRs navArrow'></button>
   <button NgxCarouselNext class='rightRs navArrow'></button>
 </ngx-carousel>
