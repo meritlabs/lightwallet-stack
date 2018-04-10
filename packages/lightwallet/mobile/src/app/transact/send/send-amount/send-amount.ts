@@ -201,9 +201,12 @@ export class SendAmountView {
     this.amountInput['_native']['nativeElement'].focus();
   }
 
-  passwordKeypress(key) {
+  passwordKeyup(key) {
     if (key == 13) {
       this.confirmInput['_native']['nativeElement'].focus();
+    }
+    if (!this.formData.password) {
+      this.updateTxData();
     }
   }
 
@@ -264,13 +267,11 @@ export class SendAmountView {
 
   public async toConfirm() {
 
-    if (this.formData.password != this.formData.confirmPassword) {
+    if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
       return this.toastCtrl.create({
         message: 'Passwords do not match',
         cssClass: ToastConfig.CLASS_ERROR
       }).present();
-    } else {
-      this.txData.password = this.formData.password;
     }
 
     let loadingSpinner = this.loadingCtrl.create({
@@ -342,7 +343,9 @@ export class SendAmountView {
 
     try {
 
-      if (this.formData.password != this.formData.confirmPassword) throw new Error('Passwords does not match');
+      if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
+        throw new Error('Passwords does not match');
+      }
 
       if (this.sendMethod.type == SendMethodType.Easy) {
 
