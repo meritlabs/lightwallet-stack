@@ -24,7 +24,7 @@ export class AddressScannerService {
           return code;
         }
       } catch (e) {
-        error = e;
+        error = e == 'cordova_not_available'? 'This feature is available on mobile devices only.' : e;
       }
     } else {
       error = 'This feature is available on mobile devices only.';
