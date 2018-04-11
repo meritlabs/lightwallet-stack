@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { OnboardingRoutingModule } from './onboarding-routing.module';
-import { OnboardComponent } from './onboard/onboard.component';
+import { OnboardView } from './onboard/onboard.view';
 import { UnlockComponent } from './unlock/unlock.view';
 import { OnboardingRootComponent } from './onboarding-root/onboarding-root.component';
 import { NgxCarouselModule } from 'ngx-carousel';
@@ -24,6 +24,6 @@ import { CommonPipesModule } from '@merit/common/common-pipes.module';
     NgxCarouselModule,
     CommonPipesModule
   ],
-  declarations: [OnboardComponent, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent]
+  declarations: [OnboardView, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent]
 })
 export class OnboardingModule { }

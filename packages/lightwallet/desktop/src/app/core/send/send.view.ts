@@ -115,11 +115,6 @@ export class SendView implements OnInit {
   }
 
   async updateTx() {
-
-    if (this.formData.type == 'easy' && !this.hasAvailableInvites) {
-      return this.error = 'You should have at least one available invite to use Global Send';
-    }
-
     this.receipt.loading = true;
     this.receipt.calculated = false;
     this.success = false;
