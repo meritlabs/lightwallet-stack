@@ -41,3 +41,8 @@ package-lock.json
 # Ionic packages
 packages/lightwallet/platforms/
 packages/lightwallet/www/
+
+# Deployment Experiments
+desktop.dist.tar.gz
+dist.tar.gz
+mobile.dist.tar.gz
