@@ -3118,10 +3118,10 @@ WalletService.prototype.getUnlockRequests = function(opts, cb) {
                 if (err) return cb(err);
                 self.storage.fetchInvitedAddresses(wallet.id, function (err, invitedAddresses) {
                   if (err) return cb(err);
-
                   var unlockRequests = referrals.map(function(referralObj) {
                      return Bitcore.Referral(referralObj.raw, network);
                     }).filter(function(referral) {
+                      if (referral.address.type == 'scripthash') return false; //do not count script hash addresses
                       return (addressStrs.indexOf(referral.address.toString()) == -1); //filter our own unlock request
                     }).map(function(referral) {
 
