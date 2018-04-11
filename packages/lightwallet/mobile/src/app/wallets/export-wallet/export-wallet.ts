@@ -78,6 +78,7 @@ export class ExportWalletView {
                   this.walletsService.decrypt(this.wallet, data.password);
                   this.mnemonic = this.wallet.getMnemonic();
                   setQrInfo(data.password);
+                  this.walletsService.encrypt(this.wallet, data.password);
                   this.accessGranted = true;
                 } catch (err) {
                   showPrompt();
