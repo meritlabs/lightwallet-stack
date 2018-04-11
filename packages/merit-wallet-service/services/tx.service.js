@@ -8,17 +8,21 @@ class TxService {
 
     async getUtxos(address) {
 
-        const cacheKey = address;
-        const addressesArg = { addresses: [address] };
+        this.bcClient.getBestBlockHash((err, res) => {
+            console.log(err, res);
+        });
 
-        //todo query mempool and blockchain in parallel?
-        const mempoolUtxos = await util.promisify( this.bcClient.getAddressMempool(addressesArg) );
-        let bcUtxos = [];
-        if (cache.utxos[cacheKey]) {
-           bcUtxos = cache.utxos[cacheKey];
-        } else {
-           bcUtxos = await this.promisify( this.bcClient.getAddressUtxos(addressesArg));
-        }
+        //const cacheKey = address;
+        //const addressesArg = { addresses: [address] };
+        //
+        ////todo query mempool and blockchain in parallel?
+        //const mempoolUtxos = await util.promisify( this.bcClient.getAddressMempool(addressesArg) );
+        //let bcUtxos = [];
+        //if (cache.utxos[cacheKey]) {
+        //   bcUtxos = cache.utxos[cacheKey];
+        //} else {
+        //   bcUtxos = await this.promisify( this.bcClient.getAddressUtxos(addressesArg));
+        //}
 
     }
 

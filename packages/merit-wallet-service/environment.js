@@ -6,7 +6,7 @@ module.exports = {
         rpcallowid: '127.0.0.1',
         rpcuser: 'merit1',
         rpcpassword: 'local321',
-        prcport:2336
+        rpcport: 2336
     },
     'prod': {
         network: 'livenet',

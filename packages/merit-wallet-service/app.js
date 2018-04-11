@@ -14,19 +14,13 @@ let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
 /** blockchain client */
-const MeritRPC = require('meritd-rpc');
-const bcClient = new MeritRPC({
-    protocol:  'http',
-    host: ENV.rpchost || '127.0.0.1',
-    port: ENV.rpcport,
-    user: ENV.rpcuser,
-    pass: ENV.rpcpassword,
-    rejectUnauthorized: ENV.rpcstrict == undefined ? true : ENV.rpcstrict
-});
+const bcClient = require('./blockchain/blockchain.client.js');
 
 /** services */
-TxService = require('./services/tx.service');
-app.txService = new TxService(bcClient);
+TxService = TxService = require('./services/tx.service');
+SystemService = require('./services/system.service');
+app.systemService = new SystemService(bcClient);
+app.txService = new TxService(bcClient)
 
 /** loading controllers into and app */
 require('express-load')('controllers').into(app);
@@ -50,7 +44,7 @@ app.use((req, res, next) => {
        //todo add regexps for:
        // validate address/alias
        // validate easyscript
-       '/test'
+       '/system'
    ];
 
    if (nonAuthRoutes.some(r => (new RegExp(r, 'i')).test(url))) return next();
@@ -72,7 +66,8 @@ app.use((req, res, next) => {
  * routes
  */
 
-app.get('/test', app.controllers.walletController.test); //tmp route just for testing
+/* sytem info */
+app.get('/system', app.controllers.systemController.getSystemStatus);
 
 /* vaults */
 app.get('/vaults', app.controllers.vaultController.getVaults);

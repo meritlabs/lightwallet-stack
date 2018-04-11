@@ -2,7 +2,7 @@ class WalletController {
 
     /** temporary endpoint only to test if service is working */
     async test(req, res) {
-        console.log(req.app.txService.getUtxos());
+        req.app.txService.getUtxos();
         res.json("ok");
     }
 
