@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import firebase from '@firebase/app';
 import '@firebase/messaging';
 import { NotificationData } from '@ionic-native/fcm';
-import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
