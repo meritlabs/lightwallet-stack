@@ -8,7 +8,7 @@ import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { Observable } from 'rxjs/Observable';
 
 @Component({
-  selector: 'app-wallet-details-history',
+  selector: 'view-wallet-details-history',
   templateUrl: './wallet-details-history.view.html',
   styleUrls: ['./wallet-details-history.view.sass']
 })
