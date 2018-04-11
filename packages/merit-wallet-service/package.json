@@ -20,7 +20,7 @@
     "nodemon": "^1.17.3"
   },
   "scripts": {
-    "start": "NODE_ENV=dev nodemon app.js",
+    "start": "NODE_ENV=dev nodemon starter.js",
     "test": "mocha --timeout 10000"
   }
 }

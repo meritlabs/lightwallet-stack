@@ -4,9 +4,6 @@ const app = require('express-async-await')(
     require('express')()
 );
 
-
-
-
 /** limitations */
 const POST_LIMIT = 1024 * 100 /* Max POST 100 kb */ ;
 
@@ -27,10 +24,11 @@ const bcClient = new MeritRPC({
     rejectUnauthorized: ENV.rpcstrict == undefined ? true : ENV.rpcstrict
 });
 
-/** loading controllers, services and schemes into app */
-TxService = require('./services/tx.service')
+/** services */
+TxService = require('./services/tx.service');
 app.txService = new TxService(bcClient);
 
+/** loading controllers into and app */
 require('express-load')('controllers').into(app);
 
 /** headers */
@@ -113,8 +111,5 @@ app.get('/community', app.controllers.communityController.getCommunityInfo);
 
 /* address */
 app.get('/address', app.controllers.addressController.getAddressInfo);
-
-
-app.listen(ENV.mwsPort, () => console.log(`MWS started on port: ${ENV.mwsPort}`));
 
 module.exports = app;
