@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
+import { DirectivesModule } from '@merit/mobile/directives/directives.module';
 import { VaultDepositView } from './vault-deposit';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { ComponentsModule } from '@merit/mobile/components/components.module';
@@ -11,7 +12,8 @@ import { ComponentsModule } from '@merit/mobile/components/components.module';
   imports: [
     IonicPageModule.forChild(VaultDepositView),
     CommonPipesModule,
-    ComponentsModule
+    ComponentsModule,
+    DirectivesModule
   ],
 })
 export class VaultDepositModule {}

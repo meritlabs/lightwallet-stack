@@ -15,7 +15,7 @@
 </ion-header>
 
 <ion-content>
-  <div [hidden]="segment != 'phrase'">
+  <div [hidden]="segment != 'phrase'" enter-to-next>
     <ion-item>
       <ion-avatar img-icon item-start>
         <img src="assets/img/icons/wallet.svg" alt="">
@@ -73,7 +73,6 @@
   </div>
 
   <div [hidden]="segment != 'file'">
-
     <ion-item (click)="openFilePicker()" text-wrap>
 
       <ion-avatar img-icon item-start>
@@ -92,28 +91,30 @@
 
       <input type="file" (change)="fileChangeListener($event)" #fileInput>
     </ion-item>
-    <ion-item>
-      <ion-avatar img-icon item-start>
-        <img src="assets/img/icons/lock.svg" alt="">
-      </ion-avatar>
-      <ion-label stacked>Password</ion-label>
-      <ion-input [(ngModel)]="formData.filePassword" [type]="showPassword2? 'text' : 'password'" autocomplete="off"
-                 placeholder="File password"></ion-input>
-      <button ion-button item-end (click)="showPassword2 = !showPassword2" clear>{{ showPassword2 ? 'Hide' : 'Show' }}
-      </button>
-    </ion-item>
 
-    <ion-item margin-bottom margin-top>
-      <ion-avatar img-icon item-start>
-        <img src="assets/img/icons/link.svg" alt="">
-      </ion-avatar>
-      <ion-label stacked>Wallet Service Url</ion-label>
-      <ion-input [(ngModel)]="formData.bwsUrl"></ion-input>
-    </ion-item>
+    <ion-item-group enter-to-next>
+      <ion-item>
+        <ion-avatar img-icon item-start>
+          <img src="assets/img/icons/lock.svg" alt="">
+        </ion-avatar>
+        <ion-label stacked>Password</ion-label>
+        <ion-input [(ngModel)]="formData.filePassword" [type]="showPassword2? 'text' : 'password'" autocomplete="off"
+                   placeholder="File password"></ion-input>
+        <button ion-button item-end (click)="showPassword2 = !showPassword2" clear>{{ showPassword2 ? 'Hide' : 'Show' }}
+        </button>
+      </ion-item>
+
+      <ion-item margin-bottom margin-top>
+        <ion-avatar img-icon item-start>
+          <img src="assets/img/icons/link.svg" alt="">
+        </ion-avatar>
+        <ion-label stacked>Wallet Service Url</ion-label>
+        <ion-input [(ngModel)]="formData.bwsUrl"></ion-input>
+      </ion-item>
+    </ion-item-group>
 
     <button class="action-button" margin-top block (click)="importBlob()" ion-button translate
             [disabled]="!fileImportAllowed()">Import
     </button>
-
   </div>
 </ion-content>

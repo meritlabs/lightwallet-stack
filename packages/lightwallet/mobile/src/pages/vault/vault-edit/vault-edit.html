@@ -1,41 +1,34 @@
 <ion-header>
-
-    <ion-navbar color="light" >
-        <ion-title translate>Edit Vault</ion-title>
-    </ion-navbar>
-
+  <ion-navbar color="light">
+    <ion-title translate>Edit Vault</ion-title>
+  </ion-navbar>
 </ion-header>
 
-
 <ion-content>
+  <ion-item enter-to-next>
+    <ion-label stacked>Vault name</ion-label>
+    <ion-input
+      placeholder="My Vault"
+      [(ngModel)]="vaultName">
+    </ion-input>
+  </ion-item>
 
-    <ion-item>
-        <ion-label stacked>Vault name</ion-label>
-        <ion-input
-                [placeholder]="'My Vault'"
-                [(ngModel)]="vaultName">
-        </ion-input>
-    </ion-item>
-
-
-
-    <button ion-item detail-none (click)="selectWhitelist()">
-        <ion-label>
-            <h2>Whitelist</h2>
-            <p>
+  <button ion-item detail-none (click)="selectWhitelist()">
+    <ion-label>
+      <h2>Whitelist</h2>
+      <p>
              <span *ngFor="let wallet of whitelist; let last = last">
                 {{wallet.name}}<span *ngIf="!last">, </span>
              </span>
-            </p>
-        </ion-label>
-        <button ion-button item-end round add-button icon-only>
-            <ion-icon name="add"></ion-icon>
-        </button>
+      </p>
+    </ion-label>
+    <button ion-button item-end round add-button icon-only>
+      <ion-icon name="add"></ion-icon>
     </button>
+  </button>
 
-    <button ion-button  class="action-button"   (click)="edit()" [disabled]="!isEditAvailable">
-        Reset
-    </button>
-
+  <button ion-button class="action-button" (click)="edit()" [disabled]="!isEditAvailable">
+    Reset
+  </button>
 </ion-content>
 

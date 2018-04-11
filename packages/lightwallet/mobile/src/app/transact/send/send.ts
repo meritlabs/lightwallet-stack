@@ -228,6 +228,10 @@ export class SendView {
     return this.addressService.isAddress(input);
   }
 
+  onSearchKeyUp(event: KeyboardEvent) {
+    if (event.keyCode === 13) (event.target as HTMLInputElement).blur();
+  }
+
   clearSearch() {
     this.searchQuery = '';
     delete this.suggestedMethod;

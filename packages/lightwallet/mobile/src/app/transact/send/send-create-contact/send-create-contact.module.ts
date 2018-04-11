@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
+import { DirectivesModule } from '@merit/mobile/directives/directives.module';
 import { SendCreateContactView } from './send-create-contact';
 
 @NgModule({
@@ -8,6 +9,7 @@ import { SendCreateContactView } from './send-create-contact';
   ],
   imports: [
     IonicPageModule.forChild(SendCreateContactView),
+    DirectivesModule
   ],
 })
 export class SendCreateContactModule {
