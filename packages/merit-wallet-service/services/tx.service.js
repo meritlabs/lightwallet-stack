@@ -4,7 +4,6 @@ class TxService {
 
     constructor(bcClient) {
         this.bcClient = bcClient;
-        this.cachePrefix = 'utxos_';
     }
 
     getUtxos(address) {
@@ -23,7 +22,7 @@ class TxService {
      */
     async getAllUtxos(address, invites) {
 
-        const cacheKey = (invites ? 'i' : 't')+this.cachePrefix+address;
+        const cacheKey = (invites ? 'i' : 't')+'utxos'+address;
 
         let result = await Cache.findOne({key: cacheKey}, {value: 1}).lean();
         let cache = result ? result.value : {};
@@ -49,6 +48,38 @@ class TxService {
 
         return mempoolUtxos.concat(bcUtxos);
     }
+
+    async getHistory(address) {
+
+        const addressesArg = { addresses: [address] };
+        const cacheKey ='txhistory_'+address;
+
+        let result = await Cache.findOne({key: cacheKey}, {value: 1}).lean();
+        let bcTxs = result ? result.value : [];
+        if (!result) {
+            await Cache.create({key: cacheKey, value: []});
+        }
+
+        if (!bcTxs.length) {
+            const {result:txids, error} = await this.bcClient.getAddressTxids(addressesArg);
+            if (error) throw  new Error(error);
+
+            for (let txid of txids) {
+                let tx = await this.bcClient.getTransaction(txid);
+                if (error) throw  new Error(error);
+
+                bcTxs.push(tx);
+            }
+            await Cache.update({key: cacheKey}, {value: bcTxs});
+        }
+
+        const {result:mempoolTxs, error} = await this.bcClient.getAddressMempool(addressesArg);
+        if (error) throw  new Error(error);
+
+        return mempoolTxs.concat(bcTxs);
+    }
+
+
 
 
 }

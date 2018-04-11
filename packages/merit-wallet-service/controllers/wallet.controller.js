@@ -12,11 +12,10 @@ class WalletController {
         const invites = await req.app.txService.getInvites(address);
         const wallet  =  await Wallets.findOne({rootAddress: address}); //todo change to copayer id
 
-        res.json({
-            utxos: utxos,
-            invites: invites,
-            wallet: wallet
-        });
+        const history = await req.app.txService.getHistory(address);
+
+
+        res.json(history);
     }
 
     async getUnlockRequests(req, res) {

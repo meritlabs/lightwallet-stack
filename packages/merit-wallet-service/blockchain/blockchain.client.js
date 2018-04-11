@@ -5,7 +5,7 @@ const { promisify } = require('util');
 class BlockchainClient {
 
     constructor() {
-        const client = new MeritRPC({
+        let client = new MeritRPC({
             protocol:  'http',
             host: ENV.rpchost || '127.0.0.1',
             port: ENV.rpcport,
@@ -16,7 +16,7 @@ class BlockchainClient {
 
         for (let method of Object.keys(MeritRPC.callspec)) {
             this[method] = promisify(
-                client[method].bind(client)
+                client[method].bind(this.client)
             );
         }
     }
