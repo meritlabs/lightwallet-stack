@@ -42,7 +42,6 @@ export class WebPushNotificationsService extends PushNotificationsService {
               private persistenceService: PersistenceService2,
               private store: Store<IRootAppState>) {
     super(http, logger);
-    this.init();
     this.logger.info('Web PushNotifications service is alive!');
     this.platform = 'web';
     this.packageName = location.origin;
