@@ -22,8 +22,8 @@ export class PollingNotificationsService {
   }
 
   async enable(): Promise<any> {
-    const { pushNotifications } = await this.persistenceService.getNotificationSettings();
-    if (pushNotifications) {
+    const pnSettings = await this.persistenceService.getNotificationSettings();
+    if (pnSettings && pnSettings.pushNotifications) {
       this.logger.warn('Attempted to enable polling, even though it is currently disabled in app settings.');
       return;
     }
