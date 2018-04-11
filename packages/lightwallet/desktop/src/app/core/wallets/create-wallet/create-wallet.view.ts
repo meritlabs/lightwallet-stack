@@ -12,6 +12,7 @@ import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ENV } from '@app/env';
 import { Store } from '@ngrx/store';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
 @Component({
   selector: 'view-create-wallet',

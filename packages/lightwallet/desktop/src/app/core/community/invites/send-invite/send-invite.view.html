@@ -11,6 +11,10 @@
     </div>
   </div>
 
+  <error-message *ngIf="(availableInvites$ | async) == 0">
+    You do not have any available invites to send.
+  </error-message>
+
   <form [formGroup]="formData" (ngSubmit)="sendInvite()">
     <div class="sendMerit__form__group">
       <label for="" class="ui-label">Send from</label>
@@ -31,7 +35,7 @@
         <div [hidden]="address.hasError('required') || !address.hasError('InvalidFormat')">Invalid address or alias format</div>
         <div [hidden]="address.hasError('required') || !address.hasError('AddressNotFound')">Address not found</div>
       </div>
-      <button class="ui-button ui-button--blue" type="submit" role="button" [disabled]="formData.invalid">SEND</button>
+      <button class="ui-button ui-button--blue" type="submit" role="button" [disabled]="formData.invalid || ((availableInvites$ | async) == 0)">SEND</button>
   </form>
 
 
