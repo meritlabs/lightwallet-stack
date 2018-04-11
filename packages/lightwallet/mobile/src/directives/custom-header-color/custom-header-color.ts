@@ -22,9 +22,7 @@ export class CustomHeaderColorDirective implements AfterViewInit {
   }
 
   constructor(private rnd: Renderer2,
-              private el: ElementRef) {
-    console.log('Custom header color directive alive!');
-  }
+              private el: ElementRef) {}
 
   ngAfterViewInit() {
     this.toolbarBackgroundNativeElement = this.el.nativeElement.querySelector('.toolbar-background');

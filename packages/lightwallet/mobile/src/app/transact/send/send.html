@@ -38,7 +38,7 @@
     </div>
 
     <div class="searchbar-wrapper">
-      <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
+      <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ngModelChange)="parseSearch()" (keyup)="onSearchKeyUp($event)"
                      (ionCancel)="clearSearch()" placeholder="Enter @alias/address"></ion-searchbar>
       <button ion-button clear item-end (click)="openScanner()" class="scan-button" *ngIf="!searchQuery">
         <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>

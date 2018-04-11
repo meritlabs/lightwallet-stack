@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
+import { DirectivesModule } from '@merit/mobile/directives/directives.module';
 import { EditWalletView } from './edit-wallet';
 
 @NgModule({
@@ -8,6 +9,7 @@ import { EditWalletView } from './edit-wallet';
   ],
   imports: [
     IonicPageModule.forChild(EditWalletView),
+    DirectivesModule
   ],
 })
 export class EditWalletModule {
