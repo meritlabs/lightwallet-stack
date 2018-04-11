@@ -18,7 +18,7 @@ export class EnterToNextDirective implements AfterViewInit {
 
     (this.el.nativeElement as HTMLElement).onkeyup = (event: KeyboardEvent) => {
       const { keyCode, target } = event;
-      if (keyCode === 13) {
+      if (keyCode === 13 && (target as HTMLInputElement).tagName === 'INPUT') {
         let index;
         const input = inputs.find((i, ii) => {
           if (target == i) {

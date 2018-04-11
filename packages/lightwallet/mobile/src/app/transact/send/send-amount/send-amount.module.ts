@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
+import { DirectivesModule } from '@merit/mobile/directives/directives.module';
 import { SendAmountView } from './send-amount';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
@@ -9,7 +10,8 @@ import { CommonPipesModule } from '@merit/common/common-pipes.module';
   ],
   imports: [
     IonicPageModule.forChild(SendAmountView),
-    CommonPipesModule
+    CommonPipesModule,
+    DirectivesModule
   ],
 })
 export class SendAmountModule {
