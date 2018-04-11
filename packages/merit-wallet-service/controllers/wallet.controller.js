@@ -1,13 +1,22 @@
+const Wallets = require('./../schemes/wallet.scheme');
+
 class WalletController {
 
-    /** temporary endpoint only to test if service is working */
-    async test(req, res) {
-        req.app.txService.getUtxos();
-        res.json("ok");
-    }
-
     async getStatus(req, res) {
-        res.json({});
+
+        //debug data
+        const address = 'meBrB81T8bTyvq9vxVUzxHaoA9fnRLcz7E';
+
+        //todo run in parallel
+        const utxos = await req.app.txService.getUtxos(address);
+        const invites = await req.app.txService.getInvites(address);
+        const wallet  =  await Wallets.findOne({rootAddress: address}); //todo change to copayer id
+
+        res.json({
+            utxos: utxos,
+            invites: invites,
+            wallet: wallet
+        });
     }
 
     async getUnlockRequests(req, res) {

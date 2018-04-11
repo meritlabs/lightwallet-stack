@@ -1,39 +1,55 @@
-const util = require('util');
+const Cache = require('../schemes/cache.scheme');
 
 class TxService {
 
     constructor(bcClient) {
         this.bcClient = bcClient;
+        this.cachePrefix = 'utxos_';
     }
 
-    async getUtxos(address) {
-
-        this.bcClient.getBestBlockHash((err, res) => {
-            console.log(err, res);
-        });
-
-        //const cacheKey = address;
-        //const addressesArg = { addresses: [address] };
-        //
-        ////todo query mempool and blockchain in parallel?
-        //const mempoolUtxos = await util.promisify( this.bcClient.getAddressMempool(addressesArg) );
-        //let bcUtxos = [];
-        //if (cache.utxos[cacheKey]) {
-        //   bcUtxos = cache.utxos[cacheKey];
-        //} else {
-        //   bcUtxos = await this.promisify( this.bcClient.getAddressUtxos(addressesArg));
-        //}
-
+    getUtxos(address) {
+        return this.getAllUtxos(address, false);
     }
 
     getInvites(address) {
-
+        return this.getAllUtxos(address, true);
     }
 
-    //calling on new block event
-    clearCache() {
-        this.cache = { utxos: {}, invites: {} };
+    /**
+     *
+     * @param address
+     * @param invites - search for invites (true) or regular transactions
+     * @returns []
+     */
+    async getAllUtxos(address, invites) {
+
+        const cacheKey = (invites ? 'i' : 't')+this.cachePrefix+address;
+
+        let result = await Cache.findOne({key: cacheKey}, {value: 1}).lean();
+        let cache = result ? result.value : {};
+        if (!result) {
+            await Cache.create({key: cacheKey, value: {}});
+        }
+
+        const addressesArg = { addresses: [address], invites: invites };
+        let { result:mempoolUtxos, error } = await this.bcClient.getAddressMempool(addressesArg);
+        if (error) throw  new Error(error);
+        mempoolUtxos = mempoolUtxos.filter(t => t.isInvite == invites);
+
+        let bcUtxos;
+        if (cache[address]) {
+            bcUtxos = cache[address];
+        } else {
+            const {result, error} = await this.bcClient.getAddressUtxos(addressesArg);
+            if (error) throw  new Error(error);
+            bcUtxos = result;
+        }
+
+        await Cache.update({key: cacheKey}, {value: cache});
+
+        return mempoolUtxos.concat(bcUtxos);
     }
+
 
 }
 

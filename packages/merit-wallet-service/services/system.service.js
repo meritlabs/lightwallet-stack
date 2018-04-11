@@ -3,7 +3,7 @@ const Cache = require('../schemes/cache.scheme');
 
 class SystemService {
 
-    constructor(bcClient, mongoClient) {
+    constructor(bcClient) {
         this.bcClient = bcClient;
         this.cacheKey = 'system';
     }
@@ -13,7 +13,7 @@ class SystemService {
         let result = await Cache.findOne({key: this.cacheKey}, {value: 1}).lean();
         let cache = result ? result.value : {};
         if (!result) {
-            await Cache.create({key: this.cacheKey}, {value: {}});
+            await Cache.create({key: this.cacheKey, value: {}});
         }
 
         if (!cache.hash) {
