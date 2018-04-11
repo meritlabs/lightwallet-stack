@@ -149,7 +149,6 @@ export class ExportWalletView {
                     // file doesn't exist
                     try {
                       await this.file.writeFile(root, data.name, blob);
-                      console.log('Done writing!');
                       return done();
                     } catch (e) {
                       this.logger.error('Error export wallet to file', e);
