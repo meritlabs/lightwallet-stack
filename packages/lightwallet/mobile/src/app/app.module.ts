@@ -19,6 +19,7 @@ import { TouchID } from '@ionic-native/touch-id';
 import { IonicStorageModule } from '@ionic/storage';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { AddressService } from '@merit/common/services/address.service';
+import { StoreModule } from '@ngrx/store';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
@@ -46,6 +47,7 @@ export function getProviders() {
     AddressScannerService,
     DeepLinkService,
     EmailNotificationsService,
+    PollingNotificationsService,
     MeritToastController,
     AddressService,
     TouchIdService,
@@ -89,6 +91,7 @@ export function loadConfigs(appService) {
     MomentModule,
     CommonModule,
     HttpClientModule,
+    StoreModule.forRoot({}),
     IonicModule.forRoot(MeritLightWallet, {
       preloadModules: true,
       tabsHideOnSubPages: true,

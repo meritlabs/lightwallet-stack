@@ -10,6 +10,7 @@ import { MeritToastController, ToastConfig } from '@merit/common/services/toast.
 import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
@@ -39,6 +40,7 @@ export class AliasView {
               private config: ConfigService,
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
+              private emailNotificationService: EmailNotificationsService,
               private addressService: AddressService) {
   }
 
@@ -112,6 +114,7 @@ export class AliasView {
         await this.pushNotificationService.subscribe(wallet);
       } else {
         this.logger.info('Subscribing to long polling for default wallet');
+        await this.emailNotificationService.init();
         this.pollingNotificationService.enablePolling(wallet);
       }
 
