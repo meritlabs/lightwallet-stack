@@ -133,7 +133,7 @@ export class SendConfirmationView {
                 } else {
                   try {
                     this.walletService.decrypt(this.txData.wallet, data.password);
-                    this.send();
+                    this.send(data.password);
                   } catch (e) {
                     showPassPrompt(true);
                   }
@@ -204,7 +204,7 @@ export class SendConfirmationView {
   }
 
 
-  async send() {
+  async send(walletPassword?) {
     const loadingSpinner = this.loadingCtrl.create({
       content: 'Sending transaction...',
       dismissOnPageChange: true,
@@ -239,6 +239,7 @@ export class SendConfirmationView {
     } finally {
       loadingSpinner.dismiss();
       this.txData.referralsToSign = [];
+      if (walletPassword) this.walletService.encrypt(this.txData.wallet, walletPassword);
     }
   }
 
