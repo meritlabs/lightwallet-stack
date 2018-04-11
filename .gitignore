@@ -41,3 +41,4 @@ package-lock.json
 # Ionic packages
 packages/lightwallet/platforms/
 packages/lightwallet/www/
+/packages/merit-wallet-service/node_modules/
