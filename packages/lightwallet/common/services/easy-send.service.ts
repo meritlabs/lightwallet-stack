@@ -1,12 +1,12 @@
 import { Injectable, Optional } from '@angular/core';
+import { ENV } from '@app/env';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { PersistenceService } from '@merit/common/services/persistence.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { EasySend } from '@merit/common/models/easy-send';
-import { ENV } from '@app/env';
-import { HDPrivateKey, Address, PrivateKey,Script } from 'bitcore-lib';
-import { FeeService } from '@merit/common/services/fee.service';
 import { AddressService } from '@merit/common/services/address.service';
+import { FeeService } from '@merit/common/services/fee.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
+import { Address, HDPrivateKey, PrivateKey, Script } from 'bitcore-lib';
 
 @Injectable()
 export class EasySendService {
@@ -20,7 +20,7 @@ export class EasySendService {
     private addressService: AddressService
   ) {}
 
-  async createEasySendScriptHash(wallet: MeritWalletClient, password:string = ''): Promise<EasySend> {
+  async createEasySendScriptHash(wallet: MeritWalletClient, password: string = ''): Promise<EasySend> {
     const rootKey = HDPrivateKey.fromString(wallet.credentials.xPrivKey);
     const signPrivKey = rootKey.privateKey;
     const pubkey = signPrivKey.publicKey;
@@ -34,7 +34,7 @@ export class EasySendService {
       signPrivKey,
       address: easySendAddress,
       addressType: Address.PayToScriptHashType, // script address
-      network: ENV.network,
+      network: ENV.network
     };
 
     // easy send address is a mix of script_id pubkey_id
@@ -43,11 +43,11 @@ export class EasySendService {
     easySend.scriptReferralOpts = scriptReferralOpts;
 
     easySend.script.isOutput = true;
-    return easySend; 
+    return easySend;
   }
 
   async sendSMS(phoneNumber: string, amountMrt: string, url: string): Promise<any> {
-    let msg: string = `Here is ${amountMrt} Merit.  Click here to redeem: ${url}`
+    let msg: string = `Here is ${amountMrt} Merit.  Click here to redeem: ${url}`;
     if (msg.length > 160) {
       // TODO: Find a way to properly split the URL across two Messages, if needed.
       const msg1: string = `I just sent you ${amountMrt} Merit.  Merit is a new Digital Currency.  `;
@@ -58,8 +58,8 @@ export class EasySendService {
 
     }
 
-    try  {
-      return this.socialSharing.shareViaSMS(msg, phoneNumber)
+    try {
+      return this.socialSharing.shareViaSMS(msg, phoneNumber);
     } catch (err) {
       throw new Error('Error sending sms: ' + err);
     }
@@ -72,7 +72,7 @@ export class EasySendService {
           `I just sent you ${amountMrt} Merit! ` +
           `Merit is a new digital currency, and if you don't have a Merit Wallet yet, ` +
           `you can easily make one to claim the money. \n \n` +
-          `Here is the link to claim the Merit: \n \n ${url}`
+          `Here is the link to claim the Merit: \n \n ${url}`;
         return this.socialSharing.shareViaEmail(message, `Here is ${amountMrt} Merit!`, [emailAddress]);
       }
     } catch (err) {
@@ -81,8 +81,7 @@ export class EasySendService {
   }
 
   async updatePendingEasySends(wallet: MeritWalletClient) {
-    let easySends: EasySend[] = await this.persistenceService.getPendingEasySends(wallet.id);
-    easySends = easySends || [];
+    let easySends: EasySend[] = (await this.persistenceService.getPendingEasySends(wallet.id)) || [];
 
     easySends = await Promise.all(easySends.map(async (easySend: EasySend) => {
       console.log('Easy send is ', easySend);
@@ -90,6 +89,7 @@ export class EasySendService {
       const txs = await wallet.validateEasyScript(easySend.scriptAddress.toString());
       return txs.result.every(tx => !tx.spent) ? easySend : null;
     }));
+
     easySends = easySends.filter((easySend: EasySend) => easySend !== null);
     await this.persistenceService.setPendingEasySends(wallet.id, easySends);
     return easySends;
@@ -102,10 +102,9 @@ export class EasySendService {
   }
 
   prepareTxp(wallet: MeritWalletClient, amount: number, easySend: EasySend) {
-
     if (amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big');
 
-    let txp:any = {
+    const txp: any = {
       outputs: [{
         'script': easySend.script.toHex(),
         'toAddress': easySend.scriptAddress,
@@ -132,9 +131,9 @@ export class EasySendService {
    */
   private async bulidScript(wallet, passphrase = '', timeout = this.DEFAULT_TIMEOUT): Promise<EasySend> {
 
-    const pubKey  = wallet.getRootAddressPubkey();
+    const pubKey = wallet.getRootAddressPubkey();
     const rcvPair = PrivateKey.forNewEasySend(passphrase, ENV.network);
-    let pubKeys = [
+    const pubKeys = [
       rcvPair.key.publicKey.toBuffer(),
       pubKey.toBuffer()
     ];
@@ -145,7 +144,7 @@ export class EasySendService {
     return {
       receiverPubKey: rcvPair.key.publicKey,
       script: script.toMixedScriptHashOut(pubKey),
-      senderName: addressInfo.alias ? '@'+addressInfo.alias : 'Someone', 
+      senderName: addressInfo.alias ? '@' + addressInfo.alias : 'Someone',
       senderPubKey: pubKey.toString(),
       secret: rcvPair.secret.toString('hex'),
       blockTimeout: timeout,
@@ -155,6 +154,5 @@ export class EasySendService {
     };
   }
 
-  
 
 }

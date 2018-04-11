@@ -14,12 +14,13 @@ const { NoEmitOnErrorsPlugin, SourceMapDevToolPlugin, NamedModulesPlugin, Define
 const { NamedLazyChunksWebpackPlugin, BaseHrefWebpackPlugin, PostcssCliResources } = require('@angular/cli/plugins/webpack');
 const { CommonsChunkPlugin } = require('webpack').optimize;
 const { AngularCompilerPlugin } = require('@ngtools/webpack');
+const { compilerOptions: { paths }} = require('./tsconfig');
 
 const nodeModules = path.join(process.cwd(), 'node_modules');
 const realNodeModules = fs.realpathSync(nodeModules);
 const genDirNodeModules = path.join(process.cwd(), 'src', '$$_gendir', 'node_modules');
 const entryPoints = ['inline', 'polyfills', 'sw-register', 'styles', 'vendor', 'main'];
-const hashFormat = { 'chunk': '', 'extract': '', 'file': '.[hash:20]', 'script': '' };
+const hashFormat = { chunk: '', extract: '', file: '.[hash:20]', script: '' };
 const baseHref = '';
 const deployUrl = '';
 const projectRoot = process.cwd();
@@ -117,189 +118,187 @@ const postcssPlugins = function (loader) {
   ];
 };
 
-function getAliases(production) {
-  if (production) {
-    return {
-      '@app/env': path.resolve(__dirname, '../common/environments/environment.ts')
-    };
-  }
+function getEnvPath(production) {
+  return '../common/environments/environment' + (production? '' : '.dev') + '.ts';
+}
 
+function getAliases(production) {
   return {
-    '@app/env': path.resolve(__dirname, '../common/environments/environment.dev.ts')
+    '@app/env': path.resolve(__dirname, getEnvPath(production))
   };
 }
 
 module.exports = (_, config) => {
   return {
-    'resolve': {
-      'extensions': [
+    resolve: {
+      extensions: [
         '.ts',
         '.js'
       ],
-      'symlinks': true,
-      'modules': [
+      symlinks: true,
+      modules: [
         './src',
         './node_modules'
       ],
-      'alias': {
+      alias: {
         ...rxPaths(),
         ...getAliases(config.p)
       },
-      'mainFields': [
+      mainFields: [
         'browser',
         'module',
         'main'
       ]
     },
-    'resolveLoader': {
-      'modules': [
+    resolveLoader: {
+      modules: [
         './node_modules'
       ],
-      'alias': {
+      alias: {
         ...rxPaths(),
         ...getAliases(config.p)
       }
     },
-    'entry': {
-      'main': [
+    entry: {
+      main: [
         './src/main.ts'
       ],
-      'polyfills': [
+      polyfills: [
         './src/polyfills.ts'
       ],
-      'styles': [
+      styles: [
         './src/styles.sass'
       ]
     },
-    'output': {
-      'path': path.join(process.cwd(), 'dist'),
-      'filename': '[name].bundle.js',
-      'chunkFilename': '[id].chunk.js',
-      'crossOriginLoading': false
+    output: {
+      path: path.join(process.cwd(), 'dist'),
+      filename: '[name].bundle.js',
+      chunkFilename: '[id].chunk.js',
+      crossOriginLoading: false
     },
-    'module': {
-      'rules': [
+    module: {
+      rules: [
         {
-          'test': /\.html$/,
-          'loader': 'raw-loader'
+          test: /\.html$/,
+          loader: 'raw-loader'
         },
         {
-          'test': /\.(eot|svg|cur)$/,
-          'loader': 'file-loader',
-          'options': {
-            'name': '[name].[hash:20].[ext]',
-            'limit': 10000
+          test: /\.(eot|svg|cur)$/,
+          loader: 'file-loader',
+          options: {
+            name: '[name].[hash:20].[ext]',
+            limit: 10000
           }
         },
         {
-          'test': /\.(jpg|png|webp|gif|otf|ttf|woff|woff2|ani)$/,
-          'loader': 'url-loader',
-          'options': {
-            'name': '[name].[hash:20].[ext]',
-            'limit': 10000
+          test: /\.(jpg|png|webp|gif|otf|ttf|woff|woff2|ani)$/,
+          loader: 'url-loader',
+          options: {
+            name: '[name].[hash:20].[ext]',
+            limit: 10000
           }
         },
         {
-          'exclude': [
+          exclude: [
             path.join(process.cwd(), 'src/styles.sass')
           ],
-          'test': /\.css$/,
-          'use': [
+          test: /\.css$/,
+          use: [
             {
-              'loader': 'raw-loader'
+              loader: 'raw-loader'
             },
             {
-              'loader': 'postcss-loader',
-              'options': {
-                'ident': 'embedded',
-                'plugins': postcssPlugins,
-                'sourceMap': true
+              loader: 'postcss-loader',
+              options: {
+                ident: 'embedded',
+                plugins: postcssPlugins,
+                sourceMap: true
               }
             }
           ]
         },
         {
-          'exclude': [
+          exclude: [
             path.join(process.cwd(), 'src/styles.sass')
           ],
-          'test': /\.scss$|\.sass$/,
-          'use': [
+          test: /\.scss$|\.sass$/,
+          use: [
             {
-              'loader': 'raw-loader'
+              loader: 'raw-loader'
             },
             {
-              'loader': 'postcss-loader',
-              'options': {
-                'ident': 'embedded',
-                'plugins': postcssPlugins,
-                'sourceMap': true
+              loader: 'postcss-loader',
+              options: {
+                ident: 'embedded',
+                plugins: postcssPlugins,
+                sourceMap: true
               }
             },
             {
-              'loader': 'sass-loader',
-              'options': {
-                'sourceMap': true,
-                'precision': 8,
-                'includePaths': []
+              loader: 'sass-loader',
+              options: {
+                sourceMap: true,
+                precision: 8,
+                includePaths: []
               }
             }
           ]
         },
         {
-          'include': [
+          include: [
             path.join(process.cwd(), 'src/styles.sass')
           ],
-          'test': /\.css$/,
-          'use': [
+          test: /\.css$/,
+          use: [
             'style-loader',
             {
-              'loader': 'raw-loader'
+              loader: 'raw-loader'
             },
             {
-              'loader': 'postcss-loader',
-              'options': {
-                'ident': 'embedded',
-                'plugins': postcssPlugins,
-                'sourceMap': true
+              loader: 'postcss-loader',
+              options: {
+                ident: 'embedded',
+                plugins: postcssPlugins,
+                sourceMap: true
               }
             }
           ]
         },
         {
-          'include': [
+          include: [
             path.join(process.cwd(), 'src/styles.sass')
           ],
-          'test': /\.scss$|\.sass$/,
-          'use': [
+          test: /\.scss$|\.sass$/,
+          use: [
             'style-loader',
             {
-              'loader': 'raw-loader'
+              loader: 'raw-loader'
             },
             {
-              'loader': 'postcss-loader',
-              'options': {
-                'ident': 'embedded',
-                'plugins': postcssPlugins,
-                'sourceMap': true
+              loader: 'postcss-loader',
+              options: {
+                ident: 'embedded',
+                plugins: postcssPlugins,
+                sourceMap: true
               }
             },
             {
-              'loader': 'sass-loader',
-              'options': {
-                'sourceMap': true,
-                'precision': 8,
-                'includePaths': []
+              loader: 'sass-loader',
+              options: {
+                sourceMap: true,
+                precision: 8,
+                includePaths: []
               }
             }
           ]
         },
         {
-          'test': /\.ts$/,
-          'loader': '@ngtools/webpack'
+          test: /\.ts$/,
+          loader: '@ngtools/webpack'
         }
       ]
     },
-    'plugins': [
+    plugins: [
       new DefinePlugin({
         WEBPACK_CONFIG: {
           COMMIT_HASH: JSON.stringify(execSync('git rev-parse --short HEAD').toString().trim()),
@@ -309,19 +308,19 @@ module.exports = (_, config) => {
       new NoEmitOnErrorsPlugin(),
       new CopyWebpackPlugin([
         {
-          'context': 'src',
-          'to': '',
-          'from': {
-            'glob': 'assets/**/*',
-            'dot': true
+          context: 'src',
+          to: '',
+          from: {
+            glob: 'assets/**/*',
+            dot: true
           }
         },
         {
-          'context': 'src',
-          'to': '',
-          'from': {
-            'glob': 'favicon.ico',
-            'dot': true
+          context: 'src',
+          to: '',
+          from: {
+            glob: 'favicon.ico',
+            dot: true
           }
         },
         {
@@ -341,36 +340,36 @@ module.exports = (_, config) => {
           }
         }
       ], {
-        'ignore': [
+        ignore: [
           '.gitkeep',
           '**/.DS_Store',
           '**/Thumbs.db'
         ],
-        'debug': 'warning'
+        debug: 'warning'
       }),
       new ProgressPlugin(),
       new CircularDependencyPlugin({
-        'exclude': /(\\|\/)node_modules(\\|\/)/,
-        'failOnError': false,
-        'onDetected': false,
-        'cwd': projectRoot
+        exclude: /(\\|\/)node_modules(\\|\/)/,
+        failOnError: false,
+        onDetected: false,
+        cwd: projectRoot
       }),
       new NamedLazyChunksWebpackPlugin(),
       new HtmlWebpackPlugin({
-        'template': './src/index.html',
-        'filename': './index.html',
-        'hash': false,
-        'inject': true,
-        'compile': true,
-        'favicon': false,
-        'minify': false,
-        'cache': true,
-        'showErrors': true,
-        'chunks': 'all',
-        'excludeChunks': [],
-        'title': 'Webpack App',
-        'xhtml': true,
-        'chunksSortMode': function sort(left, right) {
+        template: './src/index.html',
+        filename: './index.html',
+        hash: false,
+        inject: true,
+        compile: true,
+        favicon: false,
+        minify: false,
+        cache: true,
+        showErrors: true,
+        chunks: 'all',
+        excludeChunks: [],
+        title: 'Webpack App',
+        xhtml: true,
+        chunksSortMode: function sort(left, right) {
           let leftIndex = entryPoints.indexOf(left.names[0]);
           let rightIndex = entryPoints.indexOf(right.names[0]);
           if (leftIndex > rightIndex) {
@@ -386,61 +385,63 @@ module.exports = (_, config) => {
       }),
       new BaseHrefWebpackPlugin({}),
       new CommonsChunkPlugin({
-        'name': [
+        name: [
           'inline'
         ],
-        'minChunks': null
+        minChunks: null
       }),
       new CommonsChunkPlugin({
-        'name': [
+        name: [
           'vendor'
         ],
-        'minChunks': (module) => {
+        minChunks: (module) => {
           return module.resource
             && (module.resource.startsWith(nodeModules)
               || module.resource.startsWith(genDirNodeModules)
               || module.resource.startsWith(realNodeModules));
         },
-        'chunks': [
+        chunks: [
           'main'
         ]
       }),
       new SourceMapDevToolPlugin({
-        'filename': '[file].map[query]',
-        'moduleFilenameTemplate': '[resource-path]',
-        'fallbackModuleFilenameTemplate': '[resource-path]?[hash]',
-        'sourceRoot': 'webpack:///'
+        filename: '[file].map[query]',
+        moduleFilenameTemplate: '[resource-path]',
+        fallbackModuleFilenameTemplate: '[resource-path]?[hash]',
+        sourceRoot: 'webpack:///'
       }),
       new CommonsChunkPlugin({
-        'name': [
+        name: [
           'main'
         ],
-        'minChunks': 2,
-        'async': 'common'
+        minChunks: 2,
+        async: 'common'
       }),
       new NamedModulesPlugin({}),
       new AngularCompilerPlugin({
-        'mainPath': 'main.ts',
-        'platform': 0,
-        'hostReplacementPaths': {
-          'environments/environment.ts': '../../common/environments/environment.ts'
-        },
-        'sourceMap': true,
-        'tsConfigPath': 'src/tsconfig.app.json',
-        'skipCodeGeneration': true,
-        'compilerOptions': {}
+        mainPath: 'main.ts',
+        platform: 0,
+        sourceMap: true,
+        tsConfigPath: 'src/tsconfig.app.json',
+        skipCodeGeneration: true,
+        compilerOptions: {
+          paths: {
+            ...paths,
+            '@app/env': [getEnvPath(config.p)]
+          }
+        }
       })
     ],
-    'node': {
-      'fs': 'empty',
-      'global': true,
-      'crypto': true,
-      'tls': 'empty',
-      'net': 'empty',
-      'process': true
+    node: {
+      fs: 'empty',
+      global: true,
+      crypto: true,
+      tls: 'empty',
+      net: 'empty',
+      process: true
     },
-    'devServer': {
-      'historyApiFallback': true
+    devServer: {
+      historyApiFallback: true
     }
   };
 };
