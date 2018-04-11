@@ -12,6 +12,9 @@ class SystemService {
 
         let result = await Cache.findOne({key: this.cacheKey}, {value: 1}).lean();
         let cache = result ? result.value : {};
+        if (!result) {
+            await Cache.create({key: this.cacheKey}, {value: {}});
+        }
 
         if (!cache.hash) {
             const { result:hash, error } = await this.bcClient.getBestBlockHash();
@@ -25,6 +28,7 @@ class SystemService {
             cache.info = info;
         }
 
+
         await Cache.update({key: this.cacheKey}, {value: cache});
 
         return {
@@ -33,12 +37,6 @@ class SystemService {
         };
 
     }
-
-    //calling on new block event
-    clearCache() {
-        Cache.update({key: this.cacheKey}, {value: {}});
-    }
-
 
 }
 

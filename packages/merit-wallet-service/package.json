@@ -11,7 +11,8 @@
     "express-async-await": "^1.1.0",
     "express-load": "^1.1.16",
     "meritd-rpc": "^0.7.0",
-    "mongoose": "^5.0.11"
+    "mongoose": "^5.0.11",
+    "zmq": "^2.15.3"
   },
   "devDependencies": {
     "chai": "^4.1.2",
