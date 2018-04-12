@@ -165,15 +165,14 @@ export class API {
       includeOwn: this.notificationIncludeOwn
     };
 
-    if (!this.lastNotificationId) {
+    if (!this.lastNotificationId)
       opts.timeSpan = interval + 1;
-    }
 
     const notifications = await this.getNotifications(opts);
 
-    if (notifications && notifications.length > 0) {
+    if (notifications && notifications.length > 0)
       this.lastNotificationId = notifications[notifications.length - 1].id;
-    }
+
 
     return notifications;
   }
