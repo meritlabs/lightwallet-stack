@@ -1,6 +1,6 @@
-import { Component, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
@@ -13,7 +13,9 @@ import { PushNotificationsService } from '@merit/common/services/push-notificati
 import { WalletService } from '@merit/common/services/wallet.service';
 import { isAlias } from '@merit/common/utils/addresses';
 import { AddressValidator } from '@merit/common/validators/address.validator';
+import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
 @Component({
   selector: 'view-unlock',
@@ -27,8 +29,10 @@ export class UnlockComponent {
   });
 
   easyReceipt: EasyReceipt;
+  creatingWallet: boolean = false;
 
   get inviteCode() { return this.formData.get('inviteCode'); }
+
   get alias() { return this.formData.get('alias'); }
 
   constructor(private formBuilder: FormBuilder,
@@ -39,8 +43,9 @@ export class UnlockComponent {
               private logger: LoggerService,
               private router: Router,
               private store: Store<IRootAppState>,
-              private easyReceiveService: EasyReceiveService
-              ) {}
+              private easyReceiveService: EasyReceiveService,
+              private loadingCtrl: Ng4LoadingSpinnerService,
+              private toastCtrl: ToastControllerService) {}
 
   async ngOnInit() {
     const receipts = await this.easyReceiveService.getPendingReceipts();
@@ -52,6 +57,8 @@ export class UnlockComponent {
   }
 
   async onSubmit() {
+    this.loadingCtrl.show();
+    this.creatingWallet = true;
     let { inviteCode, alias } = this.formData.getRawValue();
 
     inviteCode = isAlias(inviteCode) ? inviteCode.slice(1) : inviteCode;
@@ -72,9 +79,14 @@ export class UnlockComponent {
       }));
 
       // good to go
+      this.loadingCtrl.hide();
+      this.creatingWallet = false;
       this.router.navigateByUrl('/');
     } catch (err) {
+      this.creatingWallet = false;
+      this.loadingCtrl.hide();
       this.logger.debug('Could not unlock wallet: ', err);
+      this.toastCtrl.error(err);
       // TODO show  error to user
     }
   }
