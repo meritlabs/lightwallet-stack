@@ -58,7 +58,8 @@ export class SendView implements OnInit {
   sending: boolean;
   success: boolean;
   addressLoading: boolean;
-  showTour: boolean = true;
+  showTour: boolean;
+
 
   constructor(private route: ActivatedRoute,
               private store: Store<IRootAppState>,
@@ -180,6 +181,13 @@ export class SendView implements OnInit {
       }
     });
     this.availableCurrencies = await this.rateService.getAvailableFiats();
+    let showTour;
+    if("showTour" in localStorage && localStorage.getItem("showTour") === 'false') {
+      showTour = false;
+    }else {
+      showTour  = true;
+    }
+    this.showTour = showTour;
   }
 
   async createTx() {
@@ -298,6 +306,7 @@ export class SendView implements OnInit {
   }
   hideTour($event) {
     this.showTour = $event;
+    localStorage.setItem("showTour", $event);
   }
 
 
