@@ -119,7 +119,7 @@ const postcssPlugins = function (loader) {
 };
 
 function getEnvPath(production) {
-  return '../common/environments/environment' + (production? '' : '.dev') + '.ts';
+  return '../common/environments/environment' + (production? '.prod' : '.dev') + '.ts';
 }
 
 function getAliases(production) {
