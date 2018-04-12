@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, NgZone, Optional } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { FCM } from '@ionic-native/fcm';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
@@ -30,7 +30,8 @@ export class MobilePushNotificationsService extends PushNotificationsService {
               private mwcService: MWCService,
               platform: Platform,
               private FCM: FCM,
-              private ngZone: NgZone) {
+              private ngZone: NgZone,
+              private pollingNotifications: PollingNotificationsService) {
     super(http, logger);
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
@@ -48,6 +49,14 @@ export class MobilePushNotificationsService extends PushNotificationsService {
       // TODO: enable this when we're making use of it on mobile side
       // this.pollingNotificationService.enable();
     }
+  }
+
+  protected async enablePolling() {
+    const wallets = await this.getWallets();
+    wallets.forEach(w => this.pollingNotifications.enablePolling(w));
+  }
+  protected disablePolling() {
+    this.pollingNotifications.disable();
   }
 
   getWallets() {
