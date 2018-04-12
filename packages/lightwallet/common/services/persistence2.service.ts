@@ -21,28 +21,28 @@ export class PersistenceService2 {
     return this.storage.set(StorageKey.WalletPreferencesPrefix + preferences.id, preferences);
   }
 
-  getWalletPreferences(walletId: string) {
-    return this.storage.get(StorageKey.WalletPreferencesPrefix + walletId);
+  async getWalletPreferences(walletId: string) {
+    return (await this.storage.get(StorageKey.WalletPreferencesPrefix + walletId)) || {};
   }
 
   setNotificationSettings(settings: any) {
     return this.storage.set(StorageKey.NotificationSettings, settings);
   }
 
-  getNotificationSettings() {
-    return this.storage.get(StorageKey.NotificationSettings);
+  async getNotificationSettings() {
+    return (await this.storage.get(StorageKey.NotificationSettings)) || {};
   }
 
   setNotifications(notifications: INotification[]) {
     return this.storage.set(StorageKey.Notifications, notifications);
   }
 
-  getNotifications(): Promise<INotification[]> {
-    return this.storage.get(StorageKey.Notifications);
+  async getNotifications(): Promise<INotification[]> {
+    return (await this.storage.get(StorageKey.Notifications)) || [];
   }
 
   async addEasySend(easySend: EasySend) {
-    const easySends = (await this.getEasySends()) || [];
+    const easySends = await this.getEasySends();
     easySends.push(easySend);
     return this.setEasySends(easySends);
   }
@@ -51,7 +51,7 @@ export class PersistenceService2 {
     return this.storage.set(StorageKey.EasySends, easySends);
   }
 
-  getEasySends(): Promise<EasySend[]> {
-    return this.storage.get(StorageKey.EasySends);
+  async getEasySends(): Promise<EasySend[]> {
+    return (await this.storage.get(StorageKey.EasySends)) || [];
   }
 }

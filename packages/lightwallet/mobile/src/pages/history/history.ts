@@ -52,7 +52,7 @@ export class HistoryView {
     const wallets = await this.profileService.getWallets();
     const walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
       const walletHistory = await this.walletService.getTxHistory(wallet, { force });
-      return formatWalletHistory(walletHistory, wallet, this.contactsService);
+      return formatWalletHistory(walletHistory, wallet, [], this.contactsService);
     }));
     this.transactions = sortBy(flatten(walletHistories), 'time').reverse();
   }

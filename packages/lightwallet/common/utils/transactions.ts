@@ -1,12 +1,21 @@
+import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
 import * as _ from 'lodash';
 import { IDisplayTransaction, ITransactionIO, TransactionAction } from '@merit/common/models/transaction';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritWalletClient } from "@merit/common/merit-wallet-client";
 
-export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, contactsProvider?: ContactsService): Promise<IDisplayTransaction[]> {
+export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [], contactsProvider?: ContactsService): Promise<IDisplayTransaction[]> {
   if (_.isEmpty(walletHistory)) return [];
 
   walletHistory = _.sortBy(walletHistory, 'time');
+
+  const easySendsByAddress = {};
+
+  easySends.forEach((easySend: EasySend) => {
+    if (easySend.scriptAddress) {
+      easySendsByAddress[easySend.scriptAddress] = easySend;
+    }
+  });
 
   let pendingString;
 
@@ -96,6 +105,13 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           tx.isAmbassadorReward = true;
         }
       }
+    }
+
+    if (easySendsByAddress[tx.addressTo]) {
+      const easySend = easySendsByAddress[tx.addressTo];
+      tx.name = 'Global Send';
+      tx.easySend = easySend;
+      tx.easySendUrl = getEasySendURL(easySend);
     }
 
     return tx;
