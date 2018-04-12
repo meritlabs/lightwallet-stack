@@ -7,7 +7,9 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { Store } from '@ngrx/store';
+import { debounceTime, filter, map } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
+import { uniqBy } from 'lodash';
 
 @Injectable()
 export class PollingNotificationsService {
@@ -42,6 +44,10 @@ export class PollingNotificationsService {
   enablePolling(walletClient: MeritWalletClient): void {
     this.pollingNotificationsSubscriptions.push(
       walletClient.initNotifications()
+        .pipe(
+          map((notifications: any[]) => uniqBy(notifications, 'walletId')),
+          debounceTime(500)
+        )
         .subscribe((notifications: any[]) => {
           notifications.forEach((notification) => {
             if (notification && notification.walletId) {
