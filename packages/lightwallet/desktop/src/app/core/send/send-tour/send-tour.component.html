@@ -3,6 +3,9 @@
     <div class="sendingTour_item">
       <div class="sendingTour_half sendingTour_illustartion">
         <illustations-worry-free *ngIf="step === 0"></illustations-worry-free>
+        <illustations-your-way *ngIf="step === 1"></illustations-your-way>
+        <illustations-sending-merit *ngIf="step === 2"></illustations-sending-merit>
+        <illustations-thats-it *ngIf="step === 3"></illustations-thats-it>
       </div>
       <div class="sendingTour_half sendingTour_caption">
         <div *ngIf="step === 0">
