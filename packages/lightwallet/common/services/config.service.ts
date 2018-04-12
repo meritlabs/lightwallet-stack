@@ -193,7 +193,7 @@ export class ConfigService {
     });
   }
 
-  async load() {
+  async load(): Promise<IAppConfig> {
     try {
       const config: any = await this.persistence.getConfig();
       if (!_.isEmpty(config)) this.configCache = _.clone(config);
@@ -202,6 +202,7 @@ export class ConfigService {
       this.logger.error(err);
       throw err;
     }
+    return null;
   }
 
   async set(newOpts: object) {

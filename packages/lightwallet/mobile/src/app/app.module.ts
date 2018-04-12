@@ -19,7 +19,6 @@ import { TouchID } from '@ionic-native/touch-id';
 import { IonicStorageModule } from '@ionic/storage';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { AddressService } from '@merit/common/services/address.service';
-import { StoreModule } from '@ngrx/store';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
@@ -33,7 +32,9 @@ import { MeritLightWallet } from '@merit/mobile/app/app.component';
 import { DeepLinkService } from '@merit/mobile/app/core/deep-link.service';
 import { PopupService as MobilePopupService } from '@merit/mobile/app/core/popup.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
+import { MobilePollingNotificationsService } from '@merit/mobile/services/mobile-polling-notifications.service';
 import { TouchIdService } from '@merit/mobile/services/touch-id.service';
+import { StoreModule } from '@ngrx/store';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MomentModule } from 'angular2-moment';
@@ -43,11 +44,11 @@ export function getProviders() {
   return [
     { provide: PopupService, useClass: MobilePopupService },
     { provide: PushNotificationsService, useClass: MobilePushNotificationsService },
+    { provide: PollingNotificationsService, useClass: MobilePollingNotificationsService },
     ContactsService,
     AddressScannerService,
     DeepLinkService,
     EmailNotificationsService,
-    PollingNotificationsService,
     MeritToastController,
     AddressService,
     TouchIdService,
@@ -70,7 +71,7 @@ export function getIonicNativePlugins() {
     SocialSharing,
     SplashScreen,
     StatusBar,
-    TouchID,
+    TouchID
   ];
 }
 
@@ -84,7 +85,7 @@ export function loadConfigs(appService) {
 
 @NgModule({
   declarations: [
-    MeritLightWallet,
+    MeritLightWallet
   ],
   imports: [
     BrowserModule,
