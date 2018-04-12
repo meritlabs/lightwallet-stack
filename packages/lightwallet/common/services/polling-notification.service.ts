@@ -48,6 +48,7 @@ export class PollingNotificationsService {
     } else {
       this.pollingNotificationsSubscriptions[walletClient.id] = walletClient.initNotifications()
         .pipe(
+          filter((notifications: any[]) => !!notifications),
           map((notifications: any[]) => uniqBy(notifications, 'walletId')),
           debounceTime(500)
         )
