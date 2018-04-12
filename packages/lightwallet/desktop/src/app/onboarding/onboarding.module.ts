@@ -13,6 +13,7 @@ import { SendingMeritComponent } from './onboard/illustations/sending-merit/send
 import { YourWayComponent } from './onboard/illustations/your-way/your-way.component';
 import { ThatsItComponent } from './onboard/illustations/thats-it/thats-it.component';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
+import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 
 @NgModule({
   imports: [
@@ -22,7 +23,8 @@ import { CommonPipesModule } from '@merit/common/common-pipes.module';
     ReactiveFormsModule,
     RouterModule,
     NgxCarouselModule,
-    CommonPipesModule
+    CommonPipesModule,
+    Ng4LoadingSpinnerModule
   ],
   declarations: [OnboardView, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent]
 })
