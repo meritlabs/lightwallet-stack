@@ -13,7 +13,8 @@ import {
   AddWalletAction,
   RefreshOneWalletAction,
   selectWalletById,
-  selectWallets, UpdateOneWalletAction,
+  selectWallets,
+  UpdateOneWalletAction,
   WalletsActionType
 } from '@merit/common/reducers/wallets.reducer';
 import { WalletService } from '@merit/common/services/wallet.service';
@@ -23,10 +24,7 @@ import { Store } from '@ngrx/store';
 import { flatten } from 'lodash';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
-import {
-  distinctUntilChanged, distinctUntilKeyChanged, filter, map, switchMap, take,
-  withLatestFrom
-} from 'rxjs/operators';
+import { distinctUntilKeyChanged, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class TransactionEffects {
@@ -39,15 +37,15 @@ export class TransactionEffects {
 
   @Effect()
   refreshOnWalletsRefresh$: Observable<RefreshTransactionsAction> = this.actions$.pipe(
-    ofType(WalletsActionType.Refresh),
+    ofType(WalletsActionType.Update),
     map(() => new RefreshTransactionsAction())
   );
 
   @Effect()
   refresh$: Observable<UpdateTransactionsAction> = this.actions$.pipe(
     ofType(TransactionActionType.Refresh),
-    switchMap(() => this.wallets$.pipe(take(1))),
-    switchMap((wallets: DisplayWallet[]) => Observable.fromPromise(Promise.all(wallets.map(w => this.getWalletHistory(w))))),
+    withLatestFrom(this.store.select(selectWallets)),
+    switchMap(([action, wallets]) => Observable.fromPromise(Promise.all(wallets.map(w => this.getWalletHistory(w))))),
     map((transactionsList: IDisplayTransaction[][]) => new UpdateTransactionsAction(flatten(transactionsList)))
   );
 
@@ -70,16 +68,8 @@ export class TransactionEffects {
     filter((action: UpdateOneWalletAction) => !action.opts.skipStatus),
     map((action: UpdateOneWalletAction) => action.wallet),
     distinctUntilKeyChanged('status'),
-    distinctUntilChanged((x, y) => {
-      console.log('X is ', x);
-      console.log('Y is ', y);
-
-      return true;
-    }),
     map((wallet: DisplayWallet) => new RefreshOneWalletTransactions(wallet.id))
   );
-
-  private wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
 
   constructor(private actions$: Actions,
               private walletService: WalletService,

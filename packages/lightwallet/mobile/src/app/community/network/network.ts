@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { IonicPage } from 'ionic-angular';
+import { IonicPage, Events } from 'ionic-angular';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PlatformService } from '@merit/common/services/platform.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
@@ -50,6 +50,7 @@ export class NetworkView {
     private profileService: ProfileService,
     private unlockRequestService: UnlockRequestService,
     private logger: LoggerService,
+    private events: Events,
     platformService: PlatformService
   ) {
     this.shareButtonAvailable = platformService.isCordova;
@@ -60,19 +61,24 @@ export class NetworkView {
     this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
     await this.loadCommunityInfo();
     this.loading = false;
-  }
 
+    this.events.subscribe('Remote:IncomingTx', () => {
+      this.refreshData();
+    });
+  }
   async ionViewWillEnter() {
-    this.refreshing = true;
-    await Promise.all([this.loadCommunityInfo(), this.loadRequestsInfo()]);
-    this.refreshing = false;
+    this.refreshData();
   }
 
   async doRefresh(refresher) {
+    await this.refreshData();
+    refresher.complete();
+  }
+
+  private async refreshData() {
     this.refreshing = true;
     await Promise.all([this.loadCommunityInfo(), this.loadRequestsInfo()]);
     this.refreshing = false;
-    refresher.complete();
   }
 
   shareAddress(address) {

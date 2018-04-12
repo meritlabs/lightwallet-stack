@@ -22,7 +22,8 @@ import {
   LoadingController,
   ModalController,
   NavController,
-  NavParams
+  NavParams,
+  Events
 } from 'ionic-angular';
 import * as _ from 'lodash';
 
@@ -86,7 +87,9 @@ export class SendAmountView {
               private walletService: WalletService,
               private loadingCtrl: LoadingController,
               private logger: LoggerService,
-              private sendService: SendService) {
+              private sendService: SendService,
+              private events: Events
+  ) {
     this.recipient = this.navParams.get('contact');
     this.sendMethod = this.navParams.get('suggestedMethod');
     this.loading = true;
@@ -115,6 +118,10 @@ export class SendAmountView {
     this.wallets = await this.profileService.getWallets();
     await this.chooseAppropriateWallet();
     this.loading = false;
+
+    this.events.subscribe('Remote:IncomingTx', () => {
+      this.profileService.refreshData();
+    });
   }
 
   private chooseAppropriateWallet() {
