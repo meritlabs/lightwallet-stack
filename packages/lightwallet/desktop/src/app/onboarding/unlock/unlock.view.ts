@@ -28,6 +28,8 @@ export class UnlockComponent {
   });
 
   easyReceipt: EasyReceipt;
+  creatingWallet: boolean = false;
+
 
   get inviteCode() { return this.formData.get('inviteCode'); }
   get alias() { return this.formData.get('alias'); }
@@ -54,12 +56,13 @@ export class UnlockComponent {
   }
 
   async onSubmit() {
+    this.loadingCtrl.show();
+    this.creatingWallet = true;
     let { inviteCode, alias } = this.formData.getRawValue();
 
     inviteCode = isAlias(inviteCode) ? inviteCode.slice(1) : inviteCode;
     alias = alias && isAlias(alias) ? alias.slice(1) : alias;
 
-    this.loadingCtrl.show();
 
 
     try {
@@ -78,8 +81,10 @@ export class UnlockComponent {
 
       // good to go
       this.loadingCtrl.hide();
+      this.creatingWallet = false;
       this.router.navigateByUrl('/');
     } catch (err) {
+      this.creatingWallet = false;
       this.loadingCtrl.hide();
       this.logger.debug('Could not unlock wallet: ', err);
       // TODO show  error to user

@@ -80,7 +80,7 @@
         </div>
       </div>
       <div class="unlock__form__group">
-        <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="formData.invalid">Let's get started</button>
+        <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="formData.invalid || creatingWallet">Let's get started</button>
       </div>
     </form>
 
