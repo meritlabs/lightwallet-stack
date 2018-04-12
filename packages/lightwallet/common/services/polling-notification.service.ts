@@ -13,7 +13,7 @@ import { uniqBy } from 'lodash';
 
 @Injectable()
 export class PollingNotificationsService {
-  private pollingNotificationsSubscriptions: Subscription[] = [];
+  private pollingNotificationsSubscriptions: { [walletId: string]: Subscription } = {};
 
   constructor(private profileService: ProfileService,
               private configService: ConfigService,
@@ -34,16 +34,19 @@ export class PollingNotificationsService {
   };
 
   disable() {
-    this.pollingNotificationsSubscriptions.forEach((sub: Subscription) => {
+    let walletId: string;
+    for (walletId in this.pollingNotificationsSubscriptions) {
       try {
-        sub.unsubscribe();
+        this.pollingNotificationsSubscriptions[walletId].unsubscribe();
       } catch (e) {}
-    });
+    }
   }
 
   enablePolling(walletClient: MeritWalletClient): void {
-    this.pollingNotificationsSubscriptions.push(
-      walletClient.initNotifications()
+    if (this.pollingNotificationsSubscriptions[walletClient.id]) {
+      this.logger.warn('Attempting to enable polling for wallet that already has polling enabled: ', walletClient.id);
+    } else {
+      this.pollingNotificationsSubscriptions[walletClient.id] = walletClient.initNotifications()
         .pipe(
           map((notifications: any[]) => uniqBy(notifications, 'walletId')),
           debounceTime(500)
@@ -57,7 +60,7 @@ export class PollingNotificationsService {
               }));
             }
           });
-        })
-    );
+        });
+    }
   }
 }
