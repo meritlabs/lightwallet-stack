@@ -58,6 +58,7 @@ export class SendView implements OnInit {
   sending: boolean;
   success: boolean;
   addressLoading: boolean;
+  showTour: boolean = true;
 
   constructor(private route: ActivatedRoute,
               private store: Store<IRootAppState>,
