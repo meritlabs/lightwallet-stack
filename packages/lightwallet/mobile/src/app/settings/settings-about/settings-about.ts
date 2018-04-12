@@ -21,16 +21,13 @@ export class SettingsAboutView {
               private appSettingsService: AppSettingsService,
               private appVersion: AppVersion,
               private plt: Platform) {
-    if (typeof WEBPACK_CONFIG !== 'undefined') this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
+    if (typeof WEBPACK_CONFIG !== 'undefined') {
+      this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
+      this.version = WEBPACK_CONFIG.VERSION;
+    }
   }
 
   async ngOnInit() {
-    try {
-      await this.plt.ready();
-      this.version = 'v' + await this.appVersion.getVersionNumber();
-    } catch (e) {
-      this.version = 'Unavailable';
-    }
   }
 
   toGithub() {
