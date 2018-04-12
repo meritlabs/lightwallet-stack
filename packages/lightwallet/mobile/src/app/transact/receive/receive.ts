@@ -169,10 +169,6 @@ export class ReceiveView {
     }).present();
   }
 
-  toCopayers() {
-    this.navCtrl.push('CopayersView', { walletId: this.wallet.id, wallet: this.wallet });
-  }
-
   async toggleCurrency() {
     const rate = await this.rateService.getRate(this.availableUnits[1]);
     if (rate > 0) {

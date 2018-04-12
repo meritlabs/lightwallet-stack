@@ -14,8 +14,8 @@ import { Subscription } from 'rxjs/Subscription';
 export class PollingNotificationsService {
   private pollingNotificationsSubscriptions: { [walletId: string]: Subscription } = {};
 
-  constructor(private profileService: ProfileService,
-              private logger: LoggerService,
+  constructor(protected profileService: ProfileService,
+              protected logger: LoggerService,
               @Optional() private store: Store<IRootAppState>,
               @Optional() private persistenceService: PersistenceService2) {
     this.logger.info('Hello PollingNotification Service');
