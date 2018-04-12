@@ -296,6 +296,9 @@ export class SendView implements OnInit {
     this.sending = false;
 
   }
+  hideTour($event) {
+    this.showTour = $event;
+  }
 
 
 }

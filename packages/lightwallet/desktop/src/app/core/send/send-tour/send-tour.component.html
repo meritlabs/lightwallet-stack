@@ -2,19 +2,49 @@
   <div class="sendingTour_wrap">
     <div class="sendingTour_item">
       <div class="sendingTour_half sendingTour_illustartion">
-        <illustations-worry-free></illustations-worry-free>
+        <illustations-worry-free *ngIf="step === 0"></illustations-worry-free>
       </div>
       <div class="sendingTour_half sendingTour_caption">
-        <div class="caption_title">
-          Worry Free
+        <div *ngIf="step === 0">
+          <div class="caption_title">
+            Worry Free
+          </div>
+          <div class="caption_description">
+            You have full control over your transactions when sending to users
+            outside of the Merit network! Cancellable transactions and password
+            protection at the click of a button.
+          </div>
         </div>
-        <div class="caption_description">
-          You have full control over your transactions when sending to users
-          outside of the Merit network! Cancellable transactions and password
-          protection at the click of a button.
+        <div *ngIf="step === 1">
+          <div class="caption_title">
+            Your Way
+          </div>
+          <div class="caption_description">
+            You can send merit any way you want! To a custom phone number or email,
+            through your favorite chat or social media messenger, or to an existing
+            Merit user via their alias or address.
+          </div>
         </div>
-        <div class="next_slide">Next</div>
-        <div class="skip_intro">Skip Intro</div>
+        <div *ngIf="step === 2">
+          <div class="caption_title">
+            Sending Merit
+          </div>
+          <div class="caption_description">
+            Sending merit is super easy and can be received by virtually anyone!
+            However, Merit is an invite only community and sending funds to a new
+            user will require you to have an extra invite.
+          </div>
+        </div>
+        <div *ngIf="step === 3">
+          <div class="caption_title">
+            That's It!
+          </div>
+          <div class="caption_description">
+            Now you’re ready to send money with the world’s friendliest digital currency.
+          </div>
+        </div>
+        <div class="next_slide" (click)="stepGoTo()">Next</div>
+        <div class="skip_intro" (click)="skipIntro()">Skip Intro</div>
       </div>
       <ul class="tour_steps">
         <li class="active"></li>
