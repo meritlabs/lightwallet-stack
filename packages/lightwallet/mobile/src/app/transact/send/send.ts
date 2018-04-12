@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, ModalController, NavController } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, Events } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
 import { MeritContact } from '@merit/common/models/merit-contact';
@@ -56,7 +56,8 @@ export class SendView {
     private addressService: AddressService,
     private modalCtrl: ModalController,
     private addressScanner: AddressScannerService,
-    private persistenceService: PersistenceService
+    private persistenceService: PersistenceService,
+    private events: Events
   ) {
   }
 
@@ -86,7 +87,12 @@ export class SendView {
     this.loadingContacts = false;
     await this.updateRecentContacts();
     return this.parseSearch();
+
+    this.events.subscribe('Remote:IncomingTx', () => {
+      this.updateHasUnlocked();
+    });
   }
+
 
   async updateRecentContacts() {
     const sendHistory = await this.addressService.getSendHistory();
