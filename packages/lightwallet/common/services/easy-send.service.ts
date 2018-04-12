@@ -144,7 +144,7 @@ export class EasySendService {
     return {
       receiverPubKey: rcvPair.key.publicKey,
       script: script.toMixedScriptHashOut(pubKey),
-      senderName: addressInfo.alias ? '@' + addressInfo.alias : 'Someone',
+      senderName: addressInfo.alias ? addressInfo.alias : 'Someone',
       senderPubKey: pubKey.toString(),
       secret: rcvPair.secret.toString('hex'),
       blockTimeout: timeout,
