@@ -34,7 +34,7 @@ if (env !== 'prod' && env !== 'dev') {
 }
 
 function environmentPath(env) {
-  var filePath = path.resolve(__dirname, '../common/environments/environment' + (env === ('prod' || 'dev') ? '.' + env : '') + '.ts');
+  var filePath = path.resolve(__dirname, '../common/environments/environment' + ((env === 'dev' || env === 'prod') ? '.' + env : '') + '.ts');
   if (!fs.existsSync(filePath)) {
     console.log(chalk.red('\n' + filePath + ' does not exist!'));
   } else {
