@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Tab, Tabs, Events } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { WalletService } from '@merit/common/services/wallet.service';
@@ -22,7 +22,9 @@ export class WalletDetailsView {
               private navParams: NavParams,
               private walletService: WalletService,
               private logger: LoggerService,
-              private tabsCtrl: Tabs) {
+              private tabsCtrl: Tabs,
+              private events: Events
+  ) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
     // things fast and smooth.  We can refresh as needed.
@@ -32,6 +34,11 @@ export class WalletDetailsView {
   async ngOnInit() {
     this.wallet = this.navParams.get('wallet');
     await this.getWalletHistory();
+
+    this.events.subscribe('Remote:IncomingTx', () => {
+      this.wallet.getStatus();
+      this.getWalletHistory();
+    });
   }
 
   async deposit() {
