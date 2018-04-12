@@ -3,14 +3,13 @@ import { ConfigService, IAppConfig } from '@merit/common/services/config.service
 import { LoggerService } from '@merit/common/services/logger.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { ProfileService } from '@merit/common/services/profile.service';
-import { Events } from 'ionic-angular';
+import { pick } from 'lodash';
 
 @Injectable()
 export class MobilePollingNotificationsService extends PollingNotificationsService {
   constructor(profileService: ProfileService,
               logger: LoggerService,
-              private configService: ConfigService,
-              private events: Events) {
+              private configService: ConfigService) {
     super(profileService, logger, null, null);
   }
 
@@ -20,11 +19,17 @@ export class MobilePollingNotificationsService extends PollingNotificationsServi
   }
 
   protected onFetch(notifications: any[]) {
-    notifications.forEach((notification: any) => {
+    notifications.forEach(async (notification: any) => {
       if (notification && notification.walletId) {
-        this.events.publish('UpdateWallet', {
-          walletId: notification.walletId
-        });
+        const wallet = (await this.profileService.getWallets()).find(w => w.id == notification.walletId);
+
+        if (wallet) {
+          this.profileService.propogateBwsEvent({
+            data: pick(notification, 'amount', 'address', 'txid'),
+            type: notification.type,
+            walletId: notification.walletId
+          }, wallet);
+        }
       }
     });
   }
