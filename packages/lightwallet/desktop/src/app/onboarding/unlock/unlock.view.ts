@@ -14,6 +14,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { isAlias } from '@merit/common/utils/addresses';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 import { Store } from '@ngrx/store';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
 @Component({
   selector: 'view-unlock',
@@ -39,7 +40,8 @@ export class UnlockComponent {
               private logger: LoggerService,
               private router: Router,
               private store: Store<IRootAppState>,
-              private easyReceiveService: EasyReceiveService
+              private easyReceiveService: EasyReceiveService,
+              private loadingCtrl: Ng4LoadingSpinnerService
               ) {}
 
   async ngOnInit() {
@@ -57,6 +59,9 @@ export class UnlockComponent {
     inviteCode = isAlias(inviteCode) ? inviteCode.slice(1) : inviteCode;
     alias = alias && isAlias(alias) ? alias.slice(1) : alias;
 
+    this.loadingCtrl.show();
+
+
     try {
       const wallet = await this.walletService.createDefaultWallet(inviteCode, alias);
       this.logger.info('Created a new default wallet!');
@@ -72,8 +77,10 @@ export class UnlockComponent {
       }));
 
       // good to go
+      this.loadingCtrl.hide();
       this.router.navigateByUrl('/');
     } catch (err) {
+      this.loadingCtrl.hide();
       this.logger.debug('Could not unlock wallet: ', err);
       // TODO show  error to user
     }
