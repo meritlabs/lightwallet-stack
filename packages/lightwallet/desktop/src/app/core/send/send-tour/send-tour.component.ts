@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'send-tour',
@@ -10,6 +10,20 @@ export class SendTourComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+  }
+  @Output() hideTour = new EventEmitter<Boolean>();
+  @Input() showTour: any;
+  step: number = 0;
+
+  stepGoTo(i) {
+    if(i) {
+
+    }else {
+      this.step += 1;
+    }
+  }
+  skipIntro() {
+    this.hideTour.emit(false);
   }
 
 }
