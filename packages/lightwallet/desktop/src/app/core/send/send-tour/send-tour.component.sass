@@ -1,0 +1,128 @@
+@import '~styles/v1/common/import-sass'
+.sendingTour
+  position: fixed
+  width: calc(100vw - 260px)
+  height: 100vh
+  right: 0
+  top: 0
+  z-index: 100
+  &::before
+    content: ""
+    display: block
+    width: 100%
+    height: 100%
+    z-index: 1
+    position: absolute
+    left: 0
+    top: 0
+    background-image: linear-gradient(40deg, #106dda 0%, #00b1de 100%)
+    opacity: .9
+.sendingTour
+  &_wrap
+    position: absolute
+    z-index: 2
+    max-width: 800px
+    width: 100%
+    max-height: 520px
+    height: 100%
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.52)
+    background-color: #ffffff
+    margin: auto
+    top: 20px
+    left: 20px
+    right: 20px
+    bottom: 20px
+    border-radius: 20px
+    &::after
+      content: ""
+      display: block
+      position: absolute
+      z-index: 1
+      width: 40px
+      height: 100%
+      left: 50%
+      top: 0
+      background-image: linear-gradient(270deg, rgba(116, 128, 155, 0) 0%, rgba(116, 128, 155, 0.05) 100%)
+.sendingTour
+  &_item
+    display: flex
+    flex-flow: row wrap
+    align-items: center
+    justify-content: space-between
+    height: 100%
+    position: relative
+  &_half
+    width: 50%
+    box-sizing: border-box
+  .caption_title,
+  .caption_description
+    max-width: 275px
+    text-align: center
+    width: 100%
+    margin: 0px auto
+  .caption_title
+    +font(400, 34px, 36px, $black)
+    margin-bottom: 30px
+  .caption_description
+    +font(300, 15px, 24px, $grey-2)
+    opacity: .84
+    margin-bottom: 45px
+  .next_slide
+    +font(300, 14px, 14px, $white)
+    text-align: center
+    box-shadow: 0 3px 12px rgba(45, 59, 80, 0.22)
+    background-image: linear-gradient(102deg, #106dda 0%, #00b1de 100%)
+    max-width: 232px
+    width: 100%
+    margin: 0px auto 20px
+    border-radius: 50px
+    padding: 15px 20px
+    cursor: pointer
+  .skip_intro
+    +font(300, 14px, 14px, $grey-2)
+    opacity: .84
+    cursor: pointer
+    text-align: center
+    &:hover
+      text-decoration: underline
+  .tour_steps
+    width: 50%
+    display: flex
+    justify-content: center
+    flex-flow: row wrap
+    right: 0
+    bottom: 0
+    position: absolute
+    padding: 0 0 25px
+    li
+      display: block
+      width: 8px
+      height: 8px
+      border-radius: 8px
+      background-color: $grey-3
+      margin: 0px 4px
+      cursor: pointer
+      &.active
+        background: $blue
+    &::before
+      content: ""
+      display: block
+      width: 100%
+      border: 1px solid $grey-4
+      opacity: 0.05
+      margin-bottom: 25px
+.showIllustration
+  opacity: .4
+  animation: show .5s forwards
+  animation-timing-function: ease-in
+  filter: blur(3px) grayscale(100%)
+@keyframes show
+  0%
+    opacity: .4
+    filter: blur(3px) grayscale(100%)
+  70%
+    opacity: .7
+    filter: blur(0px) grayscale(100%)
+  100%
+    opacity: 1
+    filter: blur(0px) grayscale(0%)
