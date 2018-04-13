@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Tabs } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Tabs, ViewController } from 'ionic-angular';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { PlatformService } from '@merit/common/services/platform.service';
@@ -21,10 +21,15 @@ export class EasySendShareView {
     private socialSharing: SocialSharing,
     private toastCtrl: MeritToastController,
     private platformService: PlatformService,
-    private tabs: Tabs
+    private tabs: Tabs,
+    private viewCtrl: ViewController
   ) {
     this.txData = this.navParams.get('txData');
     this.showShareButton = this.platformService.isCordova && SocialSharing.installed();
+  }
+
+  ionViewWillEnter() {
+    this.viewCtrl.showBackButton(false);
   }
 
   ionViewDidEnter() {
@@ -38,7 +43,8 @@ export class EasySendShareView {
   copyToClipboard() {
     this.toastCtrl.create({
       message: 'Copied to clipboard',
-      cssClass: ToastConfig.CLASS_SUCCESS
+      cssClass: ToastConfig.CLASS_SUCCESS,
+      duration: 3000
     }).present();
   }
 
