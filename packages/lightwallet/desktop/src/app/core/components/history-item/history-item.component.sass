@@ -16,6 +16,7 @@
   min-width: 65px
   min-height: 65px
   display: flex
+  flex-shrink: 1
   justify-content: center
   align-items: center
   img + img
@@ -27,14 +28,23 @@
   justify-content: space-between
   align-items: center
   letter-spacing: .3px
-  flex-grow: 1
   padding-left: 15px
+  flex-grow: 1
+
+  .globalSendURL
+    max-width: 80%
+    word-break: break-word
+
+.title
+  +font(400, 15px, 22px, $gun-metal)
 
 .date
   +font(400, 12px, 16px, $blue-grey)
 
 .merit-amount
-  display: block
+  display: inline-block
+  word-break: keep-all
+  flex-shrink: 1
   +font(300, 14px, 24px, $gun-metal)
   &::before
     content: '-'
