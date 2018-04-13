@@ -1,11 +1,47 @@
+@import '~styles/v1/common/variables'
+@import '~styles/v1/common/mixins'
 \:host
-  &.active
-    .history__item__details
-      max-height: 200px
-.info-box
+  display: flex
+  flex-flow: row wrap
+  justify-content: space-between
+  text-align: left
+  align-items: center
+  border-bottom: 1px solid $pale-grey-two
+  padding-bottom: 15px
+  margin-bottom: 15px
+  position: relative
+
+.icon
+  background: $pale-grey
+  min-width: 65px
+  min-height: 65px
+  display: flex
+  justify-content: center
+  align-items: center
+  img + img
+    padding-left: 10px
+
+
+.info
+  display: flex
+  justify-content: space-between
+  align-items: center
+  letter-spacing: .3px
+  flex-grow: 1
+  padding-left: 15px
+
+.date
+  +font(400, 12px, 16px, $blue-grey)
+
+.merit-amount
   display: block
-  background: white
-  margin: 16px 10px -8px 10px
-  padding: 15px
-  border-radius: 8px
-  font-size: 14px
+  +font(300, 14px, 24px, $gun-metal)
+  &::before
+    content: '-'
+  &.credit
+    color: $blue
+    &::before
+      content: '+'
+  small
+    font-size: 13px
+    color: $cool-grey

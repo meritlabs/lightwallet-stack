@@ -19,6 +19,8 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
   let pendingString;
 
+  const globalSends = [];
+
   walletHistory = await Promise.all(walletHistory.map(async (tx: IDisplayTransaction, i: number) => {
     if (!_.isNil(tx) && !_.isNil(tx.action)) {
       pendingString = tx.isPendingEasySend ? '(pending) ' : '';
@@ -110,6 +112,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
     if (easySendsByAddress[tx.addressTo]) {
       const easySend = easySendsByAddress[tx.addressTo];
       tx.name = 'Global Send';
+      tx.type = 'globalsend';
       tx.easySend = easySend;
       tx.easySendUrl = getEasySendURL(easySend);
     }
@@ -117,5 +120,8 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
     return tx;
   }));
 
-  return walletHistory.reverse();
+  // remove globalsend invites so we  have only one tx for globalsend
+  return walletHistory
+    .filter(t => !(t.type == 'globalsend' && t.isInvite))
+    .reverse();
 }
