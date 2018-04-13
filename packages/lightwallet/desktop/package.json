@@ -1,6 +1,6 @@
 {
   "name": "lightwallet-desktop",
-  "version": "0.0.0",
+  "version": "0.2.4",
   "description": "Lightwallet implementation for desktops",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "authors": [
