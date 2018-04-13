@@ -4,21 +4,19 @@ import { ActivatedRoute } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { getEasySendURL } from '@merit/common/models/easy-send';
 import { IRootAppState } from '@merit/common/reducers';
-import {
-  RefreshOneWalletAction, selectConfirmedWallets,
-  UpdateOneWalletAction
-} from '@merit/common/reducers/wallets.reducer';
+import { RefreshOneWalletAction, selectConfirmedWallets } from '@merit/common/reducers/wallets.reducer';
 import { AddressService } from '@merit/common/services/address.service';
 import { ConfigService } from '@merit/common/services/config.service';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { LoggerService } from '@merit/common/services/logger.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { SendService } from '@merit/common/services/send.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { Store } from '@ngrx/store';
-import { debounce } from 'lodash';
+import { clone, debounce } from 'lodash';
 import { Observable } from 'rxjs/Observable';
 
 @Component({
@@ -72,7 +70,8 @@ export class SendView implements OnInit {
               private addressService: AddressService,
               private easySendService: EasySendService,
               private sendService: SendService,
-              private feeService: FeeService) {
+              private feeService: FeeService,
+              private persitenceService: PersistenceService2) {
     this.resetFormData();
   }
 
@@ -199,7 +198,7 @@ export class SendView implements OnInit {
       if (micros == this.formData.wallet.balance.spendableAmount) this.formData.feeIncluded = true;
 
       if (this.formData.type == 'easy') {
-        const easySend = await  this.easySendService.createEasySendScriptHash(this.formData.wallet.client, this.formData.password);
+        const easySend = await this.easySendService.createEasySendScriptHash(this.formData.wallet.client, this.formData.password);
         this.txData.easySend = easySend;
         this.txData.txp = await this.easySendService.prepareTxp(this.formData.wallet.client, micros, easySend);
         this.txData.easySendUrl = getEasySendURL(easySend);
@@ -284,6 +283,7 @@ export class SendView implements OnInit {
 
       if (this.formData.type == 'easy') {
         this.easySendUrl = this.txData.easySendUrl;
+        this.persitenceService.addEasySend(clone(this.txData.easySend));
       }
       this.success = true;
 

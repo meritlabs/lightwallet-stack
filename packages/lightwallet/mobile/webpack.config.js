@@ -34,7 +34,7 @@ if (env !== 'prod' && env !== 'dev') {
 }
 
 function environmentPath(env) {
-  var filePath = path.resolve(__dirname, '../common/environments/environment' + (env === 'prod' ? '' : '.' + env) + '.ts');
+  var filePath = path.resolve(__dirname, '../common/environments/environment' + ((env === 'dev' || env === 'prod') ? '.' + env : '') + '.ts');
   if (!fs.existsSync(filePath)) {
     console.log(chalk.red('\n' + filePath + ' does not exist!'));
   } else {
@@ -44,7 +44,8 @@ function environmentPath(env) {
 
 const DEFINE_PLUGIN = new webpack.DefinePlugin({
   WEBPACK_CONFIG: {
-    COMMIT_HASH: JSON.stringify(execSync('git rev-parse --short HEAD').toString().trim())
+    COMMIT_HASH: JSON.stringify(execSync('git rev-parse --short HEAD').toString().trim()),
+    VERSION: JSON.stringify(require('./package.json').version)
   }
 });
 

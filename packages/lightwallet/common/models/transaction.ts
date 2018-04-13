@@ -1,3 +1,4 @@
+import { EasySend } from '@merit/common/models/easy-send';
 import { MeritContact } from './merit-contact';
 import { DisplayWallet } from './display-wallet';
 import { MeritWalletClient } from "@merit/common/merit-wallet-client/index";
@@ -54,7 +55,7 @@ export interface IDisplayTransaction extends ITransaction {
   isPendingEasySend: boolean;
   addressFrom: string;
   addressTo: string;
-  type: 'credit' | 'debit' | 'none';
+  type: 'credit' | 'debit' | 'none' | 'globalsend';
   input: string;
   output: string;
   safeConfirmed?: string;
@@ -68,4 +69,6 @@ export interface IDisplayTransaction extends ITransaction {
   isAmbassadorReward: boolean;
   isWalletUnlock: boolean;
   isConfirmed?: boolean;
+  easySend?: EasySend;
+  easySendUrl?: string;
 }

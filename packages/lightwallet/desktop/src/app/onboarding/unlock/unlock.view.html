@@ -1,3 +1,4 @@
+<ng4-loading-spinner></ng4-loading-spinner>
 <div class="container--fluid unlock">
   <div class="unlock__content container">
     <div class="container--fluid unlock__heading">
@@ -80,7 +81,7 @@
         </div>
       </div>
       <div class="unlock__form__group">
-        <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="formData.invalid">Let's get started</button>
+        <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="formData.invalid || creatingWallet">Let's get started</button>
       </div>
     </form>
 

@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Tab, Tabs, Events } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
+import { ContactsService } from '@merit/common/services/contacts.service';
 
 @IonicPage({
   segment: 'wallet/:walletId',
@@ -22,7 +23,10 @@ export class WalletDetailsView {
               private navParams: NavParams,
               private walletService: WalletService,
               private logger: LoggerService,
-              private tabsCtrl: Tabs) {
+              private tabsCtrl: Tabs,
+              private events: Events,
+              private contactsService: ContactsService
+  ) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
     // things fast and smooth.  We can refresh as needed.
@@ -32,6 +36,11 @@ export class WalletDetailsView {
   async ngOnInit() {
     this.wallet = this.navParams.get('wallet');
     await this.getWalletHistory();
+
+    this.events.subscribe('Remote:IncomingTx', () => {
+      this.wallet.getStatus();
+      this.getWalletHistory();
+    });
   }
 
   async deposit() {
@@ -60,7 +69,7 @@ export class WalletDetailsView {
   private async getWalletHistory(force: boolean = false) {
     try {
       const txs = await this.walletService.getTxHistory(this.wallet, { force });
-      this.wallet.completeHistory = await formatWalletHistory(txs, this.wallet);
+      this.wallet.completeHistory = await formatWalletHistory(txs, this.wallet, [], this.contactsService);
     } catch (err) {
       this.logger.info(err);
     }

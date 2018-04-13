@@ -1,7 +1,7 @@
 <app-lock-screen fullScreen *ngIf="!hasUnlockedWallet"></app-lock-screen>
-<div class="{{injected ? 'sendMerit--injected' : 'sendMerit'}}">
+<div class="sendMerit">
     <div class="container--inner">
-        <div class="{{injected ? 'wallet-details__content__title' : 'sendMerit__header title--primary'}}">
+        <div class="sendMerit__header title--primary">
             <p>Send Merit</p>
         </div>
 
@@ -25,7 +25,7 @@
                 <div class="sendMerit__form__group">
                     <label for="" class="ui-label">Amount</label>
                     <div class="ui-input__wrapper ui-input__wrapper--mrt">
-                        <input type="text" name="" [(ngModel)]="formData.amountMrt" (ngModelChange)="updateTx($event)" placeholder="0"
+                        <input type="text" name="" [(ngModel)]="formData.amountMrt" (ngModelChange)="updateTx()" placeholder="0"
                                class="ui-input ui-input--form ui-input--text" >
                         <div class="ui-input__addon">MRT</div>
                     </div>
@@ -48,7 +48,7 @@
                     <div class="sendMerit__form__group__column sendMerit__form_group__column--30">
                         <div class="ui-checkbox">
                             <input type="checkbox" name="feeIncluded" id="feeIncluded"
-                                   [(ngModel)]="formData.feeIncluded"  (ngModelChange)="updateTx($event)" >
+                                   [(ngModel)]="formData.feeIncluded"  (ngModelChange)="updateTx()" >
                             <span class="ui-checkbox__switcher"></span>
                         </div>
                     </div>
