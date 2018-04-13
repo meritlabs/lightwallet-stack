@@ -8,6 +8,7 @@ import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { createDisplayWallet, DisplayWallet } from '@merit/common/models/display-wallet';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
+import { PersistenceService2 } from '../../../../common/services/persistence2.service';
 
 @IonicPage()
 @Component({
@@ -23,7 +24,8 @@ export class HistoryView {
               private profileService: ProfileService,
               private addressService: AddressService,
               private contactsService: ContactsService,
-              private events: Events
+              private events: Events,
+              private persistenceService: PersistenceService2
   ) {
   }
 
@@ -52,7 +54,7 @@ export class HistoryView {
     const wallets = await this.profileService.getWallets();
     const walletHistories = await Promise.all(wallets.map(async (wallet: MeritWalletClient) => {
       const walletHistory = await this.walletService.getTxHistory(wallet, { force });
-      return formatWalletHistory(walletHistory, wallet, [], this.contactsService);
+      return formatWalletHistory(walletHistory, wallet, await this.persistenceService.getEasySends(), this.contactsService);
     }));
     this.transactions = sortBy(flatten(walletHistories), 'time').reverse();
   }
