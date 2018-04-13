@@ -31,6 +31,8 @@ export class PhraseImportView {
     mwsUrl: ENV.mwsUrl
   });
 
+  showPass: boolean;
+
   private derivationPath = ENV.network == 'livenet' ?
     DerivationPath.getDefault() :
     DerivationPath.getDefaultTestnet();

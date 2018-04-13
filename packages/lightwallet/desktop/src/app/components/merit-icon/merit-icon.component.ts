@@ -5,7 +5,7 @@ import { Component, Input } from '@angular/core';
   templateUrl: './merit-icon.component.html',
   styleUrls: ['./merit-icon.component.sass'],
   host: {
-    '[class]': name
+    '[class]': 'name'
   }
 })
 export class MeritIconComponent {

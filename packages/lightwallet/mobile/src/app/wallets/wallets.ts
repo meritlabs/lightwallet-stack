@@ -6,7 +6,7 @@ import { EasyReceiveService } from '@merit/common/services/easy-receive.service'
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
-import { AlertController, IonicPage, NavController, Platform } from 'ionic-angular';
+import { Events, AlertController, IonicPage, NavController, Platform } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -30,7 +30,9 @@ export class WalletsView {
               private toastCtrl: MeritToastController,
               private profileService: ProfileService,
               private alertController: AlertController,
-              private platform: Platform) {
+              private platform: Platform,
+              private events: Events
+  ) {
     this.logger.debug('WalletsView constructor!');
   }
 
@@ -43,6 +45,12 @@ export class WalletsView {
         this.updateAllInfo().then(() => this.refreshing = false);
       }
     });
+
+    this.events.subscribe('Remote:IncomingTx', () => {
+      this.refreshing = true;
+      this.updateAllInfo().then(() => this.refreshing = false);
+    });
+
   }
 
   private get isActivePage(): boolean {
