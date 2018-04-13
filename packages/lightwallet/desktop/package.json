@@ -11,6 +11,7 @@
     "ng": "ng",
     "start": "webpack-dev-server --port=4200",
     "build": "webpack",
+    "build:prod": "webpack --env.production",
     "postinstall": "rm -rf ./node_modules/rxjs"
   },
   "repository": {
@@ -41,7 +42,6 @@
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.1",
     "typescript": "2.4.2",
-    "uglify-js": "github:mishoo/UglifyJS2#harmony",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "url-loader": "^0.6.2",
     "webpack": "~3.11.0",

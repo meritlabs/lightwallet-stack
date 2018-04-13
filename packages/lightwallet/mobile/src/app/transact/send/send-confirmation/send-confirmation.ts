@@ -11,6 +11,7 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
 import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
 @IonicPage()
 @Component({
@@ -53,7 +54,8 @@ export class SendConfirmationView {
               private formatService: TxFormatService,
               private rateService: RateService,
               private configService: ConfigService,
-              private logger: LoggerService) {
+              private logger: LoggerService,
+              private persistenceService: PersistenceService2) {
     this.txData = navParams.get('txData');
   }
 
@@ -222,6 +224,7 @@ export class SendConfirmationView {
       await this.approveTx();
 
       if (this.txData.sendMethod.type == SendMethodType.Easy) {
+        this.persistenceService.addEasySend(this.txData.easySend);
         this.navCtrl.push('EasySendShareView', { txData: this.txData });
       } else {
         this.navCtrl.popToRoot();
