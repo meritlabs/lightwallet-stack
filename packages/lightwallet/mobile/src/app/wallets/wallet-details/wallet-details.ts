@@ -5,6 +5,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
+import { ContactsService } from '@merit/common/services/contacts.service';
 
 @IonicPage({
   segment: 'wallet/:walletId',
@@ -23,7 +24,8 @@ export class WalletDetailsView {
               private walletService: WalletService,
               private logger: LoggerService,
               private tabsCtrl: Tabs,
-              private events: Events
+              private events: Events,
+              private contactsService: ContactsService
   ) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
@@ -67,7 +69,7 @@ export class WalletDetailsView {
   private async getWalletHistory(force: boolean = false) {
     try {
       const txs = await this.walletService.getTxHistory(this.wallet, { force });
-      this.wallet.completeHistory = await formatWalletHistory(txs, this.wallet);
+      this.wallet.completeHistory = await formatWalletHistory(txs, this.wallet, [], this.contactsService);
     } catch (err) {
       this.logger.info(err);
     }

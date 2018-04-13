@@ -6,7 +6,7 @@
     style="ui-button ui-button--white ui-button--md ui-button--with-caret ui-button--wallet-icon"></app-select> -->
 </div>
 <div class="balance">
-  <ng-container *ngIf="loading$ | async">
+  <ng-container *ngIf="totalsLoading$ | async">
     <loading-spinner></loading-spinner>
   </ng-container>
   <ng-container *ngIf="totals$ | async as totals">

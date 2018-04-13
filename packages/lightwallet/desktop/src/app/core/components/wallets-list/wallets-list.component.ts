@@ -10,4 +10,8 @@ export class WalletsListComponent {
   @Input() showButton: boolean = true;
   @Input() wallets: DisplayWallet[];
   @Input() loading: boolean;
+
+  trackByFn(wallet: DisplayWallet) {
+    return wallet.id;
+  }
 }
