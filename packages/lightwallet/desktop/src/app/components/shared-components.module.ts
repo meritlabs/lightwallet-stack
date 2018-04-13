@@ -16,6 +16,10 @@ import { PasswordPromptController } from '@merit/desktop/app/components/password
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-notification/toast-notification.component';
 import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/wallet-icon.component';
+import { IllustationsWorryFreeComponent } from '@merit/desktop/app/components/illustations/worry-free/worry-free.component';
+import { IllustationsSendingMeritComponent } from '@merit/desktop/app/components/illustations/sending-merit/sending-merit.component';
+import { IllustationsThatsItComponent } from '@merit/desktop/app/components/illustations/thats-it/thats-it.component';
+import { IllustationsYourWayComponent } from '@merit/desktop/app/components/illustations/your-way/your-way.component';
 import { ClipModule } from 'ng2-clip';
 
 export function getComponents() {
@@ -30,6 +34,10 @@ export function getComponents() {
     PasswordPromptComponent,
     BackdropComponent,
     ConfirmDialogComponent,
+    IllustationsWorryFreeComponent,
+    IllustationsSendingMeritComponent,
+    IllustationsThatsItComponent,
+    IllustationsYourWayComponent
     GlobalsendLinkPopupComponent
   ];
 }

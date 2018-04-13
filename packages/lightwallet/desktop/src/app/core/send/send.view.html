@@ -18,7 +18,7 @@
         </error-message>
 
         <loading-spinner *ngIf="sending"></loading-spinner>
-
+        <send-tour *ngIf="showTour" (hideTour)="hideTour($event)" [showTour]="showTour"></send-tour>
         <div class="sendMerit__content">
 
             <div class="sendMerit__form">
