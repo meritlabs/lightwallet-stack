@@ -4,14 +4,13 @@
   "main": "main.js",
   "description": "Lightwallet implementation for desktops",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
-  "authors": [
-    "Merit Foundation"
-  ],
+  "author": "Merit Foundation <hello@merit.me> https://www.merit.me",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "webpack-dev-server --port=4200",
     "build": "webpack",
+    "build:prod": "webpack --env.production",
     "postinstall": "rm -rf ./node_modules/rxjs",
     "electron:start": "electron .",
     "electron:build": "electron-builder"
@@ -46,10 +45,14 @@
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.1",
     "typescript": "2.4.2",
-    "uglify-js": "github:mishoo/UglifyJS2#harmony",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "url-loader": "^0.6.2",
     "webpack": "~3.11.0",
     "webpack-dev-server": "2.11.0"
+  },
+  "build": {
+    "directories": {
+      "output": "electron-dist"
+    }
   }
 }

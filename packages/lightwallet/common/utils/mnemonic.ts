@@ -1,7 +1,7 @@
-import EnglishWordlist from './wordlists/english';
-import { crypto, HDPrivateKey } from 'bitcore-lib';
 import { BigNumber } from 'bignumber.js';
+import { crypto, HDPrivateKey } from 'bitcore-lib';
 import { createHash, pbkdf2Sync } from 'crypto';
+import EnglishWordlist from './wordlists/english';
 
 /**
  * New Mnemonic implementation in TypeScript.
@@ -21,16 +21,12 @@ export function mnemonicToSeed(mnemonic: string, passphrase: string = '') {
   return pbkdf2Sync(mnemonic.normalize('NFKD'), 'mnemonic' + passphrase, 2048, 64, 'sha512');
 }
 
-export function mnemonicToEntropy(mnemonic: string, wordlist: string[] = EnglishWordlist) {
-
-}
-
 export function validateMnemonic(mnemonic: string) {
-  return isValidSize(mnemonic) && hasValidWords(mnemonic) && hasValidEntropy(mnemonic)
+  return isValidSize(mnemonic) && hasValidWords(mnemonic) && hasValidEntropy(mnemonic);
 }
 
 export function validateImportMnemonic(mnemonic: string) {
-  return isValidSize(mnemonic) && hasValidWords(mnemonic)
+  return isValidSize(mnemonic) && hasValidWords(mnemonic);
 }
 
 export function isValidSize(mnemonic: string) {
@@ -68,9 +64,9 @@ export function hasValidEntropy(mnemonic: string, wordlist: string[] = EnglishWo
 }
 
 export function mnemonicToHDPrivateKey(mnemonic, passphrase, network) {
-  var seed = mnemonicToSeed(mnemonic, passphrase);
+  const seed = mnemonicToSeed(mnemonic, passphrase);
   return HDPrivateKey.fromSeed(seed, network);
-};
+}
 
 function entropyChecksum(entropy: Buffer): string {
   const hash = createHash('sha256').update(entropy).digest(),

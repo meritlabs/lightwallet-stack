@@ -63,7 +63,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
   async ngOnInit() {
     const settings = await this.persistenceService.getNotificationSettings();
     if (!isEmpty(settings)) {
-      this.formData.setValue(settings);
+      this.formData.setValue(settings, { emitEvent: false });
     }
 
     this.subs.push(

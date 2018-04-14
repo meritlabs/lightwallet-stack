@@ -31,6 +31,8 @@ export class ImportWithFileView {
     mwsUrl: ENV.mwsUrl
   };
 
+  showPass: boolean;
+
   get canSubmit(): boolean {
     return Boolean(this.formData.backupFile) && Boolean(this.formData.filePassword);
   }
