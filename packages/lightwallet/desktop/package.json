@@ -53,6 +53,14 @@
   "build": {
     "directories": {
       "output": "electron-dist"
+    },
+    "productName": "Merit Lightwallet",
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "deb"
     }
   }
 }
