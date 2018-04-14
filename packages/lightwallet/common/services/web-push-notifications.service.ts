@@ -90,6 +90,13 @@ export class WebPushNotificationsService extends PushNotificationsService {
         } catch (e) {
           this.logger.error(e);
           this.logger.info('Push notifications permission was denied');
+          this._hasPermission = false;
+          await this.persistenceService.setNotificationSettings({
+            ...settings,
+            pushNotifications: false
+          });
+          this.enablePolling();
+          return;
         }
 
         await this.getToken();
