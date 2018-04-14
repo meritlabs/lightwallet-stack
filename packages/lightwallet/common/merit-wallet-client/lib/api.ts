@@ -159,7 +159,6 @@ export class API {
   }
 
   async _fetchLatestNotifications(interval: number): Promise<any[]> {
-    this.log.info('_fetchLatestNotifications called.');
     let opts: any = {
       lastNotificationId: this.lastNotificationId,
       includeOwn: this.notificationIncludeOwn
@@ -1808,11 +1807,10 @@ export class API {
     if (opts.lastNotificationId) {
       url += '?notificationId=' + opts.lastNotificationId;
     } else if (opts.timeSpan) {
-
       url += '?timeSpan=' + opts.timeSpan;
     }
 
-    return this._doGetRequestWithLogin(url);
+    return this._doGetRequest(url);
   };
 
   /**
