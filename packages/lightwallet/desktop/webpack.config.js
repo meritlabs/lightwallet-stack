@@ -503,12 +503,12 @@ module.exports = (_, config) => {
         debug: 'warning'
       }),
       new ProgressPlugin(),
-      new CircularDependencyPlugin({
-        exclude: /(\\|\/)node_modules(\\|\/)/,
-        failOnError: false,
-        onDetected: false,
-        cwd: projectRoot
-      }),
+      // new CircularDependencyPlugin({
+      //   exclude: /(\\|\/)node_modules(\\|\/)/,
+      //   failOnError: false,
+      //   onDetected: false,
+      //   cwd: projectRoot
+      // }),
       new NamedLazyChunksWebpackPlugin(),
       new HtmlWebpackPlugin({
         template: './src/index.html',
