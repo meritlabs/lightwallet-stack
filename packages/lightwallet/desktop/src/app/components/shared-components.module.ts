@@ -5,6 +5,8 @@ import { BackdropComponent } from '@merit/desktop/app/components/backdrop/backdr
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { ConfirmDialogComponent } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog.component';
 import { ErrorMessageComponent } from '@merit/desktop/app/components/error-message/error-message.component';
+import { GlobalsendLinkPopupComponent } from '@merit/desktop/app/components/globalsend-link-popup/globalsend-link-popup.component';
+import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/globalsend-link-popup/globalsend-link-popup.controller';
 import { LoadingSpinnerSmallComponent } from '@merit/desktop/app/components/loading-spinner-small/loading-spinner-small.component';
 import { LoadingSpinnerComponent } from '@merit/desktop/app/components/loading-spinner/loading-spinner.component';
 import { LockScreenComponent } from '@merit/desktop/app/components/lock-screen/lock-screen.component';
@@ -14,6 +16,11 @@ import { PasswordPromptController } from '@merit/desktop/app/components/password
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-notification/toast-notification.component';
 import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/wallet-icon.component';
+import { IllustationsWorryFreeComponent } from '@merit/desktop/app/components/illustations/worry-free/worry-free.component';
+import { IllustationsSendingMeritComponent } from '@merit/desktop/app/components/illustations/sending-merit/sending-merit.component';
+import { IllustationsThatsItComponent } from '@merit/desktop/app/components/illustations/thats-it/thats-it.component';
+import { IllustationsYourWayComponent } from '@merit/desktop/app/components/illustations/your-way/your-way.component';
+import { ClipModule } from 'ng2-clip';
 
 export function getComponents() {
   return [
@@ -26,7 +33,12 @@ export function getComponents() {
     WalletIconComponent,
     PasswordPromptComponent,
     BackdropComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    IllustationsWorryFreeComponent,
+    IllustationsSendingMeritComponent,
+    IllustationsThatsItComponent,
+    IllustationsYourWayComponent,
+    GlobalsendLinkPopupComponent
   ];
 }
 
@@ -34,12 +46,14 @@ export function getComponents() {
   entryComponents: [
     ToastNotificationComponent,
     PasswordPromptComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    GlobalsendLinkPopupComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ClipModule
   ],
   declarations: getComponents(),
   exports: getComponents()
@@ -51,7 +65,8 @@ export class SharedComponentsModule {
       providers: [
         ToastControllerService,
         PasswordPromptController,
-        ConfirmDialogControllerService
+        ConfirmDialogControllerService,
+        GlobalsendLinkPopupController
       ]
     };
   }

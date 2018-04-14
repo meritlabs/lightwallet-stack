@@ -33,6 +33,7 @@ import { WalletDetailView } from './wallets/wallet-details/wallet-details.view';
 import { WalletSettingsView } from './wallets/wallet-details/wallet-settings/wallet-settings.view';
 import { WalletsView } from './wallets/wallets.view';
 import { ClipModule } from 'ng2-clip';
+import { SendTourComponent } from './send/send-tour/send-tour.component';
 
 export function getPages() {
   return [
@@ -80,7 +81,8 @@ export function getPages() {
   ],
   declarations: [
     CoreView,
-    ...getPages()
+    ...getPages(),
+    SendTourComponent
   ],
   providers: [
     WalletPasswordGuard

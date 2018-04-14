@@ -1,6 +1,6 @@
 <app-lock-screen fullScreen *ngIf="!hasUnlockedWallet"></app-lock-screen>
-<div class="{{injected ? 'receiveMerit--injected' : 'receiveMerit'}}">
-  <div class="{{injected ? 'wallet-details__content__title' : 'receiveMerit__header container--inner title--primary'}}">
+<div class="receiveMerit">
+  <div class="receiveMerit__header container--inner title--primary">
     <p>Receive Merit</p>
   </div>
   <div class="receiveMerit__content container--inner">
@@ -46,10 +46,10 @@
     <div class="receiveMerit__totals">
       <div class="receiveMerit__totals__qr">
         <div class="receiveMerit__totals__qr__box">
-          <ng-container  *ngIf="qrAddress && address; else qrLoading">
+          <ng-container  *ngIf="(qrAddress && address); else qrLoading">
             <qr-code [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
           </ng-container>
-          <ng-template #qrLoading *ngIf="!hasUnlockedWallet">
+          <ng-template #qrLoading>
             <loading-spinner></loading-spinner>
           </ng-template>
         </div>
@@ -58,7 +58,7 @@
       </div>
     </div>
   </div>
-  <div class="receiveMerit__footer" *ngIf="!injected">
+  <div class="receiveMerit__footer">
     <div class="container--inner">
       <p class="receiveMerit__footer__caption"><strong>Did you know</strong> that you can receive Merit by simply giving people your @alias?  They can type it or paste it in and send to you with ease!</p>
     </div>

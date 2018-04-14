@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { getEasySendURL } from '@merit/common/models/easy-send';
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 import { COINBASE_CONFIRMATION_THRESHOLD } from '@merit/common/utils/constants';
+import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/globalsend-link-popup/globalsend-link-popup.controller';
 
 @Component({
   selector: 'history-item',
@@ -28,6 +30,8 @@ export class HistoryItemComponent implements OnInit {
     }
   }
 
+  constructor(private globalSendLinkCtrl: GlobalsendLinkPopupController) {}
+
   ngOnInit() {
     const { tx } = this;
 
@@ -45,5 +49,9 @@ export class HistoryItemComponent implements OnInit {
     else if (tx.isMiningReward) this.image = 'mining';
     else if (tx.isInvite) this.image = 'invite';
     else this.image = 'merit';
+  }
+
+  showGlobalSendLink() {
+    this.globalSendLinkCtrl.create(this.tx.easySendUrl);
   }
 }

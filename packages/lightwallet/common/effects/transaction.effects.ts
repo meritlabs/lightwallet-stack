@@ -17,6 +17,7 @@ import {
   UpdateOneWalletAction,
   WalletsActionType
 } from '@merit/common/reducers/wallets.reducer';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -73,11 +74,13 @@ export class TransactionEffects {
 
   constructor(private actions$: Actions,
               private walletService: WalletService,
-              private store: Store<IRootAppState>) {
+              private store: Store<IRootAppState>,
+              private persistenceService: PersistenceService2) {
   }
 
   private async getWalletHistory(wallet: DisplayWallet): Promise<IDisplayTransaction[]> {
     const walletHistory = await this.walletService.getTxHistory(wallet.client, { force: true });
-    return formatWalletHistory(walletHistory, wallet.client);
+    const easySends = await this.persistenceService.getEasySends();
+    return formatWalletHistory(walletHistory, wallet.client, easySends);
   }
 }
