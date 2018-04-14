@@ -77,6 +77,9 @@ export class MeritLightWallet {
           });
 
         const easyReceipt: EasyReceipt = await this.easyReceiveService.validateAndSaveParams(data);
+
+        // Let's remove the Query Params from the URL so that the user is not continually loading the same EasyReceipt every time they re-open the app or the browser. 
+        window.history.replaceState({},document.title,document.location.pathname);
         this.logger.info('Returned from validate with: ', easyReceipt);
 
         // We have an easyReceipt, let's handle the cases of being a new user or an
