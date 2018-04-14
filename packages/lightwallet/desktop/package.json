@@ -1,7 +1,7 @@
 {
   "name": "lightwallet-desktop",
   "version": "0.2.4",
-  "main": "electron.js",
+  "main": "main.js",
   "description": "Lightwallet implementation for desktops",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "authors": [
@@ -13,7 +13,8 @@
     "start": "webpack-dev-server --port=4200",
     "build": "webpack",
     "postinstall": "rm -rf ./node_modules/rxjs",
-    "electron": "electron"
+    "electron:start": "electron .",
+    "electron:build": "electron-builder"
   },
   "repository": {
     "type": "git",
