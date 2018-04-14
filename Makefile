@@ -39,8 +39,8 @@ test-build: clean-stack \
 	build-lw-ww
 
 .PHONY: build-lw-ww
-build-lw-ww:  
-	cd ./packages/lightwallet && npm run build 
+build-lw-ww:
+	cd ./packages/lightwallet && npm run build
 	cd ./packages/lightwallet/desktop && npm run build
 
 .PHONY: start-mongo
@@ -81,12 +81,10 @@ clean-npm:
 	npm cache clean --force
 
 .PHONY: prepare-stack
-prepare-stack: clean-npm \
-	use-lerna
+prepare-stack: use-lerna
 
 .PHONY: prepare-procuction-stack
-prepare-production-stack: clean-npm \
-	use-lerna-production
+prepare-production-stack: use-lerna-production
 
 .PHONY: use-lerna
 use-lerna:
@@ -143,8 +141,7 @@ clean-bitcore-payment-protocol:
 	rm -rf ./packages/bitcore-payment-protocol/node_modules
 
 .PHONY: clean-stack
-clean-stack: clean-npm \
-	clean-bitcore-lib \
+clean-stack: clean-bitcore-lib \
 	clean-bitcoin-rpc \
 	clean-insight-api \
 	clean-insight-ui \
