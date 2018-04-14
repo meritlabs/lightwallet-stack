@@ -13,6 +13,7 @@ import { PushNotificationsService } from '@merit/common/services/push-notificati
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { DerivationPath } from '@merit/common/utils/derivation-path';
+import { MnemonicValidator } from '@merit/common/validators/mnemonic.validator';
 import { Store } from '@ngrx/store';
 import { startsWith } from 'lodash';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
@@ -26,7 +27,7 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 export class PhraseImportView {
 
   formData: FormGroup = this.formBuilder.group({
-    words: ['', Validators.required],
+    words: ['', [Validators.required, MnemonicValidator.validateMnemonicImport]],
     password: '',
     mwsUrl: ENV.mwsUrl
   });
