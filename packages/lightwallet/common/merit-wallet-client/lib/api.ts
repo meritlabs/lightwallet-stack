@@ -1807,11 +1807,10 @@ export class API {
     if (opts.lastNotificationId) {
       url += '?notificationId=' + opts.lastNotificationId;
     } else if (opts.timeSpan) {
-
       url += '?timeSpan=' + opts.timeSpan;
     }
 
-    return this._doGetRequestWithLogin(url);
+    return this._doGetRequest(url);
   };
 
   /**
