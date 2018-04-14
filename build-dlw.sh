@@ -3,5 +3,5 @@
 set -euo pipefail
 
 cd packages/lightwallet/desktop
-npm run build -- -p
+npm run build:prod
 firebase deploy
