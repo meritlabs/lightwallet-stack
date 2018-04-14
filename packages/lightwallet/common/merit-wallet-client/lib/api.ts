@@ -159,7 +159,6 @@ export class API {
   }
 
   async _fetchLatestNotifications(interval: number): Promise<any[]> {
-    this.log.info('_fetchLatestNotifications called.');
     let opts: any = {
       lastNotificationId: this.lastNotificationId,
       includeOwn: this.notificationIncludeOwn
