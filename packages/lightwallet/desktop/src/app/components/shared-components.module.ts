@@ -37,7 +37,7 @@ export function getComponents() {
     IllustationsWorryFreeComponent,
     IllustationsSendingMeritComponent,
     IllustationsThatsItComponent,
-    IllustationsYourWayComponent
+    IllustationsYourWayComponent,
     GlobalsendLinkPopupComponent
   ];
 }
