@@ -51,6 +51,7 @@ export class WalletsView {
       this.updateAllInfo().then(() => this.refreshing = false);
     });
 
+    this.processPendingEasyReceipts();
   }
 
   private get isActivePage(): boolean {
@@ -82,10 +83,6 @@ export class WalletsView {
     this.refreshing = true;
     await this.updateAllInfo();
     this.refreshing = false;
-  }
-
-  ionViewDidEnter() {
-    this.processPendingEasyReceipts();
   }
 
   async doRefresh(refresher) {
