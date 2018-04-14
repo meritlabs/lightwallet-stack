@@ -7,7 +7,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { INotificationSettings, PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { Store } from '@ngrx/store';
@@ -76,7 +76,7 @@ export class WebPushNotificationsService extends PushNotificationsService {
   }
 
   async init() {
-    const settings = await this.persistenceService.getNotificationSettings() || {};
+    const settings: INotificationSettings = await this.persistenceService.getNotificationSettings();
     this._pushNotificationsEnabled = Boolean(settings.pushNotifications);
 
     if (this.pushNotificationsEnabled) {
@@ -90,6 +90,13 @@ export class WebPushNotificationsService extends PushNotificationsService {
         } catch (e) {
           this.logger.error(e);
           this.logger.info('Push notifications permission was denied');
+          this._hasPermission = false;
+          await this.persistenceService.setNotificationSettings({
+            ...settings,
+            pushNotifications: false
+          });
+          this.enablePolling();
+          return;
         }
 
         await this.getToken();
