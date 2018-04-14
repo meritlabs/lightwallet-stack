@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LoggerService } from '@merit/common/services/logger.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
+import { LoggerService } from '@merit/common/services/logger.service';
 
 @Injectable()
 export class PushNotificationsService {
@@ -24,11 +23,17 @@ export class PushNotificationsService {
 
   // abstract methods
   init(): Promise<void> { return; }
+
   protected requestPermission(): Promise<boolean> { return; }
+
   protected getToken(): Promise<string> { return; }
+
   protected subscribeToEvents() {}
+
   protected getWallets(): Promise<MeritWalletClient[]> { return; }
+
   protected enablePolling() {}
+
   protected disablePolling() {}
 
   async enable() {
@@ -55,8 +60,8 @@ export class PushNotificationsService {
           token: this.token,
           platform: this.platform,
           packageName: this.packageName
-        })
-      } catch(err) {
+        });
+      } catch (err) {
         if (err) {
           this.logger.error(walletClient.name + ': Subscription Push Notifications error. ', JSON.stringify(err));
         } else {
@@ -68,8 +73,8 @@ export class PushNotificationsService {
 
   async unsubscribe(walletClient: MeritWalletClient) {
     try {
-      await walletClient.pushNotificationsUnsubscribe(this.token)
-    } catch(err) {
+      await walletClient.pushNotificationsUnsubscribe(this.token);
+    } catch (err) {
       if (err) {
         this.logger.error(walletClient.name + ': Subscription Push Notifications error. ', JSON.stringify(err));
       } else {
