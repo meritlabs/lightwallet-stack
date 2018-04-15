@@ -1801,6 +1801,7 @@ export class API {
    */
   // TODO: Make this return a promise of []Notifications
   getNotifications(opts: any = {}): Promise<any> {
+
     $.checkState(this.credentials);
 
     let url = '/v1/notifications/';

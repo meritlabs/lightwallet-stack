@@ -1,18 +1,19 @@
 {
   "name": "lightwallet-desktop",
   "version": "0.2.4",
+  "main": "main.js",
   "description": "Lightwallet implementation for desktops",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
-  "authors": [
-    "Merit Foundation"
-  ],
+  "author": "Merit Foundation <hello@merit.me> https://www.merit.me",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "webpack-dev-server --port=4200",
     "build": "webpack",
     "build:prod": "webpack --env.production",
-    "postinstall": "rm -rf ./node_modules/rxjs"
+    "postinstall": "rm -rf ./node_modules/rxjs",
+    "electron:start": "electron .",
+    "electron:build": "electron-builder"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,8 @@
     "autoprefixer": "^7.2.3",
     "circular-dependency-plugin": "^4.2.1",
     "copy-webpack-plugin": "~4.4.1",
+    "electron": "^1.8.4",
+    "electron-builder": "^20.8.1",
     "file-loader": "^1.1.5",
     "html-webpack-plugin": "^2.29.0",
     "istanbul-instrumenter-loader": "^3.0.0",
@@ -46,5 +49,18 @@
     "url-loader": "^0.6.2",
     "webpack": "~3.11.0",
     "webpack-dev-server": "2.11.0"
+  },
+  "build": {
+    "directories": {
+      "output": "electron-dist"
+    },
+    "productName": "Merit Lightwallet",
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "deb"
+    }
   }
 }
