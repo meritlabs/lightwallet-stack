@@ -12,9 +12,9 @@ const routes: Routes = [
     component: OnboardingRootComponent,
     children: [
       { path: '', component: AppStartUpComponent },
-      { path: 'tour', component: OnboardView },
-      { path: 'tour/desktop', component: GuideWentFromDesktopComponent },
-      { path: 'tour/invited', component: InvitedUserComponent },
+      // { path: 'tour', component: OnboardView },
+      { path: 'tour-desktop', component: GuideWentFromDesktopComponent },
+      { path: 'tour-invited', component: InvitedUserComponent },
       { path: 'unlock', component: UnlockComponent },
       { path: 'import', loadChildren: '../import/import.module#ImportModule' },
       { path: 'import/qr-code', loadChildren: '../import/import-by-qr/import-by-qr.module#ImportByQrModule' },
