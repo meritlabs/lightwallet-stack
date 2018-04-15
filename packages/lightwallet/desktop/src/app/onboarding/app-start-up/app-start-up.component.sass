@@ -1,0 +1,59 @@
+@import "~styles/v1/common/import-sass"
+.welcome
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-flow: row wrap
+  width: 100vw
+  min-height: 100vh
+  &_wrap
+    text-align: center
+  &_title
+    +font(500, 30px, 34px, $white)
+    margin-bottom: 20px
+  &_caption
+    +font(300, 20px, 30px, $white)
+    max-width: 500px
+    width: 100%
+    margin: 0px auto 40px
+  &_choices
+    display: flex
+    max-width: 800px
+    width: 100%
+    margin: 0 auto
+  &_choice
+    +font(400, 16px, 22px, $white)
+    margin: 0 10px
+    max-width: 25%
+    width: 100%
+    border-radius: 10px
+    border: 1px solid $white
+    padding: 20px 15px
+    cursor: pointer
+    opacity: .7
+    +transition(.3s, linear)
+    background: trasparent
+    &:hover
+      background: $blue
+      border-color: $blue
+      opacity: 1
+      box-shadow: 0 0 20px rgba(0,0,0, .2)
+      .icon
+        background: $salad-green
+.icon
+  display: block
+  width: 50px
+  height: 50px
+  margin: 0px auto 15px
+  mask-position: center
+  mask-repeat: no-repeat
+  mask-size: contain
+  background: $white
+  &-research
+    mask-image: url('/assets/v1/icons/startup/choice-new.svg')
+  &-try
+    mask-image: url('/assets/v1/icons/startup/choice-try.svg')
+  &-backup
+    mask-image: url('/assets/v1/icons/startup/choice-backup.svg')
+  &-have
+    mask-image: url('/assets/v1/icons/startup/choice-have.svg')
