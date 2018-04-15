@@ -4,14 +4,17 @@ import { OnboardingRootComponent } from '@merit/desktop/app/onboarding/onboardin
 import { UnlockComponent } from './unlock/unlock.view';
 import { OnboardView} from './onboard/onboard.view';
 import { AppStartUpComponent } from './app-start-up/app-start-up.component';
+import { GuideWentFromDesktopComponent } from './app-start-up/guide-went-from-desktop/guide-went-from-desktop.component';
 
 const routes: Routes = [
   {
     path: '',
     component: OnboardingRootComponent,
     children: [
-      { path: '', component: AppStartUpComponent },
+      // { path: '', component: AppStartUpComponent },
+      { path: '', component: GuideWentFromDesktopComponent },
       { path: 'tour', component: OnboardView },
+      { path: 'tour/desktop', component: GuideWentFromDesktopComponent },
       { path: 'unlock', component: UnlockComponent },
       { path: 'import', loadChildren: '../import/import.module#ImportModule' },
       { path: 'import/qr-code', loadChildren: '../import/import-by-qr/import-by-qr.module#ImportByQrModule' },

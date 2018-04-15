@@ -1,0 +1,28 @@
+@import "~styles/v1/common/import-sass"
+.guides_wrap
+  max-width: 1000px
+  margin: 0px auto
+  overflow-y: scroll
+  height: calc(100vh - 80px)
+  background: $white
+  position: relative
+  top: 40px
+  border-radius: 10px
+  padding: 30px 20px
+  h2, h3, h4, h5, h6, p, ul, ol
+    margin-bottom: 30px
+  li
+    margin-bottom: 15px
+  h2
+    +font(500, 24px, 26px)
+  h3
+    +font(400, 22px, 26px)
+  p
+    +font(300, 18px, 24px)
+  blockquote
+    margin-bottom: 30px
+    strong
+      font-size: 16px
+      opacity: .8
+      margin-bottom: 10px
+      display: inline-block
