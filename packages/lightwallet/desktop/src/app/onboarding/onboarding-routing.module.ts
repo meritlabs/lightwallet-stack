@@ -3,13 +3,15 @@ import { RouterModule, Routes } from '@angular/router';
 import { OnboardingRootComponent } from '@merit/desktop/app/onboarding/onboarding-root/onboarding-root.component';
 import { UnlockComponent } from './unlock/unlock.view';
 import { OnboardView} from './onboard/onboard.view';
+import { AppStartUpComponent } from './app-start-up/app-start-up.component';
 
 const routes: Routes = [
   {
     path: '',
     component: OnboardingRootComponent,
     children: [
-      { path: '', component: OnboardView },
+      { path: '', component: AppStartUpComponent },
+      { path: 'tour', component: OnboardView },
       { path: 'unlock', component: UnlockComponent },
       { path: 'import', loadChildren: '../import/import.module#ImportModule' },
       { path: 'import/qr-code', loadChildren: '../import/import-by-qr/import-by-qr.module#ImportByQrModule' },

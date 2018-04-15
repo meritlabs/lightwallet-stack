@@ -14,6 +14,7 @@ import { YourWayComponent } from './onboard/illustations/your-way/your-way.compo
 import { ThatsItComponent } from './onboard/illustations/thats-it/thats-it.component';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
+import { AppStartUpComponent } from './app-start-up/app-start-up.component';
 
 @NgModule({
   imports: [
@@ -26,6 +27,6 @@ import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
     CommonPipesModule,
     Ng4LoadingSpinnerModule
   ],
-  declarations: [OnboardView, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent]
+  declarations: [OnboardView, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent, AppStartUpComponent]
 })
 export class OnboardingModule { }
