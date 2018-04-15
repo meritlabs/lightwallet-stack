@@ -30,12 +30,18 @@
     width: 100%
     margin: 0px auto 40px
     opacity: 0
+    animation: showCaption .2s forwards
+    animation-timing-function: ease-out
+    animation-delay: 2s
   &_choices
     display: flex
     max-width: 800px
     width: 100%
     margin: 0 auto
     opacity: 0
+    animation: showChoices .2s forwards
+    animation-timing-function: ease-out
+    animation-delay: 2.5s
   &_choice
     +font(400, 16px, 22px, $white)
     margin: 0 10px
@@ -84,3 +90,17 @@
     transform: scale(3)
   100%
     transform: scale(1)
+@keyframes showCaption
+  0%
+    opacity: 0
+    transform: scale(.8)
+  100%
+    opacity: 1
+    transform: scale(1)
+@keyframes showChoices
+  0%
+    opacity: 0
+    transform: translateY(10%)
+  100%
+    opacity: 1
+    transform: translateY(0%)
