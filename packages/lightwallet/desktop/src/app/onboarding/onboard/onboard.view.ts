@@ -32,7 +32,7 @@ export class OnboardView implements OnInit {
   async ngOnInit() {
     const receipts = await this.easyReceiveService.getPendingReceipts();
     if (receipts && receipts[0]) {
-      this.router.navigateByUrl('onboarding/unlock');
+      // this.router.navigateByUrl('onboarding/unlock');
     }
   }
 

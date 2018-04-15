@@ -16,6 +16,7 @@ import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 import { AppStartUpComponent } from './app-start-up/app-start-up.component';
 import { GuideWentFromDesktopComponent } from './app-start-up/guide-went-from-desktop/guide-went-from-desktop.component';
+import { InvitedUserComponent } from './app-start-up/invited-user/invited-user.component';
 
 @NgModule({
   imports: [
@@ -28,6 +29,6 @@ import { GuideWentFromDesktopComponent } from './app-start-up/guide-went-from-de
     CommonPipesModule,
     Ng4LoadingSpinnerModule
   ],
-  declarations: [OnboardView, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent, AppStartUpComponent, GuideWentFromDesktopComponent]
+  declarations: [OnboardView, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent, AppStartUpComponent, GuideWentFromDesktopComponent, InvitedUserComponent]
 })
 export class OnboardingModule { }
