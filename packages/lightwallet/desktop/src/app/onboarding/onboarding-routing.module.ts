@@ -11,8 +11,7 @@ const routes: Routes = [
     path: '',
     component: OnboardingRootComponent,
     children: [
-      // { path: '', component: AppStartUpComponent },
-      { path: '', component: GuideWentFromDesktopComponent },
+      { path: '', component: AppStartUpComponent },
       { path: 'tour', component: OnboardView },
       { path: 'tour/desktop', component: GuideWentFromDesktopComponent },
       { path: 'unlock', component: UnlockComponent },
