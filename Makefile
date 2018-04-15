@@ -30,6 +30,17 @@ clean-lightwallet:
 	rm -rf ./packages/lightwallet/mobile/node_modules
 	rm -rf ./packages/lightwallet/node_modules
 
+.PHONY: build-electron-win
+build-electron-win:
+  cd ./packages/lightwallet/desktop && npm run electron:build -- --win --x64
+
+.PHONY: build-electron-mac
+build-electron-mac:
+	cd ./packages/lightwallet/desktop && npm run electron:build -- --mac --x64
+
+.PHONE: build-electron-deb
+build-electron-deb:
+	cd ./packages/lightwallet/desktop && npm run electron:build -- --linux deb --x64
 
 ### lightwallet-stack ###
 
