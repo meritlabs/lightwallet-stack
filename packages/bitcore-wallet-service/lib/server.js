@@ -2551,21 +2551,26 @@ WalletService.prototype.publishTx = function(opts, cb) {
  */
 WalletService.prototype.getTx = function(opts, cb) {
   var self = this;
+  if (!opts || !opts.retries) {
+    opts.retries = 1;
+  } 
 
-  self.storage.fetchTx(self.walletId, opts.txProposalId, function(err, txp) {
-    if (err) return cb(err);
-    if (!txp) return cb(Errors.TX_NOT_FOUND);
+  async.retry({times: 5, interval: 100}, 
+    self.storage.fetchTx(self.walletId, opts.txProposalId),
+      function(err, txp) {
+        if (err) return cb(err);
+        if (!txp) return cb(Errors.TX_NOT_FOUND);
 
-    if (!txp.txid) return cb(null, txp);
+        if (!txp.txid) return cb(null, txp);
 
-    self.storage.fetchTxNote(self.walletId, txp.txid, function(err, note) {
-      if (err) {
-        log.warn('Error fetching tx note for ' + txp.txid);
-      }
-      txp.note = note;
-      return cb(null, txp);
+        self.storage.fetchTxNote(self.walletId, txp.txid, function(err, note) {
+          if (err) {
+            log.warn('Error fetching tx note for ' + txp.txid);
+          }
+          txp.note = note;
+          return cb(null, txp);
+        });
     });
-  });
 };
 
 /**
@@ -2743,11 +2748,19 @@ WalletService.prototype.signTx = function(opts, cb) {
   self.getWallet({}, function(err, wallet) {
     if (err) return cb(err);
 
+    /**
+     * With a globally distributed mongo cluster, we could end up in a situation where a TxProposal was
+     * written to the Primary Mongo instance, but has not yet propogated to the secondary node we are reading from.
+     * So we've added some retry logic below.  This isn't a long-term solution, and should be reconsidered 
+     * either when we have time or get a mongo clustering expert on the team. 
+     * TODO: Reconsider approach to handling Mongo race conditions.  
+    */
     self.getTx({
-      txProposalId: opts.txProposalId
+      txProposalId: opts.txProposalId,
+      retries: 5
     }, function(err, txp) {
       if (err) return cb(err);
-
+    
       var action = _.find(txp.actions, {
         copayerId: self.copayerId
       });
