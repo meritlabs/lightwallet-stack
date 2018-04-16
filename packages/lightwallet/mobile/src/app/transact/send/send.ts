@@ -1,18 +1,16 @@
-import { Component } from '@angular/core';
-import { IonicPage, ModalController, NavController, Events, ToastController } from 'ionic-angular';
-import * as _ from 'lodash';
+import { Component, ViewChild } from '@angular/core';
 import { ENV } from '@app/env';
 import { MeritContact } from '@merit/common/models/merit-contact';
-import { ContactsService } from '@merit/common/services/contacts.service';
-import { ProfileService } from '@merit/common/services/profile.service';
-import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
-import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
 import { AddressService } from '@merit/common/services/address.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
-import { ViewChild } from '@angular/core';
-import { Slides } from 'ionic-angular';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
+import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
+import { Events, IonicPage, ModalController, NavController, Slides, ToastController } from 'ionic-angular';
+import * as _ from 'lodash';
 
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -25,6 +23,7 @@ const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 export class SendView {
 
   @ViewChild(Slides) slides: Slides;
+
   get sliderIsFinished(): boolean {
     return this.slides.isEnd();
   }
@@ -51,13 +50,13 @@ export class SendView {
   searchInProgress: boolean;
 
   constructor(private navCtrl: NavController,
-    private contactsService: ContactsService,
-    private profileService: ProfileService,
-    private addressService: AddressService,
-    private modalCtrl: ModalController,
-    private addressScanner: AddressScannerService,
-    private persistenceService: PersistenceService,
-    private events: Events,
+              private contactsService: ContactsService,
+              private profileService: ProfileService,
+              private addressService: AddressService,
+              private modalCtrl: ModalController,
+              private addressScanner: AddressScannerService,
+              private persistenceService: PersistenceService,
+              private events: Events,
               private toastCtrl: ToastController
   ) {
   }
@@ -258,6 +257,7 @@ export class SendView {
     });
     modal.present();
   }
+
   createContact() {
     let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
     let modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
@@ -310,10 +310,12 @@ export class SendView {
       ).present();
     }
   }
+
   editContact(contact, $event) {
     $event.stopPropagation();
     this.modalCtrl.create('SendEditContactView', { contact }).present();
   }
+
   sendToEntity(entity) {
     this.navCtrl.push('SendAmountView', {
       contact: entity.contact,
