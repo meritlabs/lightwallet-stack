@@ -8,8 +8,16 @@ import { Component, OnInit } from '@angular/core';
 export class AppStartUpComponent implements OnInit {
 
   constructor() { }
-
+  showWelcomeAnimation:Boolean = true;
   ngOnInit() {
+    let showWelcomeAnimation;
+    if("showWelcomeAnimation" in localStorage && localStorage.getItem("showWelcomeAnimation") === 'false') {
+      showWelcomeAnimation = false;
+    }else {
+      localStorage.setItem("showWelcomeAnimation", 'false');
+      showWelcomeAnimation = true;
+    }
+    this.showWelcomeAnimation = showWelcomeAnimation;
   }
 
 }
