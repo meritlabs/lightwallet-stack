@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, ModalController, NavController, Events } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, Events, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { ENV } from '@app/env';
 import { MeritContact } from '@merit/common/models/merit-contact';
@@ -57,7 +57,8 @@ export class SendView {
     private modalCtrl: ModalController,
     private addressScanner: AddressScannerService,
     private persistenceService: PersistenceService,
-    private events: Events
+    private events: Events,
+              private toastCtrl: ToastController
   ) {
   }
 
@@ -332,6 +333,15 @@ export class SendView {
   }
 
   easySend() {
+    if (!this.hasActiveInvites) {
+      this.toastCtrl.create({
+        message: 'You do not have any available invites to use GlobalSend',
+        duration: 4000,
+        showCloseButton: true
+      });
+      return;
+    }
+
     this.navCtrl.push('SendAmountView', {
       suggestedMethod: { type: SendMethodType.Easy }
     });
