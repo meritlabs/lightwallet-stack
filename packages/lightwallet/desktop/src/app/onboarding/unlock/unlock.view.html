@@ -10,7 +10,8 @@
           <h1>{{ easyReceipt.senderName | unescape }} sent you Merit!</h1>
         </ng-container>
         <ng-template #noEasyReceipt>
-          <h1>Merit is invite-only network</h1>
+          <h1><span routerLink="../" class="unlock__back"><img src="/assets/v1/images/backup/back-icon.svg" alt=""></span>
+            Merit is invite-only network</h1>
         </ng-template>
       </div>
     </div>
