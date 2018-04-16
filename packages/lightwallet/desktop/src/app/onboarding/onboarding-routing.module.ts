@@ -11,11 +11,10 @@ const routes: Routes = [
     path: '',
     component: OnboardingRootComponent,
     children: [
-      { path: '', component: OnboardView },
+      { path: '', component: OnboardView, pathMatch: "full" },
       { path: 'tour-desktop', component: GuideWentFromDesktopComponent },
       { path: 'tour-invited', component: InvitedUserComponent },
       { path: 'unlock', component: UnlockComponent },
-      { path: 'selection', component: AppStartUpComponent },
       { path: 'import', loadChildren: '../import/import.module#ImportModule' },
       { path: 'import/qr-code', loadChildren: '../import/import-by-qr/import-by-qr.module#ImportByQrModule' },
       { path: 'import/file', loadChildren: '../import/import-with-file/import-with-file.module#ImportWithFileModule' },
