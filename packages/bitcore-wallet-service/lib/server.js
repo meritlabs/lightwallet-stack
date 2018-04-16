@@ -2555,7 +2555,7 @@ WalletService.prototype.getTx = function(opts, cb) {
     opts.retries = 1;
   } 
 
-  async.retry({times: 5, interval: 100}, 
+  async.retry({times: opts.retries, interval: 100}, 
     self.storage.fetchTx(self.walletId, opts.txProposalId),
       function(err, txp) {
         if (err) return cb(err);
