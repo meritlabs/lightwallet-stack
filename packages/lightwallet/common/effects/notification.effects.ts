@@ -29,7 +29,7 @@ export class NotificationEffects {
    */
   @Effect()
   saveWhenNeeded$: Observable<SaveNotificationsAction> = this.actions$.pipe(
-    ofType(NotificationsActionType.Add, NotificationsActionType.Clear, NotificationsActionType.Delete, NotificationsActionType.MarkAsRead),
+    ofType(NotificationsActionType.Add, NotificationsActionType.Clear, NotificationsActionType.Delete, NotificationsActionType.MarkAsRead, NotificationsActionType.MarkAllAsRead),
     map(() => new SaveNotificationsAction())
   );
 
@@ -44,12 +44,11 @@ export class NotificationEffects {
   save$ = this.actions$.pipe(
     ofType(NotificationsActionType.Save),
     withLatestFrom(this.store.select(selectNotifications)),
-    map(([action, notifications]) => this.persistenceService.setNotifications(notifications))
+    map(([action, notifications]) => this.persistenceService.setNotifications(notifications.notifications))
   );
 
   constructor(private actions$: Actions,
               private store: Store<IRootAppState>,
-              private persistenceService: PersistenceService2,
-              private logger: LoggerService) {
+              private persistenceService: PersistenceService2) {
   }
 }

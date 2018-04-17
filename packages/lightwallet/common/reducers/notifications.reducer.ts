@@ -6,7 +6,10 @@ export interface INotification {
   [key: string]: any;
 }
 
-export type INotificationsState = INotification[];
+export interface INotificationsState {
+  notifications: INotification[];
+  totalUnread: number;
+}
 
 export enum NotificationsActionType {
   Update = '[Notifications] Update',
@@ -15,7 +18,8 @@ export enum NotificationsActionType {
   Delete = '[Notifications] Delete',
   Clear = '[Notifications] Clear',
   Load = '[Notifications] Load',
-  Save = '[Notifications] Save'
+  Save = '[Notifications] Save',
+  MarkAllAsRead = '[Notifications] Mark all as read'
 }
 
 export class LoadNotificationsAction implements Action {
@@ -76,6 +80,10 @@ export class ClearNotificationsAction implements Action {
   type = NotificationsActionType.Clear;
 }
 
+export class MarkAllNotificationsAsReadAction implements Action {
+  type = NotificationsActionType.MarkAllAsRead;
+}
+
 export type NotificationAction =
   UpdateNotificationsAction
   & AddNotificationAction
@@ -83,26 +91,50 @@ export type NotificationAction =
   & DeleteNotificationAction
   & ClearNotificationsAction;
 
-export function notificationsReducer(state: INotificationsState = [], action: NotificationAction): INotificationsState {
+export function calculateUnreadNotifications(notifications: INotification[]): number {
+  return notifications.reduce((total: number, notification: INotification) => total + Number(notification.read), 0);
+}
+
+export function notificationsReducer(state: INotificationsState = { notifications: [], totalUnread: 0 }, action: NotificationAction): INotificationsState {
   switch (action.type) {
     case NotificationsActionType.Update:
-      return action.notifications;
+      return {
+        notifications: action.notifications,
+        totalUnread: calculateUnreadNotifications(action.notifications)
+      };
 
     case NotificationsActionType.Add:
-      return [
-        ...state,
-        action.notification
-      ];
+      state.notifications.push(action.notification);
+      return {
+        notifications: state.notifications,
+        totalUnread: state.totalUnread + Number(action.notification.read)
+      };
 
     case NotificationsActionType.MarkAsRead:
-      state.find((notification: INotification) => notification.id === action.notificationId).read = true;
+      state.notifications.find((notification: INotification) => notification.id === action.notificationId).read = true;
       return state;
 
+    case NotificationsActionType.MarkAllAsRead:
+      return {
+        notifications: state.notifications.map((notification: INotification) => {
+          notification.read = true;
+          return notification;
+        }),
+        totalUnread: 0
+      };
+
     case NotificationsActionType.Delete:
-      return state.filter((notification: INotification) => notification.id !== action.notificationId);
+      state.notifications = state.notifications.filter((notification: INotification) => notification.id !== action.notificationId);
+      return {
+        notifications: state.notifications,
+        totalUnread: calculateUnreadNotifications(state.notifications)
+      };
 
     case NotificationsActionType.Clear:
-      return [];
+      return {
+        notifications: [],
+        totalUnread: 0
+      };
 
     default:
       return state;
