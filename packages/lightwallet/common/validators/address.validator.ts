@@ -25,7 +25,9 @@ export class AddressValidator {
 
   static validateAliasAvailability(mwcService: MWCService) {
     return async (abstractCtrl: AbstractControl) => {
-      const { value } = abstractCtrl;
+      let { value } = abstractCtrl;
+
+      value = value.replace(/[@|\s]/g, '');
 
       if (!couldBeAlias(value))
         return { InvalidFormat: true };
