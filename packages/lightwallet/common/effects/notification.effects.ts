@@ -52,7 +52,8 @@ export class NotificationEffects {
       const notification = formatNotification(action.notification);
       const toast = this.toastCtrl.create({
         title: notification.title,
-        text: notification.message
+        text: notification.message,
+        status: 'success'
       });
 
       toast.onDismiss = () => this.store.dispatch(new MarkNotificationAsReadAction(notification.id));
