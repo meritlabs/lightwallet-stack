@@ -61,6 +61,8 @@ export class UnlockComponent {
     this.creatingWallet = true;
     let { inviteCode, alias } = this.formData.getRawValue();
 
+    alias = alias.replace(/[@|\s]/g, '');
+
     inviteCode = isAlias(inviteCode) ? inviteCode.slice(1) : inviteCode;
     alias = alias && isAlias(alias) ? alias.slice(1) : alias;
 
