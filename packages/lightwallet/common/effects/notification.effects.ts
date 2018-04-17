@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
-import { PersistenceService2 } from '@merit/common/services/persistence2.service';
-import { fromPromise } from 'rxjs/observable/fromPromise';
 import {
-  INotification, LoadNotificationsAction, NotificationsActionType, SaveNotificationsAction,
+  INotification,
+  LoadNotificationsAction,
+  NotificationsActionType,
+  SaveNotificationsAction,
   selectNotifications,
   UpdateNotificationsAction
 } from '@merit/common/reducers/notifications.reducer';
-import { map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { LoggerService } from '@merit/common/services/logger.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
+import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
+import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class NotificationEffects {
