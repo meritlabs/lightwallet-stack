@@ -3,6 +3,7 @@ import { Action, createFeatureSelector } from '@ngrx/store';
 export interface INotification {
   timestamp: number;
   read: boolean;
+
   [key: string]: any;
 }
 
@@ -95,7 +96,10 @@ export function calculateUnreadNotifications(notifications: INotification[]): nu
   return notifications.reduce((total: number, notification: INotification) => total + Number(notification.read), 0);
 }
 
-export function notificationsReducer(state: INotificationsState = { notifications: [], totalUnread: 0 }, action: NotificationAction): INotificationsState {
+export function notificationsReducer(state: INotificationsState = {
+  notifications: [],
+  totalUnread: 0
+}, action: NotificationAction): INotificationsState {
   switch (action.type) {
     case NotificationsActionType.Update:
       return {
