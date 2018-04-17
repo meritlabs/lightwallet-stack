@@ -50,7 +50,8 @@ idb.onsuccess = () => {
       doc = doc || [];
       doc.push({
         ...data,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        read: false
       });
       store.put(doc, 'notifications');
     });
