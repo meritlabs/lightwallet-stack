@@ -123,6 +123,7 @@ export class WebPushNotificationsService extends PushNotificationsService {
 
   async subscribeToEvents() {
     this.firebaseMessaging.onMessage((data: NotificationData) => {
+      console.log('Got a message', data);
       if (data.data && data.data.walletId) {
         this.store.dispatch(new RefreshOneWalletAction(data.data.walletId, {
           skipAlias: true,

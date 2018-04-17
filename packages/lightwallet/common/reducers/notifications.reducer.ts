@@ -1,11 +1,9 @@
 import { Action, createFeatureSelector } from '@ngrx/store';
 
 export interface INotification {
-  id: string;
-  date: number;
-  data: any;
-  message: string;
+  timestamp: number;
   read: boolean;
+  [key: string]: any;
 }
 
 export type INotificationsState = INotification[];
@@ -15,9 +13,25 @@ export enum NotificationsActionType {
   Add = '[Notifications] Add',
   MarkAsRead = '[Notifications] Mark as read',
   Delete = '[Notifications] Delete',
-  Clear = '[Notifications] Clear'
+  Clear = '[Notifications] Clear',
+  Load = '[Notifications] Load',
+  Save = '[Notifications] Save'
 }
 
+export class LoadNotificationsAction implements Action {
+  type = NotificationsActionType.Load;
+}
+
+/**
+ * Save state to storage
+ */
+export class SaveNotificationsAction implements Action {
+  type = NotificationsActionType.Save;
+}
+
+/**
+ * Update notifications in state
+ */
 export class UpdateNotificationsAction implements Action {
   type = NotificationsActionType.Update;
 
@@ -25,6 +39,9 @@ export class UpdateNotificationsAction implements Action {
   }
 }
 
+/**
+ * Add a notification
+ */
 export class AddNotificationAction implements Action {
   type = NotificationsActionType.Add;
 
@@ -32,6 +49,9 @@ export class AddNotificationAction implements Action {
   }
 }
 
+/**
+ * Mark notification as read
+ */
 export class MarkNotificationAsReadAction implements Action {
   type = NotificationsActionType.MarkAsRead;
 
@@ -39,6 +59,9 @@ export class MarkNotificationAsReadAction implements Action {
   }
 }
 
+/**
+ * Delete notification
+ */
 export class DeleteNotificationAction implements Action {
   type = NotificationsActionType.Delete;
 
@@ -46,6 +69,9 @@ export class DeleteNotificationAction implements Action {
   }
 }
 
+/**
+ * Clear all notifications
+ */
 export class ClearNotificationsAction implements Action {
   type = NotificationsActionType.Clear;
 }
