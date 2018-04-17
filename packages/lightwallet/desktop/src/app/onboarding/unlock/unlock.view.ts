@@ -11,7 +11,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { isAlias } from '@merit/common/utils/addresses';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
@@ -61,7 +61,7 @@ export class UnlockComponent {
     this.creatingWallet = true;
     let { inviteCode, alias } = this.formData.getRawValue();
 
-    alias = alias.replace(/[@|\s]/g, '');
+    alias = cleanAddress(alias);
 
     inviteCode = isAlias(inviteCode) ? inviteCode.slice(1) : inviteCode;
     alias = alias && isAlias(alias) ? alias.slice(1) : alias;
