@@ -7,7 +7,7 @@ import { isEmpty } from 'lodash';
 export enum StorageKey {
   WalletPreferencesPrefix = 'merit_wallet_preferences_',
   NotificationSettings = 'merit_notification_settings',
-  Notifications = 'merit_notifications',
+  Notifications = 'notifications',
   EasySends = 'merit_easysends'
 }
 
