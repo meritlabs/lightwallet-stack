@@ -49,8 +49,8 @@ export class ToolbarComponent {
   totals$: Observable<any> = this.store.select(selectWalletTotals);
   totalsLoading$: Observable<any> = this.store.select(selectWalletTotalsLoading);
 
-  notifications$: Observable<INotification[]> = this.store.select(selectNotifications).pipe(tap((notification) => console.log('Got notifications', notification)));
-  totalUnreadNotifications$: Observable<number> = this.store.select(selectTotalUnreadNotifications).pipe(tap((notification) => console.log('Got UNREAD notifications', notification)));
+  notifications$: Observable<INotification[]> = this.store.select(selectNotifications);
+  totalUnreadNotifications$: Observable<number> = this.store.select(selectTotalUnreadNotifications);
 
   constructor(private store: Store<IRootAppState>) {}
 
