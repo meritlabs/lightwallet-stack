@@ -1,31 +1,13 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { INotification } from '@merit/common/reducers/notifications.reducer';
 
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.sass'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./notifications.component.sass']
 })
 export class NotificationsComponent {
-
-  @Input()
   showHistory: boolean = false;
-  notifications: Object[] = [
-    {
-      'title': 'Success!',
-      'status': 'success',
-      'date': '11:42 PM',
-      'text': 'Your transaction is confirmed!'
-    },
-    {
-      'title': 'Success!',
-      'status': 'success',
-      'date': '11:42 PM',
-      'text': 'Your transaction is confirmed!'
-    }
-  ];
-
-  get hasNewNotifications() {
-    return this.notifications.length > 0;
-  }
+  @Input() notifications: INotification[];
+  @Input() hasNewNotifications: boolean;
 }

@@ -37,7 +37,7 @@ import { TouchIdService } from '@merit/mobile/services/touch-id.service';
 import { StoreModule } from '@ngrx/store';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { MomentModule } from 'angular2-moment';
+import { MomentModule } from 'ngx-moment';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
 export function getProviders() {
