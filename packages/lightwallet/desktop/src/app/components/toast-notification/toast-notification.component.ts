@@ -27,6 +27,8 @@ export class ToastNotificationComponent implements IDynamicComponent, OnInit, On
   @Input() message: INotificationMessage;
   @Input() duration: number = 3000;
 
+  onDismiss;
+
   destroy: Function;
   private timeout: any;
 
@@ -45,7 +47,9 @@ export class ToastNotificationComponent implements IDynamicComponent, OnInit, On
     this.show = config.show;
   }
 
-  dismiss() {
+  dismiss(dismissedByUser?: boolean) {
+    if (dismissedByUser && typeof this.onDismiss === 'function') this.onDismiss();
+
     this.show = false;
     this.destroy && this.destroy();
   }

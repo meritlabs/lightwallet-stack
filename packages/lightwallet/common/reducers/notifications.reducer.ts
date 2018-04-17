@@ -175,7 +175,10 @@ export function notificationsReducer(state: INotificationsState = {
 
     case NotificationsActionType.MarkAsRead:
       state.notifications.find((notification: INotification) => notification.id === action.notificationId).read = true;
-      return state;
+      return {
+        notifications: state.notifications,
+        totalUnread: state.totalUnread - 1
+      };
 
     case NotificationsActionType.MarkAllAsRead:
       return {
