@@ -5,8 +5,15 @@ import { INotification } from '@merit/common/reducers/notifications.reducer';
   selector: 'notifications-history',
   templateUrl: './notifications-history.component.html',
   styleUrls: ['./notifications-history.component.sass'],
+  host: {
+    '[class.show]': 'showHistory'
+  }
 })
 export class NotificationsHistoryComponent {
   @Input() notifications: INotification[];
   @Input() showHistory: boolean;
+
+  clearAll() {
+    
+  }
 }

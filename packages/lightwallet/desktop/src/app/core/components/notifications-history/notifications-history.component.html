@@ -1,28 +1,20 @@
-<div class="notifications__history" [class.show]="showHistory">
-  <div class="notifications__history__nav">
-    <div class="notifications__history__nav__clear"
-      (click)="notifications = []"
-      *ngIf="notifications.length > 0">
-      Clear all
+<div class="nav">
+  <div class="clear" (click)="clearAll()" [hidden]="notifications.length === 0">Clear all</div>
+  <div class="close" (click)="showHistory = false">Close</div>
+</div>
+<div class="empty" [hidden]="notifications.length > 0">
+  <p>You do not have any notifications.</p>
+</div>
+<div class="notification" *ngFor="let item of notifications">
+  <div class="header">
+    <div class="title">
+      <p>{{ item.title }}</p>
     </div>
-    <div class="notifications__history__nav__close"
-      (click)="showHistory = false">Close
+    <div class="time">
+      <p>{{ item.timestamp | amTimeAgo }}</p>
     </div>
   </div>
-  <div class="notifications__history__empty" [hidden]="notifications.length > 0">
-    <p>You do not have any notifications.</p>
-  </div>
-  <div class="notifications__history__notification" *ngFor="let item of notifications">
-    <div class="notifications__history__notification__header">
-      <div class="notifications__history__notification__header__title">
-        <p>{{item.title}}</p>
-      </div>
-      <div class="notifications__history__notification__header__time">
-        <p>{{item.timestamp | amTimeAgo}}</p>
-      </div>
-    </div>
-    <div class="notifications__history__notification__content">
-      <p>{{item.message}}</p>
-    </div>
+  <div class="content">
+    <p>{{ item.message }}</p>
   </div>
 </div>
