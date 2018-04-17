@@ -1,4 +1,5 @@
 import { Action, createFeatureSelector } from '@ngrx/store';
+import { sortBy, uniqBy } from 'lodash';
 
 export interface INotification {
   timestamp: number;
@@ -96,6 +97,13 @@ export function calculateUnreadNotifications(notifications: INotification[]): nu
   return notifications.reduce((total: number, notification: INotification) => total + Number(notification.read), 0);
 }
 
+export function processNotifications(notifications: INotification[]): INotification[] {
+  return sortBy(
+    uniqBy(notifications, 'id'),
+    'timestamp'
+  ).reverse();
+}
+
 export function notificationsReducer(state: INotificationsState = {
   notifications: [],
   totalUnread: 0
@@ -103,14 +111,14 @@ export function notificationsReducer(state: INotificationsState = {
   switch (action.type) {
     case NotificationsActionType.Update:
       return {
-        notifications: action.notifications,
+        notifications: processNotifications(action.notifications),
         totalUnread: calculateUnreadNotifications(action.notifications)
       };
 
     case NotificationsActionType.Add:
       state.notifications.push(action.notification);
       return {
-        notifications: state.notifications,
+        notifications: processNotifications(action.notifications),
         totalUnread: state.totalUnread + Number(action.notification.read)
       };
 
