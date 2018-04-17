@@ -124,7 +124,6 @@ export class WebPushNotificationsService extends PushNotificationsService {
 
   async subscribeToEvents() {
     this.firebaseMessaging.onMessage((data: NotificationData) => {
-      console.log('Got a notification', data);
       if (data.data) {
         this.store.dispatch(new AddNotificationAction({
           ...data.data,

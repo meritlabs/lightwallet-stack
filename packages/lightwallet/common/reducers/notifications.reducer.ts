@@ -158,7 +158,6 @@ export function notificationsReducer(state: INotificationsState = {
   notifications: [],
   totalUnread: 0
 }, action: NotificationAction): INotificationsState {
-  if(action.type.includes('[Notifications]')) console.log(state, action);
   switch (action.type) {
     case NotificationsActionType.Update:
       return {
