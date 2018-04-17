@@ -7,6 +7,7 @@ import { IonicStorageModule } from '@ionic/storage';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { AppEffects } from '@merit/common/effects/app.effects';
+import { NotificationEffects } from '@merit/common/effects/notification.effects';
 import { TransactionEffects } from '@merit/common/effects/transaction.effects';
 import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { IRootAppState, reducer } from '@merit/common/reducers';
@@ -99,7 +100,8 @@ export function getProviders() {
     EffectsModule.forRoot([
       AppEffects,
       WalletEffects,
-      TransactionEffects
+      TransactionEffects,
+      NotificationEffects
     ]),
     SharedComponentsModule.forRoot(),
     Ng4LoadingSpinnerModule.forRoot()
