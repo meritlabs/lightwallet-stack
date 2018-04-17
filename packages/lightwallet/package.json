@@ -70,7 +70,6 @@
     "@ngrx/store-devtools": "^5.1.0",
     "@ngx-translate/core": "^9.0.2",
     "@ngx-translate/http-loader": "^2.0.1",
-    "angular2-moment": "^1.7.0",
     "angular2-qrcode": "^2.0.1",
     "asn1.js": "=4.5.2",
     "bignumber.js": "^6.0.0",
