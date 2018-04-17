@@ -15,7 +15,7 @@ var config = require('../config');
 var storage = require('./storage');
 
 
-var INITIAL_DATE = '2015-01-01';
+var INITIAL_DATE = '2017-11-31';
 
 function Stats(opts) {
   opts = opts || {};
@@ -31,13 +31,18 @@ Stats.prototype.run = function(cb) {
   var self = this;
 
   var uri = config.storageOpts.mongoDb.uri;
-  mongodb.MongoClient.connect(uri, function(err, db) {
+
+  var params = { w: 'majority' };
+  if (uri.indexOf('replicaSet') >= 0) {
+    params.readConcern = { level: 'linearizable' };
+  }
+  new mongodb.MongoClient(uri, params).connect(function(err, client) {
     if (err) {
       log.error('Unable to connect to the mongoDB', err);
       return cb(err, null);
     }
     log.info('Connection established to ' + uri);
-    self.db = db;
+    self.db = client.db('bws');
     self._getStats(function(err, stats) {
       if (err) return cb(err);
       return cb(null, stats);

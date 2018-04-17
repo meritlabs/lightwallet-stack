@@ -115,12 +115,16 @@ Storage.prototype.connect = function(opts, cb) {
   if (this.db) return cb();
 
   var config = opts.mongoDb || {};
-  mongodb.MongoClient.connect(config.uri, function(err, db) {
+  var params = { w: 'majority' };
+  if (config.uri.indexOf('replicaSet') >= 0) {
+    params.readConcern = { level: 'linearizable' };
+  }
+  new mongodb.MongoClient(config.uri, params).connect(function(err, client) {
     if (err) {
       log.error('Unable to connect to the mongoDB. Check the credentials.');
       return cb(err);
     }
-    self.db = db;
+    self.db = client.db('bws');
     self._createIndexes();
     console.log('Connection established to mongoDB');
     return cb();
@@ -151,7 +155,7 @@ Storage.prototype.storeWallet = function(wallet, cb) {
   this.db.collection(collections.WALLETS).update({
     id: wallet.id
   }, wallet.toObject(), {
-    w: 1,
+    w: 'majority',
     upsert: true,
   }, cb);
 };
@@ -171,11 +175,11 @@ Storage.prototype.storeWalletAndUpdateCopayersLookup = function(wallet, cb) {
   this.db.collection(collections.COPAYERS_LOOKUP).remove({
     walletId: wallet.id
   }, {
-    w: 1
+    w: 'majority'
   }, function(err) {
     if (err) return cb(err);
     self.db.collection(collections.COPAYERS_LOOKUP).insert(copayerLookups, {
-      w: 1
+      w: 'majority'
     }, function(err) {
       if (err) return cb(err);
       return self.storeWallet(wallet, cb);
@@ -377,7 +381,9 @@ Storage.prototype.fetchInvitedAddresses = function(walletId, cb) {
       outputs: 1
   };
 
-  this.db.collection(collections.TXS).find(filter, fields).sort({broadcastedOn: -1}).toArray(function(err, result) {
+  this.db.collection(collections.TXS).find(filter, fields)
+
+    .sort({broadcastedOn: -1}).toArray(function(err, result) {
     if (err) return cb(err);
     if (!result) return cb(null, []);
 
@@ -415,7 +421,7 @@ Storage.prototype.storeReferral = function(referral, cb) {
   this.db.collection(collections.REFERRALS).update({
     address: referral.address,
   }, referral, {
-    w: 1,
+    w: 'majority',
     upsert: true,
   }, cb);
 };
@@ -446,6 +452,7 @@ Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs,
         $gt: minId,
       },
     })
+
     .sort({
       id: 1
     })
@@ -462,7 +469,7 @@ Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs,
 // TODO: remove walletId from signature
 Storage.prototype.storeNotification = function(walletId, notification, cb) {
   this.db.collection(collections.NOTIFICATIONS).insert(notification, {
-    w: 1
+    w: 'majority'
   }, cb);
 };
 
@@ -472,7 +479,7 @@ Storage.prototype.storeTx = function(walletId, txp, cb) {
     id: txp.id,
     walletId: walletId
   }, txp.toObject(), {
-    w: 1,
+    w: 'majority',
     upsert: true,
   }, cb);
 };
@@ -482,7 +489,7 @@ Storage.prototype.removeTx = function(walletId, txProposalId, cb) {
     id: txProposalId,
     walletId: walletId
   }, {
-    w: 1
+    w: 'majority'
   }, cb);
 };
 
@@ -538,7 +545,7 @@ Storage.prototype.storeAddress = function(address, cb) {
   self.db.collection(collections.ADDRESSES).update({
     address: address.address
   }, address, {
-    w: 1,
+    w: 'majority',
     upsert: false,
   }, cb);
 };
@@ -549,7 +556,7 @@ Storage.prototype.storeAddressAndWallet = function(wallet, addresses, cb) {
   function saveAddresses(addresses, cb) {
     if (_.isEmpty(addresses)) return cb();
     self.db.collection(collections.ADDRESSES).insert(addresses, {
-      w: 1
+      w: 'majority'
     }, cb);
   };
 
@@ -622,7 +629,7 @@ Storage.prototype.storePreferences = function(preferences, cb) {
     walletId: preferences.walletId,
     copayerId: preferences.copayerId,
   }, preferences, {
-    w: 1,
+    w: 'majority',
     upsert: true,
   }, cb);
 };
@@ -631,7 +638,7 @@ Storage.prototype.storeEmail = function(email, cb) {
   this.db.collection(collections.EMAIL_QUEUE).update({
     id: email.id,
   }, email, {
-    w: 1,
+    w: 'majority',
     upsert: true,
   }, cb);
 };
@@ -667,7 +674,7 @@ Storage.prototype.cleanActiveAddresses = function(walletId, cb) {
         walletId: walletId,
         type: 'activeAddresses',
       }, {
-        w: 1
+        w: 'majority'
       }, next);
     },
     function(next) {
@@ -676,7 +683,7 @@ Storage.prototype.cleanActiveAddresses = function(walletId, cb) {
         type: 'activeAddresses',
         key: null
       }, {
-        w: 1
+        w: 'majority'
       }, next);
     },
   ], cb);
@@ -696,7 +703,7 @@ Storage.prototype.storeActiveAddresses = function(walletId, addresses, cb) {
       type: record.type,
       key: record.key,
     }, record, {
-      w: 1,
+      w: 'majority',
       upsert: true,
     }, next);
   }, cb);
@@ -807,7 +814,7 @@ Storage.prototype.getTxHistoryCache = function(walletId, from, to, cb) {
       var txs = _.map(result, 'tx');
       return cb(null, txs);
     });
-  })
+  });
 };
 
 Storage.prototype.softResetAllTxHistoryCache = function(cb) {
@@ -828,7 +835,7 @@ Storage.prototype.softResetTxHistoryCache = function(walletId, cb) {
   }, {
     isUpdated: false,
   }, {
-    w: 1,
+    w: 'majority',
     upsert: true,
   }, cb);
 };
@@ -847,7 +854,7 @@ Storage.prototype.clearTxHistoryCache = function(walletId, cb) {
       type: 'historyCacheStatus',
       key: null
     }, {
-      w: 1
+      w: 'majority'
     }, cb);
   });
 };
@@ -880,7 +887,7 @@ Storage.prototype.storeTxHistoryCache = function(walletId, totalItems, firstPosi
       key: pos,
       tx: item,
     }, {
-      w: 1,
+      w: 'majority',
       upsert: true,
     }, next);
   }, function(err) {
@@ -899,7 +906,7 @@ Storage.prototype.storeTxHistoryCache = function(walletId, totalItems, firstPosi
       isComplete: cacheIsComplete,
       isUpdated: true,
     }, {
-      w: 1,
+      w: 'majority',
       upsert: true,
     }, cb);
   });
@@ -934,7 +941,7 @@ Storage.prototype.storeFiatRate = function(providerName, rates, cb) {
       code: rate.code,
       value: rate.value,
     }, {
-      w: 1
+      w: 'majority'
     }, next);
   }, cb);
 };
@@ -1010,7 +1017,7 @@ Storage.prototype.storeTxNote = function(txNote, cb) {
     txid: txNote.txid,
     walletId: txNote.walletId
   }, txNote.toObject(), {
-    w: 1,
+    w: 'majority',
     upsert: true,
   }, cb);
 };
@@ -1031,7 +1038,7 @@ Storage.prototype.storeSession = function(session, cb) {
   this.db.collection(collections.SESSIONS).update({
     copayerId: session.copayerId,
   }, session.toObject(), {
-    w: 1,
+    w: 'majority',
     upsert: true,
   }, cb);
 };
@@ -1056,7 +1063,7 @@ Storage.prototype.storePushNotificationSub = function(pushNotificationSub, cb) {
     copayerId: pushNotificationSub.copayerId,
     token: pushNotificationSub.token,
   }, pushNotificationSub, {
-    w: 1,
+    w: 'majority',
     upsert: true,
   }, cb);
 };
@@ -1066,7 +1073,7 @@ Storage.prototype.removePushNotificationSub = function(copayerId, token, cb) {
     copayerId: copayerId,
     token: token,
   }, {
-    w: 1
+    w: 'majority'
   }, cb);
 };
 
@@ -1113,7 +1120,7 @@ Storage.prototype.storeTxConfirmationSub = function(txConfirmationSub, cb) {
     copayerId: txConfirmationSub.copayerId,
     txid: txConfirmationSub.txid,
   }, txConfirmationSub, {
-    w: 1,
+    w: 'majority',
     upsert: true,
   }, cb);
 };
@@ -1123,7 +1130,7 @@ Storage.prototype.removeTxConfirmationSub = function(copayerId, txid, cb) {
     copayerId: copayerId,
     txid: txid,
   }, {
-    w: 1
+    w: 'majority'
   }, cb);
 };
 
@@ -1132,7 +1139,7 @@ Storage.prototype.storeReferralTxConfirmationSub = function(referralConfirmation
     copayerId: referralConfirmationSub.copayerId,
     codeHash: referralConfirmationSub.codeHash,
   }, referralConfirmationSub, {
-    w: 1,
+    w: 'majority',
     upsert: true,
   }, cb);
 };
@@ -1141,7 +1148,7 @@ Storage.prototype.removeReferralTxConfirmationSub = function(copayerId, codeHash
   this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).remove({
     codeHash: codeHash,
   }, {
-    w: 1,
+    w: 'majority',
     upsert: true,
   }, cb);
 };
@@ -1186,7 +1193,7 @@ Storage.prototype.storeVault = function(copayerId, walletId, vaultTx, cb) {
     walletId,
     ...vaultTx,
   }, {
-    w: 1
+    w: 'majority'
   }, cb);
 };
 
@@ -1196,7 +1203,7 @@ Storage.prototype.updateVault = function(copayerId, vaultTx, cb) {
     copayerId,
     _id: new ObjectID(vaultTx._id),
   }, vaultTx, {
-    w: 1,
+    w: 'majority',
     upsert: false,
   }, cb);
 };
@@ -1240,7 +1247,7 @@ Storage.prototype.setVaultConfirmed = function(tx, txId, cb) {
   this.db.collection(collections.VAULTS).update({
     initialTxId: tx.initialTxId,
   }, tx, {
-    w: 1,
+    w: 'majority',
     upsert: false,
   }, cb);
 };
