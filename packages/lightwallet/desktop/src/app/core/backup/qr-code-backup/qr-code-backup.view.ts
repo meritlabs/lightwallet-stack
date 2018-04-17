@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { map, switchMap } from 'rxjs/operators';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { map, switchMap, take } from 'rxjs/operators';
 import { IRootAppState } from '@merit/common/reducers';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Observable } from 'rxjs/Observable';
@@ -14,11 +16,12 @@ import { Store } from '@ngrx/store';
 })
 export class QrCodeBackupView {
   mnemonic$: Observable<DisplayWallet> = this.route.parent.params.pipe(
-    switchMap((params: any) => this.store.select(selectWalletById(params.id))),
-    map((wallet: DisplayWallet) => wallet.client.getMnemonic())
+    switchMap((params: any) => this.store.select(selectWalletById(params.id)).pipe(take(1))),
+    switchMap((wallet: DisplayWallet) => fromPromise(this.walletService.getEncodedWalletInfo(wallet.client, null)))
   );
 
   constructor(private route: ActivatedRoute,
-              private store: Store<IRootAppState>) {
+              private store: Store<IRootAppState>,
+              private walletService: WalletService) {
   }
 }
