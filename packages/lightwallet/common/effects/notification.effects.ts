@@ -5,7 +5,7 @@ import {
   LoadNotificationsAction,
   NotificationsActionType,
   SaveNotificationsAction,
-  selectNotifications,
+  selectNotificationsState,
   UpdateNotificationsAction
 } from '@merit/common/reducers/notifications.reducer';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
@@ -18,12 +18,6 @@ import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class NotificationEffects {
-  /**
-   * Load notifications from storage on startup
-   * @type {Observable<UpdateNotificationsAction>}
-   */
-  @Effect()
-  init$ = of(new LoadNotificationsAction());
 
   /**
    * Save notifications when we add, clear, delete, or mark notification as read
@@ -45,9 +39,16 @@ export class NotificationEffects {
   @Effect({ dispatch: false })
   save$ = this.actions$.pipe(
     ofType(NotificationsActionType.Save),
-    withLatestFrom(this.store.select(selectNotifications)),
+    withLatestFrom(this.store.select(selectNotificationsState)),
     map(([action, notifications]) => this.persistenceService.setNotifications(notifications.notifications))
   );
+
+  /**
+   * Load notifications from storage on startup
+   * @type {Observable<UpdateNotificationsAction>}
+   */
+  @Effect()
+  init$ = of(new LoadNotificationsAction());
 
   constructor(private actions$: Actions,
               private store: Store<IRootAppState>,
