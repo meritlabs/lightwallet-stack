@@ -13,6 +13,7 @@ import { PersistenceService2 } from '@merit/common/services/persistence2.service
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
+import { fromEvent } from 'rxjs/observable/fromEvent';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import { map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
@@ -58,6 +59,11 @@ export class NotificationEffects {
 
       toast.onDismiss = () => this.store.dispatch(new MarkNotificationAsReadAction(notification.id));
     })
+  );
+
+  @Effect()
+  loadOnFocus$ = fromEvent(window, 'focus').pipe(
+    map(() => new LoadNotificationsAction())
   );
 
   /**
