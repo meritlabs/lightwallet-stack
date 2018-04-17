@@ -30,7 +30,11 @@ idb.onsuccess = () => {
       .then((clients) => {
         if (clients && clients.length) {
           clients = clients.map(client => {
-            client.url = location.origin;
+            Object.defineProperty(client, 'url', {
+              get: () => location.origin,
+              enumerable: true,
+              configurable: true
+            });
             return client;
           });
         }
