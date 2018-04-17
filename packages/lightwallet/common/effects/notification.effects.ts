@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { IRootAppState } from '@merit/common/reducers';
 import {
+  AddNotificationAction, formatNotification,
   INotification,
-  LoadNotificationsAction,
+  LoadNotificationsAction, MarkNotificationAsReadAction,
   NotificationsActionType,
   SaveNotificationsAction,
   selectNotificationsState,
@@ -14,7 +15,8 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { ToastControllerService } from '../../desktop/src/app/components/toast-notification/toast-controller.service';
 
 @Injectable()
 export class NotificationEffects {
@@ -43,6 +45,20 @@ export class NotificationEffects {
     map(([action, notifications]) => this.persistenceService.setNotifications(notifications.notifications))
   );
 
+  @Effect({ dispatch: false })
+  showToast$ = this.actions$.pipe(
+    ofType(NotificationsActionType.Add),
+    tap((action: AddNotificationAction) => {
+      const notification = formatNotification(action.notification);
+      const toast = this.toastCtrl.create({
+        title: notification.title,
+        text: notification.message
+      });
+
+      toast.onDismiss = () => this.store.dispatch(new MarkNotificationAsReadAction(notification.id));
+    })
+  );
+
   /**
    * Load notifications from storage on startup
    * @type {Observable<UpdateNotificationsAction>}
@@ -52,6 +68,7 @@ export class NotificationEffects {
 
   constructor(private actions$: Actions,
               private store: Store<IRootAppState>,
-              private persistenceService: PersistenceService2) {
+              private persistenceService: PersistenceService2,
+              private toastCtrl: ToastControllerService) {
   }
 }
