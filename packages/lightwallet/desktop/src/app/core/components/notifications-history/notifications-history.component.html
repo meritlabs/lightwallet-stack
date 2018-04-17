@@ -1,4 +1,4 @@
-<div class="notifications__history notifications__history--{{showHistory}}">
+<div class="notifications__history" [class.show]="showHistory">
   <div class="notifications__history__nav">
     <div class="notifications__history__nav__clear"
       (click)="notifications = []"
@@ -9,8 +9,8 @@
       (click)="showHistory = false">Close
     </div>
   </div>
-  <div class="notifications__history__empty" *ngIf="notifications.length === 0">
-    <p>oooOOps... seams you dont have notifications )</p>
+  <div class="notifications__history__empty" [hidden]="notifications.length > 0">
+    <p>You do not have any notifications.</p>
   </div>
   <div class="notifications__history__notification" *ngFor="let item of notifications">
     <div class="notifications__history__notification__header">
@@ -18,11 +18,11 @@
         <p>{{item.title}}</p>
       </div>
       <div class="notifications__history__notification__header__time">
-        <p>{{item.time}}</p>
+        <p>{{item.timestamp | amTimeAgo}}</p>
       </div>
     </div>
     <div class="notifications__history__notification__content">
-      <p>{{item.text}}</p>
+      <p>{{item.message}}</p>
     </div>
   </div>
 </div>

@@ -24,6 +24,7 @@ import { DashboardGuard } from '@merit/desktop/app/guards/dashboard.guard';
 import { OnboardingGuard } from '@merit/desktop/app/guards/onboarding.guard';
 import { EffectsModule } from '@ngrx/effects';
 import { Store, StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { Platform } from 'ionic-angular/platform/platform';

@@ -1,10 +1,20 @@
-import { Action, createFeatureSelector } from '@ngrx/store';
-import { sortBy, uniqBy } from 'lodash';
+import { formatAmount } from '@merit/common/utils/format';
+import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
+import { sortBy, uniq, random, compact } from 'lodash';
 
 export interface INotification {
   timestamp: number;
   read: boolean;
-
+  address: string;
+  copayerId: string;
+  id: string;
+  isInvite: boolean;
+  txid: string;
+  type: string;
+  walletId: string;
+  formatted: boolean;
+  title: string;
+  message: string;
   [key: string]: any;
 }
 
@@ -52,6 +62,9 @@ export class AddNotificationAction implements Action {
   type = NotificationsActionType.Add;
 
   constructor(public notification: INotification) {
+    if (!notification.id) {
+      this.notification.id = notification.txid || String(random(0, 1000000000));
+    }
   }
 }
 
@@ -94,20 +107,58 @@ export type NotificationAction =
   & ClearNotificationsAction;
 
 export function calculateUnreadNotifications(notifications: INotification[]): number {
-  return notifications.reduce((total: number, notification: INotification) => total + Number(notification.read), 0);
+  return notifications.reduce((total: number, notification: INotification) => total + Number(!notification.read), 0);
 }
 
 export function processNotifications(notifications: INotification[]): INotification[] {
   return sortBy(
-    uniqBy(notifications, 'id'),
+    uniq(
+      compact(
+        notifications.map(formatNotification)
+      )
+    ),
     'timestamp'
   ).reverse();
+}
+
+export function formatNotification(notification: INotification): INotification {
+  if (!notification.formatted) {
+    switch (notification.type) {
+      case 'IncomingTx':
+        notification.title = 'New payment received.';
+        notification.message = `A payment of ${ formatAmount(notification.amount, 'mrt') }MRT has been received into your wallet.`;
+        break;
+
+      case 'WalletUnlocked':
+        notification.title = 'Wallet unlocked';
+        notification.message = 'Your wallet was unlocked by incoming invite.';
+        break;
+
+      case 'IncomingCoinbase':
+        notification.title = 'Mining reward received.';
+        notification.message = `Congratulations! You received a mining reward of ${ formatAmount(notification.amount, 'mrt') }MRT.`;
+        break;
+
+      case 'IncomingInviteRequest':
+        notification.title = 'New invite request received.';
+        notification.text = 'An invite has been requested from your wallet.';
+        break;
+
+      default:
+        return null;
+    }
+
+    notification.formatted = true;
+  }
+
+  return notification;
 }
 
 export function notificationsReducer(state: INotificationsState = {
   notifications: [],
   totalUnread: 0
 }, action: NotificationAction): INotificationsState {
+  if(action.type.includes('[Notifications]')) console.log(state, action);
   switch (action.type) {
     case NotificationsActionType.Update:
       return {
@@ -118,8 +169,8 @@ export function notificationsReducer(state: INotificationsState = {
     case NotificationsActionType.Add:
       state.notifications.push(action.notification);
       return {
-        notifications: processNotifications(action.notifications),
-        totalUnread: state.totalUnread + Number(action.notification.read)
+        notifications: processNotifications(state.notifications),
+        totalUnread: state.totalUnread + Number(!action.notification.read)
       };
 
     case NotificationsActionType.MarkAsRead:
@@ -153,4 +204,6 @@ export function notificationsReducer(state: INotificationsState = {
   }
 }
 
-export const selectNotifications = createFeatureSelector<INotificationsState>('notifications');
+export const selectNotificationsState = createFeatureSelector<INotificationsState>('notifications');
+export const selectNotifications = createSelector(selectNotificationsState, state => state.notifications);
+export const selectTotalUnreadNotifications = createSelector(selectNotificationsState, state => state.totalUnread);

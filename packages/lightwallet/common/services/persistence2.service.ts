@@ -48,6 +48,7 @@ export class PersistenceService2 {
   }
 
   setNotifications(notifications: INotification[]) {
+    console.log('Saving notifications', notifications);
     return this.storage.set(StorageKey.Notifications, notifications);
   }
 
