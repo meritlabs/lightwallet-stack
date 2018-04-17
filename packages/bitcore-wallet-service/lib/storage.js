@@ -115,11 +115,7 @@ Storage.prototype.connect = function(opts, cb) {
   if (this.db) return cb();
 
   var config = opts.mongoDb || {};
-  var params = { w: 'majority' };
-  if (config.uri.indexOf('replicaSet') >= 0) {
-    params.readConcern = { level: 'linearizable' };
-  }
-  new mongodb.MongoClient(config.uri, params).connect(function(err, client) {
+  new mongodb.MongoClient(config.uri, {}).connect(function(err, client) {
     if (err) {
       log.error('Unable to connect to the mongoDB. Check the credentials.');
       return cb(err);
@@ -469,7 +465,7 @@ Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs,
 // TODO: remove walletId from signature
 Storage.prototype.storeNotification = function(walletId, notification, cb) {
   this.db.collection(collections.NOTIFICATIONS).insert(notification, {
-    w: 'majority'
+    w: 1
   }, cb);
 };
 
@@ -545,7 +541,7 @@ Storage.prototype.storeAddress = function(address, cb) {
   self.db.collection(collections.ADDRESSES).update({
     address: address.address
   }, address, {
-    w: 'majority',
+    w: 1,
     upsert: false,
   }, cb);
 };
@@ -556,7 +552,7 @@ Storage.prototype.storeAddressAndWallet = function(wallet, addresses, cb) {
   function saveAddresses(addresses, cb) {
     if (_.isEmpty(addresses)) return cb();
     self.db.collection(collections.ADDRESSES).insert(addresses, {
-      w: 'majority'
+      w: 1
     }, cb);
   };
 
@@ -629,7 +625,7 @@ Storage.prototype.storePreferences = function(preferences, cb) {
     walletId: preferences.walletId,
     copayerId: preferences.copayerId,
   }, preferences, {
-    w: 'majority',
+    w: 1,
     upsert: true,
   }, cb);
 };
@@ -638,7 +634,7 @@ Storage.prototype.storeEmail = function(email, cb) {
   this.db.collection(collections.EMAIL_QUEUE).update({
     id: email.id,
   }, email, {
-    w: 'majority',
+    w: 1,
     upsert: true,
   }, cb);
 };
@@ -941,7 +937,7 @@ Storage.prototype.storeFiatRate = function(providerName, rates, cb) {
       code: rate.code,
       value: rate.value,
     }, {
-      w: 'majority'
+      w: 1
     }, next);
   }, cb);
 };
@@ -1017,7 +1013,7 @@ Storage.prototype.storeTxNote = function(txNote, cb) {
     txid: txNote.txid,
     walletId: txNote.walletId
   }, txNote.toObject(), {
-    w: 'majority',
+    w: 1,
     upsert: true,
   }, cb);
 };
@@ -1063,7 +1059,7 @@ Storage.prototype.storePushNotificationSub = function(pushNotificationSub, cb) {
     copayerId: pushNotificationSub.copayerId,
     token: pushNotificationSub.token,
   }, pushNotificationSub, {
-    w: 'majority',
+    w: 1,
     upsert: true,
   }, cb);
 };
@@ -1073,7 +1069,7 @@ Storage.prototype.removePushNotificationSub = function(copayerId, token, cb) {
     copayerId: copayerId,
     token: token,
   }, {
-    w: 'majority'
+    w: 1
   }, cb);
 };
 
@@ -1120,7 +1116,7 @@ Storage.prototype.storeTxConfirmationSub = function(txConfirmationSub, cb) {
     copayerId: txConfirmationSub.copayerId,
     txid: txConfirmationSub.txid,
   }, txConfirmationSub, {
-    w: 'majority',
+    w: 1,
     upsert: true,
   }, cb);
 };
@@ -1130,7 +1126,7 @@ Storage.prototype.removeTxConfirmationSub = function(copayerId, txid, cb) {
     copayerId: copayerId,
     txid: txid,
   }, {
-    w: 'majority'
+    w: 1
   }, cb);
 };
 
@@ -1139,7 +1135,7 @@ Storage.prototype.storeReferralTxConfirmationSub = function(referralConfirmation
     copayerId: referralConfirmationSub.copayerId,
     codeHash: referralConfirmationSub.codeHash,
   }, referralConfirmationSub, {
-    w: 'majority',
+    w: 1,
     upsert: true,
   }, cb);
 };
@@ -1148,7 +1144,7 @@ Storage.prototype.removeReferralTxConfirmationSub = function(copayerId, codeHash
   this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).remove({
     codeHash: codeHash,
   }, {
-    w: 'majority',
+    w: 1,
     upsert: true,
   }, cb);
 };
