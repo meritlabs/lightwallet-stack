@@ -14,10 +14,14 @@ pipeline {
     stage('Build Wallets') {
       parallel {
         stage('Build MLW') {
-          sh 'cd packages/lightwallet && npm run build'
+          steps {
+            sh 'cd packages/lightwallet && npm run build'
+          }
         }
         stage('Build DLW') {
-          sh 'cd packages/lightwallet/desktop && npm run build'
+          steps {
+            sh 'cd packages/lightwallet/desktop && npm run build'
+          }
         }
       }
     }
