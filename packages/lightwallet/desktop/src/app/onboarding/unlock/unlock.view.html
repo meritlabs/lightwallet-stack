@@ -50,9 +50,9 @@
           </div>
         </div>
       </div>
-      <div class="ui-input__group">
+      <div class="ui-input__group" [ngClass]="{'ui-input__group--disabled': !inviteCode.valid}">
         <label for="" class="ui-label">
-          Your username (alias)
+          Your username (alias) {{!inviteCode.valid}}
           <span class="ui-tooltip">
               <span class="ui-tooltip__text">
                 Add alias to your address, so people can recognize you and type something like "@merituser" instead of address.

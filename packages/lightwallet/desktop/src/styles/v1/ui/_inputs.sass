@@ -1,5 +1,18 @@
 .ui-input__group
   position: relative
+  &--disabled
+    user-select: none
+    &::after
+      content: ""
+      display: block
+      width: 100%
+      height: 100%
+      top: 0
+      left: 0
+      cursor: not-allowed
+      position: absolute
+    *
+      opacity: .4 !important
 .tooltip-error
   display: flex
   height: 39px
