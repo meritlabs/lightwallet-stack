@@ -12,7 +12,7 @@
 
     h2.amount {
       padding-top: 35px;
-      font-size: 40px;
+      font-size: 35px;
       font-weight: 400;
       small {
         font-size: inherit;
@@ -35,7 +35,7 @@ view-wallets {
         right: 10px;
         color: white;
         &.spinner-ios {
-          top: 28px; 
+          top: 28px;
           right: 13px;
         }
     }
