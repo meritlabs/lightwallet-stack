@@ -30,6 +30,7 @@ export class UnlockComponent {
 
   easyReceipt: EasyReceipt;
   creatingWallet: boolean = false;
+  showAgreement: boolean = false;
 
   get inviteCode() { return this.formData.get('inviteCode'); }
 
