@@ -17,7 +17,7 @@
     <form class="unlock__form" [formGroup]="formData" (ngSubmit)="onSubmit()">
       <div class="ui-input__group">
         <label for="" class="ui-label">
-          Invite code or username
+          Invite code
           <span class="ui-tooltip">
             <span class="ui-tooltip__text">
               You need an invite code from a friend or colleague.
@@ -50,9 +50,9 @@
           </div>
         </div>
       </div>
-      <div class="ui-input__group" [ngClass]="{'ui-input__group--disabled': !inviteCode.valid}">
+      <div class="ui-input__group" [ngClass]="{'ui-input__group--disabled': !inviteCode.valid}" *ngIf="inviteCode.valid">
         <label for="" class="ui-label">
-          Your username (alias) {{!inviteCode.valid}}
+          Your username (alias)
           <span class="ui-tooltip">
               <span class="ui-tooltip__text">
                 Add alias to your address, so people can recognize you and type something like "@merituser" instead of address.
@@ -80,14 +80,30 @@
           </div>
         </div>
       </div>
-      <div class="unlock__form__group">
-        <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="formData.invalid || creatingWallet">Let's get started</button>
+      <div class="unlock__form__group" *ngIf="!formData.invalid && alias.valid">
+        <div class="ui-button ui-button--blue ui-button--with-arrow" (click)="showAgreement = !showAgreement">NEXT</div>
       </div>
     </form>
-
-    <div class="already-member">
-      Already a member?
-      <a routerLink="../import">Import wallet</a>
+    <div class="userAgreement" *ngIf="showAgreement">
+      <div class="userAgreement_content">
+        <h2>Wallet unlock confirmation</h2>
+        <p>Invite address: {{formData.inviteCode}}</p>
+        <p>Your username(alias): {{formData.inviteCode}}</p>
+        <p>* be carefull you cant change your alias in the future.</p>
+        <p>** you will recieve your uniq password after these conditions aprovement.</p>
+        <div>
+          <input type="checkbox" [(ngModel)]="userAgreement"> I agree with these conditions.
+          {{userAgreement}}
+        </div>
+        <div class="unlock__form__group" *ngIf="userAgreement">
+          <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="formData.invalid || creatingWallet">Let's get started</button>
+        </div>
+      </div>
+    </div>
+    <div class="already-member" [hidden]="!alias.hasError('AliasInUse')">
+      <p>Oooops! Looks like you try to reuse existing username (alias).</p>
+      <p>If it is true you can <a routerLink="../import">import wallet</a></p>
+      <p>If no, please choose another username (alias)</p>
     </div>
   </div>
 </div>
