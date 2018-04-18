@@ -18,6 +18,7 @@ import { AppStartUpComponent } from './app-start-up/app-start-up.component';
 import { GuideWentFromDesktopComponent } from './app-start-up/guide-went-from-desktop/guide-went-from-desktop.component';
 import { InvitedUserComponent } from './app-start-up/invited-user/invited-user.component';
 import { GuideComponent } from './unlock/guide/guide.component';
+import { GuideBeginnersHelpComponent } from './app-start-up/guide-beginners-help/guide-beginners-help.component';
 
 @NgModule({
   imports: [
@@ -30,6 +31,6 @@ import { GuideComponent } from './unlock/guide/guide.component';
     CommonPipesModule,
     Ng4LoadingSpinnerModule
   ],
-  declarations: [OnboardView, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent, AppStartUpComponent, GuideWentFromDesktopComponent, InvitedUserComponent, GuideComponent]
+  declarations: [OnboardView, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent, AppStartUpComponent, GuideWentFromDesktopComponent, InvitedUserComponent, GuideComponent, GuideBeginnersHelpComponent]
 })
 export class OnboardingModule { }
