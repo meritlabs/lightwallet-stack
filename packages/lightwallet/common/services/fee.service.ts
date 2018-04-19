@@ -20,8 +20,8 @@ export class FeeService {
 
   public static DEFAULT_FEE = 10000;
 
-  private readonly CACHE_TIME = 120000; //2min 
-  private cache = {updatedTs: 0, levels: []}; 
+  private readonly CACHE_TIME = 120000; //2min
+  private cache = {updatedTs: 0, levels: []};
 
   constructor(
     mwcService: MWCService
@@ -35,19 +35,16 @@ export class FeeService {
   public async getFeeRate(levelName) {
     if (this.cache.updatedTs + this.CACHE_TIME < Date.now()) {
       const levels = await this.mwClient.getFeeLevels(ENV.network);
-      this.cache = {updatedTs: Date.now(), levels}; 
+      this.cache = {updatedTs: Date.now(), levels};
     }
 
-    return this.cache.levels.find(l => l.level == levelName).feePerKb; 
+    return this.cache.levels.find(l => l.level == levelName).feePerKb;
   }
 
   /**
    * Calculates fee for txp based on transaction size
    */
   public async getTxpFee(txp) {
-
-    console.log(txp.serialize().length, 'TXP size');
-
     const feePerKB = await this.getFeeRate(ENV.feeLevel);
     const fee = Math.round(feePerKB * txp.serialize().length / 1024);
     return fee;

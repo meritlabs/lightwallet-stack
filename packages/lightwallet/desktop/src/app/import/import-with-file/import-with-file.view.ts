@@ -89,7 +89,6 @@ export class ImportWithFileView {
       const wallet: MeritWalletClient = await this.walletService.importWallet(decrypted, { bwsurl: this.formData.mwsUrl });
       this.pushNotificationsService.subscribe(wallet);
 
-      console.log('Done importing wallet!');
       this.store.dispatch(
         new AddWalletAction(
           await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)
