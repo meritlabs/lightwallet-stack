@@ -1,6 +1,7 @@
 <ion-header no-border [custom-header-color]="wallet.color">
   <ion-navbar>
     <ion-title smaller-title>{{ wallet.name }}</ion-title>
+    <ion-title smaller-title>Network alias: @{{ wallet.rootAlias}}</ion-title>
     <ion-buttons end>
       <button ion-button icon-only navPush="EditWalletView" [navParams]="{ wallet: wallet }">
         <ion-icon name="settings" merit-icon></ion-icon>
