@@ -107,7 +107,8 @@
           </div>
         </div>
         <button class="ui-button ui-button--blue ui-button--with-arrow"
-          role="button" type="submit" [disabled]="!userAgreement">Let's get started</button>
+          role="button" type="submit" [disabled]="!userAgreement"
+          (click)="onSubmit()">Let's get started</button>
       </div>
     </div>
     <div class="already-member" [hidden]="!alias.hasError('AliasInUse')">
