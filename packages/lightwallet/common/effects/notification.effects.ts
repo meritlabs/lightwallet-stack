@@ -56,7 +56,7 @@ export class NotificationEffects {
         cssClass: 'success'
       });
 
-      toast.onDismiss = () => this.store.dispatch(new MarkNotificationAsReadAction(notification.id));
+      toast.onDidDismiss = () => this.store.dispatch(new MarkNotificationAsReadAction(notification.id));
     })
   );
 
