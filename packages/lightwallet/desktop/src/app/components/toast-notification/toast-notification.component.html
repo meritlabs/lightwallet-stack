@@ -1,7 +1,7 @@
 <div class="close" (click)="dismiss(true)"></div>
-<div class="title" *ngIf="message.title">
-  <p>{{message.title}}</p>
+<div class="title" *ngIf="config?.title">
+  <p>{{config.title}}</p>
 </div>
 <div class="content">
-  <p>{{message?.text}}</p>
+  <p>{{config?.message}}</p>
 </div>

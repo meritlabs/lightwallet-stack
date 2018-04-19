@@ -12,7 +12,7 @@ import { ContactsService } from '@merit/common/services/contacts.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { AddressService } from '@merit/common/services/address.service';
-import { ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastConfig } from '@merit/common/../../../services/toast.controller.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @IonicPage()

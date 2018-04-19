@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import { RateService } from "@merit/common/services/rate.service";
 import { IVaultCreateData, VaultsService } from "@merit/common/services/vaults.service";
-import { ToastConfig, MeritToastController } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 
 @IonicPage()
 @Component({
@@ -17,7 +17,7 @@ export class VaultCreateConfirmView {
     private navCtrl: NavController,
     private navParams: NavParams,
     private alertCtrl: AlertController,
-    private toastCtrl: MeritToastController,
+    private toastCtrl: ToastControllerService,
     private vaultsService: VaultsService,
     private loadingCtrl: LoadingController
   ) {
@@ -45,10 +45,7 @@ export class VaultCreateConfirmView {
       this.navCtrl.popToRoot();
     } catch (e) {
       console.log(e);
-      this.toastCtrl.create({
-        message: e.message || 'Failed to create vault',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      this.toastCtrl.error(e.message || 'Failed to create vault');
     } finally  {
       loader.dismiss();
     }
