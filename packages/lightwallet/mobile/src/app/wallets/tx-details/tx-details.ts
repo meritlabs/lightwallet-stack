@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavParams, ToastController, ViewController } from 'ionic-angular';
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 import { COINBASE_CONFIRMATION_THRESHOLD } from '@merit/common/utils/constants';
-import { ToastConfig } from '../../../../../common/services/toast.controller.service';
+import { ToastConfig } from '../../../services/toast.controller.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']

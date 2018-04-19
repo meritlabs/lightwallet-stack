@@ -17,7 +17,7 @@ import { fromEvent } from 'rxjs/observable/fromEvent';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import { map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { ToastControllerService } from '../../desktop/src/app/components/toast-notification/toast-controller.service';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 
 @Injectable()
 export class NotificationEffects {

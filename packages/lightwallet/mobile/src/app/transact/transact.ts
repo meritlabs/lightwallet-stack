@@ -16,7 +16,7 @@ import {
 import { Subscription } from 'rxjs/Subscription';
 import { EasyReceipt } from '../../../../common/models/easy-receipt';
 import { EasyReceiveService } from '../../../../common/services/easy-receive.service';
-import { ToastConfig } from '../../../../common/services/toast.controller.service';
+import { ToastConfig } from '../../services/toast.controller.service';
 
 @IonicPage({
   segment: 'transact'

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
-import { ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastConfig } from '@merit/common/../../services/toast.controller.service';
 import { IUnlockRequest, UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
