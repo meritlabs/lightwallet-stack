@@ -1,31 +1,34 @@
 import { Injectable } from '@angular/core';
-import { DOMController } from '@merit/desktop/app/components/dom.controller';
 import {
-  INotificationMessage,
-  ToastNotificationComponent
-} from '@merit/desktop/app/components/toast-notification/toast-notification.component';
+  IMeritToastConfig,
+  ToastControllerService as ToastControllerServiceBase
+} from '@merit/common/services/toast-controller.service';
+import { DOMController } from '@merit/desktop/app/components/dom.controller';
+import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-notification/toast-notification.component';
 
 @Injectable()
-export class ToastControllerService {
-  constructor(private domCtrl: DOMController) {}
-
-  create(message: INotificationMessage): ToastNotificationComponent {
-    return this.domCtrl.create(ToastNotificationComponent, { message, show: true });
+export class ToastControllerService extends ToastControllerServiceBase {
+  constructor(private domCtrl: DOMController) {
+    super();
   }
 
-  error(text: string): ToastNotificationComponent {
+  create(config: IMeritToastConfig): ToastNotificationComponent {
+    return this.domCtrl.create(ToastNotificationComponent, config);
+  }
+
+  error(message: string): ToastNotificationComponent {
     return this.create({
-      status: 'error',
+      cssClass: 'error',
       title: 'Error',
-      text
+      message
     });
   }
 
-  success(text: string): ToastNotificationComponent {
+  success(message: string): ToastNotificationComponent {
     return this.create({
-      status: 'success',
+      cssClass: 'success',
       title: 'Success',
-      text
+      message
     });
   }
 }

@@ -12,7 +12,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { SendService } from '@merit/common/services/send.service';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
@@ -80,7 +80,7 @@ export class SendAmountView {
               private profileService: ProfileService,
               private txFormatService: TxFormatService,
               private modalCtrl: ModalController,
-              private toastCtrl: MeritToastController,
+              private toastCtrl: ToastControllerService,
               private alertCtrl: AlertController,
               private easySendService: EasySendService,
               private easyReceiveSerivce: EasyReceiveService,
@@ -275,10 +275,7 @@ export class SendAmountView {
   public async toConfirm() {
 
     if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
-      return this.toastCtrl.create({
-        message: 'Passwords do not match',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      return this.toastCtrl.error('Passwords do not match');
     }
 
     let loadingSpinner = this.loadingCtrl.create({
@@ -374,10 +371,7 @@ export class SendAmountView {
       this.txData.txp = null;
       this.logger.warn(err);
       if (err.message) this.feeCalcError = err.message;
-      return this.toastCtrl.create({
-        message: err.message || 'Unknown error',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      return this.toastCtrl.error(err.message || 'Unknown error');
     } finally {
       this.feeLoading = false;
     }

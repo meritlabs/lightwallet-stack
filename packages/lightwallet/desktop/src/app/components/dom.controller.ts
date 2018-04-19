@@ -17,7 +17,7 @@ export interface IDynamicComponent {
   /**
    * @param {Function} callback Function to be called when the component is dismissed
    */
-  onDismiss?(callback: Function): void;
+  onDidDismiss?(callback: Function): void;
 
   /**
    * Set the components config

@@ -17,11 +17,10 @@ import { fromEvent } from 'rxjs/observable/fromEvent';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import { map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { ToastControllerService } from '../../desktop/src/app/components/toast-notification/toast-controller.service';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 
 @Injectable()
 export class NotificationEffects {
-
   /**
    * Save notifications when we add, clear, delete, or mark notification as read
    * @type {Observable<SaveNotificationsAction>}
@@ -53,11 +52,11 @@ export class NotificationEffects {
       const notification = formatNotification(action.notification);
       const toast = this.toastCtrl.create({
         title: notification.title,
-        text: notification.message,
-        status: 'success'
+        message: notification.message,
+        cssClass: 'success'
       });
 
-      toast.onDismiss = () => this.store.dispatch(new MarkNotificationAsReadAction(notification.id));
+      toast.onDidDismiss = () => this.store.dispatch(new MarkNotificationAsReadAction(notification.id));
     })
   );
 
