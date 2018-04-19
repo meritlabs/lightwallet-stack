@@ -1,5 +1,7 @@
-<div class="welcomeGuide" *ngIf="!loading">
+<div class="welcomeGuide">
   <p class="welcomeGuide_title">WELCOME!</p>
-  {{ mnemonic }}
-  {{loading}}
+  <div *ngIf="wallets[0]">
+    {{ wallets[0].client.getMnemonic() }}
+  </div>
+
 </div>
