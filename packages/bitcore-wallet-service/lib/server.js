@@ -2555,22 +2555,22 @@ WalletService.prototype.getTx = function(opts, cb) {
     opts.retries = 1;
   } 
 
-  async.retry({times: opts.retries, interval: 100}, 
-    self.storage.fetchTx(self.walletId, opts.txProposalId),
-      function(err, txp) {
-        if (err) return cb(err);
-        if (!txp) return cb(Errors.TX_NOT_FOUND);
+  async.retry({times: opts.retries, interval: 50}, 
+    (callback)=> {self.storage.fetchTx(self.walletId, opts.txProposalId, callback)},
+    function(err, txp) {
+      if (err) return cb(err);
+      if (!txp) return cb(Errors.TX_NOT_FOUND);
 
-        if (!txp.txid) return cb(null, txp);
+      if (!txp.txid) return cb(null, txp);
 
-        self.storage.fetchTxNote(self.walletId, txp.txid, function(err, note) {
-          if (err) {
-            log.warn('Error fetching tx note for ' + txp.txid);
-          }
-          txp.note = note;
-          return cb(null, txp);
-        });
-    });
+      self.storage.fetchTxNote(self.walletId, txp.txid, function(err, note) {
+        if (err) {
+          log.warn('Error fetching tx note for ' + txp.txid);
+        }
+        txp.note = note;
+        return cb(null, txp);
+      });
+  });
 };
 
 /**
@@ -2757,7 +2757,7 @@ WalletService.prototype.signTx = function(opts, cb) {
     */
     self.getTx({
       txProposalId: opts.txProposalId,
-      retries: 5
+      retries: 10
     }, function(err, txp) {
       if (err) return cb(err);
     
