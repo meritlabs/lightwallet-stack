@@ -1,4 +1,3 @@
-<app-welcome-guide></app-welcome-guide>
 <div class="dashboard-panel">
   <profile-stats [totals]="totals$ | async" [loading]="walletsLoading$ | async"></profile-stats>
   <div class="dashboard-panel__group">
@@ -27,3 +26,4 @@
     </div>
   </div>
 </div>
+<app-welcome-guide [wallets]="wallets$ | async" [loading]="walletsLoading$ | async"></app-welcome-guide>
