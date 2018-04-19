@@ -1,3 +1,5 @@
+import { ENV } from '@app/env';
+
 export interface EasySend {
   receiverPubKey: any; // TODO: make a publicKey model
   script: any; // TODO: make a script model
@@ -12,7 +14,13 @@ export interface EasySend {
 }
 
 export const getEasySendURL = (es: EasySend): string => {
-  return `https://merit.app.link/` +
+  let easyUrl: string;
+  if (ENV && ENV.easyUrl) {
+    easyUrl = ENV.easyUrl;
+  } else {
+    easyUrl = "https://merittest.app.link/";
+  }
+  return easyUrl +
     `?se=${es.secret}` +
     `&sk=${es.senderPubKey}` +
     `&sn=${es.senderName}` +
