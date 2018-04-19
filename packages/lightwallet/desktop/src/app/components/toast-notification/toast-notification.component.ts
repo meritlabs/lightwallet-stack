@@ -15,7 +15,7 @@ export class ToastNotificationComponent implements IDynamicComponent, OnDestroy 
   config: IMeritToastConfig;
   show: boolean;
 
-  onDismiss;
+  _onDismiss;
 
   destroy: Function;
   private timeout: any;
@@ -35,9 +35,13 @@ export class ToastNotificationComponent implements IDynamicComponent, OnDestroy 
   }
 
   dismiss(dismissedByUser?: boolean) {
-    if (dismissedByUser && typeof this.onDismiss === 'function') this.onDismiss();
+    if (dismissedByUser && typeof this._onDismiss === 'function') this._onDismiss();
 
     this.show = false;
     this.destroy && this.destroy();
+  }
+
+  onDidDismiss(callback: Function) {
+    this._onDismiss = callback;
   }
 }

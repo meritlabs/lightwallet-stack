@@ -224,14 +224,14 @@ export class WalletSettingsView implements OnInit, OnDestroy {
       ]
     );
 
-    confirmDialog.onDismiss(async (value: string) => {
+    confirmDialog.onDidDismiss(async (value: string) => {
       if (value === 'yes') {
         try {
           // check if encrypted & prompt for password first
           if (this.isWalletEncrypted) {
             await new Promise<void>((resolve, reject) => {
               this.passwordPromptCtrl.createForWallet(this.wallet)
-                .onDismiss((password: string) => {
+                .onDidDismiss((password: string) => {
                   if (password) resolve();
                   else reject('You must decrypt you wallet before deleting it.');
                 });

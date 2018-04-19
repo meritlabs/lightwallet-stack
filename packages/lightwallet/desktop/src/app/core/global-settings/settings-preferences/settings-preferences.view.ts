@@ -129,7 +129,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
       ]
     );
 
-    dialog.onDismiss(async (value: string) => {
+    dialog.onDidDismiss(async (value: string) => {
       if (value === 'delete') {
         // TODO delete vaults
         try {
@@ -138,7 +138,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
             if (isWalletEncrypted(wallet.client)) {
               await new Promise<void>((resolve, reject) => {
                 this.passwordPromptCtrl.createForWallet(wallet)
-                  .onDismiss((password: string) => {
+                  .onDidDismiss((password: string) => {
                     if (password) resolve();
                     else reject('You must decrypt you wallet before deleting it.');
                   });
