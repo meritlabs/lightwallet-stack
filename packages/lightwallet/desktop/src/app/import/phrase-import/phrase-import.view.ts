@@ -115,11 +115,7 @@ export class PhraseImportView {
 
       this.loadingCtrl.hide();
 
-      return this.toastCtrl.create({
-        title: 'Error',
-        status: 'error',
-        text: errorMsg
-      });
+      return this.toastCtrl.error(errorMsg);
     }
   }
 

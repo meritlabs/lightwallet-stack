@@ -10,7 +10,7 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { PlatformService } from '@merit/common/services/platform.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { AddressService } from '@merit/common/services/address.service';
 
 @IonicPage()
@@ -43,7 +43,7 @@ export class ReceiveView {
               private modalCtrl: ModalController,
               private profileService: ProfileService,
               private walletService: WalletService,
-              private toastCtrl: MeritToastController,
+              private toastCtrl: ToastControllerService,
               private logger: LoggerService,
               private socialSharing: SocialSharing,
               private clipboard: Clipboard,
@@ -118,10 +118,7 @@ export class ReceiveView {
         if (err.text)
           this.error = err.text;
 
-        return this.toastCtrl.create({
-          message: err.text || 'Failed to generate new address',
-          cssClass: ToastConfig.CLASS_ERROR
-        }).present();
+        return this.toastCtrl.error(err.text || 'Failed to generate new address');
       }
     }
   }
@@ -163,10 +160,7 @@ export class ReceiveView {
     if (Clipboard.installed())
       this.clipboard.copy(address);
 
-    this.toastCtrl.create({
-      message: 'Address copied to clipboard',
-      cssClass: ToastConfig.CLASS_MESSAGE
-    }).present();
+    this.toastCtrl.message('Address copied to clipboard');
   }
 
   async toggleCurrency() {

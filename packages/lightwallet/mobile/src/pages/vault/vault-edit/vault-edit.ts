@@ -4,7 +4,7 @@ import { IonicPage, NavController, NavParams, AlertController, ModalController, 
 import { IWhitelistWallet } from "@merit/mobile/pages/vault/select-whitelist/select-whitelist";
 import { VaultsService } from "@merit/common/services/vaults.service";
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
-import { ToastConfig, MeritToastController } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
 
@@ -33,7 +33,7 @@ export class VaultEditView {
     private vaultsService: VaultsService,
     private modalCtrl: ModalController,
     private loadingCtrl: LoadingController,
-    private toastCtrl: MeritToastController
+    private toastCtrl: ToastControllerService
   ) {
     this.vault = this.navParams.get('vault');
     this.vaultName = this.vault.name;
@@ -98,10 +98,7 @@ export class VaultEditView {
       if (this.vaultName != this.previous.name) await this.editName();
       this.navCtrl.pop();
     } catch (e) {
-      this.toastCtrl.create({
-        message: e.message || 'Failed to create vault',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      this.toastCtrl.error(e.message || 'Failed to create vault');
     } finally  {
       loader.dismiss();
     }

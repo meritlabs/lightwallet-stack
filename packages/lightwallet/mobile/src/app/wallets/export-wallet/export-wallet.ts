@@ -8,7 +8,7 @@ import { AppSettingsService } from '@merit/common/services/app-settings.service'
 import { MWCService } from '@merit/common/services/mwc.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 
 @IonicPage()
 @Component({
@@ -35,7 +35,7 @@ export class ExportWalletView {
               private persistenceService: PersistenceService,
               private appService: AppSettingsService,
               private bwcService: MWCService,
-              private toastCtrl: MeritToastController,
+              private toastCtrl: ToastControllerService,
               private file: File,
               private platform: Platform,
               private logger: LoggerService) {
@@ -114,10 +114,7 @@ export class ExportWalletView {
     const defaultFileName = `${walletName}-${info.nameCase || ''}.backup.aes.json`;
     const blob = new Blob([encryptedData], { type: 'text/plain;charset=utf-8' });
 
-    const done = (fileName: string = defaultFileName) => this.toastCtrl.create({
-      message: `Wallet exported to ${fileName}`,
-      cssClass: ToastConfig.CLASS_MESSAGE
-    }).present();
+    const done = (fileName: string = defaultFileName) => this.toastCtrl.success(`Wallet exported to ${ fileName }`);
 
     if (this.platform.is('cordova')) {
       const root = this.platform.is('ios') ? this.file.documentsDirectory : this.file.externalRootDirectory;
@@ -142,10 +139,7 @@ export class ExportWalletView {
                   try {
                     await this.file.checkFile(root, data.name);
                     // file exists
-                    return this.toastCtrl.create({
-                      message: 'There is already a file with the name you specified. Please pick another name.',
-                      cssClass: ToastConfig.CLASS_ERROR
-                    }).present();
+                    return this.toastCtrl.error('There is already a file with the name you specified. Please pick another name.');
                   } catch (e) {
                     // file doesn't exist
                     try {
@@ -153,10 +147,7 @@ export class ExportWalletView {
                       return done();
                     } catch (e) {
                       this.logger.error('Error export wallet to file', e);
-                      return this.toastCtrl.create({
-                        message: 'An error occurred while exporting your wallet.',
-                        cssClass: ToastConfig.CLASS_ERROR
-                      }).present();
+                      return this.toastCtrl.error('An error occurred while exporting your wallet.');
                     }
                   }
 

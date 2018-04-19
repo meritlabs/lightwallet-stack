@@ -10,7 +10,7 @@ import { RateService } from '@merit/common/services/rate.service';
 import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
 @IonicPage()
@@ -46,7 +46,7 @@ export class SendConfirmationView {
 
   constructor(navParams: NavParams,
               private navCtrl: NavController,
-              private toastCtrl: MeritToastController,
+              private toastCtrl: ToastControllerService,
               private alertController: AlertController,
               private loadingCtrl: LoadingController,
               private touchIdService: TouchIdService,
@@ -228,17 +228,11 @@ export class SendConfirmationView {
         this.navCtrl.push('EasySendShareView', { txData: this.txData });
       } else {
         this.navCtrl.popToRoot();
-        this.toastCtrl.create({
-          message: 'Your transaction is complete',
-          cssClass: ToastConfig.CLASS_SUCCESS
-        }).present();
+        this.toastCtrl.success('Your transaction is complete');
       }
     } catch (err) {
       this.logger.warn(err);
-      return this.toastCtrl.create({
-        message: err,
-        cssClass: ToastConfig.CLASS_ERROR,
-      }).present();
+      return this.toastCtrl.error(err);
     } finally {
       loadingSpinner.dismiss();
       this.txData.referralsToSign = [];

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform, Tabs, ViewController } from 'ionic-angular';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { PlatformService } from '@merit/common/services/platform.service';
 
@@ -21,7 +21,7 @@ export class EasySendShareView {
     private navCtrl: NavController,
     private navParams: NavParams,
     private socialSharing: SocialSharing,
-    private toastCtrl: MeritToastController,
+    private toastCtrl: ToastControllerService,
     private tabs: Tabs,
     private viewCtrl: ViewController,
     private platform: Platform
@@ -56,11 +56,7 @@ export class EasySendShareView {
   }
 
   copyToClipboard() {
-    this.toastCtrl.create({
-      message: 'Copied to clipboard',
-      cssClass: ToastConfig.CLASS_SUCCESS,
-      duration: 3000
-    }).present();
+    this.toastCtrl.success('Copied to clipboard');
   }
 
   share(url: string) {
