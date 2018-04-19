@@ -86,18 +86,28 @@
     </form>
     <div class="userAgreement" *ngIf="showAgreement">
       <div class="userAgreement_content">
-        <h2>Wallet unlock confirmation</h2>
-        <p>Invite address: {{formData.inviteCode}}</p>
-        <p>Your username(alias): {{formData.inviteCode}}</p>
-        <p>* be carefull you cant change your alias in the future.</p>
-        <p>** you will recieve your uniq password after these conditions aprovement.</p>
-        <div>
-          <input type="checkbox" [(ngModel)]="userAgreement"> I agree with these conditions.
-          {{userAgreement}}
+        <h2 class="content_title">
+          <div class="import_back" (click)="showAgreement = !showAgreement">
+            <img src="/assets/v1/images/backup/back-icon.svg" alt="">
+          </div>Wallet unlock confirmation
+        </h2>
+        <div class="content_details">
+          <p>Invite address: <strong>{{inviteCode.value}}</strong></p>
+          <p>Your username(alias): <strong>{{alias.value}}</strong></p>
         </div>
-        <div class="unlock__form__group" *ngIf="userAgreement">
-          <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="formData.invalid || creatingWallet">Let's get started</button>
+        <div class="content_warning">
+          <p><strong>*</strong> Be carefull you cant change your alias in the future.</p>
+          <p><strong>**</strong> You will recieve your uniq password after these conditions aprovement.</p>
         </div>
+        <div class="content_checkbox">
+          <div class="ui-checkbox">
+              <input type="checkbox"[(ngModel)]="userAgreement">
+              <span class="ui-checkbox__switcher"></span>
+              <strong>I agree with these conditions.</strong>
+          </div>
+        </div>
+        <button class="ui-button ui-button--blue ui-button--with-arrow"
+          role="button" type="submit" [disabled]="!userAgreement">Let's get started</button>
       </div>
     </div>
     <div class="already-member" [hidden]="!alias.hasError('AliasInUse')">
