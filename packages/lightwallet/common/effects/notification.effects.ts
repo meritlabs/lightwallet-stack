@@ -21,7 +21,6 @@ import { ToastControllerService } from '@merit/common/services/toast-controller.
 
 @Injectable()
 export class NotificationEffects {
-
   /**
    * Save notifications when we add, clear, delete, or mark notification as read
    * @type {Observable<SaveNotificationsAction>}
@@ -53,8 +52,8 @@ export class NotificationEffects {
       const notification = formatNotification(action.notification);
       const toast = this.toastCtrl.create({
         title: notification.title,
-        text: notification.message,
-        status: 'success'
+        message: notification.message,
+        cssClass: 'success'
       });
 
       toast.onDismiss = () => this.store.dispatch(new MarkNotificationAsReadAction(notification.id));
