@@ -18,7 +18,7 @@ export const getEasySendURL = (es: EasySend): string => {
   if (ENV && ENV.easyUrl) {
     easyUrl = ENV.easyUrl;
   } else {
-    easyUrl = "https://merittest.app.link/";
+    easyUrl = "https://merit.test-app.link/";
   }
   return easyUrl +
     `?se=${es.secret}` +
