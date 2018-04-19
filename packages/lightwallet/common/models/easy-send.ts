@@ -14,13 +14,7 @@ export interface EasySend {
 }
 
 export const getEasySendURL = (es: EasySend): string => {
-  let easyUrl: string;
-  if (ENV && ENV.easyUrl) {
-    easyUrl = ENV.easyUrl;
-  } else {
-    easyUrl = "https://merit.test-app.link/";
-  }
-  return easyUrl +
+  return ENV.easyUrl +
     `?se=${es.secret}` +
     `&sk=${es.senderPubKey}` +
     `&sn=${es.senderName}` +
