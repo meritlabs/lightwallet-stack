@@ -1,6 +1,6 @@
 import { hasValidEntropy, hasValidWords, isValidSize } from './mnemonic';
 
-describe('Mnemonic', () => {
+describe('Utils.Mnemonic', () => {
 
   it('12 words mnemonic should be valid size', () => {
     expect(isValidSize('chair sing cool west birth stock disease sniff bulb surround absorb design')).toBeTruthy();
