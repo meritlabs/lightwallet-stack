@@ -100,7 +100,9 @@ export class AliasView {
       return false;
     }
 
-    const alias = (this.formData.alias && isAlias(this.formData.alias)) ? this.formData.alias.slice(1) : this.formData.alias;
+    let { alias } = this.formData;
+
+    alias = (alias && isAlias(alias))? alias.slice(1) : alias;
 
     const loader = this.loaderCtrl.create({ content: 'Creating wallet...' });
     await loader.present();
