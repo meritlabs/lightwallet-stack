@@ -1,24 +1,17 @@
 import { Component } from '@angular/core';
-import {
-  IonicPage,
-  LoadingController,
-  ModalController,
-  NavController,
-  NavParams,
-  ToastController
-} from 'ionic-angular';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { MeritContact } from '@merit/common/models/merit-contact';
+import { AddressService } from '@merit/common/services/address.service';
 import { ContactsService } from '@merit/common/services/contacts.service';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
-import { AddressService } from '@merit/common/services/address.service';
-import { ToastConfig } from '@merit/common/../../../services/toast.controller.service';
-import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { IonicPage, LoadingController, ModalController, NavController, NavParams } from 'ionic-angular';
 
 @IonicPage()
 @Component({
   selector: 'view-incoming-request',
-  templateUrl: 'incoming-request.html',
+  templateUrl: 'incoming-request.html'
 })
 export class IncomingRequestModal {
 
@@ -31,7 +24,7 @@ export class IncomingRequestModal {
               private modalCtrl: ModalController,
               private contactsService: ContactsService,
               private addressService: AddressService,
-              private toastCtrl: ToastController,
+              private toastCtrl: ToastControllerService,
               private unlockService: UnlockRequestService,
               private loadingCtrl: LoadingController) {
     this.unlockRequest = this.navParams.get('request');
@@ -48,12 +41,7 @@ export class IncomingRequestModal {
       loader.present();
       await this.unlockService.confirmRequest(this.unlockRequest);
     } catch (e) {
-      this.toastCtrl.create({
-        message: e.text || 'Unknown Error',
-        position: ToastConfig.POSITION,
-        duration: ToastConfig.DURATION,
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      this.toastCtrl.error(e.text || 'Unknown Error');
     } finally {
       loader.dismiss();
     }
@@ -96,7 +84,7 @@ export class IncomingRequestModal {
   selectWallet() {
     const modal = this.modalCtrl.create('SelectInviteWalletModal', {
       selectedWallet: this.unlockRequest.walletClient,
-      availableWallets: this.wallets.filter((wallet) => wallet.availableInvites> 0)
+      availableWallets: this.wallets.filter((wallet) => wallet.availableInvites > 0)
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
       if (wallet) {
