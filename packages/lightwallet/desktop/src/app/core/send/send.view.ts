@@ -253,6 +253,7 @@ export class SendView implements OnInit {
 
     this.error = null;
     this.sending = true;
+    this.easySendUrl = void 0;
 
     if (this.txData.easyFee) this.txData.txp.amount += this.txData.easyFee;
 

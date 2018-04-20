@@ -28,6 +28,8 @@ const baseHref = '';
 const deployUrl = '';
 const projectRoot = process.cwd();
 const maximumInlineSize = 10;
+const staging = process.env.LW_STAGING;
+
 const postcssPlugins = (isProduction) => {
   return function (loader) {
     return [
@@ -124,7 +126,8 @@ const postcssPlugins = (isProduction) => {
 };
 
 function getEnvPath(production) {
-  return '../common/environments/environment' + (production ? '.prod' : '.dev') + '.ts';
+  let env = staging ? 'staging' : (production ? 'prod' : 'dev');
+  return '../common/environments/environment.' + env + '.ts';
 }
 
 function getAliases(production) {
