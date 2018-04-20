@@ -2490,7 +2490,11 @@ WalletService.prototype.publishTx = function(opts, cb) {
     self.getWallet({}, function(err, wallet) {
       if (err) return cb(err);
 
-      self.storage.fetchTx(self.walletId, opts.txProposalId, function(err, txp) {
+      self.getTx({
+        txProposalId: opts.txProposalId, 
+        retries: 10, 
+        interval: 50,
+      }, function(err, txp) {
         if (err) return cb(err);
         if (!txp) return cb(Errors.TX_NOT_FOUND);
         if (!txp.isTemporary()) return cb(null, txp);
@@ -2547,14 +2551,15 @@ WalletService.prototype.publishTx = function(opts, cb) {
  * Retrieves a tx from storage.
  * @param {Object} opts
  * @param {string} opts.txProposalId - The tx id.
+ * @param {number} opts.retries - The number of times to retry.
+ * @param {number} opts.interval - The interval, in MS, between retries..  
  * @returns {Object} txProposal
  */
 WalletService.prototype.getTx = function(opts, cb) {
   var self = this;
-  if (!opts || !opts.retries) {
-    opts.retries = 1;
-  } 
-
+  opts.retries = opts.retries || 1;
+  opts.interval =  opts.interval || 50;
+  
   async.retry({times: opts.retries, interval: 50}, 
     (callback)=> {self.storage.fetchTx(self.walletId, opts.txProposalId, callback)},
     function(err, txp) {
@@ -2757,7 +2762,8 @@ WalletService.prototype.signTx = function(opts, cb) {
     */
     self.getTx({
       txProposalId: opts.txProposalId,
-      retries: 10
+      retries: 10,
+      interval: 50
     }, function(err, txp) {
       if (err) return cb(err);
     
