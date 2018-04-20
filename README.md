@@ -35,6 +35,13 @@ brew install make
 alias make='/usr/local/Cellar/make/4.2.1_1/bin/gmake'
 ```
 
+### Deploying
+When deploying to staging, add a LW_STAGING=true environment variable before running deploy
+
+To deploy mobile lightwallet (web), run `./deploy-mobile.sh`
+To deploy desktop lightwallet (web), run `./deploy-desktop.sh`
+
+
 ### Ubuntu Users
 ```
 # install ZeroMQ
