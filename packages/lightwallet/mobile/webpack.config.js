@@ -5,8 +5,8 @@ const webpackConfig = require('@ionic/app-scripts/config/webpack.config.js');
 const webpack = require('webpack');
 const { execSync } = require('child_process');
 const env = process.env.IONIC_ENV;
-
-console.log('environment setting is: ', env);
+// IONIC_ENV only supports prod and dev, so we need to pass staging in its own env var as a workaround for now.
+const staging = process.env.LW_STAGING;
 
 webpackConfig.prod.resolve = {
   alias: {
@@ -34,7 +34,10 @@ if (env !== 'prod' && env !== 'dev') {
 }
 
 function environmentPath(env) {
-  var filePath = path.resolve(__dirname, '../common/environments/environment' + ((env === 'dev' || env === 'prod') ? '.' + env : '') + '.ts');
+  env = staging ? 'staging' : env || 'dev';
+  console.log('environment setting is: ', env);
+
+  var filePath = path.resolve(__dirname, '../common/environments/environment.' + env + '.ts');
   if (!fs.existsSync(filePath)) {
     console.log(chalk.red('\n' + filePath + ' does not exist!'));
   } else {
