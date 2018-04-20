@@ -2,7 +2,7 @@ import { MWCService } from '@merit/common/services/mwc.service';
 import { Address, Referral } from 'bitcore-lib';
 
 export function cleanAddress(address: string) {
-  return address.replace(/\s+/g, '');
+  return address.replace(/[@|\s]/g, '');
 }
 
 export function isAlias(address: string) {

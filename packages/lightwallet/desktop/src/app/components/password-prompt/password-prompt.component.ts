@@ -40,7 +40,7 @@ export class PasswordPromptComponent implements IDynamicComponent {
     this._dismiss(this.password.value);
   }
 
-  onDismiss(callback: (password: string) => any) {
+  onDidDismiss(callback: (password: string) => any) {
     this._onDismiss = callback;
   }
 

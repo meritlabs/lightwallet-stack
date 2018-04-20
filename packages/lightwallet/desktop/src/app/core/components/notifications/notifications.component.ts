@@ -1,31 +1,33 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { IRootAppState } from '@merit/common/reducers';
+import {
+  ClearNotificationsAction,
+  INotification,
+  MarkAllNotificationsAsReadAction
+} from '@merit/common/reducers/notifications.reducer';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.sass'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./notifications.component.sass']
 })
 export class NotificationsComponent {
+  showHistory: boolean;
+  @Input() notifications: INotification[];
+  @Input() hasNewNotifications: boolean;
 
-  @Input()
-  showHistory: boolean = false;
-  notifications: Object[] = [
-    {
-      'title': 'Success!',
-      'status': 'success',
-      'date': '11:42 PM',
-      'text': 'Your transaction is confirmed!'
-    },
-    {
-      'title': 'Success!',
-      'status': 'success',
-      'date': '11:42 PM',
-      'text': 'Your transaction is confirmed!'
+  constructor(private store: Store<IRootAppState>) {}
+
+  onClear() {
+    this.store.dispatch(new ClearNotificationsAction());
+  }
+
+  toggleHistory() {
+    if (!this.showHistory && this.hasNewNotifications) {
+      this.store.dispatch(new MarkAllNotificationsAsReadAction());
     }
-  ];
 
-  get hasNewNotifications() {
-    return this.notifications.length > 0;
+    this.showHistory = !this.showHistory;
   }
 }

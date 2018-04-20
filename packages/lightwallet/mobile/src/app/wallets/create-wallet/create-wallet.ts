@@ -13,7 +13,7 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
@@ -51,7 +51,7 @@ export class CreateWalletView {
               private config: ConfigService,
               private walletService: WalletService,
               private loadCtrl: LoadingController,
-              private toastCtrl: MeritToastController,
+              private toastCtrl: ToastControllerService,
               private modalCtrl: ModalController,
               private logger: LoggerService,
               private pushNotificationService: PushNotificationsService,
@@ -195,10 +195,7 @@ export class CreateWalletView {
   async createWallet() {
 
     if (this.formData.password != this.formData.repeatPassword) {
-      return this.toastCtrl.create({
-        message: `Passwords don't match`,
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      return this.toastCtrl.error(`Passwords don't match`);
     }
 
     let alias = (this.formData.alias && isAlias(this.formData.alias)) ? this.formData.alias.slice(1) : this.formData.alias;
@@ -262,10 +259,7 @@ export class CreateWalletView {
     } catch (err) {
       this.logger.error(err);
       await loader.dismiss();
-      await this.toastCtrl.create({
-        message: err.text || 'Error occured when creating wallet',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      await this.toastCtrl.error(err.text || 'Error occured when creating wallet');
     }
   }
 }
