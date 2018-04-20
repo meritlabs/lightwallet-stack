@@ -10,7 +10,7 @@
     "target": "es5",
     "baseUrl": ".",
     "paths": {
-      "@app/env": ["../common/environments/environment"],
+      "@app/env": ["../common/environments/environment.example "],
       "@merit/common/*": ["../common/*"],
       "@merit/desktop/*": ["./src/*"]
     },
