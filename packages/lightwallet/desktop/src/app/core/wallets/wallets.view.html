@@ -1,4 +1,5 @@
 <div class="container--fluid wallets">
-  <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async"></wallets-list>
+  <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async"
+    [redirect]="true"></wallets-list>
   <vaults-list></vaults-list>
 </div>
