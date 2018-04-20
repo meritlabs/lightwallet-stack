@@ -1,0 +1,48 @@
+@import '~styles/v1/common/import-sass'
+
+\:host
+  height: calc(100vh - 70px)
+  width: 300px
+  position: fixed
+  top: 70px
+  overflow-y: scroll
+  +transition(.5s, linear)
+  background: rgba(255, 255, 255, .98)
+  box-shadow: 2px 0 2px rgba(46, 53, 59, 0.05)
+  right: -100%
+  &.show
+    right: 0
+
+.empty
+  padding: 20px
+  +font(900, 18px, 24px, $gun-metal)
+  opacity: .5
+  text-align: center
+  font-style: italic
+
+.nav
+  +font(500, 14px, 24px, $gun-metal)
+  display: flex
+  justify-content: space-between
+  padding: 20px 20px
+  opacity: 0.6
+  .close
+    font-style: italic
+    cursor: pointer
+  .clear
+    text-decoration: underline
+    cursor: pointer
+.notification
+  padding: 20px
+  border-top: 1px solid $pale-grey
+  +font(400, 14px, 24px, $gun-metal)
+  .header
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 5px
+  .title
+    font-weight: 900
+    font-size: 16px
+  .time
+    font-size: 10px

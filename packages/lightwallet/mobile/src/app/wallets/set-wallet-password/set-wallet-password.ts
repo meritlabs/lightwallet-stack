@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 
 @IonicPage()
 @Component({
@@ -22,7 +22,7 @@ export class SetWalletPasswordView {
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
-              private toastCtrl: MeritToastController,
+              private toastCtrl: ToastControllerService,
               private walletService: WalletService) {
     this.wallet = navParams.get('wallet');
     this.isWalletEncrypted = this.walletService.isEncrypted(this.wallet);
@@ -34,10 +34,7 @@ export class SetWalletPasswordView {
       await this.walletService.decrypt(this.wallet, this.formData.currentPassword);
       this.navCtrl.pop();
     } catch (err) {
-      return this.toastCtrl.create({
-        message: 'Incorrect current password',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      return this.toastCtrl.error('Incorrect current password');
     }
 
   }
@@ -45,10 +42,7 @@ export class SetWalletPasswordView {
   async setPassword() {
 
     if (this.formData.password != this.formData.repeatPassword) {
-      return this.toastCtrl.create({
-        message: 'Passwords don\'t match',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      return this.toastCtrl.error('Passwords don\'t match');
     }
 
 
@@ -57,10 +51,7 @@ export class SetWalletPasswordView {
         await this.walletService.encrypt(this.wallet, this.formData.password);
         this.navCtrl.pop();
       } catch (err) {
-        return this.toastCtrl.create({
-          message: err,
-          cssClass: ToastConfig.CLASS_ERROR
-        }).present();
+        return this.toastCtrl.error(err);
       }
     };
 
@@ -70,10 +61,7 @@ export class SetWalletPasswordView {
         await this.walletService.decrypt(this.wallet, this.formData.currentPassword);
         return encrypt();
       } catch (err) {
-        return this.toastCtrl.create({
-          message: 'Incorrect current password',
-          cssClass: ToastConfig.CLASS_ERROR
-        }).present();
+        return this.toastCtrl.error('Incorrect current password');
       }
     } else {
       return encrypt();

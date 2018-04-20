@@ -1,8 +1,14 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { IRootAppState } from '@merit/common/reducers';
+import {
+  INotification,
+  selectNotifications,
+  selectTotalUnreadNotifications
+} from '@merit/common/reducers/notifications.reducer';
 import { selectWalletTotals, selectWalletTotalsLoading } from '@merit/common/reducers/wallets.reducer';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-toolbar',
@@ -42,6 +48,9 @@ export class ToolbarComponent {
 
   totals$: Observable<any> = this.store.select(selectWalletTotals);
   totalsLoading$: Observable<any> = this.store.select(selectWalletTotalsLoading);
+
+  notifications$: Observable<INotification[]> = this.store.select(selectNotifications);
+  totalUnreadNotifications$: Observable<number> = this.store.select(selectTotalUnreadNotifications);
 
   constructor(private store: Store<IRootAppState>) {}
 
