@@ -1,12 +1,12 @@
-import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgxCarousel } from 'ngx-carousel';
 
 @Component({
-  selector: 'app-guide',
-  templateUrl: './guide.component.html',
-  styleUrls: ['./guide.component.sass']
+  selector: 'app-slider-guide',
+  templateUrl: './slider-guide.component.html',
+  styleUrls: ['./slider-guide.component.sass']
 })
-export class GuideComponent {
+export class SliderGuideComponent {
 
   carouselOne: NgxCarousel = {
     grid: { xs: 1, sm: 1, md: 1, lg: 1, all: 0 },
