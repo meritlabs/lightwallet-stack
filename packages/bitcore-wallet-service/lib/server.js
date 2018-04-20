@@ -2561,10 +2561,9 @@ WalletService.prototype.getTx = function(opts, cb) {
   opts.interval =  opts.interval || 50;
   
   async.retry({times: opts.retries, interval: 50}, 
-    (callback)=> {self.storage.fetchTx(self.walletId, opts.txProposalId, callback)},
+    (callback)=> {self.storage.mustFetchTx(self.walletId, opts.txProposalId, callback)},
     function(err, txp) {
       if (err) return cb(err);
-      if (!txp) return cb(Errors.TX_NOT_FOUND);
 
       if (!txp.txid) return cb(null, txp);
 
