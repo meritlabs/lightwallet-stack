@@ -183,6 +183,7 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
                     icon: "fcm_push_icon",
                   },
                   data: {
+                    id: notification.id,
                     walletId: notification.walletId,
                     copayerId: recipient.copayerId,
                     type: notification.type,
@@ -192,8 +193,9 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
 
                 if (sub.platform === 'web') {
                   pushNotification.notification.click_action = sub.packageName;
+                  pushNotification.notification.icon = '/assets/v1/icons/merit-512x512.png';
                 } else if (sub.packageName) {
-                  pushNotification.restricted_package_name = sub.packageName
+                  pushNotification.restricted_package_name = sub.packageName;
                 }
 
                 return pushNotification;
@@ -238,7 +240,7 @@ PushNotificationsService.prototype._checkShouldSendNotif = function(notification
 
   if (notification.type != 'NewTxProposal') return cb(null, true);
   self.storage.fetchWallet(notification.walletId, function(err, wallet) {
-    return cb(err, wallet.m > 1);
+    return cb(err, wallet && wallet.m > 1);
   });
 };
 
@@ -344,7 +346,7 @@ PushNotificationsService.prototype._getDataForTemplate = function(notification, 
   }
 
   self.storage.fetchWallet(notification.walletId, function(err, wallet) {
-    if (err) return cb(err);
+    if (err || !wallet) return cb(err);
 
     data.walletId = wallet.id;
     data.walletName = wallet.name;

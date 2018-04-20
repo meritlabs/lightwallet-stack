@@ -3,5 +3,6 @@ export const ENV = {
   network: 'livenet',
   mwsUrl: 'https://mws.merit.me/bws/api',
   rateUrl: 'https://mws.merit.me/bws/api/v1/rates',
-  feeLevel: 'superEconomy'
+  feeLevel: 'superEconomy',
+  easyUrl: 'http://merit.app.link/'
 };

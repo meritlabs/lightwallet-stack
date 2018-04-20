@@ -5,7 +5,7 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 
 @IonicPage()
 @Component({
@@ -24,7 +24,7 @@ export class EditWalletView {
               private alertCtrl: AlertController,
               private profileService: ProfileService,
               private app: App,
-              private toastCtrl: MeritToastController,
+              private toastCtrl: ToastControllerService,
               private configService: ConfigService,
               private walletService: WalletService,
               private logger: LoggerService
@@ -99,10 +99,7 @@ export class EditWalletView {
                 }
               })
             }).catch((err) => {
-              this.toastCtrl.create({
-                message: JSON.stringify(err),
-                cssClass: ToastConfig.CLASS_ERROR
-              });
+              this.toastCtrl.error(JSON.stringify(err));
             });
           }
         }
