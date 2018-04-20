@@ -38,8 +38,13 @@ alias make='/usr/local/Cellar/make/4.2.1_1/bin/gmake'
 ### Deploying
 When deploying to staging, add a LW_STAGING=true environment variable before running deploy
 
-To deploy mobile lightwallet (web), run `./deploy-mobile.sh`
-To deploy desktop lightwallet (web), run `./deploy-desktop.sh`
+To deploy either lightwallet (web), run `./deploy.sh`
+* It will prompt you for if you want to deploy mobile or desktop lightwallet. 
+* It will also ask if you want to deploy to production.
+
+To deploy in unattended mode, run `./deploy.sh -e <environment> -t <target>`
+* Environment can be either `staging` or `production`
+* Target can either be `mobile` or `desktop`
 
 
 ### Ubuntu Users
