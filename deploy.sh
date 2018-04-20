@@ -29,14 +29,13 @@ print_question() {
 
 set -euo pipefail
 
-environment="staging"
-firebase_project="staging-mlw"
-env_vars="LW_STAGING=true"
-build_file_path="packages/lightwallet"
-deploy_file_path="packages/lightwallet/mobile"
-target="mobile"
+environment=""
+target=""
+lw_env_vars=""
+firebase_project=""
+build_file_path=""
+deploy_file_path=""
 build_tag=""
-
 
 mobileDesktopPrompt() {
     while true; do
@@ -83,7 +82,7 @@ setRunLevelProduction() {
         firebase_project="merit-webwallet-production"
         build_tag=":prod"        
     fi
-    env_vars=""
+    lw_env_vars=""
 }
 
 setRunLevelStaging() {
@@ -94,21 +93,56 @@ setRunLevelStaging() {
         firebase_project="merit-wallet-staging"
     fi
     build_tag="" # This favors debug output over testing AOT compiling.    
-    env_vars="LW_STAGING=true"
+    lw_env_vars="LW_STAGING=true"
 }
 
-mobileDesktopPrompt;
-productionPrompt;
+
+
+
+while getopts ":t:e:" opt; do
+  case $opt in
+    t) target="$OPTARG"
+    ;;
+    e) environment="$OPTARG"
+    ;;
+    \?) echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
+
+if [ "$target" != "mobile" ] && [ "$target" != "desktop" ]; then
+    print_in_red "No target passed in with -t.  Prompting for input.\n"
+    mobileDesktopPrompt;
+else 
+    if [ "$target" == "mobile" ]; then
+        setMobileParams;
+    else 
+        setDesktopParams;
+    fi 
+fi
+
+if [ "$environment" != "staging" ] && [ "$environment" != "production" ]; then
+    print_in_red "No environment passed in with -e.  Prompting for input.\n"
+    productionPrompt;
+else 
+    if [ "$environment" == "staging" ]; then
+        setRunLevelStaging;
+    else 
+        setRunLevelProduction;
+    fi 
+fi
+
+
 
 print_in_yellow "Building Mobile LightWallet Now"
 pushd $build_file_path
 
-if [ ! -z "env_vars" ]; then 
-    print_in_yellow "Running export $env_vars"
-    export $env_vars 
+if [ ! -z "$lw_env_vars" ]; then 
+    print_in_yellow "Running export $lw_env_vars \n"
+    export ${lw_env_vars} 
 fi 
-print_in_yellow "npm run build $build_tag"
-npm run build $build_tag
+print_in_yellow "Running npm run build$build_tag \n"
+npm run build$build_tag
 popd
 
 pushd $deploy_file_path
@@ -116,5 +150,5 @@ pushd $deploy_file_path
 print_in_yellow "Using firebase project: $firebase_project"
 firebase use $firebase_project
 
-print_in_purple "Deploying to firebase now!"
+print_in_green "Deploying to firebase now!"
 firebase deploy
