@@ -24,12 +24,12 @@
         <div class="slide_description">
           <p class="description_title">You control your merit.</p>
           <p class="description_caption">Merit is decentralized. This wallet stores your merit with cutting-edge security. Not even the Merit Foundation can access it.</p>
-          <button type="button" name="button" class="ui-button ui-button--totalWhite" (click)="skipIntro()">Get Started</button>
+          <button type="button" name="button" class="ui-button ui-button--totalWhite" (click)="skipIntro()">{{getStartButton}}</button>
         </div>
       </div>
     </ngx-item>
     <button NgxCarouselPrev class='leftRs navArrow'></button>
     <button NgxCarouselNext class='rightRs navArrow'></button>
   </ngx-carousel>
-  <a (click)="skipIntro()" class="skipTutorial">Skip tutorial</a>
+  <a (click)="skipIntro()" class="skipTutorial">{{skipButton}}</a>
 </div>

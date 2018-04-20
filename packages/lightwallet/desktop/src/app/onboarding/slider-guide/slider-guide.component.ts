@@ -22,6 +22,8 @@ export class SliderGuideComponent {
   };
   @Output() hideGuide = new EventEmitter<Boolean>();
   @Input() showGuide: any;
+  @Input() skipButton: string = 'Skip tutorial';
+  @Input() getStartButton: string = 'Get Started';
   skipIntro() {
     this.hideGuide.emit(false);
   }
