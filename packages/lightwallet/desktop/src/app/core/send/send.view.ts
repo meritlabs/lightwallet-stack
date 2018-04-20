@@ -71,7 +71,7 @@ export class SendView implements OnInit {
               private easySendService: EasySendService,
               private sendService: SendService,
               private feeService: FeeService,
-              private persitenceService: PersistenceService2) {
+              private persistenceService: PersistenceService2) {
     this.resetFormData();
   }
 
@@ -180,13 +180,7 @@ export class SendView implements OnInit {
       }
     });
     this.availableCurrencies = await this.rateService.getAvailableFiats();
-    let showTour;
-    if("showTour" in localStorage && localStorage.getItem("showTour") === 'false') {
-      showTour = false;
-    }else {
-      showTour  = true;
-    }
-    this.showTour = showTour;
+    this.showTour = !('showTour' in localStorage && localStorage.getItem('showTour') === 'false');
   }
 
   async createTx() {
@@ -283,7 +277,7 @@ export class SendView implements OnInit {
 
       if (this.formData.type == 'easy') {
         this.easySendUrl = this.txData.easySendUrl;
-        this.persitenceService.addEasySend(clone(this.txData.easySend));
+        this.persistenceService.addEasySend(clone(this.txData.easySend));
       }
       this.success = true;
 
@@ -304,10 +298,9 @@ export class SendView implements OnInit {
     this.sending = false;
 
   }
+
   hideTour($event) {
     this.showTour = $event;
-    localStorage.setItem("showTour", $event);
+    localStorage.setItem('showTour', $event);
   }
-
-
 }

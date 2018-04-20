@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController, ModalController } from 'ionic-angular';
 import { IVault } from '@merit/common/models/vault';
 import { VaultsService } from '@merit/common/services/vaults.service';
-import { ToastConfig, MeritToastController } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { RateService } from "@merit/common/services/rate.service";
 
@@ -26,7 +26,7 @@ export class VaultSpendView {
     private navParams: NavParams,
     private vaultsService: VaultsService,
     private loadingCtrl: LoadingController,
-    private toastCtrl: MeritToastController,
+    private toastCtrl: ToastControllerService,
     private modalCtrl: ModalController,
     private rateService: RateService
   ) {
@@ -53,10 +53,7 @@ export class VaultSpendView {
       this.navCtrl.pop();
     } catch (e) {
       console.log(e);
-      this.toastCtrl.create({
-        message: e.message || 'Send failed ',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      this.toastCtrl.error(e.message || 'Send failed');
     } finally {
       loader.dismiss();
     }

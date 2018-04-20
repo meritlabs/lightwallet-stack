@@ -626,7 +626,7 @@ module.exports = (_, config) => {
           'license.txt'
         ],
         'perChunkOutput': false,
-        'outputTemplate': path.join(process.cwd(), 'node_modules\\license-webpack-plugin\\output.template.ejs'),
+        'outputTemplate': path.join(process.cwd(), 'node_modules/license-webpack-plugin/output.template.ejs'),
         'outputFilename': '3rdpartylicenses.txt',
         'suppressErrors': true,
         'includePackagesWithoutLicense': false,

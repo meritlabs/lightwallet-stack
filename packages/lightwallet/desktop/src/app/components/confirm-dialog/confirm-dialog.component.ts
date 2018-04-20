@@ -32,7 +32,7 @@ export class ConfirmDialogComponent implements IDynamicComponent {
     this.buttons = config.buttons;
   }
 
-  onDismiss(callback: (value: any) => any) {
+  onDidDismiss(callback: (value: any) => any) {
     this._onDismiss = callback;
   }
 
