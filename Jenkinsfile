@@ -15,7 +15,7 @@ pipeline {
         sh 'cp packages/lightwallet/common/environments/environment.example.ts packages/lightwallet/common/environments/environment.dev.ts'
       }
     }
-    stage('Build Wallets') {
+    stage('Build Wallets [Dev]') {
       parallel {
         stage('Build MLW') {
           steps {
@@ -25,6 +25,20 @@ pipeline {
         stage('Build DLW') {
           steps {
             sh 'cd packages/lightwallet/desktop && npm run build'
+          }
+        }
+      }
+    }
+    stage('Build Wallets [Production]') {
+      parallel {
+        stage('Build MLW') {
+          steps {
+            sh 'cd packages/lightwallet && npm run build -- --prod'
+          }
+        }
+        stage('Build DLW') {
+          steps {
+            sh 'cd packages/lightwallet/desktop && npm run build:prod'
           }
         }
       }

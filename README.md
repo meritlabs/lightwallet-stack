@@ -1,6 +1,6 @@
 # Merit Development Bootstrap
 
-[![Build Status](https://jenkins.merit.me/buildStatus/icon?job=lightwallet-stack)](https://jenkins.merit.me/job/lightwallet-stack)
+[![Build Status](https://jenkins.merit.me/buildStatus/icon?job=lightwallet-stack/master)](https://jenkins.merit.me/job/lightwallet-stack)
 
 ## Getting started
 The lightwallet development environment consists of:
