@@ -43,5 +43,19 @@ pipeline {
         }
       }
     }
+    stage('Test Wallets') {
+      parallel {
+        stage('Test MLW') {
+          steps {
+            sh 'cd packages/lightwallet && npm run test'
+          }
+        }
+        stage('Test DLW') {
+          steps {
+            sh 'cd packages/lightwallet/desktop && npm run test'
+          }
+        }
+      }
+    }
   }
 }
