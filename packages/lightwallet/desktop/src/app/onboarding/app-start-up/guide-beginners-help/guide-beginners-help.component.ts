@@ -7,9 +7,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GuideBeginnersHelpComponent implements OnInit {
 
-  constructor() { }
+  showGuide: boolean;
 
-  ngOnInit() {
+  async ngOnInit() {
+    let showGuide;
+    if("showGuide" in localStorage && localStorage.getItem("showGuide") === 'false') {
+      showGuide = false;
+    }else {
+      showGuide  = true;
+    }
+    this.showGuide = showGuide;
+  }
+  hideGuide($event) {
+    this.showGuide = $event;
+    localStorage.setItem("showGuide", $event);
   }
 
 }
