@@ -29,7 +29,7 @@
               Receive
             </div>
           </div>
-          <div class="details_addWallet" *ngIf="showAddNewWalletButtons">
+          <div class="details_addWallet" *ngIf="singleWallet$ | async">
             <div>
               Need more wallets?
             </div>
