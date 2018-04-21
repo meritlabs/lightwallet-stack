@@ -24,7 +24,7 @@ export class WalletsListComponent {
       this.router.navigate(['/wallets/', wallet.id]);
       localStorage.setItem('singleWallet', 'true');
     }else {
-
+      localStorage.removeItem('singleWallet');
     }
   }
 }
