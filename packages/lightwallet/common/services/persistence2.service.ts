@@ -70,11 +70,11 @@ export class PersistenceService2 {
     return (await this.storage.get(StorageKey.EasySends)) || [];
   }
 
-  setViewSettings(preferences: any) {
-    return this.storage.set(StorageKey.viewSettings, preferences);
+  setViewSettings(key: string, value: boolean) {
+    return this.storage.set(StorageKey.viewSettings + key, value);
   }
 
-  async getViewSettings() {
-    return (await this.storage.get(StorageKey.viewSettings)) || [];
+  async getViewSettings(key) {
+    return this.storage.get(StorageKey.viewSettings + key);
   }
 }
