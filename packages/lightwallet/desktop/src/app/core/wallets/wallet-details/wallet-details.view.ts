@@ -6,6 +6,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { ActivatedRoute } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { selectWalletById } from '@merit/common/reducers/wallets.reducer';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
 @Component({
   selector: 'view-wallet-details',
@@ -13,7 +14,7 @@ import { selectWalletById } from '@merit/common/reducers/wallets.reducer';
   styleUrls: ['./wallet-details.view.sass']
 })
 export class WalletDetailView {
-  showAddNewWalletButtons: boolean = false;
+  singleWallet$: any = this.persistenceService.getViewSettings('singleWallet');
   wallet$: Observable<DisplayWallet> = this.route.params
     .pipe(
       switchMap(({ id }) =>
@@ -22,10 +23,6 @@ export class WalletDetailView {
     );
 
   constructor(private store: Store<IRootAppState>,
-              private route: ActivatedRoute) {}
-  ngOnInit() {
-    if("singleWallet" in localStorage && localStorage.getItem("singleWallet") === 'true') {
-      this.showAddNewWalletButtons = true;
-    }
-  }
+              private route: ActivatedRoute,
+              private persistenceService: PersistenceService2) {}
 }
