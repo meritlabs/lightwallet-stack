@@ -21,7 +21,10 @@ export class WalletsListComponent {
   ngOnInit() {
     let wallet = this.wallets[0];
     if(this.wallets.length === 1 && this.redirect === true) {
-      this.router.navigate([`/wallets/${wallet.id}`]);
+      this.router.navigate(['/wallets/', wallet.id]);
+      localStorage.setItem('singleWallet', 'true');
+    }else {
+
     }
   }
 }
