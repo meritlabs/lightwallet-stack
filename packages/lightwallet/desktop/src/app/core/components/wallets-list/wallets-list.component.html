@@ -24,8 +24,11 @@
             <p class="large-black-text">{{ wallet.name }}</p>
             <p class="regular-blue-text" *ngIf="!balanceHidden">{{ wallet.totalBalanceMicros | toMRT }} <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})</small></p>
           </div>
-          <div>
+          <div class="inline-right">
             <p class="regular-blue-text">{{ wallet.availableInvites }} Invites</p>
+            <div class="manageIt">
+
+            </div>
           </div>
         </div>
       </div>
