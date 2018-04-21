@@ -13,6 +13,7 @@ import { selectWalletById } from '@merit/common/reducers/wallets.reducer';
   styleUrls: ['./wallet-details.view.sass']
 })
 export class WalletDetailView {
+  showAddNewWalletButtons: boolean = false;
   wallet$: Observable<DisplayWallet> = this.route.params
     .pipe(
       switchMap(({ id }) =>
@@ -22,4 +23,9 @@ export class WalletDetailView {
 
   constructor(private store: Store<IRootAppState>,
               private route: ActivatedRoute) {}
+  ngOnInit() {
+    if("singleWallet" in localStorage && localStorage.getItem("singleWallet") === 'true') {
+      this.showAddNewWalletButtons = true;
+    }
+  }
 }

@@ -37,7 +37,9 @@
         <ul>
           <li><a [routerLink]="['history']" routerLinkActive="active">Wallet transactions</a></li>
           <li><a [routerLink]="['settings']" routerLinkActive="active">Wallet preferences</a></li>
-          <li><a [routerLink]="['export']" routerLinkActive="active">Export wallet</a></li>
+          <li><a [routerLink]="['export']" routerLinkActive="active">Backup/Sync</a></li>
+          <li *ngIf="showAddNewWalletButtons"><a [routerLink]="'/wallets/import'">Import wallet</a></li>
+          <li *ngIf="showAddNewWalletButtons"><a [routerLink]="'/wallets/create'">Create new wallet</a></li>
         </ul>
       </div>
       <div class="wallet-details__content__wrap container--inner">
