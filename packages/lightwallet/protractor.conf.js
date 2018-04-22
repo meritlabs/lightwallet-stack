@@ -63,10 +63,6 @@ if (IS_CI) {
     },
     {
       ...common,
-      browserName: 'IE'
-    },
-    {
-      ...common,
       browserName: 'Safari'
     },
     {
