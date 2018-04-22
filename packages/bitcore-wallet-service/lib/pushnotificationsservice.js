@@ -240,7 +240,7 @@ PushNotificationsService.prototype._checkShouldSendNotif = function(notification
 
   if (notification.type != 'NewTxProposal') return cb(null, true);
   self.storage.fetchWallet(notification.walletId, function(err, wallet) {
-    return cb(err, wallet.m > 1);
+    return cb(err, wallet && wallet.m > 1);
   });
 };
 
@@ -346,7 +346,7 @@ PushNotificationsService.prototype._getDataForTemplate = function(notification, 
   }
 
   self.storage.fetchWallet(notification.walletId, function(err, wallet) {
-    if (err) return cb(err);
+    if (err || !wallet) return cb(err);
 
     data.walletId = wallet.id;
     data.walletName = wallet.name;

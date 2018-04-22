@@ -1,14 +1,14 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { WalletService } from '@merit/common/services/wallet.service';
-import { RateService } from '@merit/common/services/rate.service';
-import { ConfigService } from '@merit/common/services/config.service';
-import { Observable } from 'rxjs/Observable';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { Store } from '@ngrx/store';
-import { AddressService } from '@merit/common/services/address.service';
-import 'rxjs/add/operator/take';
-import { selectConfirmedWallets, selectWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
 import { IRootAppState } from '@merit/common/reducers';
+import { selectConfirmedWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
+import { AddressService } from '@merit/common/services/address.service';
+import { ConfigService } from '@merit/common/services/config.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { Store } from '@ngrx/store';
+import 'rxjs/add/operator/take';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'view-receive',
@@ -92,12 +92,7 @@ export class ReceiveView implements OnInit {
       this.formatAddress();
     } catch (err) {
       if (err.text)
-      //this.error = err.text;
         console.log('Could not initialize: ', err.text);
-      // return this.toastCtrl.create({
-      //   message: err.text || 'Failed to generate new address',
-      //   cssClass: ToastConfig.CLASS_ERROR
-      // }).present();
     }
   }
 

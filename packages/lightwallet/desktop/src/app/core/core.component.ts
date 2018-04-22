@@ -82,7 +82,7 @@ export class CoreView {
 
   private showPasswordEasyReceivePrompt(receipt: EasyReceipt) {
     const passwordPrompt = this.passwordPromptCtrl.create('Enter transaction password', [Validators.required], [PasswordValidator.ValidateEasyReceivePassword(receipt, this.easyReceiveService)]);
-    passwordPrompt.onDismiss((password: any) => {
+    passwordPrompt.onDidDismiss((password: any) => {
       if (password) {
         // Got a password, let's go ahead and process the easy receipt again
         this.processEasyReceipt(receipt, password);
@@ -104,7 +104,7 @@ export class CoreView {
       }
     ]);
 
-    confirmDialog.onDismiss((val: string) => {
+    confirmDialog.onDidDismiss((val: string) => {
       if (val === 'yes') {
         // accepted
         this.acceptEasyReceipt(receipt, data);

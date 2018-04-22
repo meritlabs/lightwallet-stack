@@ -2617,7 +2617,7 @@ export class API {
    * @returns {Promise<any>}
    */
   getRates():Promise<any> {
-    return this._doGetRequest('/v1/rates/');
+    return this._doGetRequest('/v1/rates');
   }
 
   /**

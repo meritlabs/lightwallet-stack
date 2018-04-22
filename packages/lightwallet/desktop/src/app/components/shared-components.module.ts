@@ -14,6 +14,7 @@ import { MeritIconComponent } from '@merit/desktop/app/components/merit-icon/mer
 import { PasswordPromptComponent } from '@merit/desktop/app/components/password-prompt/password-prompt.component';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
+import { ToastControllerService as ToastControllerServiceBase } from '@merit/common/services/toast-controller.service';
 import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-notification/toast-notification.component';
 import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/wallet-icon.component';
 import { IllustationsWorryFreeComponent } from '@merit/desktop/app/components/illustations/worry-free/worry-free.component';
@@ -64,6 +65,7 @@ export class SharedComponentsModule {
       ngModule: SharedComponentsModule,
       providers: [
         ToastControllerService,
+        { provide: ToastControllerServiceBase, useClass: ToastControllerService},
         PasswordPromptController,
         ConfirmDialogControllerService,
         GlobalsendLinkPopupController

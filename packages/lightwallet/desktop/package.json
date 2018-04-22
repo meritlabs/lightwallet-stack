@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "webpack-dev-server --port=4200",
+    "start": "webpack-dev-server --port=8888",
     "build": "webpack",
     "build:prod": "webpack --env.production",
     "postinstall": "rm -rf ./node_modules/rxjs",
@@ -18,11 +18,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/meritlabs/lightwallet-stack"
-  },
-  "dependencies": {
-    "hammerjs": "^2.0.8",
-    "ngx-carousel": "^1.3.5",
-    "normalize-scss": "^7.0.1"
   },
   "devDependencies": {
     "@angular-devkit/core": "0.3.2",
@@ -48,7 +43,10 @@
     "uglifyjs-webpack-plugin": "^1.2.4",
     "url-loader": "^0.6.2",
     "webpack": "~3.11.0",
-    "webpack-dev-server": "2.11.0"
+    "webpack-dev-server": "2.11.0",
+    "hammerjs": "^2.0.8",
+    "ngx-carousel": "^1.3.5",
+    "normalize-scss": "^7.0.1"
   },
   "build": {
     "directories": {
