@@ -24,7 +24,7 @@ pipeline {
       steps {
         sh 'BUILD_ID=dontKillMe cd packages/lightwallet/desktop && npm start &'
         sh 'wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888'
-        sh 'cd packages/lightwallet && npm run e2e'
+        sh 'cd packages/lightwallet && npm run test:e2e'
       }
     }
     stage('Build Wallets [Dev]') {
