@@ -1,9 +1,9 @@
 <div class="welcome">
   <div class="welcome_wrap">
-    <div class="welcome_logo" [ngClass]="{'animated' : showWelcomeAnimation}">
+    <div class="welcome_logo" [class.animated]="showWelcomeAnimation">
       <img src="/assets/v1/images/onboard/logo.svg" alt="">
     </div>
-    <div class="welcome_title" [ngClass]="{'animated' : showWelcomeAnimation}">
+    <div class="welcome_title" [class.animated]="showWelcomeAnimation">
       <h1>
         <i>W</i>
         <i>E</i>
@@ -15,13 +15,13 @@
         <i>!</i>
       </h1>
     </div>
-    <div class="welcome_caption" [ngClass]="{'animated' : showWelcomeAnimation}">
+    <div class="welcome_caption" [class.animated]="showWelcomeAnimation">
       <p>
         Hey! Glad to see you here! Now you can manage your Merit Wallets
         faster and easier! Please select your way to get started with your "Merit Web Wallet".
       </p>
     </div>
-    <div class="welcome_choices" [ngClass]="{'animated' : showWelcomeAnimation}">
+    <div class="welcome_choices" [class.animated]="showWelcomeAnimation">
       <div class="welcome_choice" routerLink="tour-desktop">
         <span class="icon icon-have"></span>
         <p>I already have Merit Wallet in the Desktop
@@ -34,7 +34,7 @@
       <div class="welcome_choice" routerLink="unlock">
         <span class="icon icon-research"></span>
         <p>I`m new in the Merit World. I don't have any wallet, but I know person who can
-        send me Invite to get starrted.</p>
+        send me Invite to get started.</p>
       </div>
       <div class="welcome_choice" routerLink="tour-beginners">
           <span class="icon icon-try"></span>
