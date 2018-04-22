@@ -15,6 +15,18 @@ pipeline {
         sh 'cp packages/lightwallet/common/environments/environment.example.ts packages/lightwallet/common/environments/environment.dev.ts'
       }
     }
+    stage('Unit Tests') {
+      steps {
+        sh 'cd packages/lightwallet && npm test'
+      }
+    }
+    stage('E2E Tests') {
+      steps {
+        sh 'BUILD_ID=dontKillMe cd packages/lightwallet/desktop && npm start &'
+        sh 'wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888'
+        sh 'cd packages/lightwallet && npm run e2e'
+      }
+    }
     stage('Build Wallets [Dev]') {
       parallel {
         stage('Build MLW') {
