@@ -74,7 +74,7 @@ export class PersistenceService2 {
     return this.storage.set(StorageKey.viewSettings + key, value);
   }
 
-  async getViewSettings(key) {
+  getViewSettings(key) {
     return this.storage.get(StorageKey.viewSettings + key);
   }
 }
