@@ -131,8 +131,6 @@ export class CreateWalletView {
   }
 
   async create() {
-    console.log('Creating wallet ... ', this.formData.getRawValue());
-
     const {
       walletName: name,
       parentAddress,

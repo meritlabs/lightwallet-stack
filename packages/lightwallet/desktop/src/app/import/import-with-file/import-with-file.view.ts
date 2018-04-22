@@ -75,11 +75,7 @@ export class ImportWithFileView {
 
       this.logger.warn(e);
       this.loadingCtrl.hide();
-      return this.toastCtrl.create({
-        title: 'Error',
-        status: 'error',
-        text: 'Could not decrypt file, check your password.'
-      });
+      return this.toastCtrl.error('Could not decrypt file, check your password.');
     }
 
     // const loader = this.loadingCtrl.create({ content: 'importingWallet' });
@@ -89,7 +85,6 @@ export class ImportWithFileView {
       const wallet: MeritWalletClient = await this.walletService.importWallet(decrypted, { bwsurl: this.formData.mwsUrl });
       this.pushNotificationsService.subscribe(wallet);
 
-      console.log('Done importing wallet!');
       this.store.dispatch(
         new AddWalletAction(
           await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)
@@ -108,11 +103,7 @@ export class ImportWithFileView {
       // loader.dismiss();
       this.logger.warn(err);
       this.loadingCtrl.hide();
-      return this.toastCtrl.create({
-        title: 'Error',
-        status: 'error',
-        text: err
-      });
+      return this.toastCtrl.error(err);
     }
   }
 

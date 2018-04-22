@@ -85,8 +85,6 @@ export class PhraseImportView {
       if (wallet) {
         this.pushNotificationsService.subscribe(wallet);
 
-        console.log('Done importing wallet!');
-
         this.store.dispatch(
           new AddWalletAction(
             await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)
@@ -117,11 +115,7 @@ export class PhraseImportView {
 
       this.loadingCtrl.hide();
 
-      return this.toastCtrl.create({
-        title: 'Error',
-        status: 'error',
-        text: errorMsg
-      });
+      return this.toastCtrl.error(errorMsg);
     }
   }
 

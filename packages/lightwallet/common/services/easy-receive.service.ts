@@ -175,7 +175,6 @@ export class EasyReceiveService {
       tx.version = Transaction.INVITE_VERSION;
     }
 
-    console.log(input.script.inspect());
     let p2shScript = input.script.toMixedScriptHashOut(input.senderPublicKey);
     const p2shInput = {
       output: Transaction.Output.fromObject({script: p2shScript, micros: totalAmount}),

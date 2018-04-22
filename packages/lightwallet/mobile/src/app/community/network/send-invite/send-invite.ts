@@ -8,7 +8,7 @@ import { ContactsService } from '@merit/common/services/contacts.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { AddressService } from '@merit/common/services/address.service';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { SendMethodDestination } from '@merit/common/models/send-method';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
@@ -41,7 +41,7 @@ export class SendInviteView {
               private modalCtrl: ModalController,
               private addressScanner: AddressScannerService,
               private walletService: WalletService,
-              private toastCtrl: MeritToastController,
+              private toastCtrl: ToastControllerService,
               private loadCtrl: LoadingController
   ) {
   }
@@ -168,10 +168,7 @@ export class SendInviteView {
 
     let wallet = this.wallets.find(w => (w.availableInvites > 0));
     if (!wallet) {
-      return this.toastCtrl.create({
-        message: 'You have no active invites',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      return this.toastCtrl.error('You have no active invites');
     }
 
     let loader = this.loadCtrl.create({ content: 'Sending invite...' });
@@ -181,10 +178,7 @@ export class SendInviteView {
       return this.navCtrl.pop();
     } catch (e) {
       console.log(e);
-      this.toastCtrl.create({
-        message: 'Failed to send invite',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      this.toastCtrl.error('Failed to send invite');
     } finally {
       loader.dismiss();
     }
