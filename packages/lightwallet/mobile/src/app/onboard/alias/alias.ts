@@ -6,7 +6,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { ConfigService } from '@merit/common/services/config.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
@@ -32,7 +32,7 @@ export class AliasView {
   private parentAddress: string;
 
   constructor(private walletService: WalletService,
-              private toastCtrl: MeritToastController,
+              private toastCtrl: ToastControllerService,
               private loaderCtrl: LoadingController,
               private navCtrl: NavController,
               private navParams: NavParams,
@@ -125,10 +125,7 @@ export class AliasView {
     } catch (err) {
       if (err == MWCErrors.INVALID_REFERRAL) this.unlockState = 'fail';
       this.logger.debug('Could not unlock wallet: ', err);
-      this.toastCtrl.create({
-        message: err.text || err.message || 'Unknown error',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      this.toastCtrl.error(err.text || err.message || 'Unknown error');
     }
 
     await loader.dismiss();

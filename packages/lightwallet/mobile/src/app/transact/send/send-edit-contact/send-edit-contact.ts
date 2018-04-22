@@ -5,7 +5,7 @@ import { ENV } from '@app/env';
 import { IMeritAddress, MeritContact } from '@merit/common/models/merit-contact';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { AddressService } from '@merit/common/services/address.service';
 
 @IonicPage()
@@ -25,7 +25,7 @@ export class SendEditContactView {
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private contactsService: ContactsService,
-              private toastController: MeritToastController,
+              private toastController: ToastControllerService,
               private addressService: AddressService,
               private alertCtrl: AlertController) {
     this.contact = this.navParams.get('contact');
@@ -45,19 +45,13 @@ export class SendEditContactView {
     address = cleanAddress(address);
     if (isAlias(address)) address = address.slice(1);
     if (this.contact.meritAddresses.findIndex(m => m.address == address || m.alias == address) > -1) {
-      return this.toastController.create({
-        message: 'Address is already bound to this contact',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      return this.toastController.error('Address is already bound to this contact');
     }
 
     const info = await this.addressService.getAddressInfoIfValid(address);
 
     if (!info) {
-      return this.toastController.create({
-        message: 'Address is invalid or not invited to blockchain yet',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      return this.toastController.error('Address is invalid or not invited to blockchain yet');
     }
 
     const meritAddress: IMeritAddress = {

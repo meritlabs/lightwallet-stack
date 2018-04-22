@@ -36,7 +36,7 @@ export class NotificationsView {
               private loadingCtrl: LoadingController
   ) {
     this.emailForm = this.formBuilder.group({
-      email: ['', Validators.compose([Validators.required, <any>(new EmailValidator().isValid(configService, emailService))])]
+      email: ['', Validators.compose([Validators.required, <any>(EmailValidator.isValid(configService, emailService))])]
     });
   }
 

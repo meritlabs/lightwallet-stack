@@ -26,7 +26,6 @@ import { MobilePushNotificationsService } from '@merit/common/services/mobile-pu
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PopupService } from '@merit/common/services/popup.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
-import { MeritToastController } from '@merit/common/services/toast.controller.service';
 import { VaultsService } from '@merit/common/services/vaults.service';
 import { MeritLightWallet } from '@merit/mobile/app/app.component';
 import { DeepLinkService } from '@merit/mobile/app/core/deep-link.service';
@@ -39,17 +38,19 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MomentModule } from 'ngx-moment';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { MobileToastControllerService } from '../services/mobile-toast-controller.service';
 
 export function getProviders() {
   return [
     { provide: PopupService, useClass: MobilePopupService },
     { provide: PushNotificationsService, useClass: MobilePushNotificationsService },
     { provide: PollingNotificationsService, useClass: MobilePollingNotificationsService },
+    { provide: ToastControllerService, useClass: MobileToastControllerService },
     ContactsService,
     AddressScannerService,
     DeepLinkService,
     EmailNotificationsService,
-    MeritToastController,
     AddressService,
     TouchIdService,
     VaultsService

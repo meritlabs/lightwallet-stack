@@ -2,6 +2,7 @@ export const ENV = {
   production: false,
   network: 'testnet',
   mwsUrl: 'http://localhost:3232/bws/api',
-  rateUrl: 'https://mws.merit.me/bws/api/v1/rates',
-  feeLevel: 'superEconomy'
+  rateUrl: 'http://localhost:3232/bws/api/v1/rates',
+  feeLevel: 'superEconomy',
+  easyUrl: 'https://merit.test-app.link/'
 };

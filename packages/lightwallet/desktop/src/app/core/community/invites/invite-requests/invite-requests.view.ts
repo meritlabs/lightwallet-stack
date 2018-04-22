@@ -49,7 +49,7 @@ export class InviteRequestsView {
       }
     ]);
 
-    dialog.onDismiss(async (value: string) => {
+    dialog.onDidDismiss(async (value: string) => {
       if (value === 'yes') {
         try {
           let wallet = request.walletClient;

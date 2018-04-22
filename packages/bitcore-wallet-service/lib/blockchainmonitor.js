@@ -175,10 +175,11 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
   // Let's format the object to be easier to process below.
   var outs = _.compact(_.map(data.vout, function(v) {
         var addr = _.keys(v)[0];
+        var amount = +[addr];
 
         return {
           address: addr,
-          amount: +v[addr]
+          amount: amount,
         };
   }));
 

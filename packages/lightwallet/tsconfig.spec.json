@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.mobile.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": false,
+    "module": "commonjs",
+    "target": "es5"
+  },
+  "include": [
+    "**/*.spec.ts",
+    "**/*.d.ts"
+  ]
+}
