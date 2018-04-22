@@ -28,7 +28,7 @@ const config = {
 const IS_CI = process.env.CIRCLECI || process.env.JENKINS_URL;
 
 if (IS_CI) {
-  const COMMIT = process.env.CIRCLE_SHA1 || 'LOCAL';
+  const COMMIT = process.env.CIRCLE_SHA1 || process.env.GIT_COMMIT || 'LOCAL';
   const browserstack = require('browserstack-local');
   config.seleniumAddress = 'http://hub-cloud.browserstack.com/wd/hub';
 
@@ -53,7 +53,7 @@ if (IS_CI) {
     'browserstack.key': process.env.BROWSERSTACK_KEY,
     'browserstack.local': true,
     resolution: '1920x1080',
-    name: 'LightwalletStack-' + process.env.GIT_COMMIT
+    name: 'LightwalletStack-' + COMMIT
   };
 
   config.multiCapabilities.push(
