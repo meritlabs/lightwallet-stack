@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { IncomingRequestModal } from './incoming-request';
-import { MomentModule } from 'angular2-moment/moment.module';
+import { MomentModule } from 'ngx-moment';
 
 
 @NgModule({

@@ -1,52 +1,47 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { IDynamicComponent } from '@merit/desktop/app/components/dom.controller';
-
-export interface INotificationMessage {
-  status?: string;
-  title?: string;
-  text: string;
-}
-
-export interface IToastNotificationConfig {
-  message: INotificationMessage;
-  show: boolean;
-  duration?: number;
-}
 
 @Component({
   selector: 'toast-notification',
   templateUrl: './toast-notification.component.html',
   styleUrls: ['./toast-notification.component.sass'],
   host: {
-    '[class]': 'message.status',
+    '[class]': 'config.cssClass',
     '[hidden]': '!show'
   }
 })
-export class ToastNotificationComponent implements IDynamicComponent, OnInit, OnDestroy {
-  @Input() show: boolean;
-  @Input() message: INotificationMessage;
-  @Input() duration: number = 3000;
+export class ToastNotificationComponent implements IDynamicComponent, OnDestroy {
+  config: IMeritToastConfig;
+  show: boolean;
+
+  _onDismiss;
 
   destroy: Function;
   private timeout: any;
-
-  ngOnInit() {
-    this.timeout = setTimeout(() => {
-      this.dismiss();
-    }, this.duration);
-  }
 
   ngOnDestroy() {
     this.timeout = void 0;
   }
 
-  init(config: any) {
-    this.message = config.message;
-    this.show = config.show;
+  init(config: IMeritToastConfig) {
+    config.duration = config.duration || 3000;
+    this.config = config;
+    this.show = true;
+
+    this.timeout = setTimeout(() => {
+      this.dismiss();
+    }, config.duration);
   }
 
-  dismiss() {
+  dismiss(dismissedByUser?: boolean) {
+    if (dismissedByUser && typeof this._onDismiss === 'function') this._onDismiss();
+
     this.show = false;
     this.destroy && this.destroy();
+  }
+
+  onDidDismiss(callback: Function) {
+    this._onDismiss = callback;
   }
 }

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { MomentModule } from 'angular2-moment';
+import { MomentModule } from 'ngx-moment';
 import { IonicPageModule } from 'ionic-angular';
 import { SelectWhitelistModal } from './select-whitelist';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';

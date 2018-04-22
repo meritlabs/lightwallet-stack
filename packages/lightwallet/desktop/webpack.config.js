@@ -28,6 +28,8 @@ const baseHref = '';
 const deployUrl = '';
 const projectRoot = process.cwd();
 const maximumInlineSize = 10;
+const staging = process.env.LW_STAGING;
+
 const postcssPlugins = (isProduction) => {
   return function (loader) {
     return [
@@ -124,7 +126,8 @@ const postcssPlugins = (isProduction) => {
 };
 
 function getEnvPath(production) {
-  return '../common/environments/environment' + (production ? '.prod' : '.dev') + '.ts';
+  let env = staging ? 'staging' : (production ? 'prod' : 'dev');
+  return '../common/environments/environment.' + env + '.ts';
 }
 
 function getAliases(production) {
@@ -626,7 +629,7 @@ module.exports = (_, config) => {
           'license.txt'
         ],
         'perChunkOutput': false,
-        'outputTemplate': path.join(process.cwd(), 'node_modules\\license-webpack-plugin\\output.template.ejs'),
+        'outputTemplate': path.join(process.cwd(), 'node_modules/license-webpack-plugin/output.template.ejs'),
         'outputFilename': '3rdpartylicenses.txt',
         'suppressErrors': true,
         'includePackagesWithoutLicense': false,

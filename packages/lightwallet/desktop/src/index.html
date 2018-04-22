@@ -1,16 +1,176 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>Merit Lightwallet</title>
   <base href="/">
-
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+  <!-- Favicon set -->
+  <link rel="icon" type="image/x-icon" href="/assets/v1/favicon/logo.ico" sizes="16x16">
+  <link rel="apple-touch-icon" sizes="24x24" href="/assets/v1/favicon/24x24.png?v=symbol">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/v1/favicon/32x32.png?v=symbol">
+  <link rel="apple-touch-icon" sizes="48x48" href="/assets/v1/favicon/48x48.png?v=symbol">
+  <link rel="apple-touch-icon" sizes="64x64" href="/assets/v1/favicon/64x64.png?v=symbol">
+  <link rel="apple-touch-icon" sizes="96x96" href="/assets/v1/favicon/96x96.png?v=symbol">
+  <link rel="apple-touch-icon" sizes="128x128" href="/assets/v1/favicon/128x128.png?v=symbol">
+
+  <script>
+    if (/Mobile|Android/i.test(navigator.userAgent))
+      location.hostname = 'm.' + location.hostname;
+  </script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114683109-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-114683109-2', { 'send_page_view': false });
+  </script>
 </head>
+
 <body>
-  <merit-lw></merit-lw>
+  <merit-lw>
+    <div class="app-loader">
+      <div>
+        <div>
+          <svg viewBox="0 0 364 64" width="364" height="64" xmlns="http://www.w3.org/2000/svg"><path fill="#000" d="M54.37 63.97h11.8V.17h-13.5L33.13 27.63 13.57.18H0v63.8h11.78V17.6L31.7 45.38h2.33l20.34-27.7V64zm93.76-11.87H113.1V37.7h33.84V26.42h-45.56v37.54h46.75V52.1zM237 63.14l-18.9-21.8c11.88-2.47 15.82-11.3 15.82-20.12 0-11.1-7.77-21.13-22.5-21.22-9.9.1-19.82 0-29.73 0v63.97h11.77V42.62h11.34l18.23 21.35h14v-.82zm-25.58-51.9c7.4 0 10.7 5.13 10.7 10.24 0 5.12-3.2 10.23-10.7 10.23h-17.95V11.26zM277.97 64V0h-11.74v63.97zm54.42 0h11.78V10.95H364V0h-51.44v10.95h19.82z"/><path fill="#30AFE6" d="M101.3 0h46.73v11.42H101.3z"/></svg>
+        </div>
+        <div class="loading-line">
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+          <span class="loading-bit"></span>
+        </div>
+      </div>
+    </div>
+    <style media="screen">
+      .app-loader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .loading-line {
+        display: inline-block;
+        height: 2px;
+        margin-top: 10px;
+        position: relative;
+      }
+
+      .loading-bit {
+        animation: 2s ease infinite animWidth;
+        background-color: white;
+        border-radius: 0;
+        display: inline-block;
+        height: 100%;
+        opacity: 0;
+        transform: scale(1);
+        vertical-align: top;
+        width: 20px;
+      }
+
+      .loading-bit:nth-child(1) {
+        animation-delay: 0.05s;
+      }
+
+      .loading-bit:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+
+      .loading-bit:nth-child(3) {
+        animation-delay: 0.15s;
+      }
+
+      .loading-bit:nth-child(4) {
+        animation-delay: 0.2s;
+      }
+
+      .loading-bit:nth-child(5) {
+        animation-delay: 0.25s;
+      }
+
+      .loading-bit:nth-child(6) {
+        animation-delay: 0.3s;
+      }
+
+      .loading-bit:nth-child(7) {
+        animation-delay: 0.35s;
+      }
+
+      .loading-bit:nth-child(8) {
+        animation-delay: 0.4s;
+      }
+
+      .loading-bit:nth-child(9) {
+        animation-delay: 0.45s;
+      }
+
+      .loading-bit:nth-child(10) {
+        animation-delay: 0.5s;
+      }
+
+      .loading-bit:nth-child(11) {
+        animation-delay: 0.55s;
+      }
+
+      .loading-bit:nth-child(12) {
+        animation-delay: 0.6s;
+      }
+
+      .loading-bit:nth-child(13) {
+        animation-delay: 0.65s;
+      }
+
+      .loading-bit:nth-child(14) {
+        animation-delay: 0.7s;
+      }
+
+      .loading-bit:nth-child(15) {
+        animation-delay: 0.75s;
+      }
+
+      .loading-bit:nth-child(16) {
+        animation-delay: 0.8s;
+      }
+
+      @keyframes animWidth {
+        0% {
+          transform: scale(1);
+        }
+
+        50% {
+          background-color: #00b0dd;
+          opacity: 1;
+          transform: scale(3);
+        }
+
+        100% {
+          transform: scale(1);
+        }
+      }
+    </style>
+  </merit-lw>
 </body>
+
 </html>

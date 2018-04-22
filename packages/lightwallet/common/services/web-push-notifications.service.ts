@@ -5,6 +5,7 @@ import '@firebase/messaging';
 import { NotificationData } from '@ionic-native/fcm';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
+import { AddNotificationAction } from '@merit/common/reducers/notifications.reducer';
 import { RefreshOneWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { INotificationSettings, PersistenceService2 } from '@merit/common/services/persistence2.service';
@@ -123,11 +124,19 @@ export class WebPushNotificationsService extends PushNotificationsService {
 
   async subscribeToEvents() {
     this.firebaseMessaging.onMessage((data: NotificationData) => {
-      if (data.data && data.data.walletId) {
-        this.store.dispatch(new RefreshOneWalletAction(data.data.walletId, {
-          skipAlias: true,
-          skipShareCode: true
+      if (data.data) {
+        this.store.dispatch(new AddNotificationAction({
+          ...data.data,
+          timestamp: Date.now(),
+          read: false
         }));
+
+        if (data.data.walletId) {
+          this.store.dispatch(new RefreshOneWalletAction(data.data.walletId, {
+            skipAlias: true,
+            skipShareCode: true
+          }));
+        }
       }
     });
 

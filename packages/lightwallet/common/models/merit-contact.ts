@@ -40,7 +40,6 @@ export class MeritContact implements IContactProperties {
       if (val.address.indexOf('merit:') == 0) val.address = val.address.split(':')[1];
       try {
         val.network = Address.fromString(val.address).network.name;
-        console.log('set network!', val.network);
       } catch (e) {
       }
     });

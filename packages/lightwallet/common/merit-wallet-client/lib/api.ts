@@ -1974,9 +1974,6 @@ export class API {
 
     let args = this._getCreateTxProposalArgs(opts);
     return this._doPostRequest('/v1/txproposals/', args).then((txp) => {
-
-      console.log('@@@TXP', txp);
-
       if (!txp) {
         return Promise.reject(new Error('Could not get transaction proposal from server.'));
       }
