@@ -45,26 +45,10 @@ jobs:
       - restore_cache:
           keys:
             - merit-rpc-deps-{{ checksum "packages/merit-rpc/package.json" }}
-
-      - restore_cache:
-          keys:
-            - global-node-modules
       - run:
           name: Install Lerna
-          command: |
-            if ! [ -x "$(command -v lerna)" ]; then
-              echo 'Installing lerna...'
-              sudo npm i -g lerna
-            else
-              echo 'Lerna already installed!'
-            fi
-      - save_cache:
-          paths:
-            - /usr/local/lib/node_modules
-            - /usr/local/bin/lerna
-          key: global-node-modules
+          command: sudo npm i -g lerna
       - run: lerna bootstrap --concurrency=$(nproc)
-
       - save_cache:
           paths:
             - packages/bitcore-lib/node_modules
