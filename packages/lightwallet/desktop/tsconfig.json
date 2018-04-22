@@ -10,7 +10,7 @@
     "target": "es5",
     "baseUrl": ".",
     "paths": {
-      "@app/env": ["../common/environments/environment.example "],
+      "@app/env": ["../common/environments/environment.example"],
       "@merit/common/*": ["../common/*"],
       "@merit/desktop/*": ["./src/*"]
     },
@@ -19,10 +19,19 @@
       "../node_modules/@firebase/app-types",
       "../node_modules/@firebase/messaging-types"
     ],
+    "types": [
+      "@firebase/app-types",
+      "@firebase/messaging-types",
+      "node",
+      "file-saver"
+    ],
     "lib": [
       "es2017",
       "dom"
     ]
   },
-  "exclude": ["e2e/**/*.ts"]
+  "exclude": [
+    "e2e/**/*.ts",
+    "**/*.spec.ts"
+  ]
 }

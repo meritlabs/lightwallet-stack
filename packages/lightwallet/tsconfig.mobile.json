@@ -29,7 +29,10 @@
   ],
   "exclude": [
     "node_modules",
-    "mobile/node_modules"
+    "mobile/node_modules",
+    "**/*.spec.ts",
+    "desktop/e2e/**/*.ts",
+    "mobile/e2e/**/*.ts"
   ],
   "compileOnSave": false,
   "atom": {
