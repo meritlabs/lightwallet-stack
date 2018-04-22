@@ -63,7 +63,10 @@ if (IS_CI) {
     },
     {
       ...common,
-      browserName: 'Safari'
+      browserName: 'Safari',
+      browser_version: '11.0',
+      os: 'OS X',
+      os_version: 'High Sierra'
     },
     {
       ...common,
