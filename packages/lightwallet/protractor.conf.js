@@ -10,7 +10,7 @@ const config = {
   ],
   multiCapabilities: [],
   directConnect: true,
-  baseUrl: 'http://localhost:4200/',
+  baseUrl: 'http://localhost:8888/',
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
@@ -43,7 +43,7 @@ if (IS_CI) {
       });
     });
   };
-  
+
   config.afterLaunch = () => new Promise(function(resolve, reject){
     exports.bs_local.stop(resolve);
   });
