@@ -1,8 +1,12 @@
-import { browser, by, element, ProtractorExpectedConditions } from 'protractor';
+import { browser, by, element, ProtractorExpectedConditions, protractor } from 'protractor';
 
 const TEST_WALLET_MNEMONIC = 'turkey walnut rocket ordinary always fiction noise skull sketch aunt clown wild';
 const TEST_WALLET_ALIAS = '@ibby-demo-mac';
 const TEST_WALLET_NAME = 'Personal wallet';
+
+async function isBrowser(browser: string) {
+  return (await protractor.browser.getCapabilities()).get('browserName').toLowerCase() == browser.toLowerCase();
+}
 
 describe('Desktop Lightwallet App', () => {
 
