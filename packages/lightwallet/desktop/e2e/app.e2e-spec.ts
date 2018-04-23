@@ -15,7 +15,7 @@ describe('Desktop Lightwallet App', () => {
   });
 
   it('should take user to onboarding view', () => {
-    expect(EC.urlContains('onboarding')).toBeTruthy();
+    browser.wait(EC.urlContains('onboarding'));
     expect(browser.getCurrentUrl()).toContain('onboarding');
   });
 
