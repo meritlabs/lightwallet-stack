@@ -163,7 +163,7 @@ describe('Desktop Lightwallet App', () => {
     });
 
     it('should go to dashboard page', async () => {
-      expect(browser.getCurrentUrl()).toContain('wallets');
+      expect(browser.getCurrentUrl()).toContain('dashboard');
     });
 
     it('should have list of wallets', async () => {
@@ -264,15 +264,15 @@ describe('Desktop Lightwallet App', () => {
 
       it('should have an option to hide balance', async () => {
         const rootEl = element(by.css('.wallet-settings__group__checkbox'));
-        expect(await rootEl.getText()).toContain('Hide balance');
-        hideBalanceEl = rootEl.element(by.css('[formControlName=balanceHidden]'));
-        expect(hideBalanceEl.isDisplayed()).toBeTruthy();
+        expect(rootEl.getText()).toContain('Hide balance');
+        hideBalanceEl = element(by.css('[formControlName=balanceHidden]'));
+        expect(hideBalanceEl.isPresent()).toBeTruthy();
       });
 
       it('should hide balance', async () => {
         hideBalanceEl.click();
         browser.wait(EC.textToBePresentInElement(header, '[Balance hidden]'));
-        expect(await header.getText()).toContain('[Balance hidden]', 'Unable to hide balance');
+        expect(header.getText()).toContain('[Balance hidden]', 'Unable to hide balance');
       });
 
       it('should hide balance in app toolbar', () => {
@@ -282,7 +282,7 @@ describe('Desktop Lightwallet App', () => {
       it('should make balance visible', async() => {
         hideBalanceEl.click();
         browser.wait(EC.not(EC.textToBePresentInElement(header, '[Balance hidden]')));
-        expect(await header.getText()).not.toContain('[Balance hidden]', 'Unable to un-hide balance');
+        expect(header.getText()).not.toContain('[Balance hidden]', 'Unable to un-hide balance');
       });
 
     });
@@ -300,19 +300,19 @@ describe('Desktop Lightwallet App', () => {
       it('should have a qr code option', async () => {
         const el = element(by.css('div[routerLink=qr-code]'));
         expect(el.isDisplayed()).toBeTruthy();
-        expect(await el.getText()).toContain('QR Code');
+        expect(el.getText()).toContain('QR Code');
       });
 
       it('should have a file backup option', async () => {
         const el = element(by.css('div[routerLink=file]'));
         expect(el.isDisplayed()).toBeTruthy();
-        expect(await el.getText()).toContain('Backup File');
+        expect(el.getText()).toContain('Backup File');
       });
 
       it('should have a mnemonic phrase option', async () => {
         const el = element(by.css('div[routerLink=mnemonic]'));
         expect(el.isDisplayed()).toBeTruthy();
-        expect(await el.getText()).toContain('Mnemonic Phrase');
+        expect(el.getText()).toContain('Mnemonic Phrase');
       });
 
     });
