@@ -3,6 +3,7 @@ import { getEasySendURL } from '@merit/common/models/easy-send';
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 import { COINBASE_CONFIRMATION_THRESHOLD } from '@merit/common/utils/constants';
 import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/globalsend-link-popup/globalsend-link-popup.controller';
+import { EasySendService } from '@merit/common/services/easy-send.service';
 
 @Component({
   selector: 'history-item',
@@ -30,7 +31,10 @@ export class HistoryItemComponent implements OnInit {
     }
   }
 
-  constructor(private globalSendLinkCtrl: GlobalsendLinkPopupController) {}
+  constructor(
+    private globalSendLinkCtrl: GlobalsendLinkPopupController,
+    private easySend: EasySendService
+  ) {}
 
   ngOnInit() {
     const { tx } = this;
@@ -53,5 +57,25 @@ export class HistoryItemComponent implements OnInit {
 
   showGlobalSendLink() {
     this.globalSendLinkCtrl.create(this.tx.easySendUrl);
+  }
+
+  async askCancelGlobalSend() {
+    const globalSendUrl = this.tx.easySendUrl;
+    console.log("CANCELLED!");
+    console.log(this.tx);
+
+    if(this.tx.outputs.length != 2) {
+      return;
+    }
+
+    const output = this.tx.outputs[1];
+    const walletPassword = "";
+    this.easySend.cancelEasySend(
+      this.tx.wallet,
+      output.amount,
+      this.tx.txid,
+      1,
+      this.tx.easySend.script,
+      walletPassword);
   }
 }

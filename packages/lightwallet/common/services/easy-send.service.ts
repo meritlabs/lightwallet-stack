@@ -125,6 +125,65 @@ export class EasySendService {
 
   }
 
+  async cancelEasySend(
+    wallet: MeritWalletClient,
+    amount: number,
+    easySendTx: any,
+    outputIndex: number,
+    easySendScript: any,
+    walletPassword: string) {
+
+    if (amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big');
+
+    console.log("1");
+    const pubKey = wallet.getRootAddressPubkey();
+    const address = pubKey.toAddress();
+
+    console.log("2");
+    const inviteOpts = {
+      invite: true,
+      outputs: [{
+        amount: amount,
+        toAddress: address,
+      }],
+      inputs: [{
+        txid: easySendTx,
+        outputIndex: outputIndex,
+        micros: amount,
+        scriptPubKey: easySendScript
+      }],
+      feeLevel: this.feeService.getCurrentFeeLevel(),
+      addressType: 'P2PKH'
+    };
+
+    console.log("3");
+    let txOpts = inviteOpts;
+    txOpts.invite = false;
+
+    console.log("4");
+    let inviteTxp = await wallet.createTxProposal(inviteOpts);
+    let txp = await wallet.createTxProposal(txOpts);
+
+    console.log("5");
+    let inviteTx = await wallet.publishTxProposal({ inviteTxp });
+    let tx = await wallet.publishTxProposal({ txp });
+
+    console.log("6");
+    inviteTx = await wallet.signTxProposal(inviteTx, walletPassword);
+    tx = await wallet.signTxProposal(tx, walletPassword);
+
+    console.log("7");
+    inviteTx = await wallet.broadcastTxProposal(inviteTx);
+    tx = await wallet.broadcastTxProposal(tx);
+    console.log('inviteTx', inviteTx);
+    console.log('tx', tx);
+
+    return {
+      inviteTx: inviteTx,
+      tx: tx,
+    };
+  }
+
   /**
    * Create an easySend script
    */

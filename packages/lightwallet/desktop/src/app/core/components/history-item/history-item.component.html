@@ -17,6 +17,9 @@
       <button *ngIf="tx.type === 'globalsend'" (click)="showGlobalSendLink()"
               class="ui-button ui-button--blue ui-button--sm">Show GlobalSend Link
       </button>
+      <button *ngIf="tx.type === 'globalsend'" (click)="askCancelGlobalSend()"
+              class="ui-button ui-button--red ui-button--sm">Cancel 
+      </button>
     </ng-container>
   </div>
   <div *ngIf="!tx.isInvite" class="details">
