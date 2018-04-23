@@ -25,7 +25,7 @@ const config = {
   }
 };
 
-const IS_CI = process.env.CIRCLECI || process.env.JENKINS_URL || true;
+const IS_CI = process.env.CIRCLECI || process.env.JENKINS_URL;
 
 if (IS_CI) {
   const COMMIT = process.env.CIRCLE_SHA1 || process.env.GIT_COMMIT || 'LOCAL';

@@ -405,7 +405,7 @@ describe('Desktop Lightwallet App', () => {
         });
 
         it('should take us to the backup file export page', () => {
-          expect(browser.getcurrentUrl()).toContain('file');
+          expect(browser.getCurrentUrl()).toContain('file');
         });
 
         it('should have a File backup title', () => {
@@ -427,7 +427,7 @@ describe('Desktop Lightwallet App', () => {
         });
 
         it('should have a submit button', () => {
-          submitButtonEl = element(by.css('button[role=submit]'));
+          submitButtonEl = element(by.css('button[type=submit]'));
           expect(submitButtonEl.isDisplayed()).toBeTruthy();
         });
 
@@ -435,18 +435,19 @@ describe('Desktop Lightwallet App', () => {
           expect(submitButtonEl.isEnabled()).toBeFalsy('Download file button is not disabled when password is not valid');
         });
 
-        it('should validate password input', () => {
-          passwordEl.sendKeys('somesecurepassword');
+        it('should validate password input', async () => {
+          passwordEl.sendKeys('a');
           expect(passwordEl.getAttribute('class')).toContain('ng-valid', 'Does not recognize password as valid');
+          passwordEl.sendKeys(protractor.Key.BACK_SPACE);
           passwordEl.clear();
           expect(passwordEl.getAttribute('class')).toContain('ng-invalid', 'Does not mark blank password as invalid');
         });
 
         it('should validate repeat password field', () => {
-          passwordEl.clear().sendKeys('123');
-          repeatPasswordEl.sendKeys('123123');
+          passwordEl.clear().sendKeys('a');
+          repeatPasswordEl.sendKeys('aa');
           expect(repeatPasswordEl.getAttribute('class')).toContain('ng-invalid', 'Did not detect a mismatching password');
-          repeatPasswordEl.clear().sendKeys('123');
+          repeatPasswordEl.clear().sendKeys('a');
           expect(repeatPasswordEl.getAttribute('class')).toContain('ng-valid', 'Did not detect a matching password');
         });
 
