@@ -57,10 +57,10 @@ if (IS_CI) {
   };
 
   config.multiCapabilities.push(
-    // {
-    //   ...common,
-    //   browserName: 'Chrome'
-    // },
+    {
+      ...common,
+      browserName: 'Chrome'
+    },
     {
       ...common,
       browserName: 'Safari',
@@ -68,11 +68,11 @@ if (IS_CI) {
       os: 'OS X',
       os_version: 'High Sierra'
     }
-    //,
-    // {
-    //   ...common,
-    //   browserName: 'Firefox'
-    // }
+    ,
+    {
+      ...common,
+      browserName: 'Firefox'
+    }
   );
   config.directConnect = false;
 } else {
