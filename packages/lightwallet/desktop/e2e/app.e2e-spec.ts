@@ -91,7 +91,7 @@ describe('Desktop Lightwallet App', () => {
 
     describe('Main import view', () => {
 
-      beforeEach(() => {
+      beforeAll(() => {
         browser.get('/');
         const el = element(by.css('a[routerLink="import"]'));
         el.click();
@@ -144,7 +144,7 @@ describe('Desktop Lightwallet App', () => {
       it('should import wallet', async () => {
         await submitButton.click();
         // wait for it to talk to MWS & get wallet info
-        browser.driver.sleep(1000);
+        browser.wait(EC.urlContains('wallets'));
         expect(browser.getCurrentUrl()).toContain('wallets');
       });
 
@@ -159,11 +159,11 @@ describe('Desktop Lightwallet App', () => {
   describe('Dashboard view', () => {
 
     beforeAll(() => {
-      return browser.get('/dashboards');
+      return browser.get('/dashboard');
     });
 
-    it('should go to dashboards page', async () => {
-      expect(EC.urlContains('dashboard')).toBeTruthy();
+    it('should go to dashboard page', async () => {
+      expect(browser.getCurrentUrl()).toContain('wallets');
     });
 
     it('should have list of wallets', async () => {
@@ -178,7 +178,7 @@ describe('Desktop Lightwallet App', () => {
     let header, walletId;
 
     beforeAll(async () => {
-      browser.get('/dashboards');
+      browser.get('/dashboard');
       element(by.css('wallets-list .wallets__group__wallet')).click();
       header = element(by.css('.wallet-details__header'));
       walletId = (await browser.getCurrentUrl()).replace('/history', '').split('/').pop()
@@ -255,7 +255,7 @@ describe('Desktop Lightwallet App', () => {
       });
 
       it('header color should change when we change the wallet\'s color', () => {
-        element(by.css('app-select')).click();
+        element(by.css('app-select .selectbox > button')).click();
         element(by.css('app-select .selectbox__dropdown button:first-child')).click();
         expect(element(by.css('.wallet-details__header')).getAttribute('style')).not.toEqual(initialHeaderColor);
       });
@@ -266,11 +266,12 @@ describe('Desktop Lightwallet App', () => {
         const rootEl = element(by.css('.wallet-settings__group__checkbox'));
         expect(await rootEl.getText()).toContain('Hide balance');
         hideBalanceEl = rootEl.element(by.css('[formControlName=balanceHidden]'));
+        expect(hideBalanceEl.isDisplayed()).toBeTruthy();
       });
 
       it('should hide balance', async () => {
         hideBalanceEl.click();
-        browser.sleep(500);
+        browser.wait(EC.textToBePresentInElement(header, '[Balance hidden]'));
         expect(await header.getText()).toContain('[Balance hidden]', 'Unable to hide balance');
       });
 
@@ -280,7 +281,7 @@ describe('Desktop Lightwallet App', () => {
 
       it('should make balance visible', async() => {
         hideBalanceEl.click();
-        browser.sleep(500);
+        browser.wait(EC.not(EC.textToBePresentInElement(header, '[Balance hidden]')));
         expect(await header.getText()).not.toContain('[Balance hidden]', 'Unable to un-hide balance');
       });
 
@@ -300,7 +301,6 @@ describe('Desktop Lightwallet App', () => {
         const el = element(by.css('div[routerLink=qr-code]'));
         expect(el.isDisplayed()).toBeTruthy();
         expect(await el.getText()).toContain('QR Code');
-        expect(EC.textToBePresentInElement(el, 'QR Code')).toBeTruthy();
       });
 
       it('should have a file backup option', async () => {
