@@ -1,4 +1,4 @@
-import { $, browser, by, element, ProtractorExpectedConditions } from 'protractor';
+import { browser, by, element, ProtractorExpectedConditions } from 'protractor';
 
 describe('Desktop Lightwallet App', () => {
 
@@ -11,7 +11,6 @@ describe('Desktop Lightwallet App', () => {
   });
 
   it('title should be Merit Lightwallet', () => {
-
     expect(browser.getTitle()).toEqual('Merit Lightwallet');
   });
 
@@ -26,6 +25,7 @@ describe('Desktop Lightwallet App', () => {
   });
 
   describe('Tutorial', () => {
+
     let el;
 
     beforeAll(() => {
@@ -46,9 +46,11 @@ describe('Desktop Lightwallet App', () => {
       expect(el.isPresent()).toBeTruthy();
       expect(el.isDisplayed()).toBeTruthy();
     });
+
   });
 
-  describe('Unlock View', () => {
+  describe('Unlock view', () => {
+
     let el;
 
     beforeAll(() => {
@@ -85,10 +87,10 @@ describe('Desktop Lightwallet App', () => {
 
   });
 
-
   describe('Import wallet', () => {
 
     describe('Main import view', () => {
+
       beforeEach(() => {
         browser.get('/');
         const el = element(by.css('a[routerLink="import"]'));
@@ -108,6 +110,7 @@ describe('Desktop Lightwallet App', () => {
       it('should have a file backup option', async () => {
 
       });
+
     });
 
     describe('Mnemonic phrase', () => {
@@ -150,6 +153,169 @@ describe('Desktop Lightwallet App', () => {
     // describe('File backup', () => {
     //
     // });
+
+  });
+
+  describe('Dashboard view', () => {
+
+    beforeAll(() => {
+      return browser.get('/dashboards');
+    });
+
+    it('should go to dashboards page', async () => {
+      expect(EC.urlContains('dashboard')).toBeTruthy();
+    });
+
+    it('should have list of wallets', async () => {
+      expect(element(by.css('wallets-list')).isDisplayed()).toBeTruthy();
+      expect(element(by.css('wallets-list .wallets__group__wallet')).isDisplayed()).toBeTruthy();
+    });
+
+  });
+
+  describe('Wallet details view', () => {
+
+    let header, walletId;
+
+    beforeAll(async () => {
+      browser.get('/dashboards');
+      element(by.css('wallets-list .wallets__group__wallet')).click();
+      header = element(by.css('.wallet-details__header'));
+      walletId = (await browser.getCurrentUrl()).replace('/history', '').split('/').pop()
+    });
+
+    it('should go to wallet details view', async () => {
+      expect(EC.urlContains('wallets')).toBeTruthy();
+      browser.takeScreenshot();
+    });
+
+    it('should have wallet name', async () => {
+      expect((await header.getText()).toLowerCase()).toContain('personal wallet');
+    });
+
+    it('should have wallet alias', async () => {
+      expect((await header.getText()).toLowerCase()).toContain('@');
+    });
+
+    it('should have merit balance', async () => {
+      expect(await header.getText()).toContain('MRT');
+    });
+
+    it('should have invites', async () => {
+      expect((await header.getText()).toLowerCase()).toContain('available invites');
+    });
+
+    it('should have wallet history tab', () => {
+      expect(element(by.css('a[href*="history"]')).isDisplayed()).toBeTruthy();
+    });
+
+    it('should have wallet preferences tab', () => {
+      expect(element(by.css('a[href*="settings"]')).isDisplayed()).toBeTruthy();
+    });
+
+    it('should have export wallet tab', () => {
+      expect(element(by.css('a[href*="export"]')).isDisplayed()).toBeTruthy();
+    });
+
+    describe('History tab', () => {
+
+      it('url should have /history', () => {
+        expect(EC.urlContains('/history')).toBeTruthy();
+      });
+
+      it('should have wallet unlocked transaction', async () => {
+        expect(await element(by.css('history-item:last-child')).getText()).toContain('Wallet Unlocked');
+      });
+
+    });
+
+    describe('Preferences tab', () => {
+
+      let header,
+        initialHeaderColor: string,
+        initialToolbarBalance: string;
+
+      beforeAll(async () => {
+        element(by.css('a[href*="settings"]')).click();
+        header = element(by.css('.wallet-details__header'));
+        initialHeaderColor = await header.getAttribute('style');
+        initialToolbarBalance = await element(by.css('app-toolbar .amount-merit')).getText();
+      });
+
+      it('should change url to /preferences', () => {
+        expect(EC.urlContains('/preferences')).toBeTruthy();
+      });
+
+      it('should have the ability to change the wallet name', () => {
+        expect(element(by.css('input[formControlName=name]')).isDisplayed()).toBeTruthy();
+      });
+
+      it('should have an option to change color', async () => {
+        expect(await element(by.css('app-select')).getText()).toContain('Merit blue');
+      });
+
+      it('header color should change when we change the wallet\'s color', () => {
+        element(by.css('app-select')).click();
+        element(by.css('app-select .selectbox__dropdown button:first-child')).click();
+        expect(element(by.css('.wallet-details__header')).getAttribute('style')).not.toEqual(initialHeaderColor);
+      });
+
+      let hideBalanceEl;
+
+      it('should have an option to hide balance', async () => {
+        const rootEl = element(by.css('.wallet-settings__group__checkbox'));
+        expect(await rootEl.getText()).toContain('Hide balance');
+        hideBalanceEl = rootEl.element(by.css('[formControlName=balanceHidden]'));
+      });
+
+      it('should hide balance', async () => {
+        hideBalanceEl.click();
+        browser.sleep(500);
+        expect(await header.getText()).toContain('[Balance hidden]', 'Unable to hide balance');
+      });
+
+      it('should hide balance in app toolbar', () => {
+        expect(element(by.css('app-toolbar .amount-merit')).getText()).not.toEqual(initialToolbarBalance, 'Toolbar balance didn\'t change');
+      });
+
+      it('should make balance visible', async() => {
+        hideBalanceEl.click();
+        browser.sleep(500);
+        expect(await header.getText()).not.toContain('[Balance hidden]', 'Unable to un-hide balance');
+      });
+
+    });
+
+    describe('Backup tab', () => {
+
+      beforeAll(async () => {
+        element(by.css('a[href*="export"]')).click();
+      });
+
+      it('should change url to /export', () => {
+        expect(EC.urlContains('/export')).toBeTruthy();
+      });
+
+      it('should have a qr code option', async () => {
+        const el = element(by.css('div[routerLink=qr-code]'));
+        expect(el.isDisplayed()).toBeTruthy();
+        expect(await el.getText()).toContain('QR Code');
+        expect(EC.textToBePresentInElement(el, 'QR Code')).toBeTruthy();
+      });
+
+      it('should have a file backup option', async () => {
+        const el = element(by.css('div[routerLink=file]'));
+        expect(el.isDisplayed()).toBeTruthy();
+        expect(await el.getText()).toContain('Backup File');
+      });
+
+      it('should have a mnemonic phrase option', async () => {
+        const el = element(by.css('div[routerLink=mnemonic]'));
+        expect(el.isDisplayed()).toBeTruthy();
+        expect(await el.getText()).toContain('Mnemonic Phrase');
+      });
+
+    });
 
   });
 
