@@ -323,6 +323,139 @@ describe('Desktop Lightwallet App', () => {
         expect(el.getText()).toContain('Mnemonic Phrase');
       });
 
+      describe('QR Code backup', () => {
+
+        beforeAll(() => {
+          element(by.css('div[routerLink=qr-code]')).click();
+          browser.wait(EC.urlContains('qr-code'));
+        });
+
+        it('should take us to qr-code export page', () => {
+          expect(browser.getCurrentUrl()).toContain('qr-code');
+        });
+
+        it('should have QR Code Backup title', () => {
+          const el = element(by.css('.page-title h3'));
+          expect(el.isDisplayed()).toBeTruthy('Title is not visible');
+          expect(el.getText()).toContain('QR Code backup', 'Doesn\'t have the right title');
+        });
+
+        it('should have a QR code image', () => {
+          expect(element(by.css('img[src^=data]')).isDisplayed()).toBeTruthy('QR Code image is not visible');
+        });
+
+        let backButton;
+
+        it('should have a back button', () => {
+          backButton = element(by.css('[routerlink="../"]'));
+          expect(backButton.isDisplayed()).toBeTruthy('Back button doesn\'t exist');
+        });
+
+        it('should take us back to root export page when clicking on back button', () => {
+          backButton.click();
+          browser.wait(EC.not(EC.urlContains('qr-code')));
+          expect(browser.getCurrentUrl()).not.toContain('qr-code');
+        });
+
+      });
+
+      describe('Mnemonic phrase backup', () => {
+
+        beforeAll(() => {
+          element(by.css('div[routerLink=mnemonic]')).click();
+          browser.wait(EC.urlContains('mnemonic'));
+        });
+
+        it('should take us to mnemonic export page', () => {
+           expect(browser.getCurrentUrl()).toContain('mnemonic');
+        });
+
+        it('should have a Mnemonic Phrase title', () => {
+          const el = element(by.css('.page-title h3'));
+          expect(el.isDisplayed()).toBeTruthy('Title is not visible');
+          expect(el.getText()).toContain('Mnemonic Phrase', 'Doesn\'t have the right title');
+        });
+
+        it('should display mnemonic phrase', () => {
+          const el = element(by.css('.mnemonic-container'));
+          expect(el.isDisplayed()).toBeTruthy('Mnemonic container not visible');
+          expect(el.getText()).toContain(TEST_WALLET_MNEMONIC, 'Doesn\'t show mnemonic');
+        });
+
+        let backButton;
+
+        it('should have a back button', () => {
+          backButton = element(by.css('[routerlink="../"]'));
+          expect(backButton.isDisplayed()).toBeTruthy('Back button doesn\'t exist');
+        });
+
+        it('should take us back to root export page when clicking on back button', () => {
+          backButton.click();
+          browser.wait(EC.not(EC.urlContains('mnemonic')));
+          expect(browser.getCurrentUrl()).not.toContain('mnemonic');
+        });
+
+      });
+
+      describe('Backup file export', () => {
+
+        beforeAll(() => {
+          element(by.css('div[routerLink=file]')).click();
+          browser.wait(EC.urlContains('file'));
+        });
+
+        it('should take us to the backup file export page', () => {
+          expect(browser.getcurrentUrl()).toContain('file');
+        });
+
+        it('should have a File backup title', () => {
+          const el = element(by.css('.page-title h3'));
+          expect(el.isDisplayed()).toBeTruthy('Title is not visible');
+          expect(el.getText()).toContain('File backup', 'Doesn\'t have the right title');
+        });
+
+        let passwordEl, repeatPasswordEl, submitButtonEl;
+
+        it('should have password input', () => {
+          passwordEl = element(by.css('input[formControlName=password]'));
+          expect(passwordEl.isDisplayed()).toBeTruthy();
+        });
+
+        it('should have a repeat password input', () => {
+          repeatPasswordEl = element(by.css('input[formControlName=repeatPassword]'));
+          expect(repeatPasswordEl.isDisplayed()).toBeTruthy();
+        });
+
+        it('should have a submit button', () => {
+          submitButtonEl = element(by.css('button[role=submit]'));
+          expect(submitButtonEl.isDisplayed()).toBeTruthy();
+        });
+
+        it('submit button should be disabled by default', () => {
+          expect(submitButtonEl.isEnabled()).toBeFalsy('Download file button is not disabled when password is not valid');
+        });
+
+        it('should validate password input', () => {
+          passwordEl.sendKeys('somesecurepassword');
+          expect(passwordEl.getAttribute('class')).toContain('ng-valid', 'Does not recognize password as valid');
+          passwordEl.clear();
+          expect(passwordEl.getAttribute('class')).toContain('ng-invalid', 'Does not mark blank password as invalid');
+        });
+
+        it('should validate repeat password field', () => {
+          passwordEl.clear().sendKeys('123');
+          repeatPasswordEl.sendKeys('123123');
+          expect(repeatPasswordEl.getAttribute('class')).toContain('ng-invalid', 'Did not detect a mismatching password');
+          repeatPasswordEl.clear().sendKeys('123');
+          expect(repeatPasswordEl.getAttribute('class')).toContain('ng-valid', 'Did not detect a matching password');
+        });
+
+        it('download file button should be enabled', () => {
+          expect(submitButtonEl.isEnabled()).toBeTruthy();
+        });
+
+      });
+
     });
 
   });
