@@ -1,6 +1,6 @@
 import { browser, by, element, ProtractorExpectedConditions } from 'protractor';
 
-const TEST_WALLET_MNEMONIC = '\'turkey walnut rocket ordinary always fiction noise skull sketch aunt clown wild\'';
+const TEST_WALLET_MNEMONIC = 'turkey walnut rocket ordinary always fiction noise skull sketch aunt clown wild';
 const TEST_WALLET_ALIAS = '@ibby-demo-mac';
 const TEST_WALLET_NAME = 'Personal wallet';
 
