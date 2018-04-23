@@ -599,6 +599,7 @@ Transaction.prototype._fromNonP2SH = function(utxo) {
   } else {
     clazz = Input;
   }
+  console.log(utxo);
   this.addInput(new clazz({
     output: new Output({
       script: utxo.script,
