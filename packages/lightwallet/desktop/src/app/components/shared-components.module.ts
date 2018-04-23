@@ -16,6 +16,7 @@ import { PasswordPromptController } from '@merit/desktop/app/components/password
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { ToastControllerService as ToastControllerServiceBase } from '@merit/common/services/toast-controller.service';
 import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-notification/toast-notification.component';
+import { UICheckboxComponent } from '@merit/desktop/app/components/ui-checkbox/ui-checkbox.component';
 import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/wallet-icon.component';
 import { IllustationsWorryFreeComponent } from '@merit/desktop/app/components/illustations/worry-free/worry-free.component';
 import { IllustationsSendingMeritComponent } from '@merit/desktop/app/components/illustations/sending-merit/sending-merit.component';
@@ -39,7 +40,8 @@ export function getComponents() {
     IllustationsSendingMeritComponent,
     IllustationsThatsItComponent,
     IllustationsYourWayComponent,
-    GlobalsendLinkPopupComponent
+    GlobalsendLinkPopupComponent,
+    UICheckboxComponent
   ];
 }
 

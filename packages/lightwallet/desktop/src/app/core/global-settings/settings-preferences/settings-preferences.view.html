@@ -6,10 +6,7 @@
         <label class="ui-label global-settings__group__item__title">Enable push notifications</label>
       </div>
       <div class="global-settings__group__item__column global-settings__group__item__column--30">
-        <div class="ui-checkbox">
-          <input type="checkbox" name="" formControlName="pushNotifications">
-          <span class="ui-checkbox__switcher"></span>
-        </div>
+        <ui-checkbox formControlName="pushNotifications"></ui-checkbox>
       </div>
     </div>
     <div class="global-settings__group__item">
@@ -17,10 +14,7 @@
         <label class="ui-label global-settings__group__item__title">Enable email notifications</label>
       </div>
       <div class="global-settings__group__item__column global-settings__group__item__column--30">
-        <div class="ui-checkbox">
-          <input type="checkbox" name="" formControlName="emailNotifications">
-          <span class="ui-checkbox__switcher"></span>
-        </div>
+        <ui-checkbox formControlName="emailNotifications"></ui-checkbox>
       </div>
     </div>
     <div class="global-settings__group__item sendMerit__form__group" *ngIf="emailNotificationsEnabled">
