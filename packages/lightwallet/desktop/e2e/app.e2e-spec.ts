@@ -7,7 +7,7 @@ describe('Desktop Lightwallet App', () => {
   beforeAll(() => {
     browser.get('/');
     EC = new ProtractorExpectedConditions(browser);
-    // browser.driver.fullscreen();
+    browser.driver.fullscreen();
   });
 
   it('title should be Merit Lightwallet', () => {
