@@ -1,5 +1,9 @@
 import { browser, by, element, ProtractorExpectedConditions } from 'protractor';
 
+const TEST_WALLET_MNEMONIC = '\'turkey walnut rocket ordinary always fiction noise skull sketch aunt clown wild\'';
+const TEST_WALLET_ALIAS = '@ibby-demo-mac';
+const TEST_WALLET_NAME = 'Personal wallet';
+
 describe('Desktop Lightwallet App', () => {
 
   let EC: ProtractorExpectedConditions;
@@ -132,7 +136,7 @@ describe('Desktop Lightwallet App', () => {
       });
 
       it('should validate mnemonic input', async () => {
-        mnemonicInput.sendKeys('turkey walnut rocket ordinary always fiction noise skull sketch aunt clown wild');
+        mnemonicInput.sendKeys(TEST_WALLET_MNEMONIC);
         expect(mnemonicInput.getAttribute('class')).toContain('ng-valid');
       });
 
@@ -190,15 +194,15 @@ describe('Desktop Lightwallet App', () => {
     });
 
     it('should have wallet name', async () => {
-      expect((await header.getText()).toLowerCase()).toContain('personal wallet');
+      expect(header.getText()).toContain(TEST_WALLET_NAME);
     });
 
     it('should have wallet alias', async () => {
-      expect((await header.getText()).toLowerCase()).toContain('@');
+      expect(header.getText()).toContain(TEST_WALLET_ALIAS);
     });
 
     it('should have merit balance', async () => {
-      expect(await header.getText()).toContain('MRT');
+      expect(header.getText()).toContain('MRT');
     });
 
     it('should have invites', async () => {
@@ -270,7 +274,7 @@ describe('Desktop Lightwallet App', () => {
       });
 
       it('should hide balance', async () => {
-        hideBalanceEl.click();
+        await element(by.css('[formControlName=balanceHidden]')).click();
         browser.wait(EC.textToBePresentInElement(header, '[Balance hidden]'));
         expect(header.getText()).toContain('[Balance hidden]', 'Unable to hide balance');
       });
