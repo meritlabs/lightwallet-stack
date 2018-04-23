@@ -25,7 +25,7 @@ const config = {
   }
 };
 
-const IS_CI = process.env.CIRCLECI || process.env.JENKINS_URL;
+const IS_CI = process.env.CIRCLECI || process.env.JENKINS_URL || true;
 
 if (IS_CI) {
   const COMMIT = process.env.CIRCLE_SHA1 || process.env.GIT_COMMIT || 'LOCAL';
@@ -57,21 +57,22 @@ if (IS_CI) {
   };
 
   config.multiCapabilities.push(
-    {
-      ...common,
-      browserName: 'Chrome'
-    },
+    // {
+    //   ...common,
+    //   browserName: 'Chrome'
+    // },
     {
       ...common,
       browserName: 'Safari',
       browser_version: '11.0',
       os: 'OS X',
       os_version: 'High Sierra'
-    },
-    {
-      ...common,
-      browserName: 'Firefox'
     }
+    //,
+    // {
+    //   ...common,
+    //   browserName: 'Firefox'
+    // }
   );
   config.directConnect = false;
 } else {
