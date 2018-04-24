@@ -1,4 +1,4 @@
-@import '~styles/v1/common/variables'
+@import '~styles/v1/common/import-sass'
 
 view-onboarding-root
   display: block
@@ -11,14 +11,32 @@ view-onboarding-root
   .ui-label
     color: $white
 
-  view-import-wallet
+  view-import-wallet,
+  view-import-with-file,
+  view-phrase-import
     .container--inner
       float: none
       margin: auto
       text-align: center
-
     .backup__navigator
       align-content: center
-
     .title--primary
       color: white
+    .import_form
+      margin: 0px auto
+      text-align: center
+    .import
+      margin: 0px auto
+      height: 100vh
+      display: flex
+      justify-content: center
+      box-sizing: border-box
+      flex-direction: column
+      .backup__navigator,
+      .import__title
+        justify-content: center !important
+      .backup__navigator__item
+        +transition(.3s, linear)
+        opacity: 0.9
+        &:hover
+          opacity: 1
