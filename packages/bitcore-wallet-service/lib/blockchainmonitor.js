@@ -175,10 +175,11 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
   // Let's format the object to be easier to process below.
   var outs = _.compact(_.map(data.vout, function(v) {
         var addr = _.keys(v)[0];
+        var amount = +[addr];
 
         return {
           address: addr,
-          amount: +v[addr]
+          amount: amount,
         };
   }));
 
@@ -456,9 +457,10 @@ BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {
 
-  this.storage.storeNotification(notification.walletId, notification, () => {
-    this.messageBroker.send(notification)
-
+  this.storage.storeNotification(notification.walletId, notification, (err, doc) => {
+    if (doc) {
+      this.messageBroker.send(doc);
+    }
     if (cb) {
       return cb();
     }

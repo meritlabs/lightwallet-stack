@@ -11,7 +11,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { isAlias } from '@merit/common/utils/addresses';
+import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
@@ -31,6 +31,7 @@ export class UnlockComponent {
   easyReceipt: EasyReceipt;
   creatingWallet: boolean = false;
   showAgreement: boolean = false;
+  showGuide: boolean = true;
 
   get inviteCode() { return this.formData.get('inviteCode'); }
 
@@ -55,12 +56,24 @@ export class UnlockComponent {
     if (this.easyReceipt) {
       this.inviteCode.setValue(this.easyReceipt.parentAddress);
     }
+    let showGuide;
+    if("showGuide" in localStorage && localStorage.getItem("showGuide") === 'false') {
+      showGuide = false;
+    }else {
+      showGuide  = true;
+    }
+    this.showGuide = showGuide;
   }
-
+  hideGuide($event) {
+    this.showGuide = $event;
+    localStorage.setItem("showGuide", $event);
+  }
   async onSubmit() {
     this.loadingCtrl.show();
     this.creatingWallet = true;
     let { inviteCode, alias } = this.formData.getRawValue();
+
+    alias = cleanAddress(alias);
 
     inviteCode = isAlias(inviteCode) ? inviteCode.slice(1) : inviteCode;
     alias = alias && isAlias(alias) ? alias.slice(1) : alias;
@@ -91,4 +104,5 @@ export class UnlockComponent {
       // TODO show  error to user
     }
   }
+
 }

@@ -127,3 +127,11 @@ wallet-details-view {
     }
   }
 }
+.ios wallet-details-view ion-header.header-ios {
+  .toolbar-ios {
+    padding: 15px 4px;
+   }
+  ion-title.title.title-ios .toolbar-title.toolbar-title-ios {
+    color: white;
+  }
+}

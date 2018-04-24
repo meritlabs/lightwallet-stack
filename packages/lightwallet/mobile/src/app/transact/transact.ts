@@ -1,22 +1,13 @@
 import { Component, ViewChild } from '@angular/core';
 import { Keyboard } from '@ionic-native/keyboard';
+import { EasyReceipt } from '@merit/common/models/easy-receipt';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
-import {
-  AlertController,
-  Events,
-  IonicPage,
-  NavController,
-  NavParams,
-  Platform,
-  Tabs,
-  ToastController
-} from 'ionic-angular';
+import { AlertController, Events, IonicPage, NavController, NavParams, Platform, Tabs } from 'ionic-angular';
 import { Subscription } from 'rxjs/Subscription';
-import { EasyReceipt } from '../../../../common/models/easy-receipt';
-import { EasyReceiveService } from '../../../../common/services/easy-receive.service';
-import { ToastConfig } from '../../../../common/services/toast.controller.service';
 
 @IonicPage({
   segment: 'transact'
@@ -43,7 +34,7 @@ export class TransactView {
               private unlockRequestService: UnlockRequestService,
               private easyReceiveService: EasyReceiveService,
               private alertCtrl: AlertController,
-              private toastCtrl: ToastController,
+              private toastCtrl: ToastControllerService,
               private events: Events) {
   }
 
@@ -234,10 +225,7 @@ export class TransactView {
       this.events.publish('Remote:IncomingTx');
     } catch (err) {
       console.log(err);
-      this.toastCtrl.create({
-        message: 'There was an error retrieving your incoming payment.',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      this.toastCtrl.error('There was an error retrieving your incoming payment.');
     }
   }
 
@@ -253,10 +241,7 @@ export class TransactView {
         this.logger.info('Easy send returned');
       }).catch((err) => {
         console.log(err);
-        this.toastCtrl.create({
-          message: err.text || 'There was an error rejecting the Merit',
-          cssClass: ToastConfig.CLASS_ERROR
-        }).present();
+        this.toastCtrl.error(err.text || 'There was an error rejecting the Merit');
       });
     });
   }

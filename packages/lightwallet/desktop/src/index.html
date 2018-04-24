@@ -18,6 +18,11 @@
   <link rel="apple-touch-icon" sizes="96x96" href="/assets/v1/favicon/96x96.png?v=symbol">
   <link rel="apple-touch-icon" sizes="128x128" href="/assets/v1/favicon/128x128.png?v=symbol">
 
+  <script>
+    if (/Mobile|Android/i.test(navigator.userAgent))
+      location.hostname = 'm.' + location.hostname;
+  </script>
+
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114683109-2"></script>
   <script>

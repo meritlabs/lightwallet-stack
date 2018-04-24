@@ -7,7 +7,7 @@ import { SharedComponentsModule } from '@merit/desktop/app/components/shared-com
 import { FileBackupView } from '@merit/desktop/app/core/backup/file-backup/file-backup.view';
 import { CoreComponentsModule } from '@merit/desktop/app/core/components/core-components.module';
 import { WalletPasswordGuard } from '@merit/desktop/app/guards/wallet-password.guard';
-import { MomentModule } from 'angular2-moment';
+import { MomentModule } from 'ngx-moment';
 import { QRCodeModule } from 'angular2-qrcode';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 import { BackupView } from './backup/backup.view';

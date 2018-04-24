@@ -85,6 +85,17 @@
       position: relative
       top: 0px
       margin-right: 10px
+  &--back
+    display: flex
+    align-items: center
+    justify-content: center
+    &:before
+      content: "›"
+      display: inline-block
+      transform: rotate(180deg)
+      font-size: 25px
+      position: relative
+      margin-right: 5px
   &--add
     &:before
       content: "+"

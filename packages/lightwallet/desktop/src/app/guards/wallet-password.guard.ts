@@ -35,7 +35,7 @@ export class WalletPasswordGuard implements CanActivate {
       if (!isWalletEncrypted(wallet.client)) return resolve(true);
 
       const passwordPrompt = this.passwordPromptCtrl.createForWallet(wallet);
-      passwordPrompt.onDismiss((password: string) => {
+      passwordPrompt.onDidDismiss((password: string) => {
         if (password) {
           // we got a valid password, let's decrypt the wallet and allow the user to enter that route
           this.walletService.decrypt(wallet.client, password);
