@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { spyOn } from 'jest';
 import { BackdropComponent } from '../backdrop/backdrop.component';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 
@@ -64,7 +63,7 @@ describe('Confirm Dialog', () => {
   });
 
   it('should dismiss the component when clicking on backdrop', () => {
-    const spy = spyOn(instance.componentInstance, 'dismiss');
+    const spy = jest.spyOn(instance.componentInstance, 'dismiss');
     const backdropEl: HTMLElement = instance.nativeElement.querySelector('app-backdrop');
     backdropEl.click();
     instance.detectChanges();
