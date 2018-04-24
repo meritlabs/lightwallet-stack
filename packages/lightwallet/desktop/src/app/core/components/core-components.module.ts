@@ -10,7 +10,7 @@ import { SelectComponent } from '@merit/desktop/app/core/components/select/selec
 import { ToolbarComponent } from '@merit/desktop/app/core/components/toolbar/toolbar.component';
 import { VaultsListComponent } from '@merit/desktop/app/core/components/vaults-list/vaults-list.component';
 import { WalletsListComponent } from '@merit/desktop/app/core/components/wallets-list/wallets-list.component';
-import { MomentModule } from 'angular2-moment';
+import { MomentModule } from 'ngx-moment';
 import { HistoryItemComponent } from './history-item/history-item.component';
 import { HistoryListComponent } from './history-list/history-list.component';
 

@@ -2490,7 +2490,11 @@ WalletService.prototype.publishTx = function(opts, cb) {
     self.getWallet({}, function(err, wallet) {
       if (err) return cb(err);
 
-      self.storage.fetchTx(self.walletId, opts.txProposalId, function(err, txp) {
+      self.getTx({
+        txProposalId: opts.txProposalId, 
+        retries: 10, 
+        interval: 50,
+      }, function(err, txp) {
         if (err) return cb(err);
         if (!txp) return cb(Errors.TX_NOT_FOUND);
         if (!txp.isTemporary()) return cb(null, txp);
@@ -2547,24 +2551,29 @@ WalletService.prototype.publishTx = function(opts, cb) {
  * Retrieves a tx from storage.
  * @param {Object} opts
  * @param {string} opts.txProposalId - The tx id.
+ * @param {number} opts.retries - The number of times to retry.
+ * @param {number} opts.interval - The interval, in MS, between retries..  
  * @returns {Object} txProposal
  */
 WalletService.prototype.getTx = function(opts, cb) {
   var self = this;
+  opts.retries = opts.retries || 1;
+  opts.interval =  opts.interval || 50;
+  
+  async.retry({times: opts.retries, interval: 50}, 
+    (callback)=> {self.storage.mustFetchTx(self.walletId, opts.txProposalId, callback)},
+    function(err, txp) {
+      if (err) return cb(err);
 
-  self.storage.fetchTx(self.walletId, opts.txProposalId, function(err, txp) {
-    if (err) return cb(err);
-    if (!txp) return cb(Errors.TX_NOT_FOUND);
+      if (!txp.txid) return cb(null, txp);
 
-    if (!txp.txid) return cb(null, txp);
-
-    self.storage.fetchTxNote(self.walletId, txp.txid, function(err, note) {
-      if (err) {
-        log.warn('Error fetching tx note for ' + txp.txid);
-      }
-      txp.note = note;
-      return cb(null, txp);
-    });
+      self.storage.fetchTxNote(self.walletId, txp.txid, function(err, note) {
+        if (err) {
+          log.warn('Error fetching tx note for ' + txp.txid);
+        }
+        txp.note = note;
+        return cb(null, txp);
+      });
   });
 };
 
@@ -2743,11 +2752,20 @@ WalletService.prototype.signTx = function(opts, cb) {
   self.getWallet({}, function(err, wallet) {
     if (err) return cb(err);
 
+    /**
+     * With a globally distributed mongo cluster, we could end up in a situation where a TxProposal was
+     * written to the Primary Mongo instance, but has not yet propogated to the secondary node we are reading from.
+     * So we've added some retry logic below.  This isn't a long-term solution, and should be reconsidered 
+     * either when we have time or get a mongo clustering expert on the team. 
+     * TODO: Reconsider approach to handling Mongo race conditions.  
+    */
     self.getTx({
-      txProposalId: opts.txProposalId
+      txProposalId: opts.txProposalId,
+      retries: 10,
+      interval: 50
     }, function(err, txp) {
       if (err) return cb(err);
-
+    
       var action = _.find(txp.actions, {
         copayerId: self.copayerId
       });

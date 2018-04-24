@@ -20,3 +20,6 @@
     Get started
   </a>
 </div>
+<div class="right">
+  <app-notifications [notifications]="notifications$ | async" [hasNewNotifications]="totalUnreadNotifications$ | async"></app-notifications>
+</div>
