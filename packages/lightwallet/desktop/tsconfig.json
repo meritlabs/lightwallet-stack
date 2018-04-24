@@ -23,7 +23,8 @@
       "@firebase/app-types",
       "@firebase/messaging-types",
       "node",
-      "file-saver"
+      "file-saver",
+      "jest"
     ],
     "lib": [
       "es2017",
