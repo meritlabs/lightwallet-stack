@@ -168,33 +168,14 @@
     "globals": {
       "ts-jest": {
         "tsConfigFile": "tsconfig.spec.json"
-      }
+      },
+      "__TRANSFORM_HTML__": true
     },
     "transformIgnorePatterns": [
       "node_modules/(?!@ngrx|bitcore-*)"
-    ]
-  },
-  "jest-old": {
-    "globals": {
-      "ts-jest": {
-        "tsConfigFile": "tsconfig.mobile.json"
-      }
-    },
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
     ],
-    "moduleNameMapper": {
-      "^@merit\\/(common|mobile|desktop)\\/([a-zA-Z0-9_\\-\\/]+)$": "<rootDir>/$1/$2",
-      "@app/env": "<rootDir>/common/environments/environment.example.ts"
-    }
+    "testMatch": [
+      "**/*.spec.ts"
+    ]
   }
 }
