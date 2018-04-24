@@ -1,0 +1,36 @@
+<app-slider-guide *ngIf="showGuide" (hideGuide)="hideGuide($event)"
+  [showGuide]="showGuide" [skipButton]="'Learn how to get invite'"
+  [getStartButton]="'Learn how to get invite'"></app-slider-guide>
+<div class="guides">
+  <div class="guides_nav">
+    <div routerLink="../" class="ui-button ui-button--back ui-button--white">
+      BACK
+    </div>
+    <div>
+      <a href="https://www.merit.me/get-started/" target="_blank" class="ui-button ui-button--white">Visit site</a>
+      <a href="https://www.merit.me/get-involved/#join-the-conversation"
+        target="_blank" class="ui-button ui-button--blue">Join the Conversation</a>
+    </div>
+  </div>
+  <div class="guides_wrap">
+    <h2>Hey there!</h2>
+    <p>It looks like you are new to the Merit world, and do not yet know anyone in the community who can invite you.
+      Don't worry -- we'll help you learn a little bit more about the Merit ecosystem, and help you on your way toward joining the network.</p>
+    <h2>MERIT IS A COMMUNITY.  YOU NEED AN INVITATION TO JOIN.</h2>
+    <p>Merit aims to build a digital currency that endures.  An invite-only ecosystem makes the network safer and stronger.  Some Merit features, such as ambassador mining and indestructable sending, are built atop the invite-only system. To
+      learn more, you can read about our thinking behind  <a href="https://www.merit.me/why-merit/#about-community">controlled-growth and
+      ambassador mining.</a></p>
+    <h2>3 WAYS TO GET AN INVITE</h2>
+    <h3>ASK PEOPLE YOU KNOW</h3>
+    <p>The first, and perhaps most effective, way to obtain an invite is to check
+      with the people you know first. A good first port of call are the people
+      you know who are already enthusiastic and knowledgeable.</p>
+    <h3>TRY YOUR EXTENDED NETWORK</h3>
+    <p>If no one comes to mind in your immediate network, you might try to reaching
+      out to your broader network. Social networks such as Twitter and Facebook might
+      be effective. Also, professional networks like LinkedIn could be strong candidates.</p>
+    <h3>ENGAGE IN THE MERIT COMMUNITY</h3>
+    <p>A great place to find someone inside the Merit network already is the Merit community.
+      Merit is present in a lot of the largest communities on the web, from Slack and Discord to our to our very own forum.</p>
+  </div>
+</div>
