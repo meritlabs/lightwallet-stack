@@ -7,7 +7,7 @@ import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
 import { LedgerService } from '@merit/common/services/ledger.service';
-import { PublicKey, PrivateKey, Script, Address, Transaction, crypto} from 'bitcore-lib';
+import { Address, HDPrivateKey, HDPublicKey, PrivateKey, PublicKey, Script, Transaction, crypto} from 'bitcore-lib';
 import { RateService } from '@merit/common/services/rate.service';
 
 @Injectable()
@@ -160,10 +160,6 @@ export class EasyReceiveService {
    */
   buildEasySendRedeemTransaction(input: any, txn: any, toAddress: string, fee = FeeService.DEFAULT_FEE): Promise<any> {
 
-    //TODO: Create and sign a transaction to redeem easy send. Use input as
-    //unspent Txo and use script to create scriptSig
-    let inputAddress = input.scriptId;
-
     const totalAmount = txn.invite ? txn.amount : txn.amount;
     const amount =  txn.invite ? txn.amount : totalAmount - fee;
 
@@ -198,4 +194,39 @@ export class EasyReceiveService {
     return tx;
 
   }
+
+  async cancelEasySend(
+    wallet: MeritWalletClient,
+    easySendScript: any,
+    easySendAddress: any,
+    walletPassword: string) {
+
+    let derivedKey = wallet.credentials.getDerivedXPrivKey(walletPassword);
+    let key = new HDPrivateKey(derivedKey);
+    const pubKey = wallet.getRootAddressPubkey();
+    const destAddress = pubKey.toAddress();
+    const redeemScript = new Script(easySendScript);
+
+    const txsRes = await wallet.validateEasyScript(easySendAddress.toString());
+    const txs = txsRes.result;
+
+    const invite = txs.find(tx => tx.invite);
+
+    const input = {
+      script: redeemScript,
+      privateKey: derivedKey.privateKey,
+      senderPublicKey: pubKey.toString(),
+    };
+
+    await this.sendEasyReceiveTx(input, invite, destAddress, wallet);
+
+    const transact = txs.find(tx => !tx.invite);
+    await this.sendEasyReceiveTx(input, transact, destAddress, wallet);
+
+    return {
+      invite: invite,
+      tx: transact,
+    };
+  }
+
 }
