@@ -84,7 +84,6 @@ export class EasySendService {
     let easySends: EasySend[] = (await this.persistenceService.getPendingEasySends(wallet.id)) || [];
 
     easySends = await Promise.all(easySends.map(async (easySend: EasySend) => {
-      console.log('Easy send is ', easySend);
       if (!easySend.scriptAddress) return null;
       const txs = await wallet.validateEasyScript(easySend.scriptAddress.toString());
       return txs.result.every(tx => !tx.spent) ? easySend : null;

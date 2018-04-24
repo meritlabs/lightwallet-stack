@@ -4,9 +4,9 @@ import { IonicPage, Events } from 'ionic-angular';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PlatformService } from '@merit/common/services/platform.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 
 @IonicPage()
 @Component({
@@ -45,7 +45,7 @@ export class NetworkView {
   shareButtonAvailable: boolean;
 
   constructor(
-    private toastCtrl: MeritToastController,
+    private toastCtrl: ToastControllerService,
     private socialSharing: SocialSharing,
     private profileService: ProfileService,
     private unlockRequestService: UnlockRequestService,
@@ -86,10 +86,7 @@ export class NetworkView {
   }
 
   notifyCopy() {
-    this.toastCtrl.create({
-      message: 'Copied to clipboard',
-      cssClass: ToastConfig.CLASS_SUCCESS
-    }).present();
+    this.toastCtrl.success('Copied to clipboard');
   }
 
   private async loadCommunityInfo() {
@@ -156,10 +153,7 @@ export class NetworkView {
       this.network = network;
     } catch (err) {
       this.logger.warn(err);
-      this.toastCtrl.create({
-        message: err.text || 'Unknown error',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      this.toastCtrl.error(err.text || 'Unknown error');
     }
 
   }
@@ -170,10 +164,7 @@ export class NetworkView {
       this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
     } catch (err) {
       this.logger.warn(err);
-      this.toastCtrl.create({
-        message: err.text || 'Unknown error',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      this.toastCtrl.error(err.text || 'Unknown error');
     }
   }
 

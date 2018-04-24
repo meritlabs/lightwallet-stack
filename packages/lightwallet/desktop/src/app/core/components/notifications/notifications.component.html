@@ -1,19 +1,7 @@
-<div class="notification__box">
-  <button class="notification__button" (click)="showHistory=!showHistory">
+<div class="box">
+  <button class="button" (click)="toggleHistory()">
     <img src="/assets/v1/icons/ui/notification.svg" alt="Notifications Icon">
-    <span *ngIf="hasNewNotifications" class="notification__indicator"></span>
+    <span [hidden]="!hasNewNotifications" class="indicator"></span>
   </button>
 </div>
-<notifications-history [showHistory]="showHistory" [notifications]="notifications"></notifications-history>
-<toast-notification
-  [show]=false
-  [message]="{status: 'success', title: 'Success!', text: 'Your transaction is confirmed!'}">
-</toast-notification>
-<toast-notification
-  [show]=false
-  [message]="{status: 'regular', title: 'Mining reward!', text: '+0.00030002 MRT'}">
-</toast-notification>
-<toast-notification
-  [show]=false
-  [message]="{status: 'error', title: 'ERROR!', text: 'Connection lost!'}">
-</toast-notification>
+<notifications-history (onClear)="onClear()" [showHistory]="showHistory" [notifications]="notifications"></notifications-history>

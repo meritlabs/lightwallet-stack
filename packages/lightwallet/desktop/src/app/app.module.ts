@@ -7,6 +7,7 @@ import { IonicStorageModule } from '@ionic/storage';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { AppEffects } from '@merit/common/effects/app.effects';
+import { NotificationEffects } from '@merit/common/effects/notification.effects';
 import { TransactionEffects } from '@merit/common/effects/transaction.effects';
 import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { IRootAppState, reducer } from '@merit/common/reducers';
@@ -23,6 +24,7 @@ import { DashboardGuard } from '@merit/desktop/app/guards/dashboard.guard';
 import { OnboardingGuard } from '@merit/desktop/app/guards/onboarding.guard';
 import { EffectsModule } from '@ngrx/effects';
 import { Store, StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { Platform } from 'ionic-angular/platform/platform';
@@ -81,7 +83,9 @@ export function getProviders() {
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    IonicStorageModule.forRoot(),
+    IonicStorageModule.forRoot({
+      driverOrder: ['indexeddb']
+    }),
     HttpClientModule,
     TranslateModule.forRoot({
       loader: {
@@ -97,7 +101,8 @@ export function getProviders() {
     EffectsModule.forRoot([
       AppEffects,
       WalletEffects,
-      TransactionEffects
+      TransactionEffects,
+      NotificationEffects
     ]),
     SharedComponentsModule.forRoot(),
     Ng4LoadingSpinnerModule.forRoot()

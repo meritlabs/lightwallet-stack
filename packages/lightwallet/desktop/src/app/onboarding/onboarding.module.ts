@@ -14,6 +14,11 @@ import { YourWayComponent } from './onboard/illustations/your-way/your-way.compo
 import { ThatsItComponent } from './onboard/illustations/thats-it/thats-it.component';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
+import { AppStartUpComponent } from './app-start-up/app-start-up.component';
+import { GuideWentFromDesktopComponent } from './app-start-up/guide-went-from-desktop/guide-went-from-desktop.component';
+import { InvitedUserComponent } from './app-start-up/invited-user/invited-user.component';
+import { GuideBeginnersHelpComponent } from './app-start-up/guide-beginners-help/guide-beginners-help.component';
+import { SliderGuideComponent } from './slider-guide/slider-guide.component';
 
 @NgModule({
   imports: [
@@ -26,6 +31,6 @@ import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
     CommonPipesModule,
     Ng4LoadingSpinnerModule
   ],
-  declarations: [OnboardView, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent]
+  declarations: [OnboardView, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent, AppStartUpComponent, GuideWentFromDesktopComponent, InvitedUserComponent, GuideBeginnersHelpComponent, SliderGuideComponent]
 })
 export class OnboardingModule { }
