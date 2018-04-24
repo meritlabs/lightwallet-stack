@@ -20,7 +20,7 @@
     </ng-container>
   </div>
   <div *ngIf="!tx.isInvite" class="details">
-    <ng-template #notConfirmed>
+    <ng-container *ngIf="confirmationsExplanation">
         <span class="ui-tooltip ui-tooltip--awating">
           <span class="ui-tooltip__text">
             {{ confirmationsExplanation }},
@@ -28,7 +28,7 @@
             Wait some time. Usually 5-10 mins.
           </span>
         </span>
-    </ng-template>
+    </ng-container>
   </div>
 </div>
 <span class="merit-amount" [class.credit]="isCredit" *ngIf="!tx.isInvite">
