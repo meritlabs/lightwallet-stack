@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { IDynamicComponent } from '@merit/desktop/app/components/dom.controller';
-import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
+import { IDynamicComponent } from '../dom.controller';
+import { ToastControllerService } from '../toast-notification/toast-controller.service';
 
 @Component({
   selector: 'globalsend-link-popup',
