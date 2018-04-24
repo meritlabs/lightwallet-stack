@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { spyOn } from 'jest';
 import { BackdropComponent } from '../backdrop/backdrop.component';
-import { DOMController } from '../dom.controller';
-import { ConfirmDialogControllerService } from './confirm-dialog-controller.service';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 
 describe('Confirm Dialog', () => {
@@ -57,6 +56,19 @@ describe('Confirm Dialog', () => {
 
     expect(buttons[1].classList.contains('primary')).toBeFalsy();
     expect(buttons[1].innerHTML).toContain('Cancel');
+  });
+
+  it('should display a backdrop element', () => {
+    const backdropEl: HTMLElement = instance.nativeElement.querySelector('app-backdrop');
+    expect(backdropEl).toBeDefined();
+  });
+
+  it('should dismiss the component when clicking on backdrop', () => {
+    const spy = spyOn(instance.componentInstance, 'dismiss');
+    const backdropEl: HTMLElement = instance.nativeElement.querySelector('app-backdrop');
+    backdropEl.click();
+    instance.detectChanges();
+    expect(spy).toHaveBeenCalledWith();
   });
 
 });
