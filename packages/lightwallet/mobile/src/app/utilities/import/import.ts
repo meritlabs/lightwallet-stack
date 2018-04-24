@@ -8,7 +8,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { MnemonicService } from '@merit/common/services/mnemonic.service';
 import { DerivationPath } from '@merit/common/utils/derivation-path';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 
@@ -42,7 +42,7 @@ export class ImportView {
 
   constructor(
     private mwcService: MWCService,
-    private toastCtrl: MeritToastController,
+    private toastCtrl: ToastControllerService,
     private logger: LoggerService,
     private loadingCtrl: LoadingController,
     private app: App,
@@ -138,10 +138,7 @@ export class ImportView {
         errorMsg = err;
       }
 
-      this.toastCtrl.create({
-        message: errorMsg,
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      this.toastCtrl.error(errorMsg);
     }
   }
 
@@ -152,10 +149,7 @@ export class ImportView {
     } catch (e) {
 
       this.logger.warn(e);
-      return this.toastCtrl.create({
-        message: 'Could not decrypt file, check your password',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      return this.toastCtrl.error('Could not decrypt file, check your password');
     }
 
     const loader = this.loadingCtrl.create({ content: 'importingWallet' });
@@ -167,10 +161,7 @@ export class ImportView {
     } catch (err) {
       loader.dismiss();
       this.logger.warn(err);
-      this.toastCtrl.create({
-        message: err,
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      this.toastCtrl.error(err);
     }
   }
 

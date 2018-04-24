@@ -5,7 +5,7 @@ import { IVault } from '@merit/common/models/vault';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { Events, IonicPage, NavController, Platform } from 'ionic-angular';
 
 @IonicPage()
@@ -26,7 +26,7 @@ export class WalletsView {
 
   constructor(private navCtrl: NavController,
               private logger: LoggerService,
-              private toastCtrl: MeritToastController,
+              private toastCtrl: ToastControllerService,
               private profileService: ProfileService,
               private platform: Platform,
               private events: Events
@@ -102,10 +102,7 @@ export class WalletsView {
       this.setTotalValues();
     } catch (err) {
       this.logger.warn(err);
-      this.toastCtrl.create({
-        message: err.text || 'Unknown error',
-        cssClass: ToastConfig.CLASS_ERROR
-      }).present();
+      this.toastCtrl.error(err.text || 'Unknown error');
     }
   }
 

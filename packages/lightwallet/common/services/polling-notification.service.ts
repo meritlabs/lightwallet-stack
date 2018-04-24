@@ -1,6 +1,7 @@
 import { Injectable, Optional } from '@angular/core';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { IRootAppState } from '@merit/common/reducers';
+import { AddNotificationAction } from '@merit/common/reducers/notifications.reducer';
 import { RefreshOneWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
@@ -60,11 +61,23 @@ export class PollingNotificationsService {
 
   protected onFetch(notifications: any[]) {
     notifications.forEach((notification) => {
-      if (notification && notification.walletId) {
-        this.store.dispatch(new RefreshOneWalletAction(notification.walletId, {
-          skipAlias: true,
-          skipShareCode: true
-        }));
+      if (notification) {
+        notification = {
+          ...notification,
+          ...notification.data,
+          read: false
+        };
+
+        delete notification.data;
+
+        this.store.dispatch(new AddNotificationAction(notification));
+
+        if (notification.walletId) {
+          this.store.dispatch(new RefreshOneWalletAction(notification.walletId, {
+            skipAlias: true,
+            skipShareCode: true
+          }));
+        }
       }
     });
   }

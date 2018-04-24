@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { MeritToastController, ToastConfig } from '@merit/common/services/toast.controller.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 
 @IonicPage()
 @Component({
@@ -16,7 +16,7 @@ export class SessionLogView {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private logger: LoggerService,
-              private toastCtrl: MeritToastController) {
+              private toastCtrl: ToastControllerService) {
   }
 
   ionViewDidLoad() {
@@ -24,10 +24,7 @@ export class SessionLogView {
   }
 
   copy() {
-    this.toastCtrl.create({
-      message: 'Session log copied to clipboard',
-      cssClass: ToastConfig.CLASS_MESSAGE
-    }).present();
+    this.toastCtrl.message('Session log copied to clipboard');
   }
 
   filterLogs() {

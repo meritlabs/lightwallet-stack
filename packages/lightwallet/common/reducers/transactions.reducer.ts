@@ -69,7 +69,10 @@ const DEFAULT_STATE: ITransactionsState = {
 export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, action: TransactionsReducerAction) {
   switch (action.type) {
     case TransactionActionType.Refresh:
-      return DEFAULT_STATE;
+      return {
+        ...state,
+        loading: true
+      };
 
     case TransactionActionType.Update:
       return {
