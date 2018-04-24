@@ -6,7 +6,7 @@ import { EasySend } from '@merit/common/models/easy-send';
 import { AddressService } from '@merit/common/services/address.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
-import { Address, HDPrivateKey, PrivateKey, Script } from 'bitcore-lib';
+import { Address, HDPrivateKey, HDPublicKey, PrivateKey, Script, Transaction, crypto} from 'bitcore-lib';
 
 @Injectable()
 export class EasySendService {
@@ -125,58 +125,97 @@ export class EasySendService {
 
   }
 
+  createAndSignEasySendCancelTransaction(
+    tx: Transaction,
+    wallet: MeritWalletClient,
+    walletPassword: string,
+    easySendTxId: string,
+    outputIndex: number,
+    key: HDPrivateKey,
+    pubKey: HDPublicKey,
+    address: any,
+    redeemScript: Script,
+    scriptPubKey: Script,
+    amount: number,
+    fee: number) {
+    if (amount - fee <= 0) throw new Error('Fee is too big or amount too small');
+
+    const output = Transaction.Output({ script: scriptPubKey, micros: amount - fee});
+    tx.addOutput(output);
+    tx.fee(fee);
+
+
+    const input = { prevTxId: easySendTxId, outputIndex: outputIndex, script: redeemScript };
+    const PP2SHInput = new Transaction.Input.PayToScriptHashInput(input, redeemScript, scriptPubKey);
+    tx.addInput(PP2SHInput, pubKey, amount);
+    tx.addressType = 'P2PKH';
+
+    let sig = Transaction.Sighash.sign(tx, key.privateKey, crypto.Signature.SIGHASH_ALL, 0, redeemScript);
+    let inputScript = Script.buildEasySendIn(sig, redeemScript, pubKey);
+    tx.inputs[0].setScript(inputScript);
+    return tx;
+  }
+
   async cancelEasySend(
     wallet: MeritWalletClient,
     amount: number,
-    easySendTx: any,
+    easySendTxId: string,
     outputIndex: number,
     easySendScript: any,
-    walletPassword: string) {
+    walletPassword: string,
+    fee = FeeService.DEFAULT_FEE) {
 
     if (amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big');
 
-    console.log("1");
+    let derivedKey = wallet.credentials.getDerivedXPrivKey(walletPassword);
+    let key = new HDPrivateKey(derivedKey);
     const pubKey = wallet.getRootAddressPubkey();
     const address = pubKey.toAddress();
 
-    console.log("2");
-    const inviteOpts = {
-      invite: true,
-      outputs: [{
-        amount: amount,
-        toAddress: address,
-      }],
-      inputs: [{
-        txid: easySendTx,
-        outputIndex: outputIndex,
-        micros: amount,
-        scriptPubKey: easySendScript
-      }],
-      feeLevel: this.feeService.getCurrentFeeLevel(),
-      addressType: 'P2PKH'
-    };
+    const scriptPubKey = new Script(address);
+    const redeemScript = new Script(easySendScript);
 
-    console.log("3");
-    let txOpts = inviteOpts;
-    txOpts.invite = false;
+    let inviteTx = Transaction();
+    inviteTx.makeInvite();
 
-    console.log("4");
-    let inviteTxp = await wallet.createTxProposal(inviteOpts);
-    let txp = await wallet.createTxProposal(txOpts);
+    let tx = Transaction();
 
-    console.log("5");
-    let inviteTx = await wallet.publishTxProposal({ inviteTxp });
-    let tx = await wallet.publishTxProposal({ txp });
+    inviteTx = this.createAndSignEasySendCancelTransaction(
+      inviteTx,
+      wallet,
+      walletPassword,
+      easySendTxId,
+      outputIndex,
+      key,
+      pubKey,
+      address,
+      redeemScript,
+      scriptPubKey,
+      amount,
+      fee);
 
-    console.log("6");
-    inviteTx = await wallet.signTxProposal(inviteTx, walletPassword);
-    tx = await wallet.signTxProposal(tx, walletPassword);
+    tx = this.createAndSignEasySendCancelTransaction(
+      tx,
+      wallet,
+      walletPassword,
+      easySendTxId,
+      outputIndex,
+      key,
+      pubKey,
+      address,
+      redeemScript,
+      scriptPubKey,
+      amount,
+      fee);
 
-    console.log("7");
-    inviteTx = await wallet.broadcastTxProposal(inviteTx);
-    tx = await wallet.broadcastTxProposal(tx);
+
+    let inviteId = await wallet.broadcastRawTx({ rawTx: inviteTx.serialize(), network: ENV.network });
+    let txId = await wallet.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
+
     console.log('inviteTx', inviteTx);
     console.log('tx', tx);
+    console.log('inviteId', inviteId);
+    console.log('txId', txId);
 
     return {
       inviteTx: inviteTx,
