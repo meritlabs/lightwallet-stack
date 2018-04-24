@@ -1,11 +1,11 @@
 // Protractor configuration file, see link for more information
 // https://github.com/angular/protractor/blob/master/lib/config.ts
-
 const { SpecReporter } = require('jasmine-spec-reporter');
 
 const config = {
   allScriptsTimeout: 11000,
   specs: [
+    './desktop/e2e/app.e2e-spec.ts',
     './desktop/e2e/**/*.e2e-spec.ts'
   ],
   multiCapabilities: [],
