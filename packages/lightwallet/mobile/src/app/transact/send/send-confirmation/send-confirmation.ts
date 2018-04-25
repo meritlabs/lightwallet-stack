@@ -224,7 +224,6 @@ export class SendConfirmationView {
       await this.approveTx();
 
       if (this.txData.sendMethod.type == SendMethodType.Easy) {
-        console.log("MAX: EASYSEND", this.txData.easySend);
         this.persistenceService.addEasySend(this.txData.easySend);
         this.navCtrl.push('EasySendShareView', { txData: this.txData });
       } else {
