@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'wallets-list',
@@ -14,4 +15,7 @@ export class WalletsListComponent {
   trackByFn(wallet: DisplayWallet) {
     return wallet.id;
   }
+  constructor(private route: ActivatedRoute,
+              private router: Router) {}
+
 }
