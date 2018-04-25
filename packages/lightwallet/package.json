@@ -113,6 +113,8 @@
     "@types/nock": "^9.1.3",
     "@types/node": "^8.0.47",
     "@types/rx": "^4.1.1",
+    "babel-jest": "^22.4.3",
+    "babel-preset-env": "^1.6.1",
     "bitcore-wallet-service": "^1.18.0",
     "browserstack-local": "^1.3.1",
     "bs58": "2.0.0",
@@ -121,6 +123,7 @@
     "grunt": "~0.4.0",
     "grunt-jsdox": "^0.1.7",
     "https-proxy-agent": "^2.2.1",
+    "ionic-mocks-jest": "^1.3.3",
     "istanbul": "*",
     "istanbul-instrumenter-loader": "^3.0.1",
     "jasmine-core": "^3.1.0",
@@ -165,7 +168,8 @@
     "moduleNameMapper": {
       "^@merit\\/common\\/([a-zA-Z0-9_\\.\\-\\/]+)$": "<rootDir>/common/$1",
       "^@merit\\/(mobile|desktop)\\/([a-zA-Z0-9_\\.\\-\\/]+)$": "<rootDir>/$1/src/$2",
-      "@app/env": "<rootDir>/common/environments/environment.example.ts"
+      "@app/env": "<rootDir>/common/environments/environment.example.ts",
+      "^ionic-angular\\/([a-zA-Z0-9_\\.\\-\\/]+)$": "<rootDir>/node_modules/ionic-angular/umd/$1"
     },
     "globals": {
       "ts-jest": {
@@ -174,10 +178,14 @@
       "__TRANSFORM_HTML__": true
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!@ngrx|bitcore-*)"
+      "node_modules/(?!@ngrx|bitcore-*|@ionic)"
     ],
     "testMatch": [
       "**/*.spec.ts"
-    ]
+    ],
+    "transform": {
+      "^.+\\.(ts|html)$": "<rootDir>/node_modules/jest-preset-angular/preprocessor.js",
+      "^.+\\.js$": "babel-jest"
+    }
   }
 }
