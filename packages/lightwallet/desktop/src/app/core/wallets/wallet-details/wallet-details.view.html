@@ -29,6 +29,19 @@
               Receive
             </div>
           </div>
+          <div class="details_addWallet" *ngIf="singleWallet$ | async">
+            <div>
+              Need more wallets?
+            </div>
+            <div>
+              <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--white
+                ui-button--loadWallet ui-button--sm ui-button--{{showButton}}"
+                routerLink="/wallets/import">Import wallet</button>
+              <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--sm
+                ui-button--add ui-button--white ui-button--{{showButton}}"
+                routerLink="/wallets/create">Create new wallet</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -37,7 +50,7 @@
         <ul>
           <li><a [routerLink]="['history']" routerLinkActive="active">Wallet transactions</a></li>
           <li><a [routerLink]="['settings']" routerLinkActive="active">Wallet preferences</a></li>
-          <li><a [routerLink]="['export']" routerLinkActive="active">Export wallet</a></li>
+          <li><a [routerLink]="['export']" routerLinkActive="active">Backup/Sync</a></li>
         </ul>
       </div>
       <div class="wallet-details__content__wrap container--inner">
