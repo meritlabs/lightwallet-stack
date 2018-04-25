@@ -22,9 +22,20 @@ export class EasyReceiveService {
   ) {
   }
 
-  async validateAndSaveParams(params: any): Promise<EasyReceipt> {
-    this.logger.debug(`Parsing easy params ${params}`);
+  parseEasySendUrl(url: string) {
+    let offset = Math.max(0, url.indexOf("?") + 1);
+    const data: any = {};
+    url
+      .substr(offset)
+      .split('&')
+      .forEach((q: any) => {
+        q = q.split('=');
+        data[q[0]] = q[1];
+      });
+    return data;
+  }
 
+  paramsToReceipt(params: any): EasyReceipt {
     let receipt = new EasyReceipt({});
     receipt.parentAddress = params.pa;
     receipt.secret = params.se;
@@ -32,6 +43,13 @@ export class EasyReceiveService {
     receipt.senderPublicKey = params.sk;
     receipt.blockTimeout = params.bt;
     receipt.deepLinkURL = params['~referring_link'];
+    return receipt;
+  }
+
+  async validateAndSaveParams(params: any): Promise<EasyReceipt> {
+    this.logger.debug(`Parsing easy params ${params}`);
+
+    let receipt = this.paramsToReceipt(params);
 
     if (receipt.isValid()) {
       await this.persistanceService.addPendingEasyReceipt(receipt);
@@ -197,29 +215,47 @@ export class EasyReceiveService {
 
   async cancelEasySend(
     wallet: MeritWalletClient,
-    easySendScript: any,
-    easySendAddress: any,
+    url: string,
+    password: string,
     walletPassword: string) {
 
-    let derivedKey = wallet.credentials.getDerivedXPrivKey(walletPassword);
-    let key = new HDPrivateKey(derivedKey);
+    let params = this.parseEasySendUrl(url);
+    let receipt = this.paramsToReceipt(params);
+    return this.cancelEasySendReceipt(wallet, receipt, password, walletPassword);
+  }
+
+  async cancelEasySendReceipt(
+    wallet: MeritWalletClient,
+    receipt: EasyReceipt,
+    password: string,
+    walletPassword: string) {
+
+    //figure out wallet info
+    const signingKey = wallet.getRootPrivateKey(walletPassword);
     const pubKey = wallet.getRootAddressPubkey();
     const destAddress = pubKey.toAddress();
-    const redeemScript = new Script(easySendScript);
 
-    const txsRes = await wallet.validateEasyScript(easySendAddress.toString());
+    //generate script based on receipt
+    const scriptData = this.generateEasyScipt(receipt, password, ENV.network);
+    const redeemScript = scriptData.script;
+    const scriptAddress = Address(scriptData.scriptPubKey.getAddressInfo()).toString();
+
+    //find the invite and transaction 
+    const txsRes = await wallet.validateEasyScript(scriptAddress.toString());
     const txs = txsRes.result;
 
-    const invite = txs.find(tx => tx.invite);
-
+    //construct input using wallet signing key as the private key
     const input = {
       script: redeemScript,
-      privateKey: derivedKey.privateKey,
+      privateKey: signingKey,
       senderPublicKey: pubKey.toString(),
     };
 
+    //get the invite back
+    const invite = txs.find(tx => tx.invite);
     await this.sendEasyReceiveTx(input, invite, destAddress, wallet);
 
+    //get the merit back
     const transact = txs.find(tx => !tx.invite);
     await this.sendEasyReceiveTx(input, transact, destAddress, wallet);
 
