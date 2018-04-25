@@ -46,6 +46,7 @@ export interface ITransaction {
   isCoinbase: boolean;
   isInvite: boolean;
   isMature: boolean;
+  isSpent: boolean;
 }
 
 export interface IDisplayTransaction extends ITransaction {
@@ -71,4 +72,5 @@ export interface IDisplayTransaction extends ITransaction {
   isConfirmed?: boolean;
   easySend?: EasySend;
   easySendUrl?: string;
+  isSpent: boolean;
 }

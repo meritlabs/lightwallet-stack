@@ -9,6 +9,7 @@ import { ENV } from '@app/env';
 import { LedgerService } from '@merit/common/services/ledger.service';
 import { Address, HDPrivateKey, HDPublicKey, PrivateKey, PublicKey, Script, Transaction, crypto} from 'bitcore-lib';
 import { RateService } from '@merit/common/services/rate.service';
+import { Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class EasyReceiveService {
@@ -21,6 +22,10 @@ export class EasyReceiveService {
     private rateService: RateService
   ) {
   }
+
+  private cancelEasySendSource = new Subject<EasyReceipt>();
+
+  cancelEasySendObservable$ = this.cancelEasySendSource.asObservable();
 
   parseEasySendUrl(url: string) {
     let offset = Math.max(0, url.indexOf("?") + 1);
@@ -213,15 +218,11 @@ export class EasyReceiveService {
 
   }
 
-  async cancelEasySend(
-    wallet: MeritWalletClient,
-    url: string,
-    password: string,
-    walletPassword: string) {
-
+  cancelEasySend(url: string) {
     let params = this.parseEasySendUrl(url);
     let receipt = this.paramsToReceipt(params);
-    return this.cancelEasySendReceipt(wallet, receipt, password, walletPassword);
+
+    this.cancelEasySendSource.next(receipt);
   }
 
   async cancelEasySendReceipt(
@@ -233,7 +234,7 @@ export class EasyReceiveService {
     //figure out wallet info
     const signingKey = wallet.getRootPrivateKey(walletPassword);
     const pubKey = wallet.getRootAddressPubkey();
-    const destAddress = pubKey.toAddress();
+    const destAddress = pubKey.toAddress(ENV.network);
 
     //generate script based on receipt
     const scriptData = this.generateEasyScipt(receipt, password, ENV.network);

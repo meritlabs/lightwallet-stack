@@ -61,15 +61,12 @@ export class HistoryItemComponent implements OnInit {
 
   async askCancelGlobalSend() {
     const globalSendUrl = this.tx.easySendUrl;
+    console.log("TX", this.tx);
 
     //TODO Ask user for these things
     const walletPassword = "";
     const password = "";
 
-    this.easyReceive.cancelEasySend(
-      this.tx.wallet,
-      globalSendUrl,
-      password,
-      walletPassword);
+    this.easyReceive.cancelEasySend(globalSendUrl);
   }
 }
