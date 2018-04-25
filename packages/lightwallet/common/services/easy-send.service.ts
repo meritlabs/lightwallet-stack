@@ -149,7 +149,8 @@ export class EasySendService {
       blockTimeout: timeout,
       parentAddress: '',
       scriptAddress: '',
-      scriptReferralOpts: {}
+      scriptReferralOpts: {},
+      cancelled: false
     };
   }
 

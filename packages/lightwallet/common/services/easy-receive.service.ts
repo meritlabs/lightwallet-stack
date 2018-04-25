@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
@@ -16,6 +17,7 @@ export class EasyReceiveService {
   constructor(
     private logger: LoggerService,
     private persistanceService: PersistenceService,
+    private persistanceService2: PersistenceService2,
     private feeService: FeeService,
     private mwcService: MWCService,
     private ledger: LedgerService,
@@ -259,6 +261,7 @@ export class EasyReceiveService {
     //get the merit back
     const transact = txs.find(tx => !tx.invite);
     await this.sendEasyReceiveTx(input, transact, destAddress, wallet);
+    await this.persistanceService2.cancelEasySend(scriptAddress);
 
     return {
       invite: invite,
