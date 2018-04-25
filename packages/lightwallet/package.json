@@ -159,10 +159,12 @@
     "ionic_app_ng_module_path": "mobile/src/app/app.module.ts"
   },
   "jest": {
+    "rootDir": ".",
     "preset": "jest-preset-angular",
     "setupTestFrameworkScriptFile": "<rootDir>/jest-setup.ts",
     "moduleNameMapper": {
-      "^@merit\\/(common|mobile|desktop)\\/([a-zA-Z0-9_\\-\\/]+)$": "<rootDir>/$1/$2",
+      "^@merit\\/common\\/([a-zA-Z0-9_\\.\\-\\/]+)$": "<rootDir>/common/$1",
+      "^@merit\\/(mobile|desktop)\\/([a-zA-Z0-9_\\.\\-\\/]+)$": "<rootDir>/$1/src/$2",
       "@app/env": "<rootDir>/common/environments/environment.example.ts"
     },
     "globals": {

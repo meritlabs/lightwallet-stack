@@ -3,12 +3,15 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": false,
     "module": "commonjs",
-    "target": "es5",
+    "paths": {
+      "@merit/desktop/*": ["desktop/src/*"],
+      "@merit/mobile/*": ["mobile/src/*"],
+      "@merit/common/*": ["common/*"],
+      "@app/env": ["common/environments/environment.example"]
+    },
     "types": [
-      "jest"
-    ],
-    "typeRoots": [
-      "node_modules/@types"
+      "jest",
+      "node"
     ]
   },
   "include": [
@@ -16,6 +19,7 @@
   ],
   "exclude": [
     "node_modules",
-    "mobile/node_modules"
+    "mobile/node_modules",
+    "desktop/node_modules"
   ]
 }
