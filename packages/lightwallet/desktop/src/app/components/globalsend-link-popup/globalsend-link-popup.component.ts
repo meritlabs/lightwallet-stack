@@ -7,7 +7,7 @@ import { ToastControllerService } from '../toast-notification/toast-controller.s
   styleUrls: ['./globalsend-link-popup.component.sass'],
   template: `
     <div class="ui-prompt">
-      <h2 class="title">GlobalSend Link</h2>
+      <h2 class="title">Global Send Link</h2>
       <div class="message">
         Click on the link to copy
         <div class="globalsend-link" (click)="onCopy()" [clip]="globalSendURL">{{ globalSendURL }}</div>

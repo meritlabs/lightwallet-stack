@@ -2,9 +2,12 @@ import { DebugElement, Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { ClipModule } from 'ng2-clip';
+import { MomentModule } from 'ngx-moment';
 import { GlobalsendLinkPopupController } from '../../../components/globalsend-link-popup/globalsend-link-popup.controller';
 import { HistoryItemComponent } from './history-item.component';
+
 
 const BASE_TRANSACTION: Partial<IDisplayTransaction> = {
   isConfirmed: true,
@@ -15,6 +18,12 @@ const BASE_TRANSACTION: Partial<IDisplayTransaction> = {
   },
   time: Date.now() / 1000
 };
+
+@Injectable()
+class MockToastController {
+  create() {}
+  success() {}
+}
 
 @Injectable()
 class MockGlobalSendLinkPopupController {
@@ -33,19 +42,22 @@ describe('History item component', () => {
         HistoryItemComponent
       ],
       providers: [
-        { provide: GlobalsendLinkPopupController, useClass: MockGlobalSendLinkPopupController }
+        { provide: GlobalsendLinkPopupController, useClass: MockGlobalSendLinkPopupController },
+        { provide: ToastControllerService, useClass: MockToastController }
       ],
       imports: [
-        ClipModule
+        ClipModule,
+        MomentModule
       ]
     }).compileComponents();
 
     instance = TestBed.createComponent(HistoryItemComponent);
     comp = instance.componentInstance;
+    de = instance.debugElement;
   });
 
   describe('Received Merit', () => {
-    const name = '@meritlover',
+    const name = '@demo',
       amountStr = '10.00',
       alternativeAmountStr = '10.00 USD';
 
@@ -58,6 +70,7 @@ describe('History item component', () => {
         amountStr,
         alternativeAmountStr
       };
+      instance.detectChanges();
     });
 
     it('should show merit icon', () => {
