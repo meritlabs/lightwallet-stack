@@ -38,6 +38,7 @@ export class PanGesture {
       rnd.listen(el, 'touchend', this._onEnd.bind(this)),
       rnd.listen(el, 'mouseup', this._onEnd.bind(this))
     );
+    this.initialCoords = {x: 0, y: 0};
   }
 
   destroy() {
@@ -57,10 +58,8 @@ export class PanGesture {
     }
 
     // the starting point looks good, let's see what happens when we move
-
     this.initialCoords = coords;
     this.lastPosX = coords.x;
-
   }
 
   private _onMove(ev: TouchEvent | MouseEvent) {
@@ -68,9 +67,10 @@ export class PanGesture {
 
     if (!this.isDragging) {
 
-      if (typeof this.shouldCapture !== 'boolean')
+      if (typeof this.shouldCapture !== 'boolean') {
       // we haven't decided yet if we want to capture this gesture
         this.checkGesture(coords);
+      }
 
 
       if (this.shouldCapture === true)
