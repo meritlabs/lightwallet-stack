@@ -150,12 +150,20 @@ popd
 
 pushd $deploy_file_path
 
-print_in_yellow "Using firebase project: $firebase_project \n"
-firebase use $firebase_project
-
-print_in_green "Deploying to firebase now! \n"
 if [[ $deploy_token = *[!\ ]* ]]; then
+    print_in_yellow "Deploying using token firebase auth.\n"
+    print_in_yellow "Using firebase project: $firebase_project \n"
+    firebase use $firebase_project --token $deploy_token
+
+    print_in_green "Deploying to firebase now! \n"
+
     firebase deploy --token $deploy_token
 else
+    print_in_yellow "Deploying using general firebase auth.\n"
+    print_in_yellow "Using firebase project: $firebase_project \n"
+    firebase use $firebase_project
+
+    print_in_green "Deploying to firebase now! \n"
+
     firebase deploy
 fi
