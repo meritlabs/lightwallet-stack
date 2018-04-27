@@ -34,7 +34,9 @@
     "ionic:serve": "ionic-app-scripts serve",
     "ionic": "ionic-app-scripts",
     "test": "jest",
-    "test:e2e": "protractor ./protractor.conf.js",
+    "test:e2e": "npm run test:desktop:e2e && npm run test:mobile:e2e",
+    "test:desktop:e2e": "protractor ./protractor.desktop.conf.js",
+    "test:mobile:e2e": "protractor ./protractor.mobile.conf.js",
     "pretest:e2e": "webdriver-manager update --standalone false --gecko false --quiet"
   },
   "dependencies": {

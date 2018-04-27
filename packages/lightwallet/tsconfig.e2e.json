@@ -14,7 +14,8 @@
     ]
   },
   "include": [
-    "desktop/e2e/**/*.ts"
+    "desktop/e2e/**/*.ts",
+    "mobile/e2e/**/*.ts"
   ],
   "exclude": [
     "node_modules",

@@ -1,6 +1,6 @@
-// Protractor configuration file, see link for more information
-// https://github.com/angular/protractor/blob/master/lib/config.ts
 const { SpecReporter } = require('jasmine-spec-reporter');
+const IS_CI = process.env.CIRCLECI || process.env.JENKINS_URL;
+const COMMIT = process.env.CIRCLE_SHA1 || process.env.GIT_COMMIT || 'LOCAL';
 
 const config = {
   allScriptsTimeout: 11000,
@@ -10,7 +10,6 @@ const config = {
   ],
   multiCapabilities: [],
   directConnect: true,
-  baseUrl: 'http://localhost:8888/',
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
@@ -25,10 +24,7 @@ const config = {
   }
 };
 
-const IS_CI = process.env.CIRCLECI || process.env.JENKINS_URL;
-
 if (IS_CI) {
-  const COMMIT = process.env.CIRCLE_SHA1 || process.env.GIT_COMMIT || 'LOCAL';
   const browserstack = require('browserstack-local');
   config.seleniumAddress = 'http://hub-cloud.browserstack.com/wd/hub';
 
@@ -44,39 +40,19 @@ if (IS_CI) {
     });
   };
 
-  config.afterLaunch = () => new Promise(function(resolve, reject){
+  config.afterLaunch = () => new Promise(resolve =>  {
     exports.bs_local.stop(resolve);
   });
 
-  const common = {
-    'browserstack.user': process.env.BROWSERSTACK_USER,
-    'browserstack.key': process.env.BROWSERSTACK_KEY,
-    'browserstack.local': true,
-    resolution: '1920x1080',
-    name: 'LightwalletStack-' + COMMIT
-  };
-
-  config.multiCapabilities.push(
-    {
-      ...common,
-      browserName: 'Chrome'
-    },
-    {
-      ...common,
-      browserName: 'Safari',
-      browser_version: '11.0',
-      os: 'OS X',
-      os_version: 'High Sierra'
-    }
-    ,
-    {
-      ...common,
-      browserName: 'Firefox'
-    }
-  );
   config.directConnect = false;
-} else {
-  config.multiCapabilities.push({ browserName: 'chrome' });
 }
+
+exports.browserStackCommon = {
+  'browserstack.user': process.env.BROWSERSTACK_USER,
+  'browserstack.key': process.env.BROWSERSTACK_KEY,
+  'browserstack.local': true,
+  resolution: '1920x1080',
+  name: 'LightwalletStack-' + COMMIT
+};
 
 exports.config = config;
