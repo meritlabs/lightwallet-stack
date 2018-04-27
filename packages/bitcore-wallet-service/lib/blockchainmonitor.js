@@ -175,7 +175,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
   // Let's format the object to be easier to process below.
   var outs = _.compact(_.map(data.vout, function(v) {
         var addr = _.keys(v)[0];
-        var amount = +[addr];
+        var amount = v[addr];
 
         return {
           address: addr,
@@ -231,7 +231,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
               notificationType = 'IncomingTx';
           }
 
-          log.info(`{notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${out.address} ]`);
+          log.info(`${notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${out.address} ]`);
 
           var fromTs = Date.now() - 24 * 3600 * 1000;
           self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {
@@ -255,7 +255,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
               walletId: walletId,
             });
             self.storage.softResetTxHistoryCache(walletId, function() {
-              self._updateActiveAddresses(address, function() {
+              self._updateActiveAddress(address, function() {
                 self._storeAndBroadcastNotification(notification, next);
               });
             });
@@ -267,10 +267,11 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
   });
 };
 
-BlockchainMonitor.prototype._updateActiveAddresses = function(address, cb) {
+BlockchainMonitor.prototype._updateActiveAddress = function(address, cb) {
   var self = this;
 
-  self.storage.storeActiveAddresses(address.walletId, address.address, function(err) {
+  var addrs = [address.address];
+  self.storage.storeActiveAddresses(address.walletId, addrs, function(err) {
     if (err) {
       log.warn('Could not update wallet cache', err);
     }
