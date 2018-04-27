@@ -2,6 +2,10 @@ const { config, browserStackCommon } = require('./protractor.common.conf');
 const IS_CI = process.env.CIRCLECI || process.env.JENKINS_URL;
 
 config.baseUrl = 'http://localhost:8100/';
+config.specs = [
+  './mobile/e2e/app.e2e-spec.ts',
+  './mobile/e2e/**/*.e2e-spec.ts'
+];
 
 if (IS_CI) {
   config.multiCapabilities.push(
@@ -18,8 +22,7 @@ if (IS_CI) {
       browser_version: '11.0',
       os: 'OS X',
       os_version: 'High Sierra'
-    }
-    ,
+    },
     {
       ...browserStackCommon,
       browserName: 'Firefox'

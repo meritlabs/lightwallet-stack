@@ -4,10 +4,6 @@ const COMMIT = process.env.CIRCLE_SHA1 || process.env.GIT_COMMIT || 'LOCAL';
 
 const config = {
   allScriptsTimeout: 11000,
-  specs: [
-    './desktop/e2e/app.e2e-spec.ts',
-    './desktop/e2e/**/*.e2e-spec.ts'
-  ],
   multiCapabilities: [],
   directConnect: true,
   framework: 'jasmine',

@@ -2,6 +2,10 @@ const { config, browserStackCommon } = require('./protractor.common.conf');
 const IS_CI = process.env.CIRCLECI || process.env.JENKINS_URL;
 
 config.baseUrl = 'http://localhost:8888/';
+config.specs = [
+  './desktop/e2e/app.e2e-spec.ts',
+  './desktop/e2e/**/*.e2e-spec.ts'
+];
 
 if (IS_CI) {
   config.multiCapabilities.push(
