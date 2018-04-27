@@ -82,7 +82,7 @@ export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, a
 
     case TransactionActionType.UpdateOne:
       return {
-        transactions: sortBy(uniqBy(state.transactions.concat(action.transactions), 'txid'), 'time').reverse(),
+        transactions: sortBy(uniqBy(action.transactions.concat(state.transactions), 'txid'), 'time').reverse(),
         transactionsByWallet: {
           ...state.transactionsByWallet,
           [action.walletId]: state.transactions
