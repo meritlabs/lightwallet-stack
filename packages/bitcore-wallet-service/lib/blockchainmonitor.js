@@ -137,7 +137,7 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
     var walletId = txp.walletId;
 
     if (!processIt) {
-      log.info(`Detected broadcast ${data.txid} of an accepted txp [${txp.id}] for wallet ' + walletId + ' [${txp.amount} ${!txp.isInvite ? 'micros' : 'invites'} ]`);
+      log.info(`Detected broadcast ${data.txid} of an accepted txp [${txp.id}] for wallet ${walletId} [${txp.amount} ${!txp.isInvite ? 'micros' : 'invites'} ]`);
       return setTimeout(self._handleThirdPartyBroadcasts.bind(self, data, true), 20 * 1000);
     }
 
