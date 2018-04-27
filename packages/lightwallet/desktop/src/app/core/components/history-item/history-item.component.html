@@ -13,12 +13,12 @@
     </div>
     <p class="date">{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
 
-    <ng-container *ngIf="tx.easySendUrl">
-      <button *ngIf="tx.type === 'globalsend'" (click)="showGlobalSendLink()"
+    <ng-container *ngIf="tx.easySendUrl && tx.type === 'globalsend'">
+      <button (click)="showGlobalSendLink()"
               class="ui-button ui-button--blue ui-button--sm">Show GlobalSend Link
       </button>
-      <button *ngIf="tx.type === 'globalsend' && !tx.easySend.cancelled" (click)="askCancelGlobalSend()"
-              class="ui-button ui-button--red ui-button--sm">Cancel 
+      <button *ngIf="!tx.easySend.cancelled" (click)="askCancelGlobalSend()"
+              class="ui-button ui-button--red ui-button--sm">Cancel
       </button>
     </ng-container>
   </div>
