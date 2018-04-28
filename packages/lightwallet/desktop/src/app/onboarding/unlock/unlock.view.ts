@@ -30,6 +30,8 @@ export class UnlockComponent {
 
   easyReceipt: EasyReceipt;
   creatingWallet: boolean = false;
+  showAgreement: boolean = false;
+  showGuide: boolean = true;
 
   get inviteCode() { return this.formData.get('inviteCode'); }
 
@@ -54,8 +56,18 @@ export class UnlockComponent {
     if (this.easyReceipt) {
       this.inviteCode.setValue(this.easyReceipt.parentAddress);
     }
+    let showGuide;
+    if("showGuide" in localStorage && localStorage.getItem("showGuide") === 'false') {
+      showGuide = false;
+    }else {
+      showGuide  = true;
+    }
+    this.showGuide = showGuide;
   }
-
+  hideGuide($event) {
+    this.showGuide = $event;
+    localStorage.setItem("showGuide", $event);
+  }
   async onSubmit() {
     this.loadingCtrl.show();
     this.creatingWallet = true;
@@ -92,4 +104,5 @@ export class UnlockComponent {
       // TODO show  error to user
     }
   }
+
 }

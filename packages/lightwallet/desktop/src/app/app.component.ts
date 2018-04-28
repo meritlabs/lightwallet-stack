@@ -27,16 +27,8 @@ export class AppComponent {
     let search = window.location.search;
     if (search && search.length > 2) {
       try {
-        const data: any = {};
-        search
-          .substr(1)
-          .split('&')
-          .forEach((q: any) => {
-            q = q.split('=');
-            data[q[0]] = q[1];
-          });
-
-        const easyReceipt: EasyReceipt = await this.easyReceiveService.validateAndSaveParams(data);
+        const params = this.easyReceiveService.parseEasySendUrl(search);
+        const easyReceipt: EasyReceipt = await this.easyReceiveService.validateAndSaveParams(params);
         if (easyReceipt) {
           // Let's remove the Query Params from the URL so that the user is not continually loading the same EasyReceipt every time they re-open the app or the browser. 
           window.history.replaceState({},document.title,document.location.pathname);        

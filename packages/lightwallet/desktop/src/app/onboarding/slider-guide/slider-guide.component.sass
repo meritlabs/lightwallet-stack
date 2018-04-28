@@ -1,0 +1,66 @@
+@import "~styles/v1/common/import-sass"
+\:host
+  color: $white
+  a
+    +font(400, 16px, 18px, $color: $white)
+    user-select: none
+.guide
+  height: 100vh
+  padding: 60px 40px 0
+  display: flex
+  flex-direction: column
+  justify-content: space-between
+  box-sizing: border-box
+  position: relative
+  &_title
+    text-align: right
+    margin-bottom: 40px
+    span
+      opacity: .8
+    .link
+      opacity: 1
+      padding-left: 10px
+      cursor: pointer
+      &:hover
+        text-decoration: underline
+  .skipTutorial
+    position: fixed
+    bottom: 20px
+    right: 40px
+.guide_slider
+  padding-bottom: 65px
+  height: 100%
+  position: relative
+  .inner
+    margin-left: -35px
+  .navArrow
+    background: transparent
+    display: block !important
+    border-radius: 100%
+    height: 40px
+    width: 40px
+    border: 0
+    position: fixed
+    top: 50vh
+    background: url('/assets/v1/images/onboard/arrow.png') no-repeat 50% 50%
+    &[style*=display]:not([style*=block])
+      opacity: .5
+      cursor: default
+  .rightRs
+    right: 40px
+  .leftRs
+    left: 40px
+    transform: rotate(180deg)
+  .slide_image
+    margin-bottom: 60px
+  .slide_description
+    max-width: 530px
+    width: 100%
+    margin: 0px auto
+  .description_title
+    +font(500, 34px, 40px)
+    margin-bottom: 30px
+  .description_caption
+    +font(100, 22px, 32px)
+    margin-bottom: 60px
+    letter-spacing: 1px

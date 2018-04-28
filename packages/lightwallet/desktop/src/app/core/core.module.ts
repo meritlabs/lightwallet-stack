@@ -34,6 +34,7 @@ import { WalletSettingsView } from './wallets/wallet-details/wallet-settings/wal
 import { WalletsView } from './wallets/wallets.view';
 import { ClipModule } from 'ng2-clip';
 import { SendTourComponent } from './send/send-tour/send-tour.component';
+import { WelcomeGuideComponent } from './dashboard/welcome-guide/welcome-guide.component';
 
 export function getPages() {
   return [
@@ -82,7 +83,8 @@ export function getPages() {
   declarations: [
     CoreView,
     ...getPages(),
-    SendTourComponent
+    SendTourComponent,
+    WelcomeGuideComponent
   ],
   providers: [
     WalletPasswordGuard

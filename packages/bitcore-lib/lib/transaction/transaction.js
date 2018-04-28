@@ -376,6 +376,10 @@ Transaction.prototype.isInvite = function isInvite() {
   return this.version >= Transaction.INVITE_VERSION;
 }
 
+Transaction.prototype.makeInvite = function () {
+  this.version = Transaction.INVITE_VERSION;
+}
+
 Transaction.prototype.fromObject = function fromObject(arg) {
   /* jshint maxstatements: 20 */
   $.checkArgument(_.isObject(arg) || arg instanceof Transaction);
@@ -599,6 +603,7 @@ Transaction.prototype._fromNonP2SH = function(utxo) {
   } else {
     clazz = Input;
   }
+
   this.addInput(new clazz({
     output: new Output({
       script: utxo.script,
