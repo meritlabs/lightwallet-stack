@@ -7,8 +7,9 @@ import { isEmpty } from 'lodash';
 export enum StorageKey {
   WalletPreferencesPrefix = 'merit_wallet_preferences_',
   NotificationSettings = 'merit_notification_settings',
-  Notifications = 'notifications',
-  EasySends = 'merit_easysends'
+  Notifications = 'merit_notifications',
+  EasySends = 'merit_easysends',
+  viewSettings = 'app_view_settings'
 }
 
 export interface INotificationSettings {
@@ -61,11 +62,33 @@ export class PersistenceService2 {
     return this.setEasySends(easySends);
   }
 
+  async cancelEasySend(address: string) {
+    const easySends = await this.getEasySends();
+
+    const idx = easySends.findIndex(tx => {
+      return tx.scriptAddress == address; 
+    });
+
+    if(idx != -1) {
+      easySends[idx].cancelled = true;
+      console.log("FOUND:", easySends[idx]);
+      return this.setEasySends(easySends);
+    }
+  }
+
   setEasySends(easySends: EasySend[]) {
     return this.storage.set(StorageKey.EasySends, easySends);
   }
 
   async getEasySends(): Promise<EasySend[]> {
     return (await this.storage.get(StorageKey.EasySends)) || [];
+  }
+
+  setViewSettings(key: string, value: boolean) {
+    return this.storage.set(StorageKey.viewSettings + key, value);
+  }
+
+  getViewSettings(key) {
+    return this.storage.get(StorageKey.viewSettings + key);
   }
 }

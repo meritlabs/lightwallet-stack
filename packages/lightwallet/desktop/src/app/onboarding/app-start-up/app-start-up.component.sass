@@ -1,0 +1,121 @@
+@import "~styles/v1/common/import-sass"
+.welcome
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-flow: row wrap
+  width: 100vw
+  min-height: 100vh
+  &_wrap
+    text-align: center
+  &_logo
+    max-width: 200px
+    width: 100%
+    margin: 0 auto 20px
+    &.animated
+      opacity: 0
+      animation: showChoices .2s forwards
+      animation-timing-function: ease-out
+      animation-delay: 2.5s
+  &_title
+    +font(500, 30px, 34px, $white)
+    margin-bottom: 20px
+    &.animated
+      transform: scale(3)
+      animation: pasteBack .2s forwards
+      animation-timing-function: ease-in
+      animation-delay: 1.8s
+      i
+        display: inline-block
+        opacity: 0
+        transform: scale(2) translateY(-20px)
+        animation: typeIt .3s forwards
+        animation-timing-function: ease-in
+    @for $i from 0 to 20
+      i:nth-child(#{$i + 1})
+        animation-delay: #{$i / 10 + 0.5 }s
+  &_caption
+    +font(300, 20px, 30px, $white)
+    max-width: 500px
+    width: 100%
+    margin: 0px auto 40px
+    &.animated
+      opacity: 0
+      animation: showCaption .2s forwards
+      animation-timing-function: ease-out
+      animation-delay: 2s
+  &_choices
+    display: flex
+    max-width: 800px
+    width: 100%
+    margin: 0 auto
+    &.animated
+      opacity: 0
+      animation: showChoices .2s forwards
+      animation-timing-function: ease-out
+      animation-delay: 2.5s
+  &_choice
+    +font(400, 16px, 22px, $white)
+    margin: 0 10px
+    max-width: 25%
+    width: 100%
+    border-radius: 10px
+    border: 1px solid $white
+    padding: 20px 15px
+    cursor: pointer
+    opacity: .7
+    +transition(.3s, linear)
+    background: transparent
+    transform: translate3d(0,0,0)
+    &:hover
+      background: $blue
+      border-color: $blue
+      opacity: 1
+      box-shadow: 0 0 20px rgba(0,0,0, .2)
+      .icon
+        background: $salad-green
+    a
+      +font(400, 16px, 22px, $white)
+.icon
+  display: block
+  width: 50px
+  height: 50px
+  margin: 0 auto 15px
+  mask-position: center
+  mask-repeat: no-repeat
+  mask-size: contain
+  background: $white
+  &-research
+    mask-image: url('/assets/v1/icons/startup/choice-new.svg')
+  &-try
+    mask-image: url('/assets/v1/icons/startup/choice-try.svg')
+  &-backup
+    mask-image: url('/assets/v1/icons/startup/choice-backup.svg')
+  &-have
+    mask-image: url('/assets/v1/icons/startup/choice-have.svg')
+@keyframes typeIt
+  0%
+    opacity: 0
+    transform: scale(2) translateY(-20px)
+  100%
+    opacity: 1
+    transform: scale(1) translateY(0)
+@keyframes pasteBack
+  0%
+    transform: scale(3)
+  100%
+    transform: scale(1)
+@keyframes showCaption
+  0%
+    opacity: 0
+    transform: scale(.8)
+  100%
+    opacity: 1
+    transform: scale(1)
+@keyframes showChoices
+  0%
+    opacity: 0
+    transform: translateY(10%)
+  100%
+    opacity: 1
+    transform: translateY(0%)

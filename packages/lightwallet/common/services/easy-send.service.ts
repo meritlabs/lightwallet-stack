@@ -6,7 +6,7 @@ import { EasySend } from '@merit/common/models/easy-send';
 import { AddressService } from '@merit/common/services/address.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
-import { Address, HDPrivateKey, PrivateKey, Script } from 'bitcore-lib';
+import { Address, HDPrivateKey, PrivateKey, Script} from 'bitcore-lib';
 
 @Injectable()
 export class EasySendService {
@@ -149,7 +149,8 @@ export class EasySendService {
       blockTimeout: timeout,
       parentAddress: '',
       scriptAddress: '',
-      scriptReferralOpts: {}
+      scriptReferralOpts: {},
+      cancelled: false
     };
   }
 

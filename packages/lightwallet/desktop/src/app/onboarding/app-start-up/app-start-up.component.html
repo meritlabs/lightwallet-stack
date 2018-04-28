@@ -1,0 +1,42 @@
+<div class="welcome">
+  <div class="welcome_wrap">
+    <div class="welcome_logo" [class.animated]="showWelcomeAnimation">
+      <img src="/assets/v1/images/onboard/logo.svg" alt="">
+    </div>
+    <div class="welcome_title" [class.animated]="showWelcomeAnimation">
+      <h1>
+        <i>W</i>
+        <i>E</i>
+        <i>L</i>
+        <i>C</i>
+        <i>O</i>
+        <i>M</i>
+        <i>E</i>
+        <i>!</i>
+      </h1>
+    </div>
+    <div class="welcome_caption" [class.animated]="showWelcomeAnimation">
+      <p>
+        Hello there!  Welcome to the Merit Web Wallet.  Merit is a new digital currency that is safer, simpler, and more community-focused than others.  Choose the option below that describes you best.
+      </p>
+    </div>
+    <div class="welcome_choices" [class.animated]="showWelcomeAnimation">
+      <div class="welcome_choice" routerLink="tour-desktop">
+        <span class="icon icon-have"></span>
+        <p>I already have a Merit wallet, and I want to access it via the web.</p>
+      </div>
+      <div class="welcome_choice" routerLink="import">
+        <span class="icon icon-backup"></span>
+        <p>I lost access to my Merit wallet, and I want do restore it here.</p>
+      </div>
+      <div class="welcome_choice" routerLink="unlock">
+        <span class="icon icon-research"></span>
+        <p>I received an invite to Merit by someone I know.</p>
+      </div>
+      <div class="welcome_choice" routerLink="tour-beginners">
+          <span class="icon icon-try"></span>
+          <p>I'm new to Merit, and I want to see what it's all about.</p>
+      </div>
+    </div>
+  </div>
+</div>

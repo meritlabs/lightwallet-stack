@@ -67,16 +67,8 @@ export class MeritLightWallet {
     let search = window.location.search;
     if (search && search.length > 2) {
       try {
-        const data: any = {};
-        search
-          .substr(1)
-          .split('&')
-          .forEach((q: any) => {
-            q = q.split('=');
-            data[q[0]] = q[1];
-          });
-
-        const easyReceipt: EasyReceipt = await this.easyReceiveService.validateAndSaveParams(data);
+        const params = this.easyReceiveService.parseEasySendUrl(search);
+        const easyReceipt: EasyReceipt = await this.easyReceiveService.validateAndSaveParams(params);
         this.logger.info('Returned from validate with: ', easyReceipt);
         
         // We have an easyReceipt, let's handle the cases of being a new user or an

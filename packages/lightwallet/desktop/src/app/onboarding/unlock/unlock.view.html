@@ -1,4 +1,5 @@
 <ng4-loading-spinner></ng4-loading-spinner>
+<app-slider-guide *ngIf="showGuide" (hideGuide)="hideGuide($event)" [showGuide]="showGuide"></app-slider-guide>
 <div class="container--fluid unlock">
   <div class="unlock__content container">
     <div class="container--fluid unlock__heading">
@@ -10,14 +11,15 @@
           <h1>{{ easyReceipt.senderName | unescape }} sent you Merit!</h1>
         </ng-container>
         <ng-template #noEasyReceipt>
-          <h1>Merit is invite-only network</h1>
+          <h1><span routerLink="../" class="unlock__back"><img src="/assets/v1/images/backup/back-icon.svg" alt=""></span>
+            Merit is invite-only network</h1>
         </ng-template>
       </div>
     </div>
     <form class="unlock__form" [formGroup]="formData" (ngSubmit)="onSubmit()">
       <div class="ui-input__group">
         <label for="" class="ui-label">
-          Invite code or username
+          Invite code
           <span class="ui-tooltip">
             <span class="ui-tooltip__text">
               You need an invite code from a friend or colleague.
@@ -42,15 +44,19 @@
             <span class="tooltip-error">
               <span>Invalid address or alias format</span>
             </span>
-            </div>
+          </div>
           <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('AddressNotFound')">
             <span class="tooltip-error">
               <span>Address not found</span>
             </span>
           </div>
         </div>
+        <div class="ui-input__group__tipbox" *ngIf="!inviteCode.valid">
+          Please enter "Invite code" which you recieved from your friend or colleague,
+          after code entering you will proceed to the next step =)
+        </div>
       </div>
-      <div class="ui-input__group">
+      <div class="ui-input__group" [ngClass]="{'ui-input__group--disabled': !inviteCode.valid}" *ngIf="inviteCode.valid">
         <label for="" class="ui-label">
           Your username (alias)
           <span class="ui-tooltip">
@@ -79,15 +85,46 @@
             </span>
           </div>
         </div>
+        <div class="ui-input__group__tipbox" *ngIf="!alias.valid && !alias.hasError('AliasInUse')">
+          Please create and enter your Uniq network alias, it will be used for identify you
+          in the Merit World. Be careful, entered name canntot be changed after unlocking process.
+        </div>
       </div>
-      <div class="unlock__form__group">
-        <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="formData.invalid || creatingWallet">Let's get started</button>
+      <div class="unlock__form__group" *ngIf="!formData.invalid && alias.valid">
+        <div class="ui-button ui-button--blue ui-button--with-arrow" (click)="showAgreement = !showAgreement">NEXT</div>
       </div>
     </form>
-
-    <div class="already-member">
-      Already a member?
-      <a routerLink="../import">Import wallet</a>
+    <div class="userAgreement" *ngIf="showAgreement">
+      <div class="userAgreement_content">
+        <h2 class="content_title">
+          <div class="import_back" (click)="showAgreement = !showAgreement">
+            <img src="/assets/v1/images/backup/back-icon.svg" alt="">
+          </div>Wallet unlock confirmation
+        </h2>
+        <div class="content_details">
+          <p>Invite address: <strong>{{inviteCode.value}}</strong></p>
+          <p>Your username(alias): <strong>{{alias.value}}</strong></p>
+        </div>
+        <div class="content_warning">
+          <p><strong>*</strong> Be carefull you cant change your alias in the future.</p>
+          <p><strong>**</strong> You will recieve your uniq password after these conditions aprovement.</p>
+        </div>
+        <div class="content_checkbox">
+          <div class="ui-checkbox">
+              <input type="checkbox"[(ngModel)]="userAgreement">
+              <span class="ui-checkbox__switcher"></span>
+              <strong>I agree with these conditions.</strong>
+          </div>
+        </div>
+        <button class="ui-button ui-button--blue ui-button--with-arrow"
+          role="button" type="submit" [disabled]="!userAgreement"
+          (click)="onSubmit()">Let's get started</button>
+      </div>
+    </div>
+    <div class="already-member" [hidden]="!alias.hasError('AliasInUse')">
+      <p>Oooops! Looks like you try to reuse existing username (alias).</p>
+      <p>If it is true you can <a routerLink="../import">import wallet</a></p>
+      <p>If no, please choose another username (alias)</p>
     </div>
   </div>
 </div>
