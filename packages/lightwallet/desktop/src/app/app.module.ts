@@ -12,8 +12,6 @@ import { TransactionEffects } from '@merit/common/effects/transaction.effects';
 import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { IRootAppState, reducer } from '@merit/common/reducers';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
-import { RefreshWalletsAction, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
-import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
@@ -31,35 +29,22 @@ import { Platform } from 'ionic-angular/platform/platform';
 import { Events } from 'ionic-angular/util/events';
 import 'rxjs/add/operator/toPromise';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
-import { filter, take } from 'rxjs/operators';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { MarketLoginView } from './market/market-login/market-login.view';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
 }
 
-export function loadConfigs(appService: AppSettingsService, profileService: ProfileService, store: Store<IRootAppState>) {
+export function loadConfigs(profileService: ProfileService, store: Store<IRootAppState>) {
   return async () => {
-    await appService.getInfo();
-
     const authorized = await profileService.isAuthorized();
 
     store.dispatch(new UpdateAppAction({
       loading: false,
       authorized
     }));
-
-    if (authorized) {
-      store.dispatch(new RefreshWalletsAction());
-
-      await store.select(selectWalletsLoading)
-        .pipe(
-          filter((loading: boolean) => !loading),
-          take(1)
-        )
-        .toPromise();
-    }
   };
 }
 
@@ -77,7 +62,8 @@ export function getProviders() {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    MarketLoginView
   ],
   imports: [
     BrowserModule,
@@ -112,9 +98,9 @@ export function getProviders() {
     {
       provide: APP_INITIALIZER,
       useFactory: loadConfigs,
-      deps: [AppSettingsService, ProfileService, Store],
+      deps: [ProfileService, Store],
       multi: true
-    }
+    },
   ],
   bootstrap: [AppComponent]
 })

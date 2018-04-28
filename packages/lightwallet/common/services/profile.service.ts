@@ -21,7 +21,7 @@ export class ProfileService {
     private events: Events,
     private mwcService: MWCService
   ){
-    this.loadProfile().then(() => this.refreshData());
+    this.loadProfile();
   }
 
   /**
