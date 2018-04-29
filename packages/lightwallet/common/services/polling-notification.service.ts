@@ -10,6 +10,7 @@ import { Store } from '@ngrx/store';
 import { uniqBy } from 'lodash';
 import { debounceTime, filter, map } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
+import { ElectronService } from '../../desktop/src/services/electron.service';
 
 @Injectable()
 export class PollingNotificationsService {
@@ -55,6 +56,8 @@ export class PollingNotificationsService {
   }
 
   protected async pushNotificationsEnabled(): Promise<boolean> {
+    if (ElectronService.isElectronAvailable) return false;
+
     const pnSettings = await this.persistenceService.getNotificationSettings();
     return Boolean(pnSettings && pnSettings.pushNotifications);
   }
