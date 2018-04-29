@@ -20,7 +20,10 @@
 
   <script>
     if (/Mobile|Android/i.test(navigator.userAgent))
-      location.hostname = 'm.' + location.hostname;
+      location.hostname = location.hostname.replace('wallet.', 'm.wallet.');
+
+    if (typeof require === 'function')
+      require('../electron.bootstrap.js');
   </script>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
