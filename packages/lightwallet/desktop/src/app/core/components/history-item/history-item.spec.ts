@@ -2,6 +2,7 @@ import { DebugElement, Injectable } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { ClipModule } from 'ng2-clip';
 import { MomentModule } from 'ngx-moment';
@@ -30,6 +31,9 @@ class MockGlobalSendLinkPopupController {
   create() {}
 }
 
+@Injectable()
+class MockEasyReceiveService {}
+
 describe('History item component', () => {
 
   let instance: ComponentFixture<HistoryItemComponent>,
@@ -43,7 +47,8 @@ describe('History item component', () => {
       ],
       providers: [
         { provide: GlobalsendLinkPopupController, useClass: MockGlobalSendLinkPopupController },
-        { provide: ToastControllerService, useClass: MockToastController }
+        { provide: ToastControllerService, useClass: MockToastController },
+        { provide: EasyReceiveService, useClass: MockEasyReceiveService }
       ],
       imports: [
         ClipModule,
