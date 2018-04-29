@@ -1,4 +1,4 @@
-import { browser, by, element, ProtractorExpectedConditions, protractor } from 'protractor';
+import { browser, by, element, protractor, ProtractorExpectedConditions } from 'protractor';
 
 export const TEST_WALLET_MNEMONIC = 'turkey walnut rocket ordinary always fiction noise skull sketch aunt clown wild';
 export const TEST_WALLET_ALIAS = '@ibby-demo-mac';
@@ -11,8 +11,13 @@ export async function isBrowser(browser: string) {
 
 describe('[Desktop] Onboarding', () => {
   beforeAll(() => {
-    browser.get('/');
+    // maximize window
     browser.driver.manage().window().maximize();
+
+    browser.get('/');
+
+    // Disable welcome screen animation
+    browser.executeScript(`localStorage.setItem('showWelcomeAnimation', false);`);
   });
 
   it('title should be Merit Lightwallet', () => {
@@ -29,36 +34,119 @@ describe('[Desktop] Onboarding', () => {
     expect(browser.getCurrentUrl()).toContain('onboarding');
   });
 
-  describe('Tutorial', () => {
-
-    let el;
-
+  describe('Welcome screen', () => {
+    let choicesRootElement, choiceElements;
     beforeAll(() => {
-      el = element(by.css('.skipTutorial'));
+      choicesRootElement = element(by.css('.welcome_choices'));
+      choiceElements = choicesRootElement.all(by.css('.welcome_choice'));
     });
 
-    it('should skip tutorial', async () => {
-      expect(await el.isPresent()).toBeTruthy();
+    it('should have 4 choiceElements', async () => {
+      expect((await choiceElements).length).toBe(4);
     });
 
-    it('should go to unlock view', async () => {
-      await el.click();
-      expect(browser.getCurrentUrl()).toContain('onboarding/unlock');
-    });
-
-    it('should have a link to the import page', async () => {
-      const el = element(by.css('a[routerLink="../import"]'));
-      expect(el.isPresent()).toBeTruthy();
+    it('should have a link to onboard users coming from QT wallet', () => {
+      const el = choicesRootElement.element(by.css('[routerlink=tour-desktop]'));
       expect(el.isDisplayed()).toBeTruthy();
+    });
+
+    it('should have a link to import page', () => {
+      const el = choicesRootElement.element(by.css('[routerlink=import]'));
+      expect(el.isDisplayed()).toBeTruthy();
+    });
+
+    it('should have a link to onboard users who got an invite', () => {
+      const el = choicesRootElement.element(by.css('[routerlink=unlock]'));
+      expect(el.isDisplayed()).toBeTruthy();
+    });
+
+    it('should have a link to onboard beginner users', () => {
+      const el = choicesRootElement.element(by.css('[routerlink=tour-beginners]'));
+      expect(el.isDisplayed()).toBeTruthy();
+    });
+  });
+
+  describe('> QT Wallet unboarding', () => {
+
+    beforeEach(() => {
+      browser.get('/onboarding');
+      const el = element(by.css('[routerlink=tour-desktop]'));
+      el.click();
+    });
+
+    it('should take user to QT wallet tour', () => {
+      expect(browser.getCurrentUrl()).toContain('tour-desktop');
+    });
+
+    describe('> Back button', () => {
+      let el;
+
+      beforeEach(() => {
+        el = element(by.css('[routerlink="../"]'));
+      });
+
+      it('should have a link to go back', () => {
+        expect(el.isDisplayed()).toBeTruthy();
+        expect(el.isEnabled()).toBeTruthy();
+      });
+
+      it('should go back', async () => {
+        el.click();
+        browser.wait(EC.not(EC.urlContains('tour-desktop')));
+        expect(browser.getCurrentUrl()).not.toContain('tour-desktop');
+      });
+    });
+
+    describe('> Create wallet button', () => {
+      let el;
+
+      beforeEach(() => {
+        el = element(by.css('[routerlink=unlock]'));
+      });
+
+      it('should have a link to create a wallet', () => {
+        expect(el.isDisplayed()).toBeTruthy();
+        expect(el.isEnabled()).toBeTruthy();
+      });
+
+      it('should take the user to the unlock page', () => {
+        el.click();
+        browser.wait(EC.not(EC.urlContains('tour-desktop')));
+        expect(browser.getCurrentUrl()).not.toContain('tour-desktop');
+        expect(browser.getCurrentUrl()).toContain('unlock');
+      });
+    });
+
+    describe('> Import wallet button', () => {
+      let el;
+
+      beforeEach(() => {
+        el = element(by.css('[routerlink="../import"]'));
+      });
+
+      it('should have a link to import a wallet', () => {
+        expect(el.isDisplayed()).toBeTruthy();
+        expect(el.isEnabled()).toBeTruthy();
+      });
+
+      it('should take the user to the import page', () => {
+        el.click();
+        browser.wait(EC.not(EC.urlContains('tour-desktop')));
+        expect(browser.getCurrentUrl()).not.toContain('tour-desktop');
+        expect(browser.getCurrentUrl()).toContain('import');
+      });
+
     });
 
   });
 
-  describe('Unlock view', () => {
+  describe('> Unlock view', () => {
 
     let el;
 
     beforeAll(() => {
+      browser.get('/onboarding');
+      element(by.css('[routerlink=unlock]')).click();
       el = element(by.css('input[formControlName=inviteCode]'));
     });
 
@@ -84,21 +172,28 @@ describe('[Desktop] Onboarding', () => {
       expect(el.getAttribute('class')).toContain('ng-valid');
     });
 
-    it('should have a link to import page', async () => {
-      const el = element(by.css('a[routerLink="../import"]'));
+    it('should have a link to go back to onboarding', async () => {
+      const el = element(by.css('[routerLink="../"]'));
       expect(el.isPresent()).toBeTruthy();
       expect(el.isDisplayed()).toBeTruthy();
     });
 
+    it('back link should go back to onboarding', () => {
+      const el = element(by.css('[routerLink="../"]'));
+      el.click();
+      browser.wait(EC.not(EC.urlContains('unlock')));
+      expect(browser.getCurrentUrl()).not.toContain('unlock');
+    });
+
   });
 
-  describe('Import wallet', () => {
+  describe('> Import wallet', () => {
 
-    describe('Main import view', () => {
+    describe('> Main import view', () => {
 
       beforeAll(() => {
         browser.get('/');
-        const el = element(by.css('a[routerLink="import"]'));
+        const el = element(by.css('[routerLink="import"]'));
         el.click();
       });
 
@@ -118,13 +213,13 @@ describe('[Desktop] Onboarding', () => {
 
     });
 
-    describe('Mnemonic phrase', () => {
+    describe('> Mnemonic phrase', () => {
 
       let mnemonicButton, mnemonicInput, submitButton;
 
       beforeAll(() => {
         browser.get('/');
-        const el = element(by.css('a[routerLink="import"]'));
+        const el = element(by.css('[routerLink="import"]'));
         el.click();
         mnemonicButton = element(by.css('.mnemonic-import-button'));
       });

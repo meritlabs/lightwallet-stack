@@ -45,7 +45,7 @@ describe('[Desktop] Wallet details view', () => {
     expect(element(by.css('a[href*="export"]')).isDisplayed()).toBeTruthy();
   });
 
-  describe('History tab', () => {
+  describe('> History tab', () => {
 
     it('url should have /history', () => {
       expect(EC.urlContains('/history')).toBeTruthy();
@@ -57,7 +57,7 @@ describe('[Desktop] Wallet details view', () => {
 
   });
 
-  describe('Preferences tab', () => {
+  describe('> Preferences tab', () => {
 
     let header,
       initialHeaderColor: string,
@@ -115,7 +115,7 @@ describe('[Desktop] Wallet details view', () => {
 
   });
 
-  describe('Backup tab', () => {
+  describe('> Backup tab', () => {
 
     beforeAll(async () => {
       element(by.css('a[href*="export"]')).click();
@@ -143,7 +143,7 @@ describe('[Desktop] Wallet details view', () => {
       expect(el.getText()).toContain('Mnemonic Phrase');
     });
 
-    describe('QR Code backup', () => {
+    describe('> QR Code backup', () => {
 
       beforeAll(() => {
         element(by.css('div[routerLink=qr-code]')).click();
@@ -179,7 +179,7 @@ describe('[Desktop] Wallet details view', () => {
 
     });
 
-    describe('Mnemonic phrase backup', () => {
+    describe('> Mnemonic phrase backup', () => {
 
       beforeAll(() => {
         element(by.css('div[routerLink=mnemonic]')).click();
@@ -217,7 +217,7 @@ describe('[Desktop] Wallet details view', () => {
 
     });
 
-    describe('Backup file export', () => {
+    describe('> Backup file export', () => {
 
       beforeAll(() => {
         element(by.css('div[routerLink=file]')).click();
