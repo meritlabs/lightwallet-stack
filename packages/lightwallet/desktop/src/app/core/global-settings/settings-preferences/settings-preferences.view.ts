@@ -12,6 +12,7 @@ import { isWalletEncrypted } from '@merit/common/utils/wallet';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
+import { ElectronService } from '@merit/desktop/services/electron.service';
 import { State, Store } from '@ngrx/store';
 import { isEmpty } from 'lodash';
 import 'rxjs/add/operator/toPromise';
@@ -26,6 +27,10 @@ declare const WEBPACK_CONFIG: any;
   styleUrls: ['./settings-preferences.view.sass']
 })
 export class SettingsPreferencesView implements OnInit, OnDestroy {
+
+  get isElectron(): boolean {
+    return ElectronService.isElectronAvailable;
+  }
 
   formData: FormGroup = this.formBuilder.group({
     pushNotifications: false,
