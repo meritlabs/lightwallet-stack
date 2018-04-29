@@ -66,6 +66,9 @@ export class PanGesture {
   private _onMove(ev: TouchEvent | MouseEvent) {
     const coords: PointerCoordinates = pointerCoord(ev);
 
+    // this can happen on desktop (for e2e testing)
+    if (!this.initialCoords) return;
+
     if (!this.isDragging) {
 
       if (typeof this.shouldCapture !== 'boolean')

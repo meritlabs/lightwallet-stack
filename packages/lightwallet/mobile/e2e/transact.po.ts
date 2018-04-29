@@ -1,0 +1,37 @@
+import { browser, protractor, element, by } from 'protractor';
+
+export class Transact {
+
+  getRootEl() {
+    return element(by.css('view-transact'));
+  }
+
+  getTabButtonsEl() {
+    return this.getTabsEl().element(by.css('.tabbar'));
+  }
+
+  getTabsEl() {
+    return this.getRootEl().element(by.css('ion-tabs'));
+  }
+
+  getSelectedTab() {
+    return this.getTabsEl().element(by.css('ion-tab[aria-hidden=false]'));
+  }
+
+  selectTab(index: number) {
+    return this.getTabButtonsEl().element(by.css(`.tab-button:nth-child(${ ++index })`)).click();
+  }
+
+  getSendView() {
+    return this.getRootEl().element(by.css('view-send'));
+  }
+
+  getReceiveView() {
+    return this.getRootEl().element(by.css('view-receive'));
+  }
+
+  getCommunityView() {
+    return this.getRootEl().element(by.css('view-network'));
+  }
+
+}
