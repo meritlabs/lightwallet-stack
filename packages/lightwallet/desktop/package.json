@@ -1,7 +1,7 @@
 {
   "name": "lightwallet-desktop",
   "version": "0.2.4",
-  "main": "main.js",
+  "main": "electron.main.js",
   "description": "Lightwallet implementation for desktops",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "author": "Merit Foundation <hello@merit.me> https://www.merit.me",
@@ -18,6 +18,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/meritlabs/lightwallet-stack"
+  },
+  "dependencies": {
+    "node-notifier": "^5.2.1"
   },
   "devDependencies": {
     "@angular-devkit/core": "0.3.2",
