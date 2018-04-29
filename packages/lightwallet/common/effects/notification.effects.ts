@@ -50,7 +50,11 @@ export class NotificationEffects {
   showToast$ = this.actions$.pipe(
     ofType(NotificationsActionType.Add),
     tap((action: AddNotificationAction) => {
+      if (!action.notification) return;
+
       const notification = formatNotification(action.notification);
+
+      if (!notification) return;
       const toast = this.toastCtrl.create({
         title: notification.title,
         message: notification.message,

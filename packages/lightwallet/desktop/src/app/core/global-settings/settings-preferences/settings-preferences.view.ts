@@ -109,6 +109,8 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
         )
         .subscribe()
     );
+
+    if (this.isElectron) this.formData.get('pushNotifications').setValue(false);
   }
 
   ngOnDestroy() {
