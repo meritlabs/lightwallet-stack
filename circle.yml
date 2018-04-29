@@ -118,6 +118,14 @@ jobs:
       - run:
           name: Wait for Desktop LW app to be ready
           command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888
-      - run: cd packages/lightwallet && npm run test:e2e
+      - run: cd packages/lightwallet && npm run test:desktop:e2e
+      - run:
+          name: Run ionic serve
+          command: cd packages/lightwallet && npm run ionic:serve
+          background: true
+      - run:
+          name: Wait for Mobile LW app to be ready
+          command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8100
+      - run: cd packages/lightwallet && npm run test:mobile:e2e
       - run: cd packages/lightwallet && npm run build -- --prod
       - run: cd packages/lightwallet/desktop && npm run build:prod
