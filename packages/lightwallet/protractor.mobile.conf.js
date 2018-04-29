@@ -12,20 +12,11 @@ if (IS_CI) {
     {
       ...browserStackCommon,
       browserName: 'Chrome',
-      mobileEmulation: {
-        deviceName: 'Pixel 2'
+      chromeOptions: {
+        mobileEmulation: {
+          deviceName: 'Pixel 2'
+        }
       }
-    },
-    {
-      ...browserStackCommon,
-      browserName: 'Safari',
-      browser_version: '11.0',
-      os: 'OS X',
-      os_version: 'High Sierra'
-    },
-    {
-      ...browserStackCommon,
-      browserName: 'Firefox'
     }
   );
 } else {
