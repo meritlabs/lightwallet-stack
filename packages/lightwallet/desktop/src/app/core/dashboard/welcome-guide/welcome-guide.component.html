@@ -1,40 +1,42 @@
-<div class="welcomeGuide" *ngIf="!hideWinow">
-  <div class="welcomeGuide_wrap">
-    <p class="welcomeGuide_title">WELCOME!</p>
-    <div class="welcomeGuide_content">
-      <div class="welcomeGuide_description">
-        <p>Congratulations, you just created/imported your first wallet!</p>
-        <p>Please save current password in some must protected place in your mind.</p>
-        <p>Curent recovery password cannot be changed or recovered, so it`s mean that
+<div class="wrap">
+  <p class="title">WELCOME!</p>
+  <div class="content">
+    <div class="description">
+      <p>Congratulations, you just created/imported your first wallet!</p>
+      <p>Please save current password in some must protected place in your mind.</p>
+      <p>Curent recovery password cannot be changed or recovered, so it`s mean that
         if you will loose your backUp data you will loose your Merits.</p>
-      </div>
+    </div>
 
-      <div class="welcomeGuide_mnemonic" *ngIf="wallets[0]">
-
-        <div class="ui-button ui-button--blue ui-button--sm"
-          (click)="showPhrase = !showPhrase">{{ showPhrase == true ? 'Hide' : 'Show' }} my secret recovery phrase</div>
-        <div *ngIf="showPhrase" class="mnemonic_box">
-          <div class="box_clip" [clip]="wallets[0].client.getMnemonic()">
-            <button type="button" name="button" class="ui-button ui-button--white ui-button--sm" (click)="copyState()">{{copy}}</button>
-          </div>
-          {{ wallets[0].client.getMnemonic() }}
+    <div class="mnemonic" *ngIf="wallets[0]">
+      <button class="ui-button ui-button--blue ui-button--sm" (click)="showPhrase = !showPhrase">
+        {{ showPhrase == true ? 'Hide' : 'Show' }} my secret recovery phrase
+      </button>
+      <div [hidden]="!showPhrase" class="box">
+        <div class="clip" [clip]="wallets[0].client.getMnemonic()">
+          <button type="button" name="button" class="ui-button ui-button--white ui-button--sm" (click)="copyState()">
+            {{ copy }}
+          </button>
         </div>
+        {{ wallets[0].client.getMnemonic() }}
       </div>
+    </div>
 
-      <div class="welcomeGuide_description">
-        <p>If you will decide to create new wallet, you should do same actions (choose
-          way to export your wallet and carefully save backup data).</p>
-        <p>For that, you should do several clicks:</p>
-        <ol>
-          <li>Select menu item <strong>Wallets</strong> (placed in the side bar)</li>
-          <li>Choose wallet which you want to backUp/export</li>
-          <li>In the wallet details route select menu item <strong>Export wallet</strong></li>
-          <li>Choose the best way to you from avalible methods: <strong>QR Code / Mnemonic Phrase / BackUp file</strong></li>
-        </ol>
-      </div>
+    <div class="description">
+      <p>If you will decide to create new wallet, you should do same actions (choose
+        way to export your wallet and carefully save backup data).</p>
+      <p>For that, you should do several clicks:</p>
+      <ol>
+        <li>Select menu item <strong>Wallets</strong> (placed in the side bar)</li>
+        <li>Choose wallet which you want to backup</li>
+        <li>In the wallet details route select menu item <strong>Backup</strong></li>
+        <li>Choose the best way to you from available methods: <strong>QR Code, Mnemonic Phrase and a Backup
+          file</strong>
+        </li>
+      </ol>
     </div>
-    <div class="welcomeGuide_nav">
-      <button type="button" name="button" class="ui-button ui-button--blue" (click)="disableWinow()">Got it</button>
-    </div>
+  </div>
+  <div class="nav">
+    <button type="button" name="button" class="ui-button ui-button--blue" (click)="dismiss.emit()">Got it</button>
   </div>
 </div>
