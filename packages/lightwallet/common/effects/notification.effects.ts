@@ -18,6 +18,7 @@ import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import { map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { ElectronService } from '../../desktop/src/services/electron.service';
 
 @Injectable()
 export class NotificationEffects {
@@ -57,6 +58,10 @@ export class NotificationEffects {
       });
 
       toast.onDidDismiss = () => this.store.dispatch(new MarkNotificationAsReadAction(notification.id));
+
+      // show electron notification
+      // TODO move this to a Desktop specific file after integrating NGRX in mobile
+      ElectronService.showNotification(notification.title, notification.message);
     })
   );
 
