@@ -1,0 +1,3 @@
+describe('[Mobile] Wallet details', () => {
+
+});
