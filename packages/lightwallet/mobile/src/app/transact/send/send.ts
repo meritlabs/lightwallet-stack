@@ -35,12 +35,10 @@ export class SendView {
   contacts: Array<MeritContact> = [];
   amount: number;
   searchResult: {
-    withMerit: Array<MeritContact>,
-    noMerit: Array<MeritContact>,
-    recent: Array<MeritContact>,
+    contacts: Array<MeritContact>,
     toNewEntity: { destination: string, contact: MeritContact },
     error: string
-  } = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
+  } = {contacts: [], toNewEntity: null, error: null };
 
 
   hasUnlockedWallets: boolean;
@@ -120,15 +118,12 @@ export class SendView {
 
   async parseSearch() {
     this.searchInProgress = true;
-    const result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
+    const result = { contacts: [], toNewEntity: null, error: null };
 
     if (!this.searchQuery || !this.searchQuery.length) {
       this.clearSearch();
       this.debounceSearch.cancel();
-      this.contacts.forEach((contact: MeritContact) => {
-        _.isEmpty(contact.meritAddresses) ? result.noMerit.push(contact) : result.withMerit.push(contact);
-      });
-      result.recent = this.recentContacts;
+      result.contacts = this.contacts;
       return this.searchResult = result;
     }
 
@@ -140,98 +135,43 @@ export class SendView {
 
   private debounceSearch = _.debounce(() => this.search(), 300);
 
+
+  /**
+   * Search users based on searchQuery
+   * Looks both for contact list and for address/alias
+  */
   private async search() {
 
-    const result = { withMerit: [], noMerit: [], recent: [], toNewEntity: null, error: null };
-    const input = cleanAddress(this.searchQuery.split('?')[0]);
-    const _isAlias = isAlias(input);
+    const result = { contacts: [], toNewEntity: null, error: null };
 
-    this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
+    let input = cleanAddress(this.searchQuery.split('?')[0]);
 
-    let query = _isAlias ? input.slice(1) : input;
-
-    if (!_isAlias) { //don't search for contacts if it is an alias
-      this.contactsService.searchContacts(this.contacts, query)
-        .forEach((contact: MeritContact) => {
-          if (_.isEmpty(contact.meritAddresses)) {
-            result.noMerit.push(contact);
-          } else {
-            result.withMerit.push(contact);
-          }
+    if (this.addressService.couldBeAlias(input) || this.addressService.isAddress(input)) {
+      let addressInfo = await this.addressService.getAddressInfo(input);
+      if (addressInfo && addressInfo.isConfirmed) {
+        result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
+        result.toNewEntity.contact.meritAddresses.push({
+          address: addressInfo.address,
+          alias: addressInfo.alias,
+          network: ENV.network
         });
-      this.contactsService.searchContacts(this.recentContacts, query)
-        .forEach((contact) => {
-          result.recent.push(contact);
-        });
-    } else {
-      query = query.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-      result.withMerit = this.contacts.filter(contact =>
-        _.some(contact.meritAddresses, (address) => address.alias && address.alias.match(query))
-      );
-      result.recent = this.recentContacts.filter(contact =>
-        _.some(contact.meritAddresses, (address) => address.alias && address.alias.match(query))
-      );
-    }
-
-
-    if (_.isEmpty(result.noMerit) && _.isEmpty(result.withMerit)) {
-      if (this.isAddress(input)) {
-        const addressInfo = await this.addressService.getAddressInfo(input);
-
-        if (addressInfo && addressInfo.isConfirmed) {
-          result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({
-            address: addressInfo.address,
-            alias: addressInfo.alias,
-            network: ENV.network
-          });
-          this.suggestedMethod = {
-            type: SendMethodType.Classic,
-            destination: SendMethodDestination.Address,
-            value: addressInfo.address,
-            alias: addressInfo.alias
-          };
-        } else {
-          result.error = ERROR_ADDRESS_NOT_CONFIRMED;
-        }
-      } else if (this.couldBeAlias(input)) {
-        const addressInfo = await this.addressService.getAddressInfo(input);
-
-        if (addressInfo && addressInfo.isConfirmed) {
-          result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({
-            address: addressInfo.address,
-            alias: addressInfo.alias,
-            network: ENV.network
-          });
-          this.suggestedMethod = {
-            type: SendMethodType.Classic,
-            destination: SendMethodDestination.Address,
-            value: addressInfo.address,
-            alias: addressInfo.alias
-          };
-        } else {
-          result.error = ERROR_ALIAS_NOT_FOUND;
-        }
       }
     }
+
+    result.contacts = this.contacts.filter(contact =>
+      _.some(contact.meritAddresses, (meritAddress) => {
+        if (meritAddress.address == input) return true;
+        return (meritAddress.alias && meritAddress.alias.match(input))
+      })
+    );
 
     this.searchResult = result;
     this.searchInProgress = false;
   }
 
-
-  private couldBeAlias(input) {
-    if (!isAlias(input)) return false;
-    return this.addressService.couldBeAlias(input.slice(1));
-  }
-
-  private async isValidAddress(input) {
-    return await this.addressService.isAddressValid(input);
-  }
-
-  private isAddress(input) {
-    return this.addressService.isAddress(input);
+  isInputAlias() {
+    let input = cleanAddress(this.searchQuery.split('?')[0]);
+    this.addressService.couldBeAlias(input);
   }
 
   onSearchKeyUp(event: KeyboardEvent) {
@@ -267,7 +207,12 @@ export class SendView {
           contact: contact,
           amount: this.amount,
           isEasyEnabled: this.hasActiveInvites,
-          suggestedMethod: this.suggestedMethod
+          suggestedMethod: {
+            type: SendMethodType.Classic,
+            destination: SendMethodDestination.Address,
+            value: meritAddress.address,
+            alias: meritAddress.alias
+          }
         });
       }
     });
@@ -282,8 +227,13 @@ export class SendView {
         this.navCtrl.push('SendViaView', {
           contact: contact,
           amount: this.amount,
-          suggestedMethod: this.suggestedMethod,
-          isEasyEnabled: this.hasActiveInvites
+          isEasyEnabled: this.hasActiveInvites,
+          suggestedMethod: {
+            type: SendMethodType.Classic,
+            destination: SendMethodDestination.Address,
+            value: meritAddress.address,
+            alias: meritAddress.alias
+          }
         });
       }
     });
