@@ -1404,10 +1404,8 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
       self.getPendingTxs({}, function(err, txps) {
         if (err) return next(err);
 
-        log.info('getPendingTxs', JSON.stringify(txps));
-
         const lockedInputs = _.map(_.flatten(_.map(txps, 'inputs')), utxoKey);
-        log.info('getPendingTxs', JSON.stringify(lockedInputs));
+
         _.each(lockedInputs, function(input) {
           if (utxoIndex[input]) {
             utxoIndex[input].locked = true;
@@ -2086,10 +2084,6 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       totalAmount = balance.totalAmount;
       availableAmount = balance.availableAmount;
     }
-
-    log.info('balance', JSON.stringify(balance));
-    log.info('total vs txp total', totalAmount / 100000000, txp.getTotalAmount() / 100000000, totalAmount < txp.getTotalAmount());
-    log.info('availableAmount vs txp total', availableAmount / 100000000, txp.getTotalAmount() / 100000000, availableAmount < txp.getTotalAmount());
 
     if (totalAmount < txp.getTotalAmount()) return cb(Errors.INSUFFICIENT_FUNDS);
     if (availableAmount < txp.getTotalAmount()) return cb(Errors.LOCKED_FUNDS);

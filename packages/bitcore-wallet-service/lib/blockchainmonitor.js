@@ -95,7 +95,6 @@ BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
 BlockchainMonitor.prototype._handleIncomingReferral = function(data) {
   const self = this;
 
-  log.info('_handleIncomingReferral');
   if (!data) return;
 
   self.storage.fetchReferralByCodeHash(data.address, function(err, referral) {
@@ -127,14 +126,12 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
   var self = this;
   if (!data || !data.txid) return;
 
-  log.info('_handleThirdPartyBroadcasts', JSON.stringify(data));
-
   self.storage.fetchTxByHash(data.txid, function(err, txp) {
     if (err) {
       log.error('Could not fetch tx from the db');
       return;
     }
-    log.info('_handleThirdPartyBroadcasts', JSON.stringify(txp));
+
     if (!txp || txp.status != 'accepted') {
       log.info('Transaction is not in accepted state, skipping');
       return;
@@ -290,7 +287,6 @@ BlockchainMonitor.prototype._updateActiveAddress = function(address, cb) {
 };
 
 BlockchainMonitor.prototype._handleIncomingTx = function(network, data) {
-  log.info('_handleIncomingTx', JSON.stringify(data));
   this._handleThirdPartyBroadcasts(data);
   this._handleIncomingPayments(data, network);
 };
@@ -454,8 +450,6 @@ BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
   if (!explorer) {
     return;
   }
-
-  log.info('_handleNewBlock', hash);
 
   explorer.getBlock(hash, (err, block) => {
     if (err) {
