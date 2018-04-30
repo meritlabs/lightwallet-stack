@@ -1,5 +1,5 @@
 import { browser, by, element } from 'protractor';
-import { TEST_WALLET_ALIAS, TEST_WALLET_NAME } from './app.e2e-spec';
+import { EC, TEST_WALLET_ALIAS, TEST_WALLET_NAME } from './app.e2e-spec';
 import { Transact } from './transact.po';
 
 describe('[Mobile] Wallets view', () => {
@@ -16,6 +16,7 @@ describe('[Mobile] Wallets view', () => {
   describe('> Header', () => {
     it('should be visible', () => {
       headerEl = rootEl.element(by.css('.big-header'));
+      browser.wait(EC.visibilityOf(headerEl), 2000);
       expect(headerEl.isDisplayed()).toBeTruthy();
     });
 
@@ -26,7 +27,7 @@ describe('[Mobile] Wallets view', () => {
     });
 
     it('should show merit balance', () => {
-      const el = headerEl.element(by.csss('h2.amount'));
+      const el = headerEl.element(by.css('h2.amount'));
       expect(el.isDisplayed()).toBeTruthy();
       expect(el.getText()).toContain('MRT');
     });
