@@ -54,7 +54,7 @@
       <img src="assets/img/easysend.png" color="primary" item-end>
     </div>
 
-    <div class="no-results" *ngIf="!searchResult.contacts.length && searchQuery" padding-top>
+    <div class="no-results" *ngIf="!searchResult.contacts?.length && searchQuery" padding-top>
 
       <div class="no-results-label" *ngIf="!searchResult.error">
         No results
@@ -87,7 +87,7 @@
 
 
       <div [hidden]="showRecent" class="contacts-list">
-      <ion-list *ngIf="searchResult.contacts.length" class="list-with-merit">
+      <ion-list *ngIf="searchResult.contacts?.length" class="list-with-merit">
         <ion-item-divider>Friends with Merit
           <!--<button ion-button clear item-end (click)="showRecent = true">Recent</button>-->
         </ion-item-divider>
