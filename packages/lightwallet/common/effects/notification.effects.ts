@@ -55,6 +55,14 @@ export class NotificationEffects {
       const notification = formatNotification(action.notification);
 
       if (!notification) return;
+
+      if (ElectronService.isElectronAvailable && !document.hasFocus()) {
+        // TODO move this to a Desktop specific file after integrating NGRX in mobile
+        // show electron notification if app is not focused
+        ElectronService.showNotification(notification.title, notification.message);
+        return;
+      }
+
       const toast = this.toastCtrl.create({
         title: notification.title,
         message: notification.message,
@@ -62,10 +70,6 @@ export class NotificationEffects {
       });
 
       toast.onDidDismiss = () => this.store.dispatch(new MarkNotificationAsReadAction(notification.id));
-
-      // show electron notification
-      // TODO move this to a Desktop specific file after integrating NGRX in mobile
-      ElectronService.showNotification(notification.title, notification.message);
     })
   );
 
