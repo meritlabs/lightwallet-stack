@@ -127,12 +127,18 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
   var self = this;
   if (!data || !data.txid) return;
 
+  log.info('_handleThirdPartyBroadcasts', JSON.stringify(data));
+
   self.storage.fetchTxByHash(data.txid, function(err, txp) {
     if (err) {
       log.error('Could not fetch tx from the db');
       return;
     }
-    if (!txp || txp.status != 'accepted') return;
+    log.info('_handleThirdPartyBroadcasts', JSON.stringify(txp));
+    if (!txp || txp.status != 'accepted') {
+      log.info('Transaction is not in accepted state, skipping');
+      return;
+    }
 
     var walletId = txp.walletId;
 
@@ -174,13 +180,13 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
 
   // Let's format the object to be easier to process below.
   var outs = _.compact(_.map(data.vout, function(v) {
-        var addr = _.keys(v)[0];
-        var amount = v[addr];
+    var addr = _.keys(v)[0];
+    var amount = v[addr];
 
-        return {
-          address: addr,
-          amount: amount,
-        };
+    return {
+      address: addr,
+      amount: amount,
+    };
   }));
 
   // Let's roll up any vouts that go to the same address.
@@ -214,7 +220,11 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
             log.error('Could not fetch addresses from the db');
             return next(err);
           }
-          if (!address || address.isChange) return next(null);
+
+          if (!address || address.isChange) {
+            log.info('Address is not registered for nottifications, skipping');
+            return next(null);
+          }
 
           var walletId = address.walletId;
 
@@ -280,6 +290,7 @@ BlockchainMonitor.prototype._updateActiveAddress = function(address, cb) {
 };
 
 BlockchainMonitor.prototype._handleIncomingTx = function(network, data) {
+  log.info('_handleIncomingTx', JSON.stringify(data));
   this._handleThirdPartyBroadcasts(data);
   this._handleIncomingPayments(data, network);
 };
@@ -443,6 +454,8 @@ BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
   if (!explorer) {
     return;
   }
+
+  log.info('_handleNewBlock', hash);
 
   explorer.getBlock(hash, (err, block) => {
     if (err) {
