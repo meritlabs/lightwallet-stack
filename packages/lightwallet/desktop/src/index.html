@@ -19,8 +19,10 @@
   <link rel="apple-touch-icon" sizes="128x128" href="/assets/v1/favicon/128x128.png?v=symbol">
 
   <script>
-    if (/Mobile|Android/i.test(navigator.userAgent))
-      location.hostname = 'm.' + location.hostname;
+    if (/Mobile|Android/i.test(navigator.userAgent)) {
+      if (location.hostname.includes("wallet.merit.me"))
+      location.hostname = location.hostname.replace("wallet.merit.me", "m.wallet.merit.me");
+    }
   </script>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
