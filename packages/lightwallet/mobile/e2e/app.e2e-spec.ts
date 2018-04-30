@@ -99,14 +99,14 @@ describe('[Mobile] Onboarding', () => {
       expect(slides.get(2).getAttribute('class')).not.toContain('active');
 
       nextButtonEl.click();
-      browser.sleep(500);
+      browser.sleep(1000);
 
       expect(slides.get(0).getAttribute('class')).not.toContain('active');
       expect(slides.get(1).getAttribute('class')).toContain('active');
       expect(slides.get(2).getAttribute('class')).not.toContain('active');
 
       nextButtonEl.click();
-      browser.sleep(500);
+      browser.sleep(1000);
       expect(slides.get(0).getAttribute('class')).not.toContain('active');
       expect(slides.get(1).getAttribute('class')).not.toContain('active');
       expect(slides.get(2).getAttribute('class')).toContain('active');

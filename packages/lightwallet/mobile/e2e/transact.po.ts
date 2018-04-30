@@ -1,4 +1,5 @@
 import { browser, protractor, element, by } from 'protractor';
+import { EC } from './app.e2e-spec';
 
 export class Transact {
 
@@ -19,7 +20,9 @@ export class Transact {
   }
 
   selectTab(index: number) {
-    return this.getTabButtonsEl().element(by.css(`.tab-button:nth-child(${ ++index })`)).click();
+    const el = this.getTabButtonsEl().element(by.css(`.tab-button:nth-child(${ ++index })`));
+    browser.wait(EC.visibilityOf(el), 3000, 'Cant click on tab button');
+   return el.click();
   }
 
   getSendView() {

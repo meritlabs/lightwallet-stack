@@ -25,7 +25,8 @@ if (IS_CI) {
     chromeOptions: {
       mobileEmulation: {
         deviceName: 'Pixel 2'
-      }
+      },
+      args: ['--touch-events=enabled']
     }
   });
 }
