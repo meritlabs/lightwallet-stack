@@ -2565,9 +2565,15 @@ WalletService.prototype.getTx = function(opts, cb) {
   var self = this;
   opts.retries = opts.retries || 1;
   opts.interval =  opts.interval || 50;
+  var current = 1;
 
   async.retry({times: opts.retries, interval: 50},
-    (callback)=> {self.storage.mustFetchTx(self.walletId, opts.txProposalId, callback)},
+    (callback) => {
+      var isLast = current === opts.retries;
+      current++;
+
+      self.storage.mustFetchTx(self.walletId, opts.txProposalId, callback, isLast);
+    },
     function(err, txp) {
       if (err) return cb(err);
 

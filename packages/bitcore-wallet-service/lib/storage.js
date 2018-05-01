@@ -239,17 +239,36 @@ Storage.prototype.fetchTx = function(walletId, txProposalId, cb) {
 
 // This is an explicit fetch method that returns an error if a TX is not found.
 // We need this approach to ensure that we preserve the integrity of retry logic
-Storage.prototype.mustFetchTx = function(walletId, txProposalId, cb) {
+Storage.prototype.mustFetchTx = function(walletId, txProposalId, cb, last) {
   var self = this;
 
-  this.db.collection(collections.TXS).findOne({
-    id: txProposalId,
-    walletId: walletId
-  }, function(err, result) {
-    if (err) return cb(err);
-    if (!result) return cb(new Error("TX_NOT_FOUND"));
-    return self._completeTxData(walletId, Model.TxProposal.fromObj(result), cb);
-  });
+  last = !!last;
+
+  if (last) {
+    this.db.collection(collections.TXS).find({
+      id: txProposalId,
+      walletId: walletId
+    }, {
+      limit: 1,
+      readPreference: mongodb.ReadPreference.PRIMARY,
+    }).toArray(function(err, results) {
+      if (err) return cb(err);
+
+      if (!results || results.length < 1 || !results[0]) return cb(new Error("TX_NOT_FOUND"));
+
+      var result = results[0];
+      return self._completeTxData(walletId, Model.TxProposal.fromObj(result), cb);
+    });
+  } else {
+    this.db.collection(collections.TXS).findOne({
+      id: txProposalId,
+      walletId: walletId
+    }, function(err, result) {
+      if (err) return cb(err);
+      if (!result) return cb(new Error("TX_NOT_FOUND"));
+      return self._completeTxData(walletId, Model.TxProposal.fromObj(result), cb);
+    });
+  }
 };
 
 
