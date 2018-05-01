@@ -8,7 +8,10 @@
       </div>
       <div class="unlock__heading__title title--primary">
         <ng-container *ngIf="easyReceipt; else noEasyReceipt">
-          <h1>{{ easyReceipt.senderName | unescape }} sent you Merit!</h1>
+          <h1>
+              <span (click)="declineGlobalSend()" class="unlock__back"><img src="/assets/v1/images/backup/back-icon.svg" alt=""></span>
+              {{ easyReceipt.senderName | unescape }} sent you Merit!
+          </h1>
         </ng-container>
         <ng-template #noEasyReceipt>
           <h1><span routerLink="../" class="unlock__back"><img src="/assets/v1/images/backup/back-icon.svg" alt=""></span>
