@@ -23,6 +23,9 @@
       if (location.hostname.includes("wallet.merit.me"))
       location.hostname = location.hostname.replace("wallet.merit.me", "m.wallet.merit.me");
     }
+    if (typeof require === 'function') {
+      require('../electron.bootstrap.js');
+    }
   </script>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->

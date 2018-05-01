@@ -95,7 +95,6 @@ BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
 BlockchainMonitor.prototype._handleIncomingReferral = function(data) {
   const self = this;
 
-  log.info('_handleIncomingReferral');
   if (!data) return;
 
   self.storage.fetchReferralByCodeHash(data.address, function(err, referral) {
@@ -132,12 +131,16 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
       log.error('Could not fetch tx from the db');
       return;
     }
-    if (!txp || txp.status != 'accepted') return;
+
+    if (!txp || txp.status != 'accepted') {
+      log.info('Transaction is not in accepted state, skipping');
+      return;
+    }
 
     var walletId = txp.walletId;
 
     if (!processIt) {
-      log.info(`Detected broadcast ${data.txid} of an accepted txp [${txp.id}] for wallet ' + walletId + ' [${txp.amount} ${!txp.isInvite ? 'micros' : 'invites'} ]`);
+      log.info(`Detected broadcast ${data.txid} of an accepted txp [${txp.id}] for wallet ${walletId} [${txp.amount} ${!txp.isInvite ? 'micros' : 'invites'} ]`);
       return setTimeout(self._handleThirdPartyBroadcasts.bind(self, data, true), 20 * 1000);
     }
 
@@ -174,13 +177,13 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
 
   // Let's format the object to be easier to process below.
   var outs = _.compact(_.map(data.vout, function(v) {
-        var addr = _.keys(v)[0];
-        var amount = +[addr];
+    var addr = _.keys(v)[0];
+    var amount = v[addr];
 
-        return {
-          address: addr,
-          amount: amount,
-        };
+    return {
+      address: addr,
+      amount: amount,
+    };
   }));
 
   // Let's roll up any vouts that go to the same address.
@@ -214,7 +217,11 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
             log.error('Could not fetch addresses from the db');
             return next(err);
           }
-          if (!address || address.isChange) return next(null);
+
+          if (!address || address.isChange) {
+            log.info('Address is not registered for nottifications, skipping');
+            return next(null);
+          }
 
           var walletId = address.walletId;
 
@@ -231,7 +238,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
               notificationType = 'IncomingTx';
           }
 
-          log.info(`{notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${out.address} ]`);
+          log.info(`${notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${out.address} ]`);
 
           var fromTs = Date.now() - 24 * 3600 * 1000;
           self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {
@@ -255,7 +262,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
               walletId: walletId,
             });
             self.storage.softResetTxHistoryCache(walletId, function() {
-              self._updateActiveAddresses(address, function() {
+              self._updateActiveAddress(address, function() {
                 self._storeAndBroadcastNotification(notification, next);
               });
             });
@@ -267,10 +274,11 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
   });
 };
 
-BlockchainMonitor.prototype._updateActiveAddresses = function(address, cb) {
+BlockchainMonitor.prototype._updateActiveAddress = function(address, cb) {
   var self = this;
 
-  self.storage.storeActiveAddresses(address.walletId, address.address, function(err) {
+  var addrs = [address.address];
+  self.storage.storeActiveAddresses(address.walletId, addrs, function(err) {
     if (err) {
       log.warn('Could not update wallet cache', err);
     }
