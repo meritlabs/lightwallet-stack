@@ -47,7 +47,6 @@ function UnspentOutput(data) {
   $.checkArgument(!_.isUndefined(data.amount) || !_.isUndefined(data.micros),
                   'Must provide an amount for the output');
   var amount = !_.isUndefined(data.amount) ? new Unit.fromMRT(data.amount).toMicros() : data.micros;
-  console.log('utxo', amount);
   $.checkArgument(_.isNumber(amount), 'Amount must be a number');
   JSUtil.defineImmutable(this, {
     address: address,
