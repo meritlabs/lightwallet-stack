@@ -13,7 +13,6 @@ error-message.success
     text-align: center
     font-size: 16px
     color: rgba(0, 0, 0, 0.77)
-
     &:hover
       small.click_to_copy
         opacity: 0.999
@@ -24,3 +23,42 @@ error-message.success
       opacity: 0
       color: $blue
       transition: opacity .3s ease-in-out
+.selectMethod
+  display: inline-flex
+  justify-content: space-between
+  flex-flow: row wrap
+  width: 100%
+  margin-bottom: 20px
+  &_item
+    width: 48%
+    border: 1px solid $blue
+    border-radius: 4px
+    text-align: center
+    padding: 20px
+    display: flex
+    align-items: center
+    justify-content: flex-start
+    flex-direction: column
+    background: rgb(247, 247, 247)
+    box-shadow: inset 1px 1px 5px rgba(0,0,0, .2)
+    cursor: pointer
+    &.active
+      background: $blue
+      box-shadow: 0 0 5px rgba(0,0,0, .4)
+      *, .title
+        color: $white
+    .title
+      font-size: 16px
+      font-weight: 600
+      color: $blue
+      margin-bottom: 5px
+    .description
+      font-size: 13px
+      line-height: 16px
+      font-weight: 300
+.sendMerit__form__group
+  .info
+    padding-top: 10px
+    font-size: 13px
+    line-height: 16px
+    font-weight: 300

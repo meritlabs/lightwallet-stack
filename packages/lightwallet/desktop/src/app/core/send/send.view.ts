@@ -37,6 +37,12 @@ export class SendView implements OnInit {
   easySendUrl: string;
   error: string;
 
+  steps: {
+    setAmount: true,
+    selctWallet: false,
+    selectMethod: false
+  }
+
   formData: {
     amountMrt: number,
     amountFiat: number,
