@@ -2,16 +2,18 @@
   <p class="title">WELCOME!</p>
   <div class="content">
     <div class="description">
-      <p>Congratulations, you just created/imported your first wallet!</p>
-      <p>Please save current password in some must protected place in your mind.</p>
-      <p>Curent recovery password cannot be changed or recovered, so it`s mean that
-        if you will loose your backUp data you will loose your Merits.</p>
+      <p>Congratulations, you just created your first Merit wallet!</p>
+      <p>Merit is decentralized, which means that <strong>storing your password is your responsibility.</strong></p>
+      <p>We cannot retrieve it for you.  Ever.</p>
+      <p>Remember, if you lose your password, you <strong>lose your Merit</strong>.  So please record and store your passphrase somewhere safe.</p>
     </div>
 
     <div class="mnemonic" *ngIf="wallets[0]">
-      <button class="ui-button ui-button--blue ui-button--sm" (click)="showPhrase = !showPhrase">
-        {{ showPhrase == true ? 'Hide' : 'Show' }} my secret recovery phrase
-      </button>
+      <div class "mnemonic_button">
+        <button class="ui-button ui-button--blue ui-button--md" (click)="showPhrase = !showPhrase">
+        {{ showPhrase == true ? 'Hide' : 'Show' }} my passphrase
+        </button>
+      </div>
       <div [hidden]="!showPhrase" class="box">
         <div class="clip" [clip]="wallets[0].client.getMnemonic()">
           <button type="button" name="button" class="ui-button ui-button--white ui-button--sm" (click)="copyState()">
@@ -23,14 +25,12 @@
     </div>
 
     <div class="description">
-      <p>If you will decide to create new wallet, you should do same actions (choose
-        way to export your wallet and carefully save backup data).</p>
-      <p>For that, you should do several clicks:</p>
+      <p>Please make sure to backup your passphrase for any new wallets you create later:</p>
       <ol>
-        <li>Select menu item <strong>Wallets</strong> (placed in the side bar)</li>
-        <li>Choose wallet which you want to backup</li>
-        <li>In the wallet details route select menu item <strong>Backup</strong></li>
-        <li>Choose the best way to you from available methods: <strong>QR Code, Mnemonic Phrase and a Backup
+        <li>Select<strong>Wallets</strong> from the menu (on the left)</li>
+        <li>Click the wallet that you want to backup</li>
+        <li>Click the <strong>Backup/Sync</strong>link</li>
+        <li>Choose to backup your wallet: <strong>QR Code, Mnemonic Phrase and a Backup
           file</strong>
         </li>
       </ol>
