@@ -56,7 +56,8 @@ export class PhraseImportView {
     // const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
     // loader.present();
 
-    const { words, password, mwsUrl } = this.formData.getRawValue();
+    let { words, password, mwsUrl } = this.formData.getRawValue();
+    words = words.replace(/\s\s+/g, ' ').trim();
 
     try {
       const pathData = DerivationPath.parse(this.derivationPath);

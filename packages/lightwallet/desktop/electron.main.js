@@ -1,5 +1,5 @@
 'use strict';
-const { BrowserWindow, app, protocol } = require('electron');
+const { BrowserWindow, app, protocol, ipcMain } = require('electron');
 const path = require('path');
 const url = require('url');
 
@@ -33,6 +33,11 @@ function createWindow() {
 
   mainWindow.loadURL(URL);
   mainWindow.maximize();
+
+  ipcMain.on('notificationClick', () => {
+    mainWindow.maximize();
+    mainWindow.focus();
+  });
 
   mainWindow.on('closed', function () {
     mainWindow = null;

@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { IDynamicComponent } from '@merit/desktop/app/components/dom.controller';
 

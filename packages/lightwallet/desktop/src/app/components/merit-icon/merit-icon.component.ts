@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'merit-icon',
-  templateUrl: './merit-icon.component.html',
+  template: '',
   styleUrls: ['./merit-icon.component.sass'],
   host: {
     '[class]': 'name'

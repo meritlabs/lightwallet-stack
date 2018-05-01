@@ -109,7 +109,7 @@ export class DisplayWallet {
   async updateShareCode() {
     const { alias } = await this.addressService.getAddressInfo(this.referrerAddress);
     if (alias) {
-      this.shareCode = alias;
+      this.shareCode = '@' + alias;
     } else {
       this.shareCode = this.referrerAddress;
     }
