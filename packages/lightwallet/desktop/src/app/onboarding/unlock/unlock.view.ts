@@ -105,4 +105,12 @@ export class UnlockComponent {
     }
   }
 
+  declineGlobalSend() {
+    this.loadingCtrl.show();
+    this.easyReceiveService.deletePendingReceipt(this.easyReceipt).then(() => {
+      this.router.navigateByUrl('onboarding');
+      this.loadingCtrl.hide();
+    });
+  }
+
 }
