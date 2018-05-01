@@ -1,13 +1,13 @@
-import { Component, ViewEncapsulation } from '@angular/core';
-import { IRootAppState } from '@merit/common/reducers';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
+import { Component } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/common/reducers/wallets.reducer';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { IRootAppState } from '@merit/common/reducers';
 import { selectTransactions, selectTransactionsLoading } from '@merit/common/reducers/transactions.reducer';
-import { map } from 'rxjs/operators';
+import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/common/reducers/wallets.reducer';
+import { Store } from '@ngrx/store';
 import { isArray } from 'lodash';
+import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'view-dashboard',
@@ -21,11 +21,17 @@ export class DashboardView {
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   totals$: Observable<any> = this.store.select(selectWalletTotals);
   transactions$: Observable<IDisplayTransaction[]> = this.store.select(selectTransactions).pipe(
-    map((transactions: IDisplayTransaction[]) => isArray(transactions)? transactions.slice(0, 5) : [])
+    map((transactions: IDisplayTransaction[]) => isArray(transactions) ? transactions.slice(0, 5) : [])
   );
   transactionsLoading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
+  showGuide: boolean = !('hideWalletWelcomeWindow' in localStorage && localStorage.getItem('hideWalletWelcomeWindow') === 'true');
 
   constructor(private store: Store<IRootAppState>) {}
+
+  onGuideDismiss() {
+    localStorage.setItem('hideWalletWelcomeWindow', 'true');
+    this.showGuide = false;
+  }
 
   sendSubmit($event) {
     if ($event.keyCode === 13) {
