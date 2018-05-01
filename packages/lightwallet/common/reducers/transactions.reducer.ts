@@ -4,9 +4,6 @@ import { sortBy, uniqBy } from 'lodash';
 
 export interface ITransactionsState {
   transactions: IDisplayTransaction[];
-  transactionsByWallet: {
-    [walletId: string]: IDisplayTransaction[];
-  };
   loading: boolean;
 }
 
@@ -28,7 +25,9 @@ export class UpdateTransactionsAction implements Action {
   constructor(public transactions: IDisplayTransaction[]) {
     let walletId: string;
 
-    transactions.forEach((transaction: IDisplayTransaction) => {
+    this.transactions = sortBy(this.transactions, 'time').reverse();
+
+    this.transactions.forEach((transaction: IDisplayTransaction) => {
       walletId = transaction.wallet.id;
 
       if (!this.transactionsByWallet[walletId])
@@ -36,8 +35,6 @@ export class UpdateTransactionsAction implements Action {
 
       this.transactionsByWallet[walletId].push(transaction);
     });
-
-    this.transactions = sortBy(this.transactions, 'time').reverse();
   }
 }
 
@@ -62,11 +59,10 @@ export type TransactionsReducerAction =
 
 const DEFAULT_STATE: ITransactionsState = {
   transactions: [],
-  transactionsByWallet: {},
   loading: true
 };
 
-export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, action: TransactionsReducerAction) {
+export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, action: TransactionsReducerAction): ITransactionsState {
   switch (action.type) {
     case TransactionActionType.Refresh:
       return {
@@ -77,16 +73,13 @@ export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, a
     case TransactionActionType.Update:
       return {
         transactions: action.transactions,
-        transactionsByWallet: action.transactionsByWallet
+        loading: false
       };
 
     case TransactionActionType.UpdateOne:
       return {
         transactions: sortBy(uniqBy(action.transactions.concat(state.transactions), 'txid'), 'time').reverse(),
-        transactionsByWallet: {
-          ...state.transactionsByWallet,
-          [action.walletId]: state.transactions
-        }
+        loading: false
       };
 
     default:
@@ -98,4 +91,4 @@ export const selectTransactionsState = createFeatureSelector<ITransactionsState>
 export const selectTransactionsLoading = createSelector(selectTransactionsState, state => state.loading);
 export const selectTransactions = createSelector(selectTransactionsState, state => state.transactions);
 export const selectSentInvites = createSelector(selectTransactions, (transactions: IDisplayTransaction[]) => transactions.filter(transaction => transaction.action === TransactionAction.SENT && transaction.isInvite));
-export const selectTransactionsByWalletId = (id: string) => createSelector(selectTransactionsState, state => state.transactionsByWallet[id]);
+export const selectTransactionsByWalletId = (id: string) => createSelector(selectTransactionsState, state => state.transactions.filter(tx => tx.walletId === id));
