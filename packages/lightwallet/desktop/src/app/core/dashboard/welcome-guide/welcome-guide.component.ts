@@ -1,4 +1,4 @@
-import { Component, Input, OnInit} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @Component({
@@ -9,27 +9,14 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 export class WelcomeGuideComponent {
   @Input() wallets: DisplayWallet[];
-  @Input() loading: boolean;
-  copy: string = "COPY";
-  hideWinow: boolean = false;
+  @Output() dismiss: EventEmitter<void> = new EventEmitter<void>();
+  copy: string = 'COPY';
+  showPhrase: boolean;
+
   copyState() {
-    this.copy = "COPIED";
-    let _this = this;
-    setTimeout(function() {
-      _this.copy = "COPY";
+    this.copy = 'COPIED';
+    setTimeout(() => {
+      this.copy = 'COPY';
     }, 1000);
-  }
-  disableWinow() {
-    this.hideWinow = true;
-    localStorage.setItem("hideWalletWelcomeWinow", "true");
-  }
-  ngOnInit() {
-    let hideWinow;
-    if("hideWalletWelcomeWinow" in localStorage && localStorage.getItem("hideWalletWelcomeWinow") === 'true') {
-      hideWinow = true;
-    }else {
-      hideWinow  = false;
-    }
-    this.hideWinow = hideWinow;
   }
 }

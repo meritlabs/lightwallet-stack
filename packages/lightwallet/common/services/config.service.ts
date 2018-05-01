@@ -181,7 +181,7 @@ const configDefault: IAppConfig = {
 
 @Injectable()
 export class ConfigService {
-  private configCache: IAppConfig;
+  private configCache: IAppConfig = _.clone(configDefault);
 
   constructor(private logger: LoggerService,
               private persistence: PersistenceService) {

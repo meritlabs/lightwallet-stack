@@ -45,6 +45,8 @@ export class ConfirmDialogComponent implements IDynamicComponent {
       this._onDismiss(val);
     }
 
-    this.destroy();
+    if (typeof this.destroy === 'function') {
+      this.destroy();
+    }
   }
 }

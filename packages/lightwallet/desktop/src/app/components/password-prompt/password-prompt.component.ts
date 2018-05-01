@@ -53,6 +53,8 @@ export class PasswordPromptComponent implements IDynamicComponent {
       this._onDismiss(val);
     }
 
-    this.destroy();
+    if (typeof this.destroy === 'function') {
+      this.destroy();
+    }
   }
 }
