@@ -11,7 +11,6 @@ import {
 } from '@merit/common/reducers/transactions.reducer';
 import {
   AddWalletAction,
-  RefreshOneWalletAction,
   selectWalletById,
   selectWallets,
   UpdateOneWalletAction,
@@ -25,15 +24,14 @@ import { Store } from '@ngrx/store';
 import { flatten } from 'lodash';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
-import { distinctUntilKeyChanged, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilKeyChanged, filter, map, switchMap, take, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class TransactionEffects {
   @Effect()
   refreshOnWalletRefresh$: Observable<RefreshOneWalletTransactions> = this.actions$.pipe(
-    ofType(WalletsActionType.Add, WalletsActionType.RefreshOne),
-    filter((action: AddWalletAction & RefreshOneWalletAction) => action.type != WalletsActionType.RefreshOne || !action.opts.skipStatus),
-    map((action: AddWalletAction & RefreshOneWalletAction) => new RefreshOneWalletTransactions(action.wallet ? action.wallet.id : action.walletId))
+    ofType(WalletsActionType.Add),
+    map((action: AddWalletAction) => new RefreshOneWalletTransactions(action.wallet.id))
   );
 
   @Effect()
