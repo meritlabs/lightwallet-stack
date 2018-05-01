@@ -1,5 +1,5 @@
 <div class="wrap">
-  <p class="title">WELCOME!</p>
+  <p class="title">YOUR MERIT PASSPHRASE</p>
   <div class="content">
     <div class="description">
       <p>Congratulations, you just created your first Merit wallet!</p>
@@ -10,7 +10,7 @@
 
     <div class="mnemonic" *ngIf="wallets[0]">
       <div class="mnemonic_button">
-        <button class="ui-button ui-button--blue ui-button--md" (click)="showPhrase = !showPhrase">
+        <button class="ui-button ui-button--blue" (click)="showPhrase = !showPhrase">
         {{ showPhrase == true ? 'Hide' : 'Show' }} my passphrase
         </button>
       </div>
@@ -25,15 +25,7 @@
     </div>
 
     <div class="description">
-      <p>Please make sure to backup your passphrase for any new wallets you create later:</p>
-      <ol>
-        <li>Select<strong>Wallets</strong> from the menu (on the left)</li>
-        <li>Click the wallet that you want to backup</li>
-        <li>Click the <strong>Backup/Sync</strong>link</li>
-        <li>Choose to backup your wallet: <strong>QR Code, Mnemonic Phrase and a Backup
-          file</strong>
-        </li>
-      </ol>
+      <p>Please make sure to store your passphrase somewhere safe.</p>
     </div>
   </div>
   <div class="nav">
