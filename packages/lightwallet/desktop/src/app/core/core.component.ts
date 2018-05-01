@@ -87,7 +87,8 @@ export class CoreView {
   }
 
   private showPasswordEasyReceivePrompt(receipt: EasyReceipt, processAll: boolean) {
-    const passwordPrompt = this.passwordPromptCtrl.create('Enter transaction password', [Validators.required], [PasswordValidator.ValidateEasyReceivePassword(receipt, this.easyReceiveService)]);
+    const message = `You've got merit from ${receipt.senderName}! Please enter transaction password`;
+    const passwordPrompt = this.passwordPromptCtrl.create(message, [Validators.required], [PasswordValidator.ValidateEasyReceivePassword(receipt, this.easyReceiveService)]);
     passwordPrompt.onDidDismiss((password: any) => {
       if (password) {
         // Got a password, let's go ahead and process the easy receipt again
