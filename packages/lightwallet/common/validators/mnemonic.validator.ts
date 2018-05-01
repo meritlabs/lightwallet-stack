@@ -3,7 +3,7 @@ import { hasValidEntropy, hasValidWords, isValidSize } from '@merit/common/utils
 
 export class MnemonicValidator {
   static validateMnemonicImport(control: AbstractControl): ValidationErrors | null {
-    const words = control.value;
+    const words = control.value.replace(/\s\s+/g, ' ').trim();
 
     if (!isValidSize(words))
       return {
@@ -19,7 +19,7 @@ export class MnemonicValidator {
   }
 
   static validateMnemonicEntropy(control: AbstractControl): ValidationErrors | null {
-    const words = control.value;
+    const words = control.value.replace(/\s\s+/g, ' ').trim();
 
     if (!hasValidEntropy(words))
       return {
