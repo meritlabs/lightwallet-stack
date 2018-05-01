@@ -14,7 +14,7 @@ export class SendTourComponent {
   step: number = 0;
 
   stepGoTo(i?: number) {
-    if (i) {
+    if (typeof i === 'number') {
       this.step = i;
     } else {
       if (this.step === 3) {

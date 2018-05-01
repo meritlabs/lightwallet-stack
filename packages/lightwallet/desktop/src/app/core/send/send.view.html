@@ -124,9 +124,13 @@
                   <div class="sendMerit__totals__table__column">Amount</div>
                   <div class="sendMerit__totals__table__column">{{ receipt.amount | toMRT }}</div>
                 </div>
-                <div class="sendMerit__totals__table__row">
-                  <div class="sendMerit__totals__table__column">Fees</div>
-                  <div class="sendMerit__totals__table__column">{{ receipt.fee | toMRT }}</div>
+                <div class="sendMerit__form__group">
+                    <div class="sendMerit__form__group__column sendMerit__form_group__column--70">
+                        <label class="ui-label">Include fee in the amount:</label>
+                    </div>
+                    <div class="sendMerit__form__group__column sendMerit__form_group__column--30">
+                      <ui-checkbox [(ngModel)]="formData.feeIncluded"  (ngModelChange)="updateTx()"></ui-checkbox>
+                    </div>
                 </div>
                 <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
                   <div class="sendMerit__totals__table__column">Total</div>

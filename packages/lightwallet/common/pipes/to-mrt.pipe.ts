@@ -5,7 +5,7 @@ import { RateService } from '@merit/common/services/rate.service';
 export class ToMrtPipe implements PipeTransform {
   constructor(private rateService: RateService) {}
 
-  transform(micros: number, digitsLimit?: number, hideUnit? : boolean): string {
+  transform(micros: number, digitsLimit?: number, hideUnit?: boolean): string {
 
     const unitStr = (hideUnit? '' : ' MRT');
 

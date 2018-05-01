@@ -8,7 +8,10 @@
       </div>
       <div class="unlock__heading__title title--primary">
         <ng-container *ngIf="easyReceipt; else noEasyReceipt">
-          <h1>{{ easyReceipt.senderName | unescape }} sent you Merit!</h1>
+          <h1>
+              <span (click)="declineGlobalSend()" class="unlock__back"><img src="/assets/v1/images/backup/back-icon.svg" alt=""></span>
+              {{ easyReceipt.senderName | unescape }} sent you Merit!
+          </h1>
         </ng-container>
         <ng-template #noEasyReceipt>
           <h1><span routerLink="../" class="unlock__back"><img src="/assets/v1/images/backup/back-icon.svg" alt=""></span>
@@ -103,11 +106,11 @@
         </h2>
         <div class="content_details">
           <p>Invite address: <strong>{{inviteCode.value}}</strong></p>
-          <p>Your username(alias): <strong>{{alias.value}}</strong></p>
+          <p>Your username (alias): <strong>@{{alias.value}}</strong></p>
         </div>
         <div class="content_warning">
-          <p><strong>*</strong> Be carefull you cant change your alias in the future.</p>
-          <p><strong>**</strong> You will recieve your uniq password after these conditions aprovement.</p>
+          <p><strong>*</strong> Be careful, you can't change your alias in the future.</p>
+          <p><strong>**</strong> You will receive your unique password after you approve these conditions</p>
         </div>
         <div class="content_checkbox">
           <div class="ui-checkbox">
