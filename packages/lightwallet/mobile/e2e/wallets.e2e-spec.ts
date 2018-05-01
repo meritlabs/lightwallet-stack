@@ -69,11 +69,4 @@ describe('[Mobile] Wallets view', () => {
     });
   });
 
-  // describe('> Vaults list', () => {
-  //   let vaultsListEl;
-  //
-  //   beforeAll(() => {
-  //     vaultsListEl = element(by.css(''))
-  //   });
-  // });
 });
