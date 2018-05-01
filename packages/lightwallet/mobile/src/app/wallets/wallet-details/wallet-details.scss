@@ -4,6 +4,27 @@
 
 wallet-details-view {
 
+  .no-transactions {
+    margin-top: 100px;
+    text-align: center;
+    font-size: 17px;
+    color: #9da6b7;
+  }
+
+  .refresh-spinner {
+    position: absolute;
+    top: 2px;
+    right: 0px;
+    color: white;
+    &.spinner-ios {
+      top: 2px;
+      right: 0px;
+    }
+    line {
+      stroke: white !important;
+    }
+  }
+
   .content-ios {
     .big-header {
       text-align: center;
@@ -134,4 +155,6 @@ wallet-details-view {
   ion-title.title.title-ios .toolbar-title.toolbar-title-ios {
     color: white;
   }
+
+
 }
