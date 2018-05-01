@@ -12,8 +12,10 @@
           <div class="wallet__balance">
             <span class="ico ico--coins"></span>
             <ng-container *ngIf="!wallet.balanceHidden; else balanceHidden">
-              <span>{{ wallet.totalBalanceMicros | toMRT:null:true }} <small>MRT</small> <small
-                *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})</small></span>
+              <span>{{ wallet.totalBalanceMicros | toMRT:null:true }}
+                <small>MRT</small>
+                <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})</small>
+              </span>
             </ng-container>
             <ng-template #balanceHidden>
               [Balance hidden]
@@ -34,15 +36,15 @@
             <div>
               Need more wallets?
             </div>
-            <div *ngIf="showButton">
-              <button type="button" name="button" class="ui-button ui-button--white
-                ui-button--loadWallet ui-button--sm}"
-                      routerLink="/wallets/import">Import wallet
-              </button>
-              <button type="button" name="button" class="ui-button ui-button--sm
-                ui-button--add ui-button--white"
-                      routerLink="/wallets/create">Create new wallet
-              </button>
+            <div>
+              <div>
+                <button type="button" name="button" class="ui-button ui-button--white
+                ui-button--loadWallet ui-button--sm" routerLink="/wallets/import">Import wallet
+                </button>
+                <button type="button" name="button" class="ui-button ui-button--sm
+                ui-button--add ui-button--white" routerLink="/wallets/create">Create new wallet
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -51,9 +53,15 @@
     <div class="wallet-details__content">
       <div class="wallet-details__content__navigation">
         <ul>
-          <li><a [routerLink]="['history']" routerLinkActive="active">Transaction history</a></li>
-          <li><a [routerLink]="['settings']" routerLinkActive="active">Preferences</a></li>
-          <li><a [routerLink]="['export']" routerLinkActive="active">Backup</a></li>
+          <li>
+            <a [routerLink]="['history']" routerLinkActive="active">Transaction history</a>
+          </li>
+          <li>
+            <a [routerLink]="['settings']" routerLinkActive="active">Preferences</a>
+          </li>
+          <li>
+            <a [routerLink]="['export']" routerLinkActive="active">Backup</a>
+          </li>
         </ul>
       </div>
       <div class="wallet-details__content__wrap container--inner">
