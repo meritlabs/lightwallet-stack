@@ -27,11 +27,8 @@
       <app-select (selectionEvent)="selectColor($event)" [selected]="wallet.color" [input]="avalibleColors" style="ui-input ui-input--select ui-input--form ui-input--color"></app-select>
     </div>
     <div class="wallet-settings__group wallet-settings__group__checkbox">
-      <label class="ui-label" for="hideBalance">Hide balance</label>
-      <div class="ui-checkbox">
-        <input type="checkbox" name="hideBalance" id="hideBalance" formControlName="hideBalance">
-        <span class="ui-checkbox__switcher"></span>
-      </div>
+      <label class="ui-label">Hide balance</label>
+      <ui-checkbox formControlName="hideBalance"></ui-checkbox>
     </div>
     <div class="wallet-settings__multi-group">
       <label class="ui-label">Password (optional)</label>

@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { getEasySendURL } from '@merit/common/models/easy-send';
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 import { COINBASE_CONFIRMATION_THRESHOLD } from '@merit/common/utils/constants';
 import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/globalsend-link-popup/globalsend-link-popup.controller';
@@ -45,7 +44,7 @@ export class HistoryItemComponent implements OnInit {
     this.isInvite = tx.isInvite === true;
     this.isMiningReward = this.isReward && tx.outputs[0].index === 0;
     this.isEasySend = !this.isInvite && !this.isReward;
-    if (!tx.isConfirmed) {
+    if (tx.isCoinbase && !tx.isMature) {
       this.confirmationsExplanation = String(this.tx.confirmations) + ' block(s) confirmed from ' + COINBASE_CONFIRMATION_THRESHOLD;
     }
 

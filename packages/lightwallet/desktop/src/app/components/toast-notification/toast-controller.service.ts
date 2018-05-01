@@ -3,8 +3,8 @@ import {
   IMeritToastConfig,
   ToastControllerService as ToastControllerServiceBase
 } from '@merit/common/services/toast-controller.service';
-import { DOMController } from '@merit/desktop/app/components/dom.controller';
-import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-notification/toast-notification.component';
+import { DOMController } from '../dom.controller';
+import { ToastNotificationComponent } from './toast-notification.component';
 
 @Injectable()
 export class ToastControllerService extends ToastControllerServiceBase {

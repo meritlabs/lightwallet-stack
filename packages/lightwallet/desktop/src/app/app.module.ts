@@ -83,9 +83,7 @@ export function getProviders() {
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    IonicStorageModule.forRoot({
-      driverOrder: ['indexeddb']
-    }),
+    IonicStorageModule.forRoot(),
     HttpClientModule,
     TranslateModule.forRoot({
       loader: {
