@@ -40,12 +40,12 @@
           </div>
           <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('minlength')">
             <span class="tooltip-error">
-              <span>Invite code must be at least 3 characters long</span>
+              <span>Invite code must be at least 3 characters long.</span>
             </span>
             </div>
           <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('InvalidFormat')">
             <span class="tooltip-error">
-              <span>Invalid address or alias format</span>
+              <span>Invalid address or alias format.</span>
             </span>
           </div>
           <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('AddressNotFound')">
@@ -55,8 +55,7 @@
           </div>
         </div>
         <div class="ui-input__group__tipbox" *ngIf="!inviteCode.valid">
-          Please enter "Invite code" which you recieved from your friend or colleague,
-          after code entering you will proceed to the next step =)
+          Please enter the invite code you were given, which is usually the alias of the sender.
         </div>
       </div>
       <div class="ui-input__group" [ngClass]="{'ui-input__group--disabled': !inviteCode.valid}" *ngIf="inviteCode.valid">
@@ -64,7 +63,7 @@
           Your username (alias)
           <span class="ui-tooltip">
               <span class="ui-tooltip__text">
-                Add alias to your address, so people can recognize you and type something like "@merituser" instead of address.
+                Your alias is how you will be known in the Merit community. Anyone can use it to easily send you Merit or as their unlock code. Think of it like your username or handle.  
               </span>
             </span>
         </label>
@@ -74,23 +73,22 @@
         <div class="input-errors" [hidden]="!alias.dirty || alias.valid">
           <div [hidden]="!alias.hasError('minlength')">
             <span class="tooltip-error">
-              <span>Your alias must be at least 3 characters long</span>
+              <span>Your alias must be at least 3 characters long.</span>
             </span>
           </div>
           <div [hidden]="!alias.hasError('InvalidFormat')">
             <span class="tooltip-error">
-              <span>Invalid alias format</span>
+              <span>Invalid alias format.</span>
             </span>
           </div>
           <div [hidden]="!alias.hasError('AliasInUse')">
             <span class="tooltip-error">
-              <span>Alias is already in use</span>
+              <span>Alias is already in use.</span>
             </span>
           </div>
         </div>
         <div class="ui-input__group__tipbox" *ngIf="!alias.valid && !alias.hasError('AliasInUse')">
-          Please create and enter your Uniq network alias, it will be used for identify you
-          in the Merit World. Be careful, entered name canntot be changed after unlocking process.
+          Each wallet should have a unique alias.  Aliases cannot be shared across multiple wallets.  Please note that aliases cannot be changed after creation.
         </div>
       </div>
       <div class="unlock__form__group" *ngIf="!formData.invalid && alias.valid">
@@ -102,32 +100,32 @@
         <h2 class="content_title">
           <div class="import_back" (click)="showAgreement = !showAgreement">
             <img src="/assets/v1/images/backup/back-icon.svg" alt="">
-          </div>Wallet unlock confirmation
+          </div>Wallet Unlock Confirmed
         </h2>
         <div class="content_details">
           <p>Invite address: <strong>{{inviteCode.value}}</strong></p>
           <p>Your username (alias): <strong>@{{alias.value}}</strong></p>
         </div>
         <div class="content_warning">
-          <p><strong>*</strong> Be careful, you can't change your alias in the future.</p>
-          <p><strong>**</strong> You will receive your unique password after you approve these conditions</p>
+          <p><strong>*</strong> You can now share Merit with the community.  Your alias is your invite code.</p>
+          <p><strong>**</strong> Be sure to record your passphrase (shown on the next screen) so you never lose access to your funds.</p>
         </div>
         <div class="content_checkbox">
           <div class="ui-checkbox">
               <input type="checkbox"[(ngModel)]="userAgreement">
               <span class="ui-checkbox__switcher"></span>
-              <strong>I agree with these conditions.</strong>
+              <strong>Got it.  Let's go!</strong>
           </div>
         </div>
         <button class="ui-button ui-button--blue ui-button--with-arrow"
           role="button" type="submit" [disabled]="!userAgreement"
-          (click)="onSubmit()">Let's get started</button>
+          (click)="onSubmit()">Let's Get Started</button>
       </div>
     </div>
     <div class="already-member" [hidden]="!alias.hasError('AliasInUse')">
-      <p>Oooops! Looks like you try to reuse existing username (alias).</p>
-      <p>If it is true you can <a routerLink="../import">import wallet</a></p>
-      <p>If no, please choose another username (alias)</p>
+      <p>Yikes! It looks like you are trying to use an alias that is already taken.</p>
+      <p>If you own this alias in another wallet, then you can <a routerLink="../import">restore or sync your wallet</a> here.</p>
+      <p>If not, you will need to choose another alias.</p>
     </div>
   </div>
 </div>
