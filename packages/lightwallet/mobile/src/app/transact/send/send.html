@@ -54,12 +54,10 @@
       <img src="assets/img/easysend.png" color="primary" item-end>
     </div>
 
-
-    <div class="no-results" *ngIf="!searchResult.withMerit.length && searchQuery" padding-top>
+    <div class="no-results" *ngIf="!searchResult.contacts?.length && searchQuery" padding-top>
 
       <div class="no-results-label" *ngIf="!searchResult.error">
         No results
-        <div *ngIf="!couldBeAlias(searchQuery)">Type '@' at the beginning to send to alias</div>
       </div>
       <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
         Address is not confirmed yet
@@ -68,33 +66,32 @@
         Alias not found
       </div>
 
-      <div *ngIf="searchResult.toNewEntity" margin-top>
+    </div>
 
-        <button primary ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()"
-                class="send-button">
+    <div *ngIf="searchResult.toNewEntity" margin-top class="no-results">
+
+      <button color="light" ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()" class="send-button">
           Create New Contact
-        </button>
-        <button primary ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length"
-                (click)="bindAddressToContact()"
-                class="send-button">
+      </button>
+      <button color="light" ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length"
+              (click)="bindAddressToContact()"
+              class="send-button">
           Bind to existing contact
-        </button>
-        <button light ion-button padding (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
-          <div *ngIf="searchResult.toNewEntity.destination == 'address'">Send To This {{ couldBeAlias(searchQuery) ?
-            'Alias' : 'Address' }}
-          </div>
-        </button>
-        <div class="address">{{searchQuery}}</div>
-      </div>
+      </button>
+      <button color="light" ion-button padding (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
+          <div>Send To This {{ isInputAlias(searchQuery) ?'Alias' : 'Address' }}</div>
+      </button>
+      <div class="address">{{isInputAlias(searchQuery) ? '@' : ''}}{{searchQuery}}</div>
 
     </div>
 
-    <div [hidden]="showRecent" class="contacts-list">
-      <ion-list *ngIf="searchResult.withMerit.length" class="list-with-merit">
+
+      <div [hidden]="showRecent" class="contacts-list">
+      <ion-list *ngIf="searchResult.contacts?.length" class="list-with-merit">
         <ion-item-divider>Friends with Merit
           <!--<button ion-button clear item-end (click)="showRecent = true">Recent</button>-->
         </ion-item-divider>
-        <ion-item *ngFor="let contact of searchResult.withMerit" (click)="sendToContact(contact)" class="contact">
+        <ion-item *ngFor="let contact of searchResult.contacts" (click)="sendToContact(contact)" class="contact">
           <contact-avatar [contact]="contact" item-start></contact-avatar>
           {{ contact.name.formatted }}
           <button ion-button icon-only clear item-end (click)="editContact(contact, $event)">
