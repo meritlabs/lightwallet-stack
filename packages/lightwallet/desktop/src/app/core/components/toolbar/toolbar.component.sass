@@ -36,3 +36,30 @@
   background: $steel
   margin: 0 20px
   opacity: .2
+
+@keyframes spin
+  from
+    transform: rotate(0deg)
+  to
+    transform: rotate(360deg)
+
+.box
+  position: fixed
+  top: 0
+  right: 90px
+  height: 73px
+  display: flex
+  align-content: center
+  align-items: center
+  button
+    border: 0
+    background: transparent
+    height: 20px
+    position: relative
+    &.refreshing
+      img
+        animation: spin 1s infinite linear
+    img
+      width: 20px
+      height: 20px
+      transform: translate3d(0,0,0)
