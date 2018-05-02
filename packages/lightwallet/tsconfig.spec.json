@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.mobile.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": false,
+    "module": "commonjs",
+    "paths": {
+      "@merit/desktop/*": ["desktop/src/*"],
+      "@merit/mobile/*": ["mobile/src/*"],
+      "@merit/common/*": ["common/*"],
+      "@app/env": ["common/environments/environment.example"]
+    },
+    "types": [
+      "jest",
+      "node"
+    ]
+  },
+  "include": [
+    "**/*.spec.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "mobile/node_modules",
+    "desktop/node_modules"
+  ]
+}

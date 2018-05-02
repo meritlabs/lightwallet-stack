@@ -5,7 +5,12 @@ import {
   selectNotifications,
   selectTotalUnreadNotifications
 } from '@merit/common/reducers/notifications.reducer';
-import { selectWalletTotals, selectWalletTotalsLoading } from '@merit/common/reducers/wallets.reducer';
+import {
+  RefreshWalletsAction,
+  selectWalletsLoading,
+  selectWalletTotals,
+  selectWalletTotalsLoading
+} from '@merit/common/reducers/wallets.reducer';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { tap } from 'rxjs/operators';
@@ -52,9 +57,15 @@ export class ToolbarComponent {
   notifications$: Observable<INotification[]> = this.store.select(selectNotifications);
   totalUnreadNotifications$: Observable<number> = this.store.select(selectTotalUnreadNotifications);
 
+  walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
+
   constructor(private store: Store<IRootAppState>) {}
 
   receiveSelection($event) {
     this.selectedCurrency = $event;
+  }
+
+  refresh() {
+    this.store.dispatch(new RefreshWalletsAction());
   }
 }

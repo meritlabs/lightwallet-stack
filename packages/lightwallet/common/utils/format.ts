@@ -1,6 +1,5 @@
-import * as _ from 'lodash';
 import { UNITS } from '@merit/common/utils/constants';
-
+import * as _ from 'lodash';
 
 function clipDecimals(number, decimals) {
   const x = number.toString().split('.');
@@ -22,8 +21,11 @@ function addSeparators(nStr: string, thousands: string, decimal: string, minDeci
 
 export const formatAmount = (micros: number, unit: string, opts: any = {}): string => {
   if (isNaN(micros)) micros = 0;
-  const u = UNITS[unit],
-    precision: string = opts.fullPrecision ? 'full' : 'short',
+  const u = UNITS[unit];
+
+  if (!u) throw new Error('Invalid unit');
+
+  const precision: string = opts.fullPrecision ? 'full' : 'short',
     amount: string = clipDecimals((micros / u.toMicros), u[precision].maxDecimals).toFixed(u[precision].maxDecimals);
   return addSeparators(amount, opts.thousandsSeparator || ',', opts.decimalSeparator || '.', u[precision].minDecimals);
 };

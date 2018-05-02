@@ -65,8 +65,8 @@ export class SendInviteView {
     if (!this.searchQuery || !this.searchQuery.length) {
       this.clearSearch();
       this.debounceSearch.cancel();
-      result.withMerit = this.contacts.filter(c => !_.isEmpty(c.meritAddresses));
-      return this.searchResult = { withMerit: [], toNewEntity: null, error: null };
+      result.withMerit = this.contacts;
+      return this.searchResult = result;
     }
 
     if (this.searchQuery.length > 6 && this.searchQuery.indexOf('merit:') == 0)
@@ -82,50 +82,33 @@ export class SendInviteView {
     let result = { withMerit: [], toNewEntity: null, error: null };
 
     const input = cleanAddress(this.searchQuery.split('?')[0]);
-    this.amount = parseInt(this.searchQuery.split('?micros=')[1]);
 
-    let query = isAlias(input) ? input.slice(1) : input;
-    this.contactsService.searchContacts(this.contacts, query)
+    if (this.addressService.isAddress(input)) {
+      let addressInfo = await this.addressService.getAddressInfo(input);
+
+      if (addressInfo.isBeaconed) {
+        result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
+        result.toNewEntity.contact.meritAddresses.push({ address: input, network: ENV.network });
+      } else {
+        result.error = ERROR_ADDRESS_NOT_FOUND;
+      }
+    } else if (this.addressService.couldBeAlias(input)) {
+      const addressInfo = await this.addressService.getAddressInfo(input);
+
+      if (addressInfo && addressInfo.isConfirmed) {
+        result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
+        result.toNewEntity.contact.meritAddresses.push({ input, address: addressInfo.address, network: ENV.network });
+      }
+    }
+
+    this.contactsService.searchContacts(this.contacts, input)
       .forEach((contact: MeritContact) => {
         if (!_.isEmpty(contact.meritAddresses)) {
           result.withMerit.push(contact);
         }
-      });
-
-
-    if (_.isEmpty(result.withMerit)) {
-      if (this.isAddress(input)) {
-        let isBeaconed = await this.addressService.isAddressBeaconed(input);
-
-        if (isBeaconed) {
-          result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ address: input, network: ENV.network });
-        } else {
-          result.error = ERROR_ADDRESS_NOT_FOUND;
-        }
-      } else if (this.couldBeAlias(input)) {
-        const alias = input.slice(1);
-        const addressInfo = await this.addressService.getAddressInfo(alias);
-
-        if (addressInfo && addressInfo.isConfirmed) {
-          result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
-          result.toNewEntity.contact.meritAddresses.push({ alias, address: addressInfo.address, network: ENV.network });
-        } else {
-          result.error = ERROR_ALIAS_NOT_FOUND;
-        }
-      }
-    }
+    });
 
     this.searchResult = result;
-  }
-
-  private couldBeAlias(input) {
-    if (!isAlias(input)) return false;
-    return this.addressService.couldBeAlias(input.slice(1));
-  }
-
-  private isAddress(input) {
-    return this.addressService.isAddress(input);
   }
 
   clearSearch() {

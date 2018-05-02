@@ -6,12 +6,12 @@ import { EasySend } from '@merit/common/models/easy-send';
 import { AddressService } from '@merit/common/services/address.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
-import { Address, HDPrivateKey, PrivateKey, Script } from 'bitcore-lib';
+import { Address, HDPrivateKey, PrivateKey, Script} from 'bitcore-lib';
 
 @Injectable()
 export class EasySendService {
 
-  private readonly DEFAULT_TIMEOUT = 1008;
+  private readonly DEFAULT_TIMEOUT = 10080; // 7 days * 24 hours * 60 minutes 
 
   constructor(
     private feeService: FeeService,
@@ -149,7 +149,8 @@ export class EasySendService {
       blockTimeout: timeout,
       parentAddress: '',
       scriptAddress: '',
-      scriptReferralOpts: {}
+      scriptReferralOpts: {},
+      cancelled: false
     };
   }
 
