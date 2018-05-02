@@ -26,7 +26,7 @@
         <div class="sendMerit__form__group">
           <label for="" class="ui-label">Amount</label>
           <div class="ui-input__wrapper ui-input__wrapper--mrt">
-            <input type="text" name="" [(ngModel)]="formData.amountMrt" (ngModelChange)="updateTx()" placeholder="0" class="ui-input ui-input--form ui-input--text">
+            <input type="text" name="amountMrt" [(ngModel)]="formData.amountMrt" (ngModelChange)="updateTx()" placeholder="0" class="ui-input ui-input--form ui-input--text">
             <div class="ui-input__addon">MRT</div>
           </div>
           <div class="ui-input__wrapper ui-input__wrapper--currency" *ngIf="availableCurrencies?.length">
@@ -56,7 +56,7 @@
         </div>
 
         <div class="selectMethod" *ngIf="formData.amountMrt">
-          <a (click)="updateTxType('classic')" class="selectMethod_item" [ngClass]="{'active': formData.type === 'classic'}">
+          <a (click)="updateTxType('classic')" class="selectMethod_item classicSend" [ngClass]="{'active': formData.type === 'classic'}">
             <span class="title">
               Send via ClassicSend
             </span>
@@ -64,7 +64,7 @@
               Send to exact Merit address?
             </span>
           </a>
-          <a (click)="updateTxType('easy')" class="selectMethod_item" [ngClass]="{'active': formData.type === 'easy'}">
+          <a (click)="updateTxType('easy')" class="selectMethod_item globalSend" [ngClass]="{'active': formData.type === 'easy'}">
             <span class="title">
               Send via GlobalSend
             </span>
@@ -79,7 +79,7 @@
         <div *ngIf="formData.type === 'classic'; else easySend">
           <div class="sendMerit__form__group">
             <label for="" class="ui-label">Send to address / alias</label>
-            <input type="text" name="" value="" placeholder="Paste address / alias here" class="ui-input ui-input--form ui-input--text"
+            <input type="text" name="address" value="" placeholder="Paste address / alias here" class="ui-input ui-input--form ui-input--text"
               [(ngModel)]="formData.address" (ngModelChange)="updateAddress($event)">
           </div>
         </div>
@@ -88,7 +88,7 @@
             <label for="" class="ui-label">Password &nbsp;
               <small>(optional)</small>
             </label>
-            <input type="password" class="ui-input ui-input--form ui-input--text" (ngModelChange)="updateTx($event)" [(ngModel)]="formData.password">
+            <input type="password" name="password" class="ui-input ui-input--form ui-input--text" (ngModelChange)="updateTx($event)" [(ngModel)]="formData.password">
             <div class="info">
               <p>
                 <sup>*</sup>You will see a link after confirming the transaction that you can share with your recipient.</p>
@@ -99,7 +99,7 @@
           </div>
         </ng-template>
         <div class="sendMerit__form__group">
-          <button type="button" name="button" class="ui-button ui-button--blue" (click)="send()" [disabled]="!receipt.calculated || (formData.type === 'easy' && formData.wallet.status.availableInvites === 0)">
+          <button type="button" name="sendButton" class="ui-button ui-button--blue" (click)="send()" [disabled]="!receipt.calculated || (formData.type === 'easy' && formData.wallet.status.availableInvites === 0)">
             Send Merit
           </button>
         </div>
