@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { IRootAppState } from '@merit/common/reducers';
-import { Store } from '@ngrx/store';
 import { ActivatedRoute } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
-import { selectTransactionsByWalletId, selectTransactionsLoading } from '@merit/common/reducers/transactions.reducer';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { IRootAppState } from '@merit/common/reducers';
+import { selectTransactionsByWalletId, selectTransactionsLoading } from '@merit/common/reducers/transactions.reducer';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'view-wallet-details-history',

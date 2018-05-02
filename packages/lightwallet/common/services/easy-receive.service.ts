@@ -2,19 +2,22 @@ import { Injectable } from '@angular/core';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
 import { LedgerService } from '@merit/common/services/ledger.service';
-import { PublicKey, PrivateKey, Script, Address, Transaction, crypto} from 'bitcore-lib';
+import { Address, HDPrivateKey, HDPublicKey, PrivateKey, PublicKey, Script, Transaction, crypto} from 'bitcore-lib';
 import { RateService } from '@merit/common/services/rate.service';
+import { Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class EasyReceiveService {
   constructor(
     private logger: LoggerService,
     private persistanceService: PersistenceService,
+    private persistanceService2: PersistenceService2,
     private feeService: FeeService,
     private mwcService: MWCService,
     private ledger: LedgerService,
@@ -22,9 +25,24 @@ export class EasyReceiveService {
   ) {
   }
 
-  async validateAndSaveParams(params: any): Promise<EasyReceipt> {
-    this.logger.debug(`Parsing easy params ${params}`);
+  private cancelEasySendSource = new Subject<EasyReceipt>();
 
+  cancelEasySendObservable$ = this.cancelEasySendSource.asObservable();
+
+  parseEasySendUrl(url: string) {
+    let offset = Math.max(0, url.indexOf("?") + 1);
+    const data: any = {};
+    url
+      .substr(offset)
+      .split('&')
+      .forEach((q: any) => {
+        q = q.split('=');
+        data[q[0]] = q[1];
+      });
+    return data;
+  }
+
+  paramsToReceipt(params: any): EasyReceipt {
     let receipt = new EasyReceipt({});
     receipt.parentAddress = params.pa;
     receipt.secret = params.se;
@@ -32,6 +50,13 @@ export class EasyReceiveService {
     receipt.senderPublicKey = params.sk;
     receipt.blockTimeout = params.bt;
     receipt.deepLinkURL = params['~referring_link'];
+    return receipt;
+  }
+
+  async validateAndSaveParams(params: any): Promise<EasyReceipt> {
+    this.logger.debug(`Parsing easy params ${params}`);
+
+    let receipt = this.paramsToReceipt(params);
 
     if (receipt.isValid()) {
       await this.persistanceService.addPendingEasyReceipt(receipt);
@@ -160,10 +185,6 @@ export class EasyReceiveService {
    */
   buildEasySendRedeemTransaction(input: any, txn: any, toAddress: string, fee = FeeService.DEFAULT_FEE): Promise<any> {
 
-    //TODO: Create and sign a transaction to redeem easy send. Use input as
-    //unspent Txo and use script to create scriptSig
-    let inputAddress = input.scriptId;
-
     const totalAmount = txn.invite ? txn.amount : txn.amount;
     const amount =  txn.invite ? txn.amount : totalAmount - fee;
 
@@ -198,4 +219,54 @@ export class EasyReceiveService {
     return tx;
 
   }
+
+  cancelEasySend(url: string) {
+    let params = this.parseEasySendUrl(url);
+    let receipt = this.paramsToReceipt(params);
+
+    this.cancelEasySendSource.next(receipt);
+  }
+
+  async cancelEasySendReceipt(
+    wallet: MeritWalletClient,
+    receipt: EasyReceipt,
+    password: string,
+    walletPassword: string) {
+
+    //figure out wallet info
+    const signingKey = wallet.getRootPrivateKey(walletPassword);
+    const pubKey = wallet.getRootAddressPubkey();
+    const destAddress = pubKey.toAddress(ENV.network);
+
+    //generate script based on receipt
+    const scriptData = this.generateEasyScipt(receipt, password, ENV.network);
+    const redeemScript = scriptData.script;
+    const scriptAddress = Address(scriptData.scriptPubKey.getAddressInfo()).toString();
+
+    //find the invite and transaction 
+    const txsRes = await wallet.validateEasyScript(scriptAddress.toString());
+    const txs = txsRes.result;
+
+    //construct input using wallet signing key as the private key
+    const input = {
+      script: redeemScript,
+      privateKey: signingKey,
+      senderPublicKey: pubKey.toString(),
+    };
+
+    //get the invite back
+    const invite = txs.find(tx => tx.invite);
+    await this.sendEasyReceiveTx(input, invite, destAddress, wallet);
+
+    //get the merit back
+    const transact = txs.find(tx => !tx.invite);
+    await this.sendEasyReceiveTx(input, transact, destAddress, wallet);
+    await this.persistanceService2.cancelEasySend(scriptAddress);
+
+    return {
+      invite: invite,
+      tx: transact,
+    };
+  }
+
 }

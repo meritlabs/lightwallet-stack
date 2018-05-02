@@ -15,8 +15,8 @@
 </ion-header>
 
 <ion-content>
-  <div [hidden]="segment != 'phrase'" enter-to-next>
-    <ion-item>
+  <div [hidden]="segment != 'phrase'" enter-to-next class="phrase">
+    <ion-item class="mnemonic-input">
       <ion-avatar img-icon item-start>
         <img src="assets/img/icons/wallet.svg" alt="">
       </ion-avatar>
@@ -72,7 +72,7 @@
 
   </div>
 
-  <div [hidden]="segment != 'file'">
+  <div [hidden]="segment != 'file'" class="file">
     <ion-item (click)="openFilePicker()" text-wrap>
 
       <ion-avatar img-icon item-start>

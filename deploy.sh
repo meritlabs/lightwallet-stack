@@ -68,7 +68,7 @@ productionPrompt() {
         read -p "Would you like to deploy to Merit-$target to production? [Y/N]: " yn
         case $yn in
             [Yy]* ) setRunLevelProduction; break;;
-            [Nn]* ) break;;
+            [Nn]* ) setRunLevelStaging; break;;
             * ) echo "Please answer yes or no.";;
         esac
     done
@@ -137,7 +137,7 @@ fi
 
 
 
-print_in_yellow "Building Mobile LightWallet Now \n"
+print_in_yellow "Building Merit-$target for $environment-environment now \n"
 pushd $build_file_path
 
 if [ ! -z "$lw_env_vars" ]; then

@@ -11,6 +11,7 @@ export interface EasySend {
   blockTimeout: number;
   scriptReferralOpts: any;
   txid?: string;
+  cancelled: boolean;
 }
 
 export const getEasySendURL = (es: EasySend): string => {

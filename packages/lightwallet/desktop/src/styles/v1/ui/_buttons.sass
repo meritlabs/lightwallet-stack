@@ -17,6 +17,13 @@
     &:hover:not([disabled])
       background: $blue-button-bg-hover
       border: 1px solid transparent
+  &--red
+    background: $red-button-bg
+    color: $white
+    border: 1px solid transparent
+    &:hover:not([disabled])
+      background: $red-button-bg-hover
+      border: 1px solid transparent
   &--white
     background: $white
     color: $blue
@@ -35,7 +42,7 @@
       display: inline-block
       font-weight: 900
       margin-left: 16px
-      transform: translate3d(0,0,0)
+      transform: translate3d(0, 0, 0)
       +transition(.1s, linear)
     &:hover:not([disabled])
       &:after
@@ -54,7 +61,7 @@
       mask-repeat: no-repeat
       +transition(.1s, linear)
     &:after
-      transform: translate3d(0,0,0)
+      transform: translate3d(0, 0, 0)
     &:hover:not([disabled])
       &:after
         transform: translate3d(2px, 0, 0)
@@ -105,6 +112,7 @@
       font-size: 15px
       top: -1px
       font-weight: 700
+
 .ui-button
   &--md
     font-weight: 700
@@ -123,11 +131,10 @@
     +chageFontSize(12px, 12px)
     padding: 4px 10px
     letter-spacing: .3px
-.ui-button
-  &--false
-    display: none
-  &--true
-    display: inline-block
+
+.ui-button:not([hidden])
+  display: inline-block
+
 .ui-button
   &--select-currency
     border: transparent

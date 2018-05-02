@@ -1361,6 +1361,10 @@ WalletService.prototype._getUtxos = function(addresses, invites, cb) {
   });
 };
 
+function utxoKey(utxo) {
+  return utxo.txid + '|' + utxo.vout
+};
+
 WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites, cb) {
   var self = this;
 
@@ -1368,10 +1372,6 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
     cb = invites;
     invites = false;
   }
-
-  function utxoKey(utxo) {
-    return utxo.txid + '|' + utxo.vout
-  };
 
   var allAddresses, allUtxos, utxoIndex;
 
@@ -1405,6 +1405,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
         if (err) return next(err);
 
         const lockedInputs = _.map(_.flatten(_.map(txps, 'inputs')), utxoKey);
+
         _.each(lockedInputs, function(input) {
           if (utxoIndex[input]) {
             utxoIndex[input].locked = true;
@@ -1507,6 +1508,11 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
     });
     balance.availableAmount = balance.totalAmount - balance.lockedAmount;
     balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
+
+    $.checkArgument(balance.availableAmount <= balance.totalAmount, 'Total amount must be greater than available');
+    $.checkArgument(balance.lockedConfirmedAmount <= balance.lockedAmount, 'Total lockedAmount must be greater than lockedConfirmedAmount');
+    $.checkArgument(balance.totalConfirmedAmount <= balance.totalAmount, 'Total totalAmount must be greater than totalConfirmedAmount');
+    $.checkArgument(balance.lockedAmount <= balance.totalAmount, 'Total amount must be greater than lockedAmount');
 
     return balance;
 };
@@ -1677,7 +1683,7 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
   self.getWallet({}, function(err, wallet) {
     if (err) return cb(err);
 
-    self._getUtxosForCurrentWallet(null, function(err, utxos) {
+    self._getUtxosForCurrentWallet(null, false, function(err, utxos) {
       if (err) return cb(err);
 
       var info = {
@@ -2491,8 +2497,8 @@ WalletService.prototype.publishTx = function(opts, cb) {
       if (err) return cb(err);
 
       self.getTx({
-        txProposalId: opts.txProposalId, 
-        retries: 10, 
+        txProposalId: opts.txProposalId,
+        retries: 10,
         interval: 50,
       }, function(err, txp) {
         if (err) return cb(err);
@@ -2552,16 +2558,22 @@ WalletService.prototype.publishTx = function(opts, cb) {
  * @param {Object} opts
  * @param {string} opts.txProposalId - The tx id.
  * @param {number} opts.retries - The number of times to retry.
- * @param {number} opts.interval - The interval, in MS, between retries..  
+ * @param {number} opts.interval - The interval, in MS, between retries..
  * @returns {Object} txProposal
  */
 WalletService.prototype.getTx = function(opts, cb) {
   var self = this;
   opts.retries = opts.retries || 1;
   opts.interval =  opts.interval || 50;
-  
-  async.retry({times: opts.retries, interval: 50}, 
-    (callback)=> {self.storage.mustFetchTx(self.walletId, opts.txProposalId, callback)},
+  var current = 1;
+
+  async.retry({times: opts.retries, interval: 50},
+    (callback) => {
+      var isLast = current === opts.retries;
+      current++;
+
+      self.storage.mustFetchTx(self.walletId, opts.txProposalId, callback, isLast);
+    },
     function(err, txp) {
       if (err) return cb(err);
 
@@ -2755,9 +2767,9 @@ WalletService.prototype.signTx = function(opts, cb) {
     /**
      * With a globally distributed mongo cluster, we could end up in a situation where a TxProposal was
      * written to the Primary Mongo instance, but has not yet propogated to the secondary node we are reading from.
-     * So we've added some retry logic below.  This isn't a long-term solution, and should be reconsidered 
-     * either when we have time or get a mongo clustering expert on the team. 
-     * TODO: Reconsider approach to handling Mongo race conditions.  
+     * So we've added some retry logic below.  This isn't a long-term solution, and should be reconsidered
+     * either when we have time or get a mongo clustering expert on the team.
+     * TODO: Reconsider approach to handling Mongo race conditions.
     */
     self.getTx({
       txProposalId: opts.txProposalId,
@@ -2765,7 +2777,7 @@ WalletService.prototype.signTx = function(opts, cb) {
       interval: 50
     }, function(err, txp) {
       if (err) return cb(err);
-    
+
       var action = _.find(txp.actions, {
         copayerId: self.copayerId
       });

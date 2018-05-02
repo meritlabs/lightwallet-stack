@@ -18,6 +18,13 @@ import { ContactsService } from '@merit/common/services/contacts.service';
 export class WalletDetailsView {
 
   wallet: MeritWalletClient;
+  loading: boolean;
+  refreshing: boolean;
+
+  offset:number = 0;
+  limit:number = 10;
+
+  txs:Array<any> = [];
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -34,8 +41,10 @@ export class WalletDetailsView {
   }
 
   async ngOnInit() {
+    this.loading = true;
     this.wallet = this.navParams.get('wallet');
     await this.getWalletHistory();
+    this.loading = false;
 
     this.events.subscribe('Remote:IncomingTx', () => {
       this.wallet.getStatus();
@@ -65,13 +74,38 @@ export class WalletDetailsView {
     }
   }
 
-
-  private async getWalletHistory(force: boolean = false) {
-    try {
-      const txs = await this.walletService.getTxHistory(this.wallet, { force });
-      this.wallet.completeHistory = await formatWalletHistory(txs, this.wallet, [], this.contactsService);
-    } catch (err) {
-      this.logger.info(err);
-    }
+  async doRefresh(refresher) {
+    this.refreshing = true;
+    await this.getWalletHistory();
+    this.refreshing = false;
+    refresher.complete();
   }
+
+
+  private async getWalletHistory() {
+
+    try {
+      this.txs = await this.wallet.getTxHistory({skip: 0, limit: this.limit, includeExtendedInfo: true});
+      this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, [], this.contactsService);
+      console.log(history);
+    } catch (e) {
+      console.log(e);
+    }
+
+  }
+
+  private async loadMoreHistory(infiniter) {
+    this.offset += this.limit;
+    console.log('loading for offset', this.offset);
+    try {
+      const txs = await this.wallet.getTxHistory({skip: this.offset, limit: this.limit, includeExtendedInfo: true});
+      this.txs = this.txs.concat(txs);
+      this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, [], this.contactsService);
+      console.log('loaded for offset', this.offset);
+    } catch (e) {
+      console.log(e);
+    }
+    infiniter.complete();
+  }
+
 }

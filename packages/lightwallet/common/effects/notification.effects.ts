@@ -18,6 +18,7 @@ import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import { map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { ElectronService } from '../../desktop/src/services/electron.service';
 
 @Injectable()
 export class NotificationEffects {
@@ -49,7 +50,19 @@ export class NotificationEffects {
   showToast$ = this.actions$.pipe(
     ofType(NotificationsActionType.Add),
     tap((action: AddNotificationAction) => {
+      if (!action.notification) return;
+
       const notification = formatNotification(action.notification);
+
+      if (!notification) return;
+
+      if (ElectronService.isElectronAvailable && !document.hasFocus()) {
+        // TODO move this to a Desktop specific file after integrating NGRX in mobile
+        // show electron notification if app is not focused
+        ElectronService.showNotification(notification.title, notification.message);
+        return;
+      }
+
       const toast = this.toastCtrl.create({
         title: notification.title,
         message: notification.message,

@@ -453,6 +453,12 @@ export class API {
     return xpub.deriveChild('m/0/0').publicKey;
   }
 
+  getRootPrivateKey(password: string) {
+    const derivedKey = this.credentials.getDerivedXPrivKey(password);
+    const xprv = new Bitcore.HDPrivateKey(derivedKey);
+    return xprv.deriveChild('m/0/0').privateKey;
+  }
+
   /**
    * Seed from extended private key
    *
@@ -2617,7 +2623,7 @@ export class API {
    * @returns {Promise<any>}
    */
   getRates():Promise<any> {
-    return this._doGetRequest('/v1/rates/');
+    return this._doGetRequest('/v1/rates');
   }
 
   /**

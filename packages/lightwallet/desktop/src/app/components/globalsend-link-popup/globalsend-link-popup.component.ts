@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { IDynamicComponent } from '@merit/desktop/app/components/dom.controller';
-import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
+import { IDynamicComponent } from '../dom.controller';
+import { ToastControllerService } from '../toast-notification/toast-controller.service';
 
 @Component({
   selector: 'globalsend-link-popup',
   styleUrls: ['./globalsend-link-popup.component.sass'],
   template: `
     <div class="ui-prompt">
-      <h2 class="title">GlobalSend Link</h2>
+      <h2 class="title">Global Send Link</h2>
       <div class="message">
         Click on the link to copy
         <div class="globalsend-link" (click)="onCopy()" [clip]="globalSendURL">{{ globalSendURL }}</div>
