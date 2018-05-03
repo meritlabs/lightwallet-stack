@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Tab, Tabs, Events } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { WalletService } from '@merit/common/services/wallet.service';
-import { LoggerService } from '@merit/common/services/logger.service';
-import { formatWalletHistory } from '@merit/common/utils/transactions';
 import { ContactsService } from '@merit/common/services/contacts.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { formatWalletHistory } from '@merit/common/utils/transactions';
+import { Events, IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
+import { PersistenceService2 } from '../../../../../common/services/persistence2.service';
 
 @IonicPage({
   segment: 'wallet/:walletId',
@@ -13,7 +14,7 @@ import { ContactsService } from '@merit/common/services/contacts.service';
 })
 @Component({
   selector: 'wallet-details-view',
-  templateUrl: 'wallet-details.html',
+  templateUrl: 'wallet-details.html'
 })
 export class WalletDetailsView {
 
@@ -21,10 +22,10 @@ export class WalletDetailsView {
   loading: boolean;
   refreshing: boolean;
 
-  offset:number = 0;
-  limit:number = 10;
+  offset: number = 0;
+  limit: number = 10;
 
-  txs:Array<any> = [];
+  txs: Array<any> = [];
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -32,7 +33,8 @@ export class WalletDetailsView {
               private logger: LoggerService,
               private tabsCtrl: Tabs,
               private events: Events,
-              private contactsService: ContactsService
+              private contactsService: ContactsService,
+              private persistenceService: PersistenceService2
   ) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
@@ -83,24 +85,26 @@ export class WalletDetailsView {
 
 
   private async getWalletHistory() {
-
     try {
-      this.txs = await this.wallet.getTxHistory({skip: 0, limit: this.limit, includeExtendedInfo: true});
-      this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, [], this.contactsService);
+      this.txs = await this.wallet.getTxHistory({ skip: 0, limit: this.limit, includeExtendedInfo: true });
+      await this.formatHistory();
       console.log(history);
     } catch (e) {
       console.log(e);
     }
-
   }
 
-  private async loadMoreHistory(infiniter) {
+  private async formatHistory() {
+    this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, await this.persistenceService.getEasySends(), this.contactsService);
+  }
+
+  async loadMoreHistory(infiniter) {
     this.offset += this.limit;
     console.log('loading for offset', this.offset);
     try {
-      const txs = await this.wallet.getTxHistory({skip: this.offset, limit: this.limit, includeExtendedInfo: true});
+      const txs = await this.wallet.getTxHistory({ skip: this.offset, limit: this.limit, includeExtendedInfo: true });
       this.txs = this.txs.concat(txs);
-      this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, [], this.contactsService);
+      await this.formatHistory();
       console.log('loaded for offset', this.offset);
     } catch (e) {
       console.log(e);
