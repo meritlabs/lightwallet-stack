@@ -24,7 +24,6 @@
 .tooltip-error
   display: flex
   height: 39px
-  display: flex
   align-items: center
   justify-content: flex-start
   text-align: left
@@ -132,6 +131,8 @@
     position: absolute
     right: 16px
     top: 11px
+    transform: translate3d(0,0,0)
+    transition: right .2s linear
 .ui-checkbox
   position: relative
   input
@@ -178,6 +179,10 @@
     margin-bottom: 10px
 
 form .ui-input
+  &.ng-dirty
+    + .ui-input__addon
+      right: 36px
+
   &--invalid, &.ng-dirty.ng-invalid
       background: rgb(255, 224, 224) url('/assets/v1/icons/ui/inputs/invalid-icon.svg') no-repeat 98% 50%
       background-size: 20px
