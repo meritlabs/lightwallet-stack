@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { AddressErrorMessagePipe } from '@merit/common/pipes/address-error-message.pipe';
 import { ChunksPipe } from '@merit/common/pipes/chunks.pipe';
 import { ToFiatPipe } from '@merit/common/pipes/to-fiat.pipe';
 import { ToUnitPipe } from '@merit/common/pipes/to-unit.pipe';
@@ -13,7 +14,8 @@ import { AddressPipe } from '@merit/common/pipes/address.pipe';
     ToUnitPipe,
     ToMrtPipe,
     UnescapePipe,
-    AddressPipe
+    AddressPipe,
+    AddressErrorMessagePipe
   ],
   exports: [
     ChunksPipe,
@@ -21,7 +23,8 @@ import { AddressPipe } from '@merit/common/pipes/address.pipe';
     ToUnitPipe,
     ToMrtPipe,
     UnescapePipe,
-    AddressPipe
+    AddressPipe,
+    AddressErrorMessagePipe
   ]
 })
 export class CommonPipesModule {}
