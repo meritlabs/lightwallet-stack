@@ -1,4 +1,5 @@
 import { browser, by, element } from 'protractor';
+import { EC, TEST_WALLET_ALIAS, TEST_WALLET_MNEMONIC, TEST_WALLET_NAME } from './app.e2e-spec';
 
 describe('[Desktop] Sending Merit', () => {
 
@@ -75,9 +76,47 @@ describe('[Desktop] Sending Merit', () => {
     });
   });
 
+
   describe('> Sending', () => {
-    it('should have an amount input', () => {
+
+    const InAmountMrt = element(by.name('amountMrt')),
+      selectBox = element(by.css('.ui-input.ui-input--select.ui-input--form.selectbox__selected')),
+      globalSendChoice = element(by.css('.selectMethod_item.globalSend')),
+      sendButton = element(by.name('sendButton'));
+
+
+    it('should have an amount input', () => {   
+      expect(InAmountMrt.isDisplayed()).toBeTruthy();
+      InAmountMrt.sendKeys(1);
     });
+    it('should have an select wallet drop down', () => {
+      expect(selectBox.isDisplayed()).toBeTruthy();
+    });
+    it('should have an sending method choice box', () => {
+      expect(element(by.css('.selectMethod')).isDisplayed()).toBeTruthy();
+    });
+    it('should have an classic send activated by default', () => {
+      expect(element(by.css('.selectMethod_item.classicSend.active')).isDisplayed()).toBeTruthy();
+    });
+    it('should have an recepient address input', async () => {
+      expect(element(by.name('address')).isDisplayed()).toBeTruthy();
+      element(by.name('address')).sendKeys(TEST_WALLET_ALIAS);
+    });
+    it('should activate sending button after alias input', async () => {
+      expect(sendButton.isDisplayed()).toBeTruthy();
+    });
+    it('should have ability switch to Global Send Method', async () => {
+      expect(globalSendChoice.isDisplayed()).toBeTruthy();
+      globalSendChoice.click();
+    });
+    it('should activate Global Send Method after choice selection', async () => {
+      expect(globalSendChoice.getAttribute('class')).toContain('active');
+    });
+    it('should have an password input if Global Send Method selected', async () => {
+      expect(element(by.name('password')).isDisplayed()).toBeTruthy();
+    });
+
+    
   });
 
   describe('> Classic Send', () => {

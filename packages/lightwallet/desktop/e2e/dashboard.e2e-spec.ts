@@ -30,13 +30,13 @@ describe('[Desktop] Dashboard view', () => {
     });
 
     it('should have a "Show recovery phrase button"', () => {
-      const el = rootEl.element(by.css('.mnemonic > button'));
+      const el = rootEl.element(by.css('.mnemonic > .mnemonic_button > button'));
       expect(el.isDisplayed()).toBeTruthy('Button is not displayed');
       expect(el.isEnabled()).toBeTruthy('Button is not enabled');
     });
 
     it('should show mnemonic phrase when clicking on show phrase button', () => {
-      const el = rootEl.element(by.css('.mnemonic > button'));
+      const el = rootEl.element(by.css('.mnemonic > .mnemonic_button > button'));
       el.click();
       browser.wait(EC.visibilityOf(rootEl.element(by.css('.mnemonic .box'))));
       const mnemonicEl = rootEl.element(by.css('.mnemonic .box'));
@@ -45,13 +45,13 @@ describe('[Desktop] Dashboard view', () => {
     });
 
     it('should have a hide mnemonic button', () => {
-      const el = rootEl.element(by.css('.mnemonic > button'));
+      const el = rootEl.element(by.css('.mnemonic > .mnemonic_button > button'));
       expect(el.isDisplayed()).toBeTruthy('Button is not displayed');
       expect(el.isEnabled()).toBeTruthy('Button is not enabled');
     });
 
     it('should hide mnemonic when pressing hide button', () => {
-      const el = rootEl.element(by.css('.mnemonic > button'));
+      const el = rootEl.element(by.css('.mnemonic > .mnemonic_button > button'));
       el.click();
       browser.sleep(200);
       expect(rootEl.element(by.css('.mnemonic .box')).isDisplayed()).toBeFalsy();

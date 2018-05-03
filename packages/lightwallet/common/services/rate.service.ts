@@ -58,11 +58,7 @@ export class RateService {
     if (this.cache.updatedTs + this.CACHE_TIME < Date.now()) {
       rates = await this.loadRates();
     }
-    // return rates.filter(r => r.rate > 0);
-
-    // temporally return everything for testing
-    rates[0].rate = 1.125;
-    return rates;
+    return rates.filter(r => r.rate > 0);
   }
 
   mrtToMicro(mrt) {
