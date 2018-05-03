@@ -46,6 +46,12 @@
         <h2>Copy Global Send Link</h2>
       </ion-label>
     </button>
+    <button ion-item *ngIf="tx.easySendUrl && !tx.cancelled">
+      <ion-icon item-start name="md-close-circle" color="danger" (click)="cancel()"></ion-icon>
+      <ion-label>
+        <h2>Cancel</h2>
+      </ion-label>
+    </button>
     <ion-item class="confirmation-status" [class.confirmed]="isConfirmed" text-wrap no-lines>
       <ion-avatar img-icon item-start>
         <img [src]="'assets/img/icons/' + (isConfirmed? 'done' : 'timeout') + '.svg'" alt="">
