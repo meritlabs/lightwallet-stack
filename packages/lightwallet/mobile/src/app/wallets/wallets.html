@@ -47,10 +47,16 @@
         </ion-avatar>
 
         <ion-label>
-          <h2 *ngIf="wallet.name">{{ wallet.name }} <span *ngIf="wallet.rootAlias">| @{{ wallet.rootAlias}}</span></h2>
+          <h2 *ngIf="wallet.name">{{ wallet.name }}</h2>
           <h2 *ngIf="!wallet.name && wallet.rootAlias">@{{ wallet.rootAlias}}</h2>
           <h2 *ngIf="!wallet.name && !wallet.rootAlias">Personal wallet</h2>
 
+          <p *ngIf="wallet.name && wallet.rootAlias">
+            @{{ wallet.rootAlias}}
+          </p>
+          <p class="invites">
+            Invites: {{ wallet.availableInvites || 0}}
+          </p>
           <p *ngIf="wallet.balanceHidden; else notHidden">
             [Balance Hidden]
           </p>
@@ -59,9 +65,6 @@
               {{ wallet.balance.spendableAmount | toMRT}}
             </p>
           </ng-template>
-          <p class="invites">
-            Invites: {{ wallet.availableInvites || 0}}
-          </p>
         </ion-label>
 
         <ion-note *ngIf="!wallet.isComplete(); else isComplete" class="assertive">Incomplete</ion-note>
