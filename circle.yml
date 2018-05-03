@@ -158,3 +158,13 @@ jobs:
     working_directory: ~/repo/packages/lightwallet/desktop
     steps:
       - run: cd packages/lightwallet/desktop && npm run build:prod
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - unit_test
+      - desktop_e2e
+      - mobile_e2e
+      - build_dlw
+      - build_mlw
