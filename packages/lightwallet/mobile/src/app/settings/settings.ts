@@ -5,6 +5,7 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
 
 @IonicPage()
 @Component({
@@ -32,6 +33,7 @@ export class SettingsView {
               private configService: ConfigService,
               private logger: LoggerService,
               private profileService: ProfileService,
+              private contactsService: ContactsService
   ) {
     let config = this.configService.get();
     this.currentUnitName = config.wallet.settings.unitName;
@@ -48,7 +50,9 @@ export class SettingsView {
       buttons: [
         { text: 'Cancel', role: 'cancel' },
         { text: 'Logout', handler: () => {
-          Promise.all(this.wallets.map( w => this.profileService.deleteWallet(w) )).then(() => {
+
+          const deleteAllData = () => this.wallets.map( w => this.profileService.deleteWallet(w)).concat(this.contactsService.deleteAddressBook());
+          Promise.all(deleteAllData()).then(() => {
             this.app.getRootNavs()[0].setRoot('OnboardingView');
           });
           }
