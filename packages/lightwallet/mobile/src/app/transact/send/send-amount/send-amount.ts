@@ -271,7 +271,8 @@ export class SendAmountView {
   public async toConfirm() {
 
     if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
-      return this.toastCtrl.error('Passwords do not match');
+      this.feeCalcError = 'Passwords do not match';
+      return this.txData.txp = null;
     }
 
     let loadingSpinner = this.loadingCtrl.create({
@@ -344,7 +345,8 @@ export class SendAmountView {
     try {
 
       if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
-        throw new Error('Passwords does not match');
+        this.feeCalcError = 'Passwords do not match';
+        return this.txData.txp = null;
       }
 
       if (this.sendMethod.type == SendMethodType.Easy) {
