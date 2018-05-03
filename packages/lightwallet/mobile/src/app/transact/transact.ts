@@ -51,7 +51,6 @@ export class TransactView {
           startWith(null),
           debounceTime(500),
           tap(() => {
-            console.log('EFFECT ~~~`');
             this.processPendingEasyReceipts();
           })
         )
@@ -80,7 +79,6 @@ export class TransactView {
   }
 
   async ngOnDestroy() {
-    console.log('On destroy called');
     if (this.subs && this.subs.length) {
       this.subs.forEach((sub: Subscription) => sub.unsubscribe());
     }
