@@ -20,17 +20,16 @@ import { SendValidator } from '@merit/common/validators/send.validator';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { Store } from '@ngrx/store';
 import { clone } from 'lodash';
-import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/isEmpty';
+import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
-import { combineLatest } from 'rxjs/observable/combineLatest';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import {
   catchError,
-  debounceTime, defaultIfEmpty,
+  debounceTime,
   filter,
-  map, share,
+  map,
   skipWhile,
   startWith,
   switchMap,
@@ -252,7 +251,7 @@ export class SendView implements OnInit {
     // temporary hack
     // TODO(ibby) find a better way to ensure we have an initial value for selected currency
     setTimeout(() => {
-      this.selectedCurrency.setValue(this.selectedCurrency.value)
+      this.selectedCurrency.setValue(this.selectedCurrency.value);
     }, 1000);
   }
 
