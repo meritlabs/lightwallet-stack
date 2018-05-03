@@ -11,6 +11,7 @@ import { AddressService } from '@merit/common/services/address.service';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { SendMethodDestination } from '@merit/common/models/send-method';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { ProfileService } from '@merit/common/services/profile.service';
 
 const ERROR_ADDRESS_NOT_FOUND = 'ADDRESS_NOT_FOUND';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -26,6 +27,7 @@ export class SendInviteView {
   contacts: Array<MeritContact> = [];
   amount: number;
   availableInvites;
+  searchInProgress: boolean;
   searchResult: {
     withMerit: Array<MeritContact>,
     toNewEntity: { destination: string, contact: MeritContact },
@@ -41,13 +43,14 @@ export class SendInviteView {
               private modalCtrl: ModalController,
               private addressScanner: AddressScannerService,
               private walletService: WalletService,
+              private profileService: ProfileService,
               private toastCtrl: ToastControllerService,
               private loadCtrl: LoadingController
   ) {
   }
 
   async ionViewWillEnter() {
-    this.wallets = this.navParams.get('wallets');
+    this.wallets = await this.profileService.getWallets();
     this.loadingContacts = true;
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;
@@ -60,6 +63,7 @@ export class SendInviteView {
   }
 
   async parseSearch() {
+    this.searchInProgress = true;
     let result = { withMerit: [], toNewEntity: null, error: null };
 
     if (!this.searchQuery || !this.searchQuery.length) {
@@ -67,6 +71,7 @@ export class SendInviteView {
       this.debounceSearch.cancel();
       result.withMerit = this.contacts;
       return this.searchResult = result;
+      this.searchInProgress = false;
     }
 
     if (this.searchQuery.length > 6 && this.searchQuery.indexOf('merit:') == 0)
@@ -75,7 +80,7 @@ export class SendInviteView {
     this.debounceSearch();
   }
 
-  private debounceSearch = _.debounce(() => this.search(), 300);
+  private debounceSearch = _.debounce(() => this.search(), 500);
 
   private async search() {
 
@@ -109,6 +114,7 @@ export class SendInviteView {
     });
 
     this.searchResult = result;
+    this.searchInProgress = false;
   }
 
   clearSearch() {
@@ -166,5 +172,9 @@ export class SendInviteView {
       loader.dismiss();
     }
 
+  }
+
+  onSearchKeyUp(event: KeyboardEvent) {
+    if (event.keyCode === 13) (event.target as HTMLInputElement).blur();
   }
 }
