@@ -15,23 +15,28 @@ import { PersistenceService2 } from '@merit/common/services/persistence2.service
 import { RateService } from '@merit/common/services/rate.service';
 import { SendService } from '@merit/common/services/send.service';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { AddressValidator } from '@merit/common/validators/address.validator';
+import { isAddress } from '@merit/common/utils/addresses';
 import { SendValidator } from '@merit/common/validators/send.validator';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { Store } from '@ngrx/store';
 import { clone } from 'lodash';
-import { Observable } from 'rxjs/Observable';
-import {
-  catchError, debounceTime, filter, map, onErrorResumeNext, skipUntil, skipWhile, startWith, switchMap, take, tap,
-  withLatestFrom
-} from 'rxjs/operators';
 import 'rxjs/add/operator/toPromise';
+import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
-import { isAddress } from '@merit/common/utils/addresses';
-import { Subscription } from 'rxjs/Subscription';
+import {
+  catchError,
+  debounceTime,
+  filter,
+  map,
+  skipWhile,
+  startWith,
+  switchMap,
+  take,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
-import { combineLatest } from 'rxjs/observable/combineLatest';
 
 interface TxData {
   txp: any;
