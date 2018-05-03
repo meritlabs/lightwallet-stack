@@ -26,7 +26,7 @@
 
   <div *ngIf="!loadingContacts && searchResult && hasUnlockedWallets && !showSlider" class="content">
 
-    <button ion-button full primary (click)="easySend()" [class.disabled]="!hasActiveInvites" class="global-send-button">
+    <button ion-button full primary (click)="easySend()" [disabled]="!hasActiveInvites" class="global-send-button">
       Global send
       <img src="assets/img/icons/send.svg">
     </button>
