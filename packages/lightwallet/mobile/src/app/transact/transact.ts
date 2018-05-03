@@ -62,8 +62,9 @@ export class TransactView {
   }
 
   async ionViewCanEnter() {
-    const wallets = await this.profileService.wallets;
-    return wallets && wallets.length > 0;
+    const wallets = await this.profileService.wallets || [];
+    let canEnter = wallets.length > 0;
+    return canEnter;
   }
 
   ionViewDidEnter() {
