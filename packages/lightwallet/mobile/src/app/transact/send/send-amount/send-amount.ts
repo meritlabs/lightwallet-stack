@@ -149,10 +149,6 @@ export class SendAmountView {
     modal.onDidDismiss(async (wallet) => {
       if (wallet) {
         this.selectedWallet = wallet;
-        if (wallet.balance.spendableAmount < this.amount.micros) {
-          this.formData.amount = this.rateService.microsToMrt(wallet.balance.spendableAmount).toString();
-          this.updateAmount();
-        }
       }
       this.updateTxData();
     });
