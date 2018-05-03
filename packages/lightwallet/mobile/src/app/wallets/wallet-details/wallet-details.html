@@ -2,7 +2,7 @@
   <ion-navbar>
     <ion-title smaller-title>
       {{ wallet.name }} <br>
-      Network alias: @{{ wallet.rootAlias}}
+      Network alias: {{ wallet.rootAlias ? '@'+wallet.rootAlias : 'not set'}} 
     </ion-title>
     <!-- <ion-title smaller-title></ion-title> -->
     <ion-buttons end>

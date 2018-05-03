@@ -47,7 +47,7 @@
         </ion-avatar>
 
         <ion-label>
-          <h2 *ngIf="wallet.name">{{ wallet.name }} | @{{ wallet.rootAlias}}</h2>
+          <h2 *ngIf="wallet.name">{{ wallet.name }} | <span *ngIf="wallet.rootAlias">@{{ wallet.rootAlias}}</span></h2>
           <h2 *ngIf="!wallet.name && wallet.rootAlias">@{{ wallet.rootAlias}}</h2>
           <h2 *ngIf="!wallet.name && !wallet.rootAlias">Personal wallet</h2>
 
