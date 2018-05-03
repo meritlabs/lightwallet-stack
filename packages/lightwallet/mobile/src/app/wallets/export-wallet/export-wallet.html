@@ -25,7 +25,7 @@
         Wallet Recovery Phrase
       </ion-item-divider>
       <ion-list>
-        <ion-item>
+        <ion-item [clip]="mnemonic" (click)="notifyCopied()">
           <div class="key">{{ mnemonic }}</div>
         </ion-item>
         <ion-item>

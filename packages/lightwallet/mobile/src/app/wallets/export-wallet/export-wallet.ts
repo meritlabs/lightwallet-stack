@@ -166,4 +166,9 @@ export class ExportWalletView {
     }
   }
 
+
+  public notifyCopied() {
+    this.toastCtrl.success('Copied to clipboard');
+  }
+
 }
