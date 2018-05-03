@@ -12,6 +12,7 @@ import { ToastControllerService, IMeritToastConfig } from '@merit/common/service
 import { SendMethodDestination } from '@merit/common/models/send-method';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 
 const ERROR_ADDRESS_NOT_FOUND = 'ADDRESS_NOT_FOUND';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -35,6 +36,7 @@ export class SendInviteView {
   } = { withMerit: [], toNewEntity: null, error: null };
 
   private wallets: Array<MeritWalletClient>;
+  private wallet: MeritWalletClient;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -146,6 +148,10 @@ export class SendInviteView {
     modal.present();
   }
 
+  onSearchKeyUp(event: KeyboardEvent) {
+    if (event.keyCode === 13) (event.target as HTMLInputElement).blur();
+  }
+
   async openScanner() {
     this.searchQuery = await this.addressScanner.scanAddress();
     this.parseSearch();
@@ -155,15 +161,17 @@ export class SendInviteView {
 
     const toAddress = contact.meritAddresses[0].address;
 
-    let wallet = this.wallets.find(w => (w.availableInvites > 0));
-    if (!wallet) {
+    if (!this.wallet) {
+      this.wallet = this.wallets.find(w => (w.availableInvites > 0));
+    }
+    if (!this.wallet || !this.wallet.availableInvites) {
       return this.toastCtrl.error('You have no active invites');
     }
 
     let loader = this.loadCtrl.create({ content: 'Sending invite...' });
     try {
       loader.present();
-      await this.walletService.sendInvite(wallet, toAddress);
+      await this.walletService.sendInvite(this.wallet, toAddress);
       return this.navCtrl.pop();
     } catch (e) {
       console.log(e);
@@ -174,7 +182,17 @@ export class SendInviteView {
 
   }
 
-  onSearchKeyUp(event: KeyboardEvent) {
-    if (event.keyCode === 13) (event.target as HTMLInputElement).blur();
+  public selectWallet() {
+    const modal = this.modalCtrl.create('SelectInviteWalletModal', {
+      selectedWallet: this.wallet,
+      availableWallets: this.wallets.filter((wallet) => wallet.availableInvites > 0)
+    }, MERIT_MODAL_OPTS);
+    modal.onDidDismiss((wallet) => {
+      if (wallet) {
+        this.wallet = wallet;
+      }
+    });
+    return modal.present();
   }
+
 }
