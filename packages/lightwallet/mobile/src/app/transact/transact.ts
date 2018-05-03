@@ -9,8 +9,7 @@ import { ToastControllerService } from '@merit/common/services/toast-controller.
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { Address, PublicKey } from 'bitcore-lib';
 import { AlertController, Events, IonicPage, NavController, NavParams, Platform, Tabs } from 'ionic-angular';
-import { debounceTime, tap } from 'rxjs/operators';
-import { Subject } from 'rxjs/Subject';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
 
 
@@ -27,10 +26,8 @@ import { Subscription } from 'rxjs/Subscription';
 export class TransactView {
   @ViewChild('tabs') tabs: Tabs;
 
-  private subs: Subscription[];
+  private subs: Subscription[] = [];
   keyboardVisible: boolean = false;
-
-  processPendingEasyReceipts: Subject<void> = new Subject();
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -43,21 +40,31 @@ export class TransactView {
               private alertCtrl: AlertController,
               private toastCtrl: ToastControllerService,
               private events: Events) {
-    this.processPendingEasyReceipts.asObservable()
-      .pipe(
-        debounceTime(500),
-        tap(async () => {
-          const receipts = await this.easyReceiveService.getPendingReceipts();
-          if (!receipts.length) return; // No receipts to process
-          return this.processEasyReceipt(receipts[0], false);
-        })
-      )
-      .subscribe();
   }
 
+  rand = Math.random();
+
   async ngOnInit() {
+    this.subs.push(
+      this.easyReceiveService.easyReceipts$
+        .pipe(
+          startWith(null),
+          debounceTime(500),
+          tap(() => {
+            console.log('EFFECT ~~~`');
+            this.processPendingEasyReceipts();
+          })
+        )
+        .subscribe(),
+      this.easyReceiveService.cancelEasySendObservable$.subscribe(
+        receipt => {
+          this.processEasyReceipt(receipt, false, '', false);
+        }
+      )
+    );
+
     if (this.plt.is('android') && Keyboard.installed()) {
-      this.subs = [
+      this.subs.push(
         this.keyboard.onKeyboardShow()
           .subscribe(() => {
             this.keyboardVisible = true;
@@ -66,19 +73,14 @@ export class TransactView {
           .subscribe(() => {
             this.keyboardVisible = false;
           })
-      ];
+      );
     }
 
     await this.unlockRequestService.loadRequestsData();
-
-    this.easyReceiveService.cancelEasySendObservable$.subscribe(
-      receipt => {
-        this.processEasyReceipt(receipt, false, '', false);
-      }
-    );
   }
 
   async ngOnDestroy() {
+    console.log('On destroy called');
     if (this.subs && this.subs.length) {
       this.subs.forEach((sub: Subscription) => sub.unsubscribe());
     }
@@ -89,9 +91,10 @@ export class TransactView {
     return wallets.length > 0;
   }
 
-  ionViewDidEnter() {
-    console.log('Can enter fired');
-    this.processPendingEasyReceipts.next();
+  private async processPendingEasyReceipts() {
+    const receipts = await this.easyReceiveService.getPendingReceipts();
+    if (!receipts.length) return; // No receipts to process
+    return this.processEasyReceipt(receipts[0], false);
   }
 
   /**
@@ -131,7 +134,7 @@ export class TransactView {
       this.logger.debug('Got a spent easyReceipt. Removing from pending receipts.');
       await this.easyReceiveService.deletePendingReceipt(receipt);
       await this.showSpentEasyReceiptAlert();
-      return await this.processPendingEasyReceipts.next();
+      return await this.processPendingEasyReceipts();
     }
 
     if (txs.some(tx => (tx.confirmations === undefined))) {
@@ -145,7 +148,7 @@ export class TransactView {
       this.logger.debug('Got an expired easyReceipt. Removing from pending receipts.');
       await this.easyReceiveService.deletePendingReceipt(receipt);
       await this.showExpiredEasyReceiptAlert();
-      return processAll ? this.processPendingEasyReceipts.next() : null;
+      return processAll ? this.processPendingEasyReceipts() : null;
     }
 
     return isSender ?
@@ -169,7 +172,7 @@ export class TransactView {
           text: 'Ignore', role: 'cancel', handler: () => {
             this.logger.info('You have declined easy receive');
             this.easyReceiveService.deletePendingReceipt(receipt).then(() =>
-              this.processPendingEasyReceipts.next()
+              this.processPendingEasyReceipts()
             );
           }
         },
@@ -235,14 +238,14 @@ export class TransactView {
         {
           text: 'Reject', role: 'cancel', handler: () => {
             this.rejectEasyReceipt(receipt, data).then(() =>
-              this.processPendingEasyReceipts.next()
+              this.processPendingEasyReceipts()
             );
           }
         },
         {
           text: 'Accept', handler: () => {
             this.acceptEasyReceipt(receipt, data).then(() =>
-              this.processPendingEasyReceipts.next()
+              this.processPendingEasyReceipts()
             );
           }
         }
