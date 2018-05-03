@@ -1,6 +1,7 @@
 <app-lock-screen fullScreen *ngIf="!hasUnlockedWallet"></app-lock-screen>
 <div class="sendMerit">
   <div class="container--inner">
+
     <div class="sendMerit__header title--primary">
       <p>Send Merit</p>
     </div>
@@ -22,11 +23,11 @@
     <send-tour *ngIf="showTour" (hideTour)="hideTour()"></send-tour>
     <div class="sendMerit__content">
 
-      <form class="sendMerit__form" [formGroup]="formData">
+      <form class="sendMerit__form" [formGroup]="formData" (ngSubmit)="submit.next()">
         <div class="sendMerit__form__group">
-          <label for="" class="ui-label">Amount</label>
+          <label class="ui-label">Amount</label>
           <div class="ui-input__wrapper ui-input__wrapper--mrt">
-            <input type="text" name="" formControlName="amountMrt" placeholder="0"
+            <input type="number" name="" formControlName="amountMrt" placeholder="0"
                    class="ui-input ui-input--form ui-input--text">
             <div class="ui-input__addon">MRT</div>
           </div>
@@ -49,7 +50,7 @@
           </div>
         </div>
         <div class="sendMerit__form__group" [hidden]="amountMrt.pristine || amountMrt.invalid">
-          <label for="" class="ui-label">Send from</label>
+          <label class="ui-label">Send from</label>
           <app-select (selectionEvent)="selectWallet($event)" [selected]="wallet.value" [input]="wallets$ | async"
                       style="ui-input ui-input--select ui-input--form"></app-select>
           <label class="ui-label available-amount-label" *ngIf="wallet.valid">
@@ -59,7 +60,7 @@
         </div>
 
         <div class="selectMethod" [hidden]="amountMrt.pristine || amountMrt.invalid">
-          <button (click)="updateTxType('classic')" class="selectMethod_item" [class.active]="type.value === 'classic'">
+          <button (click)="updateTxType('classic')" type="button" role="button" class="selectMethod_item" [class.active]="type.value === 'classic'">
             <span class="title">
               Send via ClassicSend
             </span>
@@ -67,8 +68,7 @@
               Send to a Merit address
             </span>
           </button>
-          <button (click)="updateTxType('easy')" class="selectMethod_item" [class.active]="type.value === 'easy'"
-                  [disabled]="!wallet.value?.status?.availableInvites">
+          <button (click)="updateTxType('easy')" [disabled]="!wallet.value?.status?.availableInvites" type="button" role="button" class="selectMethod_item" [class.active]="type.value === 'easy'">
             <span class="title">
               Send via GlobalSend
             </span>
@@ -84,14 +84,14 @@
         <ng-container *ngIf="amountMrt.dirty && amountMrt.valid">
           <ng-container *ngIf="type.value === 'classic'; else easySend">
             <div class="sendMerit__form__group">
-              <label for="" class="ui-label">Send to address / alias</label>
+              <label class="ui-label">Send to address / alias</label>
               <input type="text" name="" value="" placeholder="Paste address / alias here"
                      class="ui-input ui-input--form ui-input--text" formControlName="address">
             </div>
           </ng-container>
           <ng-template #easySend>
             <div class="sendMerit__form__group">
-              <label for="" class="ui-label">Password &nbsp;
+              <label class="ui-label">Password &nbsp;
                 <small>(optional)</small>
               </label>
               <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password">
@@ -104,8 +104,8 @@
         </ng-container>
 
         <div class="sendMerit__form__group">
-          <button type="submit" name="button" class="ui-button ui-button--blue"
-                  [disabled]="!receipt.calculated || formData.invalid">
+          <button type="submit" class="ui-button ui-button--blue"
+                  [disabled]="!canSend">
             Send Merit
           </button>
         </div>
@@ -113,59 +113,59 @@
 
       <div class="sendMerit__totals">
         <div class="sendMerit__form__group">
-          <div class="sendMerit__totals__table" *ngIf="receipt">
-            <loading-spinner-small *ngIf="receipt.loading; else hasData"></loading-spinner-small>
+          <div class="sendMerit__totals__table">
+            <loading-spinner-small *ngIf="receiptLoading; else hasData"></loading-spinner-small>
             <ng-template #hasData>
-              <div class="sendMerit__totals__table--top">
-                <label for="" class="ui-label">
-                  Receipt
-                </label>
-                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
-                  <div class="sendMerit__totals__table__column">
-                    Send to
+              <ng-container *ngIf="receipt$ | async as receipt">
+                <div class="sendMerit__totals__table--top">
+                  <label for="" class="ui-label">
+                    Receipt
+                  </label>
+                  <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
+                    <div class="sendMerit__totals__table__column">
+                      Send to
+                    </div>
+                    <div class="sendMerit__totals__table__column" *ngIf="type.value == 'classic'">
+                      {{ (address.value | address) || '...' }}
+                    </div>
+                    <div class="sendMerit__totals__table__column" *ngIf="type.value == 'easy'">
+                      GlobalSend
+                    </div>
                   </div>
-                  <div class="sendMerit__totals__table__column" *ngIf="type.value == 'classic'">
-                    {{ address.value }}
+                  <div class="sendMerit__totals__table__row">
+                    <div class="sendMerit__totals__table__column">
+                      Amount
+                    </div>
+                    <div class="sendMerit__totals__table__column">
+                      {{ receipt.amount | toMRT }}
+                    </div>
                   </div>
-                  <div class="sendMerit__totals__table__column" *ngIf="type.value == 'easy'">
-                    GlobalSend
-                  </div>
-                </div>
-                <div class="sendMerit__totals__table__row">
-                  <div class="sendMerit__totals__table__column">
-                    Amount
-                  </div>
-                  <div class="sendMerit__totals__table__column">
-                    {{ receipt.amount | toMRT }}
-                  </div>
-                </div>
-                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
-                  <div class="sendMerit__totals__table__column">
-                    Total
-                  </div>
-                  <div class="sendMerit__totals__table__column">
-                    {{ receipt.total | toMRT }}
-                  </div>
-                </div>
-              </div>
-
-
-              <div class="sendMerit__totals__table--bottom">
-                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--devider">
-                </div>
-                <div class="sendMerit__totals__table__row">
-                  <div class="sendMerit__totals__table__column">In Wallet</div>
-                  <div class="sendMerit__totals__table__column">
-                    {{ (wallet.value?.status.spendableAmount || 0) | toMRT }}
+                  <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
+                    <div class="sendMerit__totals__table__column">
+                      Total
+                    </div>
+                    <div class="sendMerit__totals__table__column">
+                      {{ receipt.total | toMRT }}
+                    </div>
                   </div>
                 </div>
-                <div class="sendMerit__totals__table__row">
-                  <div class="sendMerit__totals__table__column">Total Remaining</div>
-                  <div class="sendMerit__totals__table__column">
-                    {{ ((wallet.value?.status.spendableAmount || 0) - receipt.total) | toMRT }}
+                <div class="sendMerit__totals__table--bottom">
+                  <div class="sendMerit__totals__table__row sendMerit__totals__table__row--devider">
+                  </div>
+                  <div class="sendMerit__totals__table__row">
+                    <div class="sendMerit__totals__table__column">In Wallet</div>
+                    <div class="sendMerit__totals__table__column">
+                      {{ receipt.inWallet | toMRT }}
+                    </div>
+                  </div>
+                  <div class="sendMerit__totals__table__row">
+                    <div class="sendMerit__totals__table__column">Total Remaining</div>
+                    <div class="sendMerit__totals__table__column">
+                      {{ receipt.remaining | toMRT }}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </ng-container>
             </ng-template>
           </div>
         </div>
