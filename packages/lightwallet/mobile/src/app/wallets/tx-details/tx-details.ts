@@ -3,6 +3,7 @@ import { IDisplayTransaction, TransactionAction } from '@merit/common/models/tra
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { COINBASE_CONFIRMATION_THRESHOLD } from '@merit/common/utils/constants';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
+import { EasyReceiveService } from '../../../../../common/services/easy-receive.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']
@@ -33,7 +34,8 @@ export class TxDetailsView {
 
   constructor(private navParams: NavParams,
               private viewCtrl: ViewController,
-              private toastCtrl: ToastControllerService) {
+              private toastCtrl: ToastControllerService,
+              private easyReceive: EasyReceiveService) {
   }
 
   dismiss() {
@@ -42,6 +44,10 @@ export class TxDetailsView {
 
   onGlobalSendCopy() {
     this.toastCtrl.success('Copied to clipboard');
+  }
+
+  cancelGlobalSend() {
+    this.easyReceive.cancelEasySend(this.tx.easySendUrl);
   }
 
   async ngOnInit() {

@@ -59,7 +59,6 @@ export class HistoryItemComponent implements OnInit {
   }
 
   async askCancelGlobalSend() {
-    const globalSendUrl = this.tx.easySendUrl;
-    this.easyReceive.cancelEasySend(globalSendUrl);
+    this.easyReceive.cancelEasySend(this.tx.easySendUrl);
   }
 }
