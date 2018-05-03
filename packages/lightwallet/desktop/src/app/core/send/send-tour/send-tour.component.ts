@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'send-tour',
@@ -7,10 +7,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class SendTourComponent {
 
-  constructor() { }
-
   @Output() hideTour = new EventEmitter<Boolean>();
-  @Input() showTour: any;
   step: number = 0;
 
   stepGoTo(i?: number) {
