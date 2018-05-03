@@ -24,10 +24,10 @@ export class AddressScannerService {
           return code;
         }
       } catch (e) {
-        error = e == 'cordova_not_available'? 'This feature is available on mobile devices only.' : e;
+        error = e == 'cordova_not_available'? 'This feature is available in native applications only.' : e;
       }
     } else {
-      error = 'This feature is available on mobile devices only.';
+      error = 'This feature is available in native applications only.';
     }
 
     if (error) {
