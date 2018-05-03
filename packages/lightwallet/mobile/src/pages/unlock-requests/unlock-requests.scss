@@ -30,7 +30,10 @@ view-unlock-requests {
   }
 
   h2.address {
-    font-size: 12px;
+    font-size: 11px;
+  }
+  p.address {
+    font-size: 10px !important;
   }
 
   .total-invites {
