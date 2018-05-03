@@ -6,7 +6,7 @@ export function cleanAddress(address: string) {
 }
 
 export function isAlias(address: string) {
-  return address.charAt(0) === '@';
+  return address.replace(/\s/g, '').charAt(0) === '@';
 }
 
 export function isAddress(address: string, mwcService?: MWCService) {
