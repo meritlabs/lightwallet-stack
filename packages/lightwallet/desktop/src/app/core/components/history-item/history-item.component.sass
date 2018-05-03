@@ -29,7 +29,12 @@
   align-items: center
   letter-spacing: .3px
   padding-left: 15px
-  flex-grow: 1
+  box-sizing: border-box
+  width: calc(100% - 65px)
+  .details
+    text-align: right
+    display: flex
+    flex-direction: column
 
   .globalSendURL
     max-width: 80%
