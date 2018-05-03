@@ -9,6 +9,8 @@ import { ToastControllerService } from '@merit/common/services/toast-controller.
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { Address, PublicKey } from 'bitcore-lib';
 import { AlertController, Events, IonicPage, NavController, NavParams, Platform, Tabs } from 'ionic-angular';
+import { debounceTime, tap } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 
 
@@ -28,6 +30,8 @@ export class TransactView {
   private subs: Subscription[];
   keyboardVisible: boolean = false;
 
+  processPendingEasyReceipts: Subject<void> = new Subject();
+
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private logger: LoggerService,
@@ -39,6 +43,16 @@ export class TransactView {
               private alertCtrl: AlertController,
               private toastCtrl: ToastControllerService,
               private events: Events) {
+    this.processPendingEasyReceipts.asObservable()
+      .pipe(
+        debounceTime(500),
+        tap(async () => {
+          const receipts = await this.easyReceiveService.getPendingReceipts();
+          if (!receipts.length) return; // No receipts to process
+          return this.processEasyReceipt(receipts[0], false);
+        })
+      )
+      .subscribe();
   }
 
   async ngOnInit() {
@@ -56,7 +70,6 @@ export class TransactView {
     }
 
     await this.unlockRequestService.loadRequestsData();
-
 
     this.easyReceiveService.cancelEasySendObservable$.subscribe(
       receipt => {
@@ -77,7 +90,8 @@ export class TransactView {
   }
 
   ionViewDidEnter() {
-    return this.processPendingEasyReceipts();
+    console.log('Can enter fired');
+    this.processPendingEasyReceipts.next();
   }
 
   /**
@@ -117,7 +131,7 @@ export class TransactView {
       this.logger.debug('Got a spent easyReceipt. Removing from pending receipts.');
       await this.easyReceiveService.deletePendingReceipt(receipt);
       await this.showSpentEasyReceiptAlert();
-      return await this.processPendingEasyReceipts();
+      return await this.processPendingEasyReceipts.next();
     }
 
     if (txs.some(tx => (tx.confirmations === undefined))) {
@@ -131,21 +145,12 @@ export class TransactView {
       this.logger.debug('Got an expired easyReceipt. Removing from pending receipts.');
       await this.easyReceiveService.deletePendingReceipt(receipt);
       await this.showExpiredEasyReceiptAlert();
-      return processAll ? await this.processPendingEasyReceipts() : null;
+      return processAll ? this.processPendingEasyReceipts.next() : null;
     }
 
     return isSender ?
       this.showCancelEasyReceivePrompt(receipt, data) :
       this.showConfirmEasyReceivePrompt(receipt, data);
-  }
-
-  /**
-   * checks if pending easyreceive exists and if so, open it
-   */
-  private async processPendingEasyReceipts(): Promise<any> {
-    const receipts = await this.easyReceiveService.getPendingReceipts();
-    if (!receipts.length) return; // No receipts to process
-    return this.processEasyReceipt(receipts[0], false);
   }
 
   /**
@@ -164,7 +169,7 @@ export class TransactView {
           text: 'Ignore', role: 'cancel', handler: () => {
             this.logger.info('You have declined easy receive');
             this.easyReceiveService.deletePendingReceipt(receipt).then(() =>
-              this.processPendingEasyReceipts()
+              this.processPendingEasyReceipts.next()
             );
           }
         },
@@ -230,14 +235,14 @@ export class TransactView {
         {
           text: 'Reject', role: 'cancel', handler: () => {
             this.rejectEasyReceipt(receipt, data).then(() =>
-              this.processPendingEasyReceipts()
+              this.processPendingEasyReceipts.next()
             );
           }
         },
         {
           text: 'Accept', handler: () => {
             this.acceptEasyReceipt(receipt, data).then(() =>
-              this.processPendingEasyReceipts()
+              this.processPendingEasyReceipts.next()
             );
           }
         }
