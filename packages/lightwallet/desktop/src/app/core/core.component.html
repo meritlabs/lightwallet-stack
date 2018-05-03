@@ -10,7 +10,7 @@
     </ul>
     <ul class="dashboard__aside__wrap">
       <li *ngFor="let item of bottomMenuItems" class="dashboard__aside__item">
-        <a href="{{item.link}}" target="_blank">
+        <a href="{{item.link}}" [target]="item.blank ? '_blank' : '_self'">
           <img src="{{item.icon}}" alt="" class="dashboard__aside__item__icon">
           <span>{{ item.name }}</span>
         </a>
