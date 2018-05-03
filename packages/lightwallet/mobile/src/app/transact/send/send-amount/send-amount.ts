@@ -64,6 +64,8 @@ export class SendAmountView {
   public feeTogglerEnabled: boolean = true;
   private referralsToSign: Array<any>;
 
+  private walletPassword: string;
+
 
   private allowUnconfirmed: boolean = true;
 
@@ -149,6 +151,7 @@ export class SendAmountView {
     modal.onDidDismiss(async (wallet) => {
       if (wallet) {
         this.selectedWallet = wallet;
+        this.walletPassword = '';
       }
       this.updateTxData();
     });
@@ -300,7 +303,8 @@ export class SendAmountView {
     });
   }
 
-  public updateTxData() {
+  public async updateTxData() {
+
     this.feeLoading = true;
     this.feeCalcError = null;
     this.feePercent = null;
@@ -340,6 +344,19 @@ export class SendAmountView {
 
   private async createTxp() {
 
+    if (this.walletService.isEncrypted(this.selectedWallet) && this.sendMethod.type == SendMethodType.Easy ) {
+      if (this.walletPassword) {
+        this.walletService.decrypt(this.selectedWallet, this.walletPassword);
+      } else {
+        try {
+          await this.getPassword();
+        } catch (e) {
+          this.feeCalcError = 'Password required for encrypted wallet';
+          return this.txData.txp = null;
+        }
+      }
+    }
+
     if (this.amount.micros == this.selectedWallet.balance.spendableAmount) this.feeIncluded = true;
 
     try {
@@ -372,7 +389,54 @@ export class SendAmountView {
       return this.toastCtrl.error(err.message || 'Unknown error');
     } finally {
       this.feeLoading = false;
+      if (this.walletPassword) {
+        this.walletService.encrypt(this.selectedWallet, this.walletPassword);
+      }
     }
+
+  }
+
+  private getPassword(highlightInvalid = false) {
+    return new Promise((resolve, reject) => {
+      this.alertCtrl
+        .create({
+          title: 'Enter spending password',
+          cssClass: highlightInvalid ? 'invalid-input-prompt' : '',
+          inputs: [
+            {
+              name: 'password',
+              placeholder: 'Password',
+              type: 'password',
+            },
+          ],
+          buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
+                reject();
+              },
+            },
+            {
+              text: 'Ok',
+              handler: data => {
+                if (!data.password) {
+                  this.getPassword(true);
+                } else {
+                  try {
+                    this.walletService.decrypt(this.txData.wallet, data.password);
+                    this.walletPassword = data.password;
+                    resolve();
+                  } catch (e) {
+                    this.getPassword(true);
+                  }
+                }
+              },
+            },
+          ],
+        })
+        .present();
+    });
 
   }
 
