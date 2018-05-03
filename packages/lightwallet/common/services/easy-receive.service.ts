@@ -26,8 +26,10 @@ export class EasyReceiveService {
   }
 
   private cancelEasySendSource = new Subject<EasyReceipt>();
+  private easyReceiptsSource = new Subject<EasyReceipt>();
 
   cancelEasySendObservable$ = this.cancelEasySendSource.asObservable();
+  easyReceipts$ = this.easyReceiptsSource.asObservable();
 
   parseEasySendUrl(url: string) {
     let offset = Math.max(0, url.indexOf("?") + 1);
@@ -60,6 +62,7 @@ export class EasyReceiveService {
 
     if (receipt.isValid()) {
       await this.persistenceService.addPendingEasyReceipt(receipt);
+      this.easyReceiptsSource.next();
       return receipt;
     } else {
       this.logger.warn('EasyReceipt parameters are invalid: ', receipt);
