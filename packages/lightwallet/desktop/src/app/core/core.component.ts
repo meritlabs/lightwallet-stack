@@ -62,9 +62,15 @@ export class CoreView {
   ];
   bottomMenuItems: any[] = [
     {
+      name: 'Market',
+      icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
+      link: '/market-gate'
+    },
+    {
       name: 'Help & Support',
       icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
-      link: 'https://www.merit.me/get-involved/#join-the-conversation'
+      link: 'https://www.merit.me/get-involved/#join-the-conversation',
+      blank: true
     }
   ];
 
@@ -236,9 +242,9 @@ export class CoreView {
 
     if (txs.some(tx => (tx.confirmations === undefined))) {
       this.logger.warn('Got GlobalSend with unknown depth. It might be expired!');
-      return isSender ? 
+      return isSender ?
         this.showCancelEasyReceivePrompt(receipt, data):
-        this.showConfirmEasyReceivePrompt(receipt, data); 
+        this.showConfirmEasyReceivePrompt(receipt, data);
     }
 
     if (txs.some(tx => receipt.blockTimeout < tx.confirmations)) {
@@ -248,9 +254,9 @@ export class CoreView {
       return processAll ? await this.processPendingEasyReceipts() : null;
     }
 
-    return isSender ? 
+    return isSender ?
       this.showCancelEasyReceivePrompt(receipt, data):
-      this.showConfirmEasyReceivePrompt(receipt, data); 
+      this.showConfirmEasyReceivePrompt(receipt, data);
   }
 
   /**
