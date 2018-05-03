@@ -31,6 +31,22 @@
                    class="ui-input ui-input--form ui-input--text">
             <div class="ui-input__addon">MRT</div>
           </div>
+          <div class="input-errors" [hidden]="!amountMrt.dirty || amountMrt.valid">
+            <div [hidden]="!amountMrt.hasError('required')">
+                <span class="tooltip-error">
+                  <span>
+                    Amount is required
+                  </span>
+                </span>
+            </div>
+            <div [hidden]="amountMrt.hasError('required') || !amountMrt.hasError('InvalidAmount')">
+                <span class="tooltip-error">
+                  <span>
+                    Invalid amount
+                  </span>
+                </span>
+            </div>
+          </div>
           <!--<div class="ui-input__wrapper ui-input__wrapper&#45;&#45;currency" *ngIf="availableCurrencies?.length">-->
           <!--<input type="text" name="" [value]="amountFiat$ | async" disabled class="ui-input ui-input&#45;&#45;form ui-input&#45;&#45;text">-->
           <!--<div class="ui-input__addon">-->
@@ -60,7 +76,8 @@
         </div>
 
         <div class="selectMethod" [hidden]="amountMrt.pristine || amountMrt.invalid">
-          <button (click)="updateTxType('classic')" type="button" role="button" class="selectMethod_item" [class.active]="type.value === 'classic'">
+          <button (click)="updateTxType('classic')" type="button" role="button" class="selectMethod_item"
+                  [class.active]="type.value === 'classic'">
             <span class="title">
               Send via ClassicSend
             </span>
@@ -68,7 +85,8 @@
               Send to a Merit address
             </span>
           </button>
-          <button (click)="updateTxType('easy')" [disabled]="!wallet.value?.status?.availableInvites" type="button" role="button" class="selectMethod_item" [class.active]="type.value === 'easy'">
+          <button (click)="updateTxType('easy')" [disabled]="!wallet.value?.status?.availableInvites" type="button"
+                  role="button" class="selectMethod_item" [class.active]="type.value === 'easy'">
             <span class="title">
               Send via GlobalSend
             </span>
@@ -87,6 +105,15 @@
               <label class="ui-label">Send to address / alias</label>
               <input type="text" name="" value="" placeholder="Paste address / alias here"
                      class="ui-input ui-input--form ui-input--text" formControlName="address">
+              <div class="input-errors" [hidden]="!address.dirty || address.valid">
+                <div>
+                  <span class="tooltip-error">
+                    <span>
+                      {{ address.errors | addressErrorMessage }}
+                    </span>
+                  </span>
+                </div>
+              </div>
             </div>
           </ng-container>
           <ng-template #easySend>
@@ -96,8 +123,12 @@
               </label>
               <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password">
               <div class="info">
+                <span class="icon">
+                  <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
+                </span>
                 <p>
-                  You will see a link after confirming the transaction that you can share with your recipient.</p>
+                  You will see a link after confirming the transaction that you can share with your recipient.
+                </p>
               </div>
             </div>
           </ng-template>
