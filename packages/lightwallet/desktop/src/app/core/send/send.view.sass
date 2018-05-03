@@ -1,8 +1,8 @@
-@import '~styles/v1/common/variables'
+@import '~styles/v1/common/import-sass'
 error-message.success
   .easysend-url-container
     cursor: pointer
-    display: block
+    +display(block)
     word-wrap: break-word
     padding: 30px 5px
     border: 2px solid rgba(255,255,255,.4)
@@ -24,7 +24,7 @@ error-message.success
       color: $blue
       transition: opacity .3s ease-in-out
 .selectMethod
-  display: inline-flex
+  +display(inline-flex)
   justify-content: space-between
   flex-flow: row wrap
   width: 100%
