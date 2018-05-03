@@ -5,10 +5,11 @@
 
 <ion-content fullscreen>
   <div class="container">
-    <div class="title">Wallet Recovery Phrase (click to copy)</div>
+    <div class="title">Wallet Recovery Phrase</div>
     <ion-grid>
       <ion-row>
-        <ion-card class="mnemonic-card" [clip]="mnemonic">
+        <ion-card class="mnemonic-card" [clip]="mnemonic" (click)="markCopied()">
+          <div class="click-to-copy">Click to copy</div>
           <div class="mnemonic">{{ mnemonic }}</div>
         </ion-card>
       </ion-row>
@@ -21,8 +22,7 @@
       </ion-row>
       <ion-row>
         <div class="bottom-buttons" margin-top>
-          <button ion-button class="action-button" (cilck)="skipBackupPrompt()"
-                  [disabled]="false">Verify
+          <button ion-button class="action-button" (click)="skipBackupPrompt()">OK
           </button>
         </div>
       </ion-row>
