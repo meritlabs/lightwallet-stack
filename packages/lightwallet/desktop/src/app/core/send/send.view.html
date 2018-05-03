@@ -47,12 +47,15 @@
                 </span>
             </div>
           </div>
-          <!--<div class="ui-input__wrapper ui-input__wrapper&#45;&#45;currency" *ngIf="availableCurrencies?.length">-->
-          <!--<input type="text" name="" [value]="amountFiat$ | async" disabled class="ui-input ui-input&#45;&#45;form ui-input&#45;&#45;text">-->
-          <!--<div class="ui-input__addon">-->
-          <!--<app-select (selectionEvent)="selectCurrency($event)" [selected]="selectedCurrency" [input]="availableCurrencies" style="ui-button ui-button&#45;&#45;transparent ui-button&#45;&#45;select-currency ui-button&#45;&#45;md ui-button&#45;&#45;with-caret"></app-select>-->
-          <!--</div>-->
-          <!--</div>-->
+          <div class="ui-input__wrapper ui-input__wrapper--currency" *ngIf="availableCurrencies?.length">
+            <input type="text" name="" [value]="amountFiat$ | async" disabled
+                   class="ui-input ui-input--form ui-input--text">
+            <div class="ui-input__addon">
+              <app-select (selectionEvent)="selectCurrency($event)" [selected]="selectedCurrency.value"
+                          [input]="availableCurrencies"
+                          cssClass="ui-button ui-button--transparent ui-button--select-currency ui-button--md ui-button--with-caret"></app-select>
+            </div>
+          </div>
         </div>
         <div class="sendMerit__form__group">
           <div class="sendMerit__form__group__column sendMerit__form_group__column--70">
@@ -68,7 +71,7 @@
         <div class="sendMerit__form__group" [hidden]="amountMrt.pristine || amountMrt.invalid">
           <label class="ui-label">Send from</label>
           <app-select (selectionEvent)="selectWallet($event)" [selected]="wallet.value" [input]="wallets$ | async"
-                      style="ui-input ui-input--select ui-input--form"></app-select>
+                      cssClass="ui-input ui-input--select ui-input--form"></app-select>
           <label class="ui-label available-amount-label" *ngIf="wallet.valid">
             {{ wallet.value.status.spendableAmount | toMRT }}, {{ wallet.value.status.availableInvites || 0 }}
             invites available
@@ -149,7 +152,7 @@
             <ng-template #hasData>
               <ng-container *ngIf="receipt$ | async as receipt">
                 <div class="sendMerit__totals__table--top">
-                  <label for="" class="ui-label">
+                  <label class="ui-label">
                     Receipt
                   </label>
                   <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">

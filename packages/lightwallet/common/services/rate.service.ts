@@ -60,7 +60,8 @@ export class RateService {
     }
     // return rates.filter(r => r.rate > 0);
 
-    // temporarly return everything for testing
+    // temporally return everything for testing
+    rates[0].rate = 1.125;
     return rates;
   }
 

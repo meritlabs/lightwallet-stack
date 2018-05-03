@@ -183,7 +183,7 @@ export class SendView implements OnInit {
     startWith({} as Receipt)
   );
 
-  fiatAmount$: Observable<number> = combineLatest(
+  amountFiat$: Observable<number> = combineLatest(
     this.amountMrt.valueChanges,
     this.selectedCurrency.valueChanges
   ).pipe(
@@ -248,6 +248,10 @@ export class SendView implements OnInit {
           }
         })
       ).subscribe();
+  }
+
+  selectCurrency(currency) {
+    this.selectedCurrency.setValue(currency);
   }
 
   private async resetFormData() {
