@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, App, IonicPage, ModalController, NavController, NavParams, AlertController } from 'ionic-angular';
+import { App, IonicPage, ModalController, NavController, NavParams, AlertController } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { ConfigService } from '@merit/common/services/config.service';
