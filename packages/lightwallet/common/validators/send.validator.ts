@@ -1,5 +1,7 @@
 import { AbstractControl } from '@angular/forms';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { AddressValidator } from '@merit/common/validators/address.validator';
 
 export class SendValidator {
   static validateWallet(control: AbstractControl) {
@@ -12,12 +14,18 @@ export class SendValidator {
     return null;
   }
 
-  static validateAddressRequirement(control: AbstractControl) {
-    if (!control.value && control.parent && control.parent.get('type').value === 'classic') {
-      return {
-        required: true
-      };
-    }
+  static validateAddress(mwcService: MWCService) {
+    return async (control: AbstractControl) => {
+      if (control.parent && control.parent.get('type').value === 'easy') return null;
+
+      return AddressValidator.validateAddress(mwcService)(control);
+    };
+  }
+
+  static validateAmount(control: AbstractControl) {
+    const { value } = control;
+
+    if (typeof value !== 'number' || value <= 0) return { InvalidAmount: true };
 
     return null;
   }

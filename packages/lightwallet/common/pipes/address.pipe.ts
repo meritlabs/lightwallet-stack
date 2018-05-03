@@ -6,6 +6,8 @@ import { cleanAddress, isAddress, isAlias } from '@merit/common/utils/addresses'
 })
 export class AddressPipe {
   transform(value: string, maxAddressLength?: number, showEllipsis?: boolean) {
+    if (!value) return null;
+
     value = cleanAddress(value);
 
     // isAlias call is cheap, so we can try that first
