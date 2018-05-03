@@ -21,15 +21,16 @@ import { PasswordPromptController } from '@merit/desktop/app/components/password
 import { Store } from '@ngrx/store';
 import { clone } from 'lodash';
 import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/isEmpty';
 import { Observable } from 'rxjs/Observable';
-import { fromPromise } from 'rxjs/observable/fromPromise';
 import { combineLatest } from 'rxjs/observable/combineLatest';
+import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import {
   catchError,
-  debounceTime,
+  debounceTime, defaultIfEmpty,
   filter,
-  map,
+  map, share,
   skipWhile,
   startWith,
   switchMap,
@@ -183,11 +184,8 @@ export class SendView implements OnInit {
     startWith({} as Receipt)
   );
 
-  amountFiat$: Observable<number> = combineLatest(
-    this.amountMrt.valueChanges,
-    this.selectedCurrency.valueChanges
-  ).pipe(
-    filter(([amountMrt, selectedCurrency]) => selectedCurrency && amountMrt),
+  amountFiat$: Observable<number> = this.amountMrt.valueChanges.pipe(
+    withLatestFrom(this.selectedCurrency.valueChanges),
     switchMap(([amountMrt, selectedCurrency]) =>
       fromPromise(
         this.rateService.microsToFiat(
@@ -250,8 +248,16 @@ export class SendView implements OnInit {
       ).subscribe();
   }
 
+  ngAfterViewInit() {
+    // temporary hack
+    // TODO(ibby) find a better way to ensure we have an initial value for selected currency
+    setTimeout(() => {
+      this.selectedCurrency.setValue(this.selectedCurrency.value)
+    }, 1000);
+  }
+
   selectCurrency(currency) {
-    this.selectedCurrency.setValue(currency);
+    this.selectedCurrency.setValue(currency, { emitEvent: true });
   }
 
   private async resetFormData() {
@@ -275,6 +281,10 @@ export class SendView implements OnInit {
     }
 
     this.type.setValue('classic', { emitEvent: false });
+
+    if (this.availableCurrencies.length) {
+      this.selectCurrency(this.availableCurrencies[0]);
+    }
   }
 
   selectWallet(wallet) {

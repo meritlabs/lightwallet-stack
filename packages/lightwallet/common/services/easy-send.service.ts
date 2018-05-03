@@ -11,7 +11,7 @@ import { Address, HDPrivateKey, PrivateKey, Script} from 'bitcore-lib';
 @Injectable()
 export class EasySendService {
 
-  private readonly DEFAULT_TIMEOUT = 1008;
+  private readonly DEFAULT_TIMEOUT = 10080; // 7 days * 24 hours * 60 minutes 
 
   constructor(
     private feeService: FeeService,
