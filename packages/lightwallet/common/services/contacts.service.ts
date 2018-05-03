@@ -138,6 +138,10 @@ export class ContactsService {
     return this.addressBook;
   };
 
+  deleteAddressBook() {
+    return this.persistenceService.setAddressbook(ENV.network, {});
+  }
+
   async getAddressbook(network: string = ENV.network): Promise<IAddressBook> {
     const addressBook = await this.persistenceService.getAddressbook(network);
     return _.isEmpty(addressBook) ? {} : addressBook;
