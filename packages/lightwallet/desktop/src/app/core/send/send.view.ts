@@ -23,6 +23,7 @@ import { clone } from 'lodash';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 import { of } from 'rxjs/observable/of';
 import {
   catchError,
@@ -182,6 +183,21 @@ export class SendView implements OnInit {
     startWith({} as Receipt)
   );
 
+  fiatAmount$: Observable<number> = combineLatest(
+    this.amountMrt.valueChanges,
+    this.selectedCurrency.valueChanges
+  ).pipe(
+    filter(([amountMrt, selectedCurrency]) => selectedCurrency && amountMrt),
+    switchMap(([amountMrt, selectedCurrency]) =>
+      fromPromise(
+        this.rateService.microsToFiat(
+          this.rateService.mrtToMicro(amountMrt),
+          selectedCurrency.code
+        )
+      )
+    )
+  );
+
   submit: Subject<void> = new Subject<void>();
 
   constructor(private route: ActivatedRoute,
@@ -257,7 +273,6 @@ export class SendView implements OnInit {
     this.type.setValue('classic', { emitEvent: false });
   }
 
-
   selectWallet(wallet) {
     this.wallet.setValue(wallet);
   }
@@ -265,15 +280,6 @@ export class SendView implements OnInit {
   async updateTxType(type) {
     this.type.setValue(type);
   }
-
-
-  // private async updateAmount() {
-  //   this.error = '';
-  //   let micros = this.rateService.mrtToMicro(this.formData.amountMrt);
-  //   if (this.selectedCurrency) {
-  //     this.formData.amountFiat = await this.rateService.microsToFiat(micros, this.selectedCurrency.code);
-  //   }
-  // }
 
   private async createTx(formValue: any): Promise<TxData> {
     let txData: Partial<TxData> = {};
