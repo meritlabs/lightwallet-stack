@@ -13,12 +13,15 @@
         </ion-buttons>
     </ion-navbar>
 
-    <ion-searchbar [(ngModel)]="searchQuery" [debounce]="200" (ionChange)="parseSearch()"
-                   (ionCancel)="clearSearch()"></ion-searchbar>
+    <div class="searchbar-wrapper">
+        <ion-searchbar [(ngModel)]="searchQuery" [debounce]="50" (ngModelChange)="parseSearch()" (keyup)="onSearchKeyUp($event)"
+                       (ionCancel)="clearSearch()" placeholder="Enter @alias/address"></ion-searchbar>
+        <button ion-button clear item-end (click)="openScanner()" class="scan-button" *ngIf="!searchQuery">
+            <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
+        </button>
 
-    <button ion-button clear icon-only item-end (click)="openScanner()" *ngIf="!searchQuery" class="scanner-button">
-        <img src="assets/img/icons/qr.svg">
-    </button>
+        <ion-spinner color="primary"  *ngIf="searchQuery && searchInProgress"></ion-spinner>
+    </div>
 </ion-header>
 <ion-content>
     <div *ngIf="loadingContacts" class="loader">
