@@ -95,7 +95,7 @@ export class ContactsService {
   }
 
   async getAllMeritContacts(deviceContacts: Contact[] = []): Promise<MeritContact[]> {
-    const localContacts: IAddressBook = this.addressBook || {};
+    const localContacts: IAddressBook = await this.getAddressbook();
 
     const contacts: MeritContact[] = deviceContacts
       .filter((contact: Contact) => !_.isEmpty(contact.displayName) && !_.isEmpty(contact.phoneNumbers) || !_.isEmpty(contact.emails))
