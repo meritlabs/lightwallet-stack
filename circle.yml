@@ -113,7 +113,8 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - ./*
+            - packages/bitcore-lib
+            - packages/lightwallet
 
   unit_test:
     docker:
@@ -122,7 +123,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo/
-      - run: cd repo && npm test
+      - run: cd repo/packages/lightwallet && npm test
 
   desktop_e2e:
     docker:
