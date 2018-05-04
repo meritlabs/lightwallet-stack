@@ -253,11 +253,19 @@ export class SendView {
         }
       });
     } else {
-      this.modalCtrl.create('SendViaView', {
+      let modal = this.modalCtrl.create('SendViaView', {
           contact: contact,
           amount: this.amount
         }, MERIT_MODAL_OPTS
-      ).present();
+      );
+
+      modal.onDidDismiss((params) => {
+        if (params) {
+          this.navCtrl.push('SendAmountView', params);
+        }
+      });
+
+      modal.present();
     }
   }
 

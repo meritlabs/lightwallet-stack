@@ -66,7 +66,6 @@ export class SendAmountView {
 
   private walletPassword: string;
 
-
   private allowUnconfirmed: boolean = true;
 
   private loading: boolean = true;
@@ -131,13 +130,8 @@ export class SendAmountView {
 
       this.selectedWallet = this.wallets[0];
 
-      this.wallets.some((wallet) => {
-        let amount = this.navParams.get('amount') || 0;
-        if (wallet.balance.spendableAmount > amount) {
-          this.selectedWallet = wallet;
-          return true;
-        }
-      });
+      const passedAmount = this.navParams.get('amount') || 0;
+      this.selectedWallet = this.wallets.find(wallet => wallet.balance.spendableAmount > passedAmount);
     }
   }
 
@@ -147,14 +141,16 @@ export class SendAmountView {
         selectedWallet: this.selectedWallet,
         availableWallets: this.wallets
       }, MERIT_MODAL_OPTS);
-    modal.present();
+
     modal.onDidDismiss(async (wallet) => {
       if (wallet) {
         this.selectedWallet = wallet;
         this.walletPassword = '';
+        this.updateTxData();
       }
-      this.updateTxData();
     });
+
+    modal.present();
   }
 
 

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
+import { AlertController, IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { MeritContact } from '@merit/common/models/merit-contact';
 import { ISendMethod, SendMethodDestination } from '@merit/common/models/send-method';
 import { AddressService } from '@merit/common/services/address.service';
@@ -31,7 +31,7 @@ export class SendViaView {
 
   public easySendEnabled: boolean;
 
-  constructor(private navCtrl: NavController,
+  constructor(private viewCtrl: ViewController,
               private navParams: NavParams,
               private alertCtrl: AlertController,
               private addressService: AddressService) {
@@ -75,7 +75,7 @@ export class SendViaView {
   }
 
   select(type, destination, value, alias?) {
-    return this.navCtrl.push('SendAmountView', {
+    return this.viewCtrl.dismiss({
       contact: this.contact,
       amount: this.amount,
       suggestedMethod: { type, destination, value, alias }
@@ -92,7 +92,7 @@ export class SendViaView {
       'EasySend transactions could be returned, password protected and limited by expiration time. You can send Merit either to existing merit address or share a link via sms/email');
   }
   cancel() {
-    this.navCtrl.pop();
+    this.viewCtrl.dismiss();
   }
 
   private showTooltip(title, message) {
