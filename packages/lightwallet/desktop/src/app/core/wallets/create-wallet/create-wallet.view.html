@@ -24,7 +24,7 @@
     <div class="wallet-settings__group">
       <label class="ui-label">Color</label>
       <input type="text" [value]="wallet.color" name="color" id="color" formControlName="color" hidden>
-      <app-select (selectionEvent)="selectColor($event)" [selected]="wallet.color" [input]="avalibleColors" style="ui-input ui-input--select ui-input--form ui-input--color"></app-select>
+      <app-select (selectionEvent)="selectColor($event)" [selected]="wallet.color" [input]="avalibleColors" cssClass="ui-input ui-input--select ui-input--form ui-input--color"></app-select>
     </div>
     <div class="wallet-settings__group wallet-settings__group__checkbox">
       <label class="ui-label">Hide balance</label>

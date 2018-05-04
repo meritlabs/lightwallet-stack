@@ -22,7 +22,7 @@
       <div *ngIf="wallets$ | async as wallets; else empty">
         <div class="receiveMerit__form__group">
           <label for="" class="ui-label">Receive in</label>
-          <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" style="ui-input ui-input--select ui-input--form"></app-select>
+          <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" cssClass="ui-input ui-input--select ui-input--form"></app-select>
         </div>
 
         <div *ngIf="address" class="receiveMerit__form__group">
