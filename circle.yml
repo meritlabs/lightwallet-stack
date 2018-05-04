@@ -133,7 +133,7 @@ jobs:
       - attach_workspace:
           at: ~/repo/
       - run: cd ~/repo/packages/lightwallet && npm run build
-      - persist_workspace:
+      - persist_to_workspace:
           root: packages/lightwallet/mobile
           paths:
             - www/*
@@ -146,7 +146,7 @@ jobs:
       - attach_workspace:
           at: ~/repo/
       - run: cd ~/repo/packages/lightwallet/desktop && npm run build
-      - persist_workspace:
+      - persist_to_workspace:
           root: packages/lightwallet/desktop
           paths:
             - dist/*
