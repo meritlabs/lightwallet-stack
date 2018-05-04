@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: circleci/python:2.7-node
     working_directory: ~/repo
-      steps:
+    steps:
         - run:
             name: Install ZMQ
             command: sudo apt install -y libzmq3-dev
