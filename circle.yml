@@ -65,6 +65,9 @@ jobs:
             - packages/lightwallet/mobile/package-lock.json
           key: lw-mobile-deps-{{ checksum "packages/lightwallet/mobile/package.json" }}
       - run:
+          name: Setup LW Environment
+          command: cd packages/lightwallet/common/enviroenments && cp environment.example.ts enviornment.dev.ts
+      - run:
           name: Unit tests
           command: cd packages/lightwallet && npm test
       - run:
