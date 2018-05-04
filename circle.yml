@@ -125,6 +125,32 @@ jobs:
           at: ~/repo/
       - run: cd repo/packages/lightwallet && npm test
 
+  build_dlw:
+    docker:
+      - image: circleci/node:8
+    working_directory: ~/
+    steps:
+      - attach_workspace:
+          at: ~/repo/
+      - run: cd ~/repo/packages/lightwallet && npm run build
+      - persist_workspace:
+          root: packages/lightwallet/mobile
+          paths:
+            - www/*
+
+  build_mlw:
+    docker:
+      - image: circleci/node:8
+    working_directory: ~/
+    steps:
+      - attach_workspace:
+          at: ~/repo/
+      - run: cd ~/repo/packages/lightwallet/desktop && npm run build
+      - persist_workspace:
+          root: packages/lightwallet/desktop
+          paths:
+            - dist/*
+
   desktop_e2e:
     docker:
       - image: circleci/node:8
@@ -133,13 +159,16 @@ jobs:
       - attach_workspace:
           at: ~/repo/
       - run:
-          name: Run ng-serve
-          command: cd ~/repo/packages/lightwallet/desktop && npm start
-          background: true
-      - run:
-          name: Wait for Desktop LW app to be ready
-          command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888
-      - run: cd packages/lightwallet && npm run test:desktop:e2e
+          name: Install http-server
+          command: npm i -g spa-http-server
+#      - run:
+#          name: Serve DLW
+#          command: http-server
+#          background: true
+#      - run:
+#          name: Wait for Desktop LW app to be ready
+#          command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888
+#      - run: cd packages/lightwallet && npm run test:desktop:e2e
 
   mobile_e2e:
     docker:
@@ -149,31 +178,15 @@ jobs:
       - attach_workspace:
           at: ~/repo/
       - run:
-          name: Run ionic serve
-          command: cd ~/repo/packages/lightwallet && npm run ionic:serve
-          background: true
-      - run:
-          name: Wait for Mobile LW app to be ready
-          command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8100
-      - run: cd ~/repo/packages/lightwallet && npm run test:mobile:e2e
-
-  build_dlw:
-    docker:
-      - image: circleci/node:8
-    working_directory: ~/
-    steps:
-      - attach_workspace:
-          at: ~/repo/
-      - run: cd ~/repo/packages/lightwallet && npm run build -- --prod
-
-  build_mlw:
-    docker:
-      - image: circleci/node:8
-    working_directory: ~/
-    steps:
-      - attach_workspace:
-          at: ~/repo/
-      - run: cd ~/repo/packages/lightwallet/desktop && npm run build:prod
+          name: Install http-server
+          command: npm i -g spa-http-server
+#      - run:
+#          name: Serve MLW
+#          command: http-server
+#      - run:
+#          name: Wait for Mobile LW app to be ready
+#          command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8100
+#      - run: cd ~/repo/packages/lightwallet && npm run test:mobile:e2e
 
 workflows:
   version: 2
@@ -183,15 +196,15 @@ workflows:
       - unit_test:
           requires:
             - setup
-      - desktop_e2e:
-          requires:
-            - setup
-      - mobile_e2e:
-          requires:
-            - setup
       - build_dlw:
           requires:
             - setup
       - build_mlw:
           requires:
             - setup
+      - desktop_e2e:
+          requires:
+            - build_dlw
+      - mobile_e2e:
+          requires:
+            - build_mlw
