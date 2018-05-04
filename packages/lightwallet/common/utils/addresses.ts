@@ -5,6 +5,13 @@ export function cleanAddress(address: string) {
   return address.replace(/[@|\s]/g, '');
 }
 
+export function invalidPattern(address: string) {
+  let na_regEx = /@/g;
+  console.log(na_regEx.test(address));
+  
+  return na_regEx.test(address);
+}
+
 export function isAlias(address: string) {
   return cleanAddress(address).charAt(0) === '@';
 }
