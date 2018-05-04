@@ -70,7 +70,7 @@
           </ion-avatar>
           <ion-label stacked>Add Password (Optional)</ion-label>
           <ion-input type="password" [(ngModel)]="formData.password" placeholder="Type it here"
-                     autocomplete="off" autocorrect="off" autocapitalize="off"
+                     autocomplete="new-password" autocorrect="off" autocapitalize="off"
                      (keyup)="passwordKeyup($event.keyCode)"></ion-input>
         </ion-item>
 
@@ -81,7 +81,7 @@
           <ion-label stacked>Confirm Password</ion-label>
           <ion-input type="password" [(ngModel)]="formData.confirmPassword" placeholder="Repeat password"
                      (keypress)="confirmPasswordKeypress($event.keyCode)" #confirmInput
-                     autocomplete="off" autocorrect="off" autocapitalize="off"></ion-input>
+                     autocomplete="new-password" autocorrect="off" autocapitalize="off"></ion-input>
         </ion-item>
       </ion-item-group>
 

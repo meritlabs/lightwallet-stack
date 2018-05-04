@@ -24,8 +24,7 @@ import { isEmpty } from 'lodash';
 export class MeritLightWallet {
 
   @ViewChild(Nav) nav: Nav;
-
-  rootComponent: string;
+  private authorized: boolean;
 
   constructor(private platform: Platform,
               private statusBar: StatusBar,
@@ -63,29 +62,23 @@ export class MeritLightWallet {
   }
 
   private async loadEasySendInBrowser() {
-
     let search = window.location.search;
     if (search && search.length > 2) {
       try {
         const params = this.easyReceiveService.parseEasySendUrl(search);
         const easyReceipt: EasyReceipt = await this.easyReceiveService.validateAndSaveParams(params);
         this.logger.info('Returned from validate with: ', easyReceipt);
-        
+
         // We have an easyReceipt, let's handle the cases of being a new user or an
         // existing user.
         if (easyReceipt) {
-          // Let's remove the Query Params from the URL so that the user is not continually loading the same EasyReceipt every time they re-open the app or the browser. 
+          // Let's remove the Query Params from the URL so that the user is not continually loading the same EasyReceipt every time they re-open the app or the browser.
           window.history.replaceState({},document.title,document.location.pathname);
           if (!await this.profileService.isAuthorized()) {
             // User received easySend, but has no wallets yet.
             // Skip to unlock view.
             await this.nav.setRoot('UnlockView');
-          } else {
-            // User is a normal user and needs to be thrown an easyReceive modal.
-            await this.nav.setRoot('TransactView');
           }
-
-          return true;
         }
       } catch (e) {}
     }
@@ -101,10 +94,6 @@ export class MeritLightWallet {
 
     try {
       this.logger.info('Got Profile....');
-      // If the user has credentials and a profile, then let's send them to the transact
-      // view
-      const isAuthorized = await this.profileService.isAuthorized();
-
       this.deepLinkService.initBranch(async (data) => {
         this.logger.info('Branch Data: ', data);
         // If the branch params contain the minimum params needed for an easyReceipt, then
@@ -118,16 +107,10 @@ export class MeritLightWallet {
 
             // We have an easyReceipt, let's handle the cases of being a new user or an
             // existing user.
-            if (easyReceipt) {
-
-              if (!isAuthorized) {
-                // User received easySend, but has no wallets yet.
-                // Skip to unlock view.
-                await this.nav.setRoot('UnlockView');
-              } else {
-                // User is a normal user and needs to be thrown an easyReceive modal.
-                await this.nav.setRoot('TransactView');
-              }
+            if (easyReceipt && !this.authorized) {
+              // User received easySend, but has no wallets yet.
+              // Skip to unlock view.
+              await this.nav.setRoot('UnlockView');
             }
           } catch (err) {
             this.logger.warn('Error validating and saving easySend params: ', err);
@@ -154,10 +137,12 @@ export class MeritLightWallet {
       }
     }
 
+    this.authorized = await this.profileService.isAuthorized();
+
     this.loadProfileAndEasySend();
 
-    const authorized = await this.profileService.isAuthorized();
-    await this.nav.setRoot(authorized ? 'TransactView' : 'OnboardingView');
+    await this.nav.setRoot(this.authorized ? 'TransactView' : 'OnboardingView');
+
     // wait until we have a root view before hiding splash screen
     this.splashScreen.hide();
   }

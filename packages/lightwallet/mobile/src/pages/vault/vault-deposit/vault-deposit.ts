@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { IVault } from "@merit/common/models/vault";
 import { RateService } from "@merit/common/services/rate.service";
 import { VaultsService } from '@merit/common/services/vaults.service';
+import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 
 @IonicPage()
 @Component({
@@ -18,7 +19,9 @@ export class VaultDepositView {
     private navCtrl: NavController,
     private navParams: NavParams,
     private rateService: RateService,
-    private vaultsService: VaultsService
+    private vaultsService: VaultsService,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastControllerService
   ) {
     this.vault = this.navParams.get('vault');
   }
@@ -32,8 +35,15 @@ export class VaultDepositView {
   }
 
   async send() {
-    await this.vaultsService.depositVault(this.vault, this.rateService.mrtToMicro(this.amount));
-    this.navCtrl.popToRoot();
+    const loader = this.loadingCtrl.create({ content: 'Sending transaction...'});
+    loader.present();
+    try {
+      await this.vaultsService.depositVault(this.vault, this.rateService.mrtToMicro(this.amount));
+      this.navCtrl.popToRoot();
+    } catch (e) {
+      this.toastCtrl.error(e);
+    }
+    loader.dismiss();
   }
 
 }

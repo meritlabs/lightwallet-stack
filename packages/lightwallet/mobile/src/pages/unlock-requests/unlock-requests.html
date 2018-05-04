@@ -56,7 +56,7 @@
           <img src="assets/img/icons/incoming_request.svg">
         </ion-avatar>
           <h2 [class.address]="request.alias">{{ request.alias ? '@' + request.alias : request.address }}</h2>
-          <p *ngIf="request.alias">{{ request.address }}</p>
+          <p *ngIf="request.alias" class="address">{{ request.address }}</p>
       </button>
 
       <button ion-item *ngFor="let request of activeRequests; trackBy: request?.address" (click)="processRequest(request)"
@@ -65,7 +65,7 @@
           <img src="assets/img/icons/incoming_request.svg">
         </ion-avatar>
           <h2 [class.address]="request.alias">{{ request.alias ? '@' + request.alias : request.address }}</h2>
-          <p *ngIf="request.alias">{{ request.address }}</p>
+          <p *ngIf="request.alias" class="address">{{ request.address }}</p>
       </button>
     </ion-list>
   </div>

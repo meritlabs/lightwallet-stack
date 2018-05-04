@@ -124,7 +124,8 @@
           </ion-avatar>
           <ion-label stacked>
             <p>Merit Address</p>
-            <h2>{{ alias ? '@'+alias : address }}</h2>
+            <h2 *ngIf="alias">@{{alias}}</h2>
+            <h2 *ngIf="!alias" class="address">{{address}}</h2>
           </ion-label>
         </button>
 

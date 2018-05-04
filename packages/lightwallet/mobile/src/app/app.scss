@@ -739,7 +739,7 @@ ion-avatar[img-icon] {
   background: currentColor;
   display: inline-block;
 
-  $icons: settings share qr-code phone email money pencil;
+  $icons: settings share qr-code phone email money pencil copy;
 
   @each $name in $icons {
     &[name='#{$name}'], &[ng-reflect-name='#{$name}'] {
