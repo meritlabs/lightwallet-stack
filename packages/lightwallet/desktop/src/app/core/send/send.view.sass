@@ -1,8 +1,8 @@
-@import '~styles/v1/common/variables'
+@import '~styles/v1/common/import-sass'
 error-message.success
   .easysend-url-container
     cursor: pointer
-    display: block
+    +display(block)
     word-wrap: break-word
     padding: 30px 5px
     border: 2px solid rgba(255,255,255,.4)
@@ -24,7 +24,7 @@ error-message.success
       color: $blue
       transition: opacity .3s ease-in-out
 .selectMethod
-  display: inline-flex
+  +display(inline-flex)
   justify-content: space-between
   flex-flow: row wrap
   width: 100%
@@ -57,8 +57,29 @@ error-message.success
       line-height: 16px
       font-weight: 300
 .sendMerit__form__group
+  position: relative
   .info
-    padding-top: 10px
-    font-size: 13px
+    margin-top: 30px
+    display: flex
+    background: #cbdfea
+    align-items: center
+    border-radius: 8px
+    padding: 15px 17px
     line-height: 16px
     font-weight: 300
+
+    img
+      width: 40px
+
+    p
+      padding-left: 15px
+
+input[type="number"]
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button
+    -webkit-appearance: none
+    margin: 0
+
+.ui-input__wrapper--currency
+  .ui-input__addon
+    z-index: 2
