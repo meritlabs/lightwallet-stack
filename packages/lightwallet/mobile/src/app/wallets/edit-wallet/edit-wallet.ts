@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, App, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
+import { App, IonicPage, ModalController, NavController, NavParams, AlertController } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { ConfigService } from '@merit/common/services/config.service';
@@ -19,15 +19,15 @@ export class EditWalletView {
 
   constructor(
     private navCtrl: NavController,
-              private navParams: NavParams,
-              private modalCtrl: ModalController,
-              private alertCtrl: AlertController,
-              private profileService: ProfileService,
-              private app: App,
-              private toastCtrl: ToastControllerService,
-              private configService: ConfigService,
-              private walletService: WalletService,
-              private logger: LoggerService
+    private navParams: NavParams,
+    private modalCtrl: ModalController,
+    private alertCtrl: AlertController,
+    private profileService: ProfileService,
+    private app: App,
+    private toastCtrl: ToastControllerService,
+    private configService: ConfigService,
+    private walletService: WalletService,
+    private logger: LoggerService
   ) {
     this.wallet = this.navParams.get('wallet');
     this.logger.info(this.wallet);
@@ -90,20 +90,57 @@ export class EditWalletView {
         {
           text: 'Delete',
           handler: () => {
-            this.profileService.deleteWallet(this.wallet).then(() => {
-              this.profileService.isAuthorized().then((authorized) => {
-                if (authorized) {
-                  this.navCtrl.popToRoot();
-                } else {
-                  this.navCtrl.setRoot('OnboardingView');
-                }
-              })
-            }).catch((err) => {
-              this.toastCtrl.error(JSON.stringify(err));
-            });
+            if (!this.walletService.isEncrypted(this.wallet)) {
+              this.doDeleteWallet();
+            } else {
+              this.showPasswordPrompt();
+            }
           }
         }
       ]
     }).present();
+  }
+
+  private showPasswordPrompt(highlightInvalid = false) {
+    this.alertCtrl
+      .create({
+        title: 'Enter wallet password',
+        cssClass: highlightInvalid ? 'invalid-input-prompt' : '',
+        inputs: [ { name: 'password', placeholder: 'Password', type: 'password'} ],
+        buttons: [ { text: 'Cancel',role: 'cancel', },{
+            text: 'Ok',
+            handler: data => {
+              if (!data.password) {
+                this.showPasswordPrompt(true);
+              } else {
+                try {
+                  this.walletService.decrypt(this.wallet, data.password);
+                  this.doDeleteWallet();
+                } catch (e) {
+                  this.showPasswordPrompt(true);
+                }
+              }
+            },
+          },
+        ],
+      })
+      .present();
+  }
+
+  private doDeleteWallet() {
+
+    this.profileService.deleteWallet(this.wallet).then(() => {
+      this.profileService.isAuthorized().then((authorized) => {
+        if (authorized) {
+          this.navCtrl.popToRoot();
+        } else {
+          const nav = this.app.getRootNavs()[0];
+          nav.setRoot('OnboardingView');
+          nav.popToRoot();
+        }
+      })
+    }).catch((err) => {
+      this.toastCtrl.error(JSON.stringify(err));
+    });
   }
 }

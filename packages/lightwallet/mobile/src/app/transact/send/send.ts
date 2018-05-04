@@ -62,7 +62,6 @@ export class SendView {
   private async updateHasUnlocked() {
     const wallets = await this.profileService.getWallets();
     this.hasUnlockedWallets = wallets.some(w => w.confirmed);
-    this.hasUnlockedWallets = true;
     this.hasActiveInvites = wallets.some(w => w.availableInvites > 0);
 
     let pagesVisited = await this.persistenceService.getPagesVisited();
@@ -123,6 +122,7 @@ export class SendView {
     if (!this.searchQuery || !this.searchQuery.length) {
       this.clearSearch();
       this.debounceSearch.cancel();
+      this.searchInProgress = false;
       result.contacts = this.contacts;
       return this.searchResult = result;
     }
@@ -133,7 +133,7 @@ export class SendView {
     this.debounceSearch();
   }
 
-  private debounceSearch = _.debounce(() => this.search(), 300);
+  private debounceSearch = _.debounce(() => this.search(), 500);
 
 
   /**

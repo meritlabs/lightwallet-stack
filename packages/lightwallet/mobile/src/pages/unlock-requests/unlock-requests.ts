@@ -30,11 +30,11 @@ export class UnlockRequestsView {
     private unlockRequestService: UnlockRequestService,
     private profileService: ProfileService
   ) {
-    this.wallets = this.navParams.get('wallets') || [];
   }
 
   async ionViewWillEnter() {
     let vaults = await this.profileService.getVaults();
+    this.wallets = await this.profileService.getWallets();
 
     this.hiddenRequests = this.unlockRequestService.hiddenRequests;
     this.activeRequests = this.unlockRequestService.activeRequests;

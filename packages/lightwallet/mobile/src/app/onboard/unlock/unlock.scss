@@ -1,3 +1,11 @@
+.ios view-unlock {
+  ion-header {
+    top: 20px;
+    top: calc(20px + const(safe-area-inset-top));
+    top: calc(20px + env(safe-area-inset-top));
+  }
+}
+
 view-unlock {
   .bottom-buttons {
     .qr-button.button {
@@ -22,5 +30,37 @@ view-unlock {
     height: 5%;
     margin-top: 10%;
     margin-bottom: 10%;
+  }
+
+  ion-header.header {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    align-content: flex-end;
+    justify-content: flex-end;
+
+    span {
+      line-height: 36px;
+      color: white;
+      display: inline-block;
+      height: 36px;
+    }
+
+    button[ion-button].button {
+      color: white;
+      text-transform: capitalize;
+      font-weight: 600;
+    }
+
+    &.header-ios {
+      padding-top: 13px;
+      padding-bottom: 10px;
+      span {
+        color: rgba(255,255,255,0.91);
+        line-height: 19px;
+        font-size: 14px;
+      }
+    }
   }
 }
