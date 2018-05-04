@@ -81,14 +81,11 @@ jobs:
           paths:
             - packages/lightwallet/node_modules
             - packages/lightwallet/protractor*
+            - packages/lightwallet/package.json
             - packages/lightwallet/mobile/www
             - packages/lightwallet/mobile/e2e
-            - packages/lightwallet/mobile/node_modules
-            - packages/lightwallet/mobile/package.json
             - packages/lightwallet/desktop/dist
             - packages/lightwallet/desktop/e2e
-            - packages/lightwallet/desktop/node_modules
-            - packages/lightwallet/desktop/package.json
 
   desktop_e2e:
     docker:
