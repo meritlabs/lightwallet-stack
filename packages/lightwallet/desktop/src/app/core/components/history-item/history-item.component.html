@@ -22,8 +22,12 @@
       </button>
     </ng-container>
   </div>
-  <div *ngIf="confirmationsExplanation" class="details">
-      <span class="ui-tooltip ui-tooltip--awating">
+  <div class="details">
+      <div class="merit-amount" [class.credit]="isCredit" *ngIf="!tx.isInvite">
+          {{ tx.amountStr }} MRT
+          <small *ngIf="tx.alternativeAmountStr">({{ tx.alternativeAmountStr }})</small>
+        </div>
+      <span class="ui-tooltip ui-tooltip--awating" *ngIf="confirmationsExplanation">
         <span class="ui-tooltip__text">
           {{ confirmationsExplanation }},
           You have money available, but it cannot be spent until it confirms on the blockchain.
@@ -32,7 +36,3 @@
       </span>
   </div>
 </div>
-<span class="merit-amount" [class.credit]="isCredit" *ngIf="!tx.isInvite">
-  {{ tx.amountStr }} MRT
-  <small *ngIf="tx.alternativeAmountStr">({{ tx.alternativeAmountStr }})</small>
-</span>

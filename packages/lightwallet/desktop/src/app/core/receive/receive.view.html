@@ -54,7 +54,7 @@
           </ng-template>
         </div>
         <h3>or</h3>
-        <button class="receiveMerit__totals__qr__copy">Copy Link</button>
+        <button class="receiveMerit__totals__qr__copy" [clip]="qrAddress" (click)="onCopy()">Copy Link</button>
       </div>
     </div>
   </div>
