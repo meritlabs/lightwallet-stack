@@ -99,7 +99,8 @@ export class CoreView {
 
   private async showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
-    const confirmDialog = this.confirmDialogCtrl.create(`You've got ${ amount } Merit!`, 'Would you like to accept this transaction?', [
+    const message = receipt.senderName.length > 0 ? `@${ receipt.senderName } sent you ${ amount } Merit!` : `You've got ${ amount } Merit!`
+    const confirmDialog = this.confirmDialogCtrl.create(message, 'Would you like to accept this transaction?', [
       {
         text: 'Yes',
         value: 'yes',
