@@ -191,8 +191,8 @@ export class TransactView {
   private async showCancelEasyReceivePrompt(receipt: EasyReceipt, data) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
     this.alertCtrl.create({
-      title: `Cancel GlobalSend with ${ amount } Merit?`,
-      message: 'Would you like to cancel this transaction?',
+      title: `Cancel your own GlobalSend?`,
+      message: 'You clicked on a GlobalSend link that you created. Would you like to cancel GlobalSend with ${ amount } Merit?',
       buttons: [
         {
           text: `Don't Cancel`
