@@ -110,46 +110,23 @@ jobs:
             - packages/merit-rpc/package-lock.json
           key: merit-rpc-deps-{{ checksum "packages/merit-rpc/package.json" }}
 
+      - run:
+          name: Unit tests
+          run: cd repo/packages/lightwallet && npm test
+
+      - run:
+          name: Build DLW
+          command: cd ~/repo/packages/lightwallet && npm run build
+
+      - run:
+          name: Build MLW
+          command: cd ~/repo/packages/lightwallet/desktop && npm run build
+
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - packages/bitcore-lib
-            - packages/lightwallet
-
-  unit_test:
-    docker:
-      - image: circleci/node:8
-    working_directory: ~/
-    steps:
-      - attach_workspace:
-          at: ~/repo/
-      - run: cd repo/packages/lightwallet && npm test
-
-  build_dlw:
-    docker:
-      - image: circleci/node:8
-    working_directory: ~/
-    steps:
-      - attach_workspace:
-          at: ~/repo/
-      - run: cd ~/repo/packages/lightwallet && npm run build
-      - persist_to_workspace:
-          root: packages/lightwallet/mobile
-          paths:
-            - www/*
-
-  build_mlw:
-    docker:
-      - image: circleci/node:8
-    working_directory: ~/
-    steps:
-      - attach_workspace:
-          at: ~/repo/
-      - run: cd ~/repo/packages/lightwallet/desktop && npm run build
-      - persist_to_workspace:
-          root: packages/lightwallet/desktop
-          paths:
-            - dist/*
+            - packages/lightwallet/mobile/www
+            - packages/lightwallet/desktop/dist
 
   desktop_e2e:
     docker:
