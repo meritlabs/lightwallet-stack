@@ -71,10 +71,10 @@ jobs:
           name: Unit tests
           command: cd packages/lightwallet && npm test -- --runInBand
       - run:
-          name: Build DLW
+          name: Build MLW
           command: cd packages/lightwallet && npm run build
       - run:
-          name: Build MLW
+          name: Build DLW
           command: cd packages/lightwallet/desktop && npm run build
       - persist_to_workspace:
           root: ~/repo
