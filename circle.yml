@@ -91,7 +91,7 @@ jobs:
           at: ~/repo/
       - run:
           name: Install http-server
-          command: npm i -g spa-http-server
+          command: sudo npm i -g spa-http-server
 #      - run:
 #          name: Serve DLW
 #          command: http-server
@@ -110,7 +110,7 @@ jobs:
           at: ~/repo/
       - run:
           name: Install http-server
-          command: npm i -g spa-http-server
+          command: sudo npm i -g spa-http-server
 #      - run:
 #          name: Serve MLW
 #          command: http-server
