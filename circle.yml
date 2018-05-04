@@ -4,6 +4,7 @@ jobs:
     docker:
       - image: circleci/python:2.7-node
     working_directory: ~/repo
+    parallelism: 2
     steps:
         - run:
             name: Install ZMQ
