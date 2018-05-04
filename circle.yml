@@ -123,7 +123,7 @@ workflows:
       - setup
       - desktop_e2e:
           requires:
-            - build_dlw
+            - setup
       - mobile_e2e:
           requires:
-            - build_mlw
+            - setup
