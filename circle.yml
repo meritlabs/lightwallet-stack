@@ -64,19 +64,15 @@ jobs:
             - packages/lightwallet/mobile/node_modules
             - packages/lightwallet/mobile/package-lock.json
           key: lw-mobile-deps-{{ checksum "packages/lightwallet/mobile/package.json" }}
-
       - run:
           name: Unit tests
           run: cd repo/packages/lightwallet && npm test
-
       - run:
           name: Build DLW
           command: cd ~/repo/packages/lightwallet && npm run build
-
       - run:
           name: Build MLW
           command: cd ~/repo/packages/lightwallet/desktop && npm run build
-
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -125,15 +121,6 @@ workflows:
   build:
     jobs:
       - setup
-      - unit_test:
-          requires:
-            - setup
-      - build_dlw:
-          requires:
-            - setup
-      - build_mlw:
-          requires:
-            - setup
       - desktop_e2e:
           requires:
             - build_dlw
