@@ -159,8 +159,25 @@ export class SendInviteView {
 
   async sendInvite(contact) {
 
-    const toAddress = contact.meritAddresses[0].address;
+    if (contact.meritAddresses.length == 1) {
+      this.send(contact.meritAddresses[0].address);
+    } else {
+      let modal = this.modalCtrl.create('SendViaView', {
+          contact: contact,
+          amount: this.amount
+        }, MERIT_MODAL_OPTS
+      );
+      modal.onDidDismiss((params) => {
+        if (params) {
+          this.send(params.suggestedMethod.value);
+        }
+      });
+      modal.present();
+    }
 
+  }
+
+  private async send(toAddress) {
     if (!this.wallet) {
       this.wallet = this.wallets.find(w => (w.availableInvites > 0));
     }
@@ -179,7 +196,6 @@ export class SendInviteView {
     } finally {
       loader.dismiss();
     }
-
   }
 
   public selectWallet() {
