@@ -47,7 +47,7 @@ exports.browserStackCommon = {
   'browserstack.user': process.env.BROWSERSTACK_USER,
   'browserstack.key': process.env.BROWSERSTACK_KEY,
   'browserstack.local': true,
-  'browserstack.localIdentifier': `${ process.env.CIRCLE_BUILD_NUM }_${ process.env.CIRCLE_WORKFLOW_ID }_${ process.env.CIRCLE_STAGE }`,
+  'browserstack.localIdentifier': `${ process.env.CIRCLE_BUILD_NUM }-${ process.env.CIRCLE_JOB }`,
   resolution: '1920x1080',
   name: 'LightwalletStack-' + COMMIT
 };
