@@ -110,6 +110,11 @@ jobs:
               - packages/merit-rpc/package-lock.json
             key: merit-rpc-deps-{{ checksum "packages/merit-rpc/package.json" }}
 
+        - persist_to_workspace:
+            root: ../
+            paths:
+              - repo
+
   unit_test:
     docker:
       - image: circleci/python:2.7-node
