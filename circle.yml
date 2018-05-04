@@ -111,15 +111,15 @@ jobs:
             key: merit-rpc-deps-{{ checksum "packages/merit-rpc/package.json" }}
 
   unit_test:
-    requires:
-      - setup
+    docker:
+      - image: circleci/python:2.7-node
     working_directory: ~/repo/packages/lightwallet
     steps:
       - run: npm test
 
   desktop_e2e:
-    requires:
-      - setup
+    docker:
+      - image: circleci/python:2.7-node
     working_directory: ~/repo/packages/lightwallet
     steps:
       - run:
@@ -132,8 +132,8 @@ jobs:
       - run: cd packages/lightwallet && npm run test:desktop:e2e
 
   mobile_e2e:
-    requires:
-      - setup
+    docker:
+      - image: circleci/python:2.7-node
     working_directory: ~/repo/packages/lightwallet
     steps:
       - run:
@@ -146,25 +146,36 @@ jobs:
       - run: cd packages/lightwallet && npm run test:mobile:e2e
 
   build_dlw:
-    requires:
-      - setup
+    docker:
+      - image: circleci/python:2.7-node
     working_directory: ~/repo/packages/lightwallet
     steps:
       - run: cd packages/lightwallet && npm run build -- --prod
 
   build_mlw:
-    requires:
-      - setup
+    docker:
+      - image: circleci/python:2.7-node
     working_directory: ~/repo/packages/lightwallet/desktop
     steps:
       - run: cd packages/lightwallet/desktop && npm run build:prod
 
 workflows:
   version: 2
-  build_and_test:
+  build:
     jobs:
+      - setup
       - unit_test
+          requires:
+            - setup
       - desktop_e2e
+          requires:
+            - setup
       - mobile_e2e
+          requires:
+            - setup
       - build_dlw
+          requires:
+            - setup
       - build_mlw
+          requires:
+            - setup
