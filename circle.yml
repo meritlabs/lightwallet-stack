@@ -80,7 +80,14 @@ jobs:
           root: ~/repo
           paths:
             - packages/lightwallet/mobile/www
+            - packages/lightwallet/mobile/e2e
+            - packages/lightwallet/mobile/node_modules
+            - packages/lightwallet/mobile/package.json
             - packages/lightwallet/desktop/dist
+            - packages/lightwallet/desktop/e2e
+            - packages/lightwallet/desktop/node_modules
+            - packages/lightwallet/desktop/package.json
+            - packages/lightwallet/protractor*
 
   desktop_e2e:
     docker:
@@ -92,14 +99,14 @@ jobs:
       - run:
           name: Install http-server
           command: sudo npm i -g spa-http-server
-#      - run:
-#          name: Serve DLW
-#          command: http-server
-#          background: true
-#      - run:
-#          name: Wait for Desktop LW app to be ready
-#          command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888
-#      - run: cd packages/lightwallet && npm run test:desktop:e2e
+      - run:
+          name: Serve DLW
+          command: cd repo/packages/lightwallet/desktop && http-server dist -p 8888 --push-state
+          background: true
+      - run:
+          name: Wait for Desktop LW app to be ready
+          command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888
+      - run: cd packages/lightwallet && npm run test:desktop:e2e
 
   mobile_e2e:
     docker:
@@ -111,13 +118,14 @@ jobs:
       - run:
           name: Install http-server
           command: sudo npm i -g spa-http-server
-#      - run:
-#          name: Serve MLW
-#          command: http-server
-#      - run:
-#          name: Wait for Mobile LW app to be ready
-#          command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8100
-#      - run: cd ~/repo/packages/lightwallet && npm run test:mobile:e2e
+      - run:
+          name: Serve MLW
+          command: cd repo/packages/lightwallet/mobile && http-server www -p 8100 --push-state
+          background: true
+      - run:
+          name: Wait for Mobile LW app to be ready
+          command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8100
+      - run: cd ~/repo/packages/lightwallet && npm run test:mobile:e2e
 
 workflows:
   version: 2
