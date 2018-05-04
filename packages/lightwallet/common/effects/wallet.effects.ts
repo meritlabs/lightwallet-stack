@@ -52,14 +52,14 @@ export class WalletEffects {
   // TODO(ibby): update totals only if the numbers we depend on changed --> use distinct/distinctUntilChanged operators
   @Effect()
   updateTotals$: Observable<UpdateWalletTotalsAction> = this.actions$.pipe(
-    ofType(WalletsActionType.Update, WalletsActionType.UpdateOne, WalletsActionType.Add),
+    ofType(WalletsActionType.Update, WalletsActionType.UpdateOne, WalletsActionType.Add, WalletsActionType.DeleteWallet),
     withLatestFrom(this.store.select(selectWallets)),
     map(([action, wallets]) => new UpdateWalletTotalsAction(this.calculateTotals(wallets)))
   );
 
   @Effect()
   updateInviteRequests$: Observable<UpdateInviteRequestsAction> = this.actions$.pipe(
-    ofType(WalletsActionType.UpdateOne, WalletsActionType.Update, WalletsActionType.Add),
+    ofType(WalletsActionType.UpdateOne, WalletsActionType.Update, WalletsActionType.Add, WalletsActionType.DeleteWallet),
     withLatestFrom(this.store.select(selectWallets)),
     map(([action, wallets]) => wallets.reduce((requests, wallet) => requests.concat(wallet.inviteRequests), [])),
     map((inviteRequests: any[]) => new UpdateInviteRequestsAction(inviteRequests))

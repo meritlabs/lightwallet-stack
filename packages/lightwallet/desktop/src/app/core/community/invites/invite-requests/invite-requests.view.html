@@ -19,7 +19,8 @@
           <div class="history__item__info">
             <div>
               <div class="history__item__info__title">
-                <strong>{{ request.alias? '@' + request.alias : request.address }}</strong>
+                <strong *ngIf="request.alias">{{ request.alias }}</strong>
+                <strong *ngIf="!request.alias"><small>{{ request.address }}</small></strong>
               </div>
               <div class="history__item__info__title">
                 <span class="source"><i>Incoming request</i></span>

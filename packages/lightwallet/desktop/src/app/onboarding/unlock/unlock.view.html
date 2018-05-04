@@ -108,26 +108,39 @@
         <h2 class="content_title">
           <div class="import_back" (click)="showAgreement = !showAgreement">
             <img src="/assets/v1/images/backup/back-icon.svg" alt="">
-          </div>Wallet Unlock Confirmed
+          </div>Here We Go!
         </h2>
+        <div class="content_details"><p>Your wallet is going to be created with the following details:</p></div>
         <div class="content_details">
-          <p>Invite address: <strong>{{inviteCode.value}}</strong></p>
-          <p>Your username (alias): <strong>@{{alias.value}}</strong></p>
+          <p>Invited by: <strong>{{inviteCode.value}}</strong></p>
+          <p>Your alias: <strong>@{{alias.value}}</strong></p>
         </div>
         <div class="content_warning">
-          <p><strong>*</strong> You can now share Merit with the community.  Your alias is your invite code.</p>
-          <p><strong>**</strong> Be sure to record your passphrase (shown on the next screen) so you never lose access to your funds.</p>
+          <ul>
+            <li>
+              The wallet will generate a 12-word passphrase for you; it will be displayed on the next page.
+            </li>
+            <li>
+              Your wallet will be created, but will not be activated until you are sent an invite token.
+            </li>
+            <li>
+              Once your wallet has been activated, you will be able to send and receive Merit.
+            </li>
+        </ul>
         </div>
         <div class="content_checkbox">
           <div class="ui-checkbox">
-              <input type="checkbox"[(ngModel)]="userAgreement">
-              <span class="ui-checkbox__switcher"></span>
-              <strong>Got it.  Let's go!</strong>
+              <label class="content_checkbox_wrap"><strong>I understand.  Let's go!</strong>
+                <input type="checkbox"[(ngModel)]="userAgreement">
+                <span class="content_checkbox_checkmark"></span>
+              </label>
           </div>
         </div>
-        <button class="ui-button ui-button--blue ui-button--with-arrow"
+        <div class="content_nextbutton">
+          <button class="ui-button ui-button--blue ui-button--with-arrow"
           role="button" type="submit" [disabled]="!userAgreement"
-          (click)="onSubmit()">Let's Get Started</button>
+          (click)="onSubmit()">Show me my passphrase</button>
+        </div>
       </div>
     </div>
     <div class="already-member" [hidden]="!alias.hasError('AliasInUse')">
