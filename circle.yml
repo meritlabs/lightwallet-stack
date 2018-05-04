@@ -69,7 +69,7 @@ jobs:
           command: cd packages/lightwallet/common/environments && cp environment.example.ts environment.dev.ts
       - run:
           name: Unit tests
-          command: cd packages/lightwallet && npm test
+          command: cd packages/lightwallet && npm test -- --runInBand
       - run:
           name: Build DLW
           command: cd packages/lightwallet && npm run build
