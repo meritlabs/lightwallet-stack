@@ -306,6 +306,7 @@ export class SendView implements OnInit {
     }
 
     if (type === 'easy') {
+      if (!password) password = '';
       const easySend = await this.easySendService.createEasySendScriptHash(wallet.client, password);
       txData.easySend = easySend;
       txData.txp = await this.easySendService.prepareTxp(wallet.client, micros, easySend);
