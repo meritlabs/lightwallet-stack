@@ -44,7 +44,7 @@ export class SendAmountView {
   public feeLoading: boolean;
 
   public amount = { micros: 0, mrt: 0, fiat: 0 };
-  public formData = { amount: '', password: '', confirmPassword: '', nbBlocks: 1008, validTill: '' };
+  public formData = { amount: '', password: '', confirmPassword: '', nbBlocks: 10080, validTill: '' };
 
   public readonly CURRENCY_TYPE_MRT = 'mrt';
   public readonly CURRENCY_TYPE_FIAT = 'fiat';
