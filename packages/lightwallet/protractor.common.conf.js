@@ -28,7 +28,7 @@ if (IS_CI) {
     console.log("Connecting local");
     return new Promise(function(resolve, reject){
       exports.bs_local = new browserstack.Local();
-      exports.bs_local.start({ 'key': process.env.BROWSERSTACK_KEY }, function(error) {
+      exports.bs_local.start({ key: process.env.BROWSERSTACK_KEY }, function(error) {
         if (error) return reject(error);
         console.log('Connected. Now testing...');
         resolve();
@@ -47,6 +47,7 @@ exports.browserStackCommon = {
   'browserstack.user': process.env.BROWSERSTACK_USER,
   'browserstack.key': process.env.BROWSERSTACK_KEY,
   'browserstack.local': true,
+  'browserstack.localIdentifier': `${ process.env.CIRCLE_BUILD_NUM }_${ process.env.CIRCLE_WORKFLOW_ID }_${ process.env.CIRCLE_STAGE }`,
   resolution: '1920x1080',
   name: 'LightwalletStack-' + COMMIT
 };
