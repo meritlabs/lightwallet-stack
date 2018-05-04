@@ -118,18 +118,22 @@ jobs:
   unit_test:
     docker:
       - image: circleci/python:2.7-node
-    working_directory: ~/repo/packages/lightwallet
+    working_directory: ~/
     steps:
-      - run: npm test
+      - attach_workspace:
+          at: ~/repo/
+      - run: cd repo && npm test
 
   desktop_e2e:
     docker:
       - image: circleci/python:2.7-node
-    working_directory: ~/repo/packages/lightwallet
+    working_directory: ~/
     steps:
+      - attach_workspace:
+          at: ~/repo/
       - run:
           name: Run ng-serve
-          command: cd packages/lightwallet/desktop && npm start
+          command: cd ~/repo/packages/lightwallet/desktop && npm start
           background: true
       - run:
           name: Wait for Desktop LW app to be ready
@@ -139,30 +143,36 @@ jobs:
   mobile_e2e:
     docker:
       - image: circleci/python:2.7-node
-    working_directory: ~/repo/packages/lightwallet
+    working_directory: ~/
     steps:
+      - attach_workspace:
+          at: ~/repo/
       - run:
           name: Run ionic serve
-          command: cd packages/lightwallet && npm run ionic:serve
+          command: cd ~/repo/packages/lightwallet && npm run ionic:serve
           background: true
       - run:
           name: Wait for Mobile LW app to be ready
           command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8100
-      - run: cd packages/lightwallet && npm run test:mobile:e2e
+      - run: cd ~/repo/packages/lightwallet && npm run test:mobile:e2e
 
   build_dlw:
     docker:
       - image: circleci/python:2.7-node
-    working_directory: ~/repo/packages/lightwallet
+    working_directory: ~/
     steps:
-      - run: cd packages/lightwallet && npm run build -- --prod
+      - attach_workspace:
+          at: ~/repo/
+      - run: cd ~/repo/packages/lightwallet && npm run build -- --prod
 
   build_mlw:
     docker:
       - image: circleci/python:2.7-node
-    working_directory: ~/repo/packages/lightwallet/desktop
+    working_directory: ~/
     steps:
-      - run: cd packages/lightwallet/desktop && npm run build:prod
+      - attach_workspace:
+          at: ~/repo/
+      - run: cd ~/repo/packages/lightwallet/desktop && npm run build:prod
 
 workflows:
   version: 2
