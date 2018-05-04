@@ -179,18 +179,18 @@ workflows:
   build:
     jobs:
       - setup
-      - unit_test
+      - unit_test:
           requires:
             - setup
-      - desktop_e2e
+      - desktop_e2e:
           requires:
             - setup
-      - mobile_e2e
+      - mobile_e2e:
           requires:
             - setup
-      - build_dlw
+      - build_dlw:
           requires:
             - setup
-      - build_mlw
+      - build_mlw:
           requires:
             - setup
