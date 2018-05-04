@@ -57,7 +57,7 @@
         <div class="ui-input__group__tipbox" *ngIf="!inviteCode.valid">
           Please enter the invite code you were given, which is usually the alias of the sender.
           <hr>
-          <small><sup>*</sup>Allowed symbols: <strong>a-z A_Z 0-9</strong></small>
+          <small><sup>*</sup>Allowed characters: <strong>Numbers/letters only. No spaces.</strong></small>
         </div>
       </div>
       <div class="ui-input__group" [ngClass]="{'ui-input__group--disabled': !inviteCode.valid}" *ngIf="inviteCode.valid">
@@ -94,9 +94,9 @@
           Aliases cannot be shared across multiple wallets.  
           Please note that aliases cannot be changed after creation.
           <hr>
-          <small><sup>*</sup>Allowed symbols: <strong>a-z A_Z 0-9</strong></small>
+          <small><sup>*</sup>Allowed characters: <strong>Numbers/letters only. No Spaces.</strong></small>
           <br>
-          <small><sup>*</sup>Max length of the alias - 20 symbols</small>
+          <small><sup>*</sup>Max length: 20 characters</small>
         </div>
       </div>
       <div class="unlock__form__group" *ngIf="!formData.invalid && alias.valid">
