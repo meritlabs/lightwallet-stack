@@ -99,7 +99,8 @@ export class CoreView {
 
   private async showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
-    const confirmDialog = this.confirmDialogCtrl.create(`You've got ${ amount } Merit!`, 'Would you like to accept this transaction?', [
+    const message = receipt.senderName.length > 0 ? `@${ receipt.senderName } sent you ${ amount } Merit!` : `You've got ${ amount } Merit!`
+    const confirmDialog = this.confirmDialogCtrl.create(message, 'Would you like to accept this transaction?', [
       {
         text: 'Yes',
         value: 'yes',
@@ -125,7 +126,7 @@ export class CoreView {
   private async showCancelEasyReceivePrompt(receipt: EasyReceipt, data) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
 
-    const confirmDialog = this.confirmDialogCtrl.create(`Cancel GlobalSend with ${ amount } Merit?`, `Would you like to cancel this transaction?`, [
+    const confirmDialog = this.confirmDialogCtrl.create(`Cancel GlobalSend with ${ amount } Merit?`, `You clicked on a GlobalSend link that you created.  Would you like to cancel it?`, [
       {
         text: 'Cancel GlobalSend',
         value: 'yes',
