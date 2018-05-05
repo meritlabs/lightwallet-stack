@@ -24,63 +24,8 @@
     <div class="sendMerit__content">
 
       <form class="sendMerit__form" [formGroup]="formData" (ngSubmit)="submit.next()">
-        <div class="sendMerit__form__group">
-          <label class="ui-label">Amount</label>
-          <div class="ui-input__wrapper ui-input__wrapper--mrt">
-            <input type="number" name="" formControlName="amountMrt" placeholder="0"
-                   class="ui-input ui-input--form ui-input--text">
-            <div class="ui-input__addon">MRT</div>
-          </div>
-          <div class="input-errors" [hidden]="!amountMrt.dirty || amountMrt.valid">
-            <div [hidden]="!amountMrt.hasError('required')">
-                <span class="tooltip-error">
-                  <span>
-                    Amount is required
-                  </span>
-                </span>
-            </div>
-            <div [hidden]="amountMrt.hasError('required') || !amountMrt.hasError('InvalidAmount')">
-                <span class="tooltip-error">
-                  <span>
-                    Invalid amount
-                  </span>
-                </span>
-            </div>
-          </div>
-          <div class="ui-input__wrapper ui-input__wrapper--currency" *ngIf="availableCurrencies?.length">
-            <input type="text" name="" [value]="amountFiat$ | async" disabled
-                   class="ui-input ui-input--form ui-input--text">
-            <div class="ui-input__addon">
-              <app-select (selectionEvent)="selectCurrency($event)" [selected]="selectedCurrency.value"
-                          [input]="availableCurrencies"
-                          cssClass="ui-button ui-button--transparent ui-button--select-currency ui-button--md ui-button--with-caret"></app-select>
-            </div>
-          </div>
-        </div>
-        <div class="sendMerit__form__group">
-          <div class="sendMerit__form__group__column sendMerit__form_group__column--70">
-            <label for="feeIncluded" class="ui-label">Include fee in the amount:</label>
-          </div>
-          <div class="sendMerit__form__group__column sendMerit__form_group__column--30">
-            <div class="ui-checkbox">
-              <input type="checkbox" name="feeIncluded" id="feeIncluded" formControlName="feeIncluded">
-              <span class="ui-checkbox__switcher"></span>
-            </div>
-          </div>
-        </div>
-        <div class="sendMerit__form__group" [hidden]="amountMrt.pristine || amountMrt.invalid">
-          <label class="ui-label">Send from</label>
-          <app-select (selectionEvent)="selectWallet($event)" [selected]="wallet.value" [input]="wallets$ | async"
-                      cssClass="ui-input ui-input--select ui-input--form"></app-select>
-          <label class="ui-label available-amount-label" *ngIf="wallet.valid">
-            {{ wallet.value.status.spendableAmount | toMRT }}, {{ wallet.value.status.availableInvites || 0 }}
-            invites available
-          </label>
-        </div>
-
-        <div class="selectMethod" [hidden]="amountMrt.pristine || amountMrt.invalid">
-          <button (click)="updateTxType('classic')" type="button" role="button" class="selectMethod_item"
-                  [class.active]="type.value === 'classic'">
+        <div class="selectMethod">
+          <button (click)="updateTxType('classic')" type="button" role="button" class="selectMethod_item" [class.active]="type.value === 'classic'">
             <span class="title">
               Send via ClassicSend
             </span>
@@ -88,8 +33,13 @@
               Send to a Merit address
             </span>
           </button>
-          <button (click)="updateTxType('easy')" [disabled]="!wallet.value?.status?.availableInvites" type="button"
-                  role="button" class="selectMethod_item" [class.active]="type.value === 'easy'">
+
+
+          <!-- Removed this lines because we didnt provide any notification 
+               when this button disabled, I catch the issue, and it was coufused for me 
+               [disabled]="!wallet.value?.status?.availableInvites" -->
+
+          <button (click)="updateTxType('easy')" type="button" role="button" class="selectMethod_item" [class.active]="type.value === 'easy'">
             <span class="title">
               Send via GlobalSend
             </span>
@@ -101,13 +51,12 @@
             </span>
           </button>
         </div>
-
-        <ng-container *ngIf="amountMrt.dirty && amountMrt.valid">
+        <ng-container>
           <ng-container *ngIf="type.value === 'classic'; else easySend">
             <div class="sendMerit__form__group">
               <label class="ui-label">Send to address / alias</label>
-              <input type="text" name="" value="" placeholder="Paste address / alias here"
-                     class="ui-input ui-input--form ui-input--text" formControlName="address">
+              <input type="text" name="" value="" placeholder="Paste address / alias here" class="ui-input ui-input--form ui-input--text"
+                formControlName="address">
               <div class="input-errors" [hidden]="!address.dirty || address.valid">
                 <div>
                   <span class="tooltip-error">
@@ -136,10 +85,62 @@
             </div>
           </ng-template>
         </ng-container>
-
+        <div class="sendMerit__form__group" [hidden]="!address.dirty && !address.valid && type.value === 'classic'">
+          <label class="ui-label">Send from</label>
+          <app-select (selectionEvent)="selectWallet($event)" [selected]="wallet.value" [input]="wallets$ | async" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+          <label class="ui-label available-amount-label" *ngIf="wallet.valid">
+            {{ wallet.value.status.spendableAmount | toMRT }}, {{ wallet.value.status.availableInvites || 0 }} invites available
+          </label>
+        </div>
+        <div class="sendMerit__form__group" [hidden]="!address.dirty && !address.valid && type.value === 'classic'">
+          <div class="sendMerit__form__group__column sendMerit__form_group__column--70">
+            <label for="feeIncluded" class="ui-label">Who will pay fee?</label>
+          </div>
+          <div class="sendMerit__form__group__column sendMerit__form_group__column--30">
+            <div class="ui-checkbox-typeTwo">
+              <input type="checkbox" name="feeIncluded" id="feeIncluded" formControlName="feeIncluded">
+              <span class="ui-checkbox_switcherTwo">
+                <span class="ui-checkbox_case ui-checkbox_case-first">
+                  Me
+                </span>
+                <span class="ui-checkbox_case ui-checkbox_case-second">
+                  Recepient
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="sendMerit__form__group" [hidden]="!address.dirty && !address.valid && type.value === 'classic'">
+          <label class="ui-label">Amount</label>
+          <div class="ui-input__wrapper ui-input__wrapper--mrt">
+            <input type="number" name="" formControlName="amountMrt" placeholder="0" class="ui-input ui-input--form ui-input--text">
+            <div class="ui-input__addon">MRT</div>
+          </div>
+          <div class="input-errors" [hidden]="!amountMrt.dirty || amountMrt.valid">
+            <div [hidden]="!amountMrt.hasError('required')">
+              <span class="tooltip-error">
+                <span>
+                  Amount is required
+                </span>
+              </span>
+            </div>
+            <div [hidden]="amountMrt.hasError('required') || !amountMrt.hasError('InvalidAmount')">
+              <span class="tooltip-error">
+                <span>
+                  Invalid amount
+                </span>
+              </span>
+            </div>
+          </div>
+          <div class="ui-input__wrapper ui-input__wrapper--currency" *ngIf="availableCurrencies?.length">
+            <input type="text" name="" [value]="amountFiat$ | async" disabled class="ui-input ui-input--form ui-input--text">
+            <div class="ui-input__addon">
+              <app-select (selectionEvent)="selectCurrency($event)" [selected]="selectedCurrency.value" [input]="availableCurrencies" cssClass="ui-button ui-button--transparent ui-button--select-currency ui-button--md ui-button--with-caret"></app-select>
+            </div>
+          </div>
+        </div>
         <div class="sendMerit__form__group">
-          <button type="submit" class="ui-button ui-button--blue"
-                  [disabled]="!canSend">
+          <button type="submit" class="ui-button ui-button--blue" [disabled]="!canSend">
             Send Merit
           </button>
         </div>
