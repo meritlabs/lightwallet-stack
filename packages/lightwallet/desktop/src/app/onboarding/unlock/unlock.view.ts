@@ -29,8 +29,8 @@ export class UnlockComponent {
   });
 
   easyReceipt: EasyReceipt;
-  creatingWallet: boolean = false;
-  showAgreement: boolean = false;
+  creatingWallet: boolean;
+  showAgreement: boolean;
   showGuide: boolean = !('showGuide' in localStorage && localStorage.getItem('showGuide') === 'false');
 
   get inviteCode() { return this.formData.get('inviteCode'); }
