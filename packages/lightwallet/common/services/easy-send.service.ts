@@ -11,7 +11,7 @@ import { Address, HDPrivateKey, PrivateKey, Script} from 'bitcore-lib';
 @Injectable()
 export class EasySendService {
 
-  private readonly DEFAULT_TIMEOUT = 10080; // 7 days * 24 hours * 60 minutes 
+  private readonly DEFAULT_TIMEOUT = 10080; // 7 days * 24 hours * 60 minutes
 
   constructor(
     private feeService: FeeService,
@@ -20,7 +20,7 @@ export class EasySendService {
     private addressService: AddressService
   ) {}
 
-  async createEasySendScriptHash(wallet: MeritWalletClient, password: string = ''): Promise<EasySend> {
+  async createEasySendScriptHash(wallet: MeritWalletClient, password?: string): Promise<EasySend> {
     const rootKey = HDPrivateKey.fromString(wallet.credentials.xPrivKey);
     const signPrivKey = rootKey.privateKey;
     const pubkey = signPrivKey.publicKey;
@@ -128,8 +128,8 @@ export class EasySendService {
   /**
    * Create an easySend script
    */
-  private async bulidScript(wallet, passphrase = '', timeout = this.DEFAULT_TIMEOUT): Promise<EasySend> {
-
+  private async bulidScript(wallet, passphrase?: string, timeout = this.DEFAULT_TIMEOUT): Promise<EasySend> {
+    passphrase = passphrase || '';
     const pubKey = wallet.getRootAddressPubkey();
     const rcvPair = PrivateKey.forNewEasySend(passphrase, ENV.network);
     const pubKeys = [
