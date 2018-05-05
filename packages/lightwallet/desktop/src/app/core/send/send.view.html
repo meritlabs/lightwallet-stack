@@ -173,6 +173,22 @@
                       {{ receipt.amount | toMRT }}
                     </div>
                   </div>
+                  <div class="sendMerit__totals__table__row">
+                    <div class="sendMerit__totals__table__column">
+                      Your fee
+                    </div>
+                    <div class="sendMerit__totals__table__column">
+                      {{formData.controls.feeIncluded.value ? (0 | toMRT) : (receipt.fee | toMRT) }}
+                    </div>
+                  </div>
+                  <div class="sendMerit__totals__table__row">
+                    <div class="sendMerit__totals__table__column">
+                      Recipirnt fee
+                    </div>
+                    <div class="sendMerit__totals__table__column">
+                      {{formData.controls.feeIncluded.value ? (receipt.fee | toMRT) : (0 | toMRT) }}
+                    </div>
+                  </div>
                   <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
                     <div class="sendMerit__totals__table__column">
                       Total
