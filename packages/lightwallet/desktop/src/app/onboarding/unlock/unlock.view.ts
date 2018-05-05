@@ -29,12 +29,12 @@ export class UnlockComponent {
   });
 
   easyReceipt: EasyReceipt;
-  creatingWallet: boolean = false;
-  showAgreement: boolean = false;
-  showGuide: boolean = true;
+  creatingWallet: boolean;
+  showAgreement: boolean;
+  showGuide: boolean = !('showGuide' in localStorage && localStorage.getItem('showGuide') === 'false');
+  userAgreement: boolean;
 
   get inviteCode() { return this.formData.get('inviteCode'); }
-
   get alias() { return this.formData.get('alias'); }
 
   constructor(private formBuilder: FormBuilder,
@@ -55,19 +55,15 @@ export class UnlockComponent {
 
     if (this.easyReceipt) {
       this.inviteCode.setValue(this.easyReceipt.parentAddress);
+      this.showGuide = false;
     }
-    let showGuide;
-    if("showGuide" in localStorage && localStorage.getItem("showGuide") === 'false') {
-      showGuide = false;
-    }else {
-      showGuide  = true;
-    }
-    this.showGuide = showGuide;
   }
+
   hideGuide($event) {
     this.showGuide = $event;
-    localStorage.setItem("showGuide", $event);
+    localStorage.setItem('showGuide', $event);
   }
+
   async onSubmit() {
     this.loadingCtrl.show();
     this.creatingWallet = true;
