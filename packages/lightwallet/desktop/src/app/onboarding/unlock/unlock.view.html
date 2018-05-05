@@ -29,9 +29,7 @@
             </span>
           </span>
         </label>
-        <input type="text" formControlName="inviteCode" class="ui-input ui-input--text"
-        [ngClass]="{'ui-input--valid': !inviteCode.hasError('required') && !inviteCode.hasError('minlength') && !inviteCode.hasError('InvalidFormat') && !inviteCode.hasError('AddressNotFound'),
-          'ui-input--invalid': !inviteCode.hasError('required') }">
+        <input type="text" formControlName="inviteCode" class="ui-input ui-input--text" placeholder="Enter invite address or alias">
         <div class="input-errors" [hidden]="!inviteCode.dirty || inviteCode.valid">
           <div [hidden]="!inviteCode.hasError('required')">
             <span class="tooltip-error">
@@ -65,13 +63,11 @@
           Your username (alias)
           <span class="ui-tooltip">
               <span class="ui-tooltip__text">
-                Your alias is how you will be known in the Merit community. Anyone can use it to easily send you Merit or as their unlock code. Think of it like your username or handle.  
+                Your alias is how you will be known in the Merit community. Anyone can use it to easily send you Merit or as their unlock code. Think of it like your username or handle.
               </span>
             </span>
         </label>
-        <input type="text" class="ui-input ui-input--text" formControlName="alias"
-        [ngClass]="{'ui-input--valid': alias.dirty && alias.valid,
-          'ui-input--invalid': alias.dirty && !alias.valid}">
+        <input type="text" class="ui-input ui-input--text" formControlName="alias" placeholder="Enter an alias">
         <div class="input-errors" [hidden]="!alias.dirty || alias.valid">
           <div [hidden]="!alias.hasError('minlength')">
             <span class="tooltip-error">
@@ -90,8 +86,8 @@
           </div>
         </div>
         <div class="ui-input__group__tipbox" *ngIf="!alias.valid && !alias.hasError('AliasInUse')">
-          Each wallet should have a unique alias.  
-          Aliases cannot be shared across multiple wallets.  
+          Each wallet should have a unique alias.
+          Aliases cannot be shared across multiple wallets.
           Please note that aliases cannot be changed after creation.
           <hr>
           <small><sup>*</sup>Allowed characters: <strong>Numbers/letters only. No Spaces.</strong></small>
@@ -131,7 +127,7 @@
         <div class="content_checkbox">
           <div class="ui-checkbox">
               <label class="content_checkbox_wrap"><strong>I understand.  Let's go!</strong>
-                <input type="checkbox"[(ngModel)]="userAgreement">
+                <input type="checkbox" [(ngModel)]="userAgreement">
                 <span class="content_checkbox_checkmark"></span>
               </label>
           </div>
