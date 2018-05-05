@@ -32,6 +32,7 @@ export class UnlockComponent {
   creatingWallet: boolean;
   showAgreement: boolean;
   showGuide: boolean = !('showGuide' in localStorage && localStorage.getItem('showGuide') === 'false');
+  userAgreement: boolean;
 
   get inviteCode() { return this.formData.get('inviteCode'); }
   get alias() { return this.formData.get('alias'); }
