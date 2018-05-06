@@ -98,8 +98,6 @@ export class MeritMarketClient {
 
       if (this.credentials) {
         let privkey = args._requestPrivKey || this.credentials.walletPrivKey;
-        // const key = 'L2TRJbZNqksFxq3kRa6Q6Pe7Ar5MsfWBQaMRax72TLYK2d6DBfdb';
-        // const pk = '02d5d6a2ad54a7a7bd499bd71a19bd03d8406583aa601b125bc2368121e177808e';
 
         if (privkey) {
           delete args['_requestPrivKey'];
@@ -108,9 +106,7 @@ export class MeritMarketClient {
             .deriveChild('m/0/0')
             .privateKey;
 
-          console.log(this.credentials);
-
-          const debug = true;
+          const debug = !ENV.production;
           const [sig, ts] = this._signRequest(url, privkey, debug);
 
           headers['X-Pubkey'] = privkey.toPublicKey().toString();
