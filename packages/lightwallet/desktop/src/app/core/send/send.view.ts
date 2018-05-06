@@ -247,11 +247,8 @@ export class SendView implements OnInit {
         tap((success: boolean) => {
           this.sending = false;
           this.success = success;
-          console.log(success);
 
           if (success) {
-            console.log(this.receipt$);
-
             this.resetFormData();
           }
         })
