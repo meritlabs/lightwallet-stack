@@ -66,10 +66,10 @@ export class PersistenceService2 {
     const easySends = await this.getEasySends();
 
     const idx = easySends.findIndex(tx => {
-      return tx.scriptAddress == address; 
+      return tx.scriptAddress == address;
     });
 
-    if(idx != -1) {
+    if (idx != -1) {
       easySends[idx].cancelled = true;
       console.log("FOUND:", easySends[idx]);
       return this.setEasySends(easySends);
