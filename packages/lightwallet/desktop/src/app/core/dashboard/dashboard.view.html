@@ -1,29 +1,27 @@
-<div class="dashboard-panel">
-  <profile-stats [totals]="totals$ | async" [loading]="walletsLoading$ | async"></profile-stats>
-  <div class="dashboard-panel__group">
-    <div class="dashboard-panel__group__wrap container--inner">
-      <div class="dashboard-panel__widged">
-        <div class="dashboard-panel__quick-sending">
-          <div class="title--primary">Send merit</div>
-          <div class="ui-input__wrapper ui-input__wrapper--mrt">
-            <input type="text" name="" [(ngModel)]="amount" (keypress)="sendSubmit($event)"
-            class="ui-input ui-input--form ui-input--text">
-            <div class="ui-input__addon">MRT</div>
-            <button [disabled]="!amount || amount == 0" [routerLink]='"/send"' [queryParams]="{ amount: amount }"
-              class="ui-button ui-button--blue ui-button--sm" id="sendMrt">SEND</button>
-          </div>
-        </div>
-        <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async" [showButton]=false></wallets-list>
-        <vaults-list [showButton]=false></vaults-list>
-      </div>
-      <div class="dashboard-panel__widged dashboard-panel__widged--latest-transactions">
-        <div class="title--primary">
-          <p>Latest transactions</p>
-        </div>
-        <history-list [widget]=true [transactions]="transactions$ | async"
-          [loading]="transactionsLoading$ | async"></history-list>
+<profile-stats [totals]="totals$ | async" [loading]="walletsLoading$ | async"></profile-stats>
+<div class="container--inner wrap">
+  <div class="widget">
+    <div class="quick-send">
+      <h2 class="main-header">
+        Send Merit
+      </h2>
+      <div class="ui-input__wrapper ui-input__wrapper--mrt">
+        <input type="text" name="" [(ngModel)]="amount" (keypress)="sendSubmit($event)"
+               class="ui-input ui-input--form ui-input--text">
+        <div class="ui-input__addon">MRT</div>
+        <button [disabled]="!amount || amount == 0" [routerLink]='"/send"' [queryParams]="{ amount: amount }"
+                class="ui-button ui-button--blue ui-button--sm" id="sendMrt">SEND</button>
       </div>
     </div>
+    <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async" [showButton]=false></wallets-list>
+    <vaults-list [showButton]=false></vaults-list>
+  </div>
+  <div class="widget latest-transactions">
+    <h2 class="main-header">
+      Latest transactions
+    </h2>
+    <history-list [widget]=true [transactions]="transactions$ | async"
+                  [loading]="transactionsLoading$ | async"></history-list>
   </div>
 </div>
 <app-welcome-guide *ngIf="showGuide" [wallets]="wallets$ | async" (dismiss)="onGuideDismiss()"></app-welcome-guide>

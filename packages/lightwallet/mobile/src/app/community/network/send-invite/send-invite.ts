@@ -11,6 +11,8 @@ import { AddressService } from '@merit/common/services/address.service';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { SendMethodDestination } from '@merit/common/models/send-method';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 
 const ERROR_ADDRESS_NOT_FOUND = 'ADDRESS_NOT_FOUND';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -26,6 +28,7 @@ export class SendInviteView {
   contacts: Array<MeritContact> = [];
   amount: number;
   availableInvites;
+  searchInProgress: boolean;
   searchResult: {
     withMerit: Array<MeritContact>,
     toNewEntity: { destination: string, contact: MeritContact },
@@ -33,6 +36,7 @@ export class SendInviteView {
   } = { withMerit: [], toNewEntity: null, error: null };
 
   private wallets: Array<MeritWalletClient>;
+  private wallet: MeritWalletClient;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -41,13 +45,14 @@ export class SendInviteView {
               private modalCtrl: ModalController,
               private addressScanner: AddressScannerService,
               private walletService: WalletService,
+              private profileService: ProfileService,
               private toastCtrl: ToastControllerService,
               private loadCtrl: LoadingController
   ) {
   }
 
   async ionViewWillEnter() {
-    this.wallets = this.navParams.get('wallets');
+    this.wallets = await this.profileService.getWallets();
     this.loadingContacts = true;
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;
@@ -60,6 +65,7 @@ export class SendInviteView {
   }
 
   async parseSearch() {
+    this.searchInProgress = true;
     let result = { withMerit: [], toNewEntity: null, error: null };
 
     if (!this.searchQuery || !this.searchQuery.length) {
@@ -67,6 +73,7 @@ export class SendInviteView {
       this.debounceSearch.cancel();
       result.withMerit = this.contacts;
       return this.searchResult = result;
+      this.searchInProgress = false;
     }
 
     if (this.searchQuery.length > 6 && this.searchQuery.indexOf('merit:') == 0)
@@ -75,7 +82,7 @@ export class SendInviteView {
     this.debounceSearch();
   }
 
-  private debounceSearch = _.debounce(() => this.search(), 300);
+  private debounceSearch = _.debounce(() => this.search(), 500);
 
   private async search() {
 
@@ -109,6 +116,7 @@ export class SendInviteView {
     });
 
     this.searchResult = result;
+    this.searchInProgress = false;
   }
 
   clearSearch() {
@@ -140,6 +148,10 @@ export class SendInviteView {
     modal.present();
   }
 
+  onSearchKeyUp(event: KeyboardEvent) {
+    if (event.keyCode === 13) (event.target as HTMLInputElement).blur();
+  }
+
   async openScanner() {
     this.searchQuery = await this.addressScanner.scanAddress();
     this.parseSearch();
@@ -147,17 +159,36 @@ export class SendInviteView {
 
   async sendInvite(contact) {
 
-    const toAddress = contact.meritAddresses[0].address;
+    if (contact.meritAddresses.length == 1) {
+      this.send(contact.meritAddresses[0].address);
+    } else {
+      let modal = this.modalCtrl.create('SendViaView', {
+          contact: contact,
+          amount: this.amount
+        }, MERIT_MODAL_OPTS
+      );
+      modal.onDidDismiss((params) => {
+        if (params) {
+          this.send(params.suggestedMethod.value);
+        }
+      });
+      modal.present();
+    }
 
-    let wallet = this.wallets.find(w => (w.availableInvites > 0));
-    if (!wallet) {
+  }
+
+  private async send(toAddress) {
+    if (!this.wallet) {
+      this.wallet = this.wallets.find(w => (w.availableInvites > 0));
+    }
+    if (!this.wallet || !this.wallet.availableInvites) {
       return this.toastCtrl.error('You have no active invites');
     }
 
     let loader = this.loadCtrl.create({ content: 'Sending invite...' });
     try {
       loader.present();
-      await this.walletService.sendInvite(wallet, toAddress);
+      await this.walletService.sendInvite(this.wallet, toAddress);
       return this.navCtrl.pop();
     } catch (e) {
       console.log(e);
@@ -165,6 +196,19 @@ export class SendInviteView {
     } finally {
       loader.dismiss();
     }
-
   }
+
+  public selectWallet() {
+    const modal = this.modalCtrl.create('SelectInviteWalletModal', {
+      selectedWallet: this.wallet,
+      availableWallets: this.wallets.filter((wallet) => wallet.availableInvites > 0)
+    }, MERIT_MODAL_OPTS);
+    modal.onDidDismiss((wallet) => {
+      if (wallet) {
+        this.wallet = wallet;
+      }
+    });
+    return modal.present();
+  }
+
 }

@@ -10,7 +10,7 @@ export class SelectComponent {
   @Output() selectionEvent = new EventEmitter<string>();
   @Input() selected: any;
   @Input() input: any;
-  @Input() style: any;
+  @Input() cssClass: any;
   show: boolean = false;
 
   select(item) {

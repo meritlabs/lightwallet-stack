@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
@@ -8,7 +8,8 @@ import { IDisplayTransaction } from '@merit/common/models/transaction';
 @Component({
   selector: 'view-history',
   templateUrl: './history.view.html',
-  styleUrls: ['./history.view.sass']
+  styleUrls: ['./history.view.sass'],
+  encapsulation: ViewEncapsulation.None
 })
 export class HistoryView {
   loading$: Observable<boolean> = this.store.select(selectTransactionsLoading);

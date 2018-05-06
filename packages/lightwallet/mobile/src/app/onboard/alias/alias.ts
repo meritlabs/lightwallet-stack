@@ -13,6 +13,7 @@ import { PushNotificationsService } from '@merit/common/services/push-notificati
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
 
 @IonicPage({
+  segment: 'alias/:parentAddress',
   defaultHistory: ['OnboardingView']
 })
 @Component({
@@ -47,6 +48,7 @@ export class AliasView {
   async ionViewDidLoad() {
     // An unlock code from a friend sharing the link.
     this.parentAddress = this.navParams.get('parentAddress');
+
   }
 
   checkAlias() {

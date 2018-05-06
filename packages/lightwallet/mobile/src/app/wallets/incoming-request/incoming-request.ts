@@ -88,7 +88,7 @@ export class IncomingRequestModal {
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
       if (wallet) {
-        this.unlockRequest.walletClient = wallet.client;
+        this.unlockRequest.walletClient = wallet;
       }
     });
     return modal.present();

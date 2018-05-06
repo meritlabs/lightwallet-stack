@@ -19,8 +19,6 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
   let pendingString;
 
-  const globalSends = [];
-
   walletHistory = await Promise.all(walletHistory.map(async (tx: IDisplayTransaction, i: number) => {
     if (!_.isNil(tx) && !_.isNil(tx.action)) {
       pendingString = tx.isPendingEasySend ? '(pending) ' : '';

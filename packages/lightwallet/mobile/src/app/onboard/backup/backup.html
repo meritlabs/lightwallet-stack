@@ -1,10 +1,5 @@
 <ion-header>
   <ion-navbar>
-    <ion-buttons end>
-      <button ion-button clear color="primary" (click)="skipBackupPrompt()">
-        Skip
-      </button>
-    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
@@ -13,7 +8,8 @@
     <div class="title">Wallet Recovery Phrase</div>
     <ion-grid>
       <ion-row>
-        <ion-card class="mnemonic-card">
+        <ion-card class="mnemonic-card" [clip]="mnemonic" (click)="markCopied()">
+          <div class="click-to-copy">Click to copy</div>
           <div class="mnemonic">{{ mnemonic }}</div>
         </ion-card>
       </ion-row>
@@ -21,13 +17,12 @@
         <div class="text">
           You can use this phrase to recover your wallet. Write it down and keep it in a secure place. When you have
           written it down,
-          click "Verify".
+          click "OK".
         </div>
       </ion-row>
       <ion-row>
         <div class="bottom-buttons" margin-top>
-          <button ion-button class="action-button" navPush="VerifyBackupView" [navParams]="{ mnemonic: mnemonic }"
-                  [disabled]="false">Verify
+          <button ion-button class="action-button" (click)="skipBackupPrompt()">OK
           </button>
         </div>
       </ion-row>

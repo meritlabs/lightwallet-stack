@@ -36,7 +36,7 @@ export class TransactionEffects {
 
   @Effect()
   refreshOnWalletsRefresh$: Observable<RefreshTransactionsAction> = this.actions$.pipe(
-    ofType(WalletsActionType.Update),
+    ofType(WalletsActionType.Update, WalletsActionType.DeleteWallet),
     map(() => new RefreshTransactionsAction())
   );
 
@@ -77,7 +77,7 @@ export class TransactionEffects {
   }
 
   private async getWalletHistory(wallet: DisplayWallet): Promise<IDisplayTransaction[]> {
-    const walletHistory = await this.walletService.getTxHistory(wallet.client, { force: true });
+    const walletHistory = await this.walletService.getTxHistory(wallet.client);
     const easySends = await this.persistenceService.getEasySends();
     return formatWalletHistory(walletHistory, wallet.client, easySends);
   }

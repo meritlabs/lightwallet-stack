@@ -14,7 +14,7 @@ export class SendService {
   ) {
   }
 
-  async prepareTxp(wallet: MeritWalletClient, amount, toAddress) {
+  async prepareTxp(wallet: MeritWalletClient, amount: number, toAddress: string) {
 
     if (amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big');
 
