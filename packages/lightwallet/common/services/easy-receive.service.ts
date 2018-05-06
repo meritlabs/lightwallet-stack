@@ -186,10 +186,8 @@ export class EasyReceiveService {
    */
   buildEasySendRedeemTransaction(input: any, txn: any, toAddress: string, fee = FeeService.DEFAULT_FEE): Promise<any> {
 
-    const totalAmount = txn.invite ? txn.amount : txn.amount;
+    const totalAmount = txn.amount;
     const amount =  txn.invite ? txn.amount : totalAmount - fee;
-
-    debugger;
 
     if (amount <= 0) throw new Error('Insufficient funds');
 
@@ -220,7 +218,6 @@ export class EasyReceiveService {
     tx.inputs[0].setScript(inputScript);
 
     return tx;
-
   }
 
   cancelEasySend(url: string) {

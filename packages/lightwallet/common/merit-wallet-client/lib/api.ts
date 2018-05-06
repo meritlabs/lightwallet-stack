@@ -292,7 +292,6 @@ export class API {
         ret = MWCErrors[body.code];
         if (body.message) ret.message = body.message;
       } else {
-        console.trace('This is where it breaks');
         ret = new Error(body.code + ': ' + body.message);
       }
     } else {
