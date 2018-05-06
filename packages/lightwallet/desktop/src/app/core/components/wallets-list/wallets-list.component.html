@@ -4,25 +4,31 @@
       <p>Wallets</p>
     </div>
     <div>
-      <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--white
-        ui-button--loadWallet ui-button--sm ui-button--{{showButton}}"
-        routerLink="/wallets/import">Import wallet</button>
-      <button [hidden]="!showButton" type="button" name="button" class="ui-button ui-button--sm
-        ui-button--add ui-button--white ui-button--{{showButton}}"
-        routerLink="/wallets/create">Create new wallet</button>
+      <button type="button" name="button" class="ui-button ui-button--white
+        ui-button--loadWallet ui-button--sm"
+              routerLink="/wallets/import">Import
+      </button>
+      <button type="button" name="button" class="ui-button ui-button--sm
+        ui-button--add ui-button--white"
+              routerLink="/wallets/create">Create
+      </button>
     </div>
   </div>
   <div class="wallets__group__content">
     <loading-spinner [hidden]="!loading"></loading-spinner>
-    <div class="wallets__group__wallet" *ngFor="let wallet of wallets; trackBy: trackByFn" [routerLink]="['/wallets', wallet.id]">
+    <div class="wallets__group__wallet" *ngFor="let wallet of wallets; trackBy: trackByFn"
+         [routerLink]="['/wallets', wallet.id]">
       <div class="wallets__group__wallet__info">
         <div class="wallets__group__wallet__icon">
           <wallet-icon [strokeColor]=wallet.color></wallet-icon>
         </div>
-        <div class="wallets__group__wallet__details" >
+        <div class="wallets__group__wallet__details">
           <div>
             <p class="large-black-text">{{ wallet.name }}</p>
-            <p class="regular-blue-text" *ngIf="!balanceHidden">{{ wallet.totalBalanceMicros | toMRT }} <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})</small></p>
+            <p class="regular-blue-text" *ngIf="!balanceHidden">{{ wallet.totalBalanceMicros | toMRT }}
+              <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})
+              </small>
+            </p>
           </div>
           <div class="inline-right">
             <p class="regular-blue-text">{{ wallet.availableInvites }} Invites</p>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
@@ -10,7 +10,8 @@ import { switchMap } from 'rxjs/operators';
 @Component({
   selector: 'view-wallet-details-history',
   templateUrl: './wallet-details-history.view.html',
-  styleUrls: ['./wallet-details-history.view.sass']
+  styleUrls: ['./wallet-details-history.view.sass'],
+  encapsulation: ViewEncapsulation.None
 })
 export class WalletDetailHistoryView {
   transactions$: Observable<IDisplayTransaction[]> = this.route.parent.params.pipe(
