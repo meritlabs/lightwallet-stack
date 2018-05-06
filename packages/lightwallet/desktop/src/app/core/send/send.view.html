@@ -84,7 +84,7 @@
                   You will see a link after confirming the transaction that you can share with your recipient.
                 </p>
                 <p *ngIf="!wallet.value?.status?.availableInvites">
-                  Current wallet dont have invite, you can not use Global Send without avalible invite in your wallet =(
+                  Current wallet dont have invite, you can not use Global Send without available invite in your wallet =(
                 </p>
               </div>
             </div>
@@ -92,7 +92,7 @@
         </ng-container>
         <div class="sendMerit__form__group" [hidden]="!address.dirty && !address.valid && type.value === 'classic' || !wallet.value?.status?.availableInvites && type.value !== 'classic'">
           <div class="sendMerit__form__group__column sendMerit__form_group__column--70">
-            <label for="feeIncluded" class="ui-label">Who will pay fee?</label>
+            <label for="feeIncluded" class="ui-label">Who pays fee?</label>
           </div>
           <div class="sendMerit__form__group__column sendMerit__form_group__column--30">
             <div class="ui-checkbox-typeTwo">
@@ -183,7 +183,7 @@
                   </div>
                   <div class="sendMerit__totals__table__row">
                     <div class="sendMerit__totals__table__column">
-                      Recipirnt fee
+                      Recipient fee
                     </div>
                     <div class="sendMerit__totals__table__column">
                       {{formData.controls.feeIncluded.value ? (receipt.fee | toMRT) : (0 | toMRT) }}
@@ -199,7 +199,7 @@
                   </div>
                 </div>
                 <div class="sendMerit__totals__table--bottom">
-                  <div class="sendMerit__totals__table__row sendMerit__totals__table__row--devider">
+                  <div class="sendMerit__totals__table__row sendMerit__totals__table__row--divider">
                   </div>
                   <div class="sendMerit__totals__table__row">
                     <div class="sendMerit__totals__table__column">In Wallet</div>
