@@ -145,7 +145,7 @@
       </form>
 
       <div class="sendMerit__totals">
-        <div class="sendMerit__form__group">
+        <div class="sendMerit__form__group" *ngIf="!sending">
           <div class="sendMerit__totals__table">
             <loading-spinner-small *ngIf="receiptLoading"></loading-spinner-small>
             <ng-container *ngIf="receipt$ | async as receipt">
