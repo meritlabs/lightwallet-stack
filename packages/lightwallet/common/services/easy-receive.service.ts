@@ -189,6 +189,8 @@ export class EasyReceiveService {
     const totalAmount = txn.invite ? txn.amount : txn.amount;
     const amount =  txn.invite ? txn.amount : totalAmount - fee;
 
+    debugger;
+
     if (amount <= 0) throw new Error('Insufficient funds');
 
     let tx = new Transaction();

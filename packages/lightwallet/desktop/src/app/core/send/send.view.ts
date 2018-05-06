@@ -151,7 +151,11 @@ export class SendView implements OnInit {
   receiptLoading: boolean;
 
   receipt$: Observable<Receipt> = this.txData$.pipe(
-    tap(() => this.receiptLoading = true),
+    tap(() => {
+      this.receiptLoading = true;
+      this.easySendUrl = void 0;
+      this.success = void 0;
+    }),
     withLatestFrom(this.formData.valueChanges),
     map(([txData, formData]) => {
       const { feeIncluded, wallet } = formData;
@@ -341,38 +345,43 @@ export class SendView implements OnInit {
   }
 
   async send(txData: TxData) {
-    if (txData.easyFee) txData.txp.amount += txData.easyFee;
+    try {
+      if (txData.easyFee) txData.txp.amount += txData.easyFee;
 
-    const wallet = this.wallet.value;
+      const wallet = this.wallet.value;
 
-    txData.txp = await this.sendService.finalizeTxp(wallet.client, txData.txp, this.feeIncluded.value);
+      txData.txp = await this.sendService.finalizeTxp(wallet.client, txData.txp, this.feeIncluded.value);
 
-    if (txData.referralsToSign) {
-      for (let referral of txData.referralsToSign) {
-        await wallet.client.sendReferral(referral);
-        await wallet.client.sendInvite(referral.address);
+      if (txData.referralsToSign) {
+        for (let referral of txData.referralsToSign) {
+          await wallet.client.sendReferral(referral);
+          await wallet.client.sendInvite(referral.address);
+        }
       }
+
+      if (!wallet.client.canSign() && !wallet.client.isPrivKeyExternal()) {
+        this.logger.info('No signing proposal: No private key');
+        await this.walletService.onlyPublish(wallet.client, txData.txp);
+      } else {
+        await this.walletService.publishAndSign(wallet.client, txData.txp);
+      }
+
+      if (this.type.value === 'easy') {
+        this.easySendUrl = txData.easySendUrl;
+        await this.persistenceService.addEasySend(clone(txData.easySend));
+      }
+
+      this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
+        skipRewards: true,
+        skipAlias: true,
+        skipShareCode: true
+      }));
+
+      return true;
+    } catch (err) {
+      console.log('Error sending', err);
+      throw err;
     }
-
-    if (!wallet.client.canSign() && !wallet.client.isPrivKeyExternal()) {
-      this.logger.info('No signing proposal: No private key');
-      await this.walletService.onlyPublish(wallet.client, txData.txp);
-    } else {
-      await this.walletService.publishAndSign(wallet.client, txData.txp);
-    }
-
-    if (this.type.value === 'easy') {
-      this.easySendUrl = txData.easySendUrl;
-      await this.persistenceService.addEasySend(clone(txData.easySend));
-    }
-
-    this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
-      skipRewards: true,
-      skipAlias: true,
-      skipShareCode: true
-    }));
-
-    return true;
   }
 
   hideTour() {
