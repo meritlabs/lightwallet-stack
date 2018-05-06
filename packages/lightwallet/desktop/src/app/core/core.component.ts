@@ -62,8 +62,8 @@ export class CoreView {
   ];
   bottomMenuItems: any[] = [
     {
-      name: 'Market',
-      icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
+      name: 'Market Beta',
+      icon: '/assets/v1/icons/ui/aside-navigation/market.svg',
       link: '/market-gate'
     },
     {
