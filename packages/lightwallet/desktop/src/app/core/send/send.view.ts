@@ -216,7 +216,16 @@ export class SendView implements OnInit {
   async ngOnInit() {
     this.availableCurrencies = await this.rateService.getAvailableFiats();
 
-    this.resetFormData();
+    await this.resetFormData();
+
+    const query = await this.route.queryParams.pipe(take(1)).toPromise();
+    const amount = parseFloat(query.amount);
+
+    if (amount) {
+      this.amountMrt.patchValue(amount);
+      this.amountMrt.setErrors(null);
+      this.amountMrt.markAsDirty();
+    }
 
     this.type.valueChanges.pipe(
       filter((value: string) => (value === 'easy' && this.address.invalid) || (value === 'classic' && this.address.valid && !this.address.value)),
@@ -306,7 +315,6 @@ export class SendView implements OnInit {
     }
 
     if (type === 'easy') {
-      if (!password) password = '';
       const easySend = await this.easySendService.createEasySendScriptHash(wallet.client, password);
       txData.easySend = easySend;
       txData.txp = await this.easySendService.prepareTxp(wallet.client, micros, easySend);
