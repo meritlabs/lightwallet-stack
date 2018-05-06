@@ -45,14 +45,14 @@ export class EasyReceiveService {
   }
 
   paramsToReceipt(params: any): EasyReceipt {
-    let receipt = new EasyReceipt({});
-    receipt.parentAddress = params.pa;
-    receipt.secret = params.se;
-    receipt.senderName = params.sn;
-    receipt.senderPublicKey = params.sk;
-    receipt.blockTimeout = params.bt;
-    receipt.deepLinkURL = params['~referring_link'];
-    return receipt;
+    return new EasyReceipt({
+      parentAddress: params.pa,
+      secret: params.se,
+      senderName: params.sn,
+      senderPublicKey: params.sk,
+      blockTimeout: params.bt,
+      deepLinkURL: params['~referring_link']
+    });
   }
 
   async validateAndSaveParams(params: any): Promise<EasyReceipt> {
@@ -132,8 +132,6 @@ export class EasyReceiveService {
   }
 
   private async spendEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: any, destinationAddress: any): Promise<void> {
-    let opts: any = {};
-
     const invite = input.txs.find(tx => tx.invite);
     await this.sendEasyReceiveTx(input, invite, destinationAddress, wallet);
 
