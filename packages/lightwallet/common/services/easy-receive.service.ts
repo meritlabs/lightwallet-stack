@@ -16,8 +16,8 @@ import { Subject} from 'rxjs/Subject';
 export class EasyReceiveService {
   constructor(
     private logger: LoggerService,
-    private persistanceService: PersistenceService,
-    private persistanceService2: PersistenceService2,
+    private persistenceService: PersistenceService,
+    private persistenceService2: PersistenceService2,
     private feeService: FeeService,
     private mwcService: MWCService,
     private ledger: LedgerService,
@@ -26,8 +26,10 @@ export class EasyReceiveService {
   }
 
   private cancelEasySendSource = new Subject<EasyReceipt>();
+  private easyReceiptsSource = new Subject<EasyReceipt>();
 
   cancelEasySendObservable$ = this.cancelEasySendSource.asObservable();
+  easyReceipts$ = this.easyReceiptsSource.asObservable();
 
   parseEasySendUrl(url: string) {
     let offset = Math.max(0, url.indexOf("?") + 1);
@@ -43,14 +45,14 @@ export class EasyReceiveService {
   }
 
   paramsToReceipt(params: any): EasyReceipt {
-    let receipt = new EasyReceipt({});
-    receipt.parentAddress = params.pa;
-    receipt.secret = params.se;
-    receipt.senderName = params.sn;
-    receipt.senderPublicKey = params.sk;
-    receipt.blockTimeout = params.bt;
-    receipt.deepLinkURL = params['~referring_link'];
-    return receipt;
+    return new EasyReceipt({
+      parentAddress: params.pa,
+      secret: params.se,
+      senderName: params.sn,
+      senderPublicKey: params.sk,
+      blockTimeout: params.bt,
+      deepLinkURL: params['~referring_link']
+    });
   }
 
   async validateAndSaveParams(params: any): Promise<EasyReceipt> {
@@ -59,7 +61,8 @@ export class EasyReceiveService {
     let receipt = this.paramsToReceipt(params);
 
     if (receipt.isValid()) {
-      await this.persistanceService.addPendingEasyReceipt(receipt);
+      await this.persistenceService.addPendingEasyReceipt(receipt);
+      this.easyReceiptsSource.next();
       return receipt;
     } else {
       this.logger.warn('EasyReceipt parameters are invalid: ', receipt);
@@ -69,7 +72,7 @@ export class EasyReceiveService {
   }
 
   async getPendingReceipts(): Promise<Array<EasyReceipt>> {
-    const receipts = (await this.persistanceService.getPendingsEasyReceipts()) || [];
+    const receipts = (await this.persistenceService.getPendingsEasyReceipts()) || [];
     return receipts.map(receipt => new EasyReceipt(receipt));
   }
 
@@ -88,13 +91,13 @@ export class EasyReceiveService {
 
       await this.spendEasyReceipt(receipt, wallet, input, senderAddress);
     } catch (e) {
-      await this.persistanceService.deletePendingEasyReceipt(receipt);
+      await this.persistenceService.deletePendingEasyReceipt(receipt);
       throw e;
     }
   }
 
   deletePendingReceipt(receipt: EasyReceipt) {
-    return this.persistanceService.deletePendingEasyReceipt(receipt);
+    return this.persistenceService.deletePendingEasyReceipt(receipt);
   }
 
   /**
@@ -129,15 +132,13 @@ export class EasyReceiveService {
   }
 
   private async spendEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: any, destinationAddress: any): Promise<void> {
-    let opts: any = {};
-
     const invite = input.txs.find(tx => tx.invite);
     await this.sendEasyReceiveTx(input, invite, destinationAddress, wallet);
 
     const transact = input.txs.find(tx => !tx.invite);
     await this.sendEasyReceiveTx(input, transact, destinationAddress, wallet);
 
-    return this.persistanceService.deletePendingEasyReceipt(receipt);
+    return this.persistenceService.deletePendingEasyReceipt(receipt);
   }
 
   private async sendEasyReceiveTx(input: any, tx: any, destinationAddress: string, wallet: MeritWalletClient) {
@@ -243,7 +244,7 @@ export class EasyReceiveService {
     const redeemScript = scriptData.script;
     const scriptAddress = Address(scriptData.scriptPubKey.getAddressInfo()).toString();
 
-    //find the invite and transaction 
+    //find the invite and transaction
     const txsRes = await wallet.validateEasyScript(scriptAddress.toString());
     const txs = txsRes.result;
 
@@ -261,7 +262,7 @@ export class EasyReceiveService {
     //get the merit back
     const transact = txs.find(tx => !tx.invite);
     await this.sendEasyReceiveTx(input, transact, destAddress, wallet);
-    await this.persistanceService2.cancelEasySend(scriptAddress);
+    await this.persistenceService2.cancelEasySend(scriptAddress);
 
     return {
       invite: invite,

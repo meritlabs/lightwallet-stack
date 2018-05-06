@@ -1,4 +1,48 @@
 .ios view-send-invite {
+
+  on-searchbar.searchbar-ios {
+    background: transparent;
+    display: initial;
+    .searchbar-input-container {
+      border-radius: 4px;
+      overflow: hidden;
+    }
+  }
+
+  button[ion-button].scan-button {
+    margin: 10px 0 0;
+  }
+
+  .searchbar-wrapper {
+    background: #f5f5f5;
+    line-height: 44px;
+    ion-spinner {
+      background: transparent ;
+      position: absolute;
+      top: 17px;
+      right: 12px;
+    }
+    ion-searchbar {
+      padding: 10px;
+      height: 60px;
+
+      .searchbar-search-icon {
+        top: 13px;
+      }
+
+      input.searchbar-input {
+        height: 38px;
+        line-height: 38px;
+      }
+
+    }
+    .scan-button {
+      position: absolute;
+      top: 6px;
+      right: 17px;
+    }
+  }
+
   .content {
     .no-results {
       button[ion-button].button-ios {
@@ -27,6 +71,49 @@
 }
 
 view-send-invite {
+
+  .searchbar-wrapper {
+    display: flex;
+    line-height: 58px;
+    background-color: #fffffff;
+    position: relative;
+    ion-spinner {
+      background: transparent ;
+      position: absolute;
+      top: 14px;
+      right: 18px;
+    }
+    .scan-button {
+      position: absolute;
+      top: 0px;
+      right: 8px;
+      margin: 0;
+    }
+
+    ion-searchbar {
+      display: block;
+      vertical-align: middle;
+    }
+
+    .scan-button {
+      width: 30px;
+      height: 30px;
+      vertical-align: middle;
+      padding: 0;
+      margin: 15px 8px 0 0;
+
+      .button-inner {
+        height: 30px;
+        width: 30px;
+      }
+
+      ion-icon {
+        color: color($colors, primary);
+        height: 22px;
+        width: 22px;
+      }
+    }
+  }
 
   .total-invites {
     display: flex;

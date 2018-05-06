@@ -106,7 +106,7 @@
             <img src="assets/img/icons/invite.svg">
           </ion-avatar>
           <ion-label [clip]="wallet.alias? '@'+wallet.alias : wallet.referralAddress" (click)="notifyCopy()">
-            <p>Invite Code</p>
+            <p>Invite Code (click to copy)</p>
             <h2 *ngIf="wallet.alias">@{{wallet.alias}}</h2>
             <h2 *ngIf="!wallet.alias" class="address" >{{wallet.referralAddress}}</h2>
           </ion-label>

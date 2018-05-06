@@ -1,5 +1,6 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { Validators } from '@angular/forms';
+import { ENV } from '@app/env';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletAction } from '@merit/common/reducers/wallets.reducer';
@@ -11,9 +12,8 @@ import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
-import { Address, PublicKey} from 'bitcore-lib';
-import { ENV } from '@app/env';
 import { Store } from '@ngrx/store';
+import { Address, PublicKey } from 'bitcore-lib';
 
 @Component({
   selector: 'view-core',
@@ -105,7 +105,8 @@ export class CoreView {
 
   private async showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
-    const confirmDialog = this.confirmDialogCtrl.create(`You've got ${ amount } Merit!`, 'Would you like to accept this transaction?', [
+    const message = receipt.senderName.length > 0 ? `@${ receipt.senderName } sent you ${ amount } Merit!` : `You've got ${ amount } Merit!`;
+    const confirmDialog = this.confirmDialogCtrl.create(message, 'Would you like to accept this transaction?', [
       {
         text: 'Yes',
         value: 'yes',
@@ -128,17 +129,17 @@ export class CoreView {
     });
   }
 
-  private async showCancelEasyReceivePrompt(receipt: EasyReceipt, data) {
+  private async showCancelEasyReceivePrompt(receipt: EasyReceipt, data: any) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
 
-    const confirmDialog = this.confirmDialogCtrl.create(`Cancel GlobalSend with ${ amount } Merit?`, `Would you like to cancel this transaction?`, [
+    const confirmDialog = this.confirmDialogCtrl.create(`Cancel GlobalSend with ${ amount } Merit?`, `You clicked on a GlobalSend link that you created.  Would you like to cancel it?`, [
       {
         text: 'Cancel GlobalSend',
         value: 'yes',
         class: 'primary'
       },
       {
-        text: "Don't Cancel",
+        text: 'Don\'t Cancel',
         value: 'no'
       }
     ]);
@@ -146,24 +147,24 @@ export class CoreView {
     confirmDialog.onDidDismiss((val: string) => {
       if (val === 'yes') {
         // accepted
-        this.cancelEasyReceipt(receipt, data);
+        this.cancelEasyReceipt(receipt);
+      } else {
+        this.rejectEasyReceipt(receipt, data);
       }
     });
   }
 
-  private async cancelEasyReceipt(receipt: EasyReceipt, data: any): Promise<any> {
+  private async cancelEasyReceipt(receipt: EasyReceipt): Promise<any> {
     try {
-      const wallets = await this.profileService.getWallets();
-      let wallet = wallets[0];
+      const wallet = (await this.profileService.getWallets())[0];
       if (!wallet) throw 'no wallet';
 
-      const password = "";
-      const walletPassword = "";
+      const password = '';
+      const walletPassword = '';
 
-      const address = wallet.getRootAddress();
       const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, password, walletPassword);
 
-      this.logger.info('accepted easy send', acceptanceTx);
+      this.logger.info('Accepted easy send', acceptanceTx);
       this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
         skipShareCode: true,
         skipRewards: true,
@@ -243,7 +244,7 @@ export class CoreView {
     if (txs.some(tx => (tx.confirmations === undefined))) {
       this.logger.warn('Got GlobalSend with unknown depth. It might be expired!');
       return isSender ?
-        this.showCancelEasyReceivePrompt(receipt, data):
+        this.showCancelEasyReceivePrompt(receipt, data) :
         this.showConfirmEasyReceivePrompt(receipt, data);
     }
 
@@ -255,7 +256,7 @@ export class CoreView {
     }
 
     return isSender ?
-      this.showCancelEasyReceivePrompt(receipt, data):
+      this.showCancelEasyReceivePrompt(receipt, data) :
       this.showConfirmEasyReceivePrompt(receipt, data);
   }
 

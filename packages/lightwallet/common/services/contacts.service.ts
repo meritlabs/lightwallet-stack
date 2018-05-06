@@ -66,6 +66,7 @@ export class ContactsService {
       addressBook[address] = contact;
     }
 
+    console.log(addressBook, 'addressBook');
     await this.persistenceService.setAddressbook(ENV.network, addressBook);
     return existingContact || contact;
   }
@@ -94,7 +95,7 @@ export class ContactsService {
   }
 
   async getAllMeritContacts(deviceContacts: Contact[] = []): Promise<MeritContact[]> {
-    const localContacts: IAddressBook = this.addressBook || {};
+    const localContacts: IAddressBook = await this.getAddressbook();
 
     const contacts: MeritContact[] = deviceContacts
       .filter((contact: Contact) => !_.isEmpty(contact.displayName) && !_.isEmpty(contact.phoneNumbers) || !_.isEmpty(contact.emails))
@@ -137,6 +138,10 @@ export class ContactsService {
     await this.persistenceService.setAddressbook(network, this.addressBook);
     return this.addressBook;
   };
+
+  deleteAddressBook() {
+    return this.persistenceService.setAddressbook(ENV.network, {});
+  }
 
   async getAddressbook(network: string = ENV.network): Promise<IAddressBook> {
     const addressBook = await this.persistenceService.getAddressbook(network);

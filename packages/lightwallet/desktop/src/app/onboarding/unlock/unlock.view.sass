@@ -1,4 +1,15 @@
 @import "~styles/v1/common/import-sass"
+.content_checkbox_checkmark
+  position: absolute
+  top: 0
+  left: 0
+  height: 25px
+  width: 25px
+  background-color: #eee
+  &:after 
+    content: ""
+    position: absolute
+    display: none
 .unlock
   width: 100vw
   min-height: 100vh
@@ -66,9 +77,59 @@
       +font(400, 14px, 24px, $dark)
       strong
         font-weight: 600
+      li
+        list-style-type: circle
+        font-size: 1.25em
     &_checkbox
-      padding: 20px 0 30px
+      padding: 30px 0 30px
       strong
         font-size: 15px
         position: relative
         top: -2px
+      &_wrap
+        strong
+          font-size: 1.3em
+        display: block
+        position: relative
+        padding-left: 35px
+        margin-bottom: 12px
+        cursor: pointer
+        font-size: 22px
+        -webkit-user-select: none
+        -moz-user-select: none
+        -ms-user-select: none
+        user-select: none
+        input
+          position: absolute
+          z-index: 2
+          width: 100%
+          height: 30px
+          cursor: pointer
+          opacity: 0
+          &:hover ~ .content_checkbox_checkmark
+            background-color: #ccc
+          &:checked ~ .content_checkbox_checkmark
+            background: $blue
+            &:after
+              display: block
+        .content_checkbox_checkmark
+          position: absolute
+          top: 0
+          left: 0
+          height: 25px
+          width: 25px
+          background-color: #eee
+          &:after
+            left: 9px
+            top: 5px
+            width: 5px
+            height: 10px
+            border: solid white
+            border-width: 0 3px 3px 0
+            -webkit-transform: rotate(45deg)
+            -ms-transform: rotate(45deg)
+            transform: rotate(45deg)
+    &_nextbutton
+      text-align: center
+
+    

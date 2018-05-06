@@ -43,11 +43,11 @@
         </h2>
     </ion-item>
 
-    <ion-item text-wrap>
+    <ion-item text-wrap [clip]="mnemonic" (click)="markCopied()">
         <ion-avatar item-start img-icon>
             <img src="assets/img/icons/masterkey.svg">
         </ion-avatar>
-        <ion-label>
+        <ion-label >
           <p>Master key phrase</p>
           <h2>{{vaultData.masterKey.phrase}}</h2>
         </ion-label>

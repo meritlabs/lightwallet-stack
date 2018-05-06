@@ -44,7 +44,7 @@ export class SendAmountView {
   public feeLoading: boolean;
 
   public amount = { micros: 0, mrt: 0, fiat: 0 };
-  public formData = { amount: '', password: '', confirmPassword: '', nbBlocks: 1008, validTill: '' };
+  public formData = { amount: '', password: '', confirmPassword: '', nbBlocks: 10080, validTill: '' };
 
   public readonly CURRENCY_TYPE_MRT = 'mrt';
   public readonly CURRENCY_TYPE_FIAT = 'fiat';
@@ -64,6 +64,7 @@ export class SendAmountView {
   public feeTogglerEnabled: boolean = true;
   private referralsToSign: Array<any>;
 
+  private walletPassword: string;
 
   private allowUnconfirmed: boolean = true;
 
@@ -129,13 +130,8 @@ export class SendAmountView {
 
       this.selectedWallet = this.wallets[0];
 
-      this.wallets.some((wallet) => {
-        let amount = this.navParams.get('amount') || 0;
-        if (wallet.balance.spendableAmount > amount) {
-          this.selectedWallet = wallet;
-          return true;
-        }
-      });
+      const passedAmount = this.navParams.get('amount') || 0;
+      this.selectedWallet = this.wallets.find(wallet => wallet.balance.spendableAmount > passedAmount);
     }
   }
 
@@ -145,17 +141,16 @@ export class SendAmountView {
         selectedWallet: this.selectedWallet,
         availableWallets: this.wallets
       }, MERIT_MODAL_OPTS);
-    modal.present();
+
     modal.onDidDismiss(async (wallet) => {
       if (wallet) {
         this.selectedWallet = wallet;
-        if (wallet.balance.spendableAmount < this.amount.micros) {
-          this.formData.amount = this.rateService.microsToMrt(wallet.balance.spendableAmount).toString();
-          this.updateAmount();
-        }
+        this.walletPassword = '';
+        this.updateTxData();
       }
-      this.updateTxData();
     });
+
+    modal.present();
   }
 
 
@@ -275,7 +270,8 @@ export class SendAmountView {
   public async toConfirm() {
 
     if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
-      return this.toastCtrl.error('Passwords do not match');
+      this.feeCalcError = 'Passwords do not match';
+      return this.txData.txp = null;
     }
 
     let loadingSpinner = this.loadingCtrl.create({
@@ -303,7 +299,8 @@ export class SendAmountView {
     });
   }
 
-  public updateTxData() {
+  public async updateTxData() {
+
     this.feeLoading = true;
     this.feeCalcError = null;
     this.feePercent = null;
@@ -343,12 +340,26 @@ export class SendAmountView {
 
   private async createTxp() {
 
+    if (this.walletService.isEncrypted(this.selectedWallet) && this.sendMethod.type == SendMethodType.Easy ) {
+      if (this.walletPassword) {
+        this.walletService.decrypt(this.selectedWallet, this.walletPassword);
+      } else {
+        try {
+          await this.getPassword();
+        } catch (e) {
+          this.feeCalcError = 'Password required for encrypted wallet';
+          return this.txData.txp = null;
+        }
+      }
+    }
+
     if (this.amount.micros == this.selectedWallet.balance.spendableAmount) this.feeIncluded = true;
 
     try {
 
       if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
-        throw new Error('Passwords does not match');
+        this.feeCalcError = 'Passwords do not match';
+        return this.txData.txp = null;
       }
 
       if (this.sendMethod.type == SendMethodType.Easy) {
@@ -374,7 +385,54 @@ export class SendAmountView {
       return this.toastCtrl.error(err.message || 'Unknown error');
     } finally {
       this.feeLoading = false;
+      if (this.walletPassword) {
+        this.walletService.encrypt(this.selectedWallet, this.walletPassword);
+      }
     }
+
+  }
+
+  private getPassword(highlightInvalid = false) {
+    return new Promise((resolve, reject) => {
+      this.alertCtrl
+        .create({
+          title: 'Enter spending password',
+          cssClass: highlightInvalid ? 'invalid-input-prompt' : '',
+          inputs: [
+            {
+              name: 'password',
+              placeholder: 'Password',
+              type: 'password',
+            },
+          ],
+          buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
+                reject();
+              },
+            },
+            {
+              text: 'Ok',
+              handler: data => {
+                if (!data.password) {
+                  this.getPassword(true);
+                } else {
+                  try {
+                    this.walletService.decrypt(this.txData.wallet, data.password);
+                    this.walletPassword = data.password;
+                    resolve();
+                  } catch (e) {
+                    this.getPassword(true);
+                  }
+                }
+              },
+            },
+          ],
+        })
+        .present();
+    });
 
   }
 

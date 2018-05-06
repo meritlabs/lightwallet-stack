@@ -22,7 +22,7 @@
         {{ isCredit? '' : '-' }}{{tx.amount | toMRT }}
       </h2>
       <h3 class="detail-fiat" *ngIf="!tx.isCoinbase">
-        {{ isCredit? '' : '-' }}{{tx.alternativeAmountStr || altAmountStr | toFiat : tx.amount | async}}
+        {{ isCredit? '' : tx.alternativeAmountStr? '-' : '' }}{{tx.alternativeAmountStr | toFiat : tx.amount | async}}
       </h3>
       <p class="fee" *ngIf="!tx.isCoinbase">
         Fee {{ tx.fee | toMRT }}
@@ -40,11 +40,20 @@
         <h2>{{ tx.displayWallet.name }}</h2>
       </ion-label>
     </ion-item>
-    <button ion-item *ngIf="tx.easySendUrl" [clip]="tx.easySendUrl" (click)="onGlobalSendCopy()">
-      <ion-label>
-        <h2>Copy Global Send Link</h2>
-      </ion-label>
-    </button>
+    <ng-container *ngIf="tx.easySendUrl && tx.type === 'globalsend'">
+      <button ion-item *ngIf="tx.easySendUrl" [clip]="tx.easySendUrl" (click)="onGlobalSendCopy()">
+        <ion-icon item-start name="copy" color="primary" merit-icon></ion-icon>
+        <ion-label>
+          <h2>Copy Global Send Link</h2>
+        </ion-label>
+      </button>
+      <button ion-item *ngIf="!tx.easySend.cancelled" (click)="cancelGlobalSend()">
+        <ion-icon item-start name="md-close-circle" color="danger"></ion-icon>
+        <ion-label>
+          <h2>Cancel</h2>
+        </ion-label>
+      </button>
+    </ng-container>
     <ion-item class="confirmation-status" [class.confirmed]="isConfirmed" text-wrap no-lines>
       <ion-avatar img-icon item-start>
         <img [src]="'assets/img/icons/' + (isConfirmed? 'done' : 'timeout') + '.svg'" alt="">

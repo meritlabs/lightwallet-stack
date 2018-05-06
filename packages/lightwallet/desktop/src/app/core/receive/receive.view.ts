@@ -5,6 +5,7 @@ import { selectConfirmedWallets, selectWalletsLoading } from '@merit/common/redu
 import { AddressService } from '@merit/common/services/address.service';
 import { ConfigService } from '@merit/common/services/config.service';
 import { RateService } from '@merit/common/services/rate.service';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { Store } from '@ngrx/store';
 import 'rxjs/add/operator/take';
@@ -69,7 +70,8 @@ export class ReceiveView implements OnInit {
               private store: Store<IRootAppState>,
               private walletService: WalletService,
               private addressService: AddressService,
-              private rateService: RateService) {
+              private rateService: RateService,
+              private toastCtrl: ToastControllerService) {
     try {
       this.availableUnits = [
         this.configService.get().wallet.settings.unitCode.toUpperCase(),
@@ -94,6 +96,10 @@ export class ReceiveView implements OnInit {
       if (err.text)
         console.log('Could not initialize: ', err.text);
     }
+  }
+
+  onCopy() {
+    this.toastCtrl.success('Copied to clipboard!');
   }
 
   selectCurrency($event) {

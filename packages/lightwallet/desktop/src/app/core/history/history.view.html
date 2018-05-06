@@ -1,8 +1,4 @@
-<div class="history">
-  <div class="container--inner">
-    <div class="history__header title--primary">
-      <p>History</p>
-    </div>
-    <history-list [transactions]="transactions$ | async" [loading]="loading$ | async"></history-list>
-  </div>
-</div>
+<h2 class="main-header">
+  History
+</h2>
+<history-list [transactions]="transactions$ | async" [loading]="loading$ | async"></history-list>
