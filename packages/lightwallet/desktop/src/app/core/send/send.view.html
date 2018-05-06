@@ -11,7 +11,7 @@
       <!-- TODO(ibby) create success-message & info-message components... or just a global message component with different styles -->
       Transaction successfully sent
       <div *ngIf="easySendUrl">
-        Your global send URL is ready, now you can share it:
+        Your global send URL is ready, now you can share it: w
         <div class="easysend-url-container" [clip]="easySendUrl">
           <small class="click_to_copy">Click to copy</small>
           {{ easySendUrl }}
@@ -147,75 +147,73 @@
       <div class="sendMerit__totals">
         <div class="sendMerit__form__group">
           <div class="sendMerit__totals__table">
-            <loading-spinner-small *ngIf="receiptLoading; else hasData"></loading-spinner-small>
-            <ng-template #hasData>
-              <ng-container *ngIf="receipt$ | async as receipt">
-                <div class="sendMerit__totals__table--top">
-                  <label class="ui-label">
-                    Receipt
-                  </label>
-                  <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
-                    <div class="sendMerit__totals__table__column">
-                      Send to
-                    </div>
-                    <div class="sendMerit__totals__table__column" *ngIf="type.value == 'classic'">
-                      {{ (address.value | address) || '...' }}
-                    </div>
-                    <div class="sendMerit__totals__table__column" *ngIf="type.value == 'easy'">
-                      GlobalSend
-                    </div>
+            <loading-spinner-small *ngIf="receiptLoading"></loading-spinner-small>
+            <ng-container *ngIf="receipt$ | async as receipt">
+              <div class="sendMerit__totals__table--top">
+                <label class="ui-label">
+                  Receipt
+                </label>
+                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
+                  <div class="sendMerit__totals__table__column">
+                    Send to
                   </div>
-                  <div class="sendMerit__totals__table__row">
-                    <div class="sendMerit__totals__table__column">
-                      Amount
-                    </div>
-                    <div class="sendMerit__totals__table__column">
-                      {{ receipt.amount | toMRT }}
-                    </div>
+                  <div class="sendMerit__totals__table__column" *ngIf="type.value == 'classic'">
+                    {{ (address.value | address) || '...' }}
                   </div>
-                  <div class="sendMerit__totals__table__row">
-                    <div class="sendMerit__totals__table__column">
-                      Your fee
-                    </div>
-                    <div class="sendMerit__totals__table__column">
-                      {{formData.controls.feeIncluded.value ? (0 | toMRT) : (receipt.fee | toMRT) }}
-                    </div>
-                  </div>
-                  <div class="sendMerit__totals__table__row">
-                    <div class="sendMerit__totals__table__column">
-                      Recipient fee
-                    </div>
-                    <div class="sendMerit__totals__table__column">
-                      {{formData.controls.feeIncluded.value ? (receipt.fee | toMRT) : (0 | toMRT) }}
-                    </div>
-                  </div>
-                  <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
-                    <div class="sendMerit__totals__table__column">
-                      Total
-                    </div>
-                    <div class="sendMerit__totals__table__column">
-                      {{ receipt.total | toMRT }}
-                    </div>
+                  <div class="sendMerit__totals__table__column" *ngIf="type.value == 'easy'">
+                    GlobalSend
                   </div>
                 </div>
-                <div class="sendMerit__totals__table--bottom">
-                  <div class="sendMerit__totals__table__row sendMerit__totals__table__row--divider">
+                <div class="sendMerit__totals__table__row">
+                  <div class="sendMerit__totals__table__column">
+                    Amount
                   </div>
-                  <div class="sendMerit__totals__table__row">
-                    <div class="sendMerit__totals__table__column">In Wallet</div>
-                    <div class="sendMerit__totals__table__column">
-                      {{ receipt.inWallet | toMRT }}
-                    </div>
-                  </div>
-                  <div class="sendMerit__totals__table__row">
-                    <div class="sendMerit__totals__table__column">Total Remaining</div>
-                    <div class="sendMerit__totals__table__column">
-                      {{ receipt.remaining | toMRT }}
-                    </div>
+                  <div class="sendMerit__totals__table__column">
+                    {{ receipt.amount | toMRT }}
                   </div>
                 </div>
-              </ng-container>
-            </ng-template>
+                <div class="sendMerit__totals__table__row">
+                  <div class="sendMerit__totals__table__column">
+                    Your fee
+                  </div>
+                  <div class="sendMerit__totals__table__column">
+                    {{formData.controls.feeIncluded.value ? (0 | toMRT) : (receipt.fee | toMRT) }}
+                  </div>
+                </div>
+                <div class="sendMerit__totals__table__row">
+                  <div class="sendMerit__totals__table__column">
+                    Recipient fee
+                  </div>
+                  <div class="sendMerit__totals__table__column">
+                    {{formData.controls.feeIncluded.value ? (receipt.fee | toMRT) : (0 | toMRT) }}
+                  </div>
+                </div>
+                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
+                  <div class="sendMerit__totals__table__column">
+                    Total
+                  </div>
+                  <div class="sendMerit__totals__table__column">
+                    {{ receipt.total | toMRT }}
+                  </div>
+                </div>
+              </div>
+              <div class="sendMerit__totals__table--bottom">
+                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--divider">
+                </div>
+                <div class="sendMerit__totals__table__row">
+                  <div class="sendMerit__totals__table__column">In Wallet</div>
+                  <div class="sendMerit__totals__table__column">
+                    {{ receipt.inWallet | toMRT }}
+                  </div>
+                </div>
+                <div class="sendMerit__totals__table__row">
+                  <div class="sendMerit__totals__table__column">Total Remaining</div>
+                  <div class="sendMerit__totals__table__column">
+                    {{ receipt.remaining | toMRT }}
+                  </div>
+                </div>
+              </div>
+            </ng-container>
           </div>
         </div>
       </div>

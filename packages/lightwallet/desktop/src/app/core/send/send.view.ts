@@ -146,7 +146,6 @@ export class SendView implements OnInit {
   receiptLoading: boolean;
 
   receipt$: Observable<Receipt> = this.txData$.pipe(
-    tap(() => (this.receiptLoading = true)),
     withLatestFrom(this.formData.valueChanges),
     map(([txData, formData]) => {
       const { feeIncluded, wallet } = formData;
@@ -174,7 +173,9 @@ export class SendView implements OnInit {
 
       return receipt;
     }),
-    tap(() => (this.receiptLoading = false)),
+    tap(() => {
+      this.receiptLoading = false;
+    }),
     startWith({} as Receipt)
   );
 
@@ -246,8 +247,11 @@ export class SendView implements OnInit {
         tap((success: boolean) => {
           this.sending = false;
           this.success = success;
+          console.log(success);
 
           if (success) {
+            console.log(this.receipt$);
+
             this.resetFormData();
           }
         })
@@ -307,6 +311,8 @@ export class SendView implements OnInit {
     let { amountMrt, wallet, type, feeIncluded, password, address } = formValue;
 
     let micros = this.rateService.mrtToMicro(amountMrt);
+
+    this.receiptLoading = true;
 
     if (micros == wallet.balance.spendableAmount) {
       feeIncluded = true;
