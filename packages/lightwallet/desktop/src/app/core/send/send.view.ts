@@ -27,9 +27,9 @@ import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import {
   catchError,
-  debounceTime,
+  debounceTime, distinctUntilChanged,
   filter,
-  map,
+  map, share,
   skipWhile,
   startWith,
   switchMap,
@@ -116,23 +116,27 @@ export class SendView implements OnInit {
   success: boolean;
   showTour: boolean = !('showTour' in localStorage && localStorage.getItem('showTour') === 'false');
 
-  txData$: Observable<TxData> = this.formData.valueChanges.pipe(
+  txData$: Observable<TxData> = (this.formData.valueChanges as any).pipe(
     tap(() => {
       this.error = null;
       this.canSend = false;
     }),
+    filter(() => this.formData.dirty),
+    distinctUntilChanged(),
+    debounceTime(250),
     switchMap((formData) => {
       if (this.formData.pending) {
-        // wait till form is valid
+        // wait till form is validated
         return this.formData.statusChanges.pipe(
           skipWhile(() => this.formData.pending),
+          take(1),
           map(() => formData)
         );
       }
       return of(formData);
     }),
     filter(() => this.formData.valid),
-    debounceTime(150),
+    tap((formData) => console.log('Creating TX', formData)),
     switchMap((formData) =>
       fromPromise(this.createTx(formData))
         .pipe(
@@ -145,7 +149,8 @@ export class SendView implements OnInit {
     ),
     tap((txData: TxData) => {
       if (txData && txData.txp) this.canSend = true;
-    })
+    }),
+    share()
   );
 
   receiptLoading: boolean;
@@ -246,6 +251,7 @@ export class SendView implements OnInit {
         }),
         switchMap(([_, txData]) => fromPromise(this.send(txData))),
         catchError((err => {
+          console.trace(err);
           this.error = err.message;
           return of(false);
         })),
@@ -345,43 +351,38 @@ export class SendView implements OnInit {
   }
 
   async send(txData: TxData) {
-    try {
-      if (txData.easyFee) txData.txp.amount += txData.easyFee;
+    if (txData.easyFee) txData.txp.amount += txData.easyFee;
 
-      const wallet = this.wallet.value;
+    const wallet = this.wallet.value;
 
-      txData.txp = await this.sendService.finalizeTxp(wallet.client, txData.txp, this.feeIncluded.value);
+    txData.txp = await this.sendService.finalizeTxp(wallet.client, txData.txp, Boolean(this.feeIncluded.value));
 
-      if (txData.referralsToSign) {
-        for (let referral of txData.referralsToSign) {
-          await wallet.client.sendReferral(referral);
-          await wallet.client.sendInvite(referral.address);
-        }
+    if (txData.referralsToSign) {
+      for (let referral of txData.referralsToSign) {
+        await wallet.client.sendReferral(referral);
+        await wallet.client.sendInvite(referral.address);
       }
-
-      if (!wallet.client.canSign() && !wallet.client.isPrivKeyExternal()) {
-        this.logger.info('No signing proposal: No private key');
-        await this.walletService.onlyPublish(wallet.client, txData.txp);
-      } else {
-        await this.walletService.publishAndSign(wallet.client, txData.txp);
-      }
-
-      if (this.type.value === 'easy') {
-        this.easySendUrl = txData.easySendUrl;
-        await this.persistenceService.addEasySend(clone(txData.easySend));
-      }
-
-      this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
-        skipRewards: true,
-        skipAlias: true,
-        skipShareCode: true
-      }));
-
-      return true;
-    } catch (err) {
-      console.log('Error sending', err);
-      throw err;
     }
+
+    if (!wallet.client.canSign() && !wallet.client.isPrivKeyExternal()) {
+      this.logger.info('No signing proposal: No private key');
+      await this.walletService.onlyPublish(wallet.client, txData.txp);
+    } else {
+      await this.walletService.publishAndSign(wallet.client, txData.txp);
+    }
+
+    if (this.type.value === 'easy') {
+      this.easySendUrl = txData.easySendUrl;
+      await this.persistenceService.addEasySend(clone(txData.easySend));
+    }
+
+    this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
+      skipRewards: true,
+      skipAlias: true,
+      skipShareCode: true
+    }));
+
+    return true;
   }
 
   hideTour() {
