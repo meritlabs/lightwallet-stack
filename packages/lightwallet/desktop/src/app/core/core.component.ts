@@ -1,12 +1,14 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { ENV } from '@app/env';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
+import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
 import { RefreshOneWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
@@ -22,7 +24,7 @@ import { Address, PublicKey } from 'bitcore-lib';
   styleUrls: ['./core.component.sass'],
   encapsulation: ViewEncapsulation.None
 })
-export class CoreView {
+export class CoreView implements OnInit, AfterViewInit {
 
   topMenuItems: any[] = [
     {
@@ -76,14 +78,15 @@ export class CoreView {
               private passwordPromptCtrl: PasswordPromptController,
               private toastCtrl: ToastControllerService,
               private profileService: ProfileService,
-              private store: Store<IRootAppState>) {}
+              private store: Store<IRootAppState>,
+              private persistenceService2: PersistenceService2) {}
 
   ngOnInit() {
     this.processPendingEasyReceipts();
     this.pushNotificationsService.init();
     this.easyReceiveService.cancelEasySendObservable$.subscribe(
       receipt => {
-        this.processEasyReceipt(receipt, '', false);
+        this.processEasyReceipt(receipt, null, false, null, true);
       });
   }
 
@@ -128,7 +131,7 @@ export class CoreView {
     });
   }
 
-  private async showCancelEasyReceivePrompt(receipt: EasyReceipt, data: any, wallet?: MeritWalletClient) {
+  private async showCancelEasyReceivePrompt(receipt: EasyReceipt, data: any, wallet?: MeritWalletClient, cancelling?: boolean) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
 
     const confirmDialog = this.confirmDialogCtrl.create(`Cancel GlobalSend with ${ amount } Merit?`, `You clicked on a GlobalSend link that you created.  Would you like to cancel it?`, [
@@ -147,7 +150,9 @@ export class CoreView {
       if (val === 'yes') {
         // accepted
         this.cancelEasyReceipt(receipt, wallet);
-      } else {
+      } else if (val === 'no' && !cancelling) {
+        // If value == 'no' && cancelling is false, that means that the user tried claiming his own GlobalSend
+        // We shouldn't reject it on "no" since that will be the same thing as accepting it
         this.rejectEasyReceipt(receipt, data);
       }
     });
@@ -159,10 +164,7 @@ export class CoreView {
       wallet = wallet || (await this.profileService.getWallets())[0];
       if (!wallet) throw 'no wallet';
 
-      const password = '';
-      const walletPassword = '';
-
-      const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, password, walletPassword);
+      const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
 
       this.logger.info('Accepted easy send', acceptanceTx);
       this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
@@ -170,7 +172,6 @@ export class CoreView {
         skipRewards: true,
         skipAlias: true
       }));
-
     } catch (err) {
       console.log(err);
       this.toastCtrl.error('There was an error cancelling your GlobalSend.');
@@ -207,9 +208,16 @@ export class CoreView {
   }
 
   /**
-   * gets easyReceipt data from the blockchain and routes the ui accordingly
+   * Gets easyReceipt data from the blockchain and routes the ui accordingly
+   * @param {EasyReceipt} receipt
+   * @param {string} password
+   * @param {boolean} processAll
+   * @param {MeritWalletClient} wallet
+   * @param {boolean} cancelling Set to true if the intention is to cancel the outgoing transaction
+   * @returns {Promise<void>}
    */
-  async processEasyReceipt(receipt: EasyReceipt, password: string = '', processAll: boolean = true, wallet?: MeritWalletClient): Promise<void> {
+  async processEasyReceipt(receipt: EasyReceipt, password?: string, processAll: boolean = true, wallet?: MeritWalletClient, cancelling?: boolean): Promise<void> {
+    password = password || '';
     const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, password);
     let txs = data.txs;
 
@@ -239,6 +247,11 @@ export class CoreView {
     if (txs.some(tx => tx.spent)) {
       this.logger.debug('Got a spent GlobalSend. Removing from pending receipts.');
       await this.easyReceiveService.deletePendingReceipt(receipt);
+
+      if (receipt.scriptAddress && await this.persistenceService2.cancelEasySend(receipt.scriptAddress)) {
+        this.store.dispatch(new RefreshOneWalletTransactions(wallet.id));
+      }
+
       await this.showSpentEasyReceiptAlert();
 
       return processAll ? await this.processPendingEasyReceipts() : null;
@@ -247,7 +260,7 @@ export class CoreView {
     if (txs.some(tx => (tx.confirmations === undefined))) {
       this.logger.warn('Got GlobalSend with unknown depth. It might be expired!');
       return isSender ?
-        this.showCancelEasyReceivePrompt(receipt, data, wallet) :
+        this.showCancelEasyReceivePrompt(receipt, data, wallet, cancelling) :
         this.showConfirmEasyReceivePrompt(receipt, data, wallet);
     }
 
@@ -259,7 +272,7 @@ export class CoreView {
     }
 
     return isSender ?
-      this.showCancelEasyReceivePrompt(receipt, data, wallet) :
+      this.showCancelEasyReceivePrompt(receipt, data, wallet, cancelling) :
       this.showConfirmEasyReceivePrompt(receipt, data, wallet);
   }
 

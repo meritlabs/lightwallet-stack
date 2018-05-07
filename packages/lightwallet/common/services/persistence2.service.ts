@@ -62,17 +62,21 @@ export class PersistenceService2 {
     return this.setEasySends(easySends);
   }
 
-  async cancelEasySend(address: string) {
+  async cancelEasySend(scriptAddress: string) {
     const easySends = await this.getEasySends();
 
     const idx = easySends.findIndex(tx => {
-      return tx.scriptAddress == address;
+      return tx.scriptAddress == scriptAddress;
     });
 
     if (idx != -1) {
       easySends[idx].cancelled = true;
       console.log("FOUND:", easySends[idx]);
-      return this.setEasySends(easySends);
+      await this.setEasySends(easySends);
+      return true;
+    } else {
+      console.log('Couldnt find EasySend to cancel', scriptAddress);
+      return false;
     }
   }
 
