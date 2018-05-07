@@ -69,7 +69,7 @@
             <img src="assets/img/icons/unlock.svg">
           </ion-avatar>
           <ion-label stacked>Add Password (Optional)</ion-label>
-          <ion-input type="password" [(ngModel)]="formData.password" placeholder="Type it here"
+          <ion-input type="text" class="password-input" [(ngModel)]="formData.password" placeholder="Type it here"
                      autocomplete="new-password" autocorrect="off" autocapitalize="off"
                      (keyup)="passwordKeyup($event.keyCode)"></ion-input>
         </ion-item>
@@ -79,7 +79,7 @@
             <img src="assets/img/icons/unlock.svg">
           </ion-avatar>
           <ion-label stacked>Confirm Password</ion-label>
-          <ion-input type="password" [(ngModel)]="formData.confirmPassword" placeholder="Repeat password"
+          <ion-input type="text" class="password-input"  [(ngModel)]="formData.confirmPassword" placeholder="Repeat password"
                      (keypress)="confirmPasswordKeypress($event.keyCode)" #confirmInput
                      autocomplete="new-password" autocorrect="off" autocapitalize="off"></ion-input>
         </ion-item>
