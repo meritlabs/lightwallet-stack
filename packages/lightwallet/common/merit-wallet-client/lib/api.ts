@@ -1742,10 +1742,10 @@ export class API {
 
     this.balance = status.balance || {};
     this.invitesBalance = status.invitesBalance || {};
-    console.log(this.invitesBalance, 'INVITES BALANCE');
     this.confirmed = (status.invitesBalance && status.invitesBalance.totalAmount > 0);
     this.availableInvites = Math.max(0, status.invitesBalance.availableConfirmedAmount - 1);
-    this.pendingInvites = Math.max(0, status.invitesBalance.availableAmount - status.invitesBalance.availableConfirmedAmount); 
+    this.pendingInvites = status.invitesBalance.availableAmount - status.invitesBalance.availableConfirmedAmount;
+    if (!this.confirmed) this.pendingInvites =  Math.max(0,  this.pendingInvites - 1);
     //todo check if we use 'spendunconfirmed' options
     this.balance.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
 
