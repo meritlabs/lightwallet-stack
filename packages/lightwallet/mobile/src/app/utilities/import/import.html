@@ -26,7 +26,7 @@
       <button (click)="openScanner()" ion-button icon-only item-end clear class="qr-code-button">
         <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
       </button>
-      <ion-textarea [(ngModel)]="formData.words" autocapitalize="off" autocomplete="off" autocorrect="off"
+      <ion-textarea [(ngModel)]="formData.words" autocapitalize="off" autocomplete="new-password" autocorrect="off"
                     spellcheck="false" placeholder="Type it here"></ion-textarea>
     </ion-item>
 
@@ -37,7 +37,7 @@
       <ion-label stacked>Phrase Password (optional)</ion-label>
       <ion-input [(ngModel)]="formData.phrasePassword" placeholder="Type it here"
                  [type]="showPassword? 'text' : 'password'" autocapitalize="off"
-                 autocomplete="off" autocorrect="off" spellcheck="false"></ion-input>
+                 autocomplete="new-password" autocorrect="off" spellcheck="false"></ion-input>
       <button ion-button item-end (click)="showPassword = !showPassword" clear>{{ showPassword ? 'Hide' : 'Show' }}
       </button>
     </ion-item>
@@ -98,7 +98,7 @@
           <img src="assets/img/icons/lock.svg" alt="">
         </ion-avatar>
         <ion-label stacked>Password</ion-label>
-        <ion-input [(ngModel)]="formData.filePassword" [type]="showPassword2? 'text' : 'password'" autocomplete="off"
+        <ion-input [(ngModel)]="formData.filePassword" [type]="showPassword2? 'text' : 'password'" autocomplete="new-password"
                    placeholder="File password"></ion-input>
         <button ion-button item-end (click)="showPassword2 = !showPassword2" clear>{{ showPassword2 ? 'Hide' : 'Show' }}
         </button>
