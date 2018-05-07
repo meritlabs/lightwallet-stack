@@ -397,7 +397,7 @@ export class WalletService {
     if (_.isEmpty(txp) || _.isEmpty(wallet))
       throw new Error('MISSING_PARAMETER');
     try {
-      return wallet.publishTxProposal({ txp })
+      return wallet.publishTxProposal({ txp });
     } catch (err) {
       throw new Error('error publishing tx: ' + err);
     }

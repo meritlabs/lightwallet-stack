@@ -1,24 +1,15 @@
 import { Injectable } from '@angular/core';
-import { MWCService } from '@merit/common/services/mwc.service';
-import { FeeService } from '@merit/common/services/fee.service';
-import { RateService } from '@merit/common/services/rate.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { ENV } from '@app/env';
+import { FeeService } from '@merit/common/services/fee.service';
 
 @Injectable()
 export class SendService {
-  constructor(
-    private feeService: FeeService,
-    private mwcService: MWCService,
-    private rateService: RateService
-  ) {
-  }
+  constructor(private feeService: FeeService) {}
 
   async prepareTxp(wallet: MeritWalletClient, amount: number, toAddress: string) {
-
     if (amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big');
 
-    let txpData:any = {
+    let txpData: any = {
       outputs: [{ amount, toAddress }],
       inputs: [], // will be defined on MWS side
       feeLevel: this.feeService.getCurrentFeeLevel(),
@@ -37,8 +28,7 @@ export class SendService {
   }
 
   finalizeTxp(wallet: MeritWalletClient, preparedTxp: any, feeIncluded: boolean = true) {
-
-    let txp:any = {
+    let txp: any = {
       outputs: preparedTxp.outputs,
       inputs: preparedTxp.inputs,
       fee: preparedTxp.fee,
@@ -51,11 +41,8 @@ export class SendService {
       txp.outputs[0].amount = preparedTxp.amount;
     } else {
       txp.outputs[0].amount = preparedTxp.amount - preparedTxp.fee;
-
     }
 
     return wallet.createTxProposal(txp);
-
   }
-
 }

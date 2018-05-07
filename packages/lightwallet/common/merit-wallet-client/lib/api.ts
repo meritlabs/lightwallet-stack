@@ -221,12 +221,14 @@ export class API {
   _processTxNotes(notes): void {
     if (!notes) return;
     let encryptingKey = this.credentials.sharedEncryptingKey;
-    _.each([].concat(notes), (note) => {
+    notes.forEach((note) => {
       note.encryptedBody = note.body;
       note.body = this._decryptMessage(note.body, encryptingKey);
       note.encryptedEditedByName = note.editedByName;
       note.editedByName = this._decryptMessage(note.editedByName, encryptingKey);
     });
+
+    return notes;
   }
 
   /**
@@ -237,34 +239,39 @@ export class API {
    * @param {Array} txps
    * @param {String} encryptingKey
    */
-  _processTxps(txps): Promise<void> {
-    return new Promise((resolve, reject) => {
+  async _processTxps(txps) {
+    if (!txps) return;
 
-      if (!txps) return resolve();
+    txps = [].concat(txps);
 
-      let encryptingKey = this.credentials.sharedEncryptingKey;
-      _.each([].concat(txps), (txp) => {
-        txp.encryptedMessage = txp.message;
-        txp.message = this._decryptMessage(txp.message, encryptingKey) || null;
-        txp.creatorName = this._decryptMessage(txp.creatorName, encryptingKey);
+    let encryptingKey = this.credentials.sharedEncryptingKey;
 
-        _.each(txp.actions, (action) => {
-          action.copayerName = this._decryptMessage(action.copayerName, encryptingKey);
-          action.comment = this._decryptMessage(action.comment, encryptingKey);
-          // TODO get copayerName from Credentials -> copayerId to copayerName
-          // action.copayerName = null;
-        });
-        _.each(txp.outputs, (output) => {
-          output.encryptedMessage = output.message;
-          output.message = this._decryptMessage(output.message, encryptingKey) || null;
-        });
-        txp.hasUnconfirmedInputs = _.some(txp.inputs, (input: any) => {
-          return input.confirmations == 0;
-        });
-        this._processTxNotes(txp.note);
+    txps.forEach(txp => {
+      txp.actions = txp.actions || [];
+      txp.outputs = txp.outputs || [];
+
+      txp.encryptedMessage = txp.message;
+      txp.message = this._decryptMessage(txp.message, encryptingKey) || null;
+      txp.creatorName = this._decryptMessage(txp.creatorName, encryptingKey);
+
+      txp.actions.forEach(action => {
+        action.copayerName = this._decryptMessage(action.copayerName, encryptingKey);
+        action.comment = this._decryptMessage(action.comment, encryptingKey);
+        // TODO get copayerName from Credentials -> copayerId to copayerName
+        // action.copayerName = null;
       });
-      return resolve();
+
+      txp.outputs.forEach(output => {
+        output.encryptedMessage = output.message;
+        output.message = this._decryptMessage(output.message, encryptingKey) || null;
+      });
+
+      txp.hasUnconfirmedInputs = txp.inputs.some(input => input.confirmations == 0);
+
+      this._processTxNotes(txp.note);
     });
+
+    return txps;
   }
 
   /**
@@ -1087,7 +1094,8 @@ export class API {
    * @param {Object} args
    * @param {Callback} cb
    */
-  _doPostRequest(url: string, args: any): Promise<any> {
+  _doPostRequest(url: string, args?: any): Promise<any> {
+    args = args || {};
     return this._doRequest('post', url, args, false)
       .then(res => res.body);
   };
@@ -1629,112 +1637,111 @@ export class API {
    * @returns {Promise}
    */
 
-  joinWallet(secret: string, copayerName: string, opts: any = {}): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (!this._checkKeyDerivation()) return reject(new Error('Cannot join wallet'));
+  async joinWallet(secret: string, copayerName: string, opts: any = {}): Promise<any> {
+    if (!this._checkKeyDerivation())
+      throw new Error('Cannot join wallet');
 
-      let secretData = this.parseSecret(secret);
-      if (!this.credentials) {
-        this.seedFromRandom({
-          network: secretData.network
-        });
-      }
-      this.credentials.addWalletPrivateKey(secretData.walletPrivKey.toString());
-      return this.doJoinWallet(secretData.walletId, secretData.walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, copayerName, {
-        dryRun: !!opts.dryRun
-      }).then((wallet) => {
-        if (!opts.dryRun) {
-          this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.parentAddress);
-        }
-        return resolve(wallet);
-      }).catch((ex) => {
-        return reject(ex);
+    let secretData = this.parseSecret(secret);
+
+    if (!this.credentials) {
+      this.seedFromRandom({
+        network: secretData.network
       });
+    }
+
+    this.credentials.addWalletPrivateKey(secretData.walletPrivKey.toString());
+
+    const wallet = await this.doJoinWallet(secretData.walletId, secretData.walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, copayerName, {
+      dryRun: !!opts.dryRun
     });
+
+    if (!opts.dryRun) {
+      this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.parentAddress);
+    }
+
+    return wallet;
   }
 
   /**
    * Recreates a wallet, given credentials (with wallet id)
    */
-  recreateWallet(): Promise<any> {
+  async recreateWallet(): Promise<any> {
     $.checkState(this.credentials);
     $.checkState(this.credentials.isComplete());
     $.checkState(this.credentials.walletPrivKey);
     //$.checkState(this.credentials.hasWalletInfo());
 
     // First: Try to get the wallet with current credentials
-    return this.getStatus({
+    await this.getStatus({
       includeExtendedInfo: true
-    }).then(() => {
-      let c = this.credentials;
-      let walletPrivKey = Bitcore.PrivateKey.fromString(c.walletPrivKey);
-      let walletId = c.walletId;
-      let supportBIP44AndP2PKH = c.derivationStrategy != Constants.DERIVATION_STRATEGIES.BIP45;
-      let encWalletName = Utils.encryptMessage(c.walletName || 'recovered wallet', c.sharedEncryptingKey);
-
-      let args = {
-        name: encWalletName,
-        m: c.m,
-        n: c.n,
-        pubKey: walletPrivKey.toPublicKey().toString(),
-        network: c.network,
-        id: walletId,
-        supportBIP44AndP2PKH: supportBIP44AndP2PKH,
-        beacon: c.beacon
-      };
-
-
-      return this._doPostRequest('/v1/wallets/', args).then((body) => {
-        if (!walletId) {
-          walletId = body.walletId;
-        }
-        return this.addAccess({});
-      }).then(() => {
-        return this.openWallet();
-      }).then(() => {
-        let i = 1;
-        return Promise.all(this.credentials.publicKeyRing.map((item: any) => {
-          let name = item.copayerName || ('copayer ' + i++);
-          return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
-            supportBIP44AndP2PKH: supportBIP44AndP2PKH
-          });
-        }));
-      });
     });
+
+    let c = this.credentials;
+    let walletPrivKey = Bitcore.PrivateKey.fromString(c.walletPrivKey);
+    let walletId = c.walletId;
+    let supportBIP44AndP2PKH = c.derivationStrategy != Constants.DERIVATION_STRATEGIES.BIP45;
+    let encWalletName = Utils.encryptMessage(c.walletName || 'recovered wallet', c.sharedEncryptingKey);
+
+    let args = {
+      name: encWalletName,
+      m: c.m,
+      n: c.n,
+      pubKey: walletPrivKey.toPublicKey().toString(),
+      network: c.network,
+      id: walletId,
+      supportBIP44AndP2PKH,
+      beacon: c.beacon
+    };
+
+    const body = await this._doPostRequest('/v1/wallets/', args);
+
+    if (!walletId) {
+      walletId = body.walletId;
+    }
+
+    await this.addAccess({});
+    await this.openWallet();
+
+    let i = 1;
+
+    return Promise.all(this.credentials.publicKeyRing.map((item: any) => {
+      let name = item.copayerName || ('copayer ' + i++);
+      return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
+        supportBIP44AndP2PKH
+      });
+    }));
   };
 
-  private _processWallet(wallet): Promise<any> {
-    return new Promise((resolve, reject) => {
+  private async _processWallet(wallet): Promise<any> {
+    let encryptingKey = this.credentials.sharedEncryptingKey;
 
-      let encryptingKey = this.credentials.sharedEncryptingKey;
+    let name = Utils.decryptMessage(wallet.name, encryptingKey);
+    if (name != wallet.name) {
+      wallet.encryptedName = wallet.name;
+    }
+    wallet.name = name;
 
-      let name = Utils.decryptMessage(wallet.name, encryptingKey);
-      if (name != wallet.name) {
-        wallet.encryptedName = wallet.name;
+    wallet.copayers.forEach(copayer => {
+      let name = Utils.decryptMessage(copayer.name, encryptingKey);
+      if (name != copayer.name) {
+        copayer.encryptedName = copayer.name;
       }
-      wallet.name = name;
-      _.each(wallet.copayers, function (copayer) {
-        let name = Utils.decryptMessage(copayer.name, encryptingKey);
-        if (name != copayer.name) {
-          copayer.encryptedName = copayer.name;
-        }
-        copayer.name = name;
-        _.each(copayer.requestPubKeys, function (access) {
-          if (!access.name) return;
+      copayer.name = name;
 
-          let name = Utils.decryptMessage(access.name, encryptingKey);
-          if (name != access.name) {
-            access.encryptedName = access.name;
-          }
-          access.name = name;
-        });
+      copayer.requestPubKeys.forEach(access => {
+        if (!access.name) return;
+
+        let name = Utils.decryptMessage(access.name, encryptingKey);
+        if (name != access.name) {
+          access.encryptedName = access.name;
+        }
+
+        access.name = name;
       });
-      //TODO: Is there a better way to be sure we've waited for any I/O?
-      return resolve();
     });
   };
 
-  private _processStatus = (status): Promise<any> => {
+  private async _processStatus(status) {
     this.id = status.wallet.id;
     this.network = status.wallet.network;
 
@@ -1745,56 +1752,50 @@ export class API {
     //todo check if we use 'spendunconfirmed' options
     this.balance.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
 
-    let processCustomData = (data): Promise<any> => {
-      return new Promise((resolve, reject) => {
+    const processCustomData = async (data) => {
+      let copayers = data.wallet.copayers;
+      if (!copayers) return;
 
-        let copayers = data.wallet.copayers;
-        if (!copayers) return resolve();
+      const me = copayers.find(copayer => copayer.id == this.credentials.copayerId);
 
-        let me: any = _.find(copayers, {
-          'id': this.credentials.copayerId
-        });
-        if (!me || !me.customData) return resolve();
+      if (!me || !me.customData) return;
 
-        let customData;
-        try {
-          customData = JSON.parse(Utils.decryptMessage(me.customData, this.credentials.personalEncryptingKey));
-        } catch (e) {
-          this.log.warn('Could not decrypt customData:', me.customData);
-        }
-        if (!customData) return resolve();
+      let customData;
 
+      try {
+        customData = JSON.parse(Utils.decryptMessage(me.customData, this.credentials.personalEncryptingKey));
+      } catch (e) {
+        this.log.warn('Could not decrypt customData:', me.customData);
+      }
 
-        // Update walletPrivateKey
-        if (!this.credentials.walletPrivKey && customData.walletPrivKey) {
-          this.credentials.addWalletPrivateKey(customData.walletPrivKey);
-        }
+      if (!customData) return;
 
-        // Add it to result
-        return resolve(data.customData = customData);
-      });
+      // Update walletPrivateKey
+      if (!this.credentials.walletPrivKey && customData.walletPrivKey) {
+        this.credentials.addWalletPrivateKey(customData.walletPrivKey);
+      }
+
+      // Add it to result
+      return data.customData = customData;
     };
 
-
-    let validateAddress = () => {
+    const validateAddress = async () => {
       if (!this.rootAlias) {
-        this.validateAddress(this.getRootAddress().toString()).then((addressInfo) => {
-          this.rootAlias = addressInfo.alias;
-        });
+        const { alias } = await this.validateAddress(this.getRootAddress().toString());
+        this.rootAlias = alias;
       }
     };
 
     // Resolve all our async calls here, then resolve this wrapping promise.
-    return Promise.all([
+    await Promise.all([
       processCustomData(status),
       this._processWallet(status.wallet),
       this._processTxps(status.pendingTxps),
       validateAddress()
-    ]).then(() => {
-      return Promise.resolve();
-    });
-  };
+    ]);
 
+    return status;
+  }
 
   /**
    * Get latest notifications
@@ -1827,29 +1828,27 @@ export class API {
    * @param {Boolean} opts.includeExtendedInfo (optional: query extended status)
    * @returns {Callback} cb - Returns error or an object with status information
    */
-  getStatus(opts: any = {}): Promise<any> {
+  async getStatus(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     let qs = [];
     qs.push('includeExtendedInfo=' + (opts.includeExtendedInfo ? '1' : '0'));
     qs.push('twoStep=' + (opts.twoStep ? '1' : '0'));
 
-    return this._doGetRequest('/v1/wallets/?' + qs.join('&')).then((result) => {
-      if (result.wallet.status == 'pending') {
-        let c = this.credentials;
-        result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
-      }
+    const result = await this._doGetRequest('/v1/wallets/?' + qs.join('&'));
 
-      return this._processStatus(result).then(() => {
-        return Promise.resolve(result);
-      });
-    });
+    if (result.wallet.status == 'pending') {
+      let c = this.credentials;
+      result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
+    }
+
+    return this._processStatus(result);
   };
 
   getANV(addr: any): Promise<any> {
     $.checkState(this.credentials);
 
-    let keys = [addr];
-    let network = this.credentials.network;
+    const keys = [addr];
+    const network = this.credentials.network;
 
     return this._doGetRequest('/v1/anv/?network=' + network + '&keys=' + keys.join(','));
   }
@@ -1857,7 +1856,7 @@ export class API {
   getCommunityInfo(addr: string) {
     $.checkState(this.credentials);
 
-    let keys = [addr],
+    const keys = [addr],
       network = this.credentials.network;
 
     return this._doGetRequest('/v1/communityinfo/?network=' + network + '&keys=' + keys.join(','));
@@ -1865,8 +1864,8 @@ export class API {
 
   getRewards(address: any): Promise<any> {
     $.checkState(this.credentials);
-    let addresses = [address];
-    let network = this.credentials.network;
+    const addresses = [address];
+    const network = this.credentials.network;
     return this._doGetRequest('/v1/rewards/?network=' + network + '&addresses=' + addresses.join(','));
   }
 
@@ -1909,8 +1908,6 @@ export class API {
     return PayPro.get({
       url: opts.payProUrl,
       http: this.payProHttp
-    }).then((paypro) => {
-      return Promise.resolve(paypro);
     });
   };
 
@@ -1971,29 +1968,30 @@ export class API {
    * @param {Array} opts.inputs - Optional. Inputs for this TX
    * @param {number} opts.fee - Optional. Use an fixed fee for this TX (only when opts.inputs is specified)
    * @param {Boolean} opts.noShuffleOutputs - Optional. If set, TX outputs won't be shuffled. Defaults to false
-   * @returns {Callback} - Return error or the transaction proposal
    */
-  createTxProposal(opts: any): Promise<any> {
+  async createTxProposal(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     $.checkState(this.credentials.sharedEncryptingKey);
     $.checkArgument(opts);
 
     let args = this._getCreateTxProposalArgs(opts);
-    return this._doPostRequest('/v1/txproposals/', args).then((txp) => {
-      if (!txp) {
-        return Promise.reject(new Error('Could not get transaction proposal from server.'));
-      }
-      if (txp.code && txp.code == 'INSUFFICIENT_FUNDS') {
-        return Promise.reject(MWCErrors.INSUFFICIENT_FUNDS);
-      }
-      return this._processTxps(txp).then(() => {
+    const txp = await this._doPostRequest('/v1/txproposals/', args);
 
-        if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey, opts.sendMax)) {
-          return Promise.reject(MWCErrors.SERVER_COMPROMISED);
-        }
-        return Promise.resolve(txp);
-      });
-    });
+    if (!txp) {
+      throw new Error('Could not get transaction proposal from server.');
+    }
+
+    if (txp.code && txp.code == 'INSUFFICIENT_FUNDS') {
+      throw MWCErrors.INSUFFICIENT_FUNDS;
+    }
+
+    await this._processTxps([txp]);
+
+    if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey, opts.sendMax)) {
+      throw MWCErrors.SERVER_COMPROMISED;
+    }
+
+    return txp;
   };
 
   /**
@@ -2002,7 +2000,7 @@ export class API {
    * @param {Object} opts
    * @param {Object} opts.txp - The transaction proposal object returned by the API#createTxProposal method
    */
-  publishTxProposal(opts: any): Promise<any> {
+  async publishTxProposal(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete(), 'no authorization data');
     $.checkArgument(opts);
     $.checkArgument(opts.txp, 'txp is required');
@@ -2013,21 +2011,22 @@ export class API {
       proposalSignature: Utils.signMessage(hash, this.credentials.requestPrivKey)
     };
 
-    return this._doPostRequest('/v1/txproposals/' + opts.txp.id + '/publish/', args)
-      .catch((err) =>
-        Promise.reject(new Error('error in post /v1/txproposals/' + err))
-      );
+    try {
+      return await this._doPostRequest('/v1/txproposals/' + opts.txp.id + '/publish/', args);
+    } catch (err) {
+      throw new Error('error in post /v1/txproposals/' + err);
+    }
   };
 
   /**
    * Send signed referral to beacon address and unlock in MWS
    * @param {Referral} opts
    */
-  signAddressAndUnlock(opts: any = {}): Promise<any> {
-    return this.sendReferral(opts).then((refid: string) =>
-      this._doPostRequest('/v1/addresses/unlock/', { address: opts.address, parentAddress: opts.parentAddress, refid })
-        .then(() => refid)
-    );
+  async signAddressAndUnlock(opts: any = {}): Promise<any> {
+    const refid: string = await this.sendReferral(opts);
+    await this._doPostRequest('/v1/addresses/unlock/', { address: opts.address, parentAddress: opts.parentAddress, refid });
+
+    return refid;
   };
 
   /**
@@ -2036,8 +2035,9 @@ export class API {
    */
   signAddressAndUnlockWithRoot(address: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
+
     if (address.signed) {
-      return Promise.resolve(address.refid);
+      return address.refid;
     }
 
     // try to sign address and unlock it
@@ -2063,29 +2063,26 @@ export class API {
    *
    * @param {Object} opts
    * @param {Boolean} opts.ignoreMaxGap[=false]
-   * @param {Callback} cb
-   * @returns {Callback} cb - Return error or the address
    */
-  createAddress(opts: any = {}): Promise<any> {
+  async createAddress(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    return new Promise((resolve, reject) => {
-      if (!this._checkKeyDerivation()) return reject(new Error('Cannot create new address for this wallet'));
+    if (!this._checkKeyDerivation())
+      throw new Error('Cannot create new address for this wallet');
 
-      opts.ignoreMaxGap = true;
-      return this._doPostRequest('/v1/addresses/', opts).then((address) => {
-        if (!Verifier.checkAddress(this.credentials, address)) {
-          return reject(MWCErrors.SERVER_COMPROMISED);
-        }
-        if (!address.signed) {
-          return this.signAddressAndUnlockWithRoot(address)
-            .then(() => resolve(address));
-        } else {
-          return resolve(address);
-        }
+    opts.ignoreMaxGap = true;
 
-      });
-    });
+    const address = await this._doPostRequest('/v1/addresses/', opts);
+
+    if (!Verifier.checkAddress(this.credentials, address)) {
+      throw MWCErrors.SERVER_COMPROMISED;
+    }
+
+    if (!address.signed) {
+      await this.signAddressAndUnlockWithRoot(address);
+    }
+
+    return address;
   };
 
   /**
@@ -2138,7 +2135,7 @@ export class API {
    * @param {Numeric} opts.limit (optional) - Limit the resultset. Return all addresses by default.
    * @param {Boolean} [opts.reverse=false] (optional) - Reverse the order of returned addresses.
    */
-  getMainAddresses(opts: any = {}): Promise<any> {
+  async getMainAddresses(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     let args = [];
     if (opts.limit) args.push('limit=' + opts.limit);
@@ -2147,21 +2144,19 @@ export class API {
     if (args.length > 0) {
       qs = '?' + args.join('&');
     }
-    let url = '/v1/addresses/' + qs;
+    const url = '/v1/addresses/' + qs;
 
-    return new Promise((resolve, reject) => {
-      return this._doGetRequest(url).then((addresses) => {
-        if (!opts.doNotVerify) {
-          let fake = _.some(addresses, (address) => {
-            return !Verifier.checkAddress(this.credentials, address);
-          });
-          if (fake) {
-            return reject(MWCErrors.SERVER_COMPROMISED);
-          }
-        }
-        return resolve(addresses);
-      });
-    });
+    const addresses = await this._doGetRequest(url);
+
+    if (!opts.doNotVerify) {
+      const fake = addresses.sort(address => !Verifier.checkAddress(this.credentials, address));
+
+      if (fake) {
+        throw MWCErrors.SERVER_COMPROMISED;
+      }
+    }
+
+    return addresses;
   };
 
   /**
@@ -2196,103 +2191,94 @@ export class API {
    * @param {Boolean} opts.doNotEncryptPkr
    * @return {Callback} cb - Return error or array of transactions proposals
    */
-  getTxProposals(opts: any): Promise<any> {
+  async getTxProposals(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
+    let txps = await this._doGetRequest('/v1/txproposals/');
 
-    return this._doGetRequest('/v1/txproposals/').then((txps) => {
-      return this._processTxps(txps).then(() => {
-        return Promise.all(txps.map(async (txp) => {
-          if (!opts.doNotVerify) {
-            // TODO: Find a way to run this check in parallel.
-            return this.getPayPro(txp).then((paypro) => {
-              if (!Verifier.checkTxProposal(this.credentials, txp, {
-                  paypro: paypro
-                })) {
-                Promise.reject(MWCErrors.SERVER_COMPROMISED);
-              }
-            });
-          }
-        })).then(() => {
-          let result: any;
-          if (opts.forAirGapped) {
-            result = {
-              txps: JSON.parse(JSON.stringify(txps)),
-              encryptedPkr: opts.doNotEncryptPkr ? null : Utils.encryptMessage(JSON.stringify(this.credentials.publicKeyRing), this.credentials.personalEncryptingKey),
-              unencryptedPkr: opts.doNotEncryptPkr ? JSON.stringify(this.credentials.publicKeyRing) : null,
-              m: this.credentials.m,
-              n: this.credentials.n
-            };
-          } else {
-            result = txps;
-          }
-          Promise.resolve(result);
-        });
-      });
-    });
+    txps = this._processTxps(txps);
+
+    await Promise.all(txps.map(async (txp) => {
+      if (!opts.doNotVerify) {
+        // TODO: Find a way to run this check in parallel.
+        const paypro = await this.getPayPro(txp);
+
+        if (!Verifier.checkTxProposal(this.credentials, txp, { paypro })) {
+          throw MWCErrors.SERVER_COMPROMISED;
+        }
+
+        return paypro;
+      }
+    }));
+
+    let result: any;
+    if (opts.forAirGapped) {
+      result = {
+        txps: JSON.parse(JSON.stringify(txps)),
+        encryptedPkr: opts.doNotEncryptPkr ? null : Utils.encryptMessage(JSON.stringify(this.credentials.publicKeyRing), this.credentials.personalEncryptingKey),
+        unencryptedPkr: opts.doNotEncryptPkr ? JSON.stringify(this.credentials.publicKeyRing) : null,
+        m: this.credentials.m,
+        n: this.credentials.n
+      };
+    } else {
+      result = txps;
+    }
+    return result;
   };
 
   //TODO: Refactor Paypro module to be Promisified.
-  private getPayPro(txp): Promise<any> {
+  private async getPayPro(txp): Promise<any> {
     if (!txp.payProUrl || this.doNotVerifyPayPro)
-      return Promise.resolve();
+      return;
 
-    return PayPro.get({
+    const paypro = await PayPro.get({
       url: txp.payProUrl,
       http: this.payProHttp
-    }).then((paypro) => {
-      if (!paypro) {
-        return Promise.reject(new Error('Cannot check paypro transaction now.'));
-      }
-      return Promise.resolve(paypro);
     });
+
+    if (!paypro) {
+      throw new Error('Cannot check paypro transaction now.');
+    }
+    return paypro;
   };
 
   /**
    * Sign a transaction proposal
-   *
    * @param {Object} txp
    * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
    */
-  signTxProposal(txp: any, password: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      $.checkState(this.credentials && this.credentials.isComplete());
-      $.checkArgument(txp.creatorId);
+  async signTxProposal(txp: any, password: string): Promise<any> {
+    $.checkState(this.credentials && this.credentials.isComplete());
+    $.checkArgument(txp.creatorId);
 
-      if (!txp.signatures) {
-        if (!this.canSign())
-          return reject(MWCErrors.MISSING_PRIVATE_KEY);
+    if (!txp.signatures) {
+      if (!this.canSign())
+        throw MWCErrors.MISSING_PRIVATE_KEY;
 
-        if (this.isPrivKeyEncrypted() && !password)
-          return reject(MWCErrors.ENCRYPTED_PRIVATE_KEY);
-      }
+      if (this.isPrivKeyEncrypted() && !password)
+        throw MWCErrors.ENCRYPTED_PRIVATE_KEY;
+    }
 
-      return this.getPayPro(txp).then((paypro) => {
-        let isLegit = Verifier.checkTxProposal(this.credentials, txp, {
-          paypro: paypro
-        });
+    const paypro = await this.getPayPro(txp);
 
-        if (!isLegit)
-          return reject(MWCErrors.SERVER_COMPROMISED);
+    let isLegit = Verifier.checkTxProposal(this.credentials, txp, { paypro });
 
-        let signatures = txp.signatures;
+    if (!isLegit)
+      throw MWCErrors.SERVER_COMPROMISED;
 
-        if (_.isEmpty(signatures)) {
-          signatures = this._signTxp(txp, password);
-        }
+    let signatures = txp.signatures;
 
-        let url = '/v1/txproposals/' + txp.id + '/signatures/';
-        let args = {
-          signatures: signatures
-        };
+    if (_.isEmpty(signatures)) {
+      signatures = this._signTxp(txp, password);
+    }
 
-        return this._doPostRequest(url, args).then((txp) => {
-          return this._processTxps(txp).then(() => {
-            return resolve(txp);
-          });
-        });
-      });
-    });
+    const url = '/v1/txproposals/' + txp.id + '/signatures/';
+    const args = {
+      signatures
+    };
+
+    txp = await this._doPostRequest(url, args);
+    return this._processTxps(txp);
   }
 
   /**
@@ -2342,18 +2328,16 @@ export class API {
    * @param {Object} txp
    * @param {String} reason
    */
-  rejectTxProposal(txp: any, reason: any): Promise<any> {
+  async rejectTxProposal(txp: any, reason: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    let url = '/v1/txproposals/' + txp.id + '/rejections/';
-    let args = {
+    const url = '/v1/txproposals/' + txp.id + '/rejections/';
+    const args = {
       reason: this._encryptMessage(reason, this.credentials.sharedEncryptingKey) || ''
     };
-    return this._doPostRequest(url, args).then((txp) => {
-      return this._processTxps(txp).then(() => {
-        return Promise.resolve(txp);
-      });
-    });
+
+    txp = await this._doPostRequest(url, args);
+    return this._processTxps(txp);
   }
 
   /**
@@ -2365,74 +2349,64 @@ export class API {
    * @param {Callback} cb
    * @return {Callback} cb - Return error or txid
    */
-  broadcastRawTx(opts: any = {}): Promise<any> {
+  broadcastRawTx(opts?: any): Promise<any> {
     $.checkState(this.credentials);
     opts = opts || {};
 
-    let url = '/v1/broadcast_raw/';
+    const url = '/v1/broadcast_raw/';
     return this._doPostRequest(url, opts);
   };
 
-  private _doBroadcast(txp): Promise<any> {
-    let url = '/v1/txproposals/' + txp.id + '/broadcast/';
-    return this._doPostRequest(url, {}).then((txp) => {
-      return this._processTxps(txp).then(() => {
-        return Promise.resolve(txp);
-      });
-    });
+  private async _doBroadcast(txp: any): Promise<any> {
+    const url = '/v1/txproposals/' + txp.id + '/broadcast/';
+    txp = await this._doPostRequest(url);
+    return this._processTxps(txp);
   };
 
   /**
    * Broadcast a transaction proposal
    *
    * @param {Object} txp
-   * @param {Callback} cb
-   * @return {Callback} cb - Return error or object
    */
-  broadcastTxProposal(txp): Promise<any> {
+  async broadcastTxProposal(txp: any): Promise<any> {
     this.log.warn('Inside broadCastTxProposal');
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    return this.signAddressAndUnlockWithRoot(txp.changeAddress)
-      .then(() => {
-        return this.getPayPro(txp).then((paypro) => {
-          if (paypro) {
-            this.log.warn('WE ARE PAYPRO');
-            let t = Utils.buildTx(txp);
-            this._applyAllSignatures(txp, t);
+    if (_.isArray(txp))
+      txp = txp[0];
 
-            return PayPro.send({
-              http: this.payProHttp,
-              url: txp.payProUrl,
-              amountMicros: txp.amount,
-              refundAddr: txp.changeAddress.address,
-              merchant_data: paypro.merchant_data,
-              rawTx: t.serialize({
-                disableSmallFees: true,
-                disableLargeFees: true,
-                disableDustOutputs: true
-              })
-            });
-          }
-          return Promise.resolve();
-        }).then(() => {
-          return this._doBroadcast(txp);
-        });
+    await this.signAddressAndUnlockWithRoot(txp.changeAddress);
+    const paypro = await this.getPayPro(txp);
+
+    if (paypro) {
+      this.log.warn('WE ARE PAYPRO');
+      let t = Utils.buildTx(txp);
+      this._applyAllSignatures(txp, t);
+
+      await PayPro.send({
+        http: this.payProHttp,
+        url: txp.payProUrl,
+        amountMicros: txp.amount,
+        refundAddr: txp.changeAddress.address,
+        merchant_data: paypro.merchant_data,
+        rawTx: t.serialize({
+          disableSmallFees: true,
+          disableLargeFees: true,
+          disableDustOutputs: true
+        })
       });
+    }
+
+    return this._doBroadcast(txp);
   };
 
   /**
    * Remove a transaction proposal
-   *
    * @param {Object} txp
-   * @param {Callback} cb
-   * @return {Callback} cb - Return error or empty
    */
   removeTxProposal(txp: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-
-    let url = '/v1/txproposals/' + txp.id;
-    return this._doDeleteRequest(url);
+    return this._doDeleteRequest('/v1/txproposals/' + txp.id);
   };
 
   /**
@@ -2445,10 +2419,10 @@ export class API {
    * @param {Callback} cb
    * @return {Callback} cb - Return error or array of transactions
    */
-  getTxHistory(opts: any): Promise<any> {
+  async getTxHistory(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    let args = [];
+    const args = [];
     if (opts) {
       if (opts.skip) args.push('skip=' + opts.skip);
       if (opts.limit) args.push('limit=' + opts.limit);
@@ -2459,45 +2433,9 @@ export class API {
       qs = '?' + args.join('&');
     }
 
-    let url = '/v1/txhistory/' + qs;
-    return this._doGetRequest(url).then((txs) => {
-      return this._processTxps(txs).then(() => {
-
-        return Promise.resolve(txs);
-      });
-    });
-  };
-
-  /**
-   * Get invite requests
-   *
-   */
-  getInvitesHistory(): Promise<any> {
-
-    return Promise.resolve([
-      {
-        'txid': 'b0c6f7cb2f57c4ab3a6219f0843b6bb3388b7159a0face3d07cdd73721b4e9cc',
-        'action': 'unlock',
-        'amount': 1,
-        'time': 1516968822,
-        'confirmations': 0,
-        'outputs': [
-          {
-            'amount': 1,
-            'address': 'mRLJYVyq2uyzJf1StCEFV5Y86RjuFtCTBc'
-          }
-        ]
-      }
-    ]);
-
-  }
-
-  /**
-   *
-   * @param address
-   */
-  confirmRequest(request: { refid: string, address: string }): Promise<any> {
-    return Promise.resolve(true);
+    const url = '/v1/txhistory/' + qs;
+    const txps = await this._doGetRequest(url);
+    return this._processTxps(txps);
   }
 
   /**
@@ -2507,26 +2445,14 @@ export class API {
   getUnlockRequests(): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    let url = '/v1/unlockrequests/';
-    return this._doGetRequest(url);
+    return this._doGetRequest('/v1/unlockrequests/');
   }
 
-
-  /**
-   * getTx
-   *
-   * @param {String} TransactionId
-   * @return {Callback} cb - Return error or transaction
-   */
-  getTx(id: any): Promise<any> {
+  async getTx(id: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    let url = '/v1/txproposals/' + id;
-    return this._doGetRequest(url).then((txp) => {
-      this._processTxps(txp).then(() => {
-        return Promise.resolve();
-      });
-    });
+    const txp = await this._doGetRequest('/v1/txproposals/' + id);
+    return this._processTxps(txp);
   };
 
   /**
@@ -2537,9 +2463,10 @@ export class API {
    * @param {Boolean} opts.includeCopayerBranches (defaults to false)
    * @param {Callback} cb
    */
-  startScan(opts: any = {}): Promise<any> {
+  startScan(opts?: any): Promise<any> {
+    opts = opts || {};
     $.checkState(this.credentials && this.credentials.isComplete());
-    let args = {
+    const args = {
       includeCopayerBranches: opts.includeCopayerBranches
     };
     return this._doPostRequest('/v1/addresses/scan', args);
@@ -2550,14 +2477,11 @@ export class API {
    * @param {Object} opts
    * @param {string} opts.txid - The txid to associate this note with
    */
-  getTxNote(opts: any = {}): Promise<any> {
+  async getTxNote(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
-    return this._doGetRequest('/v1/txnotes/' + opts.txid + '/').then((note) => {
-      this._processTxNotes(note);
-      return Promise.resolve();
-    });
+    const note = await this._doGetRequest('/v1/txnotes/' + opts.txid + '/');
+    return this._processTxNotes(note);
   }
-
 
   /**
    * Edit a note associated with the specified txid
@@ -2565,15 +2489,14 @@ export class API {
    * @param {string} opts.txid - The txid to associate this note with
    * @param {string} opts.body - The contents of the note
    */
-  editTxNote(opts: any = {}): Promise<any> {
+  async editTxNote(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     if (opts.body) {
       opts.body = this._encryptMessage(opts.body, this.credentials.sharedEncryptingKey);
     }
-    return this._doPutRequest('/v1/txnotes/' + opts.txid + '/', opts).then((note) => {
-      this._processTxNotes(note);
-      return Promise.resolve();
-    });
+
+    const note = await this._doPutRequest('/v1/txnotes/' + opts.txid + '/', opts);
+    return this._processTxNotes(note);
   };
 
   /**
@@ -2581,7 +2504,7 @@ export class API {
    * @param {Object} opts
    * @param {string} opts.minTs - The starting timestamp
    */
-  getTxNotes(opts: any = {}): Promise<any> {
+  async getTxNotes(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     let args = [];
     if (_.isNumber(opts.minTs)) {
@@ -2592,9 +2515,9 @@ export class API {
       qs = '?' + args.join('&');
     }
 
-    return this._doGetRequest('/v1/txnotes/' + qs).then((notes) => {
-      return Promise.resolve(this._processTxNotes(notes));
-    });
+    const notes = await this._doGetRequest('/v1/txnotes/' + qs);
+
+    return this._processTxNotes(notes);
   }
 
   /**
@@ -2634,7 +2557,7 @@ export class API {
    * @returns {Object} response - Status of subscription.
    */
   pushNotificationsSubscribe(opts: any): Promise<any> {
-    let url = '/v1/pushnotifications/subscriptions/';
+    const url = '/v1/pushnotifications/subscriptions/';
     return this._doPostRequest(url, opts);
   };
 
@@ -2644,7 +2567,7 @@ export class API {
    * @return {Callback} cb - Return error if exists
    */
   pushNotificationsUnsubscribe(token: string): Promise<any> {
-    let url = '/v1/pushnotifications/subscriptions/' + token;
+    const url = '/v1/pushnotifications/subscriptions/' + token;
     return this._doDeleteRequest(url);
   };
 
@@ -2655,7 +2578,7 @@ export class API {
    * @returns {Object} response - Status of subscription.
    */
   txConfirmationSubscribe(opts: any): Promise<any> {
-    let url = '/v1/txconfirmations/';
+    const url = '/v1/txconfirmations/';
     return this._doPostRequest(url, opts);
   };
 
@@ -2664,7 +2587,7 @@ export class API {
    * @param {String} txid - The txid to unsubscribe from.
    */
   txConfirmationUnsubscribe(txid: string): Promise<any> {
-    let url = '/v1/txconfirmations/' + txid;
+    const url = '/v1/txconfirmations/' + txid;
     return this._doDeleteRequest(url);
   };
 
@@ -2677,7 +2600,7 @@ export class API {
    * @param {Boolean} opts.excludeUnconfirmedUtxos - Indicates it if should use (or not) the unconfirmed utxos
    * @param {Boolean} opts.returnInputs - Indicates it if should return (or not) the inputs
    */
-  public getSendMaxInfo(opts: any = {}): Promise<any> {
+  getSendMaxInfo(opts: any = {}): Promise<any> {
     let args = [];
 
     if (opts.feeLevel) args.push('feeLevel=' + opts.feeLevel);
@@ -2687,7 +2610,7 @@ export class API {
     let qs = '';
     if (args.length > 0)
       qs = '?' + args.join('&');
-    let url = '/v1/sendmaxinfo/' + qs;
+    const url = '/v1/sendmaxinfo/' + qs;
 
     return this._doGetRequest(url);
   };
@@ -2699,20 +2622,25 @@ export class API {
    * @param {Boolean} opts.twoStep[=false] - Optional: use 2-step balance computation for improved performance
    * @param {Boolean} opts.includeExtendedInfo (optional: query extended status)
    */
-  getStatusByIdentifier(opts: any = {}): Promise<any> {
+  async getStatusByIdentifier(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
     let qs = [];
     qs.push('includeExtendedInfo=' + (opts.includeExtendedInfo ? '1' : '0'));
     qs.push('twoStep=' + (opts.twoStep ? '1' : '0'));
 
-    return this._doGetRequest('/v1/wallets/' + opts.identifier + '?' + qs.join('&')).then((result) => {
-      if (!result || !result.wallet) return Promise.reject(new Error('Could not get status by identifier.'));
-      if (result.wallet.status == 'pending') {
-        let c = this.credentials;
-        result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
-      }
-      return this._processStatus(result);
-    });
+    const result = await this._doGetRequest('/v1/wallets/' + opts.identifier + '?' + qs.join('&'));
+
+    if (!result || !result.wallet)
+      throw new Error('Could not get status by identifier.');
+
+    if (result.wallet.status == 'pending') {
+      const { walletId, walletPrivKey, network } = this.credentials;
+      result.wallet.secret = this._buildSecret(walletId, walletPrivKey, network);
+    }
+
+    await this._processStatus(result);
+
+    return result;
   };
 
   referralTxConfirmationSubscribe(opts): Promise<any> {
@@ -2728,11 +2656,10 @@ export class API {
   /**
    *
    * Checks the blockChain for a valid EasySend transaction that can be unlocked.
-   * @param {String} EasyReceiptScript The script of the easySend, generated client side
+   * @param {String} scriptId The script of the easySend, generated client side
    * @param cb Callback or handler to manage response from BWS
-   * @return {undefined}
    */
-  validateEasyScript(scriptId): Promise<EasyReceiptResult> {
+  validateEasyScript(scriptId: string): Promise<EasyReceiptResult> {
     this.log.warn('Validating: ' + scriptId);
 
     let url = '/v1/easyreceive/validate/' + scriptId;
@@ -2744,16 +2671,12 @@ export class API {
    */
   getVaults() {
     $.checkState(this.credentials);
-
-    var url = '/v1/vaults/';
-    return this._doGetRequest(url);
+    return this._doGetRequest('/v1/vaults/');
   };
 
   getVault(vaultId) {
     $.checkState(this.credentials);
-
-    var url = `/v1/vaults/${vaultId}`;
-    return this._doGetRequest(url);
+    return this._doGetRequest(`/v1/vaults/${ vaultId }`);
   }
 
   /**
@@ -2768,23 +2691,18 @@ export class API {
   createVault(vault: any) {
     $.checkState(this.credentials);
 
-    var url = '/v1/vaults/';
-    return this._doPostRequest(url, vault);
+    return this._doPostRequest('/v1/vaults/', vault);
   };
 
   renewVault(vault: any) {
     $.checkState(this.credentials);
     delete vault.walletClient;
-
-    var url = `/v1/vaults/${vault._id}`;
-    return this._doPostRequest(url, vault);
+    return this._doPostRequest(`/v1/vaults/${vault._id}`, vault);
   };
 
   getVaultTxHistory(vaultId: string, network: string): Promise<Array<any>> {
     $.checkState(this.credentials);
-
-    var url = `/v1/vaults/${vaultId}/txhistory?network=${network}`;
-    return this._doGetRequest(url);
+    return this._doGetRequest(`/v1/vaults/${vaultId}/txhistory?network=${network}`);
   };
 
   getDefaultFee() {
