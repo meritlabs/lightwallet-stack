@@ -76,7 +76,7 @@
         </ion-avatar>
         <ion-label stacked>Password</ion-label>
         <ion-input [(ngModel)]="formData.filePassword" type="text" autocomplete="new-password"
-                   placeholder="File password" #filePassword class="password-input" [class.show]="showPassword2"></ion-input>
+                   placeholder="File password" class="password-input" [class.show]="showPassword2"></ion-input>
         <button ion-button item-end (click)="showPassword2 = !showPassword2" clear>{{ showPassword2 ? 'Hide' : 'Show' }}
         </button>
       </ion-item>
