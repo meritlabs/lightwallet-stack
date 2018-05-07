@@ -34,7 +34,9 @@
           <!--<p>+5</p>-->
         <!--</div>-->
       </ng-container>
-      <ng-template #peopleLoading>Spinner</ng-template>
+      <ng-template #peopleLoading>
+        <loading-spinner-small></loading-spinner-small>
+      </ng-template>
     </div>
     <div class="stats__item">
       <p class="stats__item__title">Ambassador<br>Rewards</p>
@@ -47,7 +49,9 @@
         </div>
       </ng-container>
     </div>
-    <ng-template #ambassadorLoading>Spinner</ng-template>
+    <ng-template #ambassadorLoading>
+      <loading-spinner-small></loading-spinner-small>
+    </ng-template>
     <div class="stats__item">
       <p class="stats__item__title">Mining<br>Rewards</p>
       <div class="stats__item__picture">
@@ -58,7 +62,9 @@
           {{totals?.totalMiningRewards || '0.00'}} <span>MRT</span>
         </div>
       </ng-container>
-      <ng-template #miningLoading>Spinner</ng-template>
+      <ng-template #miningLoading>
+        <loading-spinner-small></loading-spinner-small>
+      </ng-template>
     </div>
   </div>
 </div>
