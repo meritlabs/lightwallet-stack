@@ -192,7 +192,7 @@ export class TransactView {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
     this.alertCtrl.create({
       title: `Cancel your own GlobalSend?`,
-      message: 'You clicked on a GlobalSend link that you created. Would you like to cancel GlobalSend with ${ amount } Merit?',
+      message: `You clicked on a GlobalSend link that you created. Would you like to cancel GlobalSend with ${ amount } Merit?`,
       buttons: [
         {
           text: `Don't Cancel`
