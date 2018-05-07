@@ -29,7 +29,6 @@ export class ImportView {
     derivationPath: '',
     fromHardwareWallet: false,
     testnetEnabled: false,
-    bwsUrl: '',
     backupFile: null,
     backupFileBlob: '',
     filePassword: '',
@@ -51,8 +50,6 @@ export class ImportView {
     private pushNotificationsService: PushNotificationsService,
     private walletService: WalletService
   ) {
-
-    this.formData.bwsUrl = ENV.mwsUrl;
     this.formData.network = ENV.network;
     this.formData.derivationPath =
       this.formData.network == 'livenet' ?
@@ -156,7 +153,7 @@ export class ImportView {
     loader.present();
 
     try {
-      const wallet = await this.walletService.importWallet(decrypted, { bwsurl: this.formData.bwsUrl });
+      const wallet = await this.walletService.importWallet(decrypted, { bwsurl: ENV.mwsUrl });
       return this.processCreatedWallet(wallet, loader);
     } catch (err) {
       loader.dismiss();
