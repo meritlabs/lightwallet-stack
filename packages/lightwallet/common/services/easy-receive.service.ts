@@ -257,8 +257,6 @@ export class EasyReceiveService {
       senderPublicKey: pubKey.toString()
     };
 
-    debugger;
-
     //get the invite back
     const invite = txs.find(tx => tx.invite);
     if (invite)
