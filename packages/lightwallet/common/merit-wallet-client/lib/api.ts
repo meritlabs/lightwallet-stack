@@ -125,6 +125,7 @@ export class API {
   public balance: any;
   public invitesBalance: any;
   public availableInvites: number;
+  public pendingInvites: number;
 
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -521,6 +522,7 @@ export class API {
     wallet.balance = obj.balance || {};
     wallet.invitesBalance = obj.invitesBalance || {};
     wallet.availableInvites = obj.availableInvites || 0;
+    wallet.pendingInvites = obj.pendingInvites || 0;
     wallet.network = obj.network || ENV.network;
     wallet.rootAddress = Bitcore.Address.fromString(obj.rootAddress, wallet.network);
     wallet.rootAlias = obj.rootAlias || '';
@@ -538,7 +540,7 @@ export class API {
       confirmed: this.confirmed,
       balance: this.balance,
       invitesBalance: this.invitesBalance,
-      availableInvites: this.availableInvites,
+      pendingInvites: this.pendingInvites,
       rootAddress: this.getRootAddress().toString(),
       rootAlias: this.rootAlias,
       parentAddress: this.parentAddress,
@@ -1748,7 +1750,11 @@ export class API {
     this.balance = status.balance || {};
     this.invitesBalance = status.invitesBalance || {};
     this.confirmed = (status.invitesBalance && status.invitesBalance.totalAmount > 0);
-    this.availableInvites = Math.max(0, status.invitesBalance.totalConfirmedAmount - 1);
+    if (this.confirmed) {
+      this.availableInvites = Math.max(0, status.invitesBalance.availableConfirmedAmount - 1);
+      this.pendingInvites = status.invitesBalance.availableAmount - status.invitesBalance.availableConfirmedAmount;
+      if (status.invitesBalance.availableConfirmedAmount == 0) this.pendingInvites =  Math.max(0,  this.pendingInvites - 1);
+    }
     //todo check if we use 'spendunconfirmed' options
     this.balance.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
 
