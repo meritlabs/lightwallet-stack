@@ -36,7 +36,7 @@
       </ion-avatar>
       <ion-label stacked>Phrase Password (optional)</ion-label>
       <ion-input [(ngModel)]="formData.phrasePassword" placeholder="Type it here"
-                 [type]="showPassword? 'text' : 'password'" autocapitalize="off"
+                type="text" class="password-input" [class.show]="showPassword" autocapitalize="off"
                  autocomplete="new-password" autocorrect="off" spellcheck="false"></ion-input>
       <button ion-button item-end (click)="showPassword = !showPassword" clear>{{ showPassword ? 'Hide' : 'Show' }}
       </button>
@@ -75,8 +75,8 @@
           <img src="assets/img/icons/lock.svg" alt="">
         </ion-avatar>
         <ion-label stacked>Password</ion-label>
-        <ion-input [(ngModel)]="formData.filePassword" [type]="showPassword2? 'text' : 'password'" autocomplete="new-password"
-                   placeholder="File password"></ion-input>
+        <ion-input [(ngModel)]="formData.filePassword" type="text" autocomplete="new-password"
+                   placeholder="File password" #filePassword class="password-input" [class.show]="showPassword2"></ion-input>
         <button ion-button item-end (click)="showPassword2 = !showPassword2" clear>{{ showPassword2 ? 'Hide' : 'Show' }}
         </button>
       </ion-item>

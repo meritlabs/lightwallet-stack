@@ -801,3 +801,14 @@ $v-tab-send-selected-icon: url("../img/tab-icons/ico-send-selected.svg") !defaul
     background: linear-gradient(135deg, #106DDA 50%, #00B1DE 100%);
   }
 }
+
+.password-input {
+  text-security:disc;
+  -webkit-text-security:disc;
+  -mox-text-security:disc;
+  &.show {
+    text-security:none;
+    -webkit-text-security:none;
+    -mox-text-security:none;
+  }
+}
