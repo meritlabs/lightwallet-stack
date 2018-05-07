@@ -2,18 +2,25 @@
 <div class="container--fluid dashboard">
   <div class="dashboard__aside">
     <ul class="dashboard__aside__wrap">
-      <li *ngFor="let item of topMenuItems" [routerLink]="item.link"
-          routerLinkActive="active" class="dashboard__aside__item">
+      <li *ngFor="let item of topMenuItems" [routerLink]="item.link" routerLinkActive="active" class="dashboard__aside__item">
         <img src="{{item.icon}}" alt="" class="dashboard__aside__item__icon">
         <span>{{ item.name }}</span>
       </li>
     </ul>
     <ul class="dashboard__aside__wrap">
       <li *ngFor="let item of bottomMenuItems" class="dashboard__aside__item">
-        <a href="{{item.link}}" [target]="item.blank ? '_blank' : '_self'">
-          <img src="{{item.icon}}" alt="" class="dashboard__aside__item__icon">
-          <span>{{ item.name }}</span>
-        </a>
+        <ng-container *ngIf="!item.external">
+          <a [routerLink]="item.link">
+            <img src="{{item.icon}}" alt="" class="dashboard__aside__item__icon">
+            <span>{{ item.name }}</span>
+          </a>
+        </ng-container>
+        <ng-container *ngIf="item.external">
+          <a [href]="item.link" target="_blank">
+            <img src="{{item.icon}}" alt="" class="dashboard__aside__item__icon">
+            <span>{{ item.name }}</span>
+          </a>
+        </ng-container>
       </li>
     </ul>
   </div>
