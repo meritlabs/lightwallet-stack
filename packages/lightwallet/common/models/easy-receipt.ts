@@ -6,6 +6,7 @@ export class EasyReceipt {
   blockTimeout: number;
   deepLinkURL: string;
   checkPassword: boolean;
+  scriptAddress: string;
 
   constructor(fields: any) {
     for (const f in fields) {
