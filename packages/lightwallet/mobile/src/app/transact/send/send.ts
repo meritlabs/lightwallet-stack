@@ -134,7 +134,9 @@ export class SendView {
     }
 
     if (this.searchQuery.indexOf('micros') != -1) {
-      [this.searchQuery, this.amount] = this.searchQuery.split('?micros=');
+      let microsStr:string = this.searchQuery.split('?micros=')[1]; 
+      this.searchQuery = microsStr;
+      this.amount = +microsStr;  
       console.log(this.amount);
     } else {
       this.amount = null;
