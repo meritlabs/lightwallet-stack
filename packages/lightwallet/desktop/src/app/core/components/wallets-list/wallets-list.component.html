@@ -25,10 +25,15 @@
         <div class="wallets__group__wallet__details">
           <div>
             <p class="large-black-text">{{ wallet.name }}</p>
-            <p class="regular-blue-text" *ngIf="!balanceHidden">{{ wallet.totalBalanceMicros | toMRT }}
+            <p class="regular-blue-text" *ngIf="!wallet.balanceHidden; else balanceHidden">{{ wallet.totalBalanceMicros | toMRT }}
               <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})
               </small>
             </p>
+            <ng-template #balanceHidden>
+              <p class="regular-blue-text">
+                [Balance hidden]
+              </p>
+            </ng-template>
           </div>
           <div class="inline-right">
             <p class="regular-blue-text">{{ wallet.availableInvites }} Invites</p>

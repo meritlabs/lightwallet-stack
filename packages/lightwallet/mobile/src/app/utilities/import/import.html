@@ -26,7 +26,7 @@
       <button (click)="openScanner()" ion-button icon-only item-end clear class="qr-code-button">
         <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
       </button>
-      <ion-textarea [(ngModel)]="formData.words" autocapitalize="off" autocomplete="off" autocorrect="off"
+      <ion-textarea [(ngModel)]="formData.words" autocapitalize="off" autocomplete="new-password" autocorrect="off"
                     spellcheck="false" placeholder="Type it here"></ion-textarea>
     </ion-item>
 
@@ -36,36 +36,13 @@
       </ion-avatar>
       <ion-label stacked>Phrase Password (optional)</ion-label>
       <ion-input [(ngModel)]="formData.phrasePassword" placeholder="Type it here"
-                 [type]="showPassword? 'text' : 'password'" autocapitalize="off"
-                 autocomplete="off" autocorrect="off" spellcheck="false"></ion-input>
+                type="text" class="password-input" [class.show]="showPassword" autocapitalize="off"
+                 autocomplete="new-password" autocorrect="off" spellcheck="false"></ion-input>
       <button ion-button item-end (click)="showPassword = !showPassword" clear>{{ showPassword ? 'Hide' : 'Show' }}
       </button>
     </ion-item>
 
-    <button ion-item no-lines toggle-button (click)="advancedToggled = !advancedToggled" detail-none>
-      <ion-label>
-        <h2>Advanced options</h2>
-      </ion-label>
-      <button ion-button item-end icon-only clear>
-        <ion-icon [name]="advancedToggled? 'remove' : 'add'" color="secondary"></ion-icon>
-      </button>
-    </button>
-
-    <ion-item-group [hidden]="!advancedToggled">
-
-      <ion-item margin-bottom>
-        <ion-avatar img-icon item-start>
-          <img src="assets/img/icons/link.svg" alt="">
-        </ion-avatar>
-        <ion-label stacked>
-          Wallet Service Url
-        </ion-label>
-        <ion-input [(ngModel)]="formData.bwsUrl"></ion-input>
-      </ion-item>
-    </ion-item-group>
-
-
-    <button class="action-button" margin-top block (click)="importMnemonic()" ion-button
+        <button class="action-button" margin-top block (click)="importMnemonic()" ion-button
             [disabled]="!mnemonicImportAllowed()">
       Import
     </button>
@@ -98,19 +75,12 @@
           <img src="assets/img/icons/lock.svg" alt="">
         </ion-avatar>
         <ion-label stacked>Password</ion-label>
-        <ion-input [(ngModel)]="formData.filePassword" [type]="showPassword2? 'text' : 'password'" autocomplete="off"
-                   placeholder="File password"></ion-input>
+        <ion-input [(ngModel)]="formData.filePassword" type="text" autocomplete="new-password"
+                   placeholder="File password" class="password-input" [class.show]="showPassword2"></ion-input>
         <button ion-button item-end (click)="showPassword2 = !showPassword2" clear>{{ showPassword2 ? 'Hide' : 'Show' }}
         </button>
       </ion-item>
 
-      <ion-item margin-bottom margin-top>
-        <ion-avatar img-icon item-start>
-          <img src="assets/img/icons/link.svg" alt="">
-        </ion-avatar>
-        <ion-label stacked>Wallet Service Url</ion-label>
-        <ion-input [(ngModel)]="formData.bwsUrl"></ion-input>
-      </ion-item>
     </ion-item-group>
 
     <button class="action-button" margin-top block (click)="importBlob()" ion-button translate
