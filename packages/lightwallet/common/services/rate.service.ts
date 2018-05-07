@@ -22,7 +22,6 @@ export class RateService {
   constructor() {
     this.cache = { updatedTs: 0, rates: [] };
     this.mwClient = MeritWalletClient.getInstance({});
-    this.loadRates();
   }
 
   /**
