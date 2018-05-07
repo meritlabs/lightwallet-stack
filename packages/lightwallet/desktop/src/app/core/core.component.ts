@@ -65,9 +65,15 @@ export class CoreView implements OnInit, AfterViewInit {
   ];
   bottomMenuItems: any[] = [
     {
+      name: 'Market Beta',
+      icon: '/assets/v1/icons/ui/aside-navigation/market.svg',
+      link: '/market-gate'
+    },
+    {
       name: 'Help & Support',
       icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
-      link: 'https://www.merit.me/get-involved/#join-the-conversation'
+      link: 'https://www.merit.me/get-involved/#join-the-conversation',
+      blank: true
     }
   ];
 

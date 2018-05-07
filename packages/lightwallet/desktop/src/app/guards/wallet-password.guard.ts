@@ -24,7 +24,9 @@ export class WalletPasswordGuard implements CanActivate {
   constructor(private route: ActivatedRoute,
               private walletService: WalletService,
               private store: Store<IRootAppState>,
-              private passwordPromptCtrl: PasswordPromptController) {}
+              private passwordPromptCtrl: PasswordPromptController) {
+                console.log('WalletPasswordGuard');
+              }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     return new Promise<boolean>(async resolve => {

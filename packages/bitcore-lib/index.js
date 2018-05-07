@@ -4,7 +4,7 @@ var bitcore = module.exports;
 
 // module information
 bitcore.version = 'v' + require('./package.json').version;
-bitcore.versionGuard = function(version) {
+bitcore.versionGuard = function (version) {
   if (version !== undefined) {
     var message = 'More than one instance of bitcore-lib found. ' +
       'Please make sure to require bitcore-lib and check that submodules do' +
@@ -48,6 +48,7 @@ bitcore.MerkleBlock = require('./lib/block/merkleblock');
 bitcore.BlockHeader = require('./lib/block/blockheader');
 bitcore.HDPrivateKey = require('./lib/hdprivatekey.js');
 bitcore.HDPublicKey = require('./lib/hdpublickey.js');
+bitcore.Message = require('./lib/message');
 bitcore.Networks = require('./lib/networks');
 bitcore.Opcode = require('./lib/opcode');
 bitcore.PrivateKey = require('./lib/privatekey');

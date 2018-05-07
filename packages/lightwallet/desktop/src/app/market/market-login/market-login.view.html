@@ -1,0 +1,5 @@
+<div class="text">Logging in to market. Please wait...</div>
+<ng-container *ngIf="error">
+  <div class="error">Access to market denied. Check that your wallet is confirmed.</div>
+  <button role="button" class="ui-button ui-button--blue" (click)="login()">Try again</button>
+</ng-container>
