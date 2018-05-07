@@ -30,10 +30,11 @@ export class AppComponent {
         const params = this.easyReceiveService.parseEasySendUrl(search);
         const easyReceipt: EasyReceipt = await this.easyReceiveService.validateAndSaveParams(params);
         if (easyReceipt) {
-          // Let's remove the Query Params from the URL so that the user is not continually loading the same EasyReceipt every time they re-open the app or the browser. 
-          window.history.replaceState({},document.title,document.location.pathname);        
+          // Let's remove the Query Params from the URL so that the user is not continually loading the same
+          // EasyReceipt every time they re-open the app or the browser.
+          window.history.replaceState({}, document.title, document.location.pathname);
         }
-          this.logger.info('Returned from validate with: ', easyReceipt);
+        this.logger.info('Returned from validate with: ', easyReceipt);
       } catch (e) {}
     }
   }

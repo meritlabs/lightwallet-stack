@@ -10,7 +10,7 @@ export class AppEffects {
   @Effect({ dispatch: false }) update$ = this.actions$.pipe(
     ofType(AppReducerActionType.UPDATE),
     filter((action: UpdateAppAction) => !action.payload.authorized),
-    tap(() => this.router.navigateByUrl('/onboarding'))
+    tap(() => this.router.navigateByUrl('/onboarding', { queryParams: {} }))
   );
 
   constructor(private actions$: Actions,
