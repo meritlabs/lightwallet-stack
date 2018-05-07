@@ -10,6 +10,7 @@ import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { Events, IonicPage, ModalController, NavController, Slides, ToastController } from 'ionic-angular';
+import { RateService } from '@merit/common/services/rate.service';
 import * as _ from 'lodash';
 
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
@@ -55,7 +56,8 @@ export class SendView {
               private addressScanner: AddressScannerService,
               private persistenceService: PersistenceService,
               private events: Events,
-              private toastCtrl: ToastController
+              private toastCtrl: ToastController,
+              private rateService: RateService
   ) {
   }
 
@@ -127,8 +129,16 @@ export class SendView {
       return this.searchResult = result;
     }
 
-    if (this.searchQuery.length > 6 && this.searchQuery.indexOf('merit:') == 0)
+    if (this.searchQuery.length > 6 && this.searchQuery.indexOf('merit:') == 0) {
       this.searchQuery = this.searchQuery.split('merit:')[1];
+    }
+
+    if (this.searchQuery.indexOf('micros') != -1) {
+      [this.searchQuery, this.amount] = this.searchQuery.split('?micros=');
+      console.log(this.amount);
+    } else {
+      this.amount = null;
+    }
 
     this.debounceSearch();
   }
@@ -261,6 +271,7 @@ export class SendView {
 
       modal.onDidDismiss((params) => {
         if (params) {
+          params.amount = this.amount;
           this.navCtrl.push('SendAmountView', params);
         }
       });
