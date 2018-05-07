@@ -33,6 +33,7 @@
   position: relative
   .inner
     margin-left: -35px
+    position: relative
   .navArrow
     background: transparent
     display: block !important
@@ -44,10 +45,14 @@
     top: 50vh
     background: url('/assets/v1/images/onboard/arrow.png') no-repeat 50% 50%
     &[style*=display]:not([style*=block])
-      opacity: .5
-      cursor: default
+      opacity: 0
+      cursor: pointer
   .rightRs
     right: 40px
+  .getStartedNav.navArrow
+    position: absolute
+    top: calc(50% + 15px)
+    right: 45px
   .leftRs
     left: 40px
     transform: rotate(180deg)
