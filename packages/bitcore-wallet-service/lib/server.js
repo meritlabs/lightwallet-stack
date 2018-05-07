@@ -2499,7 +2499,7 @@ WalletService.prototype.publishTx = function(opts, cb) {
       self.getTx({
         txProposalId: opts.txProposalId,
         retries: 10,
-        interval: 50,
+        interval: 75,
       }, function(err, txp) {
         if (err) return cb(err);
         if (!txp) return cb(Errors.TX_NOT_FOUND);
@@ -2567,7 +2567,7 @@ WalletService.prototype.getTx = function(opts, cb) {
   opts.interval =  opts.interval || 50;
   var current = 1;
 
-  async.retry({times: opts.retries, interval: 50},
+  async.retry({times: opts.retries, interval: opts.interval},
     (callback) => {
       var isLast = current === opts.retries;
       current++;
@@ -2697,6 +2697,8 @@ WalletService.prototype.removePendingTx = function(opts, cb) {
 
     self.getTx({
       txProposalId: opts.txProposalId,
+      retries: 10,
+      interval: 75
     }, function(err, txp) {
       if (err) return cb(err);
 
@@ -2774,7 +2776,7 @@ WalletService.prototype.signTx = function(opts, cb) {
     self.getTx({
       txProposalId: opts.txProposalId,
       retries: 10,
-      interval: 50
+      interval: 75
     }, function(err, txp) {
       if (err) return cb(err);
 
@@ -2910,7 +2912,9 @@ WalletService.prototype.rejectTx = function(opts, cb) {
   if (!checkRequired(opts, ['txProposalId'], cb)) return;
 
   self.getTx({
-    txProposalId: opts.txProposalId
+    txProposalId: opts.txProposalId,
+    retries: 10,
+    interval: 75
   }, function(err, txp) {
     if (err) return cb(err);
 
