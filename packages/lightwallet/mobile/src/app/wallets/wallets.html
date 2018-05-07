@@ -55,7 +55,7 @@
             @{{ wallet.rootAlias}}
           </p>
           <p class="invites">
-            Invites: {{ wallet.availableInvites || 0}}
+            Invites: {{ wallet.availableInvites || 0}} <span *ngIf="wallet.pendingInvites">(+{{wallet.pendingInvites}} pending)</span>
           </p>
           <p *ngIf="wallet.balanceHidden; else notHidden">
             [Balance Hidden]
