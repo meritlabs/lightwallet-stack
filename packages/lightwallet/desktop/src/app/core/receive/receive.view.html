@@ -43,15 +43,12 @@
         <div class="receiveMeritEmpty__description"><a href="/wallets">Click here</a> to create one.</div>
       </div>
     </ng-template>
-    <div class="receiveMerit__totals">
+    <div class="receiveMerit__totals" *ngIf="hasUnlockedWallet">
       <div class="receiveMerit__totals__qr">
         <div class="receiveMerit__totals__qr__box">
-          <ng-container  *ngIf="(qrAddress && address); else qrLoading">
+          <ng-container  *ngIf="qrAddress && address">
             <qr-code [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
           </ng-container>
-          <ng-template #qrLoading>
-            <loading-spinner></loading-spinner>
-          </ng-template>
         </div>
         <h3>or</h3>
         <button class="receiveMerit__totals__qr__copy" [clip]="qrAddress" (click)="onCopy()">Copy Link</button>

@@ -27,12 +27,7 @@
           {{ tx.amountStr }} MRT
           <small *ngIf="tx.alternativeAmountStr">({{ tx.alternativeAmountStr }})</small>
         </div>
-      <span class="ui-tooltip ui-tooltip--awating" *ngIf="confirmationsExplanation">
-        <span class="ui-tooltip__text">
-          {{ confirmationsExplanation }},
-          You have money available, but it cannot be spent until it confirms on the blockchain.
-          Wait some time. Usually 5-10 mins.
-        </span>
+      <span class="ui-tooltip ui-tooltip--awaiting" *ngIf="confirmationsExplanation">
       </span>
   </div>
 </div>
