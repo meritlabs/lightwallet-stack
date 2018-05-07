@@ -133,8 +133,6 @@ export class EasyReceiveService {
   }
 
   private async spendEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: any, destinationAddress: any): Promise<void> {
-
-    debugger;
     const invite = input.txs.find(tx => tx.invite);
     await this.sendEasyReceiveTx(input, invite, destinationAddress, wallet);
 
