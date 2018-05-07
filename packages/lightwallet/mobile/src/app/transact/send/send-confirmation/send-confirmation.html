@@ -37,7 +37,7 @@
         <ion-label stacked>
           <p>Password set</p>
         </ion-label>
-        <ion-input [type]="showPassword? 'text' : 'password'" disabled [value]="viewData.password"></ion-input>
+        <ion-input type="text" disabled [value]="viewData.password" class="password-input" [class.show]="showPassword"></ion-input>
 
         <button ion-button item-end (click)="showPassword = !showPassword" clear>
           {{ showPassword? 'Hide' : 'Show' }}
