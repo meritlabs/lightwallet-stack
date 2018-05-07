@@ -25,7 +25,7 @@ export class UpdateTransactionsAction implements Action {
   constructor(public transactions: IDisplayTransaction[]) {
     let walletId: string;
 
-    // this.transactions = this.transactions;
+    this.transactions = sortBy(this.transactions, 'time').reverse();
 
     this.transactions.forEach((transaction: IDisplayTransaction) => {
       walletId = transaction.wallet.id;
@@ -78,7 +78,7 @@ export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, a
 
     case TransactionActionType.UpdateOne:
       return {
-        transactions: uniqBy(action.transactions.concat(state.transactions), 'txid'),
+        transactions: sortBy(uniqBy(action.transactions.concat(state.transactions), 'txid'), 'time').reverse(),
         loading: false
       };
 
