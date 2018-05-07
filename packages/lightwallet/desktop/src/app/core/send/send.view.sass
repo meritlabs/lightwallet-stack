@@ -65,9 +65,11 @@ error-message.success
     align-items: center
     border-radius: 8px
     padding: 15px 17px
-    line-height: 16px
+    line-height: 19px
     font-weight: 300
-
+    &.danger
+      background: #da5050
+      color: #FFF
     img
       width: 40px
 
@@ -83,3 +85,25 @@ input[type="number"]
 .ui-input__wrapper--currency
   .ui-input__addon
     z-index: 2
+.sendMerit__totals__table
+  position: relative
+  loading-spinner-small
+    display: flex
+    justify-content: flex-start
+    align-items: center
+    position: absolute
+    height: calc(100% + 60px)
+    top: -30px
+    width: 100%
+    left: -40px
+    background: $pale-grey-four
+    z-index: 10
+    opacity: 0.95
+    &:after
+      display: block
+      position: absolute
+      content: ""
+      width: 80px
+      height: 100%
+      right: -80px
+      background: $pale-grey-four
