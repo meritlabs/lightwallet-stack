@@ -87,6 +87,10 @@ export class CoreView {
       });
   }
 
+  ngAfterViewInit() {
+    window.history.replaceState({}, document.title, document.location.pathname);
+  }
+
   private showPasswordEasyReceivePrompt(receipt: EasyReceipt, processAll: boolean, wallet?: MeritWalletClient) {
     const message = `You've got merit from ${receipt.senderName}! Please enter transaction password`;
     const passwordPrompt = this.passwordPromptCtrl.create(message, [Validators.required], [PasswordValidator.ValidateEasyReceivePassword(receipt, this.easyReceiveService)]);
