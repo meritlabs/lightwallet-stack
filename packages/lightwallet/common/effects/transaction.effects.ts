@@ -77,7 +77,7 @@ export class TransactionEffects {
   }
 
   private async getWalletHistory(wallet: DisplayWallet): Promise<IDisplayTransaction[]> {
-    const walletHistory = await this.walletService.getTxHistory(wallet.client);
+    const walletHistory = await this.walletService.getTxHistory(wallet.client, { force: true });
     const easySends = await this.persistenceService.getEasySends();
     return formatWalletHistory(walletHistory, wallet.client, easySends);
   }
