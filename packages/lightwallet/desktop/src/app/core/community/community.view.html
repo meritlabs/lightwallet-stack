@@ -1,86 +1,88 @@
 <div class="network">
   <profile-stats [totals]="totals$ | async" [loading]="walletsLoading$ | async"></profile-stats>
-  <app-invites></app-invites>
-  <ng-container *ngFor="let wallet of wallets$ | async">
-    <div class="network__personal-wallet container--inner">
-      <div class="network__personal-wallet__panel">
-        <div class="network__personal-wallet__title title--primary">
-          <p>{{wallet.name}}</p>
-        </div>
-        <div class="network__personal-wallet__toolbar">
-          <div class="network__personal-wallet__toolbar__item
+  <div class="container--inner">
+    <app-invites></app-invites>
+    <ng-container *ngFor="let wallet of wallets$ | async">
+      <div class="network__personal-wallet">
+        <div class="network__personal-wallet__panel">
+          <div class="network__personal-wallet__title title--primary">
+            <p>{{wallet.name}}</p>
+          </div>
+          <div class="network__personal-wallet__toolbar">
+            <div class="network__personal-wallet__toolbar__item
           network__personal-wallet__toolbar__item--mrt">
-            <p>{{ wallet.totalBalanceMicros | toMRT:null:true }}
-              <span>MRT</span>
-            </p>
-          </div>
-          <div class="network__personal-wallet__toolbar__item
+              <p>{{ wallet.totalBalanceMicros | toMRT:null:true }}
+                <span>MRT</span>
+              </p>
+            </div>
+            <div class="network__personal-wallet__toolbar__item
           network__personal-wallet__toolbar__item--currency">
-            <p *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">{{ totalBalanceFiat }}</p>
-          </div>
-        </div>
-        <div class="network__personal-wallet__panel__row invite-code" [clip]="wallet.shareCode">
-          <div class="network__personal-wallet__panel__col">
-            <div class="network__personal-wallet__panel__icon">
-              <img src="/assets/v1/icons/ui/network/invite-code.svg" alt="">
-            </div>
-            <div class="network__personal-wallet__panel__info">
-              <p class="network__personal-wallet__panel__info__small">
-                Invite Code
-                <small class="click_to_copy">Click to copy</small>
-              </p>
-              <p class="network__personal-wallet__panel__info__regular">{{ wallet.shareCode }}</p>
+              <p *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">{{ totalBalanceFiat }}</p>
             </div>
           </div>
-        </div>
-        <div class="network__personal-wallet__panel__row">
-          <div class="network__personal-wallet__panel__col">
-            <div class="network__personal-wallet__panel__icon">
-              <img src="/assets/v1/icons/ui/network/network-size.svg" alt="">
-            </div>
-            <div class="network__personal-wallet__panel__info">
-              <p class="network__personal-wallet__panel__info__small">Community Size</p>
-              <p class="network__personal-wallet__panel__info__regular">{{ wallet.communitySize }}
-                <span>People</span>
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="network__personal-wallet__panel__row">
-          <div class="network__personal-wallet__panel__col">
-            <div class="network__personal-wallet__panel__icon">
-              <img src="/assets/v1/icons/ui/network/mining.svg" alt="">
-            </div>
-            <div class="network__personal-wallet__panel__info">
-              <p class="network__personal-wallet__panel__info__small">Mining Rewards</p>
-              <p class="network__personal-wallet__panel__info__regular">
-                {{ wallet.miningRewardsMicro | toMRT:null:true }}
-                <span>MRT</span>
-              </p>
+          <div class="network__personal-wallet__panel__row invite-code" [clip]="wallet.shareCode">
+            <div class="network__personal-wallet__panel__col">
+              <div class="network__personal-wallet__panel__icon">
+                <img src="/assets/v1/icons/ui/network/invite-code.svg" alt="">
+              </div>
+              <div class="network__personal-wallet__panel__info">
+                <p class="network__personal-wallet__panel__info__small">
+                  Invite Code
+                  <small class="click_to_copy">Click to copy</small>
+                </p>
+                <p class="network__personal-wallet__panel__info__regular">{{ wallet.shareCode }}</p>
+              </div>
             </div>
           </div>
-          <div class="network__personal-wallet__panel__col">
-            <p *ngIf="wallet.miningRewardsMicro | toFiat | async as miningRewardsFiat">{{ miningRewardsFiat }}</p>
-          </div>
-        </div>
-        <div class="network__personal-wallet__panel__row">
-          <div class="network__personal-wallet__panel__col">
-            <div class="network__personal-wallet__panel__icon">
-              <img src="/assets/v1/icons/ui/network/rewards.svg" alt="">
-            </div>
-            <div class="network__personal-wallet__panel__info">
-              <p class="network__personal-wallet__panel__info__small">Ambassador Rewards</p>
-              <p class="network__personal-wallet__panel__info__regular">
-                {{ wallet.ambassadorRewardsMicro | toMRT:null:true }}
-                <span>MRT</span>
-              </p>
+          <div class="network__personal-wallet__panel__row">
+            <div class="network__personal-wallet__panel__col">
+              <div class="network__personal-wallet__panel__icon">
+                <img src="/assets/v1/icons/ui/network/network-size.svg" alt="">
+              </div>
+              <div class="network__personal-wallet__panel__info">
+                <p class="network__personal-wallet__panel__info__small">Community Size</p>
+                <p class="network__personal-wallet__panel__info__regular">{{ wallet.communitySize }}
+                  <span>People</span>
+                </p>
+              </div>
             </div>
           </div>
-          <div class="network__personal-wallet__panel__col">
-            <p *ngIf="wallet.ambassadorRewardsMicro | toFiat | async as ambassadorRewardsMicro">{{ ambassadorRewardsMicro }}</p>
+          <div class="network__personal-wallet__panel__row">
+            <div class="network__personal-wallet__panel__col">
+              <div class="network__personal-wallet__panel__icon">
+                <img src="/assets/v1/icons/ui/network/mining.svg" alt="">
+              </div>
+              <div class="network__personal-wallet__panel__info">
+                <p class="network__personal-wallet__panel__info__small">Mining Rewards</p>
+                <p class="network__personal-wallet__panel__info__regular">
+                  {{ wallet.miningRewardsMicro | toMRT:null:true }}
+                  <span>MRT</span>
+                </p>
+              </div>
+            </div>
+            <div class="network__personal-wallet__panel__col">
+              <p *ngIf="wallet.miningRewardsMicro | toFiat | async as miningRewardsFiat">{{ miningRewardsFiat }}</p>
+            </div>
+          </div>
+          <div class="network__personal-wallet__panel__row">
+            <div class="network__personal-wallet__panel__col">
+              <div class="network__personal-wallet__panel__icon">
+                <img src="/assets/v1/icons/ui/network/rewards.svg" alt="">
+              </div>
+              <div class="network__personal-wallet__panel__info">
+                <p class="network__personal-wallet__panel__info__small">Ambassador Rewards</p>
+                <p class="network__personal-wallet__panel__info__regular">
+                  {{ wallet.ambassadorRewardsMicro | toMRT:null:true }}
+                  <span>MRT</span>
+                </p>
+              </div>
+            </div>
+            <div class="network__personal-wallet__panel__col">
+              <p *ngIf="wallet.ambassadorRewardsMicro | toFiat | async as ambassadorRewardsMicro">{{ ambassadorRewardsMicro }}</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </ng-container>
+    </ng-container>
+  </div>
 </div>
