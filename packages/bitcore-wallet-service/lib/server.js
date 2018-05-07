@@ -2697,6 +2697,8 @@ WalletService.prototype.removePendingTx = function(opts, cb) {
 
     self.getTx({
       txProposalId: opts.txProposalId,
+      retries: 10,
+      interval: 50
     }, function(err, txp) {
       if (err) return cb(err);
 
@@ -2910,7 +2912,9 @@ WalletService.prototype.rejectTx = function(opts, cb) {
   if (!checkRequired(opts, ['txProposalId'], cb)) return;
 
   self.getTx({
-    txProposalId: opts.txProposalId
+    txProposalId: opts.txProposalId,
+    retries: 10,
+    interval: 50
   }, function(err, txp) {
     if (err) return cb(err);
 
