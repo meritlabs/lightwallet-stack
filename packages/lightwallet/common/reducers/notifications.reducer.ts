@@ -125,8 +125,13 @@ export function formatNotification(notification: INotification): INotification {
   if (!notification.formatted) {
     switch (notification.type) {
       case 'IncomingTx':
-        notification.title = 'New payment received.';
+        notification.title = 'New payment received';
         notification.message = `A payment of ${ formatAmount(notification.amount, 'mrt') }MRT has been received into your wallet.`;
+        break;
+
+      case 'IncomingInvite':
+        notification.title = 'New invite received';
+        notification.message = 'An invite has been received into your wallet.';
         break;
 
       case 'WalletUnlocked':
@@ -135,12 +140,12 @@ export function formatNotification(notification: INotification): INotification {
         break;
 
       case 'IncomingCoinbase':
-        notification.title = 'Mining reward received.';
+        notification.title = 'Mining reward received';
         notification.message = `Congratulations! You received a mining reward of ${ formatAmount(notification.amount, 'mrt') }MRT.`;
         break;
 
       case 'IncomingInviteRequest':
-        notification.title = 'New invite request received.';
+        notification.title = 'New invite request received';
         notification.text = 'An invite has been requested from your wallet.';
         break;
 
