@@ -302,8 +302,8 @@ Storage.prototype.mustFetchPendingTx = function(walletId, txProposalId, cb, last
       walletId: walletId
     }, function(err, result) {
       if (err) return cb(err);
-      if (!result || !result.isPending()) return cb(new Error("TX_NOT_FOUND"));
-      if (!result.isPending()) return cb(new Error("TX_NOT_PENDING"));      
+      if (!result) return cb(new Error("TX_NOT_FOUND"));
+      if (!result.isPending) return cb(new Error("TX_NOT_PENDING"));      
       return self._completeTxData(walletId, Model.TxProposal.fromObj(result), cb);
     });
   }
