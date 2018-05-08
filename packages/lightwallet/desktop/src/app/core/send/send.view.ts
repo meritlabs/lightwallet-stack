@@ -382,7 +382,7 @@ export class SendView implements OnInit {
         skipAlias: true,
         skipShareCode: true
       }));
-    }, 1000);
+    }, 1750);
 
     return true;
   }
