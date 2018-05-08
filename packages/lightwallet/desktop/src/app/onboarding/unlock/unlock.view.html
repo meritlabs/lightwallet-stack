@@ -9,12 +9,17 @@
       <div class="unlock__heading__title title--primary">
         <ng-container *ngIf="easyReceipt; else noEasyReceipt">
           <h1>
-              <span (click)="declineGlobalSend()" class="unlock__back"><img src="/assets/v1/images/backup/back-icon.svg" alt=""></span>
-              {{ easyReceipt.senderName | unescape }} sent you Merit!
+            <span (click)="declineGlobalSend()" class="unlock__back">
+              <img src="/assets/v1/images/backup/back-icon.svg" alt="">
+            </span>
+            {{ easyReceipt.senderName | unescape }} sent you Merit!
           </h1>
         </ng-container>
         <ng-template #noEasyReceipt>
-          <h1><span routerLink="../" class="unlock__back"><img src="/assets/v1/images/backup/back-icon.svg" alt=""></span>
+          <h1>
+            <span routerLink="../" class="unlock__back">
+              <img src="/assets/v1/images/backup/back-icon.svg" alt="">
+            </span>
             Merit is invite-only network</h1>
         </ng-template>
       </div>
@@ -40,7 +45,7 @@
             <span class="tooltip-error">
               <span>Invite code must be at least 3 characters long.</span>
             </span>
-            </div>
+          </div>
           <div [hidden]="inviteCode.hasError('required') || !inviteCode.hasError('InvalidFormat')">
             <span class="tooltip-error">
               <span>Invalid address or alias format.</span>
@@ -55,17 +60,21 @@
         <div class="ui-input__group__tipbox" *ngIf="!inviteCode.valid">
           Please enter the invite code you were given, which is usually the alias of the sender.
           <hr>
-          <small><sup>*</sup>Allowed characters: <strong>Numbers/letters only. No spaces.</strong></small>
+          <small>
+            <sup>*</sup>Allowed characters:
+            <strong>Numbers/letters only. No spaces.</strong>
+          </small>
         </div>
       </div>
       <div class="ui-input__group" [ngClass]="{'ui-input__group--disabled': !inviteCode.valid}" *ngIf="inviteCode.valid">
         <label for="" class="ui-label">
           Your username (alias)
           <span class="ui-tooltip">
-              <span class="ui-tooltip__text">
-                Your alias is how you will be known in the Merit community. Anyone can use it to easily send you Merit or as their unlock code. Think of it like your username or handle.
-              </span>
+            <span class="ui-tooltip__text">
+              Your alias is how you will be known in the Merit community. Anyone can use it to easily send you Merit or as their unlock
+              code. Think of it like your username or handle.
             </span>
+          </span>
         </label>
         <input type="text" class="ui-input ui-input--text" formControlName="alias" placeholder="Enter an alias">
         <div class="input-errors" [hidden]="!alias.dirty || alias.valid">
@@ -86,13 +95,16 @@
           </div>
         </div>
         <div class="ui-input__group__tipbox" *ngIf="!alias.valid && !alias.hasError('AliasInUse')">
-          Each wallet should have a unique alias.
-          Aliases cannot be shared across multiple wallets.
-          Please note that aliases cannot be changed after creation.
+          Each wallet should have a unique alias. Aliases cannot be shared across multiple wallets. Please note that aliases cannot
+          be changed after creation.
           <hr>
-          <small><sup>*</sup>Allowed characters: <strong>Numbers/letters only. No Spaces.</strong></small>
+          <small>
+            <sup>*</sup>Allowed characters:
+            <strong>Numbers/letters only. No Spaces.</strong>
+          </small>
           <br>
-          <small><sup>*</sup>Max length: 20 characters</small>
+          <small>
+            <sup>*</sup>Max length: 20 characters</small>
         </div>
       </div>
       <div class="unlock__form__group" *ngIf="!formData.invalid && alias.valid">
@@ -106,10 +118,16 @@
             <img src="/assets/v1/images/backup/back-icon.svg" alt="">
           </div>Here We Go!
         </h2>
-        <div class="content_details"><p>Your wallet is going to be created with the following details:</p></div>
         <div class="content_details">
-          <p>Invited by: <strong>{{inviteCode.value}}</strong></p>
-          <p>Your alias: <strong>@{{alias.value}}</strong></p>
+          <p>Your wallet is going to be created with the following details:</p>
+        </div>
+        <div class="content_details">
+          <p>Invited by:
+            <strong>@{{inviteCode.value}}</strong>
+          </p>
+          <p>Your alias:
+            <strong>@{{alias.value}}</strong>
+          </p>
         </div>
         <div class="content_warning">
           <ul>
@@ -122,26 +140,26 @@
             <li>
               Once your wallet has been activated, you will be able to send and receive Merit.
             </li>
-        </ul>
+          </ul>
         </div>
         <div class="content_checkbox">
           <div class="ui-checkbox">
-              <label class="content_checkbox_wrap"><strong>I understand.  Let's go!</strong>
-                <input type="checkbox" [(ngModel)]="userAgreement">
-                <span class="content_checkbox_checkmark"></span>
-              </label>
+            <label class="content_checkbox_wrap">
+              <strong>I understand. Let's go!</strong>
+              <input type="checkbox" [(ngModel)]="userAgreement">
+              <span class="content_checkbox_checkmark"></span>
+            </label>
           </div>
         </div>
         <div class="content_nextbutton">
-          <button class="ui-button ui-button--blue ui-button--with-arrow"
-          role="button" type="submit" [disabled]="!userAgreement"
-          (click)="onSubmit()">Show me my passphrase</button>
+          <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="!userAgreement" (click)="onSubmit()">Show me my passphrase</button>
         </div>
       </div>
     </div>
     <div class="already-member" [hidden]="!alias.hasError('AliasInUse')">
       <p>Yikes! It looks like you are trying to use an alias that is already taken.</p>
-      <p>If you own this alias in another wallet, then you can <a routerLink="../import">restore or sync your wallet</a> here.</p>
+      <p>If you own this alias in another wallet, then you can
+        <a routerLink="../import">restore or sync your wallet</a> here.</p>
       <p>If not, you will need to choose another alias.</p>
     </div>
   </div>
