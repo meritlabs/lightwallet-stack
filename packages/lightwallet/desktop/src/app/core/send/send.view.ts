@@ -27,9 +27,11 @@ import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import {
   catchError,
-  debounceTime, distinctUntilChanged,
+  debounceTime,
+  distinctUntilChanged,
   filter,
-  map, share,
+  map,
+  share,
   skipWhile,
   startWith,
   switchMap,
@@ -249,12 +251,15 @@ export class SendView implements OnInit {
           this.sending = true;
           this.easySendUrl = null;
         }),
-        switchMap(([_, txData]) => fromPromise(this.send(txData))),
-        catchError((err => {
-          console.trace(err);
-          this.error = err.message;
-          return of(false);
-        })),
+        switchMap(([_, txData]) =>
+          fromPromise(this.send(txData))
+            .pipe(
+              catchError(err => {
+                this.error = err.message;
+                return of(false);
+              })
+            )
+        ),
         tap((success: boolean) => {
           this.sending = false;
           this.success = success;
