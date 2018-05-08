@@ -131,7 +131,9 @@ export class SendAmountView {
       this.selectedWallet = this.wallets[0];
 
       const passedAmount = this.navParams.get('amount') || 0;
-      this.selectedWallet = this.wallets.find(wallet => wallet.balance.spendableAmount > passedAmount);
+      this.selectedWallet = this.wallets.find(w => {
+        return (w.balance.spendableAmount >= passedAmount) && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
+      });
     }
   }
 
@@ -139,7 +141,9 @@ export class SendAmountView {
     const modal = this.modalCtrl.create('SelectWalletModal',
       {
         selectedWallet: this.selectedWallet,
-        availableWallets: this.wallets
+        availableWallets: this.wallets.filter(w => {
+          return w.spendableAmount && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
+        })
       }, MERIT_MODAL_OPTS);
 
     modal.onDidDismiss(async (wallet) => {
@@ -280,8 +284,10 @@ export class SendAmountView {
     });
     loadingSpinner.present();
     try {
+
       this.txData.txp.amount += this.txData.easyFee;
       this.txData.txp = await this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
+
       this.navCtrl.push('SendConfirmationView', { txData: this.txData, referralsToSign: this.referralsToSign });
     } catch (e) {
       this.logger.warn(e);
