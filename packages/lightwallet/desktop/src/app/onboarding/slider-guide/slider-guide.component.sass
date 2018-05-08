@@ -1,6 +1,11 @@
 @import "~styles/v1/common/import-sass"
 \:host
+  position: fixed
+  z-index: 1000
   color: $white
+  background: $gun-metal
+  width: 100vw
+  height: 100vh
   a
     +font(400, 16px, 18px, $color: $white)
     user-select: none
@@ -27,6 +32,9 @@
     position: fixed
     bottom: 20px
     right: 40px
+    &--back
+      right: initial
+      left: 40px
 .guide_slider
   padding-bottom: 65px
   height: 100%
@@ -69,3 +77,4 @@
     +font(100, 22px, 32px)
     margin-bottom: 60px
     letter-spacing: 1px
+  
