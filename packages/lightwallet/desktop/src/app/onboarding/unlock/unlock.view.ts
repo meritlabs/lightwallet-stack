@@ -53,8 +53,17 @@ export class UnlockComponent {
     const receipts = await this.easyReceiveService.getPendingReceipts();
     this.easyReceipt = receipts.pop();
 
+    let inviteCode;
+
     if (this.easyReceipt) {
-      this.inviteCode.setValue(this.easyReceipt.parentAddress);
+      inviteCode = this.easyReceipt.parentAddress;
+    } else {
+      inviteCode = this.router.routerState.root.snapshot.queryParams.user;
+    }
+
+    if (inviteCode) {
+      this.formData.controls['inviteCode'].setValue(inviteCode, { onlySelf: true });
+      this.formData.controls['inviteCode'].markAsDirty();
       this.showGuide = false;
     }
   }

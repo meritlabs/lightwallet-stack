@@ -65,8 +65,10 @@ export class SendInviteView {
     const wallets = await this.wallets$.pipe(take(1)).toPromise();
     if (this.hasAWalletWithInvites = wallets.length > 0) {
       this.selectedWallet = wallets[0];
-      this.emailSubject = `Merit invite from ${this.selectedWallet.shareCode}`;
-      this.emailBody = encodeURIComponent(`${this.selectedWallet.shareCode} invites you to Merit Community. Create your wallet now - https://wallet.merit.me/#/alias/${this.selectedWallet.shareCode}`);
+      const code = this.selectedWallet.alias || this.selectedWallet.referrerAddress;
+      const shareCode = this.selectedWallet.shareCode;
+      this.emailSubject = `Merit invite from ${shareCode}`;
+      this.emailBody = `${shareCode} invites you to Merit Community. Create your wallet now - ${window.location.origin}?user=${code}`;
     }
 
     this.formData.valueChanges.subscribe(val => (this.showEmailMessage = validateEmail(val.address)));
