@@ -286,9 +286,20 @@ export class SendAmountView {
     try {
 
       this.txData.txp.amount += this.txData.easyFee;
-      this.txData.txp = await this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
+      const txp = await this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
+      this.txData.txp.amount -= this.txData.easyFee;  //workaround to prevent txp amount change when going back and forth
 
-      this.navCtrl.push('SendConfirmationView', { txData: this.txData, referralsToSign: this.referralsToSign });
+      const txData = {
+        wallet: this.txData.wallet,
+        txp: txp,
+        amount: this.txData.amount,
+        recipient: this.txData.recipient,
+        password: this.txData.password,
+        feeIncluded: this.txData.feeIncluded,
+        sendMethod: this.txData.sendMethod
+      };
+
+      this.navCtrl.push('SendConfirmationView', { txData: txData, referralsToSign: this.referralsToSign });
     } catch (e) {
       this.logger.warn(e);
     } finally {
