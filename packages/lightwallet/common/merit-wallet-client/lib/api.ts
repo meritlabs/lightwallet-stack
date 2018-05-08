@@ -539,6 +539,7 @@ export class API {
       balance: this.balance,
       invitesBalance: this.invitesBalance,
       pendingInvites: this.pendingInvites,
+      availableInvites: this.availableInvites,
       rootAddress: this.getRootAddress().toString(),
       rootAlias: this.rootAlias,
       parentAddress: this.parentAddress,
