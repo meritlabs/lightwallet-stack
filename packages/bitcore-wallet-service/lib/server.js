@@ -1401,18 +1401,19 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
       });
     },
     function(next) {
-      self.getPendingTxs({}, function(err, txps) {
-        if (err) return next(err);
-
-        const lockedInputs = _.map(_.flatten(_.map(txps, 'inputs')), utxoKey);
-
-        _.each(lockedInputs, function(input) {
-          if (utxoIndex[input]) {
-            utxoIndex[input].locked = true;
-          }
-        });
-        return next();
-      });
+        return next(); //ignoring locks due to https://github.com/meritlabs/lightwallet-stack/issues/812
+      //self.getPendingTxs({}, function(err, txps) {
+      //  if (err) return next(err);
+      //
+      //  const lockedInputs = _.map(_.flatten(_.map(txps, 'inputs')), utxoKey);
+      //
+      //  _.each(lockedInputs, function(input) {
+      //    if (utxoIndex[input]) {
+      //      utxoIndex[input].locked = true;
+      //    }
+      //  });
+      //  return next();
+      //});
     },
     function(next) {
       const now = Math.floor(Date.now() / 1000);
@@ -1486,18 +1487,20 @@ WalletService.prototype._isConfirmedAmountUtxo = function(utxo) {
 WalletService.prototype._totalizeUtxos = function(utxos) {
     const balance = _.reduce(utxos, (acc, utxo) => {
       acc.totalAmount += utxo.micros;
-      if (utxo.locked) {
-        acc.lockedAmount = acc.lockedAmount + utxo.micros;
-        acc.lockedConfirmedAmount = acc.confirmations ?
-          acc.lockedConfirmedAmount + utxo.micros :
-          acc.lockedConfirmedAmount;
-      }
+
+      //ignoring locks due to https://github.com/meritlabs/lightwallet-stack/issues/812
+      //if (utxo.locked) {
+      //  acc.lockedAmount = acc.lockedAmount + utxo.micros;
+      //  acc.lockedConfirmedAmount = acc.confirmations ?
+      //    acc.lockedConfirmedAmount + utxo.micros :
+      //    acc.lockedConfirmedAmount;
+      //}
       acc.totalPendingCoinbaseAmount = this._isPendingCoinbaseUtxo(utxo) ?
-        acc.totalPendingCoinbaseAmount + utxo.micros :
-        acc.totalPendingCoinbaseAmount;
+      acc.totalPendingCoinbaseAmount + utxo.micros :
+      acc.totalPendingCoinbaseAmount;
       acc.totalConfirmedAmount = this._isConfirmedAmountUtxo(utxo) ?
-        acc.totalConfirmedAmount + utxo.micros :
-        acc.totalConfirmedAmount;
+      acc.totalConfirmedAmount + utxo.micros :
+      acc.totalConfirmedAmount;
       return acc;
     }, {
       totalAmount: 0,
@@ -1698,7 +1701,10 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         amountAboveMaxSize: 0,
       };
 
-      var inputs = _.reject(utxos, 'locked');
+      //ignoring locks due to https://github.com/meritlabs/lightwallet-stack/issues/812
+      //var inputs = _.reject(utxos, 'locked');
+
+      var inputs = utxos;
       if (!!opts.excludeUnconfirmedUtxos) {
         inputs = _.filter(inputs, 'confirmations');
       }
@@ -1925,7 +1931,9 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     // We should ensure that utxos are not locked and are mature enough.
     return _.filter(utxos, function(utxo) {
       if (txp.isInvite !== utxo.isInvite) return false;
-      if (utxo.locked) return false;
+
+      //ignoring locks due to https://github.com/meritlabs/lightwallet-stack/issues/812
+      //if (utxo.locked) return false;
       if (utxo.micros <= feePerInput) return false;
       if (txp.excludeUnconfirmedUtxos && !utxo.confirmations) return false;
       if (excludeIndex[utxo.txid + ":" + utxo.vout]) return false;
@@ -2534,7 +2542,9 @@ WalletService.prototype.publishTx = function(opts, cb) {
           var utxosIndex = _.keyBy(utxos, utxoKey);
           var unavailable = _.some(txpInputs, function(i) {
             var utxo = utxosIndex[i];
-            return !utxo || utxo.locked;
+            //ignoring locks due to https://github.com/meritlabs/lightwallet-stack/issues/812
+            //return !utxo || utxo.locked;
+            return !utxo;
           });
 
           if (unavailable) return cb(Errors.UNAVAILABLE_UTXOS);
