@@ -105,8 +105,11 @@ export class EasyReceiveService {
    */
   async getReceiverAmount(txs: Array<any>) {
     const tx = txs.find(tx => !tx.invite);
+    console.log('TX', tx, tx.amount);
     const amount = tx ? tx.amount : 0;
-    return amount - this.rateService.microsToMrt(await this.feeService.getEasyReceiveFee());
+    let fee = this.rateService.microsToMrt(await this.feeService.getEasyReceiveFee());
+    console.log(fee, amount - fee, 'amount minus fee');
+    return amount - fee;
   }
 
   async validateEasyReceiptOnBlockchain(receipt: EasyReceipt, password = '', network = ENV.network): Promise<any> {

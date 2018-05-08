@@ -1495,12 +1495,8 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
       //    acc.lockedConfirmedAmount + utxo.micros :
       //    acc.lockedConfirmedAmount;
       //}
-      acc.totalPendingCoinbaseAmount = this._isPendingCoinbaseUtxo(utxo) ?
-      acc.totalPendingCoinbaseAmount + utxo.micros :
-      acc.totalPendingCoinbaseAmount;
-      acc.totalConfirmedAmount = this._isConfirmedAmountUtxo(utxo) ?
-      acc.totalConfirmedAmount + utxo.micros :
-      acc.totalConfirmedAmount;
+      acc.totalPendingCoinbaseAmount += this._isPendingCoinbaseUtxo(utxo) ?  utxo.micros : 0;
+      acc.totalConfirmedAmount += this._isConfirmedAmountUtxo(utxo) ? utxo.micros : 0;
       return acc;
     }, {
       totalAmount: 0,
