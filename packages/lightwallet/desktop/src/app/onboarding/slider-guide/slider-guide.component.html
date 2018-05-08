@@ -28,11 +28,12 @@
             Remember, you control your Merit; no one else has access to it (not even us!)</p>
           <button type="button" name="button" class="ui-button ui-button--lg ui-button--green" (click)=" skipIntro() ">{{getStartButton}}</button>
         </div>
-        <button class='getStartedNav navArrow' (click)="skipIntro() "></button>
+        <button *ngIf="!hideNextButtonForLastSlide" class='getStartedNav navArrow' (click)="skipIntro() "></button>
       </div>
     </ngx-item>
     <button NgxCarouselPrev class='leftRs navArrow'></button>
     <button NgxCarouselNext class='rightRs navArrow'></button>
   </ngx-carousel>
+  <a routerLink="../" class="skipTutorial skipTutorial--back ">BACK</a>
   <a (click)="skipIntro() " class="skipTutorial ">{{skipButton}}</a>
 </div>
