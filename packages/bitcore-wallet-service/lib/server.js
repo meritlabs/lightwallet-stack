@@ -2590,6 +2590,43 @@ WalletService.prototype.getTx = function(opts, cb) {
 };
 
 /**
+ * Retrieves a tx from storage only if its pending.
+ * @param {Object} opts
+ * @param {string} opts.txProposalId - The tx id.
+ * @param {number} opts.retries - The number of times to retry.
+ * @param {number} opts.interval - The interval, in MS, between retries..
+ * @returns {Object} txProposal
+ */
+WalletService.prototype.getPendingTx = function(opts, cb) {
+  var self = this;
+  opts.retries = opts.retries || 1;
+  opts.interval =  opts.interval || 50;
+  var current = 1;
+
+  async.retry({times: opts.retries, interval: opts.interval},
+    (callback) => {
+      var isLast = current === opts.retries;
+      current++;
+
+      self.storage.mustFetchPendingTx(self.walletId, opts.txProposalId, callback, isLast);
+    },
+    function(err, txp) {
+      if (err) return cb(err);
+
+      if (!txp.txid) return cb(null, txp);
+
+      self.storage.fetchTxNote(self.walletId, txp.txid, function(err, note) {
+        if (err) {
+          log.warn('Error fetching tx note for ' + txp.txid);
+        }
+        txp.note = note;
+        return cb(null, txp);
+      });
+  });
+};
+
+
+/**
  * Edit note associated to a txid.
  * @param {Object} opts
  * @param {string} opts.txid - The txid of the tx on the blockchain.
@@ -2773,7 +2810,7 @@ WalletService.prototype.signTx = function(opts, cb) {
      * either when we have time or get a mongo clustering expert on the team.
      * TODO: Reconsider approach to handling Mongo race conditions.
     */
-    self.getTx({
+    self.getPendingTx({
       txProposalId: opts.txProposalId,
       retries: 10,
       interval: 75
