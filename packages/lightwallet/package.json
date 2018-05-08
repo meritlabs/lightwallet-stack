@@ -97,7 +97,7 @@
     "ngx-moment": "^2.0.0-rc.0",
     "plist": "^2.1.0",
     "preconditions": "^2.2.0",
-    "rxjs": "5.5.2",
+    "rxjs": "5.5.10",
     "sjcl": "^1.0.3",
     "superagent": "^3.4.1",
     "ts-md5": "^1.2.2",
