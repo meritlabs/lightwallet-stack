@@ -8,7 +8,7 @@
     </div>
   </div>
   <div class="network__personal-wallet__panel__col counter">
-    <p>{{ (inviteRequests$ | async)?.length }}</p>
+    <p>{{ ((inviteRequests$ | async)?.length) || 0 }}</p>
   </div>
 </div>
 <div class="wallets__group__wallet item" [routerLink]='"/community/send-invite"'>
@@ -21,6 +21,6 @@
     </div>
   </div>
   <div class="network__personal-wallet__panel__col counter">
-    <p>{{ invites$ | async }}</p>
+    <p>{{ (invites$ | async) || 0 }}</p>
   </div>
 </div>

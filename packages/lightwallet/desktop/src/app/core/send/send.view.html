@@ -47,9 +47,6 @@
             </span>
             <span class="description">
               Not sure if they have a Merit address?
-              <span class="error" *ngIf="!wallet.value?.status?.availableInvites">
-                You don't have an available invite to use GlobalSend, please select another wallet or use ClassicSend.
-              </span>
             </span>
           </button>
         </div>
@@ -84,7 +81,7 @@
                   You will see a link after confirming the transaction that you can share with your recipient.
                 </p>
                 <p *ngIf="!wallet.value?.status?.availableInvites">
-                  Current wallet dont have invite, you can not use Global Send without available invite in your wallet =(
+                  You don't have an available invite to use GlobalSend, please select another wallet or use ClassicSend.
                 </p>
               </div>
             </div>
@@ -102,7 +99,7 @@
                   Me
                 </span>
                 <span class="ui-checkbox_case ui-checkbox_case-second">
-                  Recepient
+                  Recipient
                 </span>
               </span>
             </div>
