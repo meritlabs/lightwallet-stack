@@ -142,7 +142,7 @@ export class SendAmountView {
       {
         selectedWallet: this.selectedWallet,
         availableWallets: this.wallets.filter(w => {
-          return w.spendableAmount && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
+          return w.balance.spendableAmount && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
         })
       }, MERIT_MODAL_OPTS);
 
