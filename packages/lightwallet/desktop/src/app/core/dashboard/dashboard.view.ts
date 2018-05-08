@@ -15,8 +15,9 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./dashboard.view.sass']
 })
 export class DashboardView {
-  amount: number = null;
 
+  showGuide: boolean = !('hideWalletWelcomeWindow' in localStorage && localStorage.getItem('hideWalletWelcomeWindow') === 'true');
+  amount: number = null;
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   totals$: Observable<any> = this.store.select(selectWalletTotals);
@@ -24,7 +25,6 @@ export class DashboardView {
     map((transactions: IDisplayTransaction[]) => isArray(transactions) ? transactions.slice(0, 5) : [])
   );
   transactionsLoading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
-  showGuide: boolean = !('hideWalletWelcomeWindow' in localStorage && localStorage.getItem('hideWalletWelcomeWindow') === 'true');
 
   constructor(private store: Store<IRootAppState>) {}
 
