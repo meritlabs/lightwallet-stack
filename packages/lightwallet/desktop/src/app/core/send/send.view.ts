@@ -317,7 +317,7 @@ export class SendView implements OnInit {
     let txData: Partial<TxData> = {};
     let { amountMrt, wallet, type, feeIncluded, password, address } = formValue;
 
-    let micros = this.rateService.mrtToMicro(amountMrt);
+    const micros = this.rateService.mrtToMicro(amountMrt);
 
     if (micros == wallet.balance.spendableAmount) {
       feeIncluded = true;
@@ -376,11 +376,13 @@ export class SendView implements OnInit {
       await this.persistenceService.addEasySend(clone(txData.easySend));
     }
 
-    this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
-      skipRewards: true,
-      skipAlias: true,
-      skipShareCode: true
-    }));
+    setTimeout(() => {
+      this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
+        skipRewards: true,
+        skipAlias: true,
+        skipShareCode: true
+      }));
+    }, 1000);
 
     return true;
   }
