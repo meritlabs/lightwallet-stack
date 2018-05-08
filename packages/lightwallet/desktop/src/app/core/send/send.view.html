@@ -76,10 +76,8 @@
                 <small>(optional)</small>
               </label>
               <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password" *ngIf="wallet.value?.status?.availableInvites">
-              <div class="info" [ngClass]="{'danger': !wallet.value?.status?.availableInvites}">
-                <span class="icon">
-                  <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
-                </span>
+              <div class="notification-info" [ngClass]="{'danger': !wallet.value?.status?.availableInvites}">
+                <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
                 <p *ngIf="wallet.value?.status?.availableInvites">
                   You will see a link after confirming the transaction that you can share with your recipient.
                 </p>

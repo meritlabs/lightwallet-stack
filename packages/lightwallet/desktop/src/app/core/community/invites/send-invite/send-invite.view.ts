@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
+
+import { ENV } from '@app/env';
 import {
   RefreshOneWalletTransactions, selectSentInvites,
   selectTransactionsLoading
@@ -22,10 +24,16 @@ import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
 import { map, take, tap } from 'rxjs/operators';
 
+function validateEmail(email) {
+  var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  return re.test(String(email).toLowerCase());
+}
+
 @Component({
   selector: 'view-send-invite',
   templateUrl: './send-invite.view.html',
-  styleUrls: ['./send-invite.view.scss']
+  styleUrls: ['./send-invite.view.sass']
 })
 export class SendInviteView {
   historyLoading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
@@ -40,6 +48,10 @@ export class SendInviteView {
     address: ['', [Validators.required], [AddressValidator.validateAddress(this.mwcService, true)]]
   });
 
+  showEmailMessage = false;
+  emailSubject;
+  emailBody;
+
   get address() { return this.formData.get('address'); }
 
   constructor(private store: Store<IRootAppState>,
@@ -51,8 +63,13 @@ export class SendInviteView {
 
   async ngOnInit() {
     const wallets = await this.wallets$.pipe(take(1)).toPromise();
-    if (this.hasAWalletWithInvites = wallets.length > 0)
+    if (this.hasAWalletWithInvites = wallets.length > 0) {
       this.selectedWallet = wallets[0];
+      this.emailSubject = `Merit invite from ${this.selectedWallet.shareCode}`;
+      this.emailBody = encodeURIComponent(`${this.selectedWallet.shareCode} invites you to Merit Community. Create your wallet now - https://wallet.merit.me/#/alias/${this.selectedWallet.shareCode}`);
+    }
+
+    this.formData.valueChanges.subscribe(val => (this.showEmailMessage = validateEmail(val.address)));
   }
 
   async sendInvite() {
