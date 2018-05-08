@@ -954,7 +954,7 @@ export class WalletService {
     const txs: any[] = await Observable.defer<any[]>(() => getNewTxs([], 0))
       .retryWhen(errors =>
         errors.zip(Observable.range(1, 3))
-          .mergeMap(([err, attempt]) => {
+          .mergeMap(([err, attempt]: [any, number]): Observable<any> => {
             if (err.code == MWCErrors.CONNECTION_ERROR.code || err.code == MWCErrors.SERVER_UNAVAILABLE && attempt < 3) {
               this.logger.info('Retrying history download in 5 secs...');
               // TODO: use RxJS
@@ -1138,7 +1138,6 @@ export class WalletService {
           this.events.publish('Local:Tx:Signed', signedTxp);
           return resolve(signedTxp);
         }
-        ;
       }).catch((err) => {
         this.logger.warn('sign error:' + err);
         let msg = err && err.message ? err.message : 'The payment was created but could not be completed. Please try again from home screen'; //TODO gettextcatalog
