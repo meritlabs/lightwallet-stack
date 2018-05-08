@@ -271,8 +271,6 @@ export class API {
 
       this._processTxNotes(txp.note);
     });
-
-    return txps;
   }
 
   /**
@@ -1991,7 +1989,7 @@ export class API {
       throw MWCErrors.INSUFFICIENT_FUNDS;
     }
 
-    await this._processTxps([txp]);
+    await this._processTxps(txp);
 
     if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey, opts.sendMax)) {
       throw MWCErrors.SERVER_COMPROMISED;
@@ -2202,7 +2200,7 @@ export class API {
 
     let txps = await this._doGetRequest('/v1/txproposals/');
 
-    txps = this._processTxps(txps);
+    await this._processTxps(txps);
 
     await Promise.all(txps.map(async (txp) => {
       if (!opts.doNotVerify) {
@@ -2284,7 +2282,8 @@ export class API {
     };
 
     txp = await this._doPostRequest(url, args);
-    return this._processTxps(txp);
+    await this._processTxps(txp);
+    return txp;
   }
 
   /**
@@ -2343,7 +2342,9 @@ export class API {
     };
 
     txp = await this._doPostRequest(url, args);
-    return this._processTxps(txp);
+    await this._processTxps(txp);
+
+    return txp;
   }
 
   /**
@@ -2366,7 +2367,9 @@ export class API {
   private async _doBroadcast(txp: any): Promise<any> {
     const url = '/v1/txproposals/' + txp.id + '/broadcast/';
     txp = await this._doPostRequest(url);
-    return this._processTxps(txp);
+    await this._processTxps(txp);
+
+    return txp;
   };
 
   /**
@@ -2441,7 +2444,9 @@ export class API {
 
     const url = '/v1/txhistory/' + qs;
     const txps = await this._doGetRequest(url);
-    return this._processTxps(txps);
+    await this._processTxps(txps);
+
+    return txps;
   }
 
   /**
@@ -2458,7 +2463,9 @@ export class API {
     $.checkState(this.credentials && this.credentials.isComplete());
 
     const txp = await this._doGetRequest('/v1/txproposals/' + id);
-    return this._processTxps(txp);
+    await this._processTxps(txp);
+
+    return txp;
   };
 
   /**
