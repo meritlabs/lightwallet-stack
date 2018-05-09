@@ -124,8 +124,8 @@ export class API {
 
   public balance: any;
   public invitesBalance: any;
-  public availableInvites: number;
-  public pendingInvites: number;
+  public availableInvites: number = 0;
+  public pendingInvites: number = 0;
 
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
