@@ -149,7 +149,7 @@ export class EasyReceiveService {
     return wallet.broadcastRawTx({ rawTx: txp.serialize({ disableSmallFees: tx.invite }), network: ENV.network });
   }
 
-  generateEasyScipt(receipt: EasyReceipt, password, network) {
+  generateEasyScipt(receipt: EasyReceipt, password: string, network: string = ENV.network) {
     const secret = this.ledger.hexToString(receipt.secret);
     const receivePrv = PrivateKey.forEasySend(secret, password, network);
     const receivePub = PublicKey.fromPrivateKey(receivePrv).toBuffer();
@@ -228,6 +228,10 @@ export class EasyReceiveService {
     this.cancelEasySendSource.next(receipt);
   }
 
+  getScriptAddress(scriptData: any) {
+    return Address(scriptData.scriptPubKey.getAddressInfo()).toString();
+  }
+
   async cancelEasySendReceipt(
     wallet: MeritWalletClient,
     receipt: EasyReceipt,
@@ -242,7 +246,7 @@ export class EasyReceiveService {
     //generate script based on receipt
     const scriptData = this.generateEasyScipt(receipt, password, ENV.network);
     const redeemScript = scriptData.script;
-    const scriptAddress = Address(scriptData.scriptPubKey.getAddressInfo()).toString();
+    const scriptAddress = this.getScriptAddress(scriptData);
 
     //find the invite and transaction
     const txsRes = await wallet.validateEasyScript(scriptAddress.toString());
