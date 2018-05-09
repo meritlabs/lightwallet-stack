@@ -18,6 +18,7 @@ import { FingerprintLockView } from '@merit/mobile/app/utilities/fingerprint-loc
 import { PinLockView } from '@merit/mobile/app/utilities/pin-lock/pin-lock';
 import { Events, ModalController, Nav, Platform } from 'ionic-angular';
 import { isEmpty } from 'lodash';
+import { cleanAddress } from '@merit/common/utils/addresses';
 
 @Component({
   templateUrl: 'app.html'
@@ -67,10 +68,13 @@ export class MeritLightWallet {
     let search = window.location.search;
 
     if (search && search.indexOf('invite') !== -1 ) {
-      const address = search.split('?invite=')[1];
-      const name = this.addressService.couldBeAlias(address) ? '@'+address : 'Someone';
+      let address = cleanAddress( search.split('?invite=')[1] );
       window.history.replaceState({},document.title,document.location.pathname);
 
+
+      if (!this.addressService.couldBeAlias(address) && !this.addressService.isAddress(address)) return;
+
+      const name = this.addressService.couldBeAlias(address) ? '@'+address : 'Someone';
       return {address, name};
     }
   }

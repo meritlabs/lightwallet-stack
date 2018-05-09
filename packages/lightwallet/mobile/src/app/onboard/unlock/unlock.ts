@@ -27,7 +27,7 @@ export class UnlockView {
   invitation: {address: string, alias: string};
 
   get canContinue(): boolean {
-    return Boolean(this.formData.parentAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError;
+    return Boolean(this.parsedAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError;
   }
 
   get shouldShowQRButton(): boolean {
@@ -57,7 +57,10 @@ export class UnlockView {
     }
 
     this.invitation = this.navParams.get('invitation');
-    if (this.invitation) this.formData.parentAddress = this.invitation.address;
+    if (this.invitation) {
+      this.formData.parentAddress = this.invitation.address;
+      this.validateAddress();
+    }
   }
 
   checkAddress() {
