@@ -63,7 +63,7 @@ export class UnlockComponent {
     if (this.easyReceipt) {
       inviteCode = this.easyReceipt.parentAddress;
     } else {
-      inviteCode = getQueryParam('invite');
+      inviteCode = cleanAddress(getQueryParam('invite'));
       this.invite = this.addressService.couldBeAlias(inviteCode) ? `@${inviteCode}` : inviteCode;
     }
 
