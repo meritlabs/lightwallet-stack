@@ -125,6 +125,11 @@ export class SendAmountView {
     });
   }
 
+  ionViewWillEnter() {
+    this.txData = null;
+    this.updateTxData();
+  }
+
   private chooseAppropriateWallet() {
     if (this.wallets && this.wallets[0]) {
 
@@ -286,20 +291,25 @@ export class SendAmountView {
     try {
 
       this.txData.txp.amount += this.txData.easyFee;
-      const txp = await this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
-      this.txData.txp.amount -= this.txData.easyFee;  //workaround to prevent txp amount change when going back and forth
+      this.txData.txp = await this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
+      this.navCtrl.push('SendConfirmationView', { txData: this.txData, referralsToSign: this.referralsToSign });
 
-      const txData = {
-        wallet: this.txData.wallet,
-        txp: txp,
-        amount: this.txData.amount,
-        recipient: this.txData.recipient,
-        password: this.txData.password,
-        feeIncluded: this.txData.feeIncluded,
-        sendMethod: this.txData.sendMethod
-      };
+      //this.txData.txp.amount += this.txData.easyFee;
+      //const txp = await this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
+      //this.txData.txp.amount -= this.txData.easyFee;  //workaround to prevent txp amount change when going back and forth
+      //
+      //const txData = {
+      //  wallet: this.txData.wallet,
+      //  txp: txp,
+      //  amount: this.txData.txp.amount,
+      //  recipient: this.txData.recipient,
+      //  password: this.txData.password,
+      //  feeIncluded: this.txData.feeIncluded,
+      //  sendMethod: this.txData.sendMethod,
+      //  easyFee: this.txData.easyFee
+      //};
 
-      this.navCtrl.push('SendConfirmationView', { txData: txData, referralsToSign: this.referralsToSign });
+      //this.navCtrl.push('SendConfirmationView', { txData: txData, referralsToSign: this.referralsToSign });
     } catch (e) {
       this.logger.warn(e);
     } finally {
