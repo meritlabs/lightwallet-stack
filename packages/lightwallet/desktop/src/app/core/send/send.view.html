@@ -31,8 +31,8 @@
             {{ wallet.value.status.spendableAmount | toMRT }}, {{ wallet.value.status.availableInvites || 0 }} invites available
           </label>
         </div>
-        <div class="selectMethod">
-          <button (click)="updateTxType('classic')" type="button" role="button" class="selectMethod_item" [class.active]="type.value === 'classic'">
+        <div class="select-method">
+          <button (click)="updateTxType('classic')" type="button" role="button" class="method" [class.active]="type.value === 'classic'">
             <span class="title">
               Send via ClassicSend
             </span>
@@ -41,7 +41,7 @@
             </span>
           </button>
 
-          <button (click)="updateTxType('easy')" type="button" role="button" class="selectMethod_item" [class.active]="type.value === 'easy'">
+          <button (click)="updateTxType('easy')" type="button" role="button" class="method" [class.active]="type.value === 'easy'">
             <span class="title">
               Send via GlobalSend
             </span>
