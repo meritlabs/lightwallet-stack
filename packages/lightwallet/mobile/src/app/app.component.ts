@@ -152,7 +152,7 @@ export class MeritLightWallet {
 
       const receipt = await this.loadEasySend();
       if (receipt) {
-        if (this.authorized) {
+        if (!this.authorized) {
           await this.nav.setRoot('UnlockView');
         } else {
           await this.nav.setRoot('TransactView');
