@@ -48,6 +48,18 @@
         justify-content: space-between
         flex-flow: row wrap
         align-items: center
+        .inline-right
+          display: flex
+          justify-content: flex-end
+          align-items: center
+        .controls
+          display: flex
+          flex-direction: column
+          align-items: flex-end
+        .share-link
+          position: relative
+          margin-top: 7px
+          +font(400, 14px, 1, $blue)
         .manageIt
           width: 20px
           height: 20px
@@ -55,10 +67,6 @@
           mask-image: url('/assets/v1/icons/ui/manage-wallet.svg')
           mask-repeat: no-repeat
           margin-left: 20px
-        .inline-right
-          display: flex
-          justify-content: flex-end
-          align-items: center
       &__info
         letter-spacing: .3px
         display: flex
@@ -208,11 +216,26 @@
   &__name
     display: flex
     align-items: center
+    justify-content: space-between
     margin-bottom: 20px
     display: flex
     +font(300, 22px, 22px, $white)
     merit-icon
       margin-right: 20px
+    &__info
+      display: flex
+      align-items: center
+      justify-content: space-between
+    &__share
+      display: inline-flex
+      align-items: center
+      font-size: 16px
+      cursor: pointer
+      merit-icon
+        width: 24px
+        height: 24px
+        margin-right: 0
+        margin-left: 10px
   &__balance
     display: flex
     align-items: center
