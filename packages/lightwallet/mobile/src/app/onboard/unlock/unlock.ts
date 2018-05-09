@@ -24,6 +24,8 @@ export class UnlockView {
   easyReceipt: EasyReceipt;
   parsedAddress: '';
 
+  invitation: {address: string, alias: string};
+
   get canContinue(): boolean {
     return Boolean(this.formData.parentAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError;
   }
@@ -53,6 +55,9 @@ export class UnlockView {
       this.formData.parentAddress = this.easyReceipt.parentAddress;
       this.validateAddress();
     }
+
+    this.invitation = this.navParams.get('invitation');
+    if (this.invitation) this.formData.parentAddress = this.invitation.address;
   }
 
   checkAddress() {
