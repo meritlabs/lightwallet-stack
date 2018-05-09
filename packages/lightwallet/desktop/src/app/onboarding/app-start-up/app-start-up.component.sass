@@ -29,7 +29,7 @@
         display: inline-block
         opacity: 0
         transform: scale(2) translateY(-20px)
-        animation: typeIt .3s forwards
+        animation: typeIt .2s forwards
         animation-timing-function: ease-in
     @for $i from 0 to 20
       i:nth-child(#{$i + 1})
@@ -64,7 +64,7 @@
     padding: 20px 15px
     cursor: pointer
     opacity: .7
-    +transition(.3s, linear)
+    +transition(.2s, ease-in-out)
     background: transparent
     transform: translate3d(0,0,0)
     &:hover
