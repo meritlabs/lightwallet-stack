@@ -166,7 +166,12 @@
                     Amount
                   </div>
                   <div class="sendMerit__totals__table__column">
-                    {{ receipt.amount | toMRT }}
+                    <ng-container *ngIf="formData.controls.feeIncluded.value; else noRecipientFee">
+                      {{ receipt.amount - receipt.fee | toMRT }}
+                    </ng-container>
+                    <ng-template #noRecipientFee>
+                      {{ receipt.amount | toMRT }}
+                    </ng-template>
                   </div>
                 </div>
                 <div class="sendMerit__totals__table__row">
