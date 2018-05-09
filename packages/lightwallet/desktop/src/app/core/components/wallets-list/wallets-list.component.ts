@@ -25,7 +25,7 @@ export class WalletsListComponent {
   shareLink(wallet: DisplayWallet) {
     const code = wallet.alias || wallet.referrerAddress;
 
-    return `${window.location.origin}?user=${code}`;
+    return `${window.location.origin}?invite=${code}`;
   }
 
   onCopy($event: MouseEvent, walletId: number) {

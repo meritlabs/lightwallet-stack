@@ -33,7 +33,7 @@ export class WalletDetailView {
     return this.wallet$.pipe(map(wallet => {
       const code = wallet.alias || wallet.referrerAddress;
 
-      return `${window.location.origin}?user=${code}`;
+      return `${window.location.origin}?invite=${code}`;
     }));
   }
 
