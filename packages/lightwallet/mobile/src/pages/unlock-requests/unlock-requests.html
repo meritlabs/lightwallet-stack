@@ -64,7 +64,7 @@
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/incoming_request.svg">
         </ion-avatar>
-          <h2 [class.address]="request.alias">{{ request.alias ? '@' + request.alias : request.address }}</h2>
+          <h2 [class.address]="!request.alias">{{ request.alias ? '@' + request.alias : request.address }}</h2>
           <p *ngIf="request.alias" class="address">{{ request.address }}</p>
       </button>
     </ion-list>
