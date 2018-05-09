@@ -8,7 +8,7 @@
     "scope_url_path": "/"
   },
   "short_name": "Merit",
-  "start_url": "https://m.wallet.merit.me/index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "display_mode": "standalone",
   "icons": [{
