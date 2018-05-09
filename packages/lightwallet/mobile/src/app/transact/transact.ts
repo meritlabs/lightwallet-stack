@@ -207,19 +207,6 @@ export class TransactView {
     }).present();
   }
 
-  private async cancelEasyReceipt(receipt: EasyReceipt): Promise<any> {
-    try {
-      const wallets = await this.profileService.getWallets();
-      let wallet = wallets[0];
-      if (!wallet) throw 'no wallet';
-
-      const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
-      this.logger.info('accepted easy send', acceptanceTx);
-    } catch (err) {
-      console.log(err);
-      this.toastCtrl.error('There was an error cancelling your GlobalSend.');
-    }
-  }
 
   /**
    * Shows after receipt is validated with correct password (or with no pass if no one set)
@@ -271,6 +258,22 @@ export class TransactView {
         'Ok'
       ]
     }).present();
+  }
+
+
+  private async cancelEasyReceipt(receipt: EasyReceipt): Promise<any> {
+    try {
+      const wallets = await this.profileService.getWallets();
+      let wallet = wallets[0];
+      if (!wallet) throw 'no wallet';
+
+      const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
+      this.events.publish('Remote:IncomingTx');
+      this.logger.info('accepted easy send', acceptanceTx);
+    } catch (err) {
+      console.log(err);
+      this.toastCtrl.error('There was an error cancelling your GlobalSend.');
+    }
   }
 
   private async acceptEasyReceipt(receipt: EasyReceipt, data: any): Promise<any> {
