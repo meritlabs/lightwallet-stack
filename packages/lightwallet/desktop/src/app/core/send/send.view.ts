@@ -70,7 +70,6 @@ export class SendView implements OnInit {
   hasAvailableInvites: boolean;
 
   availableCurrencies: Array<{ code: string; name: string; rate: number; }>;
-  // selectedCurrency: { code: string };
 
   easySendUrl: string;
   error: string;
@@ -286,7 +285,10 @@ export class SendView implements OnInit {
   private async resetFormData() {
     this.formData.reset({ emitEvent: false });
 
-    const wallets = await this.wallets$.pipe(take(1)).toPromise();
+    const wallets = await this.wallets$.pipe(
+      skipWhile(wallets => !wallets || !wallets.length),
+      take(1)
+    ).toPromise();
 
     this.hasUnlockedWallet = wallets.length > 0;
     this.hasAvailableInvites = wallets.some(w => w.availableInvites > 0);
