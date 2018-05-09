@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
@@ -14,8 +17,8 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
-import { Store } from '@ngrx/store';
-import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { getQueryParam } from '@merit/common/utils/url';
+import { AddressService } from '@merit/common/services/address.service';
 
 @Component({
   selector: 'view-unlock',
@@ -33,6 +36,7 @@ export class UnlockComponent {
   showAgreement: boolean;
   showGuide: boolean = !('showGuide' in localStorage && localStorage.getItem('showGuide') === 'false');
   userAgreement: boolean;
+  invite = '';
 
   get inviteCode() { return this.formData.get('inviteCode'); }
   get alias() { return this.formData.get('alias'); }
@@ -46,6 +50,7 @@ export class UnlockComponent {
               private router: Router,
               private store: Store<IRootAppState>,
               private easyReceiveService: EasyReceiveService,
+              private addressService: AddressService,
               private loadingCtrl: Ng4LoadingSpinnerService,
               private toastCtrl: ToastControllerService) {}
 
@@ -53,8 +58,18 @@ export class UnlockComponent {
     const receipts = await this.easyReceiveService.getPendingReceipts();
     this.easyReceipt = receipts.pop();
 
+    let inviteCode;
+
     if (this.easyReceipt) {
-      this.inviteCode.setValue(this.easyReceipt.parentAddress);
+      inviteCode = this.easyReceipt.parentAddress;
+    } else {
+      inviteCode = getQueryParam('invite');
+      this.invite = this.addressService.couldBeAlias(inviteCode) ? `@${inviteCode}` : inviteCode;
+    }
+
+    if (inviteCode) {
+      this.formData.controls['inviteCode'].setValue(inviteCode, { onlySelf: true });
+      this.formData.controls['inviteCode'].markAsDirty();
       this.showGuide = false;
     }
   }
