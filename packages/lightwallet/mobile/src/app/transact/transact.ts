@@ -296,21 +296,18 @@ export class TransactView {
     }
   }
 
-  private rejectEasyReceipt(receipt: EasyReceipt, data): Promise<any> {
+  private async rejectEasyReceipt(receipt: EasyReceipt, data): Promise<any> {
 
-    return this.profileService.getWallets().then((wallets) => {
-
-      //todo implement wallet selection UI
+    try {
+      const wallets = await this.profileService.getWallets();
       let wallet = wallets[0];
-      if (!wallet) return Promise.reject(new Error('Could not retrieve wallet.'));
+      if (!wallet) throw new Error('Could not retreive wallet');
+      await this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data);
+      this.logger.info('Easy send returned');
+    } catch (e) {
+      this.toastCtrl.error(err.text || 'There was an error rejecting the Merit');
+    }
 
-      return this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data).then(() => {
-        this.logger.info('Easy send returned');
-      }).catch((err) => {
-        console.log(err);
-        this.toastCtrl.error(err.text || 'There was an error rejecting the Merit');
-      });
-    });
   }
 
   countUnlockRequests() {
