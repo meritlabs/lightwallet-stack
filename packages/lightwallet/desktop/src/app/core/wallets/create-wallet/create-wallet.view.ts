@@ -30,8 +30,8 @@ export class CreateWalletView {
     walletName: ['Personal wallet', Validators.required],
     parentAddress: ['', Validators.required, AddressValidator.validateAddress(this.mwcService)],
     alias: ['', [], AddressValidator.validateAliasAvailability(this.mwcService)],
-    bwsurl: [ENV.mwsUrl, Validators.required],
-    recoveryPhrase: ['', MnemonicValidator.validateMnemonicImport],
+    bwsurl: [ENV.mwsUrl],
+    recoveryPhrase: '',
     password: '',
     repeatPassword: ['', PasswordValidator.MatchPassword],
     color: ['#00B0DD'],
@@ -79,6 +79,10 @@ export class CreateWalletView {
     {
       name: 'Lilac Bush',
       color: '#A185D4'
+    },
+    {
+      name: 'Merit blue',
+      color: '#00B0DD'
     },
     {
       name: 'Moody Blue',

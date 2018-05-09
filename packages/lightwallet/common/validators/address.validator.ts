@@ -27,6 +27,9 @@ export class AddressValidator {
     return async (abstractCtrl: AbstractControl) => {
       let { value } = abstractCtrl;
 
+      if (!value)
+        return null;
+
       if (invalidPattern(value) || !couldBeAlias(value))
         return { InvalidFormat: true };
 
