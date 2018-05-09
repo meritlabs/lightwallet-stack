@@ -1,7 +1,7 @@
 <profile-stats [totals]="totals$ | async" [loading]="walletsLoading$ | async"></profile-stats>
 <div class="container--inner wrap">
   <div class="widget">
-    <app-invites *ngIf="!(walletsLoading$ | async)"></app-invites>
+    <app-invites></app-invites>
     <div class="quick-send">
       <h2 class="main-header">
         Send Merit
@@ -21,8 +21,10 @@
     <h2 class="main-header">
       Latest transactions
     </h2>
-    <history-list [widget]=true [transactions]="transactions$ | async"
-                  [loading]="transactionsLoading$ | async"></history-list>
+    <ng-container *ngIf="transactions$ | async as transactions">
+      <history-list [widget]=true [transactions]="transactions"
+                    [loading]="transactionsLoading$ | async" [style]="getHistoryStyle(transactions?.length || 0)"></history-list>
+    </ng-container>
   </div>
 </div>
 <app-welcome-guide *ngIf="showGuide" [wallets]="wallets$ | async" (dismiss)="onGuideDismiss()"></app-welcome-guide>
