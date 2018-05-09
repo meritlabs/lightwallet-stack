@@ -843,6 +843,10 @@ export class API {
     let txp = await this.createTxProposal(opts);
     txp = await this.publishTxProposal({ txp });
     txp = await this.signTxProposal(txp, walletPassword);
+
+    await this.getStatus();
+    if (this.availableInvites == 0) throw new Error('You do not have free invites you can send');
+
     txp = await this.broadcastTxProposal(txp);
 
     return txp;
