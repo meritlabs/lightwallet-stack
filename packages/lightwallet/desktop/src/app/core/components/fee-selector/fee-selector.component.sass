@@ -1,0 +1,26 @@
+@import '~styles/v1/common/import-sass'
+
+\:host
+  display: flex
+  border: 2px solid $blue
+  border-radius: $base-border-radius
+  width: 240px
+  text-align: center
+  font-size: 14px
+
+div
+  display: inline-block
+  width: 120px
+  padding: 5px 10px
+  background: white
+  color: $blue
+  cursor: pointer
+  transition: all .2s ease-in-out
+  user-select: none
+
+  &:hover
+    background: rgb(243, 243, 243)
+
+  &.selected
+    background: $blue
+    color: white

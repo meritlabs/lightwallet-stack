@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
+import { FeeSelectorComponent } from '@merit/desktop/app/core/components/fee-selector/fee-selector.component';
 import { NotificationsHistoryComponent } from '@merit/desktop/app/core/components/notifications-history/notifications-history.component';
 import { NotificationsComponent } from '@merit/desktop/app/core/components/notifications/notifications.component';
 import { ProfileStatsComponent } from '@merit/desktop/app/core/components/profile-stats/profile-stats.component';
@@ -25,7 +26,8 @@ export function getComponents() {
     ToolbarComponent,
     WalletsListComponent,
     VaultsListComponent,
-    ProfileStatsComponent
+    ProfileStatsComponent,
+    FeeSelectorComponent
   ];
 }
 

@@ -2,24 +2,18 @@ import { Component, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'ui-checkbox',
-  template: `
-<span class="switcher"></span>
-  `,
-  styleUrls: ['./ui-checkbox.component.sass'],
-  host: {
-    '(click)': 'onClick()',
-    '[class.checked]': 'value'
-  },
+  selector: 'fee-selector',
+  template: `<div (click)="onClick(false)" [class.selected]="!value">Me</div><div (click)="onClick(true)" [class.selected]="value">Recipient</div>`,
+  styleUrls: ['./fee-selector.component.sass'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: forwardRef(() => UICheckboxComponent)
+      useExisting: forwardRef(() => FeeSelectorComponent)
     }
   ]
 })
-export class UICheckboxComponent implements ControlValueAccessor {
+export class FeeSelectorComponent implements ControlValueAccessor {
   value: boolean;
   onChange: Function = () => {};
   onTouched: Function = () => {};
@@ -36,7 +30,7 @@ export class UICheckboxComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  onClick() {
-    this.writeValue(!this.value);
+  onClick(value: boolean) {
+    this.writeValue(value);
   }
 }
