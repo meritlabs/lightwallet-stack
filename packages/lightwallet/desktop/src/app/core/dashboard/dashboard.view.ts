@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
@@ -26,7 +27,11 @@ export class DashboardView {
   );
   transactionsLoading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
 
-  constructor(private store: Store<IRootAppState>) {}
+  constructor(private store: Store<IRootAppState>, private sanitizer: DomSanitizer) {}
+
+  getHistoryStyle(length: number) {
+    return this.sanitizer.bypassSecurityTrustStyle('height: calc(' + (length * 95) + 'px)');
+  }
 
   onGuideDismiss() {
     localStorage.setItem('hideWalletWelcomeWindow', 'true');
