@@ -6,7 +6,7 @@
   border-radius: 4px
   box-sizing: border-box
   cursor: pointer
-  +transition(.3s, linear)
+  +transition(.2s, ease-in-out)
   &[disabled]
     opacity: .5
     cursor: default
@@ -47,7 +47,7 @@
       font-weight: 900
       margin-left: 16px
       transform: translate3d(0, 0, 0)
-      +transition(.1s, linear)
+      +transition(.1s, ease-in-out)
     &:hover:not([disabled])
       &:after
         transform: translate3d(2px, 0, 0)
@@ -62,7 +62,7 @@
       background: $blue
       mask-image: url('/assets/v1/icons/buttons/load.svg')
       mask-repeat: no-repeat
-      +transition(.1s, linear)
+      +transition(.1s, ease-in-out)
     &:after
       transform: translate3d(0, 0, 0)
     &:hover:not([disabled])
