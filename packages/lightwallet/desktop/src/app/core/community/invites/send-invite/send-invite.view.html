@@ -39,7 +39,7 @@
       <p>
         <strong>{{ formData.value.address }}</strong> is not a member of Merit community yet?
         <br>
-        <a href="mailto:{{ formData.value.address }}?subject={{ emailSubject }}&body={{ emailBody }}">Send an email</a> with invite link.</p>
+        <a href="mailto:{{ formData.value.address.trim() }}?subject={{ emailSubject }}&body={{ emailBody }}">Send an email</a> with invite link.</p>
     </div>
 
     <button class="ui-button ui-button--blue" type="submit" role="button" [disabled]="formData.invalid || ((availableInvites$ | async) == 0)">SEND</button>
