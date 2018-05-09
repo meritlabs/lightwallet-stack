@@ -105,7 +105,7 @@
             </div>
           </div>
         </div>
-        <div class="sendMerit__form__group" [hidden]="!address.dirty && !address.valid && type.value === 'classic' || !wallet.value?.status?.availableInvites && type.value !== 'classic'">
+        <div class="sendMerit__form__group" [hidden]="(type.value === 'classic' && !address.valid) || (type.value !== 'classic' && !wallet.value?.status?.availableInvites) ">
           <label class="ui-label">Amount</label>
           <div class="ui-input__wrapper ui-input__wrapper--mrt">
             <input type="number" name="" formControlName="amountMrt" placeholder="0" class="ui-input ui-input--form ui-input--text">
