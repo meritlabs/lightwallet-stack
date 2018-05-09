@@ -53,8 +53,6 @@ export class PhraseImportView {
 
   async importMnemonic() {
     this.loadingCtrl.show();
-    // const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
-    // loader.present();
 
     let { words, password, mwsUrl } = this.formData.getRawValue();
     words = words.replace(/\s\s+/g, ' ').trim();
