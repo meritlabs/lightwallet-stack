@@ -91,19 +91,7 @@
           <div class="sendMerit__form__group__column sendMerit__form_group__column--70">
             <label for="feeIncluded" class="ui-label">Who pays fee?</label>
           </div>
-          <div class="sendMerit__form__group__column sendMerit__form_group__column--30">
-            <div class="ui-checkbox-typeTwo">
-              <input type="checkbox" name="feeIncluded" id="feeIncluded" formControlName="feeIncluded">
-              <span class="ui-checkbox_switcherTwo">
-                <span class="ui-checkbox_case ui-checkbox_case-first">
-                  Me
-                </span>
-                <span class="ui-checkbox_case ui-checkbox_case-second">
-                  Recipient
-                </span>
-              </span>
-            </div>
-          </div>
+          <fee-selector id="feeIncluded" formControlName="feeIncluded"></fee-selector>
         </div>
         <div class="sendMerit__form__group" [hidden]="(type.value === 'classic' && !address.valid) || (type.value !== 'classic' && !wallet.value?.status?.availableInvites) ">
           <label class="ui-label">Amount</label>
