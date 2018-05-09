@@ -3,18 +3,15 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
-import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
 import { DeleteWalletAction, selectWalletById, UpdateOneWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { ProfileService } from '@merit/common/services/profile.service';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { isWalletEncrypted } from '@merit/common/utils/wallet';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
-import { debounceTime, filter, switchMap, tap } from 'rxjs/operators';
+import { debounceTime, filter, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'view-wallet-settings',
@@ -120,7 +117,9 @@ export class WalletSettingsView implements OnInit, OnDestroy {
   });
 
   get password() { return this.passwordChangeForm.get('password'); }
+
   get repeatPassword() { return this.passwordChangeForm.get('repeatPassword'); }
+
   get currentPassword() { return this.passwordChangeForm.get('currentPassword'); }
 
   isWalletEncrypted: boolean;
