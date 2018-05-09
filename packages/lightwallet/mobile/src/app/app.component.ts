@@ -6,6 +6,7 @@ import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { ConfigService } from '@merit/common/services/config.service';
+import { AddressService } from '@merit/common/services/address.service';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
@@ -38,6 +39,7 @@ export class MeritLightWallet {
               private easyReceiveService: EasyReceiveService,
               private events: Events,
               private keyboard: Keyboard,
+              private addressService: AddressService,
               pushNotificationService: PushNotificationsService) {
   }
 
@@ -59,6 +61,18 @@ export class MeritLightWallet {
     this.registerMwcErrorHandler();
 
     return this.initializeApp();
+  }
+
+  private parseInviteParams() {
+    let search = window.location.search;
+
+    if (search && search.indexOf('invite') !== -1 ) {
+      const address = search.split('?invite=')[1];
+      const name = this.addressService.couldBeAlias(address) ? '@'+address : 'Someone';
+      window.history.replaceState({},document.title,document.location.pathname);
+
+      return {address, name};
+    }
   }
 
   private async loadEasySendInBrowser() {
@@ -141,7 +155,12 @@ export class MeritLightWallet {
 
     this.loadProfileAndEasySend();
 
-    await this.nav.setRoot(this.authorized ? 'TransactView' : 'OnboardingView');
+    const invitation = this.parseInviteParams();
+    if (invitation && !this.authorized) {
+      await this.nav.setRoot('UnlockView', { invitation });
+    } else {
+      await this.nav.setRoot(this.authorized ? 'TransactView' : 'OnboardingView');
+    }
 
     // wait until we have a root view before hiding splash screen
     this.splashScreen.hide();
