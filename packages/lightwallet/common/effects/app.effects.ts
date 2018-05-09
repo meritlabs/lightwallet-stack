@@ -4,6 +4,8 @@ import { AppReducerActionType, UpdateAppAction } from '@merit/common/reducers/ap
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { filter, tap } from 'rxjs/operators';
 
+import { getQueryParam } from '@merit/common/utils/url';
+
 @Injectable()
 export class AppEffects {
   // Take the user to the onboarding page if they delete all wallets
@@ -12,18 +14,11 @@ export class AppEffects {
     filter((action: UpdateAppAction) => !action.payload.authorized),
     tap(() => {
       // working with window.location as router may not be initialized here
-      // lookup user=aliasoraddress in querystring
-      const q = window.location.search;
-      const params = q
-        .substring(Math.max(0, q.indexOf('?') + 1))
-        .split('&')
-        .reduce((res, pair) => {
-          const q = pair.split('=');
-          return { ...res, [q[0]]: q[1]};
-        }, {});
+      // lookup invite=aliasoraddress in querystring
+      const invite = getQueryParam('invite');
 
-      if (params['user']) {
-        this.router.navigateByUrl(`/onboarding/unlock?user=${params['user']}`);
+      if (invite) {
+        this.router.navigateByUrl(`/onboarding/unlock?invite=${invite}`);
       } else if (window.location.pathname.indexOf('/onboarding') !== 0) {
         this.router.navigateByUrl('/onboarding');
       }
