@@ -5,19 +5,16 @@
     </div>
     <div>
       <button type="button" name="button" class="ui-button ui-button--white
-        ui-button--loadWallet ui-button--sm"
-              routerLink="/wallets/import">Import
+        ui-button--loadWallet ui-button--sm" routerLink="/wallets/import">Import
       </button>
       <button type="button" name="button" class="ui-button ui-button--sm
-        ui-button--add ui-button--white"
-              routerLink="/wallets/create">Create
+        ui-button--add ui-button--white" routerLink="/wallets/create">Create
       </button>
     </div>
   </div>
   <div class="wallets__group__content">
     <loading-spinner [hidden]="!loading"></loading-spinner>
-    <div class="wallets__group__wallet" *ngFor="let wallet of wallets; trackBy: trackByFn"
-         [routerLink]="['/wallets', wallet.id]">
+    <div class="wallets__group__wallet" *ngFor="let wallet of wallets; trackBy: trackByFn" [routerLink]="['/wallets', wallet.id]">
       <div class="wallets__group__wallet__info">
         <div class="wallets__group__wallet__icon">
           <wallet-icon [strokeColor]=wallet.color></wallet-icon>
@@ -36,10 +33,13 @@
             </ng-template>
           </div>
           <div class="inline-right">
-            <p class="regular-blue-text">{{ wallet?.availableInvites || 0 }} Invites</p>
-            <div class="manageIt">
-
+            <div class="controls">
+              <p class="invites regular-blue-text">{{ wallet?.availableInvites || 0 }} Invites</p>
+              <p class="share-link" [clip]="shareLink(wallet)" [title]="shareLink(wallet)" (click)="onCopy($event, wallet.id)">
+                Copy share link
+              </p>
             </div>
+            <div class="manageIt"></div>
           </div>
         </div>
       </div>

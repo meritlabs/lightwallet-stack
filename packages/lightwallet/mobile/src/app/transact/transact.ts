@@ -207,19 +207,6 @@ export class TransactView {
     }).present();
   }
 
-  private async cancelEasyReceipt(receipt: EasyReceipt): Promise<any> {
-    try {
-      const wallets = await this.profileService.getWallets();
-      let wallet = wallets[0];
-      if (!wallet) throw 'no wallet';
-
-      const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
-      this.logger.info('accepted easy send', acceptanceTx);
-    } catch (err) {
-      console.log(err);
-      this.toastCtrl.error('There was an error cancelling your GlobalSend.');
-    }
-  }
 
   /**
    * Shows after receipt is validated with correct password (or with no pass if no one set)
@@ -273,41 +260,54 @@ export class TransactView {
     }).present();
   }
 
+
+  private async cancelEasyReceipt(receipt: EasyReceipt): Promise<any> {
+    try {
+      const wallets = await this.profileService.getWallets();
+      let wallet = wallets[0];
+      if (!wallet) throw new Error('Could not retrieve wallet');
+
+      const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
+      this.events.publish('Remote:IncomingTx');
+      this.logger.info('accepted easy send', acceptanceTx);
+    } catch (err) {
+      console.log(err);
+      this.toastCtrl.error('There was an error cancelling your GlobalSend.');
+    }
+  }
+
   private async acceptEasyReceipt(receipt: EasyReceipt, data: any): Promise<any> {
     try {
       const wallets = await this.profileService.getWallets();
       // TODO: Allow a user to choose which wallet to receive into.
       let wallet = wallets[0];
-      if (!wallet) throw 'no wallet';
+      if (!wallet) throw new Error('Could not retrieve wallet');
 
-      const address = wallet.getRootAddress();
-      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.toString());
+      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, wallet.rootAddress.toString());
 
       this.logger.info('accepted easy send', acceptanceTx);
 
-      // update wallet info
-      this.events.publish('Remote:IncomingTx');
+      this.events.publish('Remote:IncomingTx'); // update wallet info
     } catch (err) {
       console.log(err);
       this.toastCtrl.error('There was an error retrieving your incoming payment.');
     }
   }
 
-  private rejectEasyReceipt(receipt: EasyReceipt, data): Promise<any> {
+  private async rejectEasyReceipt(receipt: EasyReceipt, data): Promise<any> {
 
-    return this.profileService.getWallets().then((wallets) => {
-
-      //todo implement wallet selection UI
+    try {
+      // TODO: Allow a user to choose which wallet to receive into.
+      const wallets = await this.profileService.getWallets();
       let wallet = wallets[0];
-      if (!wallet) return Promise.reject(new Error('Could not retrieve wallet.'));
+      if (!wallet) throw new Error('Could not retrieve wallet');
+      await this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data);
+      this.logger.info('Easy send returned');
+    } catch (err) {
+      console.log(err);
+      this.toastCtrl.error(err.text || 'There was an error rejecting the Merit');
+    }
 
-      return this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data).then(() => {
-        this.logger.info('Easy send returned');
-      }).catch((err) => {
-        console.log(err);
-        this.toastCtrl.error(err.text || 'There was an error rejecting the Merit');
-      });
-    });
   }
 
   countUnlockRequests() {

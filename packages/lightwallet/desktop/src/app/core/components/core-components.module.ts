@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { FeeSelectorComponent } from '@merit/desktop/app/core/components/fee-selector/fee-selector.component';
@@ -13,6 +14,7 @@ import { VaultsListComponent } from '@merit/desktop/app/core/components/vaults-l
 import { WalletsListComponent } from '@merit/desktop/app/core/components/wallets-list/wallets-list.component';
 import { VirtualScrollModule } from 'angular2-virtual-scroll';
 import { MomentModule } from 'ngx-moment';
+import { ClipModule } from 'ng2-clip';
 import { HistoryItemComponent } from './history-item/history-item.component';
 import { HistoryListComponent } from './history-list/history-list.component';
 
@@ -38,7 +40,8 @@ export function getComponents() {
     RouterModule,
     MomentModule,
     CommonPipesModule,
-    VirtualScrollModule
+    VirtualScrollModule,
+    ClipModule,
   ],
   declarations: getComponents(),
   exports: getComponents()

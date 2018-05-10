@@ -26,15 +26,24 @@
     margin-bottom: 50px
     &__title
       color: $white
+      h1
+        display: flex
+        align-items: center
+        .label
+          line-height: 1.2
+          flex: 1
+          text-align: center
+          margin-left: -44px
+          padding: 0 34px 0 44px
+          &.small
+            font-size: 16px
     &__picture
       margin-bottom: 50px
   &__form
     .ui-label
       color: $white
   &__back
-    position: relative
-    display: inline-block
-    top: 8px
+    display: inline-flex
     margin-right: 10px
     cursor: pointer
 .already-member

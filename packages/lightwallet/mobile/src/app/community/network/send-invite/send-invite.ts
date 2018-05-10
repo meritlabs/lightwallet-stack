@@ -104,7 +104,7 @@ export class SendInviteView {
 
       if (addressInfo && addressInfo.isConfirmed) {
         result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
-        result.toNewEntity.contact.meritAddresses.push({ input, address: addressInfo.address, network: ENV.network });
+        result.toNewEntity.contact.meritAddresses.push({ alias: input, address: addressInfo.address, network: ENV.network });
       }
     }
 

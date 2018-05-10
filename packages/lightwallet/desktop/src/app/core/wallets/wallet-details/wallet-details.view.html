@@ -5,8 +5,14 @@
         <div class="details">
           <div class="name-container">
             <div class="wallet__name">
-              <merit-icon name="wallet"></merit-icon>
-              {{ wallet.name }} | {{ wallet.alias? '@' + wallet.alias : wallet.referrerAddress }}
+              <div class="wallet__name__info">
+                <merit-icon name="wallet"></merit-icon>
+                {{ wallet.name }} | {{ wallet.shareCode }}
+              </div>
+              <div class="wallet__name__share" [clip]="shareLink$ | async" (click)="onCopy()">
+                Copy share link
+                <merit-icon name="share"></merit-icon>
+              </div>
             </div>
           </div>
           <div class="wallet__balance">

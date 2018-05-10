@@ -219,6 +219,9 @@ export class CreateWalletView {
 
     try {
       const wallet = await this.walletService.createWallet(opts);
+
+      let walletId = wallet.credentials.walletId;
+
       // Subscribe to push notifications or to long-polling for this wallet.
       if (this.config.get().pushNotificationsEnabled) {
         this.logger.info('Subscribing to push notifications for default wallet');
@@ -230,7 +233,8 @@ export class CreateWalletView {
 
       let promises: Promise<any>[] = [];
       if (this.formData.hideBalance) {
-        promises.push(this.walletService.setHiddenBalanceOption(wallet.id, this.formData.hideBalance));
+        wallet.balanceHidden  = this.formData.hideBalance;
+        promises.push(this.walletService.setHiddenBalanceOption(walletId, this.formData.hideBalance));
       }
 
       if (this.formData.password) {
@@ -238,9 +242,10 @@ export class CreateWalletView {
       }
 
       if (this.formData.color) {
+        wallet.color = this.formData.color;
         const colorOpts = {
           colorFor: {
-            [wallet.id]: this.formData.color
+            [walletId]: this.formData.color
           }
         };
         promises.push(this.config.set(colorOpts));

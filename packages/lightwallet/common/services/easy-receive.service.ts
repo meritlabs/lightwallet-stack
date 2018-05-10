@@ -270,6 +270,7 @@ export class EasyReceiveService {
       await this.sendEasyReceiveTx(input, transact, destAddress, wallet);
 
     await this.persistenceService2.cancelEasySend(scriptAddress);
+    await this.persistenceService.deletePendingEasyReceipt(receipt);
 
     return {
       invite: invite,
