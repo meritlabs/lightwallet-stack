@@ -20,8 +20,15 @@ view-create-wallet {
     background: color($colors, 'danger');
   }
 
-  .warning ion-label {
-    white-space: normal;
+  .warning {
+    background: #e9edf2;
+    border-radius: 8px;
+    margin: 10px 16px;
+    width: calc(100% - 16px - 16px);
+    padding-left: 20px;
+    ion-label {
+      white-space: normal;
+    }
   }
 
   .tooltip-button {

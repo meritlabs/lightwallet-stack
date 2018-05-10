@@ -58,7 +58,6 @@
         <ion-item *ngFor="let contact of searchResult.withMerit" (click)="sendInvite(contact)" class="contact">
           <contact-avatar [contact]="contact" item-start></contact-avatar>
           {{ contact.name.formatted }}
-          <img src="assets/img/icons/merit.svg" color="primary" item-end>
         </ion-item>
       </ion-list>
 

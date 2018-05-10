@@ -7,21 +7,30 @@
         <img src="assets/v1/images/unlock/invite.svg" alt="Merit is invite-only network">
       </div>
       <div class="unlock__heading__title title--primary">
-        <ng-container *ngIf="easyReceipt; else noEasyReceipt">
+        <ng-container *ngIf="easyReceipt">
           <h1>
             <span (click)="declineGlobalSend()" class="unlock__back">
               <img src="/assets/v1/images/backup/back-icon.svg" alt="">
             </span>
-            {{ easyReceipt.senderName | unescape }} sent you Merit!
+            <p class="label small">{{ easyReceipt.senderName | unescape }} sent you Merit!</p>
           </h1>
         </ng-container>
-        <ng-template #noEasyReceipt>
+        <ng-container *ngIf="invite.length">
           <h1>
             <span routerLink="../" class="unlock__back">
               <img src="/assets/v1/images/backup/back-icon.svg" alt="">
             </span>
-            Merit is invite-only network</h1>
-        </ng-template>
+            <p class="label small">{{ invite }} welcomes you to join Merit!</p>
+          </h1>
+        </ng-container>
+        <ng-container *ngIf="!easyReceipt && !invite.length">
+          <h1>
+            <span routerLink="../" class="unlock__back">
+              <img src="/assets/v1/images/backup/back-icon.svg" alt="">
+            </span>
+            <p class="label">Merit is invite-only network</p>
+          </h1>
+        </ng-container>
       </div>
     </div>
     <form class="unlock__form" [formGroup]="formData" (ngSubmit)="onSubmit()">

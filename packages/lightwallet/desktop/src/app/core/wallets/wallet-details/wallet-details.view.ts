@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { selectWalletById, selectNumberOfWallets } from '@merit/common/reducers/wallets.reducer';
 import { map } from 'rxjs/operators';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 
 @Component({
   selector: 'view-wallet-details',
@@ -25,5 +26,18 @@ export class WalletDetailView {
     );
 
   constructor(private store: Store<IRootAppState>,
-    private route: ActivatedRoute) { }
+              private route: ActivatedRoute,
+              private toastCtrl: ToastControllerService) { }
+
+  get shareLink$() {
+    return this.wallet$.pipe(map(wallet => {
+      const code = wallet.alias || wallet.referrerAddress;
+
+      return `${window.location.origin}?invite=${code}`;
+    }));
+  }
+
+  onCopy() {
+    this.toastCtrl.success('Share link copied to clipboard!');
+  }
 }

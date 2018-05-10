@@ -63,35 +63,23 @@
         <ion-toggle [(ngModel)]="formData.hideBalance">
         </ion-toggle>
       </ion-item>
-    </ion-item-group>
-
-    <ion-item-group>
-      <ion-item-divider>Password (optional)</ion-item-divider>
-      <ion-item class="warning" no-lines>
-        <b>Warning</b> This password cannot be recovered. If the password is lost, there is no way you could recover
-        your
-        funds!
-      </ion-item>
       <ion-item>
         <ion-label stacked>
-          <h2>Password</h2>
+          <h2>Password (optional)</h2>
         </ion-label>
-        <ion-input type="text" class="password-input"  [(ngModel)]="formData.password"></ion-input>
+        <ion-input type="text" class="password-input" placeholder="Enter spending password" [(ngModel)]="formData.password"></ion-input>
       </ion-item>
-      <ion-item>
+      <ion-item [hidden]="!formData.password">
         <ion-label stacked>
           <h2>Confirm password</h2>
         </ion-label>
-        <ion-input type="text" class="password-input"  [(ngModel)]="formData.repeatPassword"></ion-input>
+        <ion-input type="text" class="password-input"  placeholder="Repeat your password" [(ngModel)]="formData.repeatPassword"></ion-input>
       </ion-item>
-
-      <ion-item>
-        <ion-label stacked>
-          <h2>Recovery Phrase</h2>
-        </ion-label>
-        <ion-textarea placeholder="Enter the recovery phrase (BIP39)"
-                      [(ngModel)]="formData.recoveryPhrase"></ion-textarea>
-      </ion-item>
+    <ion-item class="warning" no-lines [hidden]="!formData.password">
+        <b>Warning</b> This password cannot be recovered. If the password is lost, there is no way you could recover
+        your
+        funds!
+    </ion-item>
     </ion-item-group>
 
   </ion-list>
