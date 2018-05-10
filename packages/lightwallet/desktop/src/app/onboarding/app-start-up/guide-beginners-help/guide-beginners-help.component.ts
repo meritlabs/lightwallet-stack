@@ -1,26 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-guide-beginners-help',
   templateUrl: './guide-beginners-help.component.html',
   styleUrls: ['./guide-beginners-help.component.sass']
 })
-export class GuideBeginnersHelpComponent implements OnInit {
+export class GuideBeginnersHelpComponent {
+  showGuide: boolean = !('showGuide' in localStorage && localStorage.getItem('showGuide') === 'false');
 
-  showGuide: boolean;
-
-  async ngOnInit() {
-    let showGuide;
-    if("showGuide" in localStorage && localStorage.getItem("showGuide") === 'false') {
-      showGuide = false;
-    }else {
-      showGuide  = true;
-    }
-    this.showGuide = showGuide;
+  hideGuide() {
+    this.showGuide = false;
+    localStorage.setItem('showGuide', 'false');
   }
-  hideGuide($event) {
-    this.showGuide = $event;
-    localStorage.setItem("showGuide", $event);
-  }
-
 }
