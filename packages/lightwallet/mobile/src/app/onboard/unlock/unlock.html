@@ -9,7 +9,20 @@
 
   <div class="container">
 
-    <div *ngIf="easyReceipt; else noReceipt">
+    <div *ngIf="invitation">
+
+        <h1 class="title" translate>
+            {{invitation.name }} welcomes you to join Merit!
+        </h1>
+
+        <img src="assets/img/invite.svg" alt="" class="logo" />
+
+        <p class="text" translate>
+            You will need an invite confirmation after you register.
+        </p>
+    </div>
+
+    <div *ngIf="easyReceipt">
 
       <h1 class="title" translate>
         {{easyReceipt.senderName | unescape}} sent you Merit!
@@ -22,7 +35,7 @@
       </p>
     </div>
 
-    <ng-template #noReceipt>
+    <div *ngIf="!easyReceipt && !invitation">
       <h1 class="title">
         Merit is an invite-only network
       </h1>
@@ -32,7 +45,7 @@
       <p class="text" translate>
         You'll need an invite code from a friend or colleague.
       </p>
-    </ng-template>
+    </div>
 
     <div class="bottom-buttons">
       <div [hidden]="!formData.addressCheckError" class="error-message"><p>{{ formData.addressCheckError }}</p></div>

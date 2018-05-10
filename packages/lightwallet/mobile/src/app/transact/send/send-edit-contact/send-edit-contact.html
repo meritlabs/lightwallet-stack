@@ -16,12 +16,7 @@
   <ion-list>
     <ion-item>
       <ion-label stacked>Name</ion-label>
-      <ng-container *ngIf="isMeritContact(); else notContact">
-        <ion-input type="text" [(ngModel)]="contact.name.formatted"></ion-input>
-      </ng-container>
-      <ng-template #notContact>
-        <ion-label>{{contact.name.formatted}}</ion-label>
-      </ng-template>
+        <ion-input type="text" [(ngModel)]="contact.name.formatted" [disabled]="!isMeritContact()"></ion-input>
     </ion-item>
   </ion-list>
 

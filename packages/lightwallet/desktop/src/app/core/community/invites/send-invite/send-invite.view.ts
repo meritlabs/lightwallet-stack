@@ -52,6 +52,8 @@ export class SendInviteView {
   emailSubject;
   emailBody;
 
+  sending: boolean;
+
   get address() { return this.formData.get('address'); }
 
   constructor(private store: Store<IRootAppState>,
@@ -75,10 +77,14 @@ export class SendInviteView {
   }
 
   async sendInvite() {
+
+    this.sending = true;
+
     let { address } = this.formData.getRawValue();
     address = await this.addressService.getAddressInfo(address);
 
     try {
+
       await this.walletService.sendInvite(this.selectedWallet.client, address.address);
       this.store.dispatch(new RefreshOneWalletAction(this.selectedWallet.id, {
         skipRewards: true,
@@ -94,6 +100,7 @@ export class SendInviteView {
       console.log(e);
       this.toastCtrl.error('Failed to send invite');
     }
+    this.sending = false;
   }
 
   selectWallet(wallet: DisplayWallet) {
