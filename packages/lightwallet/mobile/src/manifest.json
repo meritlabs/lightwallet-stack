@@ -1,13 +1,21 @@
 {
   "name": "Merit Lightwallet",
+  "scope_url": "https://m.wallet.merit.me/",
+  "intent_filters": {
+    "scope_url_scheme": "https",
+    "scope_url_host": "testnet.m.wallet.merit.me",
+    "scope_url_path_type": "me.merit.wallet",
+    "scope_url_path": "/"
+  },
   "short_name": "Merit",
   "start_url": "index.html",
   "display": "standalone",
+  "display_mode": "standalone",
   "icons": [{
-    "src": "assets/imgs/logo.png",
+    "src": "assets/img/favicon/512x512.png",
     "sizes": "512x512",
     "type": "image/png"
   }],
-  "background_color": "#4e8ef7",
-  "theme_color": "#4e8ef7"
+  "background_color": "#0d0d29",
+  "theme_color": "#4bb0dd"
 }

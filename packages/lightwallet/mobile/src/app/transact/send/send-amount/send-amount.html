@@ -1,20 +1,20 @@
 <ion-header no-border>
   <ion-navbar color="primary">
     <ion-title>
-      {{ recipient?.name?.formatted? 'Sending To: ' + recipient.name.formatted : sendMethod.type == 'easy' ? 'Global Send' : 'Sending To: ' + (sendMethod.alias? '@' + sendMethod.alias : sendMethod.value)}}
+      {{ recipient?.name?.formatted? 'Sending To: ' + recipient.name.formatted : sendMethod?.type == 'easy' ? 'Global Send' : 'Sending To: ' + (sendMethod.alias? '@' + sendMethod.alias : sendMethod.value)}}
     </ion-title>
   </ion-navbar>
 </ion-header>
 <ion-content no-bounce>
-  <ng-container *ngIf="!loading">
+  <ng-container >
     <div class="big-header">
       <div class="amount-area" (click)="focusInput()">
         <div class="currency-bar">
           <div *ngIf="availableUnits?.length > 1">
             <div *ngFor="let currency of availableUnits" (click)="selectCurrency(currency)"
-                 class="currency" [class.selected]="currency.type == selectedCurrency.type">
+                 class="currency" [class.selected]="currency?.type == selectedCurrency?.type">
               {{currency.name}}
-              <span class="selected-mark" [hidden]="currency.type != selectedCurrency.type"></span>
+              <span class="selected-mark" [hidden]="currency?.type != selectedCurrency?.type"></span>
             </div>
           </div>
         </div>
@@ -36,7 +36,7 @@
           <div class="amount-sm">MRT</div>
         </div>
         <div class="alternative-amount">
-          {{selectedCurrency.type == 'mrt' ? amount.fiatStr : amount.mrtStr}}
+          {{selectedCurrency?.type == 'mrt' ? amount?.fiatStr : amount?.mrtStr}}
         </div>
       </div>
     </div>
@@ -46,8 +46,8 @@
           <img src="assets/img/icons/wallet.svg">
         </ion-avatar>
         <p>From</p>
-        <h2>{{selectedWallet.name}}</h2>
-        <p>{{selectedWallet.balance.spendableAmount | toMRT}}</p>
+        <h2>{{selectedWallet?.name}}</h2>
+        <p>{{selectedWallet?.balance?.spendableAmount | toMRT}}</p>
         <ion-icon name="ios-arrow-down" item-end></ion-icon>
       </button>
       <ion-item detail-none>
@@ -63,7 +63,7 @@
         <ion-toggle [(ngModel)]="feeIncluded" [disabled]="!feeTogglerEnabled" (ngModelChange)="updateTxData()"></ion-toggle>
       </ion-item>
 
-      <ion-item-group *ngIf="sendMethod.type == 'easy'" enter-to-next>
+      <ion-item-group *ngIf="sendMethod?.type == 'easy'" enter-to-next>
         <ion-item>
           <ion-avatar item-start img-icon>
             <img src="assets/img/icons/unlock.svg">

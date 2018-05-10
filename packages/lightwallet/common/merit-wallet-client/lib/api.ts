@@ -124,8 +124,8 @@ export class API {
 
   public balance: any;
   public invitesBalance: any;
-  public availableInvites: number;
-  public pendingInvites: number;
+  public availableInvites: number = 0;
+  public pendingInvites: number = 0;
 
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -539,6 +539,7 @@ export class API {
       balance: this.balance,
       invitesBalance: this.invitesBalance,
       pendingInvites: this.pendingInvites,
+      availableInvites: this.availableInvites,
       rootAddress: this.getRootAddress().toString(),
       rootAlias: this.rootAlias,
       parentAddress: this.parentAddress,
@@ -842,6 +843,10 @@ export class API {
     let txp = await this.createTxProposal(opts);
     txp = await this.publishTxProposal({ txp });
     txp = await this.signTxProposal(txp, walletPassword);
+
+    await this.getStatus();
+    if (this.availableInvites == 0) throw new Error('You do not have free invites you can send');
+
     txp = await this.broadcastTxProposal(txp);
 
     return txp;

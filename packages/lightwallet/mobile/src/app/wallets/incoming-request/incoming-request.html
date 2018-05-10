@@ -29,7 +29,8 @@
         <img src="assets/img/icons/incoming_request_l.svg" *ngIf="!unlockRequest.isConfirmed">
         <img src="assets/img/icons/confirm.svg" *ngIf="unlockRequest.isConfirmed">
       </ion-avatar>
-      <span class="wallet-name">{{ unlockRequest.alias? '@' + unlockRequest.alias : unlockRequest.address }}</span>
+      <span class="wallet-name" *ngIf="unlockRequest.alias">@{{unlockRequest.alias }}</span>
+      <span class="wallet-name address" *ngIf="!unlockRequest.alias">{{unlockRequest.address}}</span>
       <p *ngIf="unlockRequest.alias">{{unlockRequest.address}}</p>
     </div>
   </div>

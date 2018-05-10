@@ -55,6 +55,7 @@ export class IncomingRequestModal {
   createContact() {
     const meritAddress = {
       address: this.unlockRequest.address,
+      alias: this.unlockRequest.alias,
       network: this.addressService.getAddressNetwork(this.unlockRequest.address).name
     };
     const modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
@@ -67,6 +68,7 @@ export class IncomingRequestModal {
   bindContact() {
     let meritAddress = {
       address: this.unlockRequest.address,
+      alias: this.unlockRequest.alias,
       network: this.addressService.getAddressNetwork(this.unlockRequest.address).name
     };
     let modal = this.modalCtrl.create('SendSelectBindContactView', { contacts: this.contacts, address: meritAddress });
