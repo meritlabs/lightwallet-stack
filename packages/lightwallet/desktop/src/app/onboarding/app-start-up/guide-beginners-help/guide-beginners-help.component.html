@@ -1,5 +1,4 @@
-<app-slider-guide *ngIf="showGuide" (hideGuide)="hideGuide($event)" [showGuide]="showGuide" [skipButton]="'Learn how to get invite'"
-  [hideNextButtonForLastSlide]="true" [getStartButton]="'Learn how to get invite'"></app-slider-guide>
+<app-slider-guide *ngIf="showGuide" (hideGuide)="hideGuide()" skipButton="Learn how to get invite" primaryButton="Learn how to get invite"></app-slider-guide>
 <div class="guides">
   <div class="guides_nav">
     <div routerLink="../" class="ui-button ui-button--back ui-button--white">

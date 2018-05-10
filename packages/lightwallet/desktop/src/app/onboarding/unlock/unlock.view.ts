@@ -74,9 +74,9 @@ export class UnlockComponent {
     }
   }
 
-  hideGuide($event) {
-    this.showGuide = $event;
-    localStorage.setItem('showGuide', $event);
+  hideGuide() {
+    this.showGuide = false;
+    localStorage.setItem('showGuide', 'false');
   }
 
   async onSubmit() {

@@ -28,13 +28,15 @@
       cursor: pointer
       &:hover
         text-decoration: underline
-  .skipTutorial
+
+  .skip-tutorial, .back
     position: fixed
     bottom: 20px
+    cursor: pointer
+  .skip-tutorial
     right: 40px
-    &--back
-      right: initial
-      left: 40px
+  .back
+    left: 40px
 .guide_slider
   padding-bottom: 65px
   height: 100%
@@ -66,10 +68,12 @@
     transform: rotate(180deg)
   .slide_image
     margin-bottom: 60px
+    max-height: calc(100% - 360px)
   .slide_description
     max-width: 530px
     width: 100%
     margin: 0px auto
+    min-height: 330px
   .description_title
     +font(500, 34px, 40px)
     margin-bottom: 30px
@@ -77,4 +81,3 @@
     +font(100, 22px, 32px)
     margin-bottom: 60px
     letter-spacing: 1px
-  
