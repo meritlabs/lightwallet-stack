@@ -21,6 +21,7 @@ import { AddressValidator } from '@merit/common/validators/address.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import 'rxjs/add/operator/toPromise';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 import { Observable } from 'rxjs/Observable';
 import { map, take, tap } from 'rxjs/operators';
 
@@ -61,7 +62,8 @@ export class SendInviteView {
               private mwcService: MWCService,
               private walletService: WalletService,
               private toastCtrl: ToastControllerService,
-              private addressService: AddressService) {}
+              private addressService: AddressService,
+              private loader: Ng4LoadingSpinnerService) {}
 
   async ngOnInit() {
     const wallets = await this.wallets$.pipe(take(1)).toPromise();
@@ -77,8 +79,7 @@ export class SendInviteView {
   }
 
   async sendInvite() {
-
-    this.sending = true;
+    this.loader.show();
 
     let { address } = this.formData.getRawValue();
     address = await this.addressService.getAddressInfo(address);
@@ -94,13 +95,15 @@ export class SendInviteView {
       }));
 
       this.store.dispatch(new RefreshOneWalletTransactions(this.selectedWallet.id));
-      this.formData.reset();
+      this.address.reset();
+      this.formData.markAsPristine();
       this.toastCtrl.success('Invite has been sent!');
     } catch (e) {
       console.log(e);
       this.toastCtrl.error('Failed to send invite');
+    } finally {
+      this.loader.hide();
     }
-    this.sending = false;
   }
 
   selectWallet(wallet: DisplayWallet) {
