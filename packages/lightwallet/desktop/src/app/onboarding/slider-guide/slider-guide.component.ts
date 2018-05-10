@@ -28,5 +28,3 @@ export class SliderGuideComponent {
     this.hideGuide.emit(false);
   }
 }
-
-// *ngIf="showGuide"
