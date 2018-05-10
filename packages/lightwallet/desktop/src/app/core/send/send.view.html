@@ -1,4 +1,7 @@
 <app-lock-screen fullScreen *ngIf="!hasUnlockedWallet"></app-lock-screen>
+<loading-spinner *ngIf="sending"></loading-spinner>
+<send-tour *ngIf="showTour" (hideTour)="hideTour()"></send-tour>
+
 <div class="sendMerit">
   <div class="container--inner">
 
@@ -19,8 +22,6 @@
       </div>
     </error-message>
 
-    <loading-spinner *ngIf="sending"></loading-spinner>
-    <send-tour *ngIf="showTour" (hideTour)="hideTour()"></send-tour>
     <div class="sendMerit__content">
 
       <form class="sendMerit__form" [formGroup]="formData" (ngSubmit)="submit.next()">
@@ -93,10 +94,10 @@
           </div>
           <fee-selector id="feeIncluded" formControlName="feeIncluded"></fee-selector>
         </div>
-        <div class="sendMerit__form__group" [hidden]="(type.value === 'classic' && !address.valid) || (type.value !== 'classic' && !wallet.value?.status?.availableInvites) ">
+        <div class="sendMerit__form__group">
           <label class="ui-label">Amount</label>
           <div class="ui-input__wrapper ui-input__wrapper--mrt">
-            <input type="number" name="" formControlName="amountMrt" placeholder="0" class="ui-input ui-input--form ui-input--text">
+            <input type="number" formControlName="amountMrt" placeholder="0" class="ui-input ui-input--form ui-input--text">
             <div class="ui-input__addon">MRT</div>
           </div>
           <div class="input-errors" [hidden]="!amountMrt.dirty || amountMrt.valid">
@@ -123,13 +124,13 @@
           </div>
         </div>
         <div class="sendMerit__form__group">
-          <button type="submit" class="ui-button ui-button--blue" [disabled]="!canSend">
+          <button type="submit" class="ui-button ui-button--blue" [disabled]="formData.pending || formData.invalid || receiptLoading">
             Send Merit
           </button>
         </div>
       </form>
 
-      <div class="sendMerit__totals" *ngIf="!sending">
+      <div class="sendMerit__totals">
         <div class="sendMerit__form__group">
           <div class="sendMerit__totals__table">
             <loading-spinner-small *ngIf="receiptLoading"></loading-spinner-small>
@@ -140,7 +141,7 @@
                 </label>
                 <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
                   <div class="sendMerit__totals__table__column">
-                    Send to
+                    {{ type.value == 'classic' ? 'Send to' : 'Sending via' }}
                   </div>
                   <div class="sendMerit__totals__table__column" *ngIf="type.value == 'classic'">
                     {{ (address.value | address) || '...' }}
@@ -154,7 +155,7 @@
                     Amount
                   </div>
                   <div class="sendMerit__totals__table__column">
-                    <ng-container *ngIf="formData.controls.feeIncluded.value; else noRecipientFee">
+                    <ng-container *ngIf="feeIncluded.value; else noRecipientFee">
                       {{ receipt.amount - receipt.fee | toMRT }}
                     </ng-container>
                     <ng-template #noRecipientFee>
@@ -167,7 +168,7 @@
                     Your fee
                   </div>
                   <div class="sendMerit__totals__table__column">
-                    {{formData.controls.feeIncluded.value ? (0 | toMRT) : (receipt.fee | toMRT) }}
+                    {{ (feeIncluded.value ? 0 : receipt.fee) | toMRT }}
                   </div>
                 </div>
                 <div class="sendMerit__totals__table__row">
@@ -175,7 +176,7 @@
                     Recipient fee
                   </div>
                   <div class="sendMerit__totals__table__column">
-                    {{formData.controls.feeIncluded.value ? (receipt.fee | toMRT) : (0 | toMRT) }}
+                    {{ (feeIncluded.value ? receipt.fee : 0) | toMRT }}
                   </div>
                 </div>
                 <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
