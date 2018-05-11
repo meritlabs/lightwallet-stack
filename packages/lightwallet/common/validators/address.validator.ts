@@ -1,6 +1,6 @@
 import { AbstractControl } from '@angular/forms';
 import { MWCService } from '@merit/common/services/mwc.service';
-import { cleanAddress, couldBeAlias, getAddressInfo, isAddress, invalidPattern } from '@merit/common/utils/addresses';
+import { cleanAddress, couldBeAlias, getAddressInfo, isAddress } from '@merit/common/utils/addresses';
 
 export class AddressValidator {
   static validateAddress(mwcService: MWCService, allowUnconfirmed?: boolean) {
@@ -10,10 +10,12 @@ export class AddressValidator {
       if (!value)
         return { required: true };
 
+      value = cleanAddress(value);
+
       if (value.length < 3)
         return { minlength: true };
 
-      if (invalidPattern(value) || !isAddress(value) && !couldBeAlias(value))
+      if (!isAddress(value) && !couldBeAlias(value))
         return { InvalidFormat: true };
 
       const addressInfo = await getAddressInfo(value, mwcService);
@@ -30,7 +32,9 @@ export class AddressValidator {
       if (!value)
         return null;
 
-      if (invalidPattern(value) || !couldBeAlias(value))
+      value = cleanAddress(value);
+
+      if (!couldBeAlias(value))
         return { InvalidFormat: true };
 
       const addressInfo = await getAddressInfo(value, mwcService);
