@@ -11,9 +11,9 @@
     </div>
   </div>
 
-  <error-message *ngIf="(availableInvites$ | async) == 0">
+  <message-box error *ngIf="(availableInvites$ | async) == 0">
     You do not have any available invites to send.
-  </error-message>
+  </message-box>
 
   <form [formGroup]="formData" (ngSubmit)="sendInvite()">
     <div class="sendMerit__form__group">
