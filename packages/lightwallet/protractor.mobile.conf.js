@@ -10,26 +10,14 @@ config.specs = [
 if (IS_CI) {
   config.multiCapabilities.push(
     {
-      browserName: 'android',
-      device: 'Google Pixel',
-      os_version: '8.0',
-      real_mobile: true
-    },
-    {
-      browserName: 'iPhone',
-      device: 'iPhone X',
-      os_version: '11.0',
-      real_mobile: true
+      ...browserStackCommon,
+      browserName: 'Chrome',
+      chromeOptions: {
+        mobileEmulation: {
+          deviceName: 'Pixel 2'
+        }
+      }
     }
-    // {
-    //   ...browserStackCommon,
-    //   browserName: 'Chrome',
-    //   chromeOptions: {
-    //     mobileEmulation: {
-    //       deviceName: 'Pixel 2'
-    //     }
-    //   }
-    // }
   );
 } else {
   config.multiCapabilities.push(
