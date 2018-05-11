@@ -20,15 +20,28 @@ if (IS_CI) {
     }
   );
 } else {
-  config.multiCapabilities.push({
-    browserName: 'chrome',
-    chromeOptions: {
-      mobileEmulation: {
-        deviceName: 'Pixel 2'
-      },
-      args: ['--touch-events=enabled']
+  config.multiCapabilities.push(
+    {
+      device: 'Google Pixel',
+      os_version: '8.0',
+      real_mobile: true
+    },
+    {
+      device: 'iPhone X',
+      os_version: '11.0',
+      real_mobile: true
     }
-  });
+    // ,
+    // {
+    // browserName: 'chrome',
+    // chromeOptions: {
+    //   mobileEmulation: {
+    //     deviceName: 'Pixel 2'
+    //   },
+    //   args: ['--touch-events=enabled']
+    // }
+  // }
+  );
 }
 
 exports.config = config;
