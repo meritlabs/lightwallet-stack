@@ -10,7 +10,7 @@ jobs:
           command: sudo apt install -y libzmq3-dev
       - checkout
       - run:
-          name: Delete uneeded packages
+          name: Delete unneeded packages
           command: cd packages && rm -rf insight-api insight-ui bitcore-wallet-service merit-rpc bitcore-node bitcore-p2p
       - restore_cache:
           keys:
