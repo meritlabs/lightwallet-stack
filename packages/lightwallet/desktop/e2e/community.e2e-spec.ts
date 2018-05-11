@@ -3,7 +3,8 @@ import { TEST_WALLET_NAME } from './app.e2e-spec';
 
 describe('[Desktop] Community', () => {
    beforeAll(() => {
-     browser.get('/community');
+     const link = element(by.css('[ng-reflect-router-link="/community"]'));
+     link.click();
      browser.driver.takeScreenshot();
    });
 

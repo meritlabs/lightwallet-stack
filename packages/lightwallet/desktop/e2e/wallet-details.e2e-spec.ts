@@ -6,7 +6,8 @@ describe('[Desktop] Wallet details view', () => {
   let header, walletId;
 
   beforeAll(async () => {
-    browser.get('/dashboard');
+    const link = element(by.css('[ng-reflect-router-link="/dashboard"]'));
+    link.click();
     const el = element(by.css('wallets-list .wallets__group__wallet'));
     browser.wait(EC.visibilityOf(el), 8000);
     await el.click();
