@@ -66,14 +66,14 @@ jobs:
           key: lw-mobile-deps-{{ checksum "packages/lightwallet/mobile/package.json" }}
       - run: cd packages/lightwallet/common/environments && cp environment.example.ts environment.dev.ts && cp environment.example.ts environment.ts
       - run: cd packages/lightwallet && npm test -- --runInBand
-      #- run:
-      #    name: Run ng-serve
-      #    command: cd packages/lightwallet/desktop && npm start
-      #    background: true
-      #- run:
-      #    name: Wait for Desktop LW app to be ready
-      #    command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888
-      #- run: cd packages/lightwallet && npm run test:desktop:e2e
+      - run:
+          name: Run ng-serve
+          command: cd packages/lightwallet/desktop && npm start
+          background: true
+      - run:
+          name: Wait for Desktop LW app to be ready
+          command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888
+      - run: cd packages/lightwallet && npm run test:desktop:e2e
       - run:
           name: Run ionic serve
           command: cd packages/lightwallet && npm run ionic:serve -- --port 8899
