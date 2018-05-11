@@ -7,8 +7,11 @@ describe('[Desktop] Wallet details view', () => {
 
   beforeAll(async () => {
     browser.get('/dashboard');
-    element(by.css('wallets-list .wallets__group__wallet')).click();
+    const el = element(by.css('wallets-list .wallets__group__wallet'));
+    browser.wait(EC.visibilityOf(el), 8000);
+    await el.click();
     header = element(by.css('.wallet-details__header'));
+    browser.wait(EC.visibilityOf(header), 5000);
     walletId = (await browser.getCurrentUrl()).replace('/history', '').split('/').pop()
   });
 
