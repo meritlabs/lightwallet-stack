@@ -4,7 +4,8 @@ import { EC, TEST_WALLET_ALIAS, TEST_WALLET_MNEMONIC, TEST_WALLET_NAME } from '.
 describe('[Desktop] Sending Merit', () => {
 
   beforeAll(() => {
-    browser.get('/send');
+    const link = element(by.css('[ng-reflect-router-link="/send"]'));
+    link.click();
     browser.takeScreenshot();
   });
 
