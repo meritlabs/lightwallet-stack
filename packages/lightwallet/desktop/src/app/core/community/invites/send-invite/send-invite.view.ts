@@ -1,12 +1,11 @@
-import { Component, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
-
-import { ENV } from '@app/env';
 import {
-  RefreshOneWalletTransactions, selectSentInvites,
+  RefreshOneWalletTransactions,
+  selectSentInvites,
   selectTransactionsLoading
 } from '@merit/common/reducers/transactions.reducer';
 import {
@@ -20,10 +19,10 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
-import 'rxjs/add/operator/toPromise';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
-import { map, take, tap } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 
 function validateEmail(email) {
   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -52,8 +51,6 @@ export class SendInviteView {
   showEmailMessage = false;
   emailSubject;
   emailBody;
-
-  sending: boolean;
 
   get address() { return this.formData.get('address'); }
 
