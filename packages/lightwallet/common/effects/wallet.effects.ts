@@ -133,7 +133,7 @@ export class WalletEffects {
       totals.totalMiningRewards += w.miningRewardsMicro;
       totals.totalAmbassadorRewards += w.ambassadorRewardsMicro;
       totals.totalCommunitySize += w.communitySize;
-      totals.invites += isNaN(w.availableInvites)? 0 : w.availableInvites;
+      totals.invites += w.availableInvites;
 
       if (!w.balanceHidden) {
         allBalancesHidden = false;
