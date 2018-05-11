@@ -186,6 +186,10 @@
     "testMatch": [
       "**/*.spec.ts"
     ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/electron-dist/"
+    ],
     "transform": {
       "^.+\\.(ts|html)$": "<rootDir>/node_modules/jest-preset-angular/preprocessor.js",
       "^.+\\.js$": "babel-jest"
