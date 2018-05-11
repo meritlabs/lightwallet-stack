@@ -10,18 +10,6 @@ config.specs = [
 if (IS_CI) {
   config.multiCapabilities.push(
     {
-      ...browserStackCommon,
-      browserName: 'Chrome',
-      chromeOptions: {
-        mobileEmulation: {
-          deviceName: 'Pixel 2'
-        }
-      }
-    }
-  );
-} else {
-  config.multiCapabilities.push(
-    {
       device: 'Google Pixel',
       os_version: '8.0',
       real_mobile: true
@@ -31,16 +19,27 @@ if (IS_CI) {
       os_version: '11.0',
       real_mobile: true
     }
-    // ,
     // {
-    // browserName: 'chrome',
-    // chromeOptions: {
-    //   mobileEmulation: {
-    //     deviceName: 'Pixel 2'
-    //   },
-    //   args: ['--touch-events=enabled']
+    //   ...browserStackCommon,
+    //   browserName: 'Chrome',
+    //   chromeOptions: {
+    //     mobileEmulation: {
+    //       deviceName: 'Pixel 2'
+    //     }
+    //   }
     // }
-  // }
+  );
+} else {
+  config.multiCapabilities.push(
+    {
+      browserName: 'chrome',
+      chromeOptions: {
+        mobileEmulation: {
+          deviceName: 'Pixel 2'
+        },
+        args: ['--touch-events=enabled']
+      }
+    }
   );
 }
 
