@@ -1,11 +1,10 @@
 import { browser, by, element } from 'protractor';
-import { EC, TEST_WALLET_ALIAS, TEST_WALLET_MNEMONIC, TEST_WALLET_NAME } from './app.e2e-spec';
+import { TEST_WALLET_ALIAS } from './app.e2e-spec';
 
 describe('[Desktop] Sending Merit', () => {
 
   beforeAll(() => {
-    const link = element(by.css('[ng-reflect-router-link="/send"]'));
-    link.click();
+    browser.get('/send');
     browser.takeScreenshot();
   });
 
@@ -80,6 +79,66 @@ describe('[Desktop] Sending Merit', () => {
       skipButtonEl.click();
       expect(element(by.css('.sendingTour')).isPresent()).toBeFalsy();
     });
+  });
+
+
+  describe('> Sending', () => {
+
+    const InAmountMrt = element(by.css('[formcontrolname=amountMrt]')),
+      selectBox = element(by.css('.ui-input.ui-input--select.ui-input--form.selectbox__selected')),
+      selectMethod = element(by.css('.select-method')),
+      classicSendChoice = selectMethod.element(by.css('.method:first-child')),
+      globalSendChoice = selectMethod.element(by.css('.method:last-child')),
+      sendButton = element(by.css('button[type=submit]'));
+
+    it('should have an amount input', () => {
+      expect(InAmountMrt.isDisplayed()).toBeTruthy();
+      InAmountMrt.sendKeys(1);
+    });
+
+    it('should have an select wallet drop down', () => {
+      expect(selectBox.isDisplayed()).toBeTruthy();
+    });
+
+    it('should have an sending method choice box', () => {
+      expect(element(by.css('.select-method')).isDisplayed()).toBeTruthy();
+    });
+
+    it('should have an classic send activated by default', () => {
+      expect(classicSendChoice.getAttribute('class')).toContain('active');
+    });
+
+    it('should have a recipient address input', async () => {
+      const el = element(by.css('[formcontrolname=address]'));
+      expect(el.isDisplayed()).toBeTruthy();
+      el.sendKeys(TEST_WALLET_ALIAS);
+    });
+
+    it('should activate sending button after alias input', async () => {
+      expect(sendButton.isDisplayed()).toBeTruthy();
+    });
+
+    it('should have ability switch to Global Send Method', async () => {
+      expect(globalSendChoice.isDisplayed()).toBeTruthy();
+      globalSendChoice.click();
+    });
+
+    it('should activate Global Send Method after choice selection', async () => {
+      expect(globalSendChoice.getAttribute('class')).toContain('active');
+    });
+
+    it('should have an password input if Global Send Method selected', async () => {
+      expect(element(by.css('[formcontrolname=password]')).isDisplayed()).toBeTruthy();
+    });
+
+  });
+
+  describe('> Classic Send', () => {
+
+  });
+
+  describe('> Global Send', () => {
+
   });
 
 });
