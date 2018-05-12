@@ -6,5 +6,5 @@ export const ENV = {
   marketUrl: 'https://market.merit.me',
   rateUrl: 'https://mws.merit.me/bws/api/v1/rates',
   feeLevel: 'superEconomy',
-  easyUrl: 'http://merit.app.link/'
+  easyUrl: 'https://merit.app.link/'
 };

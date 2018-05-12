@@ -4,21 +4,20 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
+import { AddressService } from '@merit/common/services/address.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { ConfigService } from '@merit/common/services/config.service';
-import { AddressService } from '@merit/common/services/address.service';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { cleanAddress } from '@merit/common/utils/addresses';
 import { DeepLinkService } from '@merit/mobile/app/core/deep-link.service';
 import { OnboardingView } from '@merit/mobile/app/onboard/onboarding.view';
 import { TransactView } from '@merit/mobile/app/transact/transact';
 import { FingerprintLockView } from '@merit/mobile/app/utilities/fingerprint-lock/fingerprint-lock';
 import { PinLockView } from '@merit/mobile/app/utilities/pin-lock/pin-lock';
 import { Events, ModalController, Nav, Platform } from 'ionic-angular';
-import { isEmpty } from 'lodash';
-import { cleanAddress } from '@merit/common/utils/addresses';
 
 @Component({
   templateUrl: 'app.html'
@@ -67,15 +66,15 @@ export class MeritLightWallet {
   private parseInviteParams() {
     let search = window.location.search;
 
-    if (search && search.indexOf('invite') !== -1 ) {
-      let address = cleanAddress( search.split('?invite=')[1] );
-      window.history.replaceState({},document.title,document.location.pathname);
+    if (search && search.indexOf('invite') !== -1) {
+      let address = cleanAddress(search.split('?invite=')[1]);
+      window.history.replaceState({}, document.title, document.location.pathname);
 
 
       if (!this.addressService.couldBeAlias(address) && !this.addressService.isAddress(address)) return;
 
-      const name = this.addressService.couldBeAlias(address) ? '@'+address : 'Someone';
-      return {address, name};
+      const name = this.addressService.couldBeAlias(address) ? '@' + address : 'Someone';
+      return { address, name };
     }
   }
 
@@ -90,8 +89,9 @@ export class MeritLightWallet {
         // We have an easyReceipt, let's handle the cases of being a new user or an
         // existing user.
         if (easyReceipt) {
-          // Let's remove the Query Params from the URL so that the user is not continually loading the same EasyReceipt every time they re-open the app or the browser.
-          window.history.replaceState({},document.title,document.location.pathname);
+          // Let's remove the Query Params from the URL so that the user is not continually loading the same
+          // EasyReceipt every time they re-open the app or the browser.
+          window.history.replaceState({}, document.title, document.location.pathname);
           return easyReceipt;
         }
       } catch (e) {}
@@ -100,8 +100,7 @@ export class MeritLightWallet {
 
   private async validateAndSaveEasySend(data) {
     try {
-      const easyReceipt:EasyReceipt = await this.easyReceiveService.validateAndSaveParams(data);
-      return easyReceipt;
+      return await this.easyReceiveService.validateAndSaveParams(data);
     } catch (err) {
       this.logger.warn('Error validating and saving easySend params: ', err);
     }
@@ -115,7 +114,7 @@ export class MeritLightWallet {
 
     if (!this.platform.is('cordova')) return this.loadEasySendInBrowser();
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       try {
         this.deepLinkService.initBranch(async (data) => {
           const receipt = this.validateAndSaveEasySend(data);
@@ -150,6 +149,11 @@ export class MeritLightWallet {
       await this.nav.setRoot('UnlockView', { invitation });
     } else {
 
+      await this.nav.setRoot(this.authorized ? 'TransactView' : 'OnboardingView');
+
+      // wait until we have a root view before hiding splash screen
+      this.splashScreen.hide();
+
       const receipt = await this.loadEasySend();
       if (receipt) {
         if (!this.authorized) {
@@ -157,14 +161,8 @@ export class MeritLightWallet {
         } else {
           await this.nav.setRoot('TransactView');
         }
-      } else {
-        await this.nav.setRoot(this.authorized ? 'TransactView' : 'OnboardingView');
       }
-
     }
-
-    // wait until we have a root view before hiding splash screen
-    this.splashScreen.hide();
   }
 
   private registerMwcErrorHandler() {
