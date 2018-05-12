@@ -7,13 +7,13 @@ describe('[Desktop] Wallet details view', () => {
 
   beforeAll(async () => {
     const link = element(by.css('[ng-reflect-router-link="/dashboard"]'));
-    browser.wait(EC.visibilityOf(link), 5000);
-    browser.wait(EC.urlContains('dashboard'), 5000);
+    browser.wait(EC.visibilityOf(link), 5000, 'Dashboard menu link isn\'t visible');
     link.click();
+    browser.wait(EC.urlContains('dashboard'), 5000, 'URL doesn\'t contain dashboard');
     const el = element(by.css('wallets-list .wallets__group__wallet'));
-    browser.wait(EC.visibilityOf(el), 8000);
+    browser.wait(EC.visibilityOf(el), 8000, 'Wallet list item is not visible');
     await el.click();
-    browser.wait(EC.urlContains('wallets'), 5000);
+    browser.wait(EC.urlContains('wallets'), 5000, 'URL doesn\'t contain wallets');
     header = element(by.css('.wallet-details__header'));
     browser.wait(EC.visibilityOf(header), 5000);
     walletId = (await browser.getCurrentUrl()).replace('/history', '').split('/').pop();
