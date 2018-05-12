@@ -5,6 +5,7 @@ describe('[Desktop] Dashboard view', () => {
 
   beforeAll(() => {
     const link = element(by.css('[ng-reflect-router-link="/dashboard"]'));
+    browser.wait(EC.visibilityOf(link), 5000);
     link.click();
   });
 

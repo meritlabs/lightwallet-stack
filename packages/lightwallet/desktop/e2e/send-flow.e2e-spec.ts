@@ -4,7 +4,9 @@ import { EC, TEST_WALLET_ALIAS } from './app.e2e-spec';
 describe('[Desktop] Sending Merit', () => {
 
   beforeAll(() => {
-    browser.get('/send');
+    const link = element(by.css('[ng-reflect-router-link="/send"]'));
+    browser.wait(EC.visibilityOf(link), 5000);
+    link.click();
     browser.takeScreenshot();
   });
 

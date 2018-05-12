@@ -7,10 +7,13 @@ describe('[Desktop] Wallet details view', () => {
 
   beforeAll(async () => {
     const link = element(by.css('[ng-reflect-router-link="/dashboard"]'));
+    browser.wait(EC.visibilityOf(link), 5000);
+    browser.wait(EC.urlContains('dashboard'), 5000);
     link.click();
     const el = element(by.css('wallets-list .wallets__group__wallet'));
     browser.wait(EC.visibilityOf(el), 8000);
     await el.click();
+    browser.wait(EC.urlContains('wallets'), 5000);
     header = element(by.css('.wallet-details__header'));
     browser.wait(EC.visibilityOf(header), 5000);
     walletId = (await browser.getCurrentUrl()).replace('/history', '').split('/').pop();

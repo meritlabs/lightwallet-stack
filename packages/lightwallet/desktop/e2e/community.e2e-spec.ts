@@ -1,10 +1,12 @@
 import { browser, element, by, protractor, Ptor } from 'protractor';
-import { TEST_WALLET_NAME } from './app.e2e-spec';
+import { EC, TEST_WALLET_NAME } from './app.e2e-spec';
 
 describe('[Desktop] Community', () => {
    beforeAll(() => {
      const link = element(by.css('[ng-reflect-router-link="/community"]'));
+     browser.wait(EC.visibilityOf(link), 5000);
      link.click();
+     browser.wait(EC.urlContains('community'), 5000);
      browser.driver.takeScreenshot();
    });
 
