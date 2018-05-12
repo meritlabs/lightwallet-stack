@@ -6,10 +6,17 @@ describe('[Desktop] Wallet details view', () => {
   let header, walletId;
 
   beforeAll(async () => {
-    browser.get('/dashboard');
-    element(by.css('wallets-list .wallets__group__wallet')).click();
+    const link = element(by.css('[ng-reflect-router-link="/dashboard"]'));
+    browser.wait(EC.visibilityOf(link), 5000, 'Dashboard menu link isn\'t visible');
+    link.click();
+    browser.wait(EC.urlContains('dashboard'), 5000, 'URL doesn\'t contain dashboard');
+    const el = element(by.css('wallets-list .wallets__group__wallet'));
+    browser.wait(EC.visibilityOf(el), 8000, 'Wallet list item is not visible');
+    await el.click();
+    browser.wait(EC.urlContains('wallets'), 5000, 'URL doesn\'t contain wallets');
     header = element(by.css('.wallet-details__header'));
-    walletId = (await browser.getCurrentUrl()).replace('/history', '').split('/').pop()
+    browser.wait(EC.visibilityOf(header), 5000);
+    walletId = (await browser.getCurrentUrl()).replace('/history', '').split('/').pop();
   });
 
   it('should go to wallet details view', async () => {
@@ -51,9 +58,10 @@ describe('[Desktop] Wallet details view', () => {
       expect(EC.urlContains('/history')).toBeTruthy();
     });
 
-    it('should have wallet unlocked transaction', async () => {
-      expect(await element(by.css('history-item:last-child')).getText()).toContain('Wallet Unlocked');
-    });
+    // TODO restore this when implementing new virtual scroll
+    // it('should have wallet unlocked transaction', async () => {
+    //   expect(await element(by.css('history-item:last-child')).getText()).toContain('Wallet Unlocked');
+    // });
 
   });
 
@@ -107,7 +115,7 @@ describe('[Desktop] Wallet details view', () => {
       expect(element(by.css('app-toolbar .amount-merit')).getText()).not.toEqual(initialToolbarBalance, 'Toolbar balance didn\'t change');
     });
 
-    it('should make balance visible', async() => {
+    it('should make balance visible', async () => {
       hideBalanceEl.click();
       browser.wait(EC.not(EC.textToBePresentInElement(header, '[Balance hidden]')));
       expect(header.getText()).not.toContain('[Balance hidden]', 'Unable to un-hide balance');

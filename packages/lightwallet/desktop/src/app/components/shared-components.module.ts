@@ -5,7 +5,6 @@ import { ToastControllerService as ToastControllerServiceBase } from '@merit/com
 import { BackdropComponent } from '@merit/desktop/app/components/backdrop/backdrop.component';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { ConfirmDialogComponent } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog.component';
-import { ErrorMessageComponent } from '@merit/desktop/app/components/error-message/error-message.component';
 import { GlobalsendLinkPopupComponent } from '@merit/desktop/app/components/globalsend-link-popup/globalsend-link-popup.component';
 import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/globalsend-link-popup/globalsend-link-popup.controller';
 import { IllustationsSendingMeritComponent } from '@merit/desktop/app/components/illustations/sending-merit/sending-merit.component';
@@ -16,6 +15,7 @@ import { LoadingSpinnerSmallComponent } from '@merit/desktop/app/components/load
 import { LoadingSpinnerComponent } from '@merit/desktop/app/components/loading-spinner/loading-spinner.component';
 import { LockScreenComponent } from '@merit/desktop/app/components/lock-screen/lock-screen.component';
 import { MeritIconComponent } from '@merit/desktop/app/components/merit-icon/merit-icon.component';
+import { MessageBoxComponent } from '@merit/desktop/app/components/message-box/message-box.component';
 import { PasswordPromptComponent } from '@merit/desktop/app/components/password-prompt/password-prompt.component';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
@@ -28,7 +28,7 @@ export function getComponents() {
   return [
     LoadingSpinnerComponent,
     LoadingSpinnerSmallComponent,
-    ErrorMessageComponent,
+    MessageBoxComponent,
     MeritIconComponent,
     ToastNotificationComponent,
     LockScreenComponent,
@@ -41,7 +41,7 @@ export function getComponents() {
     IllustationsThatsItComponent,
     IllustationsYourWayComponent,
     GlobalsendLinkPopupComponent,
-    UICheckboxComponent,
+    UICheckboxComponent
   ];
 }
 
