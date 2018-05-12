@@ -72,7 +72,7 @@
   letter-spacing: .3px
   border: 1px solid transparent
   margin-bottom: 30px
-  +transition(.3, linear)
+  +transition(.3, ease-in-out)
   &:focus
     border-color: $blue
   &--text
@@ -134,7 +134,7 @@
     right: 16px
     top: 11px
     transform: translate3d(0,0,0)
-    transition: right .2s linear
+    transition: right .2s ease-in-out
 .ui-checkbox
   position: relative
   input
@@ -206,7 +206,7 @@ form .ui-input
       height: 40px
       cursor: pointer
       opacity: 0
-      &:checked ~ .ui-checkbox_switcherTwo 
+      &:checked ~ .ui-checkbox_switcherTwo
         .ui-checkbox_case-second
           background: $blue-button-bg
           color: $white
@@ -223,7 +223,7 @@ form .ui-input
     border: 2px solid $blue-button-bg
   &_case
     font-size: 14px
-    background: $white 
+    background: $white
     color: $blue-button-bg
     padding: 5px 10px
     min-width: 120px

@@ -3,17 +3,21 @@
   border: none
   +font(400, 15px, 15px, initial)
   padding: 12px 45px 10px
-  border-radius: 4px
+  border-radius: $base-border-radius
   box-sizing: border-box
   cursor: pointer
-  +transition(.3s, linear)
+  +transition(.2s, ease-in-out)
   &[disabled]
     opacity: .5
     cursor: default
   &--green
-    background: rgba(69, 189, 73, 0.7)
+    background: rgb(41, 160, 116)
     color: $white
-    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.34)
+    box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.38)
+    &:hover:not([disabled])
+      background: lighten(rgb(41, 160, 116), 5)
+      transform: translate3d(0, -1px, 0)
+      box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.38)
   &--blue
     background: $blue-button-bg
     color: $white
@@ -47,7 +51,7 @@
       font-weight: 900
       margin-left: 16px
       transform: translate3d(0, 0, 0)
-      +transition(.1s, linear)
+      +transition(.1s, ease-in-out)
     &:hover:not([disabled])
       &:after
         transform: translate3d(2px, 0, 0)
@@ -62,7 +66,7 @@
       background: $blue
       mask-image: url('/assets/v1/icons/buttons/load.svg')
       mask-repeat: no-repeat
-      +transition(.1s, linear)
+      +transition(.1s, ease-in-out)
     &:after
       transform: translate3d(0, 0, 0)
     &:hover:not([disabled])
@@ -93,7 +97,7 @@
       background: url('/assets/v1/icons/ui/wallet-button-ico.svg') no-repeat 0 0
       background-size: 13px
       position: relative
-      top: 0px
+      top: 0
       margin-right: 10px
   &--back
     display: flex
@@ -106,7 +110,6 @@
       font-size: 25px
       position: relative
       margin-right: 5px
-      position: relative
       top: 4px
   &--add
     &:before
@@ -120,11 +123,11 @@
 
 .ui-button
   &--lg
-    font-weight: 700
-    +chageFontSize(16px, 16px)
-    padding: 18px 20px
+    font-weight: 400
+    +chageFontSize(22px, 22px)
+    padding: 20px 0
     letter-spacing: .3px
-    min-width: 200px
+    min-width: 220px
   &--md
     font-weight: 700
     +chageFontSize(14px, 14px)

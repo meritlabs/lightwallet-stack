@@ -109,11 +109,11 @@ export class EasyReceiveService {
     return amount - this.rateService.microsToMrt(await this.feeService.getEasyReceiveFee());
   }
 
-  async validateEasyReceiptOnBlockchain(receipt: EasyReceipt, password = '', network = ENV.network): Promise<any> {
+  async validateEasyReceiptOnBlockchain(receipt: EasyReceipt, password = ''): Promise<any> {
     const walletClient = this.mwcService.getClient(null, {});
 
     try {
-      const scriptData = this.generateEasyScipt(receipt, password, network);
+      const scriptData = this.generateEasyScipt(receipt, password);
       const scriptAddress = Address(scriptData.scriptPubKey.getAddressInfo()).toString();
 
       const txs = await walletClient.validateEasyScript(scriptAddress);
@@ -149,13 +149,13 @@ export class EasyReceiveService {
     return wallet.broadcastRawTx({ rawTx: txp.serialize({ disableSmallFees: tx.invite }), network: ENV.network });
   }
 
-  generateEasyScipt(receipt: EasyReceipt, password, network) {
+  generateEasyScipt(receipt: EasyReceipt, password: string) {
     const secret = this.ledger.hexToString(receipt.secret);
-    const receivePrv = PrivateKey.forEasySend(secret, password, network);
+    const receivePrv = PrivateKey.forEasySend(secret, password, ENV.network);
     const receivePub = PublicKey.fromPrivateKey(receivePrv).toBuffer();
     const senderPubKey = this.ledger.hexToArray(receipt.senderPublicKey);
     const publicKeys = [receivePub, senderPubKey];
-    const script = Script.buildEasySendOut(publicKeys, receipt.blockTimeout, network);
+    const script = Script.buildEasySendOut(publicKeys, receipt.blockTimeout, ENV.network);
 
     return {
       privateKey: receivePrv,
@@ -228,6 +228,10 @@ export class EasyReceiveService {
     this.cancelEasySendSource.next(receipt);
   }
 
+  getScriptAddress(scriptData: any) {
+    return Address(scriptData.scriptPubKey.getAddressInfo()).toString();
+  }
+
   async cancelEasySendReceipt(
     wallet: MeritWalletClient,
     receipt: EasyReceipt,
@@ -240,9 +244,9 @@ export class EasyReceiveService {
     const destAddress = pubKey.toAddress(ENV.network);
 
     //generate script based on receipt
-    const scriptData = this.generateEasyScipt(receipt, password, ENV.network);
+    const scriptData = this.generateEasyScipt(receipt, password);
     const redeemScript = scriptData.script;
-    const scriptAddress = Address(scriptData.scriptPubKey.getAddressInfo()).toString();
+    const scriptAddress = this.getScriptAddress(scriptData);
 
     //find the invite and transaction
     const txsRes = await wallet.validateEasyScript(scriptAddress.toString());

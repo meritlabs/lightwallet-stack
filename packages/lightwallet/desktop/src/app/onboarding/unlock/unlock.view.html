@@ -1,5 +1,5 @@
 <ng4-loading-spinner></ng4-loading-spinner>
-<app-slider-guide *ngIf="showGuide" (hideGuide)="hideGuide($event)" [showGuide]="showGuide"></app-slider-guide>
+<app-slider-guide *ngIf="showGuide" (hideGuide)="hideGuide()"></app-slider-guide>
 <div class="container--fluid unlock">
   <div class="unlock__content container">
     <div class="container--fluid unlock__heading">
@@ -116,8 +116,8 @@
             <sup>*</sup>Max length: 20 characters</small>
         </div>
       </div>
-      <div class="unlock__form__group" *ngIf="!formData.invalid && alias.valid">
-        <div class="ui-button ui-button--blue ui-button--with-arrow" (click)="showAgreement = !showAgreement">NEXT</div>
+      <div class="unlock__form__group">
+        <button type="button" role="button" class="ui-button ui-button--blue ui-button--with-arrow" [disabled]="formData.invalid || formData.pending" (click)="showAgreement = !showAgreement">Next</button>
       </div>
     </form>
     <div class="userAgreement" *ngIf="showAgreement">

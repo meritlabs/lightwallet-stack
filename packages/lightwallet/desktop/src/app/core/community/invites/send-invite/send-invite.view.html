@@ -15,8 +15,6 @@
     You do not have any available invites to send.
   </error-message>
 
-  <loading-spinner *ngIf="sending"></loading-spinner>
-
   <form [formGroup]="formData" (ngSubmit)="sendInvite()">
     <div class="sendMerit__form__group">
       <label for="" class="ui-label">Send from</label>
@@ -44,7 +42,7 @@
         <a href="mailto:{{ formData.value.address.trim() }}?subject={{ emailSubject }}&body={{ emailBody }}">Send an email</a> with invite link.</p>
     </div>
 
-    <button class="ui-button ui-button--blue" type="submit" role="button" [disabled]="formData.invalid || ((availableInvites$ | async) == 0)">SEND</button>
+    <button class="ui-button ui-button--blue" type="submit" role="button" [disabled]="formData.invalid || formData.pending || ((availableInvites$ | async) == 0)">SEND</button>
 
   </form>
 

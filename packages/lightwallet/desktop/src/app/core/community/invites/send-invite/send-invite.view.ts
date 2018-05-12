@@ -1,12 +1,11 @@
-import { Component, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
-
-import { ENV } from '@app/env';
 import {
-  RefreshOneWalletTransactions, selectSentInvites,
+  RefreshOneWalletTransactions,
+  selectSentInvites,
   selectTransactionsLoading
 } from '@merit/common/reducers/transactions.reducer';
 import {
@@ -20,9 +19,10 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
-import { map, take, tap } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 
 function validateEmail(email) {
   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -52,8 +52,6 @@ export class SendInviteView {
   emailSubject;
   emailBody;
 
-  sending: boolean;
-
   get address() { return this.formData.get('address'); }
 
   constructor(private store: Store<IRootAppState>,
@@ -61,7 +59,8 @@ export class SendInviteView {
               private mwcService: MWCService,
               private walletService: WalletService,
               private toastCtrl: ToastControllerService,
-              private addressService: AddressService) {}
+              private addressService: AddressService,
+              private loader: Ng4LoadingSpinnerService) {}
 
   async ngOnInit() {
     const wallets = await this.wallets$.pipe(take(1)).toPromise();
@@ -77,8 +76,7 @@ export class SendInviteView {
   }
 
   async sendInvite() {
-
-    this.sending = true;
+    this.loader.show();
 
     let { address } = this.formData.getRawValue();
     address = await this.addressService.getAddressInfo(address);
@@ -94,13 +92,15 @@ export class SendInviteView {
       }));
 
       this.store.dispatch(new RefreshOneWalletTransactions(this.selectedWallet.id));
-      this.formData.reset();
+      this.address.reset();
+      this.formData.markAsPristine();
       this.toastCtrl.success('Invite has been sent!');
     } catch (e) {
       console.log(e);
       this.toastCtrl.error('Failed to send invite');
+    } finally {
+      this.loader.hide();
     }
-    this.sending = false;
   }
 
   selectWallet(wallet: DisplayWallet) {

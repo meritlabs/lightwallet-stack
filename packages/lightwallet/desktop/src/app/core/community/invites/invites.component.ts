@@ -12,5 +12,6 @@ import { Observable } from 'rxjs/Observable';
 export class InvitesComponent {
   invites$: Observable<number> = this.store.select(selectInvites);
   inviteRequests$: Observable<any[]> = this.store.select(selectInviteRequests);
+
   constructor(private store: Store<IRootAppState>) {}
 }

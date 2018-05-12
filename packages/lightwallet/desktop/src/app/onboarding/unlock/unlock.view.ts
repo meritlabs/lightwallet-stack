@@ -28,7 +28,7 @@ import { AddressService } from '@merit/common/services/address.service';
 export class UnlockComponent {
   formData: FormGroup = this.formBuilder.group({
     inviteCode: ['', [Validators.required, Validators.minLength(3)], [AddressValidator.validateAddress(this.mwcService)]],
-    alias: ['', Validators.minLength(3), [AddressValidator.validateAliasAvailability(this.mwcService)]]
+    alias: ['', [Validators.required, Validators.minLength(3)], [AddressValidator.validateAliasAvailability(this.mwcService)]]
   });
 
   easyReceipt: EasyReceipt;
@@ -74,9 +74,9 @@ export class UnlockComponent {
     }
   }
 
-  hideGuide($event) {
-    this.showGuide = $event;
-    localStorage.setItem('showGuide', $event);
+  hideGuide() {
+    this.showGuide = false;
+    localStorage.setItem('showGuide', 'false');
   }
 
   async onSubmit() {

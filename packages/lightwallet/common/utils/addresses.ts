@@ -8,8 +8,6 @@ export function cleanAddress(address: string) {
 
 export function invalidPattern(address: string) {
   let na_regEx = /@/g;
-  console.log(na_regEx.test(address));
-
   return na_regEx.test(address);
 }
 

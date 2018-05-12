@@ -36,7 +36,7 @@
     left: -6px
     padding: 8px 12px
     box-shadow: 0 0 15px rgba(0, 0, 0, .3)
-    +transition(.3s, linear)
+    +transition(.2s, ease-in-out)
     opacity: 0
     display: none
     &:after
@@ -51,7 +51,7 @@
   .ui-tooltip__text
     display: block
     will-change: opacity, transform
-    animation: showToolTip .3s cubic-bezier(1.000, 0.008, 0.565, 1.650) .1s 1 forwards
+    animation: showToolTip .2s cubic-bezier(1.000, 0.008, 0.565, 1.650) .1s 1 forwards
 @keyframes showToolTip
   from
     opacity: 0
