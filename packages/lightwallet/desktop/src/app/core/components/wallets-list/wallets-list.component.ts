@@ -1,6 +1,6 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { Router, ActivatedRoute } from '@angular/router';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 
 @Component({
@@ -20,7 +20,7 @@ export class WalletsListComponent {
   constructor(private route: ActivatedRoute,
               private router: Router,
               private toastCtrl: ToastControllerService
-            ) {}
+  ) {}
 
   shareLink(wallet: DisplayWallet) {
     const code = wallet.alias || wallet.referrerAddress;
