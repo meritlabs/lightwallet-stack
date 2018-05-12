@@ -69,8 +69,9 @@ export class WalletDetailsView {
   async send() {
     this.navCtrl.popToRoot();
     try {
-      await this.tabsCtrl.select(3);
-      await this.tabsCtrl.getActiveChildNavs()[0].popToRoot();
+      // await this.tabsCtrl.select(3);
+      const tabsNav = this.tabsCtrl.getActiveChildNavs()[0].popToRoot();
+      this.navCtrl.push('SendView', {wallet: this.wallet});
     } catch (e) {
       console.log(e);
     }
