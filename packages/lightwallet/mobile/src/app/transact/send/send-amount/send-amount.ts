@@ -133,12 +133,14 @@ export class SendAmountView {
   private chooseAppropriateWallet() {
     if (this.wallets && this.wallets[0]) {
 
-      this.selectedWallet = this.wallets[0];
-
-      const passedAmount = this.navParams.get('amount') || 0;
-      this.selectedWallet = this.wallets.find(w => {
-        return (w.balance.spendableAmount >= passedAmount) && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
-      });
+      this.selectedWallet = this.navParams.get('wallet');
+      if (!this.selectedWallet) {
+        this.selectedWallet = this.wallets[0];
+        const passedAmount = this.navParams.get('amount') || 0;
+        this.selectedWallet = this.wallets.find(w => {
+          return (w.balance.spendableAmount >= passedAmount) && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
+        });
+      } 
     }
   }
 
