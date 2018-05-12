@@ -1,5 +1,5 @@
 import { browser, by, element } from 'protractor';
-import { TEST_WALLET_ALIAS } from './app.e2e-spec';
+import { EC, TEST_WALLET_ALIAS } from './app.e2e-spec';
 
 describe('[Desktop] Sending Merit', () => {
 
@@ -81,63 +81,174 @@ describe('[Desktop] Sending Merit', () => {
     });
   });
 
-
   describe('> Sending', () => {
 
-    const InAmountMrt = element(by.css('[formcontrolname=amountMrt]')),
-      selectBox = element(by.css('.ui-input.ui-input--select.ui-input--form.selectbox__selected')),
-      selectMethod = element(by.css('.select-method')),
-      classicSendChoice = selectMethod.element(by.css('.method:first-child')),
-      globalSendChoice = selectMethod.element(by.css('.method:last-child')),
-      sendButton = element(by.css('button[type=submit]'));
+    const amountInputEl = element(by.css('[formcontrolname=amountMrt]')),
+      selectBoxEl = element(by.css('.ui-input.ui-input--select.ui-input--form.selectbox__selected')),
+      selectMethodEl = element(by.css('.select-method')),
+      classicSendChoiceEl = selectMethodEl.element(by.css('.method:first-child')),
+      globalSendChoiceEl = selectMethodEl.element(by.css('.method:last-child')),
+      sendButtonEl = element(by.css('button[type=submit]')),
+      addressInputEl = element(by.css('[formcontrolname=address]')),
+      receiptEl = element(by.css('.sendMerit__totals')),
+      receiptLoadingEl = receiptEl.element(by.css('loading-spinner-small')),
+      sendingSpinnerEl = element(by.css('loading-spinner[sending-spinner]')),
+      successEl = element(by.css('message-box[success]'));
+
+    const sendAmount = '0.005';
 
     it('should have an amount input', () => {
-      expect(InAmountMrt.isDisplayed()).toBeTruthy();
-      InAmountMrt.sendKeys(1);
+      expect(amountInputEl.isDisplayed()).toBeTruthy();
     });
 
     it('should have an select wallet drop down', () => {
-      expect(selectBox.isDisplayed()).toBeTruthy();
+      expect(selectBoxEl.isDisplayed()).toBeTruthy();
     });
 
     it('should have an sending method choice box', () => {
-      expect(element(by.css('.select-method')).isDisplayed()).toBeTruthy();
+      expect(selectMethodEl.isDisplayed()).toBeTruthy();
     });
 
     it('should have an classic send activated by default', () => {
-      expect(classicSendChoice.getAttribute('class')).toContain('active');
+      expect(classicSendChoiceEl.getAttribute('class')).toContain('active');
     });
 
     it('should have a recipient address input', async () => {
-      const el = element(by.css('[formcontrolname=address]'));
-      expect(el.isDisplayed()).toBeTruthy();
-      el.sendKeys(TEST_WALLET_ALIAS);
+      expect(addressInputEl.isDisplayed()).toBeTruthy();
     });
 
     it('should activate sending button after alias input', async () => {
-      expect(sendButton.isDisplayed()).toBeTruthy();
+      expect(sendButtonEl.isDisplayed()).toBeTruthy();
     });
 
     it('should have ability switch to Global Send Method', async () => {
-      expect(globalSendChoice.isDisplayed()).toBeTruthy();
-      globalSendChoice.click();
+      expect(globalSendChoiceEl.isDisplayed()).toBeTruthy();
+      globalSendChoiceEl.click();
     });
 
     it('should activate Global Send Method after choice selection', async () => {
-      expect(globalSendChoice.getAttribute('class')).toContain('active');
+      expect(globalSendChoiceEl.getAttribute('class')).toContain('active');
     });
 
     it('should have an password input if Global Send Method selected', async () => {
       expect(element(by.css('[formcontrolname=password]')).isDisplayed()).toBeTruthy();
     });
 
-  });
+    describe('> Classic Send', () => {
+      beforeAll(() => {
+        classicSendChoiceEl.click();
+        addressInputEl.sendKeys(TEST_WALLET_ALIAS);
+        amountInputEl.sendKeys(sendAmount);
+        browser.takeScreenshot();
+        browser.wait(EC.invisibilityOf(receiptLoadingEl));
+        browser.takeScreenshot();
+      });
 
-  describe('> Classic Send', () => {
+      afterAll(() => {
+        browser.takeScreenshot();
+        browser.sleep(2000);
+      });
 
-  });
+      describe('> Receipt', () => {
+        it('should display recipient address', () => {
+          const el = receiptEl.element(by.css('div:nth-child(2) > div:nth-child(2)'));
+          expect(el.getText()).toContain(TEST_WALLET_ALIAS);
+        });
 
-  describe('> Global Send', () => {
+        it('should display transaction amount', () => {
+          const el = receiptEl.element(by.css('div:nth-child(3) > div:nth-child(2)'));
+          expect(el.getText()).toContain(sendAmount + ' MRT');
+        });
+
+        it('should display transaction fee', () => {
+          const el = receiptEl.element(by.css('div:nth-child(4) > div:nth-child(2)'));
+          expect(el.getText()).not.toContain('0 MRT');
+        });
+      });
+
+      it('submit button should be enabled', () => {
+        expect(sendButtonEl.isEnabled()).toBeTruthy();
+      });
+
+      it('should send transaction', () => {
+        sendButtonEl.click();
+        browser.wait(EC.visibilityOf(successEl), 8000, 'Success box did not show up');
+        expect(successEl.isDisplayed()).toBeTruthy();
+      });
+    });
+
+    describe('> Global Send', () => {
+      beforeAll(() => {
+        globalSendChoiceEl.click();
+        amountInputEl.sendKeys(sendAmount);
+        browser.takeScreenshot();
+        browser.wait(EC.invisibilityOf(receiptLoadingEl));
+        browser.takeScreenshot();
+      });
+
+      afterAll(() => {
+        browser.takeScreenshot();
+      });
+
+      describe('> Receipt', () => {
+        it('should display GlobalSend instead of recipient name', () => {
+          const el = receiptEl.element(by.css('div:nth-child(2) > div:nth-child(2)'));
+          expect(el.getText()).toContain('GlobalSend');
+        });
+      });
+
+      it('submit button should be enabled', () => {
+        expect(sendButtonEl.isEnabled()).toBeTruthy();
+      });
+
+      it('should send transaction', () => {
+        sendButtonEl.click();
+        browser.wait(EC.visibilityOf(successEl), 8000, 'Success box did not show up');
+        expect(successEl.isDisplayed()).toBeTruthy();
+      });
+
+      it('should display GlobalSend link', () => {
+        const el = successEl.element(by.css('.easysend-url-container'));
+        expect(el.getText()).toContain('http');
+        browser.takeScreenshot();
+      });
+
+      describe('> Cancel GlobalSend', () => {
+        const cancelGlobalSendButtonEl = element(by.css('history-list')).element(by.buttonText('Cancel'));
+        const confirmDialogEl = element(by.css('confirm-dialog'));
+        const refreshButton = element(by.css('button.refresh-button'));
+        const historyLoaderEl = element(by.css('history-list loading-spinner-small'));
+
+        beforeAll(() => {
+          const link = element(by.css('[ng-reflect-router-link="/history"]'));
+          link.click();
+          refreshButton.click();
+
+          browser.wait(EC.visibilityOf(cancelGlobalSendButtonEl));
+        });
+
+        it('should prompt the user to confirm cancellation', () => {
+          cancelGlobalSendButtonEl.click();
+          browser.wait(EC.visibilityOf(confirmDialogEl));
+          expect(confirmDialogEl.isPresent()).toBeTruthy();
+        });
+
+        it('should cancel GlobalSend', () => {
+          const buttonEl = confirmDialogEl.element(by.css('button.primary'));
+          expect(buttonEl.isDisplayed()).toBeTruthy('Cancel button not displayed');
+          expect(buttonEl.isEnabled()).toBeTruthy('Cancel button not enabled');
+
+          buttonEl.click();
+          browser.wait(EC.invisibilityOf(confirmDialogEl));
+        });
+
+        it('should hide cancel button', () => {
+          refreshButton.click();
+          browser.wait(EC.invisibilityOf(cancelGlobalSendButtonEl), 10000);
+          expect(cancelGlobalSendButtonEl.isPresent()).toBeFalsy();
+        });
+      });
+    });
 
   });
 
