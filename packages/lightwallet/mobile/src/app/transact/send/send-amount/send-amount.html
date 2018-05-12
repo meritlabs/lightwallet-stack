@@ -46,8 +46,9 @@
           <img src="assets/img/icons/wallet.svg">
         </ion-avatar>
         <p>From</p>
-        <h2>{{selectedWallet?.name}}</h2>
+        <h2>{{selectedWallet?.name}} <span *ngIf="selectedWallet.rootAlias">| @{{selectedWallet.rootAlias}}</span></h2>
         <p>{{selectedWallet?.balance?.spendableAmount | toMRT}}</p>
+        <p>Invites: {{selectedWallet?.availableInvites}}</p>
         <ion-icon name="ios-arrow-down" item-end></ion-icon>
       </button>
       <ion-item detail-none>
