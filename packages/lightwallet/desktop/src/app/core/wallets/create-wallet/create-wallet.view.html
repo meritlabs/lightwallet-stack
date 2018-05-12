@@ -5,26 +5,46 @@
   <form [formGroup]="formData" (ngSubmit)="create()">
     <div class="wallet-settings__group">
       <label class="ui-label" for="name">Wallet name</label>
-      <input type="text" name="name" id="name" formControlName="walletName" class="ui-input ui-input--form ui-input--text">
+      <input type="text" name="name" id="name" formControlName="walletName"
+             class="ui-input ui-input--form ui-input--text">
     </div>
     <div class="wallet-settings__group">
       <label class="ui-label" for="parentAddress">Referrer address</label>
-      <input type="text" name="parentAddress" id="parentAddress" formControlName="parentAddress" class="ui-input ui-input--form ui-input--text">
+      <input type="text" name="parentAddress" id="parentAddress" formControlName="parentAddress"
+             class="ui-input ui-input--form ui-input--text">
+      <div class="input-errors" [hidden]="!parentAddress.dirty || parentAddress.valid">
+        <div>
+          <span class="tooltip-error">
+            <span>
+              {{ parentAddress.errors | addressErrorMessage }}
+            </span>
+          </span>
+        </div>
+      </div>
     </div>
     <div class="wallet-settings__group">
-      <label for="alias" class="ui-label">Address alias <span>(optional)</span>
+      <label for="alias" class="ui-label">Address alias &nbsp; <span>(optional)</span>
         <span class="ui-tooltip">
             <span class="ui-tooltip__text">
-              add tooltip that briefly explains what an alias is
+              Your alias is how you will be known in the Merit community. Anyone can use it to easily send you Merit or as their unlock code. Think of it like your username or handle.
             </span>
           </span>
       </label>
       <input type="text" name="alias" id="alias" formControlName="alias" class="ui-input ui-input--form ui-input--text">
+      <div class="input-errors" [hidden]="!alias.dirty || alias.valid">
+        <div>
+          <span class="tooltip-error">
+            <span>
+              {{ alias.errors | aliasErrorMessage }}
+            </span>
+          </span>
+        </div>
+      </div>
     </div>
     <div class="wallet-settings__group">
       <label class="ui-label">Color</label>
-      <input type="text" [value]="wallet.color" name="color" id="color" formControlName="color" hidden>
-      <app-select (selectionEvent)="selectColor($event)" [selected]="wallet.color" [input]="avalibleColors" cssClass="ui-input ui-input--select ui-input--form ui-input--color"></app-select>
+      <app-select (selectionEvent)="selectColor($event)" [selected]="selectedColor" [input]="availableColors"
+                  cssClass="ui-input ui-input--select ui-input--form ui-input--color"></app-select>
     </div>
     <div class="wallet-settings__group wallet-settings__group__checkbox">
       <label class="ui-label">Hide balance</label>
@@ -33,25 +53,27 @@
     <div class="wallet-settings__multi-group">
       <label class="ui-label">Password (optional)</label>
       <div class="wallet-settings__group">
-        <label class="ui-label" for="password"><small>Password</small></label>
-        <input type="password" name="password" id="password" formControlName="password" class="ui-input ui-input--form ui-input--text">
+        <label class="ui-label" for="password">
+          <small>Password</small>
+        </label>
+        <input type="password" name="password" id="password" formControlName="password"
+               class="ui-input ui-input--form ui-input--text">
       </div>
       <div class="wallet-settings__group">
-        <label class="ui-label" for="repeatPassword"><small>Confirm password</small></label>
-        <input type="password" name="repeatPassword" id="repeatPassword" formControlName="repeatPassword" class="ui-input ui-input--form ui-input--text">
+        <label class="ui-label" for="repeatPassword">
+          <small>Confirm password</small>
+        </label>
+        <input type="password" name="repeatPassword" id="repeatPassword" formControlName="repeatPassword"
+               class="ui-input ui-input--form ui-input--text">
       </div>
       <div class="wallet-settings__group">
         <label for="recoveryPhrase" class="ui-label">Recovery phrase</label>
-        <textarea name="recoveryPhrase" id="recoveryPhrase" rows="4" class="ui-input ui-input--form ui-input--text" placeholder="Enter the recovery phrase (BIP39)" formControlName="recoveryPhrase"></textarea>
+        <textarea name="recoveryPhrase" id="recoveryPhrase" rows="4" class="ui-input ui-input--form ui-input--text"
+                  placeholder="Enter the recovery phrase (BIP39)" formControlName="recoveryPhrase"></textarea>
       </div>
     </div>
-    <div class="wallet-settings__multi-group">
-      <label class="ui-label">Advanced options</label>
-      <div class="wallet-settings__group">
-        <label class="ui-label" for="mwsUrl"><small>Wallet Service URL</small></label>
-        <input type="text" id="mwsUrl" name="mwsUrl" formControlName="bwsurl" class="ui-input ui-input--form ui-input--text">
-      </div>
-    </div>
-    <button role="button" type="submit" name="button" class="ui-button ui-button--blue ui-button--md">Create wallet</button>
+    <button role="button" type="submit" name="button" class="ui-button ui-button--blue ui-button--lg" [disabled]="formData.pending || formData.invalid">
+      Create wallet
+    </button>
   </form>
 </div>

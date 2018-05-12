@@ -19,7 +19,7 @@ import { isAddress } from '@merit/common/utils/addresses';
 import { SendValidator } from '@merit/common/validators/send.validator';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { Store } from '@ngrx/store';
-import { clone } from 'lodash';
+import { clone, omit, isEqual } from 'lodash';
 import 'rxjs/add/operator/isEmpty';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
@@ -27,9 +27,11 @@ import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import {
   catchError,
-  debounceTime, distinctUntilChanged,
+  debounceTime,
+  distinctUntilChanged,
   filter,
-  map, share,
+  map,
+  share,
   skipWhile,
   startWith,
   switchMap,
@@ -68,7 +70,6 @@ export class SendView implements OnInit {
   hasAvailableInvites: boolean;
 
   availableCurrencies: Array<{ code: string; name: string; rate: number; }>;
-  // selectedCurrency: { code: string };
 
   easySendUrl: string;
   error: string;
@@ -117,13 +118,20 @@ export class SendView implements OnInit {
   showTour: boolean = !('showTour' in localStorage && localStorage.getItem('showTour') === 'false');
 
   txData$: Observable<TxData> = (this.formData.valueChanges as any).pipe(
+    debounceTime(250),
+    distinctUntilChanged((before: any, after: any) => {
+      const b: any = omit(before, 'wallet');
+      const a: any = omit(after, 'wallet');
+      b.wallet = before.wallet? before.wallet.id : null;
+      a.wallet = after.wallet? after.wallet.id : null;
+
+      return isEqual(a, b);
+    }),
     tap(() => {
       this.error = null;
       this.canSend = false;
     }),
     filter(() => this.formData.dirty),
-    distinctUntilChanged(),
-    debounceTime(250),
     switchMap((formData) => {
       if (this.formData.pending) {
         // wait till form is validated
@@ -136,7 +144,9 @@ export class SendView implements OnInit {
       return of(formData);
     }),
     filter(() => this.formData.valid),
-    tap((formData) => console.log('Creating TX', formData)),
+    tap(() => {
+      this.receiptLoading = true;
+    }),
     switchMap((formData) =>
       fromPromise(this.createTx(formData))
         .pipe(
@@ -161,9 +171,8 @@ export class SendView implements OnInit {
       this.easySendUrl = void 0;
       this.success = void 0;
     }),
-    withLatestFrom(this.formData.valueChanges),
-    map(([txData, formData]) => {
-      const { feeIncluded, wallet } = formData;
+    map((txData) => {
+      const { feeIncluded, wallet } = this.formData.value;
       const { spendableAmount } = wallet.status;
 
       if (!txData || !txData.txp) {
@@ -238,7 +247,7 @@ export class SendView implements OnInit {
 
     this.type.valueChanges.pipe(
       filter((value: string) => (value === 'easy' && this.address.invalid) || (value === 'classic' && this.address.valid && !this.address.value)),
-      tap(() => this.address.updateValueAndValidity({ emitEvent: true, onlySelf: false }))
+      tap(() => this.address.updateValueAndValidity({ onlySelf: false }))
     ).subscribe();
 
     this.submit.asObservable()
@@ -249,12 +258,15 @@ export class SendView implements OnInit {
           this.sending = true;
           this.easySendUrl = null;
         }),
-        switchMap(([_, txData]) => fromPromise(this.send(txData))),
-        catchError((err => {
-          console.trace(err);
-          this.error = err.message;
-          return of(false);
-        })),
+        switchMap(([_, txData]) =>
+          fromPromise(this.send(txData))
+            .pipe(
+              catchError(err => {
+                this.error = err.message;
+                return of(false);
+              })
+            )
+        ),
         tap((success: boolean) => {
           this.sending = false;
           this.success = success;
@@ -269,19 +281,24 @@ export class SendView implements OnInit {
   ngAfterViewInit() {
     // temporary hack
     // TODO(ibby) find a better way to ensure we have an initial value for selected currency
-    setTimeout(() => {
-      this.selectedCurrency.setValue(this.selectedCurrency.value);
-    }, 1000);
+    if (this.selectedCurrency.value) {
+      setTimeout(() => {
+        this.selectedCurrency.setValue(this.selectedCurrency.value);
+      }, 1000);
+    }
   }
 
   selectCurrency(currency) {
-    this.selectedCurrency.setValue(currency, { emitEvent: true });
+    this.selectedCurrency.setValue(currency);
   }
 
   private async resetFormData() {
     this.formData.reset({ emitEvent: false });
 
-    const wallets = await this.wallets$.pipe(take(1)).toPromise();
+    const wallets = await this.wallets$.pipe(
+      skipWhile(wallets => !wallets || !wallets.length),
+      take(1)
+    ).toPromise();
 
     this.hasUnlockedWallet = wallets.length > 0;
     this.hasAvailableInvites = wallets.some(w => w.availableInvites > 0);
@@ -306,11 +323,15 @@ export class SendView implements OnInit {
   }
 
   selectWallet(wallet) {
-    this.wallet.setValue(wallet);
+    const { value } = this.wallet;
+    if (!value || value.id !== wallet.id)
+      this.wallet.setValue(wallet);
   }
 
   async updateTxType(type) {
-    this.type.setValue(type);
+    if (type !== this.type.value) {
+      this.type.setValue(type);
+    }
   }
 
   private async createTx(formValue: any): Promise<TxData> {

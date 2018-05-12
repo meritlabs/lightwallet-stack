@@ -3,16 +3,21 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { createDisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
-import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
+import { AddWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { AddressService } from '@merit/common/services/address.service';
+import { MWCService } from '@merit/common/services/mwc.service';
 import { WalletService } from '@merit/common/services/wallet.service';
+import { AddressValidator } from '@merit/common/validators/address.validator';
+import { MnemonicValidator } from '@merit/common/validators/mnemonic.validator';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ENV } from '@app/env';
 import { Store } from '@ngrx/store';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { take } from 'rxjs/operators';
+import 'rxjs/add/operator/toPromise';
 
 @Component({
   selector: 'view-create-wallet',
@@ -22,23 +27,43 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 export class CreateWalletView {
 
   formData: FormGroup = this.formBuilder.group({
-    walletName: ['', Validators.required],
-    parentAddress: ['', Validators.required], // TODO(ibby): add parent address validator
-    alias: '', // TODO(ibby): add alias validator
-    bwsurl: [ENV.mwsUrl, Validators.required],
-    recoveryPhrase: '', // TODO(ibby): add mnemonic validator
+    walletName: ['Personal wallet', Validators.required],
+    parentAddress: ['', Validators.required, AddressValidator.validateAddress(this.mwcService)],
+    alias: ['', [], AddressValidator.validateAliasAvailability(this.mwcService)],
+    bwsurl: [ENV.mwsUrl],
+    recoveryPhrase: '',
     password: '',
     repeatPassword: ['', PasswordValidator.MatchPassword],
-    color: '',
+    color: ['#00B0DD'],
     hideBalance: false
   });
-  wallet: any = {
-    color: {
-      name: 'Sunglo',
-      color: 'rgba(87,182,121, .6)'
-    }
+
+  get parentAddress() {
+    return this.formData.get('parentAddress');
+  }
+
+  get alias() {
+    return this.formData.get('alias');
+  }
+
+  get recoveryPhrase() {
+    return this.formData.get('recoveryPhrase');
+  }
+
+  get password() {
+    return this.formData.get('password');
+  }
+
+  get repeatPassword() {
+    return this.formData.get('repeatPassword');
+  }
+
+  selectedColor = {
+    name: 'Merit blue',
+    color: '#00B0DD'
   };
-  avalibleColors: any = [
+
+  availableColors: any = [
     {
       name: 'Sunglo',
       color: '#E57373'
@@ -54,6 +79,10 @@ export class CreateWalletView {
     {
       name: 'Lilac Bush',
       color: '#A185D4'
+    },
+    {
+      name: 'Merit blue',
+      color: '#00B0DD'
     },
     {
       name: 'Moody Blue',
@@ -116,9 +145,12 @@ export class CreateWalletView {
       color: '#383d43'
     }
   ];
-  selectColor($event) {
-    this.wallet.color = $event
+
+  selectColor(color: any) {
+    this.selectedColor = color;
+    this.formData.get('color').setValue(color.color);
   }
+
   constructor(private formBuilder: FormBuilder,
               private walletService: WalletService,
               private config: ConfigService,
@@ -126,11 +158,26 @@ export class CreateWalletView {
               private router: Router,
               private store: Store<IRootAppState>,
               private addressService: AddressService,
-              private txFormatService: TxFormatService
-            ) {
+              private txFormatService: TxFormatService,
+              private loader: Ng4LoadingSpinnerService,
+              private mwcService: MWCService) {
+  }
+
+  async ngOnInit() {
+    const wallets = await this.store.select(selectWallets).pipe(take(1)).toPromise();
+    let wallet = wallets.find(w => w.availableInvites > 0);
+    wallet = wallet || wallets[0];
+
+    if (wallet) {
+      this.parentAddress.setValue(wallet.alias || wallet.referrerAddress);
+      this.parentAddress.markAsDirty();
+      this.parentAddress.updateValueAndValidity();
+    }
   }
 
   async create() {
+    this.loader.show();
+
     const {
       walletName: name,
       parentAddress,
@@ -192,11 +239,12 @@ export class CreateWalletView {
 
       const displayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService);
       this.store.dispatch(new AddWalletAction(displayWallet));
-
       return this.router.navigateByUrl('/wallets');
     } catch (err) {
       this.logger.error(err);
       // TODO: display error to user
+    } finally {
+      this.loader.hide();
     }
   }
 }

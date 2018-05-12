@@ -41,7 +41,7 @@ export function getComponents() {
     IllustationsThatsItComponent,
     IllustationsYourWayComponent,
     GlobalsendLinkPopupComponent,
-    UICheckboxComponent
+    UICheckboxComponent,
   ];
 }
 

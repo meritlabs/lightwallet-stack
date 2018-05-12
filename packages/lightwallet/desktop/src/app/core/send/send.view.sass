@@ -22,17 +22,20 @@ error-message.success
       left: calc(50% - 35px)
       opacity: 0
       color: $blue
-      transition: opacity .3s ease-in-out
-.selectMethod
+      transition: opacity .2s ease-in-out
+
+// Tx method selector (easy/classic)
+.select-method
   +display(inline-flex)
   justify-content: space-between
   flex-flow: row wrap
   width: 100%
   margin-bottom: 20px
-  &_item
+
+  button.method
     width: 48%
-    border: 1px solid $blue
-    border-radius: 4px
+    border: 1px solid #dbdbdc
+    border-radius: $base-border-radius
     text-align: center
     padding: 20px
     display: flex
@@ -40,13 +43,19 @@ error-message.success
     justify-content: flex-start
     flex-direction: column
     background: rgb(247, 247, 247)
-    box-shadow: inset 1px 1px 5px rgba(0,0,0, .2)
     cursor: pointer
+    transition: all .2s ease-in-out
+
+    &:hover
+      background: rgb(243, 243, 243)
+
     &.active
       background: $blue
-      box-shadow: 0 0 5px rgba(0,0,0, .4)
+      box-shadow: 0 2px 8px -2px rgba(0,0,0, .22)
+      border: 1px solid $blue
       *, .title
         color: $white
+
     .title
       font-size: 16px
       font-weight: 600
@@ -56,6 +65,7 @@ error-message.success
       font-size: 13px
       line-height: 16px
       font-weight: 300
+
 .sendMerit__form__group
   position: relative
 

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
@@ -15,8 +16,9 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./dashboard.view.sass']
 })
 export class DashboardView {
-  amount: number = null;
 
+  showGuide: boolean = !('hideWalletWelcomeWindow' in localStorage && localStorage.getItem('hideWalletWelcomeWindow') === 'true');
+  amount: number = null;
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   totals$: Observable<any> = this.store.select(selectWalletTotals);
@@ -24,9 +26,12 @@ export class DashboardView {
     map((transactions: IDisplayTransaction[]) => isArray(transactions) ? transactions.slice(0, 5) : [])
   );
   transactionsLoading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
-  showGuide: boolean = !('hideWalletWelcomeWindow' in localStorage && localStorage.getItem('hideWalletWelcomeWindow') === 'true');
 
-  constructor(private store: Store<IRootAppState>) {}
+  constructor(private store: Store<IRootAppState>, private sanitizer: DomSanitizer) {}
+
+  getHistoryStyle(length: number) {
+    return this.sanitizer.bypassSecurityTrustStyle('height: calc(' + (length * 95) + 'px)');
+  }
 
   onGuideDismiss() {
     localStorage.setItem('hideWalletWelcomeWindow', 'true');

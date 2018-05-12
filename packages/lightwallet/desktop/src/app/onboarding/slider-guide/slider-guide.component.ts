@@ -19,11 +19,11 @@ export class SliderGuideComponent {
     touch: true,
     loop: false,
   };
+
   @Output() hideGuide = new EventEmitter<Boolean>();
-  @Input() showGuide: any;
   @Input() skipButton: string = 'Skip tutorial';
-  @Input() getStartButton: string = 'Get Started';
-  @Input() hideNextButtonForLastSlide: boolean = false;
+  @Input() primaryButton: string = 'Get started';
+
   skipIntro() {
     this.hideGuide.emit(false);
   }

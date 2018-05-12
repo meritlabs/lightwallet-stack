@@ -4,7 +4,7 @@ import { ENV } from '@app/env';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
-import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
+import { RefreshOneWalletTransactions, UpdateOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
 import { RefreshOneWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
@@ -259,6 +259,16 @@ export class CoreView implements OnInit, AfterViewInit {
       }
 
       await this.showSpentEasyReceiptAlert();
+
+      if (cancelling) {
+        const data = this.easyReceiveService.generateEasyScipt(receipt, password);
+        const scriptAddress = this.easyReceiveService.getScriptAddress(data);
+        this.persistenceService2.cancelEasySend(scriptAddress)
+          .then(() => {
+            this.store.dispatch(new RefreshOneWalletTransactions(wallet.id))
+          })
+          .catch(() => {});
+      }
 
       return processAll ? await this.processPendingEasyReceipts() : null;
     }
