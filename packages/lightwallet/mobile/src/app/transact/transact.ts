@@ -216,6 +216,7 @@ export class TransactView {
   private async showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
 
     let amount = await this.easyReceiveService.getReceiverAmount(data.txs);
+    console.log(amount, 'AMOUNT');
 
     this.alertCtrl.create({
       title: `You've got ${amount} Merit!`,
