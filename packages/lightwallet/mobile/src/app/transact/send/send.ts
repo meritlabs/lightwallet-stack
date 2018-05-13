@@ -16,6 +16,8 @@ import * as _ from 'lodash';
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 
+declare const cordova: any;
+
 @IonicPage()
 @Component({
   selector: 'view-send',
@@ -29,8 +31,13 @@ export class SendView {
     return this.slides.isEnd();
   }
 
+  get isCordova(): boolean {
+    return typeof cordova !== 'undefined';
+  }
+
   private recentContacts: Array<MeritContact> = [];
   private suggestedMethod: ISendMethod;
+
   searchQuery: string = '';
   loadingContacts: boolean;
   contacts: Array<MeritContact> = [];

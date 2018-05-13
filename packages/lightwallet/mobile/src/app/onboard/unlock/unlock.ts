@@ -6,6 +6,7 @@ import { EasyReceiveService } from '@merit/common/services/easy-receive.service'
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { AddressService } from '@merit/common/services/address.service';
+declare const cordova: any;
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
@@ -30,8 +31,12 @@ export class UnlockView {
     return Boolean(this.parsedAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError;
   }
 
+  get isCordova(): boolean {
+    return typeof cordova !== 'undefined';
+  }
+
   get shouldShowQRButton(): boolean {
-    return !Boolean(this.formData.parentAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError;
+    return this.isCordova && !Boolean(this.formData.parentAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError;
   }
 
   @ViewChild(Content) content: Content;
