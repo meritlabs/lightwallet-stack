@@ -148,6 +148,7 @@ export class SendAmountView {
     const modal = this.modalCtrl.create('SelectWalletModal',
       {
         selectedWallet: this.selectedWallet,
+        showInvites: this.sendMethod.type == SendMethodType.Easy,  
         availableWallets: this.wallets.filter(w => {
           return w.balance.spendableAmount && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
         })
