@@ -5,7 +5,8 @@ const showNotification = (title, message = ' ') => {
   nn.notify({
     title,
     message,
-    wait: true
+    wait: true,
+    sound: true
   });
 };
 
