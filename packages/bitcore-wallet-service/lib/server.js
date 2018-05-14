@@ -3179,47 +3179,66 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
   return cb(null, cache.current);
 };
 
+/**
+ * Receiving list of pending and accepted invite requests to current wallet address
+ * Pending requests are receiving from mempool, accepted requests are stored in blockchain
+ * (we don't care if address was unconfirmled after acceptance so we don't check current address status)
+ *
+ * @param opts
+ * @param cb
+ */
+const { promisify } = require('util');
+WalletService.prototype.getUnlockRequests = async function(opts, cb) {
 
-WalletService.prototype.getUnlockRequests = function(opts, cb) {
-    var self = this;
+    try {
 
-    self.getWallet({}, function(err, wallet) {
-        if (err) return cb(err);
+        let wallet = await promisify(this.getWallet.bind(this))({});
+        console.log(wallet.id, 'WALLET');
+        let addresses = await promisify(this.storage.fetchAddresses.bind(this))(wallet.id);
+        console.log(addresses, 'ADDRESS');
+        if (addresses.length == 0) return cb(null, []);
+        const addressStrs = _.map(addresses, 'address');
 
-        self.storage.fetchAddresses(wallet.id, function(err, addresses) {
-            if (err) return cb(err);
+        //receiving txs from mempool to filter requests that vere approved but not in bc yet
+        const txs = await localMeritDaemon.getAddressMempool(addressStrs);
+        const mempoolTxs = txs.filter(t => t.isInvite);
 
-            if (addresses.length == 0) return cb(null, []);
-            var network = wallet.network;
-            var addressStrs = _.map(addresses, 'address');
+        //receiving referrals from mempool and blockchaing
+        let mempoolRequests = [], bcRequests = [];
 
-            var bc = self._getBlockchainExplorer(network);
-            if (!bc) return next(new Error('Could not get blockchain explorer instance'));
-            bc.getAddressReferrals(addressStrs, function(err, referrals) {
-                if (err) return cb(err);
-                self.storage.fetchInvitedAddresses(wallet.id, function (err, invitedAddresses) {
-                  if (err) return cb(err);
-                  var unlockRequests = referrals.map(function(referralObj) {
-                     return Bitcore.Referral(referralObj.raw, network);
-                    }).filter(function(referral) {
-                      if (referral.address.type == 'scripthash') return false; //do not count script hash addresses
-                      return (addressStrs.indexOf(referral.address.toString()) == -1); //filter our own unlock request
-                    }).map(function(referral) {
-
-                      return {
-                        referralId: referral.hash,
-                        address: referral.address.toString(),
-                        parentAddress: referral.parentAddress.toString(),
-                        alias: referral.alias,
-                        isConfirmed: (invitedAddresses.indexOf(referral.address.toString()) != -1)
-                      };
-                    });
-
-                  return cb(null, unlockRequests);
-                });
+        const filterAndMapRequests = (referrals, isConfirmed) => {
+            return referrals.map(r => Bitcore.Referral(r.raw, wallet.network)).filter(r => {
+                if (r.address.type == 'scripthash') return false; //do not count script hash addresses
+                return (addressStrs.indexOf(r.address.toString()) == -1); //filter our own unlock request
+            }).map(referral => {
+                return {
+                    referralId: referral.hash,
+                    address: referral.address.toString(),
+                    parentAddress: referral.parentAddress.toString(),
+                    alias: referral.alias,
+                    isConfirmed: isConfirmed
+                };
             });
-        });
-    });
+        };
+
+        const mpRefs = await localMeritDaemon.getPendingReferrals(addressStrs);
+        mempoolRequests = filterAndMapRequests(mpRefs, false).reverse();
+
+        const bcRefs = await localMeritDaemon.getAcceptedReferrals(addressStrs);
+        bcRequests = filterAndMapRequests(bcRefs, true).reverse();
+
+        // marking invites from mempool that are already approved but not in bc yet
+        let recentlyApprovedRequests = mempoolRequests.filter(r => mempoolTxs.some(t => t.address == r.address ));
+        recentlyApprovedRequests.forEach(r => r.isConfirmed = true);
+        let pendingRequests = mempoolRequests.filter(r => !mempoolTxs.some(t => t.address == r.address ));
+
+        let requests = pendingRequests.concat(pendingRequests.concat(bcRequests));
+        cb(null, requests);
+
+    } catch (err) {
+        cb(err);
+    }
+
 };
 
 /**

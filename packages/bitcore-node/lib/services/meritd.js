@@ -201,7 +201,11 @@ Merit.prototype.getAPIMethods = function() {
     ['sendReferral', this, this.sendReferral, 1],
     ['getReferral', this, this.getReferral, 1],
     ['getAddressReferrals', this, this.getAddressReferrals, 1],
-    ['getcommunityinfo', this, this.getCommunityInfo, 1]
+    ['getcommunityinfo', this, this.getCommunityInfo, 1],
+
+    ['getPendingReferrals', this, this.getPendingReferrals, 1],
+    ['getAcceptedReferrals', this, this.getAcceptedReferrals, 1],
+    ['getAddressMempool', this, this.getAddressMempool, 1]
   ];
   return methods;
 };
@@ -2457,5 +2461,25 @@ Merit.prototype.stop = function(callback) {
     callback();
   }
 };
+
+const { promisify } = require('util');
+Merit.prototype.getPendingReferrals = async function(addresses) {
+    const {err, result} = await promisify(this.client.getaddressmempoolreferrals.bind(this.client))({addresses: addresses});
+    if (err) throw err;
+    return result;
+};
+
+Merit.prototype.getAcceptedReferrals = async function(addresses) {
+    const {err, result} = await promisify(this.client.getaddressreferrals.bind(this.client))({addresses: addresses});
+    if (err) throw err;
+    return result;
+};
+
+Merit.prototype.getAddressMempool = async function(addresses) {
+    const {err, result} = await promisify(this.client.getAddressMempool.bind(this.client))({addresses: addresses});
+    if (err) throw err;
+    return result;
+};
+
 
 module.exports = Merit;

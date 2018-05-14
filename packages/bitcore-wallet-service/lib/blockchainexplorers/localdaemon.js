@@ -66,4 +66,17 @@ LocalDaemon.prototype.sendReferral = function(rawReferral, cb) {
   });
 };
 
+
+LocalDaemon.prototype.getPendingReferrals  = function(addresses) {
+    return this.node.getPendingReferrals(addresses);
+};
+LocalDaemon.prototype.getAcceptedReferrals = function(addresses) {
+    return this.node.getAcceptedReferrals(addresses);
+};
+LocalDaemon.prototype.getAddressMempool = function(addresses) {
+    return this.node.getAddressMempool(addresses);
+};
+
+
+
 module.exports = LocalDaemon;
