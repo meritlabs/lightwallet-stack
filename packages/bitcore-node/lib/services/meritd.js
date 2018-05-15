@@ -203,8 +203,8 @@ Merit.prototype.getAPIMethods = function() {
     ['getAddressReferrals', this, this.getAddressReferrals, 1],
     ['getcommunityinfo', this, this.getCommunityInfo, 1],
 
-    ['getPendingReferrals', this, this.getPendingReferrals, 1],
-    ['getAcceptedReferrals', this, this.getAcceptedReferrals, 1],
+    ['getMempoolReferrals', this, this.getMempoolReferrals, 1],
+    ['getBlockchainReferrals', this, this.getBlockchainReferrals, 1],
     ['getAddressMempool', this, this.getAddressMempool, 1]
   ];
   return methods;
@@ -2463,13 +2463,16 @@ Merit.prototype.stop = function(callback) {
 };
 
 const { promisify } = require('util');
-Merit.prototype.getPendingReferrals = async function(addresses) {
+Merit.prototype.getMempoolReferrals = async function(addresses) {
     const {err, result} = await promisify(this.client.getaddressmempoolreferrals.bind(this.client))({addresses: addresses});
     if (err) throw err;
     return result;
 };
 
-Merit.prototype.getAcceptedReferrals = async function(addresses) {
+Merit.prototype.getBlockchainReferrals = async function(addresses) {
+
+
+
     const {err, result} = await promisify(this.client.getaddressreferrals.bind(this.client))({addresses: addresses});
     if (err) throw err;
     return result;

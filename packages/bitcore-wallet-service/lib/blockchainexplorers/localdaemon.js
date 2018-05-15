@@ -67,16 +67,34 @@ LocalDaemon.prototype.sendReferral = function(rawReferral, cb) {
 };
 
 
-LocalDaemon.prototype.getPendingReferrals  = function(addresses) {
-    return this.node.getPendingReferrals(addresses);
-};
-LocalDaemon.prototype.getAcceptedReferrals = function(addresses) {
-    return this.node.getAcceptedReferrals(addresses);
-};
-LocalDaemon.prototype.getAddressMempool = function(addresses) {
-    return this.node.getAddressMempool(addresses);
+
+LocalDaemon.prototype.getMempoolReferrals  = function(addresses) {
+    return this.node.getMempoolReferrals(addresses);
 };
 
+LocalDaemon.prototype.getBlockchainReferrals = function(addresses) {
+    return this.node.getBlockchainReferrals(addresses);
+};
+
+/**
+ * Receive addresses for requests that were accepted, but not in blockchain yet
+ * @param addresses that requests were sent for
+ * @return Array of addresses that were accepted
+ */
+const { promisify } = require('util');
+LocalDaemon.prototype.getMempoolAcceptedAddresses = async function(addresses) {
+    let acceptedAddresses = [];
+
+    const txs = (await this.node.getAddressMempool(addresses))
+        .filter(t => t.isInvite && addresses.indexOf(t.address) != -1); //is invite tx and sent FROM given address
+
+    await Promise.all(txs.map(async (t) => {
+        let res = await promisify(this.node.getDetailedTransaction)(t.txid);
+        acceptedAddresses.push(res.outputs[0].address);
+    }));
+
+    return acceptedAddresses;
+};
 
 
 module.exports = LocalDaemon;
