@@ -1,3 +1,4 @@
+import { back } from 'nock';
 import { browser, by, element, protractor, ProtractorExpectedConditions } from 'protractor';
 
 export const TEST_WALLET_MNEMONIC = 'turkey walnut rocket ordinary always fiction noise skull sketch aunt clown wild';
@@ -27,6 +28,7 @@ describe('[Mobile] Onboarding', () => {
 
     it('should say "Welcome to Merit"', () => {
       const el = element(by.css('h1.main-header'));
+      browser.wait(EC.visibilityOf(el));
       expect(el).toBeDefined();
       expect(el.isDisplayed()).toBeTruthy();
       expect(el.getText()).toContain('Welcome to Merit');
@@ -34,7 +36,6 @@ describe('[Mobile] Onboarding', () => {
 
     it('should have a "Get started" button', async () => {
       const el = element(by.buttonText('Get started'));
-      expect(el).toBeDefined('Button does not exist');
       expect(el.isDisplayed()).toBeTruthy('Button is not displayed');
       expect((await el.getText()).toLowerCase()).toBe('get started');
       expect(el.getAttribute('navpush')).toBe('TourView', 'Does not have a navPush');
@@ -129,7 +130,7 @@ describe('[Mobile] Onboarding', () => {
   describe('> Unlock view', () => {
 
     let rootEl;
-    let inviteInputEl, nextButtonEl, backButtonEl, errorEl;
+    let inviteInputEl, nextButtonEl, errorEl;
 
     beforeAll(() => {
       rootEl = element(by.css('view-unlock'));
@@ -147,12 +148,6 @@ describe('[Mobile] Onboarding', () => {
 
     it('next button should be disabled', () => {
       expect(nextButtonEl.isEnabled()).toBeFalsy();
-    });
-
-    it('should have a back button', () => {
-      backButtonEl = rootEl.element(by.css('ion-navbar button.back-button'));
-      expect(backButtonEl.isDisplayed()).toBeTruthy();
-      expect(backButtonEl.isEnabled()).toBeTruthy();
     });
 
     it('should detect an invalid invite code', () => {
@@ -173,22 +168,15 @@ describe('[Mobile] Onboarding', () => {
       });
     });
 
-    it('back button should take us back to the tour page', () => {
-      backButtonEl.click();
-      browser.wait(EC.invisibilityOf(element(by.css('view-unlock'))));
-      browser.wait(EC.not(EC.urlContains('unlock')));
-      expect(browser.getCurrentUrl()).not.toContain('unlock');
-      expect(browser.getCurrentUrl()).toContain('tour');
-    });
-
   });
 
   describe('> Import view', () => {
 
     beforeAll(() => {
-      const restoreButtonEl = element(by.css('view-tour ion-header button[navpush=ImportView]'));
+      const restoreButtonEl = element(by.css('view-unlock ion-header button[navpush=ImportView]'));
       restoreButtonEl.click();
-      browser.wait(EC.urlContains('import'));
+      browser.wait(EC.urlContains('import'), 5000);
+      browser.wait(EC.visibilityOf(element(by.css('view-import'))), 5000);
     });
 
     describe('> File import', () => {
@@ -201,7 +189,9 @@ describe('[Mobile] Onboarding', () => {
       });
 
       it('should show the file tab when clicking on segment button', () => {
-         expect(element(by.css('view-import .file')).isDisplayed()).toBeTruthy();
+        const el = element(by.css('view-import .file'));
+        browser.wait(EC.visibilityOf(el), 5000);
+         expect(el.isDisplayed()).toBeTruthy();
       });
     });
 
