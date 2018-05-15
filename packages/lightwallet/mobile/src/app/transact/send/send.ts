@@ -63,8 +63,6 @@ export class SendView {
               private rateService: RateService
   ) {
 
-    this.wallet = this.navParams.get('wallet');
-
   }
 
   private async updateHasUnlocked() {
@@ -86,6 +84,7 @@ export class SendView {
   }
 
   async ionViewWillEnter() {
+    this.wallet = this.navParams.data.wallet;
     this.loadingContacts = true;
     await this.updateHasUnlocked();
     this.contacts = await this.contactsService.getAllMeritContacts();
