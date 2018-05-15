@@ -84,7 +84,8 @@ export class IncomingRequestModal {
   }
 
   selectWallet() {
-    const modal = this.modalCtrl.create('SelectInviteWalletModal', {
+    const modal = this.modalCtrl.create('SelectWalletModal', {
+      showInvites: true,
       selectedWallet: this.unlockRequest.walletClient,
       availableWallets: this.wallets.filter((wallet) => wallet.availableInvites > 0)
     }, MERIT_MODAL_OPTS);
