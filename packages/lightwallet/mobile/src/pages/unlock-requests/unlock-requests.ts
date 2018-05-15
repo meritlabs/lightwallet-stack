@@ -57,11 +57,9 @@ export class UnlockRequestsView {
   }
 
   async doRefresh(refreshser) {
-    
     Promise.all([this.profileService.refreshData(), this.unlockRequestService.loadRequestsData()]);
     await this.ionViewWillEnter();
     refreshser.complete();
-
   }
 
   processRequest(request: IUnlockRequest) {
