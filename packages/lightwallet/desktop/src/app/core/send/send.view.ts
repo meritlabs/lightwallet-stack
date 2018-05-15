@@ -41,6 +41,7 @@ import {
   withLatestFrom
 } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 
 interface TxData {
   txp: any;
@@ -144,39 +145,67 @@ export class SendView implements OnInit {
       }
       return of(formData);
     }),
-    filter(() => this.formData.valid),
-    tap(() => {
-      this.receiptLoading = true;
+    switchMap((formData) => {
+      if (this.formData.valid) {
+        this.receiptLoading = true;
+        return fromPromise(this.createTx(formData))
+          .pipe(
+            catchError((err: any) => {
+              console.log(err);
+              this.error = err.message || 'Unknown error';
+              return of({} as TxData);
+            })
+          );
+      }
+
+      return of({} as TxData);
     }),
-    switchMap((formData) =>
-      fromPromise(this.createTx(formData))
-        .pipe(
-          catchError((err: any) => {
-            console.log(err);
-            this.error = err.message || 'Unknown error';
-            return of({} as TxData);
-          })
-        )
-    ),
     tap((txData: TxData) => {
       if (txData && txData.txp) this.canSend = true;
     }),
     share()
   );
 
+  submit: Subject<void> = new Subject<void>();
+  onSubmit$: Observable<boolean> = this.submit.asObservable()
+  .pipe(
+    withLatestFrom(this.txData$),
+    tap(() => {
+      this.error = null;
+      this.sending = true;
+      this.easySendUrl = null;
+    }),
+    switchMap(([_, txData]) =>
+      fromPromise(this.send(txData))
+        .pipe(
+          catchError(err => {
+            this.error = err.message;
+            return of(false);
+          })
+        )
+    ),
+    tap((success: boolean) => {
+      this.sending = false;
+      this.success = success;
+
+      if (success) {
+        this.resetFormData();
+      }
+    }),
+    startWith(false)
+  );
+
+
   receiptLoading: boolean;
 
-  receipt$: Observable<Receipt> = this.txData$.pipe(
-    tap(() => {
-      this.receiptLoading = true;
-      this.easySendUrl = void 0;
-      this.success = void 0;
-    }),
-    map((txData) => {
+  receipt$: Observable<Receipt> = combineLatest(this.txData$, this.onSubmit$).pipe(
+    map(([txData, submitSuccess]) => {
       const { feeIncluded, wallet } = this.formData.value;
-      const { spendableAmount } = wallet.status;
+      const { spendableAmount } = wallet? wallet.status : 0;
 
-      if (!txData || !txData.txp) {
+      if (!txData || !txData.txp || this.success) {
+        this.success = void 0;
+
         return {
           amount: 0,
           fee: 0,
@@ -185,6 +214,10 @@ export class SendView implements OnInit {
           remaining: spendableAmount
         };
       }
+
+      this.receiptLoading = true;
+      this.easySendUrl = void 0;
+      this.success = void 0;
 
       const receipt: Receipt = {
         amount: txData.txp.amount,
@@ -213,8 +246,6 @@ export class SendView implements OnInit {
       )
     )
   );
-
-  submit: Subject<void> = new Subject<void>();
 
   constructor(private route: ActivatedRoute,
               private store: Store<IRootAppState>,
@@ -252,32 +283,7 @@ export class SendView implements OnInit {
       tap(() => this.address.updateValueAndValidity({ onlySelf: false }))
     ).subscribe();
 
-    this.submit.asObservable()
-      .pipe(
-        withLatestFrom(this.txData$),
-        tap(() => {
-          this.error = null;
-          this.sending = true;
-          this.easySendUrl = null;
-        }),
-        switchMap(([_, txData]) =>
-          fromPromise(this.send(txData))
-            .pipe(
-              catchError(err => {
-                this.error = err.message;
-                return of(false);
-              })
-            )
-        ),
-        tap((success: boolean) => {
-          this.sending = false;
-          this.success = success;
-
-          if (success) {
-            this.resetFormData();
-          }
-        })
-      ).subscribe();
+    this.onSubmit$.subscribe();
   }
 
   onGlobalSendCopy() {
