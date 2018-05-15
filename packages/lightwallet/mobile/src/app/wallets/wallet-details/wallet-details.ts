@@ -5,7 +5,7 @@ import { ContactsService } from '@merit/common/services/contacts.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
-import { Events, IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
+import { App, Events, IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
 import { PersistenceService2 } from '../../../../../common/services/persistence2.service';
 
 @IonicPage({
@@ -28,6 +28,7 @@ export class WalletDetailsView {
   txs: Array<any> = [];
 
   constructor(private navCtrl: NavController,
+              private app: App,
               private navParams: NavParams,
               private walletService: WalletService,
               private logger: LoggerService,
@@ -69,9 +70,10 @@ export class WalletDetailsView {
   async send() {
     this.navCtrl.popToRoot();
     try {
-      // await this.tabsCtrl.select(3);
-      const tabsNav = this.tabsCtrl.getActiveChildNavs()[0].popToRoot();
-      this.navCtrl.push('SendView', {wallet: this.wallet});
+      const nav: Tab = this.tabsCtrl._tabs[3];
+      await nav.setRoot('SendView', { wallet: this.wallet });
+      await nav.popToRoot();
+      await this.tabsCtrl.select(3);
     } catch (e) {
       console.log(e);
     }
