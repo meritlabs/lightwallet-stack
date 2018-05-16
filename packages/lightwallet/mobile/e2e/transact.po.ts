@@ -22,11 +22,16 @@ export class Transact {
   selectTab(index: number) {
     const el = this.getTabButtonsEl().element(by.css(`.tab-button:nth-child(${ ++index })`));
     browser.wait(EC.visibilityOf(el), 3000, 'Cant click on tab button');
+    browser.wait(EC.elementToBeClickable(el), 3000);
    return el.click();
   }
 
   getSendView() {
     return this.getRootEl().element(by.css('view-send'));
+  }
+
+  getHistoryView() {
+    return this.getRootEl().element(by.css('view-history'));
   }
 
   getReceiveView() {

@@ -25,7 +25,9 @@ export class SlideToActionComponent implements AfterViewInit, OnDestroy {
   @Output() confirm: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private _plt: Platform,
-              private _rnd: Renderer2){}
+              private _rnd: Renderer2){
+    window['_slideToConfirm'] = () => this.confirm.emit();
+  }
 
   ngAfterViewInit() {
     this._sliderNativeElement = this._sliderElement.nativeElement;
