@@ -42,3 +42,28 @@
     margin-bottom: 30px
     text-align: center
     +font(500, 24px, 26px, $dark-grey-blue)
+.StarterTips_item
+  +font(300, 18px, 24px, $dark-grey-blue)
+  p
+    margin-bottom: 20px
+  ul
+    li
+      margin-bottom: 20px
+      position: relative
+      padding-left: 35px
+      &:before
+        display: block
+        position: absolute
+        top: 0
+        left: 0
+        width: 25px
+        height: 25px
+        margin-right: 15px
+        text-align: center
+        background: $dark-grey-blue
+        border-radius: 20px
+        +font(500, 14px, 24px, $grey)
+@for $i from 0 to 20
+  li:nth-child(#{$i + 1})
+    &:before
+      content: "#{$i + 1 }"
