@@ -22,16 +22,18 @@
       </ng-template>
     </div> -->
     <div class="stats__item">
-      <p class="stats__item__title">My<br>Community</p>
+      <p class="stats__item__title">My
+        <br>Community</p>
       <div class="stats__item__picture">
         <img src="/assets/v1/images/stats/communityIcon.png" alt="">
       </div>
       <ng-container *ngIf="!loading; else peopleLoading">
         <div class="stats__item__info">
-          {{ totals?.totalCommunitySize }} <span>People</span>
+          {{ totals?.totalCommunitySize }}
+          <span>People</span>
         </div>
         <!--<div class="stats__item__grows">-->
-          <!--<p>+5</p>-->
+        <!--<p>+5</p>-->
         <!--</div>-->
       </ng-container>
       <ng-template #peopleLoading>
@@ -39,13 +41,15 @@
       </ng-template>
     </div>
     <div class="stats__item">
-      <p class="stats__item__title">Ambassador<br>Rewards</p>
+      <p class="stats__item__title">Ambassador
+        <br>Rewards</p>
       <div class="stats__item__picture">
         <img src="/assets/v1/images/stats/ambassadorIcon.png" alt="">
       </div>
       <ng-container *ngIf="!loading; else ambassadorLoading">
         <div class="stats__item__info">
-          {{totals?.totalAmbassadorRewards || '0.00'}} <span>MRT</span>
+          {{totals?.totalAmbassadorRewards || '0.00'}}
+          <span>MRT</span>
         </div>
       </ng-container>
     </div>
@@ -53,13 +57,15 @@
       <loading-spinner-small></loading-spinner-small>
     </ng-template>
     <div class="stats__item">
-      <p class="stats__item__title">Mining<br>Rewards</p>
+      <p class="stats__item__title">Mining
+        <br>Rewards</p>
       <div class="stats__item__picture">
         <img src="/assets/v1/images/stats/miningIcon.png" alt="">
       </div>
       <ng-container *ngIf="!loading; else miningLoading">
         <div class="stats__item__info">
-          {{totals?.totalMiningRewards || '0.00'}} <span>MRT</span>
+          {{totals?.totalMiningRewards || '0.00'}}
+          <span>MRT</span>
         </div>
       </ng-container>
       <ng-template #miningLoading>
@@ -67,4 +73,5 @@
       </ng-template>
     </div>
   </div>
+  <app-get-started-tips></app-get-started-tips>
 </div>
