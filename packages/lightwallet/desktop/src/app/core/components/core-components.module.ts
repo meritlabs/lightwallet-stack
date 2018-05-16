@@ -17,6 +17,7 @@ import { MomentModule } from 'ngx-moment';
 import { ClipModule } from 'ng2-clip';
 import { HistoryItemComponent } from './history-item/history-item.component';
 import { HistoryListComponent } from './history-list/history-list.component';
+import { GetStartedTipsComponent } from './get-started-tips/get-started-tips.component';
 
 export function getComponents() {
   return [
@@ -29,7 +30,8 @@ export function getComponents() {
     WalletsListComponent,
     VaultsListComponent,
     ProfileStatsComponent,
-    FeeSelectorComponent
+    FeeSelectorComponent,
+    GetStartedTipsComponent,
   ];
 }
 
@@ -44,6 +46,6 @@ export function getComponents() {
     ClipModule,
   ],
   declarations: getComponents(),
-  exports: getComponents()
+  exports: getComponents(),
 })
 export class CoreComponentsModule {}
