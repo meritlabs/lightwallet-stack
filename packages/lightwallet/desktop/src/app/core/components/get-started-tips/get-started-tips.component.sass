@@ -4,7 +4,7 @@
   margin: 35px -20px -35px
   background: $grey
   border-bottom: 1px solid $dark-grey-blue
-  padding: 20px
+  padding: 30px 20px
   position: relative
 .closeCross
   width: 50px
@@ -31,3 +31,14 @@
     transform: rotate(45deg)
   &:before
     transform: rotate(-45deg)
+.StarterTips
+  &_items
+    display: flex
+    justify-content: space-between
+    flex-flow: row wrap
+  &_item
+    width: 25%
+  &_title
+    margin-bottom: 30px
+    text-align: center
+    +font(500, 24px, 26px, $dark-grey-blue)
