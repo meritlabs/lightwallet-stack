@@ -37,7 +37,21 @@
     justify-content: space-between
     flex-flow: row wrap
   &_item
-    width: 25%
+    width: calc(100% / 3 - 10px)
+    position: relative
+    padding: 30px 20px
+    &:after
+      content: ""
+      display: block
+      position: absolute
+      right: 0
+      top: 0
+      height: 100%
+      width: 1px
+      background: linear-gradient(to bottom, rgba(46,51,88,0.01) 0%,rgba(46,51,88,0.65) 48%,rgba(0,0,0,0) 100%)
+    &:nth-child(3)
+      &:after
+        display: none
   &_title
     margin-bottom: 30px
     text-align: center
@@ -60,7 +74,7 @@
         height: 25px
         margin-right: 15px
         text-align: center
-        background: $dark-grey-blue
+        background: rgba(0, 176, 221, 0.7)
         border-radius: 20px
         +font(500, 14px, 24px, $grey)
 @for $i from 0 to 20
