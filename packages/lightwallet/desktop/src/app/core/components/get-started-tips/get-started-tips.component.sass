@@ -1,0 +1,33 @@
+@import '~styles/v1/common/import-sass'
+
+.StarterTips_wrap
+  margin: 35px -20px -35px
+  background: $grey
+  border-bottom: 1px solid $dark-grey-blue
+  padding: 20px
+  position: relative
+.closeCross
+  width: 50px
+  height: 50px
+  border: 2px solid $dark-grey-blue
+  border-radius: 50px
+  background: $dark-grey-blue
+  box-shadow: 2px 0 5px rgba(0,0,0, .15)
+  position: absolute
+  left: calc(50% - 25px)
+  bottom: -25px
+  cursor: pointer
+  &:after,
+  &:before
+    content: ""
+    width: 40px
+    height: 1px
+    background: $grey
+    display: block
+    position: absolute
+    top: 22px
+    left: 3px
+  &:after
+    transform: rotate(45deg)
+  &:before
+    transform: rotate(-45deg)
