@@ -1,24 +1,80 @@
-<ion-header>
-  <div class="big-header">
-    <button ion-button clear icon-only class="header-action-button"
-            navPush="SettingsView" [navParams]="{ wallets: wallets }">
-      <ion-icon name="settings" merit-icon></ion-icon>
-    </button>
-    <ion-spinner *ngIf="refreshing" class="refresh-spinner"></ion-spinner>
-    <p>Total Value of Your Wallets</p>
-    <ion-spinner *ngIf="loading; else notLoading"></ion-spinner>
-    <ng-template #notLoading>
-      <h2 *ngIf="allBalancesHidden; else balancesNotHidden"></h2>
-      <ng-template #balancesNotHidden>
-        <h2 class="amount">
-          {{ ( totalAmount || '0.00') | toMRT:8:true }} <small>MRT</small>
-        </h2>
-        <h3 class="detail-fiat">{{ totalWalletsValueFiat }}</h3>
-        <h3 class="detail-fiat">{{ totalInvites }} Invites</h3>
-      </ng-template>
-    </ng-template>
-  </div>
+<!--<ion-header>-->
+  <!--<div class="big-header">-->
+    <!--<button ion-button clear icon-only class="header-action-button"-->
+            <!--navPush="SettingsView" [navParams]="{ wallets: wallets }">-->
+      <!--<ion-icon name="settings" merit-icon></ion-icon>-->
+    <!--</button>-->
+    <!--<ion-spinner *ngIf="refreshing" class="refresh-spinner"></ion-spinner>-->
+    <!--<p>Total Value of Your Wallets</p>-->
+    <!--<ion-spinner *ngIf="loading; else notLoading"></ion-spinner>-->
+    <!--<ng-template #notLoading>-->
+      <!--<h2 *ngIf="allBalancesHidden; else balancesNotHidden"></h2>-->
+      <!--<ng-template #balancesNotHidden>-->
+        <!--<h2 class="amount">-->
+          <!--{{ ( totalAmount || '0.00') | toMRT:8:true }} <small>MRT</small>-->
+        <!--</h2>-->
+        <!--<h3 class="detail-fiat">{{ totalWalletsValueFiat }}</h3>-->
+        <!--<h3 class="detail-fiat">{{ totalInvites }} Invites</h3>-->
+      <!--</ng-template>-->
+    <!--</ng-template>-->
+  <!--</div>-->
+<!--</ion-header>-->
+
+
+<ion-header no-border>
+    <ion-navbar color="primary">
+        <ion-title>Dashboard</ion-title>
+        <ion-buttons end>
+            <button ion-button clear icon-only class="header-action-button"
+                navPush="SettingsView" [navParams]="{ wallets: wallets }">
+                <ion-icon name="settings" merit-icon></ion-icon>
+            </button>
+            <ion-spinner class="refreshing" color="light" [hidden]="!refreshing"></ion-spinner>
+        </ion-buttons>
+    </ion-navbar>
+    <ion-toolbar>
+        <ion-row>
+
+            <ion-col col-4>
+                <small>Total</small>
+                <ion-avatar img-icon>
+                    <img src="assets/img/icons/merit_white.svg" alt="">
+                </ion-avatar>
+                <span class="merit-amount" [hidden]="loading">
+                  {{ (totalAmount || 0) | toMRT:8:true }}
+                  <small>MRT</small>
+                </span>
+            </ion-col>
+
+            <ion-col col-4>
+                <small>Invites</small>
+                <ion-avatar img-icon>
+                    <img src="assets/img/icons/invite_white.svg" alt="">
+                </ion-avatar>
+                <span class="merit-amount" [hidden]="loading">
+                  {{ totalInvites || 0}}
+                  <small>INV</small>
+                </span>
+            </ion-col>
+
+
+            <ion-col col-4>
+                <small>Community</small>
+                <ion-avatar img-icon>
+                    <img src="assets/img/icons/network_dark.svg" alt="">
+                </ion-avatar>
+                <span class="merit-amount" [hidden]="loading">
+                  {{ network?.communitySize || '0' }}
+                  <small>People</small>
+                </span>
+            </ion-col>
+
+
+        </ion-row>
+    </ion-toolbar>
 </ion-header>
+
+
 <ion-content>
   <ion-refresher (ionRefresh)="doRefresh($event)" [enabled]="!loading">
     <ion-refresher-content></ion-refresher-content>

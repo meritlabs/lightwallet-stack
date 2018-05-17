@@ -1,34 +1,97 @@
-.ios view-wallets {
-  .big-header {
-    text-align: center;
-    min-height: 269px;
-
-    p {
-      font-weight: 400;
-      font-size: 17px;
-      letter-spacing: -.4px;
-      padding-top: 10px;
-    }
-
-    h2.amount {
-      padding-top: 35px;
-      font-size: 35px;
-      font-weight: 400;
-      small {
-        font-size: inherit;
-        font-weight: inherit;
-      }
-    }
-
-    h3.detail-fiat {
-      font-size: 17px;
-      font-weight: 400;
-    }
-  }
-}
+//.ios view-wallets {
+//  .big-header {
+//    text-align: center;
+//    min-height: 269px;
+//
+//    p {
+//      font-weight: 400;
+//      font-size: 17px;
+//      letter-spacing: -.4px;
+//      padding-top: 10px;
+//    }
+//
+//    h2.amount {
+//      padding-top: 35px;
+//      font-size: 35px;
+//      font-weight: 400;
+//      small {
+//        font-size: inherit;
+//        font-weight: inherit;
+//      }
+//    }
+//
+//    h3.detail-fiat {
+//      font-size: 17px;
+//      font-weight: 400;
+//    }
+//  }
+//}
 
 view-wallets {
-  .big-header {
+
+  ion-header.header {
+  //  background: linear-gradient(#282d50, #383c63);
+    background: color($colors, primary);
+
+    .toolbar-background {
+      background: transparent;
+    }
+
+    ion-toolbar.toolbar {
+      margin-top: 5px;
+      ion-spinner.spinner {
+        svg > * {
+          stroke: white;
+        }
+        margin-bottom: 20px;
+        min-height: 35px;
+      }
+
+      ion-row {
+        text-align: center;
+        padding: 0;
+        margin: 0;
+
+        ion-col {
+          padding: 0;
+          margin: 0;
+
+          > small {
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            line-height: 15px;
+            display: block;
+          }
+
+          ion-avatar[img-icon] {
+            float: none;
+            margin: 12px auto;
+            cursor: pointer;
+            margin-bottom: 8px;
+            background: rgba(0,0,0,.17);
+            box-shadow: 0 0 1px 1px #afdffc;
+          }
+
+          span.merit-amount {
+            color: white;
+            font-weight: 600;
+            font-size: 17px;
+            letter-spacing: -.47px;
+            padding-bottom: 24px;
+            display: block;
+            small {
+              display: block;
+              font-size: 13px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  ion-header  {
     ion-spinner.spinner {
         position: absolute;
         top: 24px;
@@ -39,7 +102,6 @@ view-wallets {
           right: 13px;
         }
     }
-
   }
 
   ion-list.list {
@@ -138,6 +200,14 @@ view-wallets {
     color: color($colors, danger) !important;
   }
 
+  .scroll-content {
+    margin-top: 195px !important;
+  }
+
+  .wallets.list {
+    margin-bottom: 0;
+  }
+
   .wallet {
     position: relative;
     .unlock-backdrop {
@@ -193,10 +263,11 @@ view-wallets {
   }
 
   .vaults-section {
-      .item .detail {
-        font-size: 13px;
-        color: rgba(0,0,0,0.6);
-      }
+    margin-top: -30px;
+    .item .detail {
+      font-size: 13px;
+      color: rgba(0,0,0,0.6);
+    }
   }
 
 }
