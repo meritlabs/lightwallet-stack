@@ -94,12 +94,12 @@ view-wallets {
   ion-header  {
     ion-spinner.spinner {
         position: absolute;
-        top: 24px;
-        right: 10px;
+        top: 2px;
+        right: 2px;
         color: white;
         &.spinner-ios {
-          top: 28px;
-          right: 13px;
+          top: 2px;
+          right: 1px;
         }
     }
   }
