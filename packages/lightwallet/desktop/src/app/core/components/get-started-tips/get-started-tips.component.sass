@@ -1,12 +1,16 @@
 @import '~styles/v1/common/import-sass'
 
+.StarterTips
+  position: relative
 .StarterTips_wrap
   margin: 35px -20px -35px
   background: $grey
   border-bottom: 1px solid $dark-grey-blue
   padding: 30px 20px
   position: relative
+  z-index: 1
   overflow: hidden
+  max-height: 1000px
 .closeCross
   width: 50px
   height: 50px
@@ -18,20 +22,18 @@
   left: calc(50% - 25px)
   bottom: -25px
   cursor: pointer
-  &:after,
-  &:before
+  z-index: 3
+  &:after
     content: ""
-    width: 40px
-    height: 1px
-    background: $grey
+    width: 20px
+    height: 20px
     display: block
     position: absolute
-    top: 22px
-    left: 3px
-  &:after
+    border-left: 1px solid $grey
+    border-top: 1px solid $grey
     transform: rotate(45deg)
-  &:before
-    transform: rotate(-45deg)
+    top: 18px
+    left: 12px
 .StarterTips
   &_items
     display: flex
@@ -54,13 +56,17 @@
       &:after
         display: none
   &_title
-    margin-bottom: 30px
+    padding: 30px 0 0
     text-align: center
     +font(500, 24px, 26px, $dark-grey-blue)
+    opacity: .7
 .StarterTips_item
   +font(300, 18px, 24px, $dark-grey-blue)
   p
     margin-bottom: 20px
+  a
+    +font(500, 18px, 24px, $blue)
+    text-decoration: underline
   ul
     li
       margin-bottom: 20px

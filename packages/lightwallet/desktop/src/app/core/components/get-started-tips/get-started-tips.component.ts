@@ -8,9 +8,9 @@ import { trigger, state, transition, style, animate } from '@angular/animations'
   animations: [
     trigger('slideInUp', [
       state('true', style({})),
-      state('false', style({ maxHeight: 0 })),
+      state('false', style({ maxHeight: 0, padding: '0 20px' })),
       // transition
-      transition('* => *', animate('150ms ease-out')),
+      transition('* => *', animate('300ms ease-out')),
     ]),
   ],
 })
