@@ -39,7 +39,7 @@
       <ng-template #peopleLoading>
         <loading-spinner-small></loading-spinner-small>
       </ng-template>
-      <button class="ui-button ui-button--xs">Extend my community</button>
+      <button class="ui-button ui-button--xs" (click)="showTips('community')">Extend my community</button>
     </div>
     <div class="stats__item">
       <p class="stats__item__title">Ambassador
@@ -53,7 +53,7 @@
           <span>MRT</span>
         </div>
       </ng-container>
-      <button class="ui-button ui-button--xs">Get Ambassador Rewards</button>
+      <button class="ui-button ui-button--xs" (click)="showTips('ambassador')">Get Ambassador Rewards</button>
     </div>
     <ng-template #ambassadorLoading>
       <loading-spinner-small></loading-spinner-small>
@@ -73,8 +73,8 @@
       <ng-template #miningLoading>
         <loading-spinner-small></loading-spinner-small>
       </ng-template>
-      <button class="ui-button ui-button--xs">Strart mining</button>
+      <button class="ui-button ui-button--xs" (click)="showTips('mining')">Strart mining</button>
     </div>
   </div>
-  <app-get-started-tips></app-get-started-tips>
+  <app-get-started-tips [setTipType]="tipType"></app-get-started-tips>
 </div>

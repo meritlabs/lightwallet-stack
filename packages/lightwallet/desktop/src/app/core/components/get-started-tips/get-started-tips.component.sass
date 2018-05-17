@@ -51,11 +51,17 @@
     width: calc(100% / 3 - 10px)
     position: relative
     padding: 30px 20px
+    border-radius: 15px
+    &.active
+      animation-name: highlight
+      animation-duration: 2.5s
+      animation-iteration-count: 1
+      animation-delay: .3s
     &:after
       content: ""
       display: block
       position: absolute
-      right: 0
+      right: -10px
       top: 0
       height: 100%
       width: 1px
@@ -95,3 +101,13 @@
   li:nth-child(#{$i + 1})
     &:before
       content: "#{$i + 1 }"
+
+@keyframes highlight
+  0%
+    box-shadow: 0 0 0px rgba(0, 176, 221, 0)
+  20%
+    box-shadow: 0 0 10px rgba(0, 176, 221, 1)
+  100%
+    box-shadow: 0 0 10px rgba(0, 176, 221, 1)
+  100%
+    box-shadow: 0 0 0px rgba(0, 176, 221, 0)

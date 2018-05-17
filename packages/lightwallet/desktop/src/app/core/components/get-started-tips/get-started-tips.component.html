@@ -3,9 +3,9 @@
 
   <div class="StarterTips_wrap" [@showTips]="active">
     <div class="StarterTips_items">
-      <div class="StarterTips_item">
+      <div class="StarterTips_item" [ngClass]="{'active': setTipType === 'community'}">
         <div class="StarterTips_title">
-          <p>How to extend my community?</p>
+          <p>How to extend my community? {{setTipType}}</p>
         </div>
         <p>Each new person in your community will increase your rating in the Merit World and deliver advanced benefits. For
           that you can:</p>
@@ -24,7 +24,7 @@
           </li>
         </ul>
       </div>
-      <div class="StarterTips_item">
+      <div class="StarterTips_item" [ngClass]="{'active': setTipType === 'ambassador'}">
         <div class="StarterTips_title">
           <p>How to get ambassador rewards?</p>
         </div>
@@ -35,7 +35,7 @@
             Community" tips tab</li>
         </ul>
       </div>
-      <div class="StarterTips_item">
+      <div class="StarterTips_item" [ngClass]="{'active': setTipType === 'mining'}">
         <div class="StarterTips_title">
           <p>How to get mining rewards?</p>
         </div>
