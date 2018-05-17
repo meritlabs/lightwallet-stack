@@ -17,6 +17,7 @@ import { PersistenceService2 } from '@merit/common/services/persistence2.service
 export class GetStartedTipsComponent {
   constructor(private persistenceService: PersistenceService2) {}
   active: boolean = false;
+  share;
 
   @Input() setTipType: string;
 
@@ -25,6 +26,14 @@ export class GetStartedTipsComponent {
 
     if (getActiveState !== false) {
       this.active = true;
+    }
+
+    // move created shareThis into right container
+    var newParent = document.getElementById('pasteShareThis'),
+      oldParent = document.getElementById('shareThis');
+
+    while (oldParent.childNodes.length > 0) {
+      newParent.appendChild(oldParent.childNodes[0]);
     }
   }
   ngOnChanges() {
