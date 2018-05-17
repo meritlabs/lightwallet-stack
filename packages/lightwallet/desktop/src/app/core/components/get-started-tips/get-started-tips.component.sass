@@ -24,6 +24,7 @@
   bottom: -25px
   cursor: pointer
   z-index: 3
+  opacity: 0
   &:after
     content: ""
     width: 20px
@@ -36,9 +37,11 @@
     top: 8px
     left: 12px
     +transition(.3s, lenear)
-  &.active:after
-    transform: rotate(45deg)
-    top: 18px
+  &.active
+    opacity: 1
+    &:after
+      transform: rotate(45deg)
+      top: 18px
 .StarterTips
   &_items
     display: flex
