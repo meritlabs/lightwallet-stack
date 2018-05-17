@@ -1,6 +1,7 @@
 <div class="StarterTips">
   <div class="closeCross" (click)="showHide()" [ngClass]="{'active': active}"></div>
-  <div class="StarterTips_wrap" [@slideInUp]="active">
+
+  <div class="StarterTips_wrap" [@showTips]="active">
     <div class="StarterTips_items">
       <div class="StarterTips_item">
         <div class="StarterTips_title">
