@@ -152,17 +152,23 @@
             </button>
         </ion-list>
 
-        <ion-list class="create-vault" *ngIf="vaults && !vaults.length">
-            <ion-item class="add-vault-block">
+        <div class="add-vault-block" *ngIf="vaults && !vaults.length">
+            <ion-item >
                 <ion-thumbnail item-start>
                     <img src="assets/img/icons/vault.svg" alt="">
                 </ion-thumbnail>
                 <ion-label>
                     <h2>Create your vault</h2>
                     <p>Vaults are a way to keep your Merit safe</p>
-                </ion-label>
+                    <p [hidden]="vaultsMoreInfoMode" (click)="vaultsMoreInfoMode = true"><a>More info</a></p>
+                </ion-label>vault
             </ion-item>
-        </ion-list>
+            <div class="vaults-more-info" [hidden]="!vaultsMoreInfoMode">
+                Vault is a merit address which has another layer of safety - you can send money only to selected list of addresses.
+                <br><br>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                <br><br>Since vault is a merit address you need an active invite to create a vault
+            </div>
+        </div>
 
         <ion-list *ngIf="!vaults" >
             <ion-item class="add-vault-block">
