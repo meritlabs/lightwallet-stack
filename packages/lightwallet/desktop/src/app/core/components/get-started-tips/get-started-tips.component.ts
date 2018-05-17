@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { trigger, state, transition, style, animate } from '@angular/animations';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
@@ -18,6 +18,8 @@ export class GetStartedTipsComponent {
   constructor(private persistenceService: PersistenceService2) {}
   active: boolean = false;
 
+  @Input() setTipType: string;
+
   async ngOnInit() {
     const getActiveState = await this.persistenceService.getViewSettings('showStarterTips');
 
@@ -25,7 +27,12 @@ export class GetStartedTipsComponent {
       this.active = true;
     }
   }
-  async showHide() {
+  ngOnChanges() {
+    if (this.setTipType !== 'all' && this.active !== true) {
+      this.active = true;
+    }
+  }
+  showHide(value) {
     if (this.active) {
       this.persistenceService.setViewSettings('showStarterTips', false);
       this.active = false;
