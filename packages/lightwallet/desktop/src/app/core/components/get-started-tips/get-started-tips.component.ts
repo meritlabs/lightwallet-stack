@@ -18,7 +18,6 @@ export class GetStartedTipsComponent {
   constructor(private persistenceService: PersistenceService2) {}
   active: boolean = false;
   getArticle: boolean = false;
-  contactUs: boolean = false;
   syncWallet: boolean = false;
   copy: string = 'COPY';
 
@@ -56,6 +55,10 @@ export class GetStartedTipsComponent {
   getArticleAction() {
     if (this.getArticle) this.getArticle = false;
     else this.getArticle = true;
+  }
+  syncWalletAction() {
+    if (this.syncWallet) this.syncWallet = false;
+    else this.syncWallet = true;
   }
   copyState() {
     this.copy = 'COPIED';
