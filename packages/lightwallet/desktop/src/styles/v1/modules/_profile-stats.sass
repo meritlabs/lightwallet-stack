@@ -5,11 +5,13 @@
     display: flex
     justify-content: space-between
     flex-flow: row wrap
+    position: relative
+    z-index: 2
   &__item
     width: calc(100% / 3 - 10px)
     text-align: center
     &__title
-      +font(300, 16px, 15px, $cool-grey)
+      +font(300, 16px, 20px, $cool-grey)
       margin: 0px auto 35px
       max-width: 120px
       width: 100%
