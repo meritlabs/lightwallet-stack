@@ -17,8 +17,12 @@ import { PersistenceService2 } from '@merit/common/services/persistence2.service
 export class GetStartedTipsComponent {
   constructor(private persistenceService: PersistenceService2) {}
   active: boolean = false;
-  share;
+  getArticle: boolean = false;
+  contactUs: boolean = false;
+  syncWallet: boolean = false;
+  copy: string = 'COPY';
 
+  @Input() wallets: Object;
   @Input() setTipType: string;
 
   async ngOnInit() {
@@ -48,5 +52,12 @@ export class GetStartedTipsComponent {
     } else {
       this.active = true;
     }
+  }
+  getArticleAction() {
+    if (this.getArticle) this.getArticle = false;
+    else this.getArticle = true;
+  }
+  copyState() {
+    this.copy = 'COPIED';
   }
 }

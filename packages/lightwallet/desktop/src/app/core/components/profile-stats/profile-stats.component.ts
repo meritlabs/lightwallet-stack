@@ -9,6 +9,7 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 export class ProfileStatsComponent {
   @Input() totals: any;
   @Input() loading: boolean;
+  @Input() wallets: Object;
   tipType: string = 'all';
 
   showTips(value) {
