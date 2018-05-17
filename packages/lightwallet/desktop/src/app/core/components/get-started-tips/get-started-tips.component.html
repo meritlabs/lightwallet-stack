@@ -16,12 +16,12 @@
           </li>
           <li>
             Post article about Merit
-            <a href="">Get prepared article</a>
+            <a (click)="getArticleAction()">Get prepared article</a>
           </li>
           <li>Tell about Merit to your friends / family</li>
           <li>
             I you have another kind of the opportunity to grow your and Merit community, please
-            <a href="">contact us</a>
+            <a>contact us</a>
           </li>
         </ul>
       </div>
@@ -48,10 +48,48 @@
           </li>
           <li>
             If your machine not so powerful you can join forces in our
-            <a href="">Merit Pool</a> and get mining rewards.
+            <a href="https://pool.merit.me/" target="blank">Merit Pool</a> and get mining rewards.
           </li>
         </ul>
       </div>
     </div>
   </div>
+</div>
+<div class="tipsModal" *ngIf="getArticle">
+  <div class="close" (click)="getArticleAction()"></div>
+  <div class="ui-wysiwyg" id="clipArticle" [clip]="'
+    IT’S ALL ABOUT COMMUNITY\n
+    Merit is focused, first and foremost, on being a real community. While other currencies aim to be more faceless and anonymous,
+    Merit strives to create great incentives and to make the lives of users easier. This guiding principle has driven the
+    design and architecture choices of the Merit Core Team.\n
+    Merit, aiming to be the world’s most adopted cryptocurrency, believes that safety is paramount. All members of the community,
+    irrespective of technical and financial background, should have the peace-of-mind of knowing that their money is safe.
+    This is decidedly not the case with traditional cryptocurrencies that leave users looking over their shoulders for
+    hackers and not fully grasping the unforgiven terrain that they are in.\n
+    Join Us! It’s your uniq invite code: @' + wallets[0]?.alias">
+    <p>
+      <strong>IT’S ALL ABOUT COMMUNITY</strong>
+    </p>
+    <p>Merit is focused, first and foremost, on being a real community. While other currencies aim to be more faceless and anonymous,
+      Merit strives to create great incentives and to make the lives of users easier. This guiding principle has driven the
+      design and architecture choices of the Merit Core Team.</p>
+    <p>Merit, aiming to be the world’s most adopted cryptocurrency, believes that safety is paramount. All members of the community,
+      irrespective of technical and financial background, should have the peace-of-mind of knowing that their money is safe.
+      This is decidedly not the case with traditional cryptocurrencies that leave users looking over their shoulders for
+      hackers and not fully grasping the unforgiven terrain that they are in.</p>
+    <p>Join Us! It`s your uniq invite code:
+      <strong>@{{wallets[0]?.alias}}</strong>
+    </p>
+    <div class="copy">
+      <button type="button" name="button" class="ui-button ui-button--blue ui-button--sm" (click)="copyState()">
+        {{copy}}
+      </button>
+    </div>
+  </div>
+</div>
+<div class="tipsModal" *ngIf="contactUs">
+
+</div>
+<div class="tipsModal" *ngIf="syncWallet">
+
 </div>

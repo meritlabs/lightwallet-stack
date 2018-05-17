@@ -79,6 +79,7 @@
   a
     +font(500, 18px, 24px, $blue)
     text-decoration: underline
+    cursor: pointer
   ul
     li
       margin-bottom: 30px
@@ -112,3 +113,42 @@
     box-shadow: 0 0 10px rgba(0, 176, 221, 1)
   100%
     box-shadow: 0 0 0px rgba(0, 176, 221, 0)
+.tipsModal
+  position: fixed
+  z-index: 1000
+  width: 100vw
+  height: 100vh
+  margin: auto
+  left: 20px
+  top: 20px
+  right: 20px
+  bottom: 20px
+  max-width: 900px
+  max-height: 700px
+  background: $white
+  border-radius: 10px
+  box-shadow: 0 0 100px rgba(0,0,0, .5)
+  padding: 50px 20px 30px
+  .close
+    position: absolute
+    width: 30px
+    height: 30px
+    right: 20px
+    top: 30px
+    cursor: pointer
+    &:after,
+    &:before
+      content: ""
+      width: 30px
+      height: 1px
+      background-color: $dark-grey-blue
+      position: absolute
+      display: block
+      top: 0
+      left: 0
+    &:before
+      transform: rotate(45deg)
+    &:after
+      transform: rotate(-45deg)
+  .copy
+    text-align: center
