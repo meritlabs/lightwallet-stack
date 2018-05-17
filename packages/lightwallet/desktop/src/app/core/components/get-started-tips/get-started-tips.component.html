@@ -1,17 +1,18 @@
 <div class="StarterTips">
   <div class="closeCross" (click)="showHide()" [ngClass]="{'active': active}"></div>
-
   <div class="StarterTips_wrap" [@showTips]="active">
     <div class="StarterTips_items">
       <div class="StarterTips_item" [ngClass]="{'active': setTipType === 'community'}">
         <div class="StarterTips_title">
-          <p>How to extend my community? {{setTipType}}</p>
+          <p>How to extend my community?</p>
         </div>
         <p>Each new person in your community will increase your rating in the Merit World and deliver advanced benefits. For
           that you can:</p>
         <ul>
           <li>
             Share your invintation in the your social networks:
+            <div id="pasteShareThis" class="shareBox"></div>
+
           </li>
           <li>
             Post article about Merit
