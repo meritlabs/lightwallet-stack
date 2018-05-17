@@ -1,6 +1,6 @@
 .stats
   background: $dark-grey-blue
-  padding: 35px 20px
+  padding: 35px 20px 55px
   &__wrap
     display: flex
     justify-content: space-between
@@ -10,8 +10,21 @@
   &__item
     width: calc(100% / 3 - 10px)
     text-align: center
+    position: relative
+    &:after
+      content: ""
+      display: block
+      position: absolute
+      right: 0
+      top: 0
+      height: 100%
+      width: 1px
+      background: linear-gradient(to bottom, rgba(255,255,255, 0.01) 0%,rgba(255,255,255,0.65) 48%,rgba(0,0,0,0) 100%)
+    &:nth-child(3)
+      &:after
+        display: none
     &__title
-      +font(300, 16px, 20px, $cool-grey)
+      +font(500, 16px, 24px, $cool-grey)
       margin: 0px auto 35px
       max-width: 120px
       width: 100%

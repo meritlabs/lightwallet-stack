@@ -1,11 +1,11 @@
 <div class="StarterTips">
-  <div class="closeCross" (click)="showHide()"></div>
+  <div class="closeCross" (click)="showHide()" [ngClass]="{'active': active}"></div>
   <div class="StarterTips_wrap" [@slideInUp]="active">
-    <div class="StarterTips_title">
-      <p>All what you need to know for start</p>
-    </div>
     <div class="StarterTips_items">
       <div class="StarterTips_item">
+        <div class="StarterTips_title">
+          <p>How to extend my community?</p>
+        </div>
         <p>Each new person in your community will increase your rating in the Merit World and deliver advanced benefits. For
           that you can:</p>
         <ul>
@@ -18,15 +18,15 @@
           </li>
           <li>Tell about Merit to your friends / family</li>
           <li>
-            Create Landing Page and share it to World
-          </li>
-          <li>
             I you have another kind of the opportunity to grow your and Merit community, please
             <a href="">contact us</a>
           </li>
         </ul>
       </div>
       <div class="StarterTips_item">
+        <div class="StarterTips_title">
+          <p>How to get ambassador rewards?</p>
+        </div>
         <ul>
           <li>If you have own good community, you can mining Merit in the "Lazy Way", called "Ambassador Rewards". Its mean that
             you will rewarded when somebody from your community will mine new blocks.</li>
@@ -35,10 +35,13 @@
         </ul>
       </div>
       <div class="StarterTips_item">
+        <div class="StarterTips_title">
+          <p>How to get mining rewards?</p>
+        </div>
         <ul>
           <li>
             You can mine MRT on your machine if you have powerful hardware. For that you should
-            <a href="">Download Merit-QT wallet</a> and run minig. Before you will start please read instruction
+            <a href="https://www.merit.me/get-started/#get-merit-desktop" target="blank">Download Merit-QT wallet</a> and run minig. Before you will start please read instruction
             <a href="">how to sync my wallet.</a>
           </li>
           <li>
