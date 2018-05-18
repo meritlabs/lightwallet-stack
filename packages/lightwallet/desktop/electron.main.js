@@ -2,9 +2,7 @@
 const { BrowserWindow, app, protocol, ipcMain } = require('electron');
 const path = require('path');
 const url = require('url');
-const nn = require('node-notifier');
 
-const icon = path.join(__dirname, 'build/1024x1024.png')
 
 let mainWindow;
 
@@ -42,13 +40,7 @@ function createWindow() {
   });
 }
 
-ipcMain.on('showNotification', (event, data) => {
-  data.icon = icon;
-  data.appId = 'wallet.merit.me';
-  nn.notify(data);
-});
-
-nn.on('click', () => {
+ipcMain.on('notificationClick', () => {
   // maximize & focus window when the user clicks on the notification
   if (mainWindow) {
     mainWindow.maximize();
