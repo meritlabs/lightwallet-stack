@@ -78,7 +78,7 @@ export class MobilePushNotificationsService extends PushNotificationsService {
 
     this.logger.info('Starting push notification registration...');
     await this.getToken();
-    this.subscribeToEvents();
+    await this.subscribeToEvents();
   }
 
   // TODO: Chain getting the token as part of a standalone single-wallet subscription.
