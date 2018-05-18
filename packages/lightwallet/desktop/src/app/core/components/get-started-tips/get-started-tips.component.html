@@ -91,32 +91,48 @@
 <div class="tipsModal" *ngIf="syncWallet">
   <div class="close" (click)="syncWalletAction()"></div>
   <div class="ui-wysiwyg">
-    <h2>Coming from a Desktop Wallet</h2>
-    <p>If you have a Merit Desktop Wallet already, synchronizing it with or adding a separate Web Wallet is a great way to make
-      your experience smoother.</p>
-    <h2>There are 2 ways to get started with the Web Wallet.</h2>
-    <h3>Sync your desktop wallet to the web wallet.</h3>
     <p>
-      To synchronize your web wallet with an existing wallet, you must first get your wallet's Pass Phrase.
+      <strong>How to sync Web Wallet between Desktop Wallet</strong>
+    </p>
+    <p>
+      <strong>1.</strong>
+      <a href="https://www.merit.me/get-started/#get-merit-desktop" target="blank">Download Desktop Wallet</a>
+    </p>
+    <p>
+      <strong>2.</strong> Go to the Web Wallet and export your wallet from the "Web Interface"
     </p>
     <blockquote>
-      <strong>Go to: Help > Debug Window > Console</strong>
-      <img src="/assets/v1/images/tour/dektop/mnemonic-phrase.png" alt="">
+      <strong>Choice needed wallet and select "backup" item</strong>
+      <img src="/assets/v1/images/dashboard/tips/get-mnemonic-1.png" alt="">
     </blockquote>
     <blockquote>
-      <strong>Type: getmnemonic</strong>
-      <img src="/assets/v1/images/tour/dektop/getmnemonic.png" alt="">
+      <strong>Then select "Mnemonic phrase"</strong>
+      <img src="/assets/v1/images/dashboard/tips/get-mnemonic-2.png" alt="">
     </blockquote>
-    <h3>Create a Standalone Web Wallet</h3>
-    <p>To create a standalone wallet, you simply use your existing alias or address as your invite code. This method requires
-      a spare invite that you must send to your new wallet in order to active it.</p>
+    <p>
+      <strong>3.</strong> Run your "Desktop Wallet" client
+    </p>
     <blockquote>
-      <strong>Ensure you have at least 1 available invite.</strong>
-      <img src="/assets/v1/images/tour/dektop/avalible-invites.png" alt="">
+      <strong>Select "Import wallet" item</strong>
+      <img src="/assets/v1/images/dashboard/tips/import-wallet-1.png" alt="">
     </blockquote>
     <blockquote>
-      <strong>Use your own Alias as a referral.</strong>
-      <img src="/assets/v1/images/tour/dektop/use-your-alis.png" alt="">
+      <strong>Copy your "Mnemonic phrase" and paste into "Import box"</strong>
+      <img src="/assets/v1/images/dashboard/tips/import-wallet-2.png" alt="">
+    </blockquote>
+    <p>
+      <strong>4.</strong> After successful wallet import, you should wait before your client will sync with block chain
+    </p>
+    <p>
+      <strong>5.</strong> After successful block chain sync you able to mine Merit
+    </p>
+    <blockquote>
+      <strong>Go to application toolbar and select "Mining" item</strong>
+      <img src="/assets/v1/images/dashboard/tips/mining-1.png" alt="">
+    </blockquote>
+    <blockquote>
+      <strong>And enable miner</strong>
+      <img src="/assets/v1/images/dashboard/tips/mining-2.png" alt="">
     </blockquote>
   </div>
 </div>
