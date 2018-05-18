@@ -116,15 +116,15 @@
 .tipsModal
   position: fixed
   z-index: 1000
-  width: 100vw
-  height: 100vh
+  width: calc(100vw - 40px)
+  height: calc(100vh - 40px)
   margin: auto
   left: 20px
   top: 20px
   right: 20px
   bottom: 20px
-  max-width: 900px
-  max-height: 700px
+  max-width: 1200px
+  max-height: 900px
   background: $white
   border-radius: 10px
   box-shadow: 0 0 100px rgba(0,0,0, .5)
@@ -155,3 +155,6 @@
   .ui-wysiwyg
     height: 100%
     overflow-y: auto
+    a, a:active, a:hover, a:visited
+      color: $blue
+      text-decoration: underline
