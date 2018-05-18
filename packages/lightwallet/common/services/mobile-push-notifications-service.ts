@@ -24,10 +24,6 @@ export class MobilePushNotificationsService extends PushNotificationsService {
     return this.configService.get().pushNotificationsEnabled;
   }
 
-  protected get hasPermission(): boolean {
-    return true;
-  }
-
   constructor(http: HttpClient,
               public profileService: ProfileService,
               public platformService: PlatformService,
