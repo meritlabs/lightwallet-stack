@@ -3,6 +3,7 @@ const { BrowserWindow, app, protocol, ipcMain } = require('electron');
 const path = require('path');
 const url = require('url');
 
+
 let mainWindow;
 
 function createWindow() {
@@ -22,7 +23,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
-    autoHideMenuBar: true
+    autoHideMenuBar: true,
   });
 
   const URL = url.format({
@@ -34,15 +35,18 @@ function createWindow() {
   mainWindow.loadURL(URL);
   mainWindow.maximize();
 
-  ipcMain.on('notificationClick', () => {
-    mainWindow.maximize();
-    mainWindow.focus();
-  });
-
   mainWindow.on('closed', function () {
     mainWindow = null;
   });
 }
+
+ipcMain.on('notificationClick', () => {
+  // maximize & focus window when the user clicks on the notification
+  if (mainWindow) {
+    mainWindow.maximize();
+    mainWindow.focus();
+  }
+});
 
 app.on('ready', createWindow);
 
