@@ -20,6 +20,14 @@ export class MobilePushNotificationsService extends PushNotificationsService {
   private usePushNotifications: boolean;
   private retriesRemaining: number = 3; // Try to get a token 3 times, and then give up.
 
+  protected get pushNotificationsEnabled(): boolean {
+    return this.configService.get().pushNotificationsEnabled;
+  }
+
+  protected get hasPermission(): boolean {
+    return true;
+  }
+
   constructor(http: HttpClient,
               public profileService: ProfileService,
               public platformService: PlatformService,
