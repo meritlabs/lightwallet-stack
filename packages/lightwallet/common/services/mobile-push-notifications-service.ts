@@ -38,7 +38,7 @@ export class MobilePushNotificationsService extends PushNotificationsService {
     this.isAndroid = this.platformService.isAndroid;
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;
     this.platform = this.isIOS ? 'iOS' : 'Android';
-    this.packageName = 'mws.merit.me';
+    this.packageName = 'me.merit.wallet';
 
     if (this.usePushNotifications) {
       platform.ready().then(() => {
