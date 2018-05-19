@@ -14,7 +14,7 @@ export interface IWalletsState {
 export interface IWalletTotals {
   totalNetworkValue: string;
   totalMiningRewards: string;
-  totalAmbassadorRewards: string;
+  totalGrowthRewards: string;
   totalWalletsBalance: string;
   totalWalletsBalanceFiat: string;
   allBalancesHidden: boolean;
@@ -28,7 +28,7 @@ const DEFAULT_STATE: IWalletsState = {
   totals: {
     totalNetworkValue: '0.00',
     totalMiningRewards: '0.00',
-    totalAmbassadorRewards: '0.00',
+    totalGrowthRewards: '0.00',
     totalWalletsBalance: '0.00',
     totalWalletsBalanceFiat: '0.00',
     allBalancesHidden: false,
