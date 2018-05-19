@@ -70,15 +70,15 @@
                 <img src="/assets/v1/icons/ui/network/rewards.svg" alt="">
               </div>
               <div class="network__personal-wallet__panel__info">
-                <p class="network__personal-wallet__panel__info__small">Ambassador Rewards</p>
+                <p class="network__personal-wallet__panel__info__small">Growth Rewards</p>
                 <p class="network__personal-wallet__panel__info__regular">
-                  {{ wallet.ambassadorRewardsMicro | toMRT:null:true }}
+                  {{ wallet.growthRewardsMicro | toMRT:null:true }}
                   <span>MRT</span>
                 </p>
               </div>
             </div>
             <div class="network__personal-wallet__panel__col">
-              <p *ngIf="wallet.ambassadorRewardsMicro | toFiat | async as ambassadorRewardsMicro">{{ ambassadorRewardsMicro }}</p>
+              <p *ngIf="wallet.growthRewardsMicro | toFiat | async as growthRewardsMicro">{{ growthRewardsMicro }}</p>
             </div>
           </div>
         </div>

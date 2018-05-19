@@ -43,8 +43,8 @@ export class TransactionHistoryComponent {
     return !transaction.isCoinbase && !transaction.isInvite;
   }
 
-  isAmbassadorReward(transaction: IDisplayTransaction) {
-    return transaction.isAmbassadorReward;
+  isGrowthReward(transaction: IDisplayTransaction) {
+    return transaction.isGrowthReward;
   }
 
   private isReward(transaction: IDisplayTransaction) {

@@ -111,7 +111,7 @@ export class API {
   public totalNetworkValue: string;
   public displayAddress: string;
   public miningRewards: string;
-  public ambassadorRewards: string;
+  public growthRewards: string;
   public onConnectionError: any;
   public onAuthenticationError: any;
   public onConnectionRestored: any;

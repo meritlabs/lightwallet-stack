@@ -63,7 +63,7 @@ export class TxDetailsView {
       this.confirmationsExplanation = String(tx.confirmations) + ' block(s) confirmed from ' + COINBASE_CONFIRMATION_THRESHOLD;
     }
 
-    if (tx.isAmbassadorReward) this.image = 'ambassador';
+    if (tx.isGrowthReward) this.image = 'growth';
     else if (tx.isMiningReward) this.image = 'mining';
     else if (tx.isInvite) this.image = 'invite';
     else this.image = 'merit';
