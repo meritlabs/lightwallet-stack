@@ -6,8 +6,8 @@ import { BackdropComponent } from '@merit/desktop/app/components/backdrop/backdr
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { ConfirmDialogComponent } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog.component';
 import { ErrorMessageComponent } from '@merit/desktop/app/components/error-message/error-message.component';
-import { GlobalsendLinkPopupComponent } from '@merit/desktop/app/components/globalsend-link-popup/globalsend-link-popup.component';
-import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/globalsend-link-popup/globalsend-link-popup.controller';
+import { GlobalsendLinkPopupComponent } from '@merit/desktop/app/components/meritmoney-link-popup/meritmoney-link-popup.component';
+import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/meritmoney-link-popup/meritmoney-link-popup.controller';
 import { IllustationsSendingMeritComponent } from '@merit/desktop/app/components/illustations/sending-merit/sending-merit.component';
 import { IllustationsThatsItComponent } from '@merit/desktop/app/components/illustations/thats-it/thats-it.component';
 import { IllustationsWorryFreeComponent } from '@merit/desktop/app/components/illustations/worry-free/worry-free.component';

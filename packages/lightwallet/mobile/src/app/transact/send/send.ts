@@ -307,7 +307,7 @@ export class SendView {
   easySend() {
     if (!this.hasActiveInvites) {
       this.toastCtrl.create({
-        message: 'You do not have any available invites to use GlobalSend',
+        message: 'You do not have any available invites to use MeritMoney',
         duration: 4000,
         showCloseButton: true
       });

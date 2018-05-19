@@ -42,11 +42,11 @@ export class TxDetailsView {
     return this.viewCtrl.dismiss();
   }
 
-  onGlobalSendCopy() {
+  onMeritMoneyCopy() {
     this.toastCtrl.success('Copied to clipboard');
   }
 
-  cancelGlobalSend() {
+  cancelMeritMoney() {
     this.easyReceive.cancelEasySend(this.tx.easySendUrl);
   }
 

@@ -6,7 +6,7 @@ import { EasyReceiveService } from '@merit/common/services/easy-receive.service'
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { ClipModule } from 'ng2-clip';
 import { MomentModule } from 'ngx-moment';
-import { GlobalsendLinkPopupController } from '../../../components/globalsend-link-popup/globalsend-link-popup.controller';
+import { GlobalsendLinkPopupController } from '../../../components/meritmoney-link-popup/meritmoney-link-popup.controller';
 import { HistoryItemComponent } from './history-item.component';
 
 
@@ -27,7 +27,7 @@ class MockToastController {
 }
 
 @Injectable()
-class MockGlobalSendLinkPopupController {
+class MockMeritMoneyLinkPopupController {
   create() {}
 }
 
@@ -46,7 +46,7 @@ describe('History item component', () => {
         HistoryItemComponent
       ],
       providers: [
-        { provide: GlobalsendLinkPopupController, useClass: MockGlobalSendLinkPopupController },
+        { provide: GlobalsendLinkPopupController, useClass: MockMeritMoneyLinkPopupController },
         { provide: ToastControllerService, useClass: MockToastController },
         { provide: EasyReceiveService, useClass: MockEasyReceiveService }
       ],
