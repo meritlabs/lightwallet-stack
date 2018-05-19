@@ -43,7 +43,7 @@
         <ul>
           <li>
             You can mine MRT on your machine if you have powerful hardware. For that you should
-            <a href="https://www.merit.me/get-started/#get-merit-desktop" target="blank">Download Merit-QT wallet</a> and run minig. Before you will start please read instruction
+            <a href="https://www.merit.me/get-started/#get-merit-desktop" target="blank">Download Merit-QT wallet</a> and run mining. Before you will start please read instruction
             <a (click)="syncWalletAction()">how to sync my wallet.</a>
           </li>
           <li>
@@ -57,28 +57,36 @@
 </div>
 <div class="tipsModal" *ngIf="getArticle">
   <div class="close" (click)="getArticleAction()"></div>
-  <div class="ui-wysiwyg" id="clipArticle" [clip]="'
-    IT’S ALL ABOUT COMMUNITY\n
-    Merit is focused, first and foremost, on being a real community. While other currencies aim to be more faceless and anonymous,
-    Merit strives to create great incentives and to make the lives of users easier. This guiding principle has driven the
-    design and architecture choices of the Merit Core Team.\n
-    Merit, aiming to be the world’s most adopted cryptocurrency, believes that safety is paramount. All members of the community,
-    irrespective of technical and financial background, should have the peace-of-mind of knowing that their money is safe.
-    This is decidedly not the case with traditional cryptocurrencies that leave users looking over their shoulders for
-    hackers and not fully grasping the unforgiven terrain that they are in.\n
-    Join Us! It’s your uniq invite code: @' + wallets[0]?.alias">
+  <div class="ui-wysiwyg" id="clipArticle" [clip]="'DIGITAL CURRENCY FOR HUMANS.\nMerit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth. Merit believes that digital currency should stand on the pillars of simplicity, safety, and community.\nSAFETY\nThe Merit Guardian protocol provides something no other currency does - decentralized account recovery. There’s no third party that can lock you out of Merit. And with Vaults, a hacker can’t even use your Merit if they compromise your account. With these features, digital currency has never been safer.\nSIMPLICITY\nSending or sharing Merit is as easy as sending an SMS. With EasySend, simply select a contact from your phone, choose and amount, and tap send! With Merit aliases, you can simply type an alias such as @meritlover instead a complex 34-character key.\nCOMMUNITY\nThis isn’t the Deep Web. Merit is a community of real people like you. The more people you invite, the more useful, safe, and reliable the network becomes.\nJoin Us and be a part of the world first Invite only cryptocurrency Merit!\nAdditional information: www.merit.me\nYour activation code:' + wallets[0]?.alias">
     <p>
-      <strong>IT’S ALL ABOUT COMMUNITY</strong>
+      <strong>DIGITAL CURRENCY FOR HUMANS.</strong>
     </p>
-    <p>Merit is focused, first and foremost, on being a real community. While other currencies aim to be more faceless and anonymous,
-      Merit strives to create great incentives and to make the lives of users easier. This guiding principle has driven the
-      design and architecture choices of the Merit Core Team.</p>
-    <p>Merit, aiming to be the world’s most adopted cryptocurrency, believes that safety is paramount. All members of the community,
-      irrespective of technical and financial background, should have the peace-of-mind of knowing that their money is safe.
-      This is decidedly not the case with traditional cryptocurrencies that leave users looking over their shoulders for
-      hackers and not fully grasping the unforgiven terrain that they are in.</p>
-    <p>Join Us! It`s your uniq invite code:
+    <p>Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage
+      your wealth. Merit believes that digital currency should stand on the pillars of simplicity, safety, and community.</p>
+    <p>
+      <strong>SAFETY</strong>
+    </p>
+    <p>The Merit Guardian protocol provides something no other currency does - decentralized account recovery. There’s no third
+      party that can lock you out of Merit. And with Vaults, a hacker can't even use your Merit if they compromise your account.
+      With these features, digital currency has never been safer.</p>
+    <p>
+      <strong>SIMPLICITY</strong>
+    </p>
+    <p>Sending or sharing Merit is as easy as sending an SMS. With EasySend, simply select a contact from your phone, choose
+      and amount, and tap send! With Merit aliases, you can simply type an alias such as @meritlover instead a complex 34-character
+      key.
+    </p>
+    <p>
+      <strong>COMMUNITY</strong>
+    </p>
+    <p>This isn’t the Deep Web. Merit is a community of real people like you. The more people you invite, the more useful, safe,
+      and reliable the network becomes.</p>
+    <p>Join Us and be a part of the world first Invite only cryptocurrency Merit!</p>
+    <p>Your activation code:
       <strong>@{{wallets[0]?.alias}}</strong>
+    </p>
+    <p>Additional information:
+      <strong>www.merit.me</strong>
     </p>
     <div class="copy">
       <button type="button" name="button" class="ui-button ui-button--blue ui-button--sm" (click)="copyState()">
@@ -121,10 +129,10 @@
       <img src="/assets/v1/images/dashboard/tips/import-wallet-2.png" alt="">
     </blockquote>
     <p>
-      <strong>4.</strong> After successful wallet import, you should wait before your client will sync with block chain
+      <strong>4.</strong> After successful wallet import, you should wait before your client will sync with blockchain
     </p>
     <p>
-      <strong>5.</strong> After successful block chain sync you able to mine Merit
+      <strong>5.</strong> After successful blockchain sync you able to mine Merit
     </p>
     <blockquote>
       <strong>Go to application toolbar and select "Mining" item</strong>
