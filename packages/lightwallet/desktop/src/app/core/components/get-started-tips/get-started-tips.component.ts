@@ -46,6 +46,15 @@ export class GetStartedTipsComponent {
       newParent.appendChild(oldParent.childNodes[0]);
     }
   }
+  ngOnDestroy() {
+    // move created shareThis into right container
+    var newParent = document.getElementById('shareThis'),
+      oldParent = document.getElementById('pasteShareThis');
+
+    while (oldParent.childNodes.length > 0) {
+      newParent.appendChild(oldParent.childNodes[0]);
+    }
+  }
   ngOnChanges() {
     if (this.setTipType !== 'all' && this.active !== true) {
       this.active = true;
