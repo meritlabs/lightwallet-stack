@@ -48,7 +48,7 @@ export enum WalletsActionType {
   RefreshOne = '[Wallets] Refresh one',
   RefreshTotals = '[Wallets] Refresh totals',
   UpdateTotals = '[Wallets] Update totals',
-  UpdateInviteRequests = '[Wallets] Update Invite Requests',
+  UpdateInviteRequests = '[Wallets] Update Invite Wait List',
   DeleteWallet = '[Wallets] Delete wallet',
   DeleteWalletCompleted = '[Wallets] Delete wallet completed'
 }
