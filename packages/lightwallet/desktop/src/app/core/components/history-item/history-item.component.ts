@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 import { COINBASE_CONFIRMATION_THRESHOLD } from '@merit/common/utils/constants';
-import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/globalsend-link-popup/globalsend-link-popup.controller';
+import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/meritmoney-link-popup/meritmoney-link-popup.controller';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 
 @Component({
@@ -54,11 +54,11 @@ export class HistoryItemComponent implements OnInit {
     else this.image = 'merit';
   }
 
-  showGlobalSendLink() {
+  showMeritMoneyLink() {
     this.globalSendLinkCtrl.create(this.tx.easySendUrl);
   }
 
-  async askCancelGlobalSend() {
+  async askCancelMeritMoney() {
     this.easyReceive.cancelEasySend(this.tx.easySendUrl);
   }
 }

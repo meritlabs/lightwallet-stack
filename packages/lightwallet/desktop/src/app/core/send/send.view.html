@@ -44,10 +44,10 @@
 
           <button (click)="updateTxType('easy')" type="button" role="button" class="method" [class.active]="type.value === 'easy'">
             <span class="title">
-              Send via GlobalSend
+              Send via MeritMoney Link
             </span>
             <span class="description">
-              Not sure if they have a Merit address?
+              Not sure if they have a Merit address?  Want to be able to cancel?
             </span>
           </button>
         </div>
@@ -80,7 +80,7 @@
                   You will see a link after confirming the transaction that you can share with your recipient.
                 </p>
                 <p *ngIf="!wallet.value?.status?.availableInvites">
-                  You don't have an available invite to use GlobalSend, please select another wallet or use ClassicSend.
+                  You don't have an available invite to use MeritMoney, please select another wallet or use ClassicSend.
                 </p>
               </div>
             </div>
@@ -145,7 +145,7 @@
                     {{ (address.value | address) || '...' }}
                   </div>
                   <div class="sendMerit__totals__table__column" *ngIf="type.value == 'easy'">
-                    GlobalSend
+                    MeritMoney Link
                   </div>
                 </div>
                 <div class="sendMerit__totals__table__row">
