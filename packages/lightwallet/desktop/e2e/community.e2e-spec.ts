@@ -44,8 +44,8 @@ describe('[Desktop] Community', () => {
        expect(el.isPresent()).toBeTruthy();
      });
 
-     it('should have Invite Requests button', () => {
-       expect(el.getText()).toContain('Invite Requests');
+     it('should have Invite Wait List button', () => {
+       expect(el.getText()).toContain('Invite Wait List');
      });
 
      it('should have Invites button', () => {
