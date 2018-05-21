@@ -187,7 +187,6 @@ export class SendConfirmationView {
     }
   }
 
-
   async send(walletPassword?) {
     const loadingSpinner = this.loadingCtrl.create({
       content: 'Sending transaction...',
@@ -196,24 +195,7 @@ export class SendConfirmationView {
     loadingSpinner.present();
 
     try {
-
-      this.txData.txp = await this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
-
-      if (this.txData.referralsToSign) {
-        for (let referral of this.txData.referralsToSign) {
-          await this.txData.wallet.sendReferral(referral);
-          await this.txData.wallet.sendInvite(referral.address);
-        }
-      }
-      await this.approveTx();
-
-      if (this.txData.sendMethod.type == SendMethodType.Easy) {
-        this.persistenceService.addEasySend(this.txData.easySend);
-        this.navCtrl.push('EasySendShareView', { txData: this.txData });
-      } else {
-        this.navCtrl.popToRoot();
-        this.toastCtrl.success('Your transaction is complete');
-      }
+      await this.sendService.send(this.txData, this.txData.wallet);
     } catch (err) {
       this.logger.warn(err);
       return this.toastCtrl.error(err);
