@@ -11,7 +11,7 @@ import { FeeService } from '@merit/common/services/fee.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from '@merit/common/services/rate.service';
-import { SendService } from '@merit/common/services/send.service';
+import { ISendTxData, SendService } from '@merit/common/services/send.service';
 import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { WalletService } from '@merit/common/services/wallet.service';
@@ -39,7 +39,7 @@ export class SendAmountView {
   public availableUnits: Array<{ type: string, name: string }>;
   public selectedCurrency: { type: string, name: string };
 
-  public txData: any;
+  public txData: ISendTxData;
   public feeCalcError: string;
   public feeLoading: boolean;
 
@@ -295,9 +295,7 @@ export class SendAmountView {
     });
     loadingSpinner.present();
     try {
-
       this.txData.txp.amount += this.txData.easyFee;
-      this.txData.txp = await this.sendService.finalizeTxp(this.txData.wallet, this.txData.txp, this.txData.feeIncluded);
       this.navCtrl.push('SendConfirmationView', { txData: this.txData, referralsToSign: this.referralsToSign });
     } catch (e) {
       this.logger.warn(e);
