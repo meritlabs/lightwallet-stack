@@ -1,6 +1,31 @@
 import { Injectable } from '@angular/core';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { EasySend } from '@merit/common/models/easy-send';
+import { MeritContact } from '@merit/common/models/merit-contact';
+import { ISendMethod } from '@merit/common/models/send-method';
 import { FeeService } from '@merit/common/services/fee.service';
+
+export interface ISendTxData {
+  amount?: number; // micros
+  totalAmount?: number; // micros
+  feeAmount?: number; // micros
+  feeIncluded?: boolean;
+  easyFee?: number,
+  password?: string;
+  recipient?: {
+    label?: string;
+    name?: string;
+    emails?: Array<{ value: string }>;
+    phoneNumbers?: Array<{ value: string }>;
+  } | MeritContact;
+  sendMethod?: ISendMethod;
+  txp?: any;
+  easySend?: EasySend;
+  easySendUrl?: string;
+  wallet?: MeritWalletClient;
+  referralsToSign?: Array<any>;
+  timeout?: number;
+}
 
 @Injectable()
 export class SendService {
