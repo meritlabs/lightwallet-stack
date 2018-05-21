@@ -24,13 +24,7 @@ export class GetStartedTipsComponent {
   @Input() wallets: Object;
   @Input() setTipType: string;
 
-  async ngOnInit() {
-    const getActiveState = await this.persistenceService.getViewSettings('showStarterTips');
-
-    if (getActiveState !== false) {
-      this.active = true;
-    }
-
+  ngOnInit() {
     // move created shareThis into right container
     var newParent = document.getElementById('pasteShareThis'),
       oldParent = document.getElementById('shareThis');
@@ -39,8 +33,12 @@ export class GetStartedTipsComponent {
       newParent.appendChild(oldParent.childNodes[0]);
     }
   }
-  ngOnChanges() {
+  async ngOnChanges() {
+    const getActiveState = await this.persistenceService.getViewSettings('showStarterTips');
+
     if (this.setTipType !== 'all' && this.active !== true) {
+      this.active = true;
+    } else if (getActiveState !== false) {
       this.active = true;
     }
   }
