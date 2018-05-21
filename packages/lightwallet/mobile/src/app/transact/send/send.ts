@@ -6,11 +6,11 @@ import { AddressService } from '@merit/common/services/address.service';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { ProfileService } from '@merit/common/services/profile.service';
+import { RateService } from '@merit/common/services/rate.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { Events, IonicPage, ModalController, NavController, Slides, ToastController } from 'ionic-angular';
-import { RateService } from '@merit/common/services/rate.service';
 import * as _ from 'lodash';
 
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
@@ -39,7 +39,7 @@ export class SendView {
     contacts: Array<MeritContact>,
     toNewEntity: { destination: string, contact: MeritContact },
     error: string
-  } = {contacts: [], toNewEntity: null, error: null };
+  } = { contacts: [], toNewEntity: null, error: null };
 
 
   hasUnlockedWallets: boolean;
@@ -85,7 +85,7 @@ export class SendView {
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;
     await this.updateRecentContacts();
-    return this.parseSearch();
+    await  this.parseSearch();
 
     this.events.subscribe('Remote:IncomingTx', () => {
       this.updateHasUnlocked();
@@ -134,7 +134,7 @@ export class SendView {
     }
 
     if (this.searchQuery.indexOf('micros') != -1) {
-      let microsStr:string = this.searchQuery.split('?micros=')[1];
+      let microsStr: string = this.searchQuery.split('?micros=')[1];
       this.searchQuery = this.searchQuery.split('?micros=')[0];
       this.amount = +microsStr;
     } else {
@@ -150,7 +150,7 @@ export class SendView {
   /**
    * Search users based on searchQuery
    * Looks both for contact list and for address/alias
-  */
+   */
   private async search() {
 
     const result = { contacts: [], toNewEntity: null, error: null };
@@ -172,7 +172,7 @@ export class SendView {
     result.contacts = this.contacts.filter(contact =>
       _.some(contact.meritAddresses, (meritAddress) => {
         if (meritAddress.address == input) return true;
-        return (meritAddress.alias && meritAddress.alias.match(input))
+        return (meritAddress.alias && meritAddress.alias.match(input));
       })
     );
 
