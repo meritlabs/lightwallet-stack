@@ -12,29 +12,29 @@
   line-height: $height
   @if $color != default
     color: $color
-  @else if $color == default
+
   @if $family != default
     font-family: $family
-  @else if $family == default
+
   @if $weight != default
     font-weight: $weight
-  @else if $weight == default
-  @else if $weight == 300
+
   @if $style != normal
     font-style: $style
-  @else if $style == none
+
   @if $decoration != none
     text-decoration: $decoration
-  @else if $decoration == none
+
   @if $transform != none
     text-transform: $transform
-  @else if $transform == none
+
   text-rendering: geometricPrecision
   opacity: 0.99999
 
-=chageFontSize($size, $height)
+=chageFontSize($size, $height: null)
   font-size: $size
-  line-height: $height
+  @if $height != null
+    line-height: $height
 
 =transition($speed, $type)
   transition: all $speed $type
