@@ -1,0 +1,70 @@
+<div class="container--inner">
+  <error-message *ngIf="(availableInvites$ | async) == 0">
+    You do not have any available invites to send.
+  </error-message>
+  <error-message *ngIf="easySendUrl" class="success">
+    Your global send URL is ready, now you can share it:
+    <div class="easysend-url-container" [clip]="easySendUrl">
+      <small class="click_to_copy">Click to copy</small>
+      {{ easySendUrl }}
+    </div>
+  </error-message>
+
+  <form [formGroup]="formData" (ngSubmit)="sendInvite()">
+    <div class="sendMerit__form__group">
+      <label for="" class="ui-label">Send from</label>
+      <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async"
+                  cssClass="ui-input ui-input--select ui-input--form"></app-select>
+    </div>
+
+    <send-method formControlName="type"></send-method>
+
+    <ng-container *ngIf="type.value === 'classic'; else easySend">
+      <div class="ui-input__wrapper ui-input__wrapper">
+        <input type="text" name="" id="receiveAmount" placeholder="Enter recipient address or alias"
+               class="ui-input ui-input--form ui-input--text"
+               formControlName="address">
+      </div>
+      <div class="input-errors" [hidden]="!address.dirty || address.valid">
+        <div [hidden]="!address.hasError('required')">Recipient address is required</div>
+        <div [hidden]="address.hasError('required') || !address.hasError('minlength')">Address must be at least 3
+          characters long
+        </div>
+        <div [hidden]="address.hasError('required') || !address.hasError('InvalidFormat')">Invalid address or alias
+          format
+        </div>
+        <div [hidden]="address.hasError('required') || !address.hasError('AddressNotFound')">Address not found</div>
+      </div>
+    </ng-container>
+    <ng-template #easySend>
+      <div class="sendMerit__form__group">
+        <label class="ui-label" *ngIf="selectedWallet?.status?.availableInvites">Password &nbsp;
+          <small>(optional)</small>
+        </label>
+        <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password"
+               *ngIf="selectedWallet?.status?.availableInvites">
+        <div class="notification-info">
+          <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
+          <p *ngIf="selectedWallet?.status?.availableInvites">
+            You will see a link after confirming the transaction that you can share with your recipient.
+          </p>
+        </div>
+      </div>
+    </ng-template>
+
+    <!--<div class="notification-info email-info" *ngIf="showEmailMessage && hasAWalletWithInvites">-->
+    <!--<span class="icon">-->
+    <!--<img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">-->
+    <!--</span>-->
+    <!--<p>-->
+    <!--<strong>{{ formData.value.address }}</strong> is not a member of Merit community yet?-->
+    <!--<br>-->
+    <!--<a href="mailto:{{ formData.value.address.trim() }}?subject={{ emailSubject }}&body={{ emailBody }}">Send an email</a> with invite link.</p>-->
+    <!--</div>-->
+
+    <button class="ui-button ui-button--blue" type="submit" role="button"
+            [disabled]="formData.invalid || formData.pending || ((availableInvites$ | async) == 0)">SEND
+    </button>
+  </form>
+
+</div>

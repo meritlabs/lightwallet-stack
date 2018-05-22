@@ -1,0 +1,17 @@
+<button (click)="onClick('classic')" type="button" role="button" class="method" [class.active]="value === 'classic'">
+            <span class="title">
+              Send via ClassicSend
+            </span>
+  <span class="description">
+              Send to a Merit address
+            </span>
+</button>
+
+<button (click)="onClick('easy')" type="button" role="button" class="method" [class.active]="value === 'easy'">
+            <span class="title">
+              Send via GlobalSend
+            </span>
+  <span class="description">
+              Not sure if they have a Merit address?
+            </span>
+</button>

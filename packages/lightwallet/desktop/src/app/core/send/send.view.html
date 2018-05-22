@@ -32,25 +32,7 @@
             {{ wallet.value.status.spendableAmount | toMRT }}, {{ wallet.value.status.availableInvites || 0 }} invites available
           </label>
         </div>
-        <div class="select-method">
-          <button (click)="updateTxType('classic')" type="button" role="button" class="method" [class.active]="type.value === 'classic'">
-            <span class="title">
-              Send via ClassicSend
-            </span>
-            <span class="description">
-              Send to a Merit address
-            </span>
-          </button>
-
-          <button (click)="updateTxType('easy')" type="button" role="button" class="method" [class.active]="type.value === 'easy'">
-            <span class="title">
-              Send via GlobalSend
-            </span>
-            <span class="description">
-              Not sure if they have a Merit address?
-            </span>
-          </button>
-        </div>
+        <send-method formControlName="type"></send-method>
         <ng-container>
           <ng-container *ngIf="type.value === 'classic'; else easySend">
             <div class="sendMerit__form__group">
