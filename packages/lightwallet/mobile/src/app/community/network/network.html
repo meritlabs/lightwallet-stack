@@ -1,151 +1,202 @@
-<ion-header no-border>
-  <ion-navbar color="secondary">
-    <ion-title>Your Community</ion-title>
-    <ion-buttons end>
-        <ion-spinner class="refreshing" color="light" [hidden]="!refreshing"></ion-spinner>
-    </ion-buttons>
-  </ion-navbar>
-  <ion-toolbar>
-    <ion-row>
-      <ion-col col-4>
-        <small>Community<br>Size</small>
-        <ion-avatar img-icon>
-          <img src="assets/img/icons/network_dark.svg" alt="">
-        </ion-avatar>
-        <ion-spinner [hidden]="!loading"></ion-spinner>
-        <span class="merit-amount" [hidden]="loading">
-          {{ network?.communitySize || '0' }}
-          <small>People</small>
-        </span>
-      </ion-col>
-      <ion-col col-4>
-        <small>Mining<br>Rewards</small>
-        <ion-avatar img-icon>
-          <img src="assets/img/icons/mining_dark.svg" alt="">
-        </ion-avatar>
-        <ion-spinner [hidden]="!loading"></ion-spinner>
-        <span class="merit-amount" [hidden]="loading">
-          {{ (network?.miningRewards || 0) | toMRT:8:true }}
-          <small>MRT</small>
-        </span>
-      </ion-col>
-      <ion-col col-4>
-        <small>Ambassador<br>Rewards</small>
-        <ion-avatar img-icon>
-          <img src="assets/img/icons/ambassador_dark.svg" alt="">
-        </ion-avatar>
-        <ion-spinner [hidden]="!loading"></ion-spinner>
-        <span class="merit-amount" [hidden]="loading">
-          {{ (network?.ambassadorRewards || 0) | toMRT:8:true }}
-          <small>MRT</small>
-        </span>
-      </ion-col>
-    </ion-row>
-  </ion-toolbar>
-</ion-header>
+<!--<ion-header no-border>-->
+  <!--<ion-navbar color="secondary">-->
+    <!--<ion-title>Your Community</ion-title>-->
+    <!--<ion-buttons end>-->
+        <!--<ion-spinner class="refreshing" color="light" [hidden]="!refreshing"></ion-spinner>-->
+    <!--</ion-buttons>-->
+  <!--</ion-navbar>-->
+  <!--<ion-toolbar>-->
+    <!--<ion-row>-->
+      <!--<ion-col col-4>-->
+        <!--<small>Community<br>Size</small>-->
+        <!--<ion-avatar img-icon>-->
+          <!--<img src="assets/img/icons/network_dark.svg" alt="">-->
+        <!--</ion-avatar>-->
+        <!--<ion-spinner [hidden]="!loading"></ion-spinner>-->
+        <!--<span class="merit-amount" [hidden]="loading">-->
+          <!--{{ network?.communitySize || '0' }}-->
+          <!--<small>People</small>-->
+        <!--</span>-->
+      <!--</ion-col>-->
+      <!--<ion-col col-4>-->
+        <!--<small>Mining<br>Rewards</small>-->
+        <!--<ion-avatar img-icon>-->
+          <!--<img src="assets/img/icons/mining_dark.svg" alt="">-->
+        <!--</ion-avatar>-->
+        <!--<ion-spinner [hidden]="!loading"></ion-spinner>-->
+        <!--<span class="merit-amount" [hidden]="loading">-->
+          <!--{{ (network?.miningRewards || 0) | toMRT:8:true }}-->
+          <!--<small>MRT</small>-->
+        <!--</span>-->
+      <!--</ion-col>-->
+      <!--<ion-col col-4>-->
+        <!--<small>Ambassador<br>Rewards</small>-->
+        <!--<ion-avatar img-icon>-->
+          <!--<img src="assets/img/icons/ambassador_dark.svg" alt="">-->
+        <!--</ion-avatar>-->
+        <!--<ion-spinner [hidden]="!loading"></ion-spinner>-->
+        <!--<span class="merit-amount" [hidden]="loading">-->
+          <!--{{ (network?.ambassadorRewards || 0) | toMRT:8:true }}-->
+          <!--<small>MRT</small>-->
+        <!--</span>-->
+      <!--</ion-col>-->
+    <!--</ion-row>-->
+  <!--</ion-toolbar>-->
+<!--</ion-header>-->
+
+
 
 <ion-content>
 
-  <ion-refresher (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+    <ion-refresher (ionRefresh)="doRefresh($event)"><ion-refresher-content></ion-refresher-content></ion-refresher>
 
-  <ion-spinner [hidden]="!loading"></ion-spinner>
-
-  <ion-list no-lines [hidden]="loading">
-    <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: wallets }">
-      <ion-avatar item-start img-icon>
-        <img src="assets/img/icons/incoming_request.svg">
-      </ion-avatar>
-      <ion-label>
-        <h2>Invite Requests</h2>
-      </ion-label>
-      <ion-badge item-end>{{activeUnlockRequests}}</ion-badge>
+    <button ion-button full primary  navPush="SendInviteView" [navParams]="{wallets: wallets }"  [disabled]="!hasActiveInvites" class="send-invite-button">
+        Send Invite
     </button>
-    <button ion-item class="pending-unlock-requests" navPush="SendInviteView" [navParams]="{wallets: wallets }">
+
+
+    <ion-item-divider >
+        Community info
+    </ion-item-divider>
+
+    <ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: wallets }">
         <ion-avatar item-start img-icon>
-          <img src="assets/img/icons/invite.svg">
+            <img src="assets/img/icons/network_dark.svg" alt="">
         </ion-avatar>
         <ion-label>
-          <h2>Invites</h2>
+            <h2>People Invited</h2>
         </ion-label>
-        <ion-badge item-end>{{availableInvites}}</ion-badge>
-      </button>
-  </ion-list>
+        <span item-end class="details">0 <ion-badge>+3</ion-badge></span>
+    </ion-item>
 
-  <div *ngIf="!loading && network">
-      <ion-list *ngFor="let wallet of network.wallets" no-lines>
+    <ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: wallets }">
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/merit.svg" alt="">
+        </ion-avatar>
+        <ion-label>
+            <h2>Total Community Value</h2>
+        </ion-label>
+        <span item-end class="details">0 MRT</span>
+    </ion-item>
 
-        <div *ngIf="!wallet.confirmed" item-end class="locked-info">
-            <div class="backdrop"></div>
-
-            <div class="popup">
-                <img src="assets/img/icons/confirm.svg">
-                <h2>Waiting for invite</h2>
-                <div class="bottom-label">You can ask another person for invite by sharing your address: </div>
-                <div class="address-line">
-                    <div class="address" [clip]="wallet.referralAddress" (click)="notifyCopy()">
-                        {{wallet.referralAddress}}
-                    </div>
-                    <button ion-button icon-only clear (click)="shareAddress(wallet.referralAddress)">
-                        <ion-icon merit-icon name="share"></ion-icon>
-                    </button>
-                </div>
-            </div>
-       </div>
-
-        <ion-item-divider>
-          {{ wallet.name }}
-          <span class="merit-amount">
-            {{ wallet.communitySize || 0 }} people
-          </span>
-        </ion-item-divider>
-
-        <ion-item text-wrap>
-          <ion-avatar item-start img-icon>
-            <img src="assets/img/icons/invite.svg">
-          </ion-avatar>
-          <ion-label [clip]="wallet.alias? '@'+wallet.alias : wallet.referralAddress" (click)="notifyCopy()">
-            <p>Invite Code (click to copy)</p>
-            <h2 *ngIf="wallet.alias">@{{wallet.alias}}</h2>
-            <h2 *ngIf="!wallet.alias" class="address" >{{wallet.referralAddress}}</h2>
-          </ion-label>
-          <button ion-button icon-only clear item-end *ngIf="shareButtonAvailable" (click)="shareAddress(wallet.alias? wallet.alias : wallet.referrerAddress)">
-            <ion-icon merit-icon name="share"></ion-icon>
-          </button>
-        </ion-item>
-
-        <ion-item>
-          <ion-avatar img-icon item-start>
-            <img src="assets/img/icons/mining.svg" alt="">
-          </ion-avatar>
-          <ion-label>
-            <p>Mining Rewards</p>
-            <h2>{{ (wallet.miningRewards || 0) | toMRT }}</h2>
-          </ion-label>
-          <ion-note item-end class="balance">
-            <span class="fiat-amount">
-              {{ (wallet.miningRewards || 0) | toFiat }}
-            </span>
-          </ion-note>
-        </ion-item>
-
-        <ion-item>
-          <ion-avatar img-icon item-start>
+    <ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: wallets }">
+        <ion-avatar item-start img-icon>
             <img src="assets/img/icons/ambassador.svg" alt="">
-          </ion-avatar>
-          <ion-label>
-            <p>Ambassador Rewards</p>
-            <h2>{{ (wallet.ambassadorRewards || 0) | toMRT }}</h2>
-          </ion-label>
-          <ion-note item-end class="balance">
-            <span class="fiat-amount">
-              {{ (wallet.ambassadorRewards || 0) | toFiat }}
-            </span>
-          </ion-note>
-        </ion-item>
+        </ion-avatar>
+        <ion-label>
+            <h2>Ambassador Rewards</h2>
+        </ion-label>
+        <span item-end class="details">0 MRT</span>
+    </ion-item>
 
-      </ion-list>
-  </div>
+    <ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: wallets }">
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/mining.svg" alt="">
+        </ion-avatar>
+        <ion-label>
+            <h2>Mining Rewards</h2>
+        </ion-label>
+        <span item-end class="details">0 MRT</span>
+    </ion-item>
+
+    <ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: wallets }">
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/invite.svg" alt="">
+        </ion-avatar>
+        <ion-label>
+            <h2>Invites Mined</h2>
+        </ion-label>
+        <span item-end class="details">0 INV</span>
+    </ion-item>
+
+    <ion-item-divider >
+        Wallets details
+    </ion-item-divider>
+
+    <ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: wallets }">
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/wallet.svg" alt="">
+        </ion-avatar>
+        <ion-label>
+            <h2>Personal wallet</h2>
+        </ion-label>
+
+    </ion-item>
+
+
+    <!--<div *ngIf="!loading && network">-->
+      <!--<ion-list *ngFor="let wallet of network.wallets" no-lines>-->
+
+        <!--<div *ngIf="!wallet.confirmed" item-end class="locked-info">-->
+            <!--<div class="backdrop"></div>-->
+
+            <!--<div class="popup">-->
+                <!--<img src="assets/img/icons/confirm.svg">-->
+                <!--<h2>Waiting for invite</h2>-->
+                <!--<div class="bottom-label">You can ask another person for invite by sharing your address: </div>-->
+                <!--<div class="address-line">-->
+                    <!--<div class="address" [clip]="wallet.referralAddress" (click)="notifyCopy()">-->
+                        <!--{{wallet.referralAddress}}-->
+                    <!--</div>-->
+                    <!--<button ion-button icon-only clear (click)="shareAddress(wallet.referralAddress)">-->
+                        <!--<ion-icon merit-icon name="share"></ion-icon>-->
+                    <!--</button>-->
+                <!--</div>-->
+            <!--</div>-->
+       <!--</div>-->
+
+        <!--<ion-item-divider>-->
+          <!--{{ wallet.name }}-->
+          <!--<span class="merit-amount">-->
+            <!--{{ wallet.communitySize || 0 }} people-->
+          <!--</span>-->
+        <!--</ion-item-divider>-->
+
+        <!--<ion-item text-wrap>-->
+          <!--<ion-avatar item-start img-icon>-->
+            <!--<img src="assets/img/icons/invite.svg">-->
+          <!--</ion-avatar>-->
+          <!--<ion-label [clip]="wallet.alias? '@'+wallet.alias : wallet.referralAddress" (click)="notifyCopy()">-->
+            <!--<p>Invite Code (click to copy)</p>-->
+            <!--<h2 *ngIf="wallet.alias">@{{wallet.alias}}</h2>-->
+            <!--<h2 *ngIf="!wallet.alias" class="address" >{{wallet.referralAddress}}</h2>-->
+          <!--</ion-label>-->
+          <!--<button ion-button icon-only clear item-end *ngIf="shareButtonAvailable" (click)="shareAddress(wallet.alias? wallet.alias : wallet.referrerAddress)">-->
+            <!--<ion-icon merit-icon name="share"></ion-icon>-->
+          <!--</button>-->
+        <!--</ion-item>-->
+
+        <!--<ion-item>-->
+          <!--<ion-avatar img-icon item-start>-->
+            <!--<img src="assets/img/icons/mining.svg" alt="">-->
+          <!--</ion-avatar>-->
+          <!--<ion-label>-->
+            <!--<p>Mining Rewards</p>-->
+            <!--<h2>{{ (wallet.miningRewards || 0) | toMRT }}</h2>-->
+          <!--</ion-label>-->
+          <!--<ion-note item-end class="balance">-->
+            <!--<span class="fiat-amount">-->
+              <!--{{ (wallet.miningRewards || 0) | toFiat }}-->
+            <!--</span>-->
+          <!--</ion-note>-->
+        <!--</ion-item>-->
+
+        <!--<ion-item>-->
+          <!--<ion-avatar img-icon item-start>-->
+            <!--<img src="assets/img/icons/ambassador.svg" alt="">-->
+          <!--</ion-avatar>-->
+          <!--<ion-label>-->
+            <!--<p>Ambassador Rewards</p>-->
+            <!--<h2>{{ (wallet.ambassadorRewards || 0) | toMRT }}</h2>-->
+          <!--</ion-label>-->
+          <!--<ion-note item-end class="balance">-->
+            <!--<span class="fiat-amount">-->
+              <!--{{ (wallet.ambassadorRewards || 0) | toFiat }}-->
+            <!--</span>-->
+          <!--</ion-note>-->
+        <!--</ion-item>-->
+
+      <!--</ion-list>-->
+  <!--</div>-->
 
 </ion-content>

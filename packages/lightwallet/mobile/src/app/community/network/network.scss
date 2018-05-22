@@ -1,60 +1,18 @@
 view-network {
 
-  ion-header.header {
-    background: linear-gradient(#282d50, #383c63);
-
-    .toolbar-background {
-      background: transparent;
-    }
-
-    ion-toolbar.toolbar {
-      ion-spinner.spinner {
-        svg > * {
-          stroke: white;
-        }
-        margin-bottom: 20px;
-        min-height: 35px;
-      }
-
-      ion-row {
-        text-align: center;
-        padding: 0;
-        margin: 0;
-
-        ion-col {
-          padding: 0;
-          margin: 0;
-
-          > small {
-            color: #acadbc;
-            font-size: 13px;
-            line-height: 15px;
-            display: block;
-          }
-
-          ion-avatar[img-icon] {
-            float: none;
-            margin: 12px auto 14px;
-            background: rgba(0,0,0,.17);
-          }
-
-          span.merit-amount {
-            color: white;
-            font-weight: 600;
-            font-size: 17px;
-            letter-spacing: -.47px;
-            padding-bottom: 24px;
-            display: block;
-
-            small {
-              display: block;
-              font-size: 13px;
-            }
-          }
-        }
-      }
+  .send-invite-button {
+    height: 40px;
+    line-height: 40px;
+    min-height: 40px;
+    margin: 8px 8px;
+    width: calc(100% - 16px);
+    border-radius: 4px;
+    img {
+      margin-left: 8px;
+      height: 18px;
     }
   }
+
 
   ion-content.content > .scroll-content {
     background: #f6f8fa;
@@ -172,6 +130,32 @@ view-network {
 
       small {
         font-size: 11px;
+      }
+    }
+  }
+
+  ion-list { //todo temp!!
+    margin: 0 !important;
+    margin-bottom: 8px !important;
+  }
+
+  ion-item-divider {
+    background: transparent !important;
+  }
+
+  .item { //todo temp!
+    .details {
+      color: color($colors, primary);
+      font-weight: 400;
+      font-size: 14px;
+      letter-spacing: -.47px;
+      display: block;
+      small {
+        display: block;
+        font-size: 13px;
+      }
+      ion-badge {
+        margin-top: -5px;
       }
     }
   }
