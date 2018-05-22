@@ -86,7 +86,7 @@ LocalDaemon.prototype.getMempoolAcceptedAddresses = async function(addresses) {
     let acceptedAddresses = [];
 
     const txs = (await this.node.getAddressMempool(addresses))
-        .filter(t => t.isInvite && addresses.indexOf(t.address) != -1); //is invite tx and sent FROM given address
+        .filter(t => t.isInvite && t.satoshis < 0); //is invite tx and sent FROM given address
 
     await Promise.all(txs.map(async (t) => {
         let res = await promisify(this.node.getDetailedTransaction)(t.txid);
