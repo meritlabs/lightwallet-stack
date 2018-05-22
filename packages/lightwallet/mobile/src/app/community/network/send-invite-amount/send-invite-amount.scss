@@ -1,0 +1,223 @@
+view-send-invite-amount {
+  .feeCalcError {
+    white-space: normal;
+    text-align: center;
+    color: color($colors, danger) !important;
+    font-weight: normal !important;
+    padding-top: 20px;
+  }
+
+  ion-avatar {
+    text-align: center;
+    color: color($colors, primary);
+    display: inline-block;
+    line-height: 40px;
+    letter-spacing: -1px;
+    border-radius: 50%;
+  }
+
+  ion-header.header {
+    h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      font-weight: normal;
+      color: #73819b;
+    }
+  }
+
+  .amount-area {
+    background: #f6f8fa;
+    text-align: center;
+    height: 180px;
+
+   .main-amount {
+      text-align: center;
+
+      ion-item.item {
+        padding: 0 !important;
+        margin: 0;
+        background: transparent;
+
+        .item-inner {
+          padding: 0;
+        }
+
+        ion-input {
+          display: inline-block;
+        }
+
+        input.text-input {
+          margin: 0 !important;
+
+          text-align: center;
+          font-size: 120px;
+          color: #f6f8fa;
+          //color: rgb(70, 85, 111);
+          font-weight: normal;
+          display: inline-block;
+          width: 100%;
+
+          &::placeholder {
+            color: transparentize(white, .47);
+            text-shadow: none;
+            width: 100%;
+            font-size: 20px;
+            letter-spacing: -1.3px;
+          }
+        }
+      }
+    }
+
+    .alternative-amount {
+      color: rgb(70, 85, 111);
+      font-size: 17px;
+      height: 35px;
+    }
+
+    .suggested-amounts {
+      height: 55px;
+      box-sizing: border-box;
+      padding: 13px 0;
+      margin: 0 16px;
+      border-top: 1px solid rgb(209, 214, 220);
+      display: flex;
+      flex-direction: row;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+
+      button {
+        margin: 0 4px;
+        height: 29px;
+        max-width: 72px;
+        vertical-align: middle;
+        flex: 1;
+        border: 1px solid #b7bcc8;
+        color: rgb(115, 129, 155);
+      }
+    }
+  }
+
+  ion-icon[item-end] {
+    font-size: 14px;
+  }
+
+  ion-avatar.default {
+    box-shadow: 0 0 1px 1px $wallet-default-color;
+  }
+
+  .tooltip-button {
+    vertical-align: middle;
+    padding: 0;
+    margin: 0;
+    height: 20px;
+
+    ion-icon {
+      font-size: 20px;
+      color: #9ba6b9;
+      font-weight: 600;
+      width: 20px;
+    }
+  }
+
+  .amount-area,
+  .toolbar-background-ios {
+    background: transparent;
+  }
+
+  .toolbar-background-ios {
+    border-bottom: 2px solid;
+  }
+
+  .globalSendHeader {
+    background-image: linear-gradient(180deg, #106dda 0%, #00b1de 100%);
+
+    * {
+      color: #FFF;
+      background: transparent;
+    }
+  }
+
+  .whiteColor {
+    color: #FFF !important;
+  }
+}
+
+view-send-amount {
+  .view-send-amount .amount-area .main-amount ion-item.item ion-input {
+    width: 100%;
+  }
+
+  .item-ios.item-block .item-inner,
+  .item-inner {
+    padding-right: 0 !important;
+  }
+
+  .amount-area .main-amount ion-item.item input.text-input {
+    color: #FFF;
+    text-shadow: 0 3px 16px rgba(0, 0, 0, 0.23);
+    width: 100%;
+    font-size: 80px;
+    letter-spacing: 4.8px;
+
+  }
+
+  .amount-area .main-amount {
+    .amount-big input.text-input {
+      font-size: 80px !important;
+      letter-spacing: 4.8px !important;
+    }
+    .amount-medium input.text-input {
+      font-size: 70px !important;
+      letter-spacing: 2px !important;
+    }
+    .amount-small input.text-input {
+      font-size: 60px !important;
+      letter-spacing: 1px !important;
+    }
+    .amount-tiny input.text-input {
+      font-size: 40px !important;
+      letter-spacing: 1px !important;
+    }
+  }
+
+  .amount-area {
+    height: 250px;
+    display: flex;
+    align-items: center;
+  }
+
+  .amount-sm {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.96px;
+    line-height: 20px;
+    text-transform: uppercase;
+  }
+
+  .amount-converted {
+    opacity: 0.7;
+  }
+
+  .text-input-ios {
+    width: 100%;
+  }
+
+  .item-ios [item-end],
+  .item-ios [item-right] {
+    margin: 30px;
+  }
+
+  .big-header {
+    background: color($colors, primary);
+  }
+
+}
+
+
