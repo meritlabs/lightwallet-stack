@@ -385,10 +385,6 @@ export class WalletService {
     return isEncrypted;
   }
 
-  sendInvite(wallet: MeritWalletClient, toAddress: string) {
-    return wallet.sendInvite(toAddress);
-  }
-
   createTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     return wallet.createTxProposal(txp);
   }
