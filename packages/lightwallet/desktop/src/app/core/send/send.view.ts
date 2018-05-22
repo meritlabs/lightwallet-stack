@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
-import { SendMethodType } from '@merit/common/models/send-method';
+import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletAction, selectConfirmedWallets } from '@merit/common/reducers/wallets.reducer';
 import { AddressService } from '@merit/common/services/address.service';
@@ -321,12 +321,6 @@ export class SendView implements OnInit {
       this.wallet.setValue(wallet);
   }
 
-  async updateTxType(type) {
-    if (type !== this.type.value) {
-      this.type.setValue(type);
-    }
-  }
-
   private async createTx(formValue: any): Promise<ISendTxData> {
     let txData: Partial<ISendTxData> = {};
     let { amountMrt, wallet, type, feeIncluded, password, address } = formValue;
@@ -368,6 +362,8 @@ export class SendView implements OnInit {
     if (txData.easyFee) txData.txp.amount += txData.easyFee;
 
     const wallet = this.wallet.value;
+
+    txData.sendMethod = { type: this.type.value } as ISendMethod;
 
     await this.sendService.send(txData, wallet.client);
 

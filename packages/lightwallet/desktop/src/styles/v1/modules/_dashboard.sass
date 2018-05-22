@@ -19,7 +19,7 @@
       display: block
       width: 100%
     &__item
-      +font(400, 15px, 15px, $white)
+      +font(400, 15px, 15px, transparentize($white, .4))
       cursor: pointer
       border-left: 5px solid transparent
       padding-left: 25px
@@ -27,7 +27,6 @@
       display: flex
       align-items: center
       background: transparent
-      opacity: .6
       +transition(.2s, ease-in-out)
       a
         +font(400, 15px, 15px, $white)
