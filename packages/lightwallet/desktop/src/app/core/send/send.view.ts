@@ -16,7 +16,7 @@ import { PersistenceService2 } from '@merit/common/services/persistence2.service
 import { RateService } from '@merit/common/services/rate.service';
 import { ISendTxData, SendService } from '@merit/common/services/send.service';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { isAddress } from '@merit/common/utils/addresses';
+import { cleanAddress, isAddress } from '@merit/common/utils/addresses';
 import { SendValidator } from '@merit/common/validators/send.validator';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { Store } from '@ngrx/store';
@@ -324,6 +324,8 @@ export class SendView implements OnInit {
   private async createTx(formValue: any): Promise<ISendTxData> {
     let txData: Partial<ISendTxData> = {};
     let { amountMrt, wallet, type, feeIncluded, password, address } = formValue;
+
+    address = cleanAddress(address);
 
     const micros = this.rateService.mrtToMicro(amountMrt);
 
