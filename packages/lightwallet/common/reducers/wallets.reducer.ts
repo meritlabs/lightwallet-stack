@@ -207,4 +207,10 @@ export const selectWalletById = (id: string) => createSelector(selectWalletsStat
 export const selectWalletsWithInvites = createSelector(selectWallets, (wallets: DisplayWallet[]) => wallets.filter(wallet => wallet.availableInvites > 0));
 export const selectInvites = createSelector(selectWalletTotals, totals => totals.invites);
 export const selectInviteRequests = createSelector(selectWalletsState, state => state.inviteRequests);
+export const selectNumberOfInviteRequests = createSelector(selectInviteRequests, inviteRequests => {
+  if (!inviteRequests) return '0';
+  if (inviteRequests.length > 99) return '99+';
+  return inviteRequests.length.toString();
+});
+
 export const selectNumberOfWallets = createSelector(selectWallets, wallets => wallets.length);
