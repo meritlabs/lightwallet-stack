@@ -2,13 +2,15 @@
   &:not([hidden])
     display: block
   border-radius: 4px
-  background: transparentize(red, 0.9)
-  border: 1px solid red
   margin: 10px 0
   padding: 10px 20px
   width: calc(100% - 40px)
 
-  &.success
+  &[error]
+    background: transparentize(red, 0.9)
+    border: 1px solid red
+
+  &[success]
     background: transparentize(#18a56d, 0.9)
     border: 1px solid #18a56d
     a
