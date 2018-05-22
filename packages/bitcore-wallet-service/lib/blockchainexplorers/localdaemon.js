@@ -14,6 +14,7 @@ var $ = bitcore.util.preconditions;
 var async = require('async');
 var _ = require('lodash');
 var log;
+const { promisify } = require('util');
 
 function LocalDaemon(node) {
   this.node = node;
@@ -81,7 +82,6 @@ LocalDaemon.prototype.getBlockchainReferrals = function(addresses) {
  * @param addresses that requests were sent for
  * @return Array of addresses that were accepted
  */
-const { promisify } = require('util');
 LocalDaemon.prototype.getMempoolAcceptedAddresses = async function(addresses) {
     let acceptedAddresses = [];
 

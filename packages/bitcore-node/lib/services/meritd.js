@@ -2470,9 +2470,6 @@ Merit.prototype.getMempoolReferrals = async function(addresses) {
 };
 
 Merit.prototype.getBlockchainReferrals = async function(addresses) {
-
-
-
     const {err, result} = await promisify(this.client.getaddressreferrals.bind(this.client))({addresses: addresses});
     if (err) throw err;
     return result;
