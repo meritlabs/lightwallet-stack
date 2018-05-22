@@ -19,6 +19,7 @@ import { AddressService } from '@merit/common/services/address.service';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { WalletService } from '@merit/common/services/wallet.service';
+import { cleanAddress } from '@merit/common/utils/addresses';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 import { SendValidator } from '@merit/common/validators/send.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
@@ -106,6 +107,7 @@ export class SendInviteView {
 
       this.easySendUrl = getEasySendURL(easySend);
     } else {
+      address = cleanAddress(address);
       address = await this.addressService.getAddressInfo(address);
       await this.walletService.sendInvite(walletClient, address.address);
     }
