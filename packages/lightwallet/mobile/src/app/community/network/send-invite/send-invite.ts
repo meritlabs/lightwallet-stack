@@ -188,7 +188,7 @@ export class SendInviteView {
     let loader = this.loadCtrl.create({ content: 'Sending invite...' });
     try {
       loader.present();
-      await this.walletService.sendInvite(this.wallet, toAddress);
+      await this.wallet.sendInvite(toAddress);
       return this.navCtrl.pop();
     } catch (e) {
       console.log(e);
