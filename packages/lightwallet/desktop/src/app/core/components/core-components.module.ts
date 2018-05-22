@@ -11,6 +11,7 @@ import { ProfileStatsComponent } from '@merit/desktop/app/core/components/profil
 import { SelectComponent } from '@merit/desktop/app/core/components/select/select.component';
 import { ToolbarComponent } from '@merit/desktop/app/core/components/toolbar/toolbar.component';
 import { VaultsListComponent } from '@merit/desktop/app/core/components/vaults-list/vaults-list.component';
+import { WalletSelectorComponent } from '@merit/desktop/app/core/components/wallet-selector/wallet-selector.component';
 import { WalletsListComponent } from '@merit/desktop/app/core/components/wallets-list/wallets-list.component';
 import { VirtualScrollModule } from 'angular2-virtual-scroll';
 import { MomentModule } from 'ngx-moment';
@@ -29,7 +30,8 @@ export function getComponents() {
     WalletsListComponent,
     VaultsListComponent,
     ProfileStatsComponent,
-    FeeSelectorComponent
+    FeeSelectorComponent,
+    WalletSelectorComponent
   ];
 }
 

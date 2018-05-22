@@ -10,6 +10,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { Store } from '@ngrx/store';
 import 'rxjs/add/operator/take';
 import { Observable } from 'rxjs/Observable';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
   selector: 'view-receive',
@@ -85,7 +86,10 @@ export class ReceiveView implements OnInit {
 
   async ngOnInit() {
     try {
-      const wallets = await this.wallets$.take(1).toPromise();
+      await this.walletsLoading$.pipe(filter(loading => !loading), take(1)).toPromise();
+      const wallets = await this.wallets$.pipe(
+        take(1)
+      ).toPromise();
       this.hasUnlockedWallet = wallets.length > 0;
       this.selectedWallet = wallets[0];
       this.address = this.selectedWallet.client.getRootAddress().toString();

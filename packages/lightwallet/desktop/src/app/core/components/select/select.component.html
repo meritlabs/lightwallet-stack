@@ -1,17 +1,15 @@
-<div class="selectbox" [ngClass]="{'selectbox--disabled' : input.length === 0}">
-  <button (click)="show=!show" (blur)="onBlur()"
-    class="{{ cssClass }} selectbox__selected"  role="button" type="button">
-    <img src="{{selected?.iconUrl}}" alt="" *ngIf="selected?.iconUrl" class="selectbox__dropdown__icon">
-    <span *ngIf="selected?.color" [style.background]="selected?.color" class="selectbox__color"></span>
-    <span>{{ input.length > 0 ? selected?.name : "No items to select" }}</span>
-  </button>
-  <div class="selectbox__dropdown showHidden"
-    [hidden]="!show || input.length === 0"
-    [ngClass]="{'showHidden--animated' : show}">
-    <button *ngFor="let item of input"
-      (click)="select(item)" class="selectbox__dropdown__item" role="button" type="button">
-      <img src="{{item?.iconUrl}}" alt="" *ngIf="item?.iconUrl" class="selectbox__dropdown__icon">
-      <span *ngIf="item?.color" [style.background]="item?.color" class="selectbox__color"></span>
-      <span>{{ item?.name }}</span></button>
-  </div>
+<button (click)="show=!show" (blur)="onBlur()"
+        class="selected"  role="button" type="button">
+  <img src="{{selected?.iconUrl}}" alt="" *ngIf="selected?.iconUrl" class="icon">
+  <span *ngIf="selected?.color" [style.background]="selected?.color" class="color"></span>
+  <span>{{ input.length > 0 ? selected?.name : "No items to select" }}</span>
+</button>
+<div class="dropdown showHidden"
+     [hidden]="!show || input.length === 0"
+     [class.animated]="show">
+  <button *ngFor="let item of input"
+          (click)="select(item)" class="item" role="button" type="button">
+    <img src="{{item?.iconUrl}}" alt="" *ngIf="item?.iconUrl" class="icon">
+    <span *ngIf="item?.color" [style.background]="item?.color" class="color"></span>
+    <span>{{ item?.name }}</span></button>
 </div>

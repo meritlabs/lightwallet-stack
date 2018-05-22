@@ -1,6 +1,6 @@
-.selectbox
+app-select, wallet-selector
   position: relative
-  &__dropdown
+  .dropdown
     position: absolute
     top: calc(100% + 10px)
     background: $white
@@ -11,29 +11,29 @@
     max-height: 182px
     overflow-y: auto
     border: 1px solid rgba(72, 77, 94, 0.5)
-    &__icon
-      max-width: 13px
-      width: 100%
-      margin-right: 5px
-    &__item
-      width: 100%
-      display: flex
-      align-items: center
-      background: transparent
-      border: 0px
-      +font(400, 14px, 24px, $gun-metal)
-      &:hover
-        color: $blue
-  &__color
+  .icon
+    max-width: 13px
+    width: 100%
+    margin-right: 5px
+  .item
+    width: 100%
+    display: flex
+    align-items: center
+    background: transparent
+    border: 0px
+    +font(400, 14px, 24px, $gun-metal)
+    &:hover
+      color: $blue
+  .color
     width: 20px
     height: 15px
     border-radius: 3px
     display: inline-block
     margin-right: 10px
-  &__selected
+  .selected
     display: flex
     align-items: center
-  &--disabled
+  &.disabled
     opacity: .7
     cursor: not-allowed
     .ui-input

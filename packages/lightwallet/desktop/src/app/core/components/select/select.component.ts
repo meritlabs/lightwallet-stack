@@ -3,7 +3,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   selector: 'app-select',
   templateUrl: './select.component.html',
-  styleUrls: ['./select.component.sass']
+  styleUrls: ['./select.component.sass'],
+  host: {
+    '[class.disabled]': 'input.length === 0'
+  }
 })
 export class SelectComponent {
 

@@ -1,0 +1,14 @@
+<button (click)="show=!show" (blur)="onBlur()" class="selected" role="button" type="button">
+  <img src="/assets/v1/icons/ui/wallets/wallet-ico-grey.svg" alt="" class="icon">
+  <span [style.background]="selected?.color" class="color"></span>
+  <span>{{ input.length > 0 ? selected?.name || 'Select a wallet' : 'No items to select' }}</span>
+</button>
+<div class="dropdown showHidden"
+     [hidden]="!show || input.length === 0"
+     [class.animated]="show">
+  <button *ngFor="let wallet of wallets"
+          (click)="select(wallet)" class="item" role="button" type="button">
+    <img src="/assets/v1/icons/ui/wallets/wallet-ico-grey.svg" alt="" class="icon">
+    <span [style.background]="wallet.color" class="color"></span>
+    <span>{{ wallet.name }}</span></button>
+</div>
