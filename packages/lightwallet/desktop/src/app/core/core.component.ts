@@ -268,7 +268,7 @@ export class CoreView implements OnInit, AfterViewInit {
 
     if (!txs.length) return this.showPasswordEasyReceivePrompt(receipt, processAll);
 
-    const inviteOnly = txs.length === 1 && txs[0].invite === true;
+    const inviteOnly = !txs.some(tx => !tx.invite);
 
     //Decide if the wallet is the sender of the Global Send.
     //We will prompt here to cancel the global send instead.
