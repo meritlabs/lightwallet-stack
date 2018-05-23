@@ -6,7 +6,7 @@
 
 
 
-  <button ion-button full primary navPush="SendInviteAmount" [disabled]="!availableInvites" class="send-invite-button">
+  <button ion-button full primary navPush="SendInviteAmountView" [disabled]="!availableInvites" class="send-invite-button"> 
     Send invite
     <img src="assets/img/icons/send.svg">
   </button>
@@ -21,7 +21,7 @@
       </ion-label>
        <div item-end class="details">
            {{network.communitySize}} people
-           <ion-badge *ngIf="activeUnlockRequests">{{activeUnlockRequests}}</ion-badge>
+           <ion-badge *ngIf="activeUnlockRequests"> +{{activeUnlockRequests}}</ion-badge>
        </div>
 
     </button>
