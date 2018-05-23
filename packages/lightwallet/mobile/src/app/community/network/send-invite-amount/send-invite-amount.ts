@@ -1,4 +1,3 @@
-import { Component } from '@angular/core';
 import { IonicPage, NavParams, NavController,  LoadingController, ModalController  } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
@@ -72,7 +71,7 @@ export class SendInviteAmountView {
     modal.onDidDismiss((wallet) => {
       if (wallet) {
         this.wallet = wallet;
-        this.processAmount(this.amount);
+        this.processAmount(this.formData.amount);
       }
     });
     return modal.present();
