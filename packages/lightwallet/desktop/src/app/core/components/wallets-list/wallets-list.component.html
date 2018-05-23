@@ -36,9 +36,6 @@
           <div class="inline-right">
             <div class="controls">
               <p class="invites regular-blue-text">{{ wallet?.availableInvites || 0 }} Invites</p>
-              <p class="share-link" [clip]="shareLink(wallet)" [title]="shareLink(wallet)" (click)="onCopy($event, wallet.id)">
-                Copy share link
-              </p>
             </div>
             <merit-icon name="right-arrow"></merit-icon>
           </div>
