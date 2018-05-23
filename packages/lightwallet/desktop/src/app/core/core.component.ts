@@ -39,6 +39,12 @@ export class CoreView implements OnInit, AfterViewInit {
       link: '/dashboard'
     },
     {
+      name: 'Invites',
+      icon: '/assets/v1/icons/invites/invite.svg',
+      link: '/invites',
+      badge: this.store.select(selectNumberOfInviteRequests)
+    },
+    {
       name: 'Wallets',
       icon: '/assets/v1/icons/ui/aside-navigation/wallet.svg',
       link: '/wallets'
@@ -52,12 +58,6 @@ export class CoreView implements OnInit, AfterViewInit {
       name: 'Send Merit',
       icon: '/assets/v1/icons/ui/aside-navigation/send.svg',
       link: '/send'
-    },
-    {
-      name: 'Invites',
-      icon: '/assets/v1/icons/invites/invite.svg',
-      link: '/invites',
-      badge: this.store.select(selectNumberOfInviteRequests)
     },
     {
       name: 'History',
