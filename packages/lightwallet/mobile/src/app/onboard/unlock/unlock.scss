@@ -1,4 +1,10 @@
 .ios view-unlock {
+  ion-content.content[fullscreen] .scroll-content {
+    padding-top: 76px !important;
+    padding-top: calc(20px + const(safe-area-inset-top)) !important;
+    padding-top: calc(20px + env(safe-area-inset-top)) !important;
+  }
+
   ion-header {
     top: 20px;
     top: calc(20px + const(safe-area-inset-top));
