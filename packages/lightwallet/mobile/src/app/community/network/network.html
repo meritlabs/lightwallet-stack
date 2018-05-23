@@ -1,76 +1,62 @@
-<ion-header no-border>
-  <ion-navbar color="secondary">
-    <ion-title>Your Community</ion-title>
-    <ion-buttons end>
-        <ion-spinner class="refreshing" color="light" [hidden]="!refreshing"></ion-spinner>
-    </ion-buttons>
-  </ion-navbar>
-  <ion-toolbar>
-    <ion-row>
-      <ion-col col-4>
-        <small>Community<br>Size</small>
-        <ion-avatar img-icon>
-          <img src="assets/img/icons/network_dark.svg" alt="">
-        </ion-avatar>
-        <ion-spinner [hidden]="!loading"></ion-spinner>
-        <span class="merit-amount" [hidden]="loading">
-          {{ network?.communitySize || '0' }}
-          <small>People</small>
-        </span>
-      </ion-col>
-      <ion-col col-4>
-        <small>Mining<br>Rewards</small>
-        <ion-avatar img-icon>
-          <img src="assets/img/icons/mining_dark.svg" alt="">
-        </ion-avatar>
-        <ion-spinner [hidden]="!loading"></ion-spinner>
-        <span class="merit-amount" [hidden]="loading">
-          {{ (network?.miningRewards || 0) | toMRT:8:true }}
-          <small>MRT</small>
-        </span>
-      </ion-col>
-      <ion-col col-4>
-        <small>Ambassador<br>Rewards</small>
-        <ion-avatar img-icon>
-          <img src="assets/img/icons/ambassador_dark.svg" alt="">
-        </ion-avatar>
-        <ion-spinner [hidden]="!loading"></ion-spinner>
-        <span class="merit-amount" [hidden]="loading">
-          {{ (network?.ambassadorRewards || 0) | toMRT:8:true }}
-          <small>MRT</small>
-        </span>
-      </ion-col>
-    </ion-row>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
 
   <ion-refresher (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
+        <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-spinner [hidden]="!loading"></ion-spinner>
+
+
+  <button ion-button full primary (click)="easySend()" [disabled]="!hasActiveInvites" class="send-invite-button">
+    Send invite
+    <img src="assets/img/icons/send.svg">
+  </button>
 
   <ion-list no-lines [hidden]="loading">
     <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: wallets }">
       <ion-avatar item-start img-icon>
-        <img src="assets/img/icons/incoming_request.svg">
+        <img src="assets/img/icons/network.svg">
       </ion-avatar>
       <ion-label>
-        <h2>Invite Requests</h2>
+        <h2>People invited</h2>
       </ion-label>
-      <ion-badge item-end>{{activeUnlockRequests}}</ion-badge>
+       <div item-end class="details">
+           {{network.communitySize}} people
+           <ion-badge *ngIf="activeUnlockRequests">{{activeUnlockRequests}}</ion-badge>
+       </div>
+
     </button>
-    <button ion-item class="pending-unlock-requests" navPush="SendInviteView" [navParams]="{wallets: wallets }">
+
+    <ion-item class="pending-unlock-requests">
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/invite.svg">
         </ion-avatar>
         <ion-label>
           <h2>Invites</h2>
         </ion-label>
-        <ion-badge item-end>{{availableInvites}}</ion-badge>
-      </button>
+        <div item-end class="details">{{availableInvites}} INV</div>
+    </ion-item>
+
+    <ion-item class="pending-unlock-requests">
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/mining.svg" alt="">
+        </ion-avatar>
+        <ion-label>
+          <h2>Mining rewards</h2>
+        </ion-label>
+        <div item-end class="details">{{ (network?.miningRewards || 0) | toMRT:8 }}</div>
+    </ion-item>
+
+    <ion-item class="pending-unlock-requests">
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/ambassador.svg" alt="">
+        </ion-avatar>
+        <ion-label>
+          <h2>Growth rewards</h2>
+        </ion-label>
+        <div item-end class="details">{{ (network?.ambassadorRewards || 0) | toMRT:8 }}</div>
+    </ion-item>
+
+
   </ion-list>
 
   <div *ngIf="!loading && network">
