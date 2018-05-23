@@ -50,7 +50,7 @@ export class SendInviteAmountView {
       return this.toastCtrl.error('You have no active invites');
     }
 
-    let loader = this.loadCtrl.create({ content: 'Sending invite...' });
+    let loader = this.loadCtrl.create({ content: 'Creating invite link...' });
     try {
       loader.present();
       await this.wallet.sendInvite(this.address, this.formData.amount);
