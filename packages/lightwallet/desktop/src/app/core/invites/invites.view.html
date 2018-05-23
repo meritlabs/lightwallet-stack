@@ -3,15 +3,15 @@
   <div class="wallet-details__content__navigation">
     <ul>
       <li>
+        <a [routerLink]="['requests']" routerLinkActive="active">
+          My Waitlist <span class="badge">{{ inviteRequests$ | async}}</span>
+        </a>
+      </li>
+      <li>
         <a [routerLink]="['history']" routerLinkActive="active">History</a>
       </li>
       <li>
         <a [routerLink]="['send']" routerLinkActive="active">Send</a>
-      </li>
-      <li>
-        <a [routerLink]="['requests']" routerLinkActive="active">
-          Waitlist <span class="badge">{{ inviteRequests$ | async}}</span>
-        </a>
       </li>
     </ul>
   </div>
