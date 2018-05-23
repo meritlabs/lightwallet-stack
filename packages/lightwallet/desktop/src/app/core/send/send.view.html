@@ -15,7 +15,7 @@
       Transaction successfully sent
       <div *ngIf="easySendUrl">
         Your global send URL is ready, now you can share it:
-        <div class="easysend-url-container" [clip]="easySendUrl">
+        <div class="easysend-url-container" [clip]="easySendUrl" (click)="onGlobalSendCopy()">
           <small class="click_to_copy">Click to copy</small>
           {{ easySendUrl }}
         </div>
