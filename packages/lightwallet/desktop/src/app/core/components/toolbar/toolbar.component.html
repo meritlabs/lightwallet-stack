@@ -1,3 +1,13 @@
+<div class="menuSwitcher" [ngClass]="{'active': showMenu}" (click)="showMenu = !showMenu">
+  <div class="burger">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <div class="title">
+    MENU
+  </div>
+</div>
 <div class="balance">
   <ng-container *ngIf="totalsLoading$ | async">
     <loading-spinner></loading-spinner>

@@ -63,3 +63,45 @@
       width: 20px
       height: 20px
       transform: translate3d(0,0,0)
+.menuSwitcher
+  display: flex
+  align-items: center
+  cursor: pointer
+  .burger
+    padding-top: 4px
+    margin-right: 10px
+    span
+      display: block
+      width: 30px
+      height: 2px
+      margin-bottom: 4px
+      background: $gun-metal
+      +transition(.3s, linear)
+      transform: translateY(0%)
+      &:nth-child(2)
+        background: transparent
+        position: relative
+        &:after,
+        &:before
+          content: ""
+          display: block
+          width: 100%
+          height: 2px
+          background: $gun-metal
+          position: absolute
+          top: 0
+          +transition(.3s, linear)
+  &.active
+    span:nth-child(1),
+    span:nth-child(3)
+      opacity: 0
+    span:nth-child(1)
+      transform: translateY(6px)
+    span:nth-child(3)
+      transform: translateY(-6px)
+    span:nth-child(2)
+      &:after
+        transform: rotate(45deg)
+      &:before
+        transform: rotate(-45deg)
+

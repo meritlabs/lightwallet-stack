@@ -3,13 +3,13 @@ import { IRootAppState } from '@merit/common/reducers';
 import {
   INotification,
   selectNotifications,
-  selectTotalUnreadNotifications
+  selectTotalUnreadNotifications,
 } from '@merit/common/reducers/notifications.reducer';
 import {
   RefreshWalletsAction,
   selectWalletsLoading,
   selectWalletTotals,
-  selectWalletTotalsLoading
+  selectWalletTotalsLoading,
 } from '@merit/common/reducers/wallets.reducer';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
@@ -18,37 +18,38 @@ import { tap } from 'rxjs/operators';
 @Component({
   selector: 'app-toolbar',
   templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.sass']
+  styleUrls: ['./toolbar.component.sass'],
 })
 export class ToolbarComponent {
+  showMenu: boolean = false;
 
   availableCurrencies: any = [
     {
-      'name': 'USD',
-      'symbol': '$',
-      'value': '1'
+      name: 'USD',
+      symbol: '$',
+      value: '1',
     },
     {
-      'name': 'RUB',
-      'symbol': 'R',
-      'value': '0.1'
+      name: 'RUB',
+      symbol: 'R',
+      value: '0.1',
     },
     {
-      'name': 'CAD',
-      'symbol': 'R',
-      'value': '2'
+      name: 'CAD',
+      symbol: 'R',
+      value: '2',
     },
     {
-      'name': 'EUR',
-      'symbol': 'R',
-      'value': '3'
-    }
+      name: 'EUR',
+      symbol: 'R',
+      value: '3',
+    },
   ];
 
   selectedCurrency: any = {
-    'name': 'USD',
-    'symbol': '$',
-    'value': '1'
+    name: 'USD',
+    symbol: '$',
+    value: '1',
   };
 
   totals$: Observable<any> = this.store.select(selectWalletTotals);
