@@ -51,6 +51,12 @@ view-network {
       color: transparentize(color($colors, primary), 0.2);
       font-size: 12px;
       font-weight: 600;
+      ion-badge {
+        height: 25px;
+        line-height: 25px;
+        padding: 0 5px;
+        margin-left: 5px;
+      }
     }
 
 
