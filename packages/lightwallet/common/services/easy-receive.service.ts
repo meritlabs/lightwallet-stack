@@ -133,11 +133,7 @@ export class EasyReceiveService {
   }
 
   private async spendEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: any, destinationAddress: any): Promise<void> {
-    const invite = input.txs.find(tx => tx.invite);
-    if (invite) await this.sendEasyReceiveTx(input, invite, destinationAddress, wallet);
-
-    const transact = input.txs.find(tx => !tx.invite);
-    if (transact) await this.sendEasyReceiveTx(input, transact, destinationAddress, wallet);
+    await Promise.all(input.txs.map(tx => this.sendEasyReceiveTx(input, tx, destinationAddress, wallet)));
 
     return this.persistenceService.deletePendingEasyReceipt(receipt);
   }
