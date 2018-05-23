@@ -1,10 +1,10 @@
-import { IonicPage, NavParams, NavController,  LoadingController, ModalController, AlertController  } from 'ionic-angular';
+import { IonicPage, NavParams, NavController,  LoadingController, ModalController, AlertController, Platform  } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 @IonicPage()
 @Component({
@@ -23,6 +23,8 @@ export class SendInviteAmountView {
 
   public link:string;
   copied: boolean;
+  showShareButton: boolean;
+
 
   @ViewChild('amount') amountInput: ElementRef;
 
@@ -32,10 +34,12 @@ export class SendInviteAmountView {
               private toastCtrl: ToastControllerService,
               private loadCtrl: LoadingController,
               private modalCtrl: ModalController,
-              private alertCtrl: AlertController
+              private alertCtrl: AlertController,
+              private socialSharing: SocialSharing,
+              private platform: Platform
   ) {
     this.address = this.navParams.get('address');
-    console.log(this.address, "ADDRESS");
+    this.showShareButton = this.platform.is('cordova') && SocialSharing.installed();
   }
 
   async ionViewWillEnter() {
@@ -110,7 +114,7 @@ export class SendInviteAmountView {
     } else {
       this.alertCtrl.create({
         title: 'Have you copied/shared your link?',
-        message: "Do not forget to copy or share your link, or you can loose money",
+        message: "Do not forget to copy or share your link, or you can loose invite",
         buttons: [
           { text: 'Cancel', role: 'cancel' },
           { text: 'Ok', handler: () => {
