@@ -1,4 +1,4 @@
-import { IonicPage, NavParams, NavController,  LoadingController, ModalController  } from 'ionic-angular';
+import { IonicPage, NavParams, NavController,  LoadingController, ModalController, AlertController  } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
@@ -21,6 +21,9 @@ export class SendInviteAmountView {
 
   public error:string;
 
+  public link:string;
+  copied: boolean;
+
   @ViewChild('amount') amountInput: ElementRef;
 
   constructor(private navCtrl: NavController,
@@ -28,7 +31,8 @@ export class SendInviteAmountView {
               private profileService: ProfileService,
               private toastCtrl: ToastControllerService,
               private loadCtrl: LoadingController,
-              private modalCtrl: ModalController
+              private modalCtrl: ModalController,
+              private alertCtrl: AlertController
   ) {
     this.address = this.navParams.get('address');
     console.log(this.address, "ADDRESS");
@@ -53,8 +57,9 @@ export class SendInviteAmountView {
     let loader = this.loadCtrl.create({ content: 'Creating invite link...' });
     try {
       loader.present();
-      await this.wallet.sendInvite(this.address, this.formData.amount);
-      return this.navCtrl.setRoot('NetworkView');
+      this.link = "http://merit.test-app.link/?se=c7eda2aaf493743605af2bcf118df81f&sk=02f328965a06eb3d8d2ef7868becfdfbf2ffd4bc028b0039fab6d9215ddd33be46&sn=MyTest&bt=10080&pa=mTzdxDzF7vJmZiAgSckj8nK4vWJCnSB3Bs";
+      //await this.wallet.sendInvite(this.address, this.formData.amount);
+      //return this.navCtrl.setRoot('NetworkView');
     } catch (e) {
       console.log(e);
       this.toastCtrl.error('Failed to send invite');
@@ -91,5 +96,31 @@ export class SendInviteAmountView {
   focusInput() {
     this.amountInput['_native']['nativeElement'].focus();
   }
+
+
+  copyToClipboard() {
+    this.copied = true;
+    this.toastCtrl.success('Copied to clipboard');
+  }
+
+
+  async toWallets() {
+    if (this.copied) {
+      this.navCtrl.pop();
+    } else {
+      this.alertCtrl.create({
+        title: 'Have you copied/shared your link?',
+        message: "Do not forget to copy or share your link, or you can loose money",
+        buttons: [
+          { text: 'Cancel', role: 'cancel' },
+          { text: 'Ok', handler: () => {
+            this.navCtrl.pop();
+          } }
+        ]
+      }).present();
+    }
+  }
+
+
 
 }
