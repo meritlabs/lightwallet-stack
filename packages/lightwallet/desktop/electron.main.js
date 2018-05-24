@@ -1,9 +1,79 @@
 'use strict';
-const { BrowserWindow, app, protocol, ipcMain } = require('electron');
+
+const { BrowserWindow, app, protocol, ipcMain, shell, Menu } = require('electron');
 const path = require('path');
 const url = require('url');
 
+const appName = 'Merit Lightwallet';
+
 let mainWindow;
+
+function buildMenuTemplate() {
+  const template = [
+    {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'pasteandmatchstyle' },
+        { role: 'delete' },
+        { role: 'selectall' }
+      ]
+    },
+    {
+      label: 'View',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forcereload' },
+        { type: 'separator' },
+        { role: 'resetzoom' },
+        { role: 'zoomin' },
+        { role: 'zoomout' },
+        { type: 'separator' }
+      ]
+    },
+    {
+      role: 'window',
+      submenu: [
+        { role: 'minimize' },
+        { role: 'close' },
+        { role: 'toggledevtools' }
+      ]
+    },
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'Learn More',
+          click() { shell.openExternal('https://www.merit.me'); }
+        }
+      ]
+    }
+  ];
+
+  if (process.platform === 'darwin') {
+    template.unshift({
+      label: appName,
+      submenu: [
+        { role: 'about', label: `About ${appName}` },
+        { type: 'separator' },
+        { role: 'services', submenu: [] },
+        { type: 'separator' },
+        { role: 'hide', label: `Hide ${appName}` },
+        { role: 'hideothers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit', label: `Quit ${appName}` }
+      ]
+    });
+  }
+
+  return template;
+}
 
 function createWindow() {
   protocol.interceptFileProtocol('file', (request, cb) => {
@@ -22,7 +92,10 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
-    autoHideMenuBar: true
+    autoHideMenuBar: true,
+    webPreferences: {
+      devTools: true
+    }
   });
 
   const URL = url.format({
@@ -34,15 +107,22 @@ function createWindow() {
   mainWindow.loadURL(URL);
   mainWindow.maximize();
 
-  ipcMain.on('notificationClick', () => {
-    mainWindow.maximize();
-    mainWindow.focus();
-  });
-
   mainWindow.on('closed', function () {
     mainWindow = null;
   });
+
+  const menuTemplate = buildMenuTemplate();
+  const menu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(menu);
 }
+
+ipcMain.on('notificationClick', () => {
+  // maximize & focus window when the user clicks on the notification
+  if (mainWindow) {
+    mainWindow.maximize();
+    mainWindow.focus();
+  }
+});
 
 app.on('ready', createWindow);
 

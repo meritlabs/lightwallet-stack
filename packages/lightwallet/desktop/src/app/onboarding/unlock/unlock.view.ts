@@ -85,9 +85,7 @@ export class UnlockComponent {
     let { inviteCode, alias } = this.formData.getRawValue();
 
     alias = cleanAddress(alias);
-
-    inviteCode = isAlias(inviteCode) ? inviteCode.slice(1) : inviteCode;
-    alias = alias && isAlias(alias) ? alias.slice(1) : alias;
+    inviteCode = cleanAddress(inviteCode);
 
     try {
       const wallet = await this.walletService.createDefaultWallet(inviteCode, alias);

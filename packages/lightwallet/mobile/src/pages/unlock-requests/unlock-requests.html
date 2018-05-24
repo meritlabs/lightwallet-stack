@@ -22,6 +22,10 @@
 
 <ion-content>
 
+  <ion-refresher (ionRefresh)="doRefresh($event)" [enabled]="!loading">
+      <ion-refresher-content></ion-refresher-content>
+  </ion-refresher> 
+
   <ion-item [hidden]="activeTab === 'confirmed'"
             (click)="showHiddenRequests = true"
             *ngIf="hiddenRequests?.length && !showHiddenRequests">

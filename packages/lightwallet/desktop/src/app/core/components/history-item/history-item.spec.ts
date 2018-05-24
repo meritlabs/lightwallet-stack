@@ -4,9 +4,9 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/globalsend-link-popup/globalsend-link-popup.controller';
 import { ClipModule } from 'ng2-clip';
 import { MomentModule } from 'ngx-moment';
-import { GlobalsendLinkPopupController } from '../../../components/meritmoney-link-popup/meritmoney-link-popup.controller';
 import { HistoryItemComponent } from './history-item.component';
 
 
@@ -48,7 +48,7 @@ describe('History item component', () => {
       providers: [
         { provide: GlobalsendLinkPopupController, useClass: MockMeritMoneyLinkPopupController },
         { provide: ToastControllerService, useClass: MockToastController },
-        { provide: EasyReceiveService, useClass: MockEasyReceiveService }
+        { provide: EasyReceiveService, useClass: MockEasyReceiveService },
       ],
       imports: [
         ClipModule,

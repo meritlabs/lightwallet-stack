@@ -2,16 +2,18 @@
 
 .StarterTips
   position: relative
+
 .StarterTips_wrap
   margin: 35px -20px -55px
   background: $grey
   border-bottom: 1px solid $dark-grey-blue
-  padding: 0px 20px
+  padding: 0 20px
   position: relative
   z-index: 1
   overflow: hidden
   max-height: 0
-  box-shadow: inset 0px -4px 43px rgba(0,0,0, .15)
+  box-shadow: inset 0px -25px 40px -20px rgba(0, 0, 0, 0.05)
+
 .closeCross
   width: 50px
   height: 50px
@@ -27,21 +29,22 @@
   opacity: 0
   &:after
     content: ""
-    width: 20px
-    height: 20px
+    width: 16px
+    height: 16px
     display: block
     position: absolute
-    border-left: 1px solid $grey
-    border-top: 1px solid $grey
+    border-left: 2px solid $grey
+    border-top: 2px solid $grey
     transform: rotate(-135deg)
     top: 8px
-    left: 12px
-    +transition(.3s, lenear)
+    left: 14px
+    +transition(.15s, ease-in-out)
   &.active
     opacity: 1
     &:after
       transform: rotate(45deg)
       top: 18px
+
 .StarterTips
   &_items
     display: flex
@@ -53,11 +56,10 @@
     padding: 30px 20px
     border-radius: 15px
     &.active
-      animation-name: highlight
-      animation-duration: 2.5s
-      animation-iteration-count: 1
+      animation: highlight 1s 2
       animation-delay: .3s
-    &:after
+      animation-direction: alternate
+    &:not(:nth-child(3)):after
       content: ""
       display: block
       position: absolute
@@ -65,19 +67,18 @@
       top: 0
       height: 100%
       width: 1px
-      background: linear-gradient(to bottom, rgba(46,51,88,0.01) 0%,rgba(46,51,88,0.65) 48%,rgba(0,0,0,0) 100%)
-    &:nth-child(3)
-      &:after
-        display: none
+      background: linear-gradient(to bottom, rgba(46, 51, 88, 0.01) 0%, rgba(46, 51, 88, 0.65) 48%, rgba(0, 0, 0, 0) 100%)
   &_title
-    +font(500, 24px, 26px, $dark-grey-blue)
+    +font(500, 24px, 26px, #3542a6)
     opacity: .7
+    margin-bottom: 40px
+
 .StarterTips_item
-  +font(300, 18px, 24px, $dark-grey-blue)
+  +font(300, 17px, 24px, $dark-grey-blue)
   p
     margin-bottom: 20px
   a
-    +font(500, 18px, 24px, $blue)
+    color: $blue
     text-decoration: underline
     cursor: pointer
   ul
@@ -88,31 +89,38 @@
       &:before
         display: block
         position: absolute
-        top: -4px
+        top: 0
         left: 0
         width: 35px
         padding: 10px 0
         margin-right: 15px
         text-align: center
-        background: rgba(0, 176, 221, 0.7)
-        border-radius: 35px
-        +font(500, 14px, 14px, $grey)
-        box-shadow: 0 0 1px rgba(0,0,0, .5)
+        background: rgb(44, 49, 65)
+        border-radius: 500rem
+        font-size: 14px
+        line-height: 14px
+        color: $grey
+        box-shadow: 0 4px 5px -2px rgba(0, 0, 0, 0.28)
+
 @for $i from 0 to 20
   li:nth-child(#{$i + 1})
     &:before
       content: "#{$i + 1 }"
+
 .shareBox
   padding-top: 20px
+
 @keyframes highlight
   0%
-    box-shadow: 0 0 0px rgba(0, 176, 221, 0)
-  20%
+    background: rgba(255, 255, 255, 0)
+    box-shadow: 0 0 0 rgba(0, 176, 221, 0)
+  40%
+    background: rgba(255, 255, 255, 1)
     box-shadow: 0 0 10px rgba(0, 176, 221, 1)
   100%
+    background: rgba(255, 255, 255, 1)
     box-shadow: 0 0 10px rgba(0, 176, 221, 1)
-  100%
-    box-shadow: 0 0 0px rgba(0, 176, 221, 0)
+
 .tipsModal
   position: fixed
   z-index: 1000
@@ -124,10 +132,10 @@
   right: 20px
   bottom: 20px
   max-width: 1200px
-  max-height: 900px
+  max-height: 725px
   background: $white
   border-radius: 10px
-  box-shadow: 0 0 100px rgba(0,0,0, .5)
+  box-shadow: 0 0 100px rgba(0, 0, 0, .5)
   padding: 50px 20px 30px
   .close
     position: absolute

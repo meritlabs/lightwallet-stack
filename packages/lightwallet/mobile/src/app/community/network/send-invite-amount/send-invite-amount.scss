@@ -1,4 +1,4 @@
-view-send-amount {
+view-send-invite-amount {
   .feeCalcError {
     white-space: normal;
     text-align: center;
@@ -35,51 +35,32 @@ view-send-amount {
     text-align: center;
     height: 180px;
 
-    .currency-bar {
-      height: 42px;
-
-      .currency {
-        display: inline-block;
-        font-size: 12px;
-        margin: 8px;
-        color: rgba(115, 129, 155, 0.5);
-
-        &.selected {
-          color: rgb(70, 85, 111);
-        }
-
-        .selected-mark {
-          width: 3px;
-          height: 3px;
-          background: map_get($colors, primary);
-          display: block;
-          float: none;
-          margin: auto;
-          border-radius: 500rem;
-        }
-      }
-    }
-
-    .main-amount {
+   .main-amount {
       text-align: center;
 
       ion-item.item {
-        padding: 0;
+        padding: 0 !important;
         margin: 0;
         background: transparent;
+
+        .item-inner {
+          padding: 0;
+        }
 
         ion-input {
           display: inline-block;
         }
 
         input.text-input {
-          margin: 0;
+          margin: 0 !important;
+
           text-align: center;
-          font-size: 40px;
-          color: rgb(70, 85, 111);
-          letter-spacing: -1.3px;
+          font-size: 120px;
+          color: #f6f8fa;
+          //color: rgb(70, 85, 111);
           font-weight: normal;
           display: inline-block;
+          width: 100%;
 
           &::placeholder {
             color: transparentize(white, .47);
@@ -164,10 +145,6 @@ view-send-amount {
 
   .whiteColor {
     color: #FFF !important;
-  }
-
-  ion-toggle {
-    padding-right: 16px;
   }
 }
 
