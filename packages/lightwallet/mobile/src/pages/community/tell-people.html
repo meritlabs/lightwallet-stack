@@ -1,0 +1,35 @@
+<ion-header no-border>
+    <ion-navbar color="light">
+        <ion-title smaller-title>Spread the world</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only >
+                <ion-icon name="share"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content no-bounce>
+
+
+    <div class="illustration">
+        <img src="assets/img/invite-spread.svg" alt="">
+
+        Tell people about Merit and encourage them to register with your unlock code.
+        <br><br>
+        Every Merit on their account will enlarge your community size and increase your chances of receiving Growth Rewards.
+        <br><br>
+        Share this invite text whenever you want:
+        <br><br>
+
+        <ion-card (click)="copyToClipboard()">
+            <div class="click-to-copy">Click to copy</div>
+            Hey, let's use Merit, a digital currency for humans! <br><br>
+            <a>{{inviteLink}}</a>
+        </ion-card>
+    </div>
+
+
+
+</ion-content>
