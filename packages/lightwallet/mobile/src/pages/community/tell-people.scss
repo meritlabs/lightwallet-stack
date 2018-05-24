@@ -1,0 +1,30 @@
+view-tell-people {
+  .illustration {
+    text-align: center;
+    padding: 0 25px;
+    img {
+      max-width: 45%;
+      height: auto;
+      margin: 25px auto;
+      display: block;
+    }
+    color: #73819B;
+
+    ion-card {
+      padding: 40px;
+      margin: 0;
+      width: 100%;
+      color: rgba(0,0,0,0.75);
+      background:  rgba(75, 176, 221, 0.075);
+      position: relative;
+      .click-to-copy {
+        font-size: 10px;
+        color: rgba(0,0,0,0.4);
+        position: absolute;
+        top: 5px;
+        right: 5px;
+      }
+    }
+  }
+
+}
