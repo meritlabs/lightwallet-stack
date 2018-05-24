@@ -1,0 +1,49 @@
+@import '~styles/v1/common/import-sass'
+
+\:host
+  +font(300, 14px, 22px, $gun-metal)
+.title
+  +font(500, 15px, 22px, $gun-metal, $transform: uppercase)
+p
+  margin-bottom: 5px
+.choices
+  display: flex
+  justify-content: space-between
+  flex-flow: row wrap
+  & > div
+    width: calc(50% - 10px)
+    height: 70px
+    display: flex
+    justify-content: center
+    align-items: center
+    text-align: center
+    margin: 5px
+    border-radius: 5px
+    box-shadow: inset 0 0 2px rgba(0,0,0, .15)
+    +font(500, 14px, 16px, $white)
+    cursor: pointer
+    &:nth-child(1)
+      background: $blue
+    &:nth-child(2)
+      background: rgb(8, 177, 105)
+    &:nth-child(3)
+      background: rgb(255, 110, 5)
+    &:nth-child(4)
+      background: rgb(127, 15, 128)
+ol
+  list-style-type: decimal
+  padding-left: 20px
+  li
+    margin-bottom: 5px
+.navigation
+  padding-top: 15px
+.congrats
+  text-align: center
+  svg
+    max-height: 100px
+    margin-bottom: 15px
+  .title
+    +font(500, 18px, 18px, rgb(8, 177, 105))
+    margin-bottom: 15px
+  .description
+    +font(500, 16px, 22px, $gun-metal)
