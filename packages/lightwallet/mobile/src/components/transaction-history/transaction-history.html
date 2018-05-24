@@ -11,11 +11,11 @@
       <h2>{{ tx.name }}</h2>
       <p>{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
     </ion-label>
-    <ion-note *ngIf="!tx.isInvite" item-end>
+    <ion-note item-end>
       <span class="merit-amount" [class.credit]="isCredit(tx)">
-        {{ tx.amount | toMRT}}
+        {{ tx.isInvite? (tx.amount + ' INV') : (tx.amount | toMRT) }}
       </span>
-      <span class="fiat-amount">
+      <span *ngIf="!tx.isInvite" class="fiat-amount">
           {{ tx.amount | toFiat }}
       </span>
     </ion-note>
