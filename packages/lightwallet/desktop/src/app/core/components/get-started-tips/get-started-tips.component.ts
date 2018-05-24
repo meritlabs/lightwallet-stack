@@ -2,8 +2,12 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
-declare const addthis_config: any;
-declare const addthis_share: any;
+declare global {
+  interface Window {
+    addthis_config: any;
+    addthis_share: any;
+  }
+}
 
 @Component({
   selector: 'app-get-started-tips',
@@ -63,9 +67,9 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy, OnChanges {
     }
     if (this.wallets[0]) {
       let alias = this.wallets[0].alias;
-      addthis_config.ui_email_title = this.shareTitle;
-      addthis_config.ui_email_note = this.shareText + alias;
-      addthis_share = {
+      window.addthis_config.ui_email_title = this.shareTitle;
+      window.addthis_config.ui_email_note = this.shareText + alias;
+      window.addthis_share = {
         passthrough: {
           twitter: {
             text: `${this.shareTitle}\n ${this.shareText}${alias}`
