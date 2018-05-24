@@ -23,7 +23,7 @@ export class NetworkView {
   network:{
     communitySize: number,
     miningRewards: number,
-    ambassadorRewards: number
+    growthRewards: number
     wallets: Array<{
       name: string,
       referralAddress: string,
@@ -31,12 +31,12 @@ export class NetworkView {
       confirmed: boolean,
       communitySize: number
       miningRewards: number,
-      ambassadorRewards: number
+      growthRewards: number
     }>
   } = {
     communitySize: 0,
     miningRewards: 0,
-    ambassadorRewards: 0,
+    growthRewards: 0,
     wallets: []
   };
 
@@ -99,7 +99,7 @@ export class NetworkView {
         communitySize: 0,
         networkValue: 0,
         miningRewards: 0,
-        ambassadorRewards: 0,
+        growthRewards: 0,
         wallets: this.wallets.map(w => { return {
           name: w.name,
           alias: w.rootAlias,
@@ -107,7 +107,7 @@ export class NetworkView {
           confirmed: w.confirmed,
           communitySize: 0,
           miningRewards: 0,
-          ambassadorRewards: 0
+          growthRewards: 0
         }})
       };
 
@@ -146,9 +146,9 @@ export class NetworkView {
           rewards.forEach(r => {
             let w = network.wallets.find(w => w.referralAddress == r.address);
             w.miningRewards = r.rewards.mining;
-            w.ambassadorRewards = r.rewards.ambassador;
+            w.growthRewards = r.rewards.growth;
             network.miningRewards += w.miningRewards;
-            network.ambassadorRewards += w.ambassadorRewards;
+            network.growthRewards += w.growthRewards;
           });
         };
 

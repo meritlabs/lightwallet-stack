@@ -59,9 +59,9 @@ export class DisplayWallet {
   miningRewardsMerit: string;
   miningRewardsFiat: string;
 
-  ambassadorRewardsMicro: number;
-  ambassadorRewardsMerit: string;
-  ambassadorRewardsFiat: string;
+  growthRewardsMicro: number;
+  growthRewardsMerit: string;
+  growthRewardsFiat: string;
 
   inviteRequests: any[];
 
@@ -132,7 +132,7 @@ export class DisplayWallet {
     // If we cannot properly fetch data, let's return wallets as-is.
     if (rewardsData && rewardsData.length > 0) {
       this.miningRewardsMicro = sumBy(rewardsData, 'rewards.mining');
-      this.ambassadorRewardsMicro = sumBy(rewardsData, 'rewards.ambassador');
+      this.growthRewardsMicro = sumBy(rewardsData, 'rewards.growth');
       this.formatNetworkInfo();
     }
 
@@ -150,9 +150,9 @@ export class DisplayWallet {
       this.miningRewardsFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.miningRewardsMicro)).amountStr;
     }
 
-    if (!isNil(this.ambassadorRewardsMicro)) {
-      this.ambassadorRewardsMerit = this.txFormatService.parseAmount(this.ambassadorRewardsMicro, 'micros').amountUnitStr;
-      this.ambassadorRewardsFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.ambassadorRewardsMicro)).amountStr;
+    if (!isNil(this.growthRewardsMicro)) {
+      this.growthRewardsMerit = this.txFormatService.parseAmount(this.growthRewardsMicro, 'micros').amountUnitStr;
+      this.growthRewardsFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.growthRewardsMicro)).amountStr;
     }
   }
 }

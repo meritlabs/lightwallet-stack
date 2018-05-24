@@ -191,14 +191,14 @@ export class TransactView {
   private async showCancelEasyReceivePrompt(receipt: EasyReceipt, data) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
     this.alertCtrl.create({
-      title: `Cancel your own GlobalSend?`,
-      message: `You clicked on a GlobalSend link that you created. Would you like to cancel GlobalSend with ${ amount } Merit?`,
+      title: `Cancel your own MeritMoney?`,
+      message: `You clicked on a MeritMoney link that you created. Would you like to cancel MeritMoney with ${ amount } Merit?`,
       buttons: [
         {
           text: `Don't Cancel`
         },
         {
-          text: 'Cancel GlobalSend',
+          text: 'Cancel MeritMoney',
           handler: () => {
             this.cancelEasyReceipt(receipt);
           }
@@ -272,7 +272,7 @@ export class TransactView {
       this.logger.info('accepted easy send', acceptanceTx);
     } catch (err) {
       console.log(err);
-      this.toastCtrl.error('There was an error cancelling your GlobalSend.');
+      this.toastCtrl.error('There was an error cancelling your MeritMoney.');
     }
   }
 
