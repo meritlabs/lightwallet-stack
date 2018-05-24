@@ -1,7 +1,7 @@
 @import '~styles/v1/common/variables'
 @import '~styles/v1/common/mixins'
 
-\:host
+.toolbar
   display: flex
   width: calc(100% - #{$dashboard-aside-width})
   background: $white
@@ -108,4 +108,16 @@
         transform: rotate(45deg)
       &:before
         transform: rotate(-45deg)
-
+.advancedToolbar
+  position: fixed
+  width: calc(100% - #{$dashboard-aside-width})
+  background: $white
+  height: $advanced-toolbar-height
+  top: calc(#{$advanced-toolbar-height} * -1)
+  left: $dashboard-aside-width
+  padding: 0 40px
+  box-shadow: 0 2px 2px rgba(46,53,59, .05), inset -2px 2px 2px rgba(46,53,59, .05)
+  z-index: 98
+  +transition(.3s, linear)
+  &.active
+    top: $toolbar-height
