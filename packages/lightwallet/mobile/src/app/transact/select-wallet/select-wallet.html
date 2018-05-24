@@ -16,7 +16,7 @@
       <ion-label>
         <h2 translate>
           {{wallet.name || wallet._id}}
-          <span *ngIf="wallet?.rootAlias">| @{{wallet?.rootAlias}}</span> 
+          <span *ngIf="wallet?.rootAlias">| @{{wallet.rootAlias}}</span>
         </h2>
         <p>
           <span *ngIf="!wallet.confirmed">Not unlocked</span>
