@@ -140,9 +140,9 @@ export class CoreView implements OnInit, AfterViewInit {
   private async showCancelEasyReceivePrompt(receipt: EasyReceipt, data: any, wallet?: MeritWalletClient, cancelling?: boolean) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
 
-    const confirmDialog = this.confirmDialogCtrl.create(`Cancel GlobalSend with ${ amount } Merit?`, `You clicked on a GlobalSend link that you created.  Would you like to cancel it?`, [
+    const confirmDialog = this.confirmDialogCtrl.create(`Cancel MeritMoney with ${ amount } Merit?`, `You clicked on a MeritMoney link that you created.  Would you like to cancel it?`, [
       {
-        text: 'Cancel GlobalSend',
+        text: 'Cancel MeritMoney',
         value: 'yes',
         class: 'primary'
       },
@@ -157,7 +157,7 @@ export class CoreView implements OnInit, AfterViewInit {
         // accepted
         this.cancelEasyReceipt(receipt, wallet);
       } else if (val === 'no' && !cancelling) {
-        // If value == 'no' && cancelling is false, that means that the user tried claiming his own GlobalSend
+        // If value == 'no' && cancelling is false, that means that the user tried claiming his own MeritMoney
         // We shouldn't reject it on "no" since that will be the same thing as accepting it
         this.rejectEasyReceipt(receipt, data);
       }
@@ -180,7 +180,7 @@ export class CoreView implements OnInit, AfterViewInit {
       }));
     } catch (err) {
       console.log(err);
-      this.toastCtrl.error('There was an error cancelling your GlobalSend.');
+      this.toastCtrl.error('There was an error cancelling your MeritMoney.');
     }
   }
 
@@ -251,7 +251,7 @@ export class CoreView implements OnInit, AfterViewInit {
     const isSender = senderAddress == address;
 
     if (txs.some(tx => tx.spent)) {
-      this.logger.debug('Got a spent GlobalSend. Removing from pending receipts.');
+      this.logger.debug('Got a spent MeritMoney. Removing from pending receipts.');
       await this.easyReceiveService.deletePendingReceipt(receipt);
 
       if (receipt.scriptAddress && await this.persistenceService2.cancelEasySend(receipt.scriptAddress)) {
@@ -274,14 +274,14 @@ export class CoreView implements OnInit, AfterViewInit {
     }
 
     if (txs.some(tx => (tx.confirmations === undefined))) {
-      this.logger.warn('Got GlobalSend with unknown depth. It might be expired!');
+      this.logger.warn('Got MeritMoney with unknown depth. It might be expired!');
       return isSender ?
         this.showCancelEasyReceivePrompt(receipt, data, wallet, cancelling) :
         this.showConfirmEasyReceivePrompt(receipt, data, wallet);
     }
 
     if (txs.some(tx => receipt.blockTimeout < tx.confirmations)) {
-      this.logger.debug('Got an expired GlobalSend. Removing from pending receipts.');
+      this.logger.debug('Got an expired MeritMoney. Removing from pending receipts.');
       await this.easyReceiveService.deletePendingReceipt(receipt);
       await this.showExpiredEasyReceiptAlert();
       return processAll ? await this.processPendingEasyReceipts() : null;
@@ -309,9 +309,9 @@ export class CoreView implements OnInit, AfterViewInit {
         throw 'Could not retrieve wallet';
 
       await this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data);
-      this.logger.info('GlobalSend rejected');
+      this.logger.info('MeritMoney rejected');
     } catch (err) {
-      this.logger.error('Error rejecting GlobalSend', err);
+      this.logger.error('Error rejecting MeritMoney', err);
       this.toastCtrl.error('There was an error rejecting the Merit');
     }
   }

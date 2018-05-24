@@ -25,8 +25,8 @@ describe('[Mobile] Community', () => {
     expect(headerEl.getText()).toContain('Mining');
   });
 
-  it('should have Ambassador rewards', () => {
-    expect(headerEl.getText()).toContain('Ambassador');
+  it('should have Growth rewards', () => {
+    expect(headerEl.getText()).toContain('Growth');
   });
 
   describe('> Invites', () => {
