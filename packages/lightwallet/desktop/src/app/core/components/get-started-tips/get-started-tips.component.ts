@@ -1,11 +1,12 @@
 /* global addthis_config */
 
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { trigger, state, transition, style, animate } from '@angular/animations';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
 declare var addthis_config: any;
 declare var addthis_share: any;
+
 @Component({
   selector: 'app-get-started-tips',
   templateUrl: './get-started-tips.component.html',
@@ -14,12 +15,13 @@ declare var addthis_share: any;
     trigger('showTips', [
       state('true', style({ maxHeight: '1000px', padding: '30px 20px' })),
       state('false', style({})),
-      transition('* => *', animate('300ms ease-out')),
-    ]),
-  ],
+      transition('* => *', animate('300ms ease-out'))
+    ])
+  ]
 })
-export class GetStartedTipsComponent {
+export class GetStartedTipsComponent implements OnInit, OnDestroy, OnChanges {
   constructor(private persistenceService: PersistenceService2) {}
+
   active: boolean = false;
   getArticle: boolean = false;
   syncWallet: boolean = false;
@@ -46,6 +48,7 @@ export class GetStartedTipsComponent {
       newParent.appendChild(oldParent.childNodes[0]);
     }
   }
+
   ngOnDestroy() {
     // move created shareThis into right container
     var newParent = document.getElementById('shareThis'),
@@ -55,6 +58,7 @@ export class GetStartedTipsComponent {
       newParent.appendChild(oldParent.childNodes[0]);
     }
   }
+
   ngOnChanges() {
     if (this.setTipType !== 'all' && this.active !== true) {
       this.active = true;
@@ -66,22 +70,23 @@ export class GetStartedTipsComponent {
       addthis_share = {
         passthrough: {
           twitter: {
-            text: `${this.shareTitle}\n ${this.shareText}${alias}`,
+            text: `${this.shareTitle}\n ${this.shareText}${alias}`
           },
           linkedin: {
             title: this.shareTitle,
             text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-            description: `${this.shareTitle}\n ${this.shareText}${alias}`,
+            description: `${this.shareTitle}\n ${this.shareText}${alias}`
           },
           facebook: {
             title: this.shareTitle,
-            text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-          },
-        },
+            text: `${this.shareTitle}\n ${this.shareText}${alias}`
+          }
+        }
       };
     }
   }
-  showHide(value) {
+
+  showHide() {
     if (this.active) {
       this.persistenceService.setViewSettings('showStarterTips', false);
       this.active = false;
@@ -89,14 +94,15 @@ export class GetStartedTipsComponent {
       this.active = true;
     }
   }
+
   getArticleAction() {
-    if (this.getArticle) this.getArticle = false;
-    else this.getArticle = true;
+    this.getArticle = !this.getArticle;
   }
+
   syncWalletAction() {
-    if (this.syncWallet) this.syncWallet = false;
-    else this.syncWallet = true;
+    this.syncWallet = !this.syncWallet;
   }
+
   copyState() {
     this.copy = 'COPIED';
   }
