@@ -53,10 +53,10 @@ export class SlideToActionComponent implements AfterViewInit, OnDestroy {
         case maxPosition:
           this.confirm.emit();
           break;
-        default:
-          this._sliderPosition = 0;
-          this.moveSlider();
       }
+
+      this._sliderPosition = 0;
+      this.moveSlider();
     };
   }
 
@@ -74,10 +74,5 @@ export class SlideToActionComponent implements AfterViewInit, OnDestroy {
       }
       this._rnd.setStyle(this._sliderNativeElement, this._plt.Css.transform, `translate3d(${ this._sliderPosition }px, 0, 0)`);
     });
-  }
-
-  resetSlider() {
-    this._sliderPosition = 0;
-    this.moveSlider();
   }
 }

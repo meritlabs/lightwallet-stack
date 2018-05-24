@@ -45,8 +45,6 @@ export class SendConfirmationView {
 
   unlockValue: number = 0;
 
-  @ViewChild(SlideToActionComponent) slideToAction: SlideToActionComponent;
-
   constructor(navParams: NavParams,
               private navCtrl: NavController,
               private toastCtrl: ToastControllerService,
@@ -212,8 +210,7 @@ export class SendConfirmationView {
       }
     } catch (err) {
       this.logger.warn(err);
-      this.toastCtrl.error(err);
-      return this.slideToAction.resetSlider();
+      return this.toastCtrl.error(err);
     } finally {
       loadingSpinner.dismiss();
       this.txData.referralsToSign = [];
