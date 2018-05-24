@@ -36,6 +36,8 @@ view-wallets {
         color: white;
         &.spinner-ios {
           top: 28px;
+          top: calc(28px + const(safe-area-inset-top));
+          top: calc(28px + env(safe-area-inset-top));
           right: 13px;
         }
     }

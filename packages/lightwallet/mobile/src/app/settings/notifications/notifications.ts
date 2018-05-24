@@ -14,16 +14,16 @@ import { PushNotificationsService } from '@merit/common/services/push-notificati
   templateUrl: 'notifications.html',
 })
 export class NotificationsView {
-  public emailForm: FormGroup;
+  emailForm: FormGroup;
 
-  public appName: string;
-  public usePushNotifications: boolean;
-  public isIOSApp: boolean;
+  appName: string;
+  usePushNotifications: boolean;
+  isIOSApp: boolean;
 
-  public pushNotifications: boolean;
-  public confirmedTxsNotifications: boolean;
+  pushNotifications: boolean;
+  confirmedTxsNotifications: boolean;
 
-  public emailNotifications: boolean;
+  emailNotifications: boolean;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -44,20 +44,22 @@ export class NotificationsView {
     this.updateConfig();
   }
 
-  public pushNotificationsChange() {
-    let opts = {
+  async pushNotificationsChange() {
+    const opts = {
       pushNotificationsEnabled: this.pushNotifications
     };
 
     this.configService.set(opts);
 
-    if (opts.pushNotificationsEnabled)
-      this.pushService.init();
+    if (opts.pushNotificationsEnabled) {
+      await this.pushService.init();
+      await this.pushService.enable();
+    }
     else
-      this.pushService.disable();
+      return this.pushService.disable();
   };
 
-  public emailNotificationsChange() {
+  emailNotificationsChange() {
     let opts = {
       enabled: this.emailNotifications,
       email: this.emailForm.value.email
@@ -65,7 +67,7 @@ export class NotificationsView {
     this.emailService.updateEmail(opts);
   };
 
-  public async saveEmail() {
+  async saveEmail() {
     let loader = this.loadingCtrl.create({
       content: 'Saving changes...',
       dismissOnPageChange: true
