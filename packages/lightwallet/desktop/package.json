@@ -51,19 +51,5 @@
     "url-loader": "^0.6.2",
     "webpack": "~3.11.0",
     "webpack-dev-server": "2.11.0"
-  },
-  "build": {
-    "appId": "wallet.merit.me",
-    "directories": {
-      "output": "electron-dist"
-    },
-    "productName": "Merit Lightwallet",
-    "mac": {
-      "category": "public.app-category.utilities",
-      "target": "dmg"
-    },
-    "linux": {
-      "target": "deb"
-    }
   }
 }
