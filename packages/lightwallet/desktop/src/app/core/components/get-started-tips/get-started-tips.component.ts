@@ -18,7 +18,7 @@ declare global {
     trigger('showTips', [
       state('true', style({ maxHeight: '1000px', padding: '30px 20px' })),
       state('false', style({})),
-      transition('* => *', animate('300ms ease-out'))
+      transition('* => *', animate('300ms ease-in-out'))
     ])
   ]
 })
