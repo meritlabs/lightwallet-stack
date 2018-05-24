@@ -1,5 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
 declare global {
@@ -32,7 +33,7 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy, OnChanges {
   shareUrl: string = 'wallet.merit.me';
   shareText: string = `Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth.\n Get wallet now, your activation code: @`;
 
-  @Input() wallets: Object;
+  @Input() wallets: DisplayWallet[];
   @Input() setTipType: string;
 
   async ngOnInit() {
@@ -65,8 +66,9 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy, OnChanges {
     if (this.setTipType !== 'all' && this.active !== true) {
       this.active = true;
     }
-    if (this.wallets[0]) {
-      let alias = this.wallets[0].alias;
+    if (this.wallets[0] && window.addthis_config && window.addthis_share) {
+      const { alias } = this.wallets[0];
+
       window.addthis_config.ui_email_title = this.shareTitle;
       window.addthis_config.ui_email_note = this.shareText + alias;
       window.addthis_share = {
