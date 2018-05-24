@@ -70,11 +70,11 @@
     opacity: .7
     margin-bottom: 40px
 .StarterTips_item
-  +font(300, 18px, 24px, $dark-grey-blue)
+  +font(300, 17px, 24px, $dark-grey-blue)
   p
     margin-bottom: 20px
   a
-    +font(500, 18px, 24px, $blue)
+    color: $blue
     text-decoration: underline
     cursor: pointer
   ul
@@ -85,7 +85,7 @@
       &:before
         display: block
         position: absolute
-        top: -4px
+        top: 0
         left: 0
         width: 35px
         padding: 10px 0
@@ -93,7 +93,9 @@
         text-align: center
         background: rgb(44, 49, 65)
         border-radius: 500rem
-        +font(500, 14px, 14px, $grey)
+        font-size: 14px
+        line-height: 14px
+        color: $grey
         box-shadow: 0 4px 5px -2px rgba(0, 0, 0, 0.28)
 @for $i from 0 to 20
   li:nth-child(#{$i + 1})
