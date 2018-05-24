@@ -16,6 +16,7 @@ import {
 import { AddressService } from '@merit/common/services/address.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { WalletService } from '@merit/common/services/wallet.service';
+import { cleanAddress } from '@merit/common/utils/addresses';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
@@ -79,11 +80,12 @@ export class SendInviteView {
     this.loader.show();
 
     let { address } = this.formData.getRawValue();
+    address = cleanAddress(address);
     address = await this.addressService.getAddressInfo(address);
 
     try {
 
-      await this.walletService.sendInvite(this.selectedWallet.client, address.address);
+      await this.selectedWallet.client.sendInvite(address.address);
       this.store.dispatch(new RefreshOneWalletAction(this.selectedWallet.id, {
         skipRewards: true,
         skipAnv: true,

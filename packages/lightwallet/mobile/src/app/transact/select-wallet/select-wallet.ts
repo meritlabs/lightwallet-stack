@@ -12,6 +12,8 @@ export class SelectWalletModal {
   wallets: MeritWalletClient[];
   selectedWallet: MeritWalletClient;
 
+  showInvites: boolean;
+
   constructor(private navParams: NavParams,
               private viewCtrl: ViewController,
               private profileService: ProfileService) {
@@ -20,6 +22,7 @@ export class SelectWalletModal {
   async ngOnInit() {
     this.wallets = this.navParams.get('availableWallets') || await this.profileService.getWallets();
     this.selectedWallet = this.navParams.get('selectedWallet');
+    this.showInvites = this.navParams.get('showInvites'); 
   }
 
   cancel() {

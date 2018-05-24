@@ -16,7 +16,7 @@
             Enable push notifications
           </h2>
         </ion-label>
-        <ion-toggle [(ngModel)]="pushNotifications" (ionChange)="pushNotificationsChange()"></ion-toggle>
+        <ion-toggle [(ngModel)]="pushNotifications" (ngModelChange)="pushNotificationsChange()"></ion-toggle>
       </ion-item>
 
       <ion-item *ngIf="isIOSApp" translate text-wrap>
@@ -30,7 +30,7 @@
           Enable email notifications
         </h2>
       </ion-label>
-      <ion-toggle [(ngModel)]="emailNotifications" (ionChange)="emailNotificationsChange()"></ion-toggle>
+      <ion-toggle [(ngModel)]="emailNotifications" (ngModelChange)="emailNotificationsChange()"></ion-toggle>
     </ion-item>
 
     <ion-item-group *ngIf="emailNotifications">
