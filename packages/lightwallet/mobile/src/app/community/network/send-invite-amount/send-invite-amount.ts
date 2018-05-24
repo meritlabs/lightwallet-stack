@@ -65,6 +65,7 @@ export class SendInviteAmountView {
   selectWallet() {
     const modal = this.modalCtrl.create('SelectWalletModal', {
       selectedWallet: this.wallet,
+      showInvites: true,
       availableWallets: this.wallets.filter(wallet => wallet.availableInvites > 0)
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {

@@ -1,12 +1,12 @@
 <ion-header no-border>
     <ion-navbar color="primary">
         <ion-title>
-            Sending inv to: {{address}}
+            Sending invites to: {{ address }}
         </ion-title>
     </ion-navbar>
 </ion-header>
 <ion-content no-bounce>
-    <ng-container >
+    <ng-container>
         <div class="big-header">
             <div class="amount-area" (click)="focusInput()">
                 <div class="main-amount" enter-to-next>
@@ -25,14 +25,14 @@
                 </div>
             </div>
         </div>
-        <ion-list>
-            <button ion-item (click)="selectWallet()" detail-none *ngIf="wallet">
+        <ion-list *ngIf="wallet">
+            <button ion-item (click)="selectWallet()" detail-none class="wallet-selector">
                 <ion-avatar item-start img-icon>
                     <img src="assets/img/icons/wallet.svg">
                 </ion-avatar>
                 <p>From</p>
                 <h2>{{wallet?.name}} <span *ngIf="wallet?.alias"> | @{{wallet.alias}}</span></h2>
-                <p>{{wallet?.availableInvites}} INV</p>
+                <p *ngIf="wallet?.availableInvites">{{wallet.availableInvites}} invite{{ wallet.availableInvites > 1? 's': '' }}</p>
                 <ion-icon name="ios-arrow-down" item-end></ion-icon>
             </button>
         </ion-list>
