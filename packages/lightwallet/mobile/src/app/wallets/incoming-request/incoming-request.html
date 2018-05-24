@@ -43,7 +43,7 @@
     <ion-list>
       <ion-item-group *ngIf="!unlockRequest.isConfirmed" detail-none>
         <button ion-item (click)="accept()" detail-none>Send Invite</button>
-        <button ion-item (click)="decline()" detail-none>Ignore</button>
+        <button ion-item (click)="decline()" detail-none class="ignore">Ignore</button>
       </ion-item-group>
       <ion-item-group *ngIf="unlockRequest.isConfirmed" detail-none>
         <button ion-item (click)="createContact()" detail-none>
