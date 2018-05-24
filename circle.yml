@@ -9,6 +9,9 @@ jobs:
           name: Install ZMQ
           command: sudo apt install -y libzmq3-dev
       - checkout
+      - run:
+          name: Delete unneeded packages
+          command: cd packages && rm -rf insight-api insight-ui bitcore-wallet-service merit-rpc bitcore-node bitcore-p2p
       - restore_cache:
           keys:
             - bitcore-lib-deps-{{ checksum "packages/bitcore-lib/package.json" }}
@@ -17,22 +20,7 @@ jobs:
             - bitcore-message-deps-{{ checksum "packages/bitcore-message/package.json" }}
       - restore_cache:
           keys:
-            - bitcore-node-deps-{{ checksum "packages/bitcore-node/package.json" }}
-      - restore_cache:
-          keys:
-            - bitcore-p2p-deps-{{ checksum "packages/bitcore-p2p/package.json" }}
-      - restore_cache:
-          keys:
             - bitcore-payment-protocol-deps-{{ checksum "packages/bitcore-payment-protocol/package.json" }}
-      - restore_cache:
-          keys:
-            - bitcore-wallet-service-deps-{{ checksum "packages/bitcore-wallet-service/package.json" }}
-      - restore_cache:
-          keys:
-            - insight-api-deps-{{ checksum "packages/insight-api/package.json" }}
-      - restore_cache:
-          keys:
-            - insight-ui-deps-{{ checksum "packages/insight-ui/package.json" }}
       - restore_cache:
           keys:
             - lw-deps-{{ checksum "packages/lightwallet/package.json" }}
@@ -42,9 +30,6 @@ jobs:
       - restore_cache:
           keys:
             - lw-mobile-deps-{{ checksum "packages/lightwallet/mobile/package.json" }}
-      - restore_cache:
-          keys:
-            - merit-rpc-deps-{{ checksum "packages/merit-rpc/package.json" }}
       - run:
           name: Install Lerna
           command: sudo npm i -g lerna
@@ -61,34 +46,9 @@ jobs:
           key: bitcore-message-deps-{{ checksum "packages/bitcore-message/package.json" }}
       - save_cache:
           paths:
-            - packages/bitcore-node/node_modules
-            - packages/bitcore-node/package-lock.json
-          key: bitcore-node-deps-{{ checksum "packages/bitcore-node/package.json" }}
-      - save_cache:
-          paths:
-            - packages/bitcore-p2p/node_modules
-            - packages/bitcore-p2p/package-lock.json
-          key: bitcore-p2p-deps-{{ checksum "packages/bitcore-p2p/package.json" }}
-      - save_cache:
-          paths:
             - packages/bitcore-payment-protocol/node_modules
             - packages/bitcore-payment-protocol/package-lock.json
           key: bitcore-payment-protocol-deps-{{ checksum "packages/bitcore-payment-protocol/package.json" }}
-      - save_cache:
-          paths:
-            - packages/bitcore-wallet-service/node_modules
-            - packages/bitcore-wallet-service/package-lock.json
-          key: bitcore-wallet-service-deps-{{ checksum "packages/bitcore-wallet-service/package.json" }}
-      - save_cache:
-          paths:
-            - packages/insight-api/node_modules
-            - packages/insight-api/package-lock.json
-          key: insight-api-deps-{{ checksum "packages/insight-api/package.json" }}
-      - save_cache:
-          paths:
-            - packages/insight-ui/node_modules
-            - packages/insight-ui/package-lock.json
-          key: insight-ui-deps-{{ checksum "packages/insight-ui/package.json" }}
       - save_cache:
           paths:
             - packages/lightwallet/node_modules
@@ -104,13 +64,8 @@ jobs:
             - packages/lightwallet/mobile/node_modules
             - packages/lightwallet/mobile/package-lock.json
           key: lw-mobile-deps-{{ checksum "packages/lightwallet/mobile/package.json" }}
-      - save_cache:
-          paths:
-            - packages/merit-rpc/node_modules
-            - packages/merit-rpc/package-lock.json
-          key: merit-rpc-deps-{{ checksum "packages/merit-rpc/package.json" }}
       - run: cd packages/lightwallet/common/environments && cp environment.example.ts environment.dev.ts && cp environment.example.ts environment.ts
-      - run: cd packages/lightwallet && npm test
+      - run: cd packages/lightwallet && npm test -- --runInBand
       - run:
           name: Run ng-serve
           command: cd packages/lightwallet/desktop && npm start
@@ -121,11 +76,11 @@ jobs:
       - run: cd packages/lightwallet && npm run test:desktop:e2e
       - run:
           name: Run ionic serve
-          command: cd packages/lightwallet && npm run ionic:serve
+          command: cd packages/lightwallet && npm run ionic:serve -- --port 8899
           background: true
       - run:
           name: Wait for Mobile LW app to be ready
-          command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8100
+          command: wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8899
       - run: cd packages/lightwallet && npm run test:mobile:e2e
       - run: cd packages/lightwallet && npm run build -- --prod
       - run: cd packages/lightwallet/desktop && npm run build:prod

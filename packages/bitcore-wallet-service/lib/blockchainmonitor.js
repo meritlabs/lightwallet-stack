@@ -467,7 +467,7 @@ BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notificati
 
   this.storage.storeNotification(notification.walletId, notification, (err, doc) => {
     if (doc) {
-      this.messageBroker.send(doc);
+      this.messageBroker.send(notification);
     }
     if (cb) {
       return cb();

@@ -2223,6 +2223,7 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
       return Errors.INCORRECT_ADDRESS_NETWORK;
     }
 
+    if (!_.isNumber(output.amount)) output.amount = parseInt(output.amount);
     if (!_.isNumber(output.amount) || _.isNaN(output.amount) || output.amount <= 0) {
       return new ClientError('Invalid amount');
     }

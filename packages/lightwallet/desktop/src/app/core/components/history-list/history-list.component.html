@@ -1,5 +1,5 @@
 <ng-container *ngIf="loading; else loaded">
-  <loading-spinner-small [hidden]="!loading"></loading-spinner-small>
+  <loading-spinner-small></loading-spinner-small>
 </ng-container>
 <ng-template #loaded>
   <ng-container *ngIf="transactions?.length; else noItems">

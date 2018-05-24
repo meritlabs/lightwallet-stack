@@ -37,6 +37,7 @@ export class PollingNotificationsService {
     for (walletId in this.pollingNotificationsSubscriptions) {
       try {
         this.pollingNotificationsSubscriptions[walletId].unsubscribe();
+        delete this.pollingNotificationsSubscriptions[walletId];
       } catch (e) {}
     }
   }

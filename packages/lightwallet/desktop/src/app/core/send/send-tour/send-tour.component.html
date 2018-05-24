@@ -13,9 +13,8 @@
             Worry Free
           </div>
           <div class="caption_description">
-            You have full control over your transactions when sending to users
-            outside of the Merit network! Cancellable transactions and password
-            protection at the click of a button.
+            You have full control over your transactions when sending to users outside of the Merit network! Cancellable transactions
+            and password protection at the click of a button.
           </div>
         </div>
         <div *ngIf="step === 1">
@@ -23,9 +22,8 @@
             Your Way
           </div>
           <div class="caption_description">
-            You can send merit any way you want! To a custom phone number or email,
-            through your favorite chat or social media messenger, or to an existing
-            Merit user via their alias or address.
+            You can send merit any way you want! To a custom phone number or email, through your favorite chat or social media messenger,
+            or to an existing Merit user via their alias or address.
           </div>
         </div>
         <div *ngIf="step === 2">
@@ -33,9 +31,8 @@
             Sending Merit
           </div>
           <div class="caption_description">
-            Sending merit is super easy and can be received by virtually anyone!
-            However, Merit is an invite only community and sending funds to a new
-            user will require you to have an extra invite.
+            Sending merit is super easy and can be received by virtually anyone! However, Merit is an invite only community and sending
+            funds to a new user will require you to have an extra invite.
           </div>
         </div>
         <div *ngIf="step === 3">
@@ -46,10 +43,10 @@
             Now you’re ready to send money with the world’s friendliest digital currency.
           </div>
         </div>
-        <div class="next_slide" (click)="stepGoTo()">
+        <div class="next_slide" (click)="stepGoTo()" onclick="gtag('event', 'UX Testing', { 'event_category': 'Testing', 'event_action': 'Click', 'event_label': '_Learn sending tour'})">
           {{ step === 3 ? 'Get Started!' : 'Next' }}
         </div>
-        <div class="skip_intro" (click)="skipIntro()" [hidden]="step === 3">Skip Intro</div>
+        <div class="skip_intro" (click)="skipIntro()" [hidden]="step === 3" onclick="gtag('event', 'UX Testing', { 'event_category': 'Testing', 'event_action': 'Click', 'event_label': '_Skip sending tour'})">Skip Intro</div>
       </div>
       <ul class="tour_steps">
         <li [ngClass]="{'active': step === 0}" (click)="stepGoTo(0)"></li>
