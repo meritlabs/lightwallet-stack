@@ -31,7 +31,6 @@ export class SendInviteAmountView {
               private modalCtrl: ModalController
   ) {
     this.address = this.navParams.get('address');
-    console.log(this.address, "ADDRESS");
   }
 
   async ionViewWillEnter() {
@@ -42,7 +41,7 @@ export class SendInviteAmountView {
     }
   }
 
-  private async send() {
+  async send() {
     if (!this.wallet) {
       this.wallet = this.wallets.find(w => (w.availableInvites > 0));
     }
@@ -63,10 +62,10 @@ export class SendInviteAmountView {
     }
   }
 
-  public selectWallet() {
-    const modal = this.modalCtrl.create('SelectInviteWalletModal', {
+  selectWallet() {
+    const modal = this.modalCtrl.create('SelectWalletModal', {
       selectedWallet: this.wallet,
-      availableWallets: this.wallets.filter((wallet) => wallet.availableInvites > 0)
+      availableWallets: this.wallets.filter(wallet => wallet.availableInvites > 0)
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
       if (wallet) {
@@ -77,14 +76,14 @@ export class SendInviteAmountView {
     return modal.present();
   }
 
-  public processAmount(amount) {
+  processAmount(amount) {
     this.error = '';
     if (amount > this.wallet.availableInvites) {
       this.error = 'Not enough invites';
     }
   }
 
-  public amountKeypress(key) {
+  amountKeypress(key) {
     if (key == 13) return this.amountInput['_native']['nativeElement'].blur();
   }
 

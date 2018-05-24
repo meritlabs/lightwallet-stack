@@ -147,48 +147,25 @@ export class SendConfirmationView {
         .present();
     };
 
-    let showNoPassPrompt = () => {
-      this.alertController
-        .create({
-          title: 'Confirm Send',
-          subTitle: 'Are you sure that you want to proceed with this transaction?',
-          buttons: [
-            {
-              text: 'Cancel',
-              role: 'cancel',
-              handler: () => {
-                this.navCtrl.pop();
-              },
-            },
-            {
-              text: 'Ok',
-              handler: () => {
-                this.send();
-              },
-            },
-          ],
-        })
-        .present();
-    };
-
     let showTouchIDPrompt = () => {
-      // TODO check if we need this
-      //this.alertController.create({
-      //  title: 'TouId required',
-      //  subTitle: 'Confirm transaction by your fingerprint',
-      //  buttons: [
-      //      { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop(); } }
-      //  ]
-      //}).present();
+      this.send();
+      // // TODO check if we need this
+      // //this.alertController.create({
+      // //  title: 'TouId required',
+      // //  subTitle: 'Confirm transaction by your fingerprint',
+      // //  buttons: [
+      // //      { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop(); } }
+      // //  ]
+      // //}).present();
 
-      this.touchIdService
-        .check()
-        .then(() => {
-          return this.send();
-        })
-        .catch(() => {
-          this.navCtrl.pop();
-        });
+      // this.touchIdService
+      //   .check()
+      //   .then(() => {
+      //     return this.send();
+      //   })
+      //   .catch(() => {
+      //     this.navCtrl.pop();
+      //   });
     };
 
     if (this.walletService.isEncrypted(this.txData.wallet)) {
@@ -199,7 +176,7 @@ export class SendConfirmationView {
         if (this.touchIdService.isAvailable()) {
           return showTouchIDPrompt();
         } else {
-          return showNoPassPrompt();
+          return this.send();
         }
       // }
     }
