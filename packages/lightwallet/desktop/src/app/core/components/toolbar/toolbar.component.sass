@@ -119,5 +119,47 @@
   box-shadow: 0 2px 2px rgba(46,53,59, .05), inset -2px 2px 2px rgba(46,53,59, .05)
   z-index: 98
   +transition(.3s, linear)
+  display: flex
+  flex-flow: row wrap
   &.active
     top: $toolbar-height
+  .column
+    padding-top: 40px
+    box-sizing: border-box
+    padding-right: 40px
+    position: relative
+    &:after
+      content: ""
+      display: block
+      position: absolute
+      right: 20px
+      top: 10%
+      height: 80%
+      width: 1px
+      background: linear-gradient(68deg, rgba(124, 124, 124, 0.01), rgba(34, 47, 3, 0.15) 48%, transparent)
+  .column:nth-child(1),
+  .column:nth-child(2)
+    width: 20%
+  .column:nth-child(3)
+    width: 30%
+  .column:nth-child(4)
+    width: 30%
+    &:after
+      display: none
+  .title
+    +font(500, 16px, 16px, $gun-metal, $transform: uppercase)
+    opacity: .95
+    margin-bottom: 25px
+  ul li 
+    margin-bottom: 10px
+    a
+      +font(300, 14px, 14px, $gun-metal)
+      display: flex
+      align-items: center
+      .ico
+        background: $gun-metal
+        margin-right: 5px
+      &:hover
+        color: $blue
+        .ico
+          background: $blue
