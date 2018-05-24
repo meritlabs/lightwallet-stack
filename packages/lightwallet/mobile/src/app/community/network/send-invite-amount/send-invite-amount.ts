@@ -4,6 +4,7 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { Component, ElementRef, ViewChild } from '@angular/core';
+import { SlideToActionComponent } from '../../../../components/slide-to-action/slide-to-action';
 
 
 @IonicPage()
@@ -22,6 +23,7 @@ export class SendInviteAmountView {
   public error:string;
 
   @ViewChild('amount') amountInput: ElementRef;
+  @ViewChild(SlideToActionComponent) slideToAction: SlideToActionComponent;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -46,7 +48,13 @@ export class SendInviteAmountView {
       this.wallet = this.wallets.find(w => (w.availableInvites > 0));
     }
     if (!this.wallet || !this.wallet.availableInvites) {
-      return this.toastCtrl.error('You have no active invites');
+      this.toastCtrl.error('You have no active invites');
+      return this.slideToAction.resetSlider();
+    }
+
+    if (this.wallet.availableInvites < this.formData.amount) {
+      this.toastCtrl.error('You don\'t have enough invites in your wallet for this transaction.');
+      return this.slideToAction.resetSlider();
     }
 
     let loader = this.loadCtrl.create({ content: 'Sending invite...' });
