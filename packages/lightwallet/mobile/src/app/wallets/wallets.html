@@ -1,121 +1,162 @@
-<ion-header>
-  <div class="big-header">
-    <button ion-button clear icon-only class="header-action-button"
-            navPush="SettingsView" [navParams]="{ wallets: wallets }">
-      <ion-icon name="settings" merit-icon></ion-icon>
-    </button>
-    <ion-spinner *ngIf="refreshing" class="refresh-spinner"></ion-spinner>
-    <p>Total Value of Your Wallets</p>
-    <ion-spinner *ngIf="loading; else notLoading"></ion-spinner>
-    <ng-template #notLoading>
-      <h2 *ngIf="allBalancesHidden; else balancesNotHidden"></h2>
-      <ng-template #balancesNotHidden>
-        <h2 class="amount">
-          {{ ( totalAmount || '0.00') | toMRT:8:true }} <small>MRT</small>
-        </h2>
-        <h3 class="detail-fiat">{{ totalWalletsValueFiat }}</h3>
-        <h3 class="detail-fiat">{{ totalInvites }} Invites</h3>
-      </ng-template>
-    </ng-template>
-  </div>
+<ion-header no-border>
+    <ion-navbar color="primary">
+        <ion-title>Dashboard</ion-title>
+        <ion-buttons end>
+            <button ion-button clear icon-only class="header-action-button"
+                    navPush="SettingsView" [navParams]="{ wallets: wallets }">
+                <ion-icon name="settings" merit-icon></ion-icon>
+            </button>
+            <ion-spinner class="refreshing" color="light" [hidden]="!refreshing"></ion-spinner>
+        </ion-buttons>
+    </ion-navbar>
+    <ion-toolbar>
+        <ion-row>
+
+            <ion-col col-4>
+                <small>Total</small>
+                <ion-avatar img-icon>
+                    <img src="assets/img/icons/merit_white.svg" alt="">
+                </ion-avatar>
+                <span class="merit-amount" [hidden]="loading">
+                  {{ (totalAmount || 0) | toMRT:8:true }}
+                  <small>MRT</small>
+                </span>
+            </ion-col>
+
+            <ion-col col-4>
+                <small>Invites</small>
+                <ion-avatar img-icon>
+                    <img src="assets/img/icons/invite_white.svg" alt="">
+                </ion-avatar>
+                <span class="merit-amount" [hidden]="loading">
+                  {{ totalInvites || 0}}
+                  <small>INV</small>
+                </span>
+            </ion-col>
+
+
+            <ion-col col-4>
+                <small>Community</small>
+                <ion-avatar img-icon>
+                    <img src="assets/img/icons/network_dark.svg" alt="">
+                </ion-avatar>
+                <span class="merit-amount" [hidden]="loading">
+                  {{ communitySize || '0' }}
+                  <small>People</small>
+                </span>
+            </ion-col>
+
+
+        </ion-row>
+    </ion-toolbar>
 </ion-header>
+
+
 <ion-content>
-  <ion-refresher (ionRefresh)="doRefresh($event)" [enabled]="!loading">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+    <ion-refresher (ionRefresh)="doRefresh($event)" [enabled]="!loading">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
 
-  <ion-item-divider translate>
-    Wallets
-    <button ion-button item-end round add-button icon-only (click)="toAddWallet()">
-      <ion-icon name="add"></ion-icon>
-    </button>
-  </ion-item-divider>
-
-  <ion-item no-lines *ngIf="!wallets?.length && loading">
-    <ion-spinner item-start></ion-spinner>
-    <h2>Loading...</h2>
-  </ion-item>
-
-  <ion-list class="wallets" *ngIf="wallets">
-
-    <div *ngFor="let wallet of wallets; trackBy: wallet?.id">
-      <button ion-item *ngIf="wallet.confirmed; else notConfirmed" navPush="WalletDetailsView"
-              [navParams]="{ wallet: wallet, walletId: wallet.id }" class="wallet">
-        <ion-avatar item-start img-icon [class.locked]="wallet.locked" [class.default]="!wallet.color"
-                    [style.box-shadow]="'0 0 0 2px ' + wallet.color">
-          <img src="assets/img/icons/wallet.svg">
-        </ion-avatar>
-
-        <ion-label>
-          <h2 *ngIf="wallet.name">{{ wallet.name }}</h2>
-          <h2 *ngIf="!wallet.name && wallet.rootAlias">@{{ wallet.rootAlias}}</h2>
-          <h2 *ngIf="!wallet.name && !wallet.rootAlias">Personal wallet</h2>
-
-          <p *ngIf="wallet.name && wallet.rootAlias">
-            @{{ wallet.rootAlias}}
-          </p>
-          <p class="invites">
-            Invites: {{ wallet.availableInvites || 0}} <span *ngIf="wallet.pendingInvites">(+{{wallet.pendingInvites}} pending)</span>
-          </p>
-          <p *ngIf="wallet.balanceHidden; else notHidden">
-            [Balance Hidden]
-          </p>
-          <ng-template #notHidden>
-            <p class="merit-amount">
-              {{ wallet.balance.spendableAmount | toMRT}}
-            </p>
-          </ng-template>
-        </ion-label>
-
-        <ion-note *ngIf="!wallet.isComplete(); else isComplete" class="assertive">Incomplete</ion-note>
-        <ng-template #isComplete>
-          <ion-note class="balance" item-end>
-              <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.alternativeBalanceAvailable">
-              {{ wallet.balance.spendableAmount | toFiat }}
-            </div>
-
-            <span class="error" *ngIf="wallet.error">{{ wallet.error }}</span>
-          </ion-note>
-        </ng-template>
-
-      </button>
-
-      <ng-template #notConfirmed>
-        <div *ngIf="!wallet.confirmed" class="wallet"
-             navPush="EditWalletView"
-             [navParams]="{ wallet: wallet, walletId: wallet.id }">
-          <div class="unlock-backdrop"></div>
-
-          <div class="unlock-popup">
-            <img src="assets/img/icons/unlock.svg">
-            <h2>Not unlocked</h2>
-            <div class="bottom-label">You cannot use this wallet until your invite request is confirmed</div>
-          </div>
-
-          <button ion-item detail-none>
-            <ion-avatar item-start img-icon [class.locked]="wallet.locked" [class.default]="!wallet.color"
-                        [style.box-shadow]="'0 0 0 2px ' + wallet.color">
-              <img src="assets/img/icons/wallet.svg">
-            </ion-avatar>
-            <ion-label>
-              <h2>{{ wallet.name }}</h2>
-              <p>Pending unlock request</p>
-            </ion-label>
-          </button>
-        </div>
-      </ng-template>
-
+    <div class="popup-community" *ngIf="showCommunityPopup">
+        Tell friends about Merit and start to grow your community NOW!
+        <button ion-button clear icon-only class="close-button" (click)="closeCommunityPopup()">
+            <ion-icon name="close"></ion-icon>
+        </button>
     </div>
 
-    <button ion-item class="import-wallet-button" navPush="ImportView" detail-none>
-      <ion-avatar item-start img-icon>
-        <img src="assets/img/icons/export.svg">
-      </ion-avatar>
-      <ion-label>
-        <h2>Import wallet</h2>
-      </ion-label>
-    </button>
-  </ion-list>
+
+    <ion-item-divider translate>
+        Wallets
+        <button ion-button item-end round add-button icon-only (click)="toAddWallet()">
+            <ion-icon name="add"></ion-icon>
+        </button>
+    </ion-item-divider>
+
+    <ion-item no-lines *ngIf="!wallets?.length && loading">
+        <ion-spinner item-start></ion-spinner>
+        <h2>Loading...</h2>
+    </ion-item>
+
+    <ion-list class="wallets" *ngIf="wallets">
+
+        <div *ngFor="let wallet of wallets; trackBy: wallet?.id">
+            <button ion-item *ngIf="wallet.confirmed; else notConfirmed" navPush="WalletDetailsView"
+                    [navParams]="{ wallet: wallet, walletId: wallet.id }" class="wallet">
+                <ion-avatar item-start img-icon [class.locked]="wallet.locked" [class.default]="!wallet.color"
+                            [style.box-shadow]="'0 0 0 2px ' + wallet.color">
+                    <img src="assets/img/icons/wallet.svg">
+                </ion-avatar>
+
+                <ion-label>
+                    <h2 *ngIf="wallet.name">{{ wallet.name }}</h2>
+                    <h2 *ngIf="!wallet.name && wallet.rootAlias">@{{ wallet.rootAlias}}</h2>
+                    <h2 *ngIf="!wallet.name && !wallet.rootAlias">Personal wallet</h2>
+
+                    <p *ngIf="wallet.name && wallet.rootAlias">
+                        @{{ wallet.rootAlias}}
+                    </p>
+                    <p class="invites">
+                        Invites: {{ wallet.availableInvites || 0}} <span *ngIf="wallet.pendingInvites">(+{{wallet.pendingInvites}} pending)</span>
+                    </p>
+                    <p *ngIf="wallet.balanceHidden; else notHidden">
+                        [Balance Hidden]
+                    </p>
+                    <ng-template #notHidden>
+                        <p class="merit-amount">
+                            {{ wallet.balance.spendableAmount | toMRT}}
+                        </p>
+                    </ng-template>
+                </ion-label>
+
+                <ion-note *ngIf="!wallet.isComplete(); else isComplete" class="assertive">Incomplete</ion-note>
+                <ng-template #isComplete>
+                    <ion-note class="balance" item-end>
+                        <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.alternativeBalanceAvailable">
+                            {{ wallet.balance.spendableAmount | toFiat }}
+                        </div>
+
+                        <span class="error" *ngIf="wallet.error">{{ wallet.error }}</span>
+                    </ion-note>
+                </ng-template>
+
+            </button>
+
+            <ng-template #notConfirmed>
+                <div *ngIf="!wallet.confirmed" class="wallet"
+                     navPush="EditWalletView"
+                     [navParams]="{ wallet: wallet, walletId: wallet.id }">
+                    <div class="unlock-backdrop"></div>
+
+                    <div class="unlock-popup">
+                        <img src="assets/img/icons/unlock.svg">
+                        <h2>Not unlocked</h2>
+                        <div class="bottom-label">You cannot use this wallet until your invite request is confirmed</div>
+                    </div>
+
+                    <button ion-item detail-none>
+                        <ion-avatar item-start img-icon [class.locked]="wallet.locked" [class.default]="!wallet.color"
+                                    [style.box-shadow]="'0 0 0 2px ' + wallet.color">
+                            <img src="assets/img/icons/wallet.svg">
+                        </ion-avatar>
+                        <ion-label>
+                            <h2>{{ wallet.name }}</h2>
+                            <p>Pending unlock request</p>
+                        </ion-label>
+                    </button>
+                </div>
+            </ng-template>
+
+        </div>
+
+        <button ion-item class="import-wallet-button" navPush="ImportView" detail-none>
+            <ion-avatar item-start img-icon>
+                <img src="assets/img/icons/export.svg">
+            </ion-avatar>
+            <ion-label>
+                <h2>Import wallet</h2>
+            </ion-label>
+        </button>
+    </ion-list>
 
     <ion-list class="vaults-section">
         <ion-item-divider>
@@ -152,17 +193,23 @@
             </button>
         </ion-list>
 
-        <ion-list class="create-vault" *ngIf="vaults && !vaults.length">
-            <ion-item class="add-vault-block">
+        <div class="add-vault-block" *ngIf="vaults && !vaults.length">
+            <ion-item >
                 <ion-thumbnail item-start>
                     <img src="assets/img/icons/vault.svg" alt="">
                 </ion-thumbnail>
                 <ion-label>
                     <h2>Create your vault</h2>
                     <p>Vaults are a way to keep your Merit safe</p>
-                </ion-label>
+                    <p [hidden]="vaultsMoreInfoMode" (click)="vaultsMoreInfoMode = true"><a>More info</a></p>
+                </ion-label>vault
             </ion-item>
-        </ion-list>
+            <div class="vaults-more-info" [hidden]="!vaultsMoreInfoMode">
+                Vault is a merit address which has another layer of safety - you can send money only to selected list of addresses.
+                <br><br>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                <br><br>Since vault is a merit address you need an active invite to create a vault
+            </div>
+        </div>
 
         <ion-list *ngIf="!vaults" >
             <ion-item class="add-vault-block">
