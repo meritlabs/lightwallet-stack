@@ -1,5 +1,5 @@
 <div class="stats">
-  <div class="container--inner stats__wrap">
+  <div class="container--fluid stats__wrap">
     <!-- NOTE: Uncoment code for displaying rank widget -->
     <!-- <div class="stats__item">
       <p class="stats__item__title">Rank<br>&nbsp;</p>
@@ -22,49 +22,59 @@
       </ng-template>
     </div> -->
     <div class="stats__item">
-      <p class="stats__item__title">My<br>Community</p>
+      <p class="stats__item__title">My
+        <br>Community</p>
       <div class="stats__item__picture">
         <img src="/assets/v1/images/stats/communityIcon.png" alt="">
       </div>
       <ng-container *ngIf="!loading; else peopleLoading">
         <div class="stats__item__info">
-          {{ totals?.totalCommunitySize }} <span>People</span>
+          {{ totals?.totalCommunitySize }}
+          <span>People</span>
         </div>
         <!--<div class="stats__item__grows">-->
-          <!--<p>+5</p>-->
+        <!--<p>+5</p>-->
         <!--</div>-->
       </ng-container>
       <ng-template #peopleLoading>
         <loading-spinner-small></loading-spinner-small>
       </ng-template>
+      <button class="ui-button ui-button--xs" (click)="showTips('community')">Extend my community</button>
     </div>
     <div class="stats__item">
-      <p class="stats__item__title">Ambassador<br>Rewards</p>
+      <p class="stats__item__title">Ambassador
+        <br>Rewards</p>
       <div class="stats__item__picture">
         <img src="/assets/v1/images/stats/ambassadorIcon.png" alt="">
       </div>
       <ng-container *ngIf="!loading; else ambassadorLoading">
         <div class="stats__item__info">
-          {{totals?.totalAmbassadorRewards || '0.00'}} <span>MRT</span>
+          {{totals?.totalAmbassadorRewards || '0.00'}}
+          <span>MRT</span>
         </div>
       </ng-container>
+      <button class="ui-button ui-button--xs" (click)="showTips('ambassador')">Get Ambassador Rewards</button>
     </div>
     <ng-template #ambassadorLoading>
       <loading-spinner-small></loading-spinner-small>
     </ng-template>
     <div class="stats__item">
-      <p class="stats__item__title">Mining<br>Rewards</p>
+      <p class="stats__item__title">Mining
+        <br>Rewards</p>
       <div class="stats__item__picture">
         <img src="/assets/v1/images/stats/miningIcon.png" alt="">
       </div>
       <ng-container *ngIf="!loading; else miningLoading">
         <div class="stats__item__info">
-          {{totals?.totalMiningRewards || '0.00'}} <span>MRT</span>
+          {{totals?.totalMiningRewards || '0.00'}}
+          <span>MRT</span>
         </div>
       </ng-container>
       <ng-template #miningLoading>
         <loading-spinner-small></loading-spinner-small>
       </ng-template>
+      <button class="ui-button ui-button--xs" (click)="showTips('mining')">Start mining</button>
     </div>
   </div>
+  <app-get-started-tips [wallets]='wallets' [setTipType]="tipType"></app-get-started-tips>
 </div>

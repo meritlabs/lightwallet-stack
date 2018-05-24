@@ -1,4 +1,4 @@
-<profile-stats [totals]="totals$ | async" [loading]="walletsLoading$ | async"></profile-stats>
+<profile-stats [totals]="totals$ | async" [wallets]="wallets$ | async" [loading]="walletsLoading$ | async"></profile-stats>
 <div class="container--inner wrap">
   <div class="widget">
     <app-invites></app-invites>
@@ -7,11 +7,10 @@
         Send Merit
       </h2>
       <div class="ui-input__wrapper ui-input__wrapper--mrt">
-        <input type="text" name="" [(ngModel)]="amount" (keypress)="sendSubmit($event)"
-               class="ui-input ui-input--form ui-input--text">
+        <input type="text" name="" [(ngModel)]="amount" (keypress)="sendSubmit($event)" class="ui-input ui-input--form ui-input--text">
         <div class="ui-input__addon">MRT</div>
-        <button [disabled]="!amount || amount == 0" [routerLink]='"/send"' [queryParams]="{ amount: amount }"
-                class="ui-button ui-button--blue ui-button--sm" id="sendMrt">SEND</button>
+        <button [disabled]="!amount || amount == 0" [routerLink]='"/send"' [queryParams]="{ amount: amount }" class="ui-button ui-button--blue ui-button--sm"
+          id="sendMrt">SEND</button>
       </div>
     </div>
     <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async" [showButton]=false></wallets-list>
@@ -22,8 +21,7 @@
       Latest transactions
     </h2>
     <ng-container *ngIf="transactions$ | async as transactions">
-      <history-list [widget]=true [transactions]="transactions"
-                    [loading]="transactionsLoading$ | async" [style]="getHistoryStyle(transactions?.length || 0)"></history-list>
+      <history-list [widget]=true [transactions]="transactions" [loading]="transactionsLoading$ | async" [style]="getHistoryStyle(transactions?.length || 0)"></history-list>
     </ng-container>
   </div>
 </div>
