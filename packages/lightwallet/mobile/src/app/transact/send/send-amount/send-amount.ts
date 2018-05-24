@@ -123,8 +123,8 @@ export class SendAmountView {
     this.suggestedAmounts[this.CURRENCY_TYPE_MRT] = ['5', '10', '100'];
     this.suggestedAmounts[this.CURRENCY_TYPE_FIAT] = ['5', '10', '100'];
 
-    this.wallets = await this.profileService.getWallets();
-    await this.chooseAppropriateWallet();
+    this.wallets = (await this.profileService.getWallets()).filter(w => w.confirmed);
+    this.chooseAppropriateWallet();
     this.loading = false;
 
     this.events.subscribe('Remote:IncomingTx', () => {
@@ -134,7 +134,6 @@ export class SendAmountView {
 
   private chooseAppropriateWallet() {
     if (this.wallets && this.wallets[0]) {
-
       this.selectedWallet = this.navParams.get('wallet');
       if (!this.selectedWallet) {
         this.selectedWallet = this.wallets[0];
