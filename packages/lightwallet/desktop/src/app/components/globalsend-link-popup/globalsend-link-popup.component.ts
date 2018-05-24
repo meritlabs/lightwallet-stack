@@ -4,13 +4,13 @@ import { ToastControllerService } from '../toast-notification/toast-controller.s
 
 @Component({
   selector: 'meritmoney-link-popup',
-  styleUrls: ['./meritmoney-link-popup.component.sass'],
+  styleUrls: ['./globalsend-link-popup.component.sass'],
   template: `
     <div class="ui-prompt">
-      <h2 class="title">Global Send Link</h2>
+      <h2 class="title">{{ isInvite? 'MeritInvite' : 'MeritMoney' }} Link</h2>
       <div class="message">
         Click on the link to copy
-        <div class="meritmoney-link" (click)="onCopy()" [clip]="globalSendURL">{{ globalSendURL }}</div>
+        <div class="globalsend-link" (click)="onCopy()" [clip]="globalSendURL">{{ globalSendURL }}</div>
       </div>
       <div class="controls">
         <button (click)="dismiss()"
@@ -25,15 +25,17 @@ import { ToastControllerService } from '../toast-notification/toast-controller.s
 export class GlobalsendLinkPopupComponent implements IDynamicComponent {
   destroy: Function;
   globalSendURL: string;
+  isInvite: boolean;
 
   constructor(private toastCtrl: ToastControllerService) {}
 
-  init(globalSendURL: string) {
+  init(globalSendURL: string, isInvite?: boolean) {
+    this.isInvite = isInvite;
     this.globalSendURL = globalSendURL;
   }
 
   onCopy() {
-    this.toastCtrl.success('MeritMoney link copied!');
+    this.toastCtrl.success((this.isInvite? 'MeritInvite' : 'MeritMoney') + ' link copied!');
   }
 
   dismiss() {

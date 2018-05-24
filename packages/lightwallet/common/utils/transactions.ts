@@ -114,7 +114,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
     if (easySendsByAddress[tx.addressTo]) {
       const easySend = easySendsByAddress[tx.addressTo];
-      tx.name = 'Global Send';
+      tx.name = 'MeritMoney';
       tx.type = 'meritmoney';
       tx.easySend = easySend;
       tx.easySendUrl = getEasySendURL(easySend);
