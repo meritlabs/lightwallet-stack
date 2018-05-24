@@ -812,3 +812,10 @@ $v-tab-send-selected-icon: url("../img/tab-icons/ico-send-selected.svg") !defaul
     -mox-text-security:none;
   }
 }
+
+.wallet-selector {
+  ion-icon[item-end] {
+    font-size: 22px;
+    margin-right: 16px;
+  }
+}
