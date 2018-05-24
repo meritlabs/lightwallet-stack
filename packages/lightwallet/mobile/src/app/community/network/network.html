@@ -69,7 +69,11 @@
         <ion-label>
           <h2>Invites</h2>
         </ion-label>
-        <ion-badge item-end>{{availableInvites}}</ion-badge>
+        <div ion-item>
+          <ion-badge item-end>{{availableInvites}}</ion-badge>
+          <span *ngIf="pendingInvites" class="pending-invites">+{{pendingInvites}} pending</span>
+        </div>
+        
       </button>
   </ion-list>
 

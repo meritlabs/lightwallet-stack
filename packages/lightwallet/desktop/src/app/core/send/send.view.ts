@@ -14,12 +14,13 @@ import { MWCService } from '@merit/common/services/mwc.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { SendService } from '@merit/common/services/send.service';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { cleanAddress, isAddress } from '@merit/common/utils/addresses';
 import { SendValidator } from '@merit/common/validators/send.validator';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { Store } from '@ngrx/store';
-import { clone, omit, isEqual } from 'lodash';
+import { clone, isEqual, omit } from 'lodash';
 import 'rxjs/add/operator/isEmpty';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
@@ -122,8 +123,8 @@ export class SendView implements OnInit {
     distinctUntilChanged((before: any, after: any) => {
       const b: any = omit(before, 'wallet');
       const a: any = omit(after, 'wallet');
-      b.wallet = before.wallet? before.wallet.id : null;
-      a.wallet = after.wallet? after.wallet.id : null;
+      b.wallet = before.wallet ? before.wallet.id : null;
+      a.wallet = after.wallet ? after.wallet.id : null;
 
       return isEqual(a, b);
     }),
@@ -228,7 +229,8 @@ export class SendView implements OnInit {
               private sendService: SendService,
               private feeService: FeeService,
               private persistenceService: PersistenceService2,
-              private mwcService: MWCService) {
+              private mwcService: MWCService,
+              private toastCtrl: ToastControllerService) {
   }
 
   async ngOnInit() {
@@ -276,6 +278,10 @@ export class SendView implements OnInit {
           }
         })
       ).subscribe();
+  }
+
+  onGlobalSendCopy() {
+    this.toastCtrl.success('Copied to clipboard');
   }
 
   ngAfterViewInit() {
