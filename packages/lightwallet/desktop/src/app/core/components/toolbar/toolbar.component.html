@@ -1,37 +1,42 @@
-<div class="menuSwitcher" [ngClass]="{'active': showMenu}" (click)="showMenu = !showMenu">
-  <div class="burger">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-  <div class="title">
-    Advanced toolbar
-  </div>
-</div>
-<div class="divider"></div>
-<div class="balance">
-  <ng-container *ngIf="totalsLoading$ | async">
-    <loading-spinner></loading-spinner>
-  </ng-container>
-  <ng-container *ngIf="totals$ | async as totals">
-    <div class="title">
-      Avalible amount:
+<div class="toolbar">
+  <div class="menuSwitcher" [ngClass]="{'active': showAdvTb}" (click)="showAdvTb = !showAdvTb">
+    <div class="burger">
+      <span></span>
+      <span></span>
+      <span></span>
     </div>
-    <div class="amount-merit">{{ totals.totalWalletsBalance }} MRT</div>
-    <div class="amount-fiat" *ngIf="totalWalletsBalanceFiat">$ {{ totals.totalWalletsBalanceFiat }}</div>
-  </ng-container>
-</div>
-<div class="buy-merit">
-  <a href="https://www.merit.me/get-started/#learn-the-basics" onclick="gtag('event', 'UX Testing', { 'event_category': 'Testing', 'event_action': 'Click', 'event_label': '_Get started toolbar'})"
-    target="_blank" class="ui-button ui-button--buy">
-    <small>BUY MORE</small>
-  </a>
-</div>
-<div class="right">
-  <div class="box">
-    <button role="button" (click)="refresh()" class="refresh-button" [class.refreshing]="walletsLoading$ | async" [disabled]="walletsLoading$ | async">
-      <img src="/assets/v1/icons/refresh.svg" alt="">
-    </button>
+    <div class="title">
+      Advanced toolbar
+    </div>
   </div>
-  <app-notifications [notifications]="notifications$ | async" [hasNewNotifications]="totalUnreadNotifications$ | async"></app-notifications>
+  <div class="divider"></div>
+  <div class="balance">
+    <ng-container *ngIf="totalsLoading$ | async">
+      <loading-spinner></loading-spinner>
+    </ng-container>
+    <ng-container *ngIf="totals$ | async as totals">
+      <div class="title">
+        Avalible amount:
+      </div>
+      <div class="amount-merit">{{ totals.totalWalletsBalance }} MRT</div>
+      <div class="amount-fiat" *ngIf="totalWalletsBalanceFiat">$ {{ totals.totalWalletsBalanceFiat }}</div>
+    </ng-container>
+  </div>
+  <div class="buy-merit">
+    <a href="https://www.merit.me/get-started/#learn-the-basics" onclick="gtag('event', 'UX Testing', { 'event_category': 'Testing', 'event_action': 'Click', 'event_label': '_Get started toolbar'})"
+      target="_blank" class="ui-button ui-button--buy">
+      <small>BUY MORE</small>
+    </a>
+  </div>
+  <div class="right">
+    <div class="box">
+      <button role="button" (click)="refresh()" class="refresh-button" [class.refreshing]="walletsLoading$ | async" [disabled]="walletsLoading$ | async">
+        <img src="/assets/v1/icons/refresh.svg" alt="">
+      </button>
+    </div>
+    <app-notifications [notifications]="notifications$ | async" [hasNewNotifications]="totalUnreadNotifications$ | async"></app-notifications>
+  </div>
+</div>
+<div class="advancedToolbar" [ngClass]="{'active': showAdvTb}">
+
 </div>
