@@ -1,11 +1,9 @@
-/* global addthis_config */
-
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
-declare var addthis_config: any;
-declare var addthis_share: any;
+declare const addthis_config: any;
+declare const addthis_share: any;
 
 @Component({
   selector: 'app-get-started-tips',
