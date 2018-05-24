@@ -22,7 +22,7 @@ declare global {
     ])
   ]
 })
-export class GetStartedTipsComponent implements OnInit, OnDestroy, OnChanges {
+export class GetStartedTipsComponent implements OnInit, OnDestroy {
   constructor(private persistenceService: PersistenceService2) {}
 
   active: boolean = false;
@@ -33,41 +33,14 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy, OnChanges {
   shareUrl: string = 'wallet.merit.me';
   shareText: string = `Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth.\n Get wallet now, your activation code: @`;
 
-  @Input() wallets: DisplayWallet[];
-  @Input() setTipType: string;
+  private _wallets: DisplayWallet[];
 
-  async ngOnInit() {
-    const getActiveState = await this.persistenceService.getViewSettings('showStarterTips');
+  @Input()
+  set wallets(val: DisplayWallet[]) {
+    this._wallets = val;
 
-    if (getActiveState !== false) {
-      this.active = true;
-    }
-
-    // move created shareThis into right container
-    const newParent = document.getElementById('pasteShareThis'),
-      oldParent = document.getElementById('shareThis');
-
-    while (oldParent.childNodes.length > 0) {
-      newParent.appendChild(oldParent.childNodes[0]);
-    }
-  }
-
-  ngOnDestroy() {
-    // move created shareThis into right container
-    const newParent = document.getElementById('shareThis'),
-      oldParent = document.getElementById('pasteShareThis');
-
-    while (oldParent.childNodes.length > 0) {
-      newParent.appendChild(oldParent.childNodes[0]);
-    }
-  }
-
-  ngOnChanges() {
-    if (this.setTipType !== 'all' && this.active !== true) {
-      this.active = true;
-    }
-    if (this.wallets[0] && window.addthis_config && window.addthis_share) {
-      const { alias } = this.wallets[0];
+    if (val && val[0] && window.addthis_config && window.addthis_share) {
+      const { alias } = val[0];
 
       window.addthis_config.ui_email_title = this.shareTitle;
       window.addthis_config.ui_email_note = this.shareText + alias;
@@ -86,7 +59,48 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy, OnChanges {
             text: `${this.shareTitle}\n ${this.shareText}${alias}`
           }
         }
-      };
+      }
+    }
+  }
+
+  get wallets(): DisplayWallet[] {
+    return this._wallets;
+  }
+
+
+  @Input() setTipType: string;
+
+  async ngOnInit() {
+    const getActiveState = await this.persistenceService.getViewSettings('showStarterTips');
+
+    if (getActiveState !== false) {
+      this.active = true;
+    }
+
+    if (this.setTipType !== 'all' && this.active !== true) {
+      this.active = true;
+    }
+
+    if (window.addthis_config && window.addthis_share) {
+      // move created shareThis into right container
+      const newParent = document.getElementById('pasteShareThis'),
+        oldParent = document.getElementById('shareThis');
+
+      while (oldParent.childNodes.length > 0) {
+        newParent.appendChild(oldParent.childNodes[0]);
+      }
+    }
+  }
+
+  ngOnDestroy() {
+    if (!(window.addthis_config && window.addthis_share)) return;
+    
+    // move created shareThis into right container
+    const newParent = document.getElementById('shareThis'),
+      oldParent = document.getElementById('pasteShareThis');
+
+    while (oldParent.childNodes.length > 0) {
+      newParent.appendChild(oldParent.childNodes[0]);
     }
   }
 
