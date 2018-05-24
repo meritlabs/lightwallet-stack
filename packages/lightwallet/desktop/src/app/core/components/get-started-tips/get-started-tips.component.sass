@@ -2,6 +2,7 @@
 
 .StarterTips
   position: relative
+
 .StarterTips_wrap
   margin: 35px -20px -55px
   background: $grey
@@ -12,6 +13,7 @@
   overflow: hidden
   max-height: 0
   box-shadow: inset 0px -25px 40px -20px rgba(0, 0, 0, 0.05)
+
 .closeCross
   width: 50px
   height: 50px
@@ -42,6 +44,7 @@
     &:after
       transform: rotate(45deg)
       top: 18px
+
 .StarterTips
   &_items
     display: flex
@@ -64,11 +67,12 @@
       top: 0
       height: 100%
       width: 1px
-      background: linear-gradient(to bottom, rgba(46,51,88,0.01) 0%,rgba(46,51,88,0.65) 48%,rgba(0,0,0,0) 100%)
+      background: linear-gradient(to bottom, rgba(46, 51, 88, 0.01) 0%, rgba(46, 51, 88, 0.65) 48%, rgba(0, 0, 0, 0) 100%)
   &_title
     +font(500, 24px, 26px, #3542a6)
     opacity: .7
     margin-bottom: 40px
+
 .StarterTips_item
   +font(300, 17px, 24px, $dark-grey-blue)
   p
@@ -97,22 +101,26 @@
         line-height: 14px
         color: $grey
         box-shadow: 0 4px 5px -2px rgba(0, 0, 0, 0.28)
+
 @for $i from 0 to 20
   li:nth-child(#{$i + 1})
     &:before
       content: "#{$i + 1 }"
+
 .shareBox
   padding-top: 20px
+
 @keyframes highlight
   0%
-    background: rgba(255,255,255,0)
+    background: rgba(255, 255, 255, 0)
     box-shadow: 0 0 0 rgba(0, 176, 221, 0)
   40%
-    background: rgba(255,255,255,1)
+    background: rgba(255, 255, 255, 1)
     box-shadow: 0 0 10px rgba(0, 176, 221, 1)
   100%
-    background: rgba(255,255,255,1)
+    background: rgba(255, 255, 255, 1)
     box-shadow: 0 0 10px rgba(0, 176, 221, 1)
+
 .tipsModal
   position: fixed
   z-index: 1000
@@ -127,7 +135,7 @@
   max-height: 725px
   background: $white
   border-radius: 10px
-  box-shadow: 0 0 100px rgba(0,0,0, .5)
+  box-shadow: 0 0 100px rgba(0, 0, 0, .5)
   padding: 50px 20px 30px
   .close
     position: absolute
