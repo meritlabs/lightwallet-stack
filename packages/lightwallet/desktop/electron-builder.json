@@ -1,0 +1,14 @@
+{
+  "appId": "me.merit.lightwallet-desktop",
+  "productName": "Merit Lightwallet",
+  "directories": {
+    "output": "electron-dist"
+  },
+  "mac": {
+    "category": "public.app-category.utilities",
+    "target": "dmg"
+  },
+  "linux": {
+    "target": "deb"
+  }
+}
