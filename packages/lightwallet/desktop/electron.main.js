@@ -13,16 +13,16 @@ function buildMenuTemplate() {
     {
       label: 'Edit',
       submenu: [
-          { role: 'undo' },
-          { role: 'redo' },
-          { type: 'separator' },
-          { role: 'cut' },
-          { role: 'copy' },
-          { role: 'paste' },
-          { role: 'pasteandmatchstyle' },
-          { role: 'delete' },
-          { role: 'selectall' },
-      ],
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'pasteandmatchstyle' },
+        { role: 'delete' },
+        { role: 'selectall' }
+      ]
     },
     {
       label: 'View',
@@ -33,40 +33,41 @@ function buildMenuTemplate() {
         { role: 'resetzoom' },
         { role: 'zoomin' },
         { role: 'zoomout' },
-        { type: 'separator' },
-      ],
+        { type: 'separator' }
+      ]
     },
     {
       role: 'window',
       submenu: [
-          { role: 'minimize' },
-          { role: 'close' }
-      ],
+        { role: 'minimize' },
+        { role: 'close' },
+        { role: 'toggledevtools' }
+      ]
     },
     {
       role: 'help',
       submenu: [
         {
           label: 'Learn More',
-          click () { shell.openExternal('https://www.merit.me') }
+          click() { shell.openExternal('https://www.merit.me'); }
         }
-      ],
-    },
+      ]
+    }
   ];
 
   if (process.platform === 'darwin') {
     template.unshift({
       label: appName,
       submenu: [
-        {role: 'about', label: `About ${appName}`},
-        {type: 'separator'},
-        {role: 'services', submenu: []},
-        {type: 'separator'},
-        {role: 'hide', label: `Hide ${appName}`},
-        {role: 'hideothers'},
-        {role: 'unhide'},
-        {type: 'separator'},
-        {role: 'quit', label: `Quit ${appName}`}
+        { role: 'about', label: `About ${appName}` },
+        { type: 'separator' },
+        { role: 'services', submenu: [] },
+        { type: 'separator' },
+        { role: 'hide', label: `Hide ${appName}` },
+        { role: 'hideothers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit', label: `Quit ${appName}` }
       ]
     });
   }
@@ -92,6 +93,9 @@ function createWindow() {
     width: 1280,
     height: 720,
     autoHideMenuBar: true,
+    webPreferences: {
+      devTools: true
+    }
   });
 
   const URL = url.format({
