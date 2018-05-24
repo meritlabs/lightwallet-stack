@@ -30,7 +30,7 @@ export class DashboardView {
   constructor(private store: Store<IRootAppState>, private sanitizer: DomSanitizer) {}
 
   getHistoryStyle(length: number) {
-    return this.sanitizer.bypassSecurityTrustStyle('height: calc(' + (length * 95) + 'px)');
+    return this.sanitizer.bypassSecurityTrustStyle('height: ' + (length * 96) + 'px');
   }
 
   onGuideDismiss() {

@@ -12,18 +12,18 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { SendService } from '@merit/common/services/send.service';
-import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
+import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import {
   AlertController,
+  Events,
   IonicPage,
   LoadingController,
   ModalController,
   NavController,
-  NavParams,
-  Events
+  NavParams
 } from 'ionic-angular';
 import * as _ from 'lodash';
 
@@ -84,7 +84,7 @@ export class SendAmountView {
               private toastCtrl: ToastControllerService,
               private alertCtrl: AlertController,
               private easySendService: EasySendService,
-              private easyReceiveSerivce: EasyReceiveService,
+              private easyReceiveService: EasyReceiveService,
               private walletService: WalletService,
               private loadingCtrl: LoadingController,
               private logger: LoggerService,
@@ -97,6 +97,9 @@ export class SendAmountView {
   }
 
   async ngOnInit() {
+    this.txData = null;
+    await this.updateTxData();
+
     this.availableUnits = [
       { type: this.CURRENCY_TYPE_MRT, name: this.configService.get().wallet.settings.unitCode.toUpperCase() }
     ];
@@ -109,7 +112,11 @@ export class SendAmountView {
     }
     this.selectedCurrency = this.availableUnits[0];
     let passedAmount = this.navParams.get('amount');
-    if (passedAmount) this.formData.amount = String(this.rateService.microsToMrt(passedAmount));
+    if (passedAmount) {
+      this.formData.amount = String(this.rateService.microsToMrt(passedAmount));
+      this.createTxp();
+    }
+
     await this.updateAmount();
 
     // todo add smart common amounts receive
@@ -125,11 +132,6 @@ export class SendAmountView {
     });
   }
 
-  ionViewWillEnter() {
-    this.txData = null;
-    this.updateTxData();
-  }
-
   private chooseAppropriateWallet() {
     if (this.wallets && this.wallets[0]) {
 
@@ -140,7 +142,7 @@ export class SendAmountView {
         this.selectedWallet = this.wallets.find(w => {
           return (w.balance.spendableAmount >= passedAmount) && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
         });
-      } 
+      }
     }
   }
 
@@ -148,9 +150,9 @@ export class SendAmountView {
     const modal = this.modalCtrl.create('SelectWalletModal',
       {
         selectedWallet: this.selectedWallet,
-        showInvites: this.sendMethod.type == SendMethodType.Easy,  
+        showInvites: this.sendMethod.type == SendMethodType.Easy,
         availableWallets: this.wallets.filter(w => {
-          return w.balance.spendableAmount && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
+          return w.balance.spendableAmount && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites);
         })
       }, MERIT_MODAL_OPTS);
 
@@ -353,7 +355,7 @@ export class SendAmountView {
 
   private async createTxp() {
 
-    if (this.walletService.isEncrypted(this.selectedWallet) && this.sendMethod.type == SendMethodType.Easy ) {
+    if (this.walletService.isEncrypted(this.selectedWallet) && this.sendMethod.type == SendMethodType.Easy) {
       if (this.walletPassword) {
         this.walletService.decrypt(this.selectedWallet, this.walletPassword);
       } else {
@@ -415,8 +417,8 @@ export class SendAmountView {
             {
               name: 'password',
               placeholder: 'Password',
-              type: 'password',
-            },
+              type: 'password'
+            }
           ],
           buttons: [
             {
@@ -424,7 +426,7 @@ export class SendAmountView {
               role: 'cancel',
               handler: () => {
                 reject();
-              },
+              }
             },
             {
               text: 'Ok',
@@ -440,9 +442,9 @@ export class SendAmountView {
                     this.getPassword(true);
                   }
                 }
-              },
-            },
-          ],
+              }
+            }
+          ]
         })
         .present();
     });

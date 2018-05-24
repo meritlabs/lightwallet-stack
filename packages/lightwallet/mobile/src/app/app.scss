@@ -225,6 +225,8 @@ ion-item textarea {
   button[ion-button].button.header-action-button {
     position: absolute;
     top: 16px;
+    top: calc(16px + const(safe-area-inset-top));
+    top: calc(16px + env(safe-area-inset-top));
     right: 0;
     color: white;
   }

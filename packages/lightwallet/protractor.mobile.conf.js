@@ -20,15 +20,17 @@ if (IS_CI) {
     }
   );
 } else {
-  config.multiCapabilities.push({
-    browserName: 'chrome',
-    chromeOptions: {
-      mobileEmulation: {
-        deviceName: 'Pixel 2'
-      },
-      args: ['--touch-events=enabled']
+  config.multiCapabilities.push(
+    {
+      browserName: 'chrome',
+      chromeOptions: {
+        mobileEmulation: {
+          deviceName: 'Pixel 2'
+        },
+        args: ['--touch-events=enabled']
+      }
     }
-  });
+  );
 }
 
 exports.config = config;

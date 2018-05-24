@@ -14,8 +14,9 @@ import { MWCService } from '@merit/common/services/mwc.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { SendService } from '@merit/common/services/send.service';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { isAddress } from '@merit/common/utils/addresses';
+import { cleanAddress, isAddress } from '@merit/common/utils/addresses';
 import { SendValidator } from '@merit/common/validators/send.validator';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { Store } from '@ngrx/store';
@@ -228,7 +229,8 @@ export class SendView implements OnInit {
               private sendService: SendService,
               private feeService: FeeService,
               private persistenceService: PersistenceService2,
-              private mwcService: MWCService) {
+              private mwcService: MWCService,
+              private toastCtrl: ToastControllerService) {
   }
 
   async ngOnInit() {
@@ -276,6 +278,10 @@ export class SendView implements OnInit {
           }
         })
       ).subscribe();
+  }
+
+  onGlobalSendCopy() {
+    this.toastCtrl.success('Copied to clipboard');
   }
 
   ngAfterViewInit() {
@@ -337,6 +343,8 @@ export class SendView implements OnInit {
   private async createTx(formValue: any): Promise<TxData> {
     let txData: Partial<TxData> = {};
     let { amountMrt, wallet, type, feeIncluded, password, address } = formValue;
+
+    address = cleanAddress(address);
 
     const micros = this.rateService.mrtToMicro(amountMrt);
 

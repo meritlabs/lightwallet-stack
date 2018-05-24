@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { COINBASE_CONFIRMATION_THRESHOLD } from '@merit/common/utils/constants';
 import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/globalsend-link-popup/globalsend-link-popup.controller';
-import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 
 @Component({
   selector: 'history-item',
@@ -32,8 +32,7 @@ export class HistoryItemComponent implements OnInit {
 
   constructor(
     private globalSendLinkCtrl: GlobalsendLinkPopupController,
-    private easyReceive: EasyReceiveService
-  ) {}
+    private easyReceive: EasyReceiveService) {}
 
   ngOnInit() {
     const { tx } = this;
