@@ -94,6 +94,7 @@
           +transition(.3s, linear)
   .title
     +font(300, 12px, 12px, $gun-metal, $transform: uppercase)
+    position: relative
   &.active
     span:nth-child(1),
     span:nth-child(3)
@@ -107,6 +108,22 @@
         transform: rotate(45deg)
       &:before
         transform: rotate(-45deg)
+.notification
+  position: absolute
+  display: block
+  width: 15px
+  height: 15px
+  border-radius: 100%
+  background: rgb(8, 177, 105)
+  color: $white
+  font-size: 10px
+  display: flex
+  justify-content: center
+  align-items: center
+  position: absolute
+  right: -15px
+  top: -15px
+  box-shadow: 1px 1px 3px rgba(0,0,0, .3)
 .advancedToolbar
   position: fixed
   width: calc(100% - #{$dashboard-aside-width})
@@ -149,6 +166,12 @@
     +font(500, 16px, 16px, $gun-metal, $transform: uppercase)
     opacity: .95
     margin-bottom: 25px
+    position: relative
+    &-selected
+      color: rgb(8, 177, 105)
+    .notification
+      right: initial
+      left: -15px
   .description
     +font(300, 14px, 22px, $gun-metal)
   ul li 
