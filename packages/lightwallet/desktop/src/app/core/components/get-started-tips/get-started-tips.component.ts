@@ -41,7 +41,7 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     // move created shareThis into right container
-    var newParent = document.getElementById('pasteShareThis'),
+    const newParent = document.getElementById('pasteShareThis'),
       oldParent = document.getElementById('shareThis');
 
     while (oldParent.childNodes.length > 0) {
@@ -51,7 +51,7 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnDestroy() {
     // move created shareThis into right container
-    var newParent = document.getElementById('shareThis'),
+    const newParent = document.getElementById('shareThis'),
       oldParent = document.getElementById('pasteShareThis');
 
     while (oldParent.childNodes.length > 0) {
