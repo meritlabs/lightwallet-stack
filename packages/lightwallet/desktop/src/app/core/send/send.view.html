@@ -14,7 +14,7 @@
       <!-- TODO(ibby) create success-message & info-message components... or just a global message component with different styles -->
       Transaction successfully sent
       <div *ngIf="easySendUrl">
-        Your global send URL is ready, now you can share it:
+        Your MeritMoney Link is ready, now you can share it:
         <div class="easysend-url-container" [clip]="easySendUrl" (click)="onGlobalSendCopy()">
           <small class="click_to_copy">Click to copy</small>
           {{ easySendUrl }}
