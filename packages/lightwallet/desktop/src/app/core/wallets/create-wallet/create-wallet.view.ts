@@ -9,6 +9,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { AddressService } from '@merit/common/services/address.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { WalletService } from '@merit/common/services/wallet.service';
+import { cleanAddress } from '@merit/common/utils/addresses';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 import { MnemonicValidator } from '@merit/common/validators/mnemonic.validator';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
@@ -178,7 +179,7 @@ export class CreateWalletView {
   async create() {
     this.loader.show();
 
-    const {
+    let {
       walletName: name,
       parentAddress,
       alias,
@@ -188,6 +189,9 @@ export class CreateWalletView {
       password,
       color
     } = this.formData.getRawValue();
+
+    parentAddress = cleanAddress(parentAddress);
+    alias = cleanAddress(alias);
 
     const opts = {
       name,
@@ -199,7 +203,6 @@ export class CreateWalletView {
       m: 1, //todo temp!
       n: 1 //todo temp!
     };
-
 
     try {
       const wallet = await this.walletService.createWallet(opts);

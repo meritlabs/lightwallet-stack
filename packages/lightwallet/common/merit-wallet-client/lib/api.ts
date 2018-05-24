@@ -830,6 +830,7 @@ export class API {
    *
    */
   async sendInvite(toAddress: string, amount: number = 1, script = null, message: string = '', walletPassword: string = ''): Promise<any> {
+    amount = parseInt(amount as any);
     const opts = {
       invite: true,
       outputs: [_.pickBy({

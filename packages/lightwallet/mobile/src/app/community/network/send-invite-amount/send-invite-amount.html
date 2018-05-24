@@ -1,0 +1,47 @@
+<ion-header no-border>
+    <ion-navbar color="primary">
+        <ion-title>
+            Sending invites to: {{ address }}
+        </ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content no-bounce>
+    <ng-container>
+        <div class="big-header">
+            <div class="amount-area" (click)="focusInput()">
+                <div class="main-amount" enter-to-next>
+                    <ion-item no-lines>
+                        <ion-input
+                                #amount
+                                type="number"
+                                pattern="[0-9]"
+                                [(ngModel)]="formData.amount"
+                                (ngModelChange)="processAmount(amount)"
+                                placeholder="Enter amount to send"
+                                (keypress)="amountKeypress($event.keyCode)">
+                        </ion-input>
+                    </ion-item>
+                    <div class="amount-sm">INV</div>
+                </div>
+            </div>
+        </div>
+        <ion-list *ngIf="wallet">
+            <button ion-item (click)="selectWallet()" detail-none class="wallet-selector">
+                <ion-avatar item-start img-icon>
+                    <img src="assets/img/icons/wallet.svg">
+                </ion-avatar>
+                <p>From</p>
+                <h2>{{wallet?.name}} <span *ngIf="wallet?.alias"> | @{{wallet.alias}}</span></h2>
+                <p *ngIf="wallet?.availableInvites">{{wallet.availableInvites}} invite{{ wallet.availableInvites > 1? 's': '' }}</p>
+                <ion-icon name="ios-arrow-down" item-end></ion-icon>
+            </button>
+        </ion-list>
+    </ng-container>
+
+    <p [hidden]="!error" class="error">{{ error }}</p>
+
+    <ion-footer>
+        <slide-to-action text="Slide to Send" (confirm)="send()"></slide-to-action>
+    </ion-footer>
+
+</ion-content>

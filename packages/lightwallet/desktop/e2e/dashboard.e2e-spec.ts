@@ -4,7 +4,9 @@ import { TEST_WALLET_MNEMONIC, EC } from './app.e2e-spec';
 describe('[Desktop] Dashboard view', () => {
 
   beforeAll(() => {
-    return browser.get('/dashboard');
+    const link = element(by.css('[ng-reflect-router-link="/dashboard"]'));
+    browser.wait(EC.visibilityOf(link), 5000);
+    link.click();
   });
 
   it('should go to dashboard page', async () => {

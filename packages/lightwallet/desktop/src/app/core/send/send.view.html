@@ -1,5 +1,5 @@
 <app-lock-screen fullScreen *ngIf="!hasUnlockedWallet"></app-lock-screen>
-<loading-spinner *ngIf="sending"></loading-spinner>
+<loading-spinner sending-spinner *ngIf="sending"></loading-spinner>
 <send-tour *ngIf="showTour" (hideTour)="hideTour()"></send-tour>
 
 <div class="sendMerit">
@@ -9,18 +9,18 @@
       <p>Send Merit</p>
     </div>
 
-    <error-message *ngIf="error">{{ error }}</error-message>
-    <error-message *ngIf="success" class="success">
+    <message-box error *ngIf="error">{{ error }}</message-box>
+    <message-box success *ngIf="success">
       <!-- TODO(ibby) create success-message & info-message components... or just a global message component with different styles -->
       Transaction successfully sent
       <div *ngIf="easySendUrl">
         Your global send URL is ready, now you can share it:
-        <div class="easysend-url-container" [clip]="easySendUrl">
+        <div class="easysend-url-container" [clip]="easySendUrl" (click)="onGlobalSendCopy()">
           <small class="click_to_copy">Click to copy</small>
           {{ easySendUrl }}
         </div>
       </div>
-    </error-message>
+    </message-box>
 
     <div class="sendMerit__content">
 

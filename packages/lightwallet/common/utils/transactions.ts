@@ -95,14 +95,19 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           tx.name = 'Mined Invite';
           tx.action = TransactionAction.INVITE;
           tx.type = 'credit';
-        } else if (tx.outputs[0].index === 0) {
-          tx.name = 'Mining Reward';
-          tx.action = TransactionAction.MINING_REWARD;
-          tx.isMiningReward = true;
         } else {
-          tx.name = 'Growth Reward';
-          tx.action = TransactionAction.AMBASSADOR_REWARD;
-          tx.isGrowthReward = true;
+          const output = tx.outputs.find(o => o.isMine);
+
+          if (output && output.index !== 0) {
+            // Ambassador reward
+            tx.name = 'Growth Reward';
+            tx.action = TransactionAction.AMBASSADOR_REWARD;
+            tx.isGrowthReward = true;
+          } else {
+            tx.name = 'Mining Reward';
+            tx.action = TransactionAction.MINING_REWARD;
+            tx.isMiningReward = true;
+          }
         }
       }
     }

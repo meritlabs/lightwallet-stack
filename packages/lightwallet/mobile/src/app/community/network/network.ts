@@ -42,6 +42,7 @@ export class NetworkView {
 
   activeUnlockRequests: number;
   availableInvites: number;
+  pendingInvites: number;
   shareButtonAvailable: boolean;
 
   constructor(
@@ -112,6 +113,10 @@ export class NetworkView {
 
       this.availableInvites = this.wallets.reduce((number, w) => {
         return number + w.availableInvites;
+      }, 0);
+
+      this.pendingInvites = this.wallets.reduce((number, w) => {
+        return number + w.pendingInvites;
       }, 0);
 
       const addresses = network.wallets.map(w => w.referralAddress);
