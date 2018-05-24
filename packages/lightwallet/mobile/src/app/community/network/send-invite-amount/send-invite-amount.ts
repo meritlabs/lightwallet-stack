@@ -23,7 +23,6 @@ export class SendInviteAmountView {
   public error:string;
 
   @ViewChild('amount') amountInput: ElementRef;
-  @ViewChild(SlideToActionComponent) slideToAction: SlideToActionComponent;
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -48,13 +47,11 @@ export class SendInviteAmountView {
       this.wallet = this.wallets.find(w => (w.availableInvites > 0));
     }
     if (!this.wallet || !this.wallet.availableInvites) {
-      this.toastCtrl.error('You have no active invites');
-      return this.slideToAction.resetSlider();
+      return this.toastCtrl.error('You have no active invites');
     }
 
     if (this.wallet.availableInvites < this.formData.amount) {
-      this.toastCtrl.error('You don\'t have enough invites in your wallet for this transaction.');
-      return this.slideToAction.resetSlider();
+      return this.toastCtrl.error('You don\'t have enough invites in your wallet for this transaction.');
     }
 
     let loader = this.loadCtrl.create({ content: 'Sending invite...' });
