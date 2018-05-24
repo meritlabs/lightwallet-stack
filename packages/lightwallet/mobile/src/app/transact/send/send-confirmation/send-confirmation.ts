@@ -1,5 +1,5 @@
 import { AlertController, IonicPage, LoadingController, NavController, NavParams, Tabs } from 'ionic-angular';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import * as  _ from 'lodash';
 import { EasySend } from '@merit/common/models/easy-send';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
@@ -12,6 +12,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { SlideToActionComponent } from '../../../../components/slide-to-action/slide-to-action';
 
 @IonicPage()
 @Component({

@@ -53,10 +53,10 @@ export class SlideToActionComponent implements AfterViewInit, OnDestroy {
         case maxPosition:
           this.confirm.emit();
           break;
-        default:
-          this._sliderPosition = 0;
-          this.moveSlider();
       }
+
+      this._sliderPosition = 0;
+      this.moveSlider();
     };
   }
 

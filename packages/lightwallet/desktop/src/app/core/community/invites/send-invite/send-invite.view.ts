@@ -85,7 +85,7 @@ export class SendInviteView {
 
     try {
 
-      await this.walletService.sendInvite(this.selectedWallet.client, address.address);
+      await this.selectedWallet.client.sendInvite(address.address);
       this.store.dispatch(new RefreshOneWalletAction(this.selectedWallet.id, {
         skipRewards: true,
         skipAnv: true,
