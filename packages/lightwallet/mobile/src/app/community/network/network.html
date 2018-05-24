@@ -4,11 +4,14 @@
         <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-
-
   <button ion-button full primary navPush="SendInviteAmountView" [disabled]="!availableInvites" class="send-invite-button">
     Send invite
     <img src="assets/img/icons/send.svg">
+  </button>
+
+  <button ion-button full primary navPush="TellPeopleView" class="tell-people-button">
+    Tell people
+    <img src="assets/img/icons/ambassador_dark.svg">
   </button>
 
   <ion-list no-lines [hidden]="loading">

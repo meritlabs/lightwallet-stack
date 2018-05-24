@@ -14,6 +14,20 @@ view-network {
     }
   }
 
+  .tell-people-button {
+    height: 40px;
+    line-height: 40px;
+    min-height: 40px;
+    margin: 8px 8px 4px;
+    width: calc(100% - 16px);
+    border-radius: 4px;
+    background: #0c0d29;
+    img {
+      margin-left: 8px;
+      height: 18px;
+    }
+  }
+
   ion-content.content > .scroll-content {
     background: #f6f8fa;
 
