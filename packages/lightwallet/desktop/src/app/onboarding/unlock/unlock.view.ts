@@ -114,7 +114,7 @@ export class UnlockComponent {
     }
   }
 
-  declineGlobalSend() {
+  declineMeritMoney() {
     this.loadingCtrl.show();
     this.easyReceiveService.deletePendingReceipt(this.easyReceipt).then(() => {
       this.router.navigateByUrl('onboarding');

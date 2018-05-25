@@ -9,7 +9,11 @@ export enum StorageKey {
   NotificationSettings = 'merit_notification_settings',
   Notifications = 'merit_notifications',
   EasySends = 'merit_easysends',
-  viewSettings = 'app_view_settings'
+  ViewSettingsPrefix = 'app_view_settings_'
+}
+
+export enum ViewSettingsKey {
+  GetStartedTips = 'get_started_tips'
 }
 
 export interface INotificationSettings {
@@ -88,11 +92,11 @@ export class PersistenceService2 {
     return (await this.storage.get(StorageKey.EasySends)) || [];
   }
 
-  setViewSettings(key: string, value: boolean) {
-    return this.storage.set(StorageKey.viewSettings + key, value);
+  setViewSettings(key: ViewSettingsKey, value: any) {
+    return this.storage.set(StorageKey.ViewSettingsPrefix + key, value);
   }
 
-  getViewSettings(key) {
-    return this.storage.get(StorageKey.viewSettings + key);
+  getViewSettings(key: ViewSettingsKey) {
+    return this.storage.get(StorageKey.ViewSettingsPrefix + key);
   }
 }
