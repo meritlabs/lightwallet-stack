@@ -3,9 +3,12 @@ view-tell-people {
     text-align: center;
     padding: 25px;
     color: #73819B;
+    display: flex;
+    align-items: center;
+    height: 100%;
 
     ion-card {
-      margin: 0;
+      margin: 15px 0;
       width: 100%;
       color: rgba(0,0,0,0.4);
       position: relative;
