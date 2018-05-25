@@ -2,7 +2,7 @@
     <ion-navbar color="secondary">
         <ion-title smaller-title>Spread the world</ion-title>
         <ion-buttons end>
-            <button ion-button icon-only >
+            <button ion-button icon-only *ngIf="showShareButton" (click)="share()">
                 <ion-icon name="share"></ion-icon>
             </button>
         </ion-buttons>
@@ -17,7 +17,7 @@
         <div>
             Tell people about Merit and encourage them to register with your unlock code.
 
-            <ion-card (click)="copyToClipboard()">
+            <ion-card (click)="copyToClipboard()" [clip]="inviteText">
                 <div class="click-to-copy">Click to copy</div>
                 <ion-card-header>
                     Share this text in your social networks

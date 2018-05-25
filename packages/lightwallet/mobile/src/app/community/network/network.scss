@@ -150,18 +150,14 @@ view-network {
     }
   }
 
-  ion-item-divider.item-divider {
-    span.merit-amount {
-      display: block;
-      color: map_get($colors, primary);
-      font-size: 13px;
-
-      small {
-        font-size: 11px;
-      }
+  ion-list.wallet {
+    box-shadow: 0 0 1px 0 color($colors, primary);
+    .wallet-title {
+      min-height: 35px;
+      height: 35px;
+      line-height: 35px;
     }
   }
-
 
 
 }
