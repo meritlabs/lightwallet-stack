@@ -11,7 +11,7 @@
       <h2>{{ tx.name }}</h2>
       <p>{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
     </ion-label>
-    <ion-note item-end>
+    <ion-note item-end *ngIf="!tx.isWalletUnlock">
       <span class="merit-amount" [class.credit]="isCredit(tx)">
         {{ tx.isInvite? (tx.amount + ' INV') : (tx.amount | toMRT) }}
       </span>
