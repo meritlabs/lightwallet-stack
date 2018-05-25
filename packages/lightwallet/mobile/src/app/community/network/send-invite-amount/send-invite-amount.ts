@@ -69,7 +69,7 @@ export class SendInviteAmountView {
       const referral = easySend.scriptReferralOpts;
 
       await this.wallet.sendReferral(referral);
-      await this.wallet.sendInvite(referral.address);
+      await this.wallet.sendInvite(referral.address, this.formData.amount);
 
       this.link = getEasySendURL(easySend);
 
