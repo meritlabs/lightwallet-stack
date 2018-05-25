@@ -124,7 +124,8 @@ export class SendAmountView {
     this.suggestedAmounts[this.CURRENCY_TYPE_FIAT] = ['5', '10', '100'];
 
     this.wallets = await this.profileService.getWallets();
-    await this.chooseAppropriateWallet();
+    this.chooseAppropriateWallet();
+
     this.loading = false;
 
     this.events.subscribe('Remote:IncomingTx', () => {
@@ -134,10 +135,9 @@ export class SendAmountView {
 
   private chooseAppropriateWallet() {
     if (this.wallets && this.wallets[0]) {
-
       this.selectedWallet = this.navParams.get('wallet');
       if (!this.selectedWallet) {
-        this.selectedWallet = this.wallets[0];
+        this.selectedWallet = this.wallets.find(w => w.confirmed);
         const passedAmount = this.navParams.get('amount') || 0;
         this.selectedWallet = this.wallets.find(w => {
           return (w.balance.spendableAmount >= passedAmount) && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
@@ -270,6 +270,7 @@ export class SendAmountView {
       this.amount.micros > 0
       && !_.isNil(this.txData)
       && !_.isNil(this.txData.txp)
+      && (!this.formData.password || this.formData.password === this.formData.confirmPassword)
     );
   }
 
