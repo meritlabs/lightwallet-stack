@@ -1,6 +1,6 @@
 <ion-header no-border>
   <ion-navbar color="light">
-    <ion-title>Invite Wait List</ion-title>
+    <ion-title>My Invite Waitlist</ion-title>
     <ion-buttons end>
       <div class="total-invites" item-end>
         <ion-avatar img-icon>
@@ -24,7 +24,7 @@
 
   <ion-refresher (ionRefresh)="doRefresh($event)" [enabled]="!loading">
       <ion-refresher-content></ion-refresher-content>
-  </ion-refresher> 
+  </ion-refresher>
 
   <ion-item [hidden]="activeTab === 'confirmed'"
             (click)="showHiddenRequests = true"
