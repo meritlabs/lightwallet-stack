@@ -44,7 +44,7 @@
       <button ion-item *ngIf="tx.easySendUrl" [clip]="tx.easySendUrl" (click)="onMeritMoneyCopy()">
         <ion-icon item-start name="copy" color="primary" merit-icon></ion-icon>
         <ion-label>
-          <h2>Copy Global Send Link</h2>
+          <h2>Copy MeritMoney Link</h2>
         </ion-label>
       </button>
       <button ion-item *ngIf="!tx.easySend.cancelled" (click)="cancelMeritMoney()">
