@@ -19,8 +19,5 @@
           {{ tx.amount | toFiat }}
       </span>
     </ion-note>
-    <ion-note *ngIf="tx.isInvite && !tx.isCoinbase && tx.name !== 'Wallet Unlocked'" item-end class="merit-invite" [class.credit]="isCredit(tx)">
-      {{ isCredit(tx) ? 'Received' : 'Sent' }}
-    </ion-note>
   </button>
 </ion-list>
