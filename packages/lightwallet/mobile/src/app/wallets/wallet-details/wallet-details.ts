@@ -51,7 +51,9 @@ export class WalletDetailsView {
     this.events.subscribe('Remote:IncomingTx', () => {
       this.wallet.getStatus();
       this.getWalletHistory();
+      this.getCommunityInfo();
     });
+
   }
 
   async deposit() {
@@ -79,10 +81,18 @@ export class WalletDetailsView {
   async doRefresh(refresher) {
     this.refreshing = true;
     await this.getWalletHistory();
+    this.wallet.getStatus();
+    this.getCommunityInfo();
     this.refreshing = false;
     refresher.complete();
   }
 
+
+  private async getCommunityInfo() {
+    const rewards = await this.wallet.getRewards([this.wallet.getRootAddress()]);
+    this.wallet.miningRewards = rewards[0].mining;
+    this.wallet.ambassadorRewards += rewards[0].ambassadorRewards;
+  }
 
   private async getWalletHistory() {
     try {
