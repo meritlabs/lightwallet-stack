@@ -94,7 +94,7 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (!(window.addthis_config && window.addthis_share)) return;
-    
+
     // move created shareThis into right container
     const newParent = document.getElementById('shareThis'),
       oldParent = document.getElementById('pasteShareThis');

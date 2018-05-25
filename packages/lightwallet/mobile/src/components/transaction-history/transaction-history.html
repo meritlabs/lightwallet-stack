@@ -11,16 +11,13 @@
       <h2>{{ tx.name }}</h2>
       <p>{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
     </ion-label>
-    <ion-note *ngIf="!tx.isInvite" item-end>
+    <ion-note item-end *ngIf="!tx.isWalletUnlock">
       <span class="merit-amount" [class.credit]="isCredit(tx)">
-        {{ tx.amount | toMRT}}
+        {{ tx.isInvite? (tx.amount + ' INV') : (tx.amount | toMRT) }}
       </span>
-      <span class="fiat-amount">
+      <span *ngIf="!tx.isInvite" class="fiat-amount">
           {{ tx.amount | toFiat }}
       </span>
-    </ion-note>
-    <ion-note *ngIf="tx.isInvite && !tx.isCoinbase && tx.name !== 'Wallet Unlocked'" item-end class="merit-invite" [class.credit]="isCredit(tx)">
-      {{ isCredit(tx) ? 'Received' : 'Sent' }}
     </ion-note>
   </button>
 </ion-list>
