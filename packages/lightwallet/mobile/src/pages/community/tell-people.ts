@@ -14,6 +14,7 @@ export class TellPeopleView {
 
   inviteLink: string;
   showShareButton: boolean = true;
+  copied: boolean;
 
   constructor(
     private navCtrl: NavController,
