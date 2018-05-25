@@ -9,9 +9,10 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
-import { Events, IonicPage, ModalController, NavController, Slides, ToastController } from 'ionic-angular';
+import { Events, IonicPage, ModalController, NavController, NavParams, Slides, ToastController } from 'ionic-angular';
 import { RateService } from '@merit/common/services/rate.service';
 import * as _ from 'lodash';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -41,14 +42,16 @@ export class SendView {
     error: string
   } = {contacts: [], toNewEntity: null, error: null };
 
-
   hasUnlockedWallets: boolean;
   hasActiveInvites: boolean;
   showSlider: boolean;
 
+  wallet: MeritWalletClient;
+
   searchInProgress: boolean;
 
   constructor(private navCtrl: NavController,
+              private navParams: NavParams, 
               private contactsService: ContactsService,
               private profileService: ProfileService,
               private addressService: AddressService,
@@ -59,6 +62,7 @@ export class SendView {
               private toastCtrl: ToastController,
               private rateService: RateService
   ) {
+
   }
 
   private async updateHasUnlocked() {
@@ -80,6 +84,7 @@ export class SendView {
   }
 
   async ionViewWillEnter() {
+    this.wallet = this.navParams.data.wallet;
     this.loadingContacts = true;
     await this.updateHasUnlocked();
     this.contacts = await this.contactsService.getAllMeritContacts();
@@ -91,7 +96,6 @@ export class SendView {
       this.updateHasUnlocked();
     });
   }
-
 
   async updateRecentContacts() {
     const sendHistory = await this.addressService.getSendHistory();
@@ -218,6 +222,7 @@ export class SendView {
           contact: contact,
           amount: this.amount,
           isEasyEnabled: this.hasActiveInvites,
+          wallet: this.wallet, 
           suggestedMethod: {
             type: SendMethodType.Classic,
             destination: SendMethodDestination.Address,
@@ -239,6 +244,7 @@ export class SendView {
           contact: contact,
           amount: this.amount,
           isEasyEnabled: this.hasActiveInvites,
+          wallet: this.wallet, 
           suggestedMethod: {
             type: SendMethodType.Classic,
             destination: SendMethodDestination.Address,
@@ -256,6 +262,7 @@ export class SendView {
       return this.navCtrl.push('SendAmountView', {
         contact: contact,
         amount: this.amount,
+        wallet: this.wallet, 
         suggestedMethod: {
           type: SendMethodType.Classic,
           destination: SendMethodDestination.Address,
@@ -273,6 +280,7 @@ export class SendView {
       modal.onDidDismiss((params) => {
         if (params) {
           params.amount = this.amount;
+          params.wallet = this.wallet;
           this.navCtrl.push('SendAmountView', params);
         }
       });
@@ -290,6 +298,7 @@ export class SendView {
     this.navCtrl.push('SendAmountView', {
       contact: entity.contact,
       amount: this.amount,
+      wallet: this.wallet,
       suggestedMethod: {
         type: SendMethodType.Classic,
         destination: SendMethodDestination.Address,
@@ -307,7 +316,7 @@ export class SendView {
   easySend() {
     if (!this.hasActiveInvites) {
       this.toastCtrl.create({
-        message: 'You do not have any available invites to use GlobalSend',
+        message: 'You do not have any available invites to use MeritMoney',
         duration: 4000,
         showCloseButton: true
       });
@@ -315,8 +324,8 @@ export class SendView {
     }
 
     this.navCtrl.push('SendAmountView', {
-      suggestedMethod: { type: SendMethodType.Easy }
-    });
+      suggestedMethod: { type: SendMethodType.Easy, wallet: this.wallet }
+    }); 
   }
 
   slideNext() {

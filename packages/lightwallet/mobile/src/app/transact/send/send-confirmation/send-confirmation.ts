@@ -1,5 +1,5 @@
 import { AlertController, IonicPage, LoadingController, NavController, NavParams, Tabs } from 'ionic-angular';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import * as  _ from 'lodash';
 import { EasySend } from '@merit/common/models/easy-send';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
@@ -12,6 +12,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { SlideToActionComponent } from '../../../../components/slide-to-action/slide-to-action';
 
 @IonicPage()
 @Component({
@@ -81,7 +82,7 @@ export class SendConfirmationView {
       walletCurrentBalance: this.txData.wallet.balance.totalAmount,
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
-      methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'Global Send' : 'Classic Send',
+      methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'MeritMoney Link' : 'Classic Send',
       destination: this.txData.sendMethod.alias ? '@'+this.txData.sendMethod.alias : this.txData.sendMethod.value
     };
 
@@ -147,48 +148,25 @@ export class SendConfirmationView {
         .present();
     };
 
-    let showNoPassPrompt = () => {
-      this.alertController
-        .create({
-          title: 'Confirm Send',
-          subTitle: 'Are you sure that you want to proceed with this transaction?',
-          buttons: [
-            {
-              text: 'Cancel',
-              role: 'cancel',
-              handler: () => {
-                this.navCtrl.pop();
-              },
-            },
-            {
-              text: 'Ok',
-              handler: () => {
-                this.send();
-              },
-            },
-          ],
-        })
-        .present();
-    };
-
     let showTouchIDPrompt = () => {
-      // TODO check if we need this
-      //this.alertController.create({
-      //  title: 'TouId required',
-      //  subTitle: 'Confirm transaction by your fingerprint',
-      //  buttons: [
-      //      { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop(); } }
-      //  ]
-      //}).present();
+      this.send();
+      // // TODO check if we need this
+      // //this.alertController.create({
+      // //  title: 'TouId required',
+      // //  subTitle: 'Confirm transaction by your fingerprint',
+      // //  buttons: [
+      // //      { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop(); } }
+      // //  ]
+      // //}).present();
 
-      this.touchIdService
-        .check()
-        .then(() => {
-          return this.send();
-        })
-        .catch(() => {
-          this.navCtrl.pop();
-        });
+      // this.touchIdService
+      //   .check()
+      //   .then(() => {
+      //     return this.send();
+      //   })
+      //   .catch(() => {
+      //     this.navCtrl.pop();
+      //   });
     };
 
     if (this.walletService.isEncrypted(this.txData.wallet)) {
@@ -199,7 +177,7 @@ export class SendConfirmationView {
         if (this.touchIdService.isAvailable()) {
           return showTouchIDPrompt();
         } else {
-          return showNoPassPrompt();
+          return this.send();
         }
       // }
     }

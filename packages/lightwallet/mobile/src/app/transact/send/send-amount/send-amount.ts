@@ -103,18 +103,14 @@ export class SendAmountView {
     this.availableUnits = [
       { type: this.CURRENCY_TYPE_MRT, name: this.configService.get().wallet.settings.unitCode.toUpperCase() }
     ];
-
     const rate = await this.rateService.getRate(this.configService.get().wallet.settings.alternativeIsoCode);
-
     if (rate > 0) {
       this.availableUnits.push({
         type: this.CURRENCY_TYPE_FIAT,
         name: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
       });
     }
-
     this.selectedCurrency = this.availableUnits[0];
-
     let passedAmount = this.navParams.get('amount');
     if (passedAmount) {
       this.formData.amount = String(this.rateService.microsToMrt(passedAmount));
@@ -128,7 +124,8 @@ export class SendAmountView {
     this.suggestedAmounts[this.CURRENCY_TYPE_FIAT] = ['5', '10', '100'];
 
     this.wallets = await this.profileService.getWallets();
-    await this.chooseAppropriateWallet();
+    this.chooseAppropriateWallet();
+
     this.loading = false;
 
     this.events.subscribe('Remote:IncomingTx', () => {
@@ -138,13 +135,14 @@ export class SendAmountView {
 
   private chooseAppropriateWallet() {
     if (this.wallets && this.wallets[0]) {
-
-      this.selectedWallet = this.wallets[0];
-
-      const passedAmount = this.navParams.get('amount') || 0;
-      this.selectedWallet = this.wallets.find(w => {
-        return (w.balance.spendableAmount >= passedAmount) && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites);
-      });
+      this.selectedWallet = this.navParams.get('wallet');
+      if (!this.selectedWallet) {
+        this.selectedWallet = this.wallets.find(w => w.confirmed);
+        const passedAmount = this.navParams.get('amount') || 0;
+        this.selectedWallet = this.wallets.find(w => {
+          return (w.balance.spendableAmount >= passedAmount) && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
+        });
+      }
     }
   }
 
@@ -152,6 +150,7 @@ export class SendAmountView {
     const modal = this.modalCtrl.create('SelectWalletModal',
       {
         selectedWallet: this.selectedWallet,
+        showInvites: this.sendMethod.type == SendMethodType.Easy,
         availableWallets: this.wallets.filter(w => {
           return w.balance.spendableAmount && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites);
         })
@@ -271,6 +270,7 @@ export class SendAmountView {
       this.amount.micros > 0
       && !_.isNil(this.txData)
       && !_.isNil(this.txData.txp)
+      && (!this.formData.password || this.formData.password === this.formData.confirmPassword)
     );
   }
 

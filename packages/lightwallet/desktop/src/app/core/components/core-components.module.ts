@@ -18,6 +18,7 @@ import { ClipModule } from 'ng2-clip';
 import { HistoryItemComponent } from './history-item/history-item.component';
 import { HistoryListComponent } from './history-list/history-list.component';
 import { QuestsComponent } from './quests/quests.component';
+import { GetStartedTipsComponent } from './get-started-tips/get-started-tips.component';
 
 export function getComponents() {
   return [
@@ -32,6 +33,7 @@ export function getComponents() {
     ProfileStatsComponent,
     FeeSelectorComponent,
     QuestsComponent,
+    GetStartedTipsComponent,
   ];
 }
 

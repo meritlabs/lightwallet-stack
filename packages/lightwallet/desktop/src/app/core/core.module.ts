@@ -58,15 +58,12 @@ export function getPages() {
     FileBackupView,
     InvitesComponent,
     InviteRequestsView,
-    SendInviteView
+    SendInviteView,
   ];
 }
 
 @NgModule({
-  entryComponents: [
-    CoreView,
-    ...getPages()
-  ],
+  entryComponents: [CoreView, ...getPages()],
   imports: [
     CommonModule,
     CoreRoutingModule,
@@ -78,17 +75,9 @@ export function getPages() {
     MomentModule,
     ClipModule,
     Ng4LoadingSpinnerModule,
-    CoreComponentsModule
+    CoreComponentsModule,
   ],
-  declarations: [
-    CoreView,
-    ...getPages(),
-    SendTourComponent,
-    WelcomeGuideComponent
-  ],
-  providers: [
-    WalletPasswordGuard
-  ]
+  declarations: [CoreView, ...getPages(), SendTourComponent, WelcomeGuideComponent],
+  providers: [WalletPasswordGuard],
 })
-export class CoreModule {
-}
+export class CoreModule {}
