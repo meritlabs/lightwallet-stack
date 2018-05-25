@@ -1,5 +1,5 @@
-<ion-header no-border [custom-header-color]="wallet.color">
-  <ion-navbar>
+<ion-header no-border >
+  <ion-navbar color="primary">
     <ion-title smaller-title>
       {{ wallet.rootAlias ? '@' + wallet.rootAlias : wallet.name }}
     </ion-title>
@@ -18,70 +18,48 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-    <!--<ion-row class="sub-header">-->
-        <!--<ion-col [style.background]="wallet.color">-->
-            <!--<button ion-button (click)="deposit()">-->
-                <!--<span class="inner-container">-->
-                    <!--<ion-icon name="md-add-circle"></ion-icon>-->
-                    <!--<span>Deposit</span>-->
-                <!--</span>-->
-            <!--</button>-->
-        <!--</ion-col>-->
-        <!--<ion-col [style.background]="wallet.color">-->
-            <!--<button ion-button (click)="send()">-->
-                <!--<span class="inner-container">-->
-                    <!--<ion-icon name="ios-send"></ion-icon>-->
-                    <!--<span>Send</span>-->
-                <!--</span>-->
-            <!--</button>-->
-        <!--</ion-col>-->
-    <!--</ion-row>-->
+  <ion-list class="stats">
+    <ion-item-divider>
+        Statistics
+    </ion-item-divider>
 
-
-    <ion-list class="stats">
-        <ion-item-divider>
-            Statistics
-        </ion-item-divider>
-
-        <ion-item >
-            <ion-avatar item-start img-icon>
-                <img src="assets/img/icons/merit.svg">
-            </ion-avatar>
-            <h2>Total amount</h2>
-            <div item-end class="details">
-                {{ wallet.balance.totalAmount | toMRT:null }}
-            </div>
-        </ion-item>
-        <ion-item >
-            <ion-avatar item-start img-icon>
-                <img src="assets/img/icons/invite.svg">
-            </ion-avatar>
-            <h2>Invite tokens</h2>
-            <div item-end class="details">
-                {{ wallet.availableInvites }} INV
-            </div>
-        </ion-item>
-        <ion-item >
-            <ion-avatar item-start img-icon>
-                <img src="assets/img/icons/mining.svg">
-            </ion-avatar>
-            <h2>Mining rewards</h2>
-            <div item-end class="details">
-                {{ wallet.miningRewards | toMRT:null }}
-            </div>
-        </ion-item>
-        <ion-item >
-            <ion-avatar item-start img-icon>
-                <img src="assets/img/icons/ambassador.svg">
-            </ion-avatar>
-            <h2>Growth rewards</h2>
-            <div item-end class="details">
-                {{ wallet.ambassadorRewards | toMRT:null }}
-            </div>
-        </ion-item>
-    </ion-list>
-
-
+    <ion-item >
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/merit.svg">
+        </ion-avatar>
+        <h2>Total amount</h2>
+        <div item-end class="details">
+            {{ wallet.balance.totalAmount | toMRT:null }}
+        </div>
+    </ion-item>
+    <ion-item >
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/invite.svg">
+        </ion-avatar>
+        <h2>Invite tokens</h2>
+        <div item-end class="details">
+            {{ wallet.availableInvites }} INV
+        </div>
+    </ion-item>
+    <ion-item >
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/mining.svg">
+        </ion-avatar>
+        <h2>Mining rewards</h2>
+        <div item-end class="details">
+            {{ wallet.miningRewards | toMRT:null }}
+        </div>
+    </ion-item>
+    <ion-item >
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/ambassador.svg">
+        </ion-avatar>
+        <h2>Growth rewards</h2>
+        <div item-end class="details">
+            {{ wallet.ambassadorRewards | toMRT:null }}
+        </div>
+    </ion-item>
+  </ion-list>
 
   <ion-item-divider>
     History
