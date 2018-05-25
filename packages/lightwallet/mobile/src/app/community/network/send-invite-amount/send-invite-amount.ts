@@ -5,6 +5,9 @@ import { ToastControllerService, IMeritToastConfig } from '@merit/common/service
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { EasySendService } from '@merit/common/services/easy-send.service';
+import { getEasySendURL } from '@merit/common/models/easy-send';
+
 
 @IonicPage()
 @Component({
@@ -25,7 +28,6 @@ export class SendInviteAmountView {
   copied: boolean;
   showShareButton: boolean;
 
-
   @ViewChild('amount') amountInput: ElementRef;
 
   constructor(private navCtrl: NavController,
@@ -36,7 +38,8 @@ export class SendInviteAmountView {
               private modalCtrl: ModalController,
               private alertCtrl: AlertController,
               private socialSharing: SocialSharing,
-              private platform: Platform
+              private platform: Platform,
+              private easySendService: EasySendService
   ) {
     this.address = this.navParams.get('address');
     this.showShareButton = this.platform.is('cordova') && SocialSharing.installed();
@@ -61,9 +64,15 @@ export class SendInviteAmountView {
     let loader = this.loadCtrl.create({ content: 'Creating invite link...' });
     try {
       loader.present();
-      this.link = "http://merit.test-app.link/?se=c7eda2aaf493743605af2bcf118df81f&sk=02f328965a06eb3d8d2ef7868becfdfbf2ffd4bc028b0039fab6d9215ddd33be46&sn=MyTest&bt=10080&pa=mTzdxDzF7vJmZiAgSckj8nK4vWJCnSB3Bs";
-      //await this.wallet.sendInvite(this.address, this.formData.amount);
-      //return this.navCtrl.setRoot('NetworkView');
+
+      const easySend = await this.easySendService.createEasySendScriptHash(this.wallet, '');
+      const referral = easySend.scriptReferralOpts;
+
+      await this.wallet.sendReferral(referral);
+      await this.wallet.sendInvite(referral.address);
+
+      this.link = getEasySendURL(easySend);
+
     } catch (e) {
       console.log(e);
       this.toastCtrl.error('Failed to send invite');
