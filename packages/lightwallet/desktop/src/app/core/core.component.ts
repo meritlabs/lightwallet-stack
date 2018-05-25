@@ -235,8 +235,8 @@ export class CoreView implements OnInit, AfterViewInit {
 
     if (!txs.length) return this.showPasswordEasyReceivePrompt(receipt, processAll);
 
-    //Decide if the wallet is the sender of the Global Send.
-    //We will prompt here to cancel the global send instead.
+    //Decide if the wallet is the sender of the MeritMoney Link.
+    //We will prompt here to cancel the MM Link instead.
     const senderPublicKey = new PublicKey(receipt.senderPublicKey);
     const senderAddress = senderPublicKey.toAddress(ENV.network).toString();
     const wallets = await this.profileService.getWallets();
