@@ -39,6 +39,7 @@ export class WalletsView {
 
   async ngOnInit() {
     this.logger.debug('Hello WalletsView :: IonViewDidLoad!');
+    this.showCommunityPopup = !(await this.profileService.isCommunityPopupClosed());
     this.platform.resume.subscribe(() => {
       this.logger.info('WalletView is going to refresh data on resume.');
       if (this.isActivePage) {
@@ -140,6 +141,7 @@ export class WalletsView {
 
   closeCommunityPopup() {
     this.showCommunityPopup = false;
+    this.profileService.closeCommunityPopup();
   }
 
 

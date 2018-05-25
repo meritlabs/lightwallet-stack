@@ -428,6 +428,15 @@ export class PersistenceService {
     return pages || [];
   }
 
+  async isCommunityPopupClosed() {
+    let isClosed = await this.storage.get(Keys.Community_POPUP_CLOSED);
+    return isClosed || false;
+  }
+
+  async closeCommunityPopup() {
+    return this.storage.set(Keys.Community_POPUP_CLOSED, true);
+  }
+
   private get(key: any) {
     return this.storage.get(key);
   }
