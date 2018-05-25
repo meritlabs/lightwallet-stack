@@ -185,5 +185,9 @@ view-send-invite-amount {
       }
     }
   }
+  .error {
+    text-align: center;
+    color: color($colors, danger);
+  }
 }
 

@@ -134,6 +134,12 @@ export class SendInviteAmountView {
     }
   }
 
+  isSendAllowed() {
+    return (
+      !this.error && this.formData.amount
+    )
+  }
+
 
 
 }

@@ -15,7 +15,7 @@
                             type="number"
                             pattern="[0-9]"
                             [(ngModel)]="formData.amount"
-                            (ngModelChange)="processAmount(amount)"
+                            (ngModelChange)="processAmount($event)"
                             placeholder="Enter amount to send"
                             (keypress)="amountKeypress($event.keyCode)">
                     </ion-input>
@@ -36,7 +36,7 @@
         </button>
     </ion-list>
 
-    <p [hidden]="!error" class="error">{{ error }}</p>
+
 
     <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length" [hidden]="link">
         <img src="assets/img/icons/invite.svg" color="primary" item-end>
@@ -71,7 +71,8 @@
 
 
     <ion-footer [hidden]="link">
-        <slide-to-action text="Slide to create link" (confirm)="send()"></slide-to-action>
+        <p [hidden]="!error" class="error">{{ error }}</p>
+        <slide-to-action text="Slide to create link" (confirm)="send()" [disabled]="!isSendAllowed()"></slide-to-action>
     </ion-footer>
 
 
