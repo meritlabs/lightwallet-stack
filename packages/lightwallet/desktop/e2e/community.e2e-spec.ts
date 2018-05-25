@@ -29,9 +29,9 @@ describe('[Desktop] Community', () => {
       expect(el.getText()).toContain('People');
     });
 
-    it('second item should be ambassador rewards', () => {
+    it('second item should be growth rewards', () => {
       const el = profileStatsEl.element(by.css('.stats__item:nth-child(2)'));
-      expect(el.getText()).toContain('Ambassador');
+      expect(el.getText()).toContain('Growth');
       expect(el.getText()).toContain('MRT');
     });
 
@@ -49,8 +49,8 @@ describe('[Desktop] Community', () => {
       expect(el.isPresent()).toBeTruthy();
     });
 
-    it('should have Invite Requests button', () => {
-      expect(el.getText()).toContain('Invite Requests');
+    it('should have Invite Waitlist button', () => {
+      expect(el.getText()).toContain('Invite Waitlist');
     });
 
     it('should have Invites button', () => {

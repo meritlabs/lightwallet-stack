@@ -30,13 +30,13 @@
         </span>
       </ion-col>
       <ion-col col-4>
-        <small>Ambassador<br>Rewards</small>
+        <small>Growth<br>Rewards</small>
         <ion-avatar img-icon>
-          <img src="assets/img/icons/ambassador_dark.svg" alt="">
+          <img src="assets/img/icons/growth_dark.svg" alt="">
         </ion-avatar>
         <ion-spinner [hidden]="!loading"></ion-spinner>
         <span class="merit-amount" [hidden]="loading">
-          {{ (network?.ambassadorRewards || 0) | toMRT:8:true }}
+          {{ (network?.growthRewards || 0) | toMRT:8:true }}
           <small>MRT</small>
         </span>
       </ion-col>
@@ -58,7 +58,7 @@
         <img src="assets/img/icons/incoming_request.svg">
       </ion-avatar>
       <ion-label>
-        <h2>Invite Requests</h2>
+        <h2>Invite Waitlist</h2>
       </ion-label>
       <ion-badge item-end>{{activeUnlockRequests}}</ion-badge>
     </button>
@@ -73,7 +73,7 @@
           <ion-badge item-end>{{availableInvites}}</ion-badge>
           <span *ngIf="pendingInvites" class="pending-invites">+{{pendingInvites}} pending</span>
         </div>
-        
+
       </button>
   </ion-list>
 
@@ -136,15 +136,15 @@
 
         <ion-item>
           <ion-avatar img-icon item-start>
-            <img src="assets/img/icons/ambassador.svg" alt="">
+            <img src="assets/img/icons/growth.svg" alt="">
           </ion-avatar>
           <ion-label>
-            <p>Ambassador Rewards</p>
-            <h2>{{ (wallet.ambassadorRewards || 0) | toMRT }}</h2>
+            <p>Growth Rewards</p>
+            <h2>{{ (wallet.growthRewards || 0) | toMRT }}</h2>
           </ion-label>
           <ion-note item-end class="balance">
             <span class="fiat-amount">
-              {{ (wallet.ambassadorRewards || 0) | toFiat }}
+              {{ (wallet.growthRewards || 0) | toFiat }}
             </span>
           </ion-note>
         </ion-item>

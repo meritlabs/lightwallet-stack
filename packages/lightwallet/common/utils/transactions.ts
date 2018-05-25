@@ -100,9 +100,9 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
           if (output && output.index !== 0) {
             // Ambassador reward
-            tx.name = 'Ambassador Reward';
+            tx.name = 'Growth Reward';
             tx.action = TransactionAction.AMBASSADOR_REWARD;
-            tx.isAmbassadorReward = true;
+            tx.isGrowthReward = true;
           } else {
             tx.name = 'Mining Reward';
             tx.action = TransactionAction.MINING_REWARD;
@@ -120,8 +120,8 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
     if (easySendsByAddress[tx.addressTo]) {
       const easySend = easySendsByAddress[tx.addressTo];
-      tx.name = 'Global Send';
-      tx.type = 'globalsend';
+      tx.name = 'MeritMoney';
+      tx.type = 'meritmoney';
       tx.easySend = easySend;
       tx.easySendUrl = getEasySendURL(easySend);
     }
@@ -129,8 +129,8 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
     return tx;
   }));
 
-  // remove globalsend invites so we  have only one tx for globalsend
+  // remove meritmoney invites so we  have only one tx for meritmoney
   return walletHistory
-    .filter(t => !(t.type == 'globalsend' && t.isInvite))
+    .filter(t => !(t.type == 'meritmoney' && t.isInvite))
     .reverse();
 }

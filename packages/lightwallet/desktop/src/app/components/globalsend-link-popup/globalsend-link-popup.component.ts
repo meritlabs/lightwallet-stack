@@ -3,11 +3,11 @@ import { IDynamicComponent } from '../dom.controller';
 import { ToastControllerService } from '../toast-notification/toast-controller.service';
 
 @Component({
-  selector: 'globalsend-link-popup',
+  selector: 'meritmoney-link-popup',
   styleUrls: ['./globalsend-link-popup.component.sass'],
   template: `
     <div class="ui-prompt">
-      <h2 class="title">Global Send Link</h2>
+      <h2 class="title">{{ isInvite? 'MeritInvite' : 'MeritMoney' }} Link</h2>
       <div class="message">
         Click on the link to copy
         <div class="globalsend-link" (click)="onCopy()" [clip]="globalSendURL">{{ globalSendURL }}</div>
@@ -25,15 +25,17 @@ import { ToastControllerService } from '../toast-notification/toast-controller.s
 export class GlobalsendLinkPopupComponent implements IDynamicComponent {
   destroy: Function;
   globalSendURL: string;
+  isInvite: boolean;
 
   constructor(private toastCtrl: ToastControllerService) {}
 
-  init(globalSendURL: string) {
+  init(globalSendURL: string, isInvite?: boolean) {
+    this.isInvite = isInvite;
     this.globalSendURL = globalSendURL;
   }
 
   onCopy() {
-    this.toastCtrl.success('GlobalSend link copied!');
+    this.toastCtrl.success((this.isInvite? 'MeritInvite' : 'MeritMoney') + ' link copied!');
   }
 
   dismiss() {
