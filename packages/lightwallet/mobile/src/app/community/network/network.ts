@@ -31,7 +31,8 @@ export class NetworkView {
       confirmed: boolean,
       communitySize: number
       miningRewards: number,
-      ambassadorRewards: number
+      ambassadorRewards: number,
+      color: string
     }>
   } = {
     communitySize: 0,
@@ -106,7 +107,8 @@ export class NetworkView {
           confirmed: w.confirmed,
           communitySize: 0,
           miningRewards: 0,
-          ambassadorRewards: 0
+          ambassadorRewards: 0,
+          color: w.color
         }})
       };
 

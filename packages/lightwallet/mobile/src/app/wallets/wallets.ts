@@ -24,7 +24,7 @@ export class WalletsView {
   loading: boolean; //initial load, no data displayed
   refreshing: boolean; //soft data refresh
 
-  showCommunityPopup: boolean = true;
+  showCommunityPopup: boolean;
   communitySize: number;
 
   constructor(private navCtrl: NavController,
