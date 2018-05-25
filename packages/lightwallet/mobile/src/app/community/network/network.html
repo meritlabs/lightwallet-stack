@@ -10,7 +10,7 @@
   </button>
 
   <button ion-button full primary navPush="SendInviteAmountView" [disabled]="!availableInvites" class="send-invite-button">
-    Send invite
+    Send invite token
     <img src="assets/img/icons/send.svg">
   </button>
 
@@ -112,7 +112,7 @@
             <img src="assets/img/icons/ambassador.svg" alt="">
           </ion-avatar>
           <ion-label>
-            <p>Ambassador Rewards</p>
+            <p>Growth Rewards</p>
             <h2>{{ (wallet.ambassadorRewards || 0) | toMRT }}</h2>
           </ion-label>
           <ion-note item-end class="balance">
