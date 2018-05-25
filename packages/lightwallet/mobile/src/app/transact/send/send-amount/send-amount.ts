@@ -270,6 +270,7 @@ export class SendAmountView {
       this.amount.micros > 0
       && !_.isNil(this.txData)
       && !_.isNil(this.txData.txp)
+      && (!this.formData.password || this.formData.password === this.formData.confirmPassword)
     );
   }
 
