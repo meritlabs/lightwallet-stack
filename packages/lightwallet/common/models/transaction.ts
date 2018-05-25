@@ -10,6 +10,7 @@ export enum TransactionAction {
   INVITE = 'invite',
   MOVED = 'moved',
   MINING_REWARD = 'mining_reward',
+  POOL_REWARD = 'pool_reward',
   AMBASSADOR_REWARD = 'ambassador_reward'
 }
 
@@ -25,6 +26,7 @@ export interface ITransactionIO {
   index: number;
   alias: string;
   isMine: boolean;
+  data?: string;
 }
 
 export interface ITransaction {
@@ -67,6 +69,7 @@ export interface IDisplayTransaction extends ITransaction {
   displayWallet?: DisplayWallet;
   wallet: MeritWalletClient;
   isMiningReward: boolean;
+  isPoolReward: boolean;
   isAmbassadorReward: boolean;
   isWalletUnlock: boolean;
   isConfirmed?: boolean;

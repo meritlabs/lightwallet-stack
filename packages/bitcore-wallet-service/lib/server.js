@@ -3106,11 +3106,14 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
         itemAlias = item.scriptPubKey.aliases[0];
       }
 
+      const script = Bitcore.Script.fromHex(item.scriptPubKey.hex);
+
       return {
         address: itemAddr,
         alias: itemAlias,
         amount: parseInt((item.value * 1e8).toFixed(0)),
-        index: item.n
+        index: item.n,
+        data: script.isDataOut() ? script.getData().toString() : null,
       }
     });
 
@@ -3270,6 +3273,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           // TODO: handle singleAddress and change addresses
           // isChange: address ? (address.isChange || wallet.singleAddress) : false,
           isChange: address ? ((address.isChange || wallet.singleAddress) && !isInvite) : false,
+          data: item.data,
         }
       });
     };
@@ -3338,7 +3342,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           return _.pick(input, 'address', 'alias', 'amount', 'isMine', 'index');
         });
         newTx.outputs = _.map(outputs, function(output) {
-          return _.pick(output, 'address', 'alias', 'amount', 'isMine', 'index');
+          return _.pick(output, 'address', 'alias', 'amount', 'isMine', 'index', 'data');
         });
       } else {
         // TODO: handle singleAddress and change addresses
