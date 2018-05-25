@@ -1,7 +1,7 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
 
 declare global {
   interface Window {
@@ -25,9 +25,9 @@ declare global {
 export class GetStartedTipsComponent implements OnInit, OnDestroy {
   constructor(private persistenceService: PersistenceService2) {}
 
-  active: boolean = false;
-  getArticle: boolean = false;
-  syncWallet: boolean = false;
+  active: boolean;
+  getArticle: boolean;
+  syncWallet: boolean;
   copy: string = 'COPY';
   shareTitle: string = 'Merit - digital currency for humans.';
   shareUrl: string = 'wallet.merit.me';
@@ -68,17 +68,17 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy {
   }
 
 
-  @Input() setTipType: string;
+  setTipType: string = 'all';
 
   async ngOnInit() {
-    const getActiveState = await this.persistenceService.getViewSettings('showStarterTips');
+    const getActiveState = Boolean(await this.persistenceService.getViewSettings(ViewSettingsKey.GetStartedTips));
 
     if (getActiveState !== false) {
-      this.active = true;
+      this.show();
     }
 
     if (this.setTipType !== 'all' && this.active !== true) {
-      this.active = true;
+      this.show();
     }
 
     if (window.addthis_config && window.addthis_share) {
@@ -104,13 +104,27 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy {
     }
   }
 
+  setType(type: string) {
+    this.setTipType = type;
+    this.show();
+
+    // TODO cancel any previous timeouts before setting a new one
+    setTimeout(() => {
+      this.setTipType = 'all';
+    }, 500);
+  }
+
+  show() {
+    return this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, this.active = true);
+  }
+
+  hide() {
+    return this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, this.active = false);
+  }
+
+  // rename to toggle
   showHide() {
-    if (this.active) {
-      this.persistenceService.setViewSettings('showStarterTips', false);
-      this.active = false;
-    } else {
-      this.active = true;
-    }
+    return this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, this.active = !this.active);
   }
 
   getArticleAction() {
