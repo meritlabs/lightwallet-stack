@@ -37,7 +37,8 @@ const Keys = {
   SEND_HISTORY: 'sendHistory',
   HIDDEN_REQUESTS_ADDRESSES: 'hiddenRequestsAddresses',
   ACTIVE_UNLOCK_REQUESTS_NUMBER: 'activeUnlockRequests',
-  PAGES_VISITED: 'pagesVisited'
+  PAGES_VISITED: 'pagesVisited',
+  COMMUNITY_POPUP_CLOSED: 'communityPopupClosed' 
 };
 
 @Injectable()
@@ -429,12 +430,12 @@ export class PersistenceService {
   }
 
   async isCommunityPopupClosed() {
-    let isClosed = await this.storage.get(Keys.Community_POPUP_CLOSED);
+    let isClosed = await this.storage.get(Keys.COMMUNITY_POPUP_CLOSED);
     return isClosed || false;
   }
 
   async closeCommunityPopup() {
-    return this.storage.set(Keys.Community_POPUP_CLOSED, true);
+    return this.storage.set(Keys.COMMUNITY_POPUP_CLOSED, true);
   }
 
   private get(key: any) {
