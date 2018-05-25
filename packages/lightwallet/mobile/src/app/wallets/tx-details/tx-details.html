@@ -28,6 +28,11 @@
         Fee {{ tx.fee | toMRT }}
       </p>
     </div>
+    <div *ngIf="tx.isInvite">
+      <h2 class="amount">
+        {{ isCredit? '' : '-' }}{{ tx.amount + ' INV' }}
+      </h2>
+    </div>
   </div>
 
   <div *ngIf="tx">
