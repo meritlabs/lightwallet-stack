@@ -100,7 +100,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           tx.action = TransactionAction.MINING_REWARD;
           tx.isMiningReward = true;
         } else {
-          tx.name = 'Ambassador Reward';
+          tx.name = 'Growth Reward';
           tx.action = TransactionAction.AMBASSADOR_REWARD;
           tx.isAmbassadorReward = true;
         }
