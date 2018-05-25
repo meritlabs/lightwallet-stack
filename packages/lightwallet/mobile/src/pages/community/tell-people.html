@@ -14,19 +14,30 @@
 
 
     <div class="illustration">
-        <img src="assets/img/invite-spread.svg" alt="">
+
 
         Tell people about Merit and encourage them to register with your unlock code.
         <br><br>
         Every Merit on their account will enlarge your community size and increase your chances of receiving Growth Rewards.
         <br><br>
-        Share this invite text whenever you want:
-        <br><br>
 
         <ion-card (click)="copyToClipboard()">
             <div class="click-to-copy">Click to copy</div>
-            Hey, let's use Merit, a digital currency for humans! <br><br>
-            <a>{{inviteLink}}</a>
+            <ion-card-header>
+                Share this text in your social networks
+            </ion-card-header>
+            <ion-item>
+                <ion-avatar item-start>
+                    <img src="assets/img/invite-spread.svg" alt="">
+                </ion-avatar>
+                <p>
+                    Hey, let's use Merit, a digital currency for humans!
+                </p>
+                <p>
+                    <a>{{inviteLink}}</a>
+                </p>
+            </ion-item>
+            <a></a>
         </ion-card>
     </div>
 
