@@ -21,6 +21,7 @@ export class SlideToActionComponent implements AfterViewInit, OnDestroy {
   @ViewChild('container') _containerElement: ElementRef;
 
   @Input() text: string = 'Slide to confirm';
+  @Input() disabled: boolean;
 
   @Output() confirm: EventEmitter<void> = new EventEmitter<void>();
 
@@ -65,6 +66,7 @@ export class SlideToActionComponent implements AfterViewInit, OnDestroy {
   }
 
   moveSlider(duration: number = 300) {
+    if (this.disabled) return;
     this._plt.raf(() => {
       if (duration) {
         this._rnd.setStyle(this._sliderNativeElement, this._plt.Css.transition, `all ${ duration }ms ease-out`);
