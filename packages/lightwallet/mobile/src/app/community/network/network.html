@@ -55,7 +55,7 @@
   </ion-list>
 
   <div *ngIf="!loading && network">
-      <ion-list *ngFor="let wallet of network.wallets" no-lines class="wallet" [style.box-shadow]="'0 0 1px 1px '+wallet.color">
+      <ion-list *ngFor="let wallet of network.wallets" no-lines class="wallet" [style.box-shadow]="'0 0 1px 0 '+wallet.color">
         <div *ngIf="!wallet.confirmed" item-end class="locked-info">
             <div class="backdrop"></div>
 
