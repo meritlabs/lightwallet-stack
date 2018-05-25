@@ -148,7 +148,9 @@ export class EasyReceiveService {
     await this.sendEasyReceiveTx(input, invite, destinationAddress, wallet);
 
     const transact = input.txs.find(tx => !tx.invite);
-    await this.sendEasyReceiveTx(input, transact, destinationAddress, wallet);
+    if (transact) {
+      await this.sendEasyReceiveTx(input, transact, destinationAddress, wallet);
+    }
 
     return this.persistenceService.deletePendingEasyReceipt(receipt);
   }
