@@ -145,7 +145,6 @@ export class SendView implements OnInit {
       }
       return of(formData);
     }),
-    debounceTime(500),
     switchMap((formData) => {
       if (this.formData.valid) {
         this.receiptLoading = true;
