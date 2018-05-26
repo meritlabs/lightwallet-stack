@@ -6,7 +6,7 @@
 
   <button ion-button full primary navPush="TellPeopleView" class="tell-people-button">
     Share your unlock code
-    <img src="assets/img/icons/ambassador_dark.svg">
+    <img src="assets/img/icons/growth_dark.svg">
   </button>
 
   <button ion-button full primary navPush="SendInviteAmountView" [disabled]="!availableInvites" class="send-invite-button">
@@ -43,12 +43,12 @@
 
     <ion-item class="pending-unlock-requests">
         <ion-avatar item-start img-icon>
-            <img src="assets/img/icons/ambassador.svg" alt="">
+            <img src="assets/img/icons/growth.svg" alt="">
         </ion-avatar>
         <ion-label>
           <h2>Growth rewards</h2>
         </ion-label>
-        <div item-end class="details">{{ (network?.ambassadorRewards || 0) | toMRT:8 }}</div>
+        <div item-end class="details">{{ (network?.growthRewards || 0) | toMRT:8 }}</div>
     </ion-item>
 
 
@@ -109,15 +109,15 @@
 
         <ion-item>
           <ion-avatar img-icon item-start>
-            <img src="assets/img/icons/ambassador.svg" alt="">
+            <img src="assets/img/icons/growth.svg" alt="">
           </ion-avatar>
           <ion-label>
             <p>Growth Rewards</p>
-            <h2>{{ (wallet.ambassadorRewards || 0) | toMRT }}</h2>
+            <h2>{{ (wallet.growthRewards || 0) | toMRT }}</h2>
           </ion-label>
           <ion-note item-end class="balance">
             <span class="fiat-amount">
-              {{ (wallet.ambassadorRewards || 0) | toFiat }}
+              {{ (wallet.growthRewards || 0) | toFiat }}
             </span>
           </ion-note>
         </ion-item>

@@ -94,7 +94,7 @@ export class WalletDetailsView {
   private async getCommunityInfo() {
     const rewards = await this.wallet.getRewards([this.wallet.getRootAddress()]);
     this.wallet.miningRewards = rewards[0].mining;
-    this.wallet.ambassadorRewards += rewards[0].ambassadorRewards;
+    this.wallet.growthRewards += rewards[0].growthRewards;
   }
 
   private async getWalletHistory() {
