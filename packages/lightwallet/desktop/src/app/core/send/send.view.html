@@ -27,36 +27,21 @@
       <form class="sendMerit__form" [formGroup]="formData" (ngSubmit)="submit.next()">
         <div class="sendMerit__form__group">
           <label class="ui-label">Send from</label>
-          <app-select (selectionEvent)="selectWallet($event)" [selected]="wallet.value" [input]="wallets$ | async" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+          <app-select (selectionEvent)="selectWallet($event)" [selected]="wallet.value" [input]="wallets$ | async"
+                      cssClass="ui-input ui-input--select ui-input--form"></app-select>
           <label class="ui-label available-amount-label" *ngIf="wallet.valid">
-            {{ wallet.value.status.spendableAmount | toMRT }}, {{ wallet.value.status.availableInvites || 0 }} invites available
+            {{ wallet.value.status.spendableAmount | toMRT }}, {{ wallet.value.status.availableInvites || 0 }} invites
+            available
           </label>
         </div>
-        <div class="select-method">
-          <button (click)="updateTxType('classic')" type="button" role="button" class="method" [class.active]="type.value === 'classic'">
-            <span class="title">
-              Send via ClassicSend
-            </span>
-            <span class="description">
-              Send to a Merit address
-            </span>
-          </button>
-
-          <button (click)="updateTxType('easy')" type="button" role="button" class="method" [class.active]="type.value === 'easy'">
-            <span class="title">
-              Send via MeritMoney Link
-            </span>
-            <span class="description">
-              Not sure if they have a Merit address?  Want to be able to cancel?
-            </span>
-          </button>
-        </div>
+        <send-method formControlName="type"></send-method>
         <ng-container>
           <ng-container *ngIf="type.value === 'classic'; else easySend">
             <div class="sendMerit__form__group">
               <label class="ui-label">Send to address / alias</label>
-              <input type="text" name="" value="" placeholder="Paste address / alias here" class="ui-input ui-input--form ui-input--text"
-                formControlName="address">
+              <input type="text" name="" value="" placeholder="Paste address / alias here"
+                     class="ui-input ui-input--form ui-input--text"
+                     formControlName="address">
               <div class="input-errors" [hidden]="!address.dirty || address.valid">
                 <div>
                   <span class="tooltip-error">
@@ -73,7 +58,8 @@
               <label class="ui-label" *ngIf="wallet.value?.status?.availableInvites">Password &nbsp;
                 <small>(optional)</small>
               </label>
-              <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password" *ngIf="wallet.value?.status?.availableInvites">
+              <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password"
+                     *ngIf="wallet.value?.status?.availableInvites">
               <div class="notification-info" [ngClass]="{'danger': !wallet.value?.status?.availableInvites}">
                 <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
                 <p *ngIf="wallet.value?.status?.availableInvites">
@@ -86,7 +72,8 @@
             </div>
           </ng-template>
         </ng-container>
-        <div class="sendMerit__form__group" [hidden]="!address.dirty && !address.valid && type.value === 'classic' || !wallet.value?.status?.availableInvites && type.value !== 'classic'">
+        <div class="sendMerit__form__group"
+             [hidden]="!address.dirty && !address.valid && type.value === 'classic' || !wallet.value?.status?.availableInvites && type.value !== 'classic'">
           <div class="sendMerit__form__group__column sendMerit__form_group__column--70">
             <label for="feeIncluded" class="ui-label">Who pays fee?</label>
           </div>
@@ -95,7 +82,8 @@
         <div class="sendMerit__form__group">
           <label class="ui-label">Amount</label>
           <div class="ui-input__wrapper ui-input__wrapper--mrt">
-            <input type="number" formControlName="amountMrt" placeholder="0" class="ui-input ui-input--form ui-input--text">
+            <input type="number" formControlName="amountMrt" placeholder="0"
+                   class="ui-input ui-input--form ui-input--text">
             <div class="ui-input__addon">MRT</div>
           </div>
           <div class="input-errors" [hidden]="!amountMrt.dirty || amountMrt.valid">
@@ -115,14 +103,18 @@
             </div>
           </div>
           <div class="ui-input__wrapper ui-input__wrapper--currency" *ngIf="availableCurrencies?.length">
-            <input type="text" name="" [value]="amountFiat$ | async" disabled class="ui-input ui-input--form ui-input--text">
+            <input type="text" name="" [value]="amountFiat$ | async" disabled
+                   class="ui-input ui-input--form ui-input--text">
             <div class="ui-input__addon">
-              <app-select (selectionEvent)="selectCurrency($event)" [selected]="selectedCurrency.value" [input]="availableCurrencies" cssClass="ui-button ui-button--transparent ui-button--select-currency ui-button--md ui-button--with-caret"></app-select>
+              <app-select (selectionEvent)="selectCurrency($event)" [selected]="selectedCurrency.value"
+                          [input]="availableCurrencies"
+                          cssClass="ui-button ui-button--transparent ui-button--select-currency ui-button--md ui-button--with-caret"></app-select>
             </div>
           </div>
         </div>
         <div class="sendMerit__form__group">
-          <button type="submit" class="ui-button ui-button--blue" [disabled]="formData.pending || formData.invalid || receiptLoading">
+          <button type="submit" class="ui-button ui-button--blue"
+                  [disabled]="formData.pending || formData.invalid || receiptLoading">
             Send Merit
           </button>
         </div>

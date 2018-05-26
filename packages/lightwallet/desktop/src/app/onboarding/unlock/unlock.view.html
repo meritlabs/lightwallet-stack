@@ -12,7 +12,7 @@
             <span (click)="declineMeritMoney()" class="unlock__back">
               <img src="/assets/v1/images/backup/back-icon.svg" alt="">
             </span>
-            <p class="label small">{{ easyReceipt.senderName | unescape }} sent you Merit!</p>
+            <p class="label small">{{ easyReceipt.senderName | unescape }} welcomes you to join Merit!</p>
           </h1>
         </ng-container>
         <ng-container *ngIf="invite.length">
@@ -77,7 +77,7 @@
       </div>
       <div class="ui-input__group" [ngClass]="{'ui-input__group--disabled': !inviteCode.valid}" *ngIf="inviteCode.valid">
         <label for="" class="ui-label">
-          Your username (alias)
+          Choose your username (alias)
           <span class="ui-tooltip">
             <span class="ui-tooltip__text">
               Your alias is how you will be known in the Merit community. Anyone can use it to easily send you Merit or as their unlock

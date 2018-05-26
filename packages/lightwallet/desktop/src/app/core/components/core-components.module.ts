@@ -9,6 +9,7 @@ import { NotificationsHistoryComponent } from '@merit/desktop/app/core/component
 import { NotificationsComponent } from '@merit/desktop/app/core/components/notifications/notifications.component';
 import { ProfileStatsComponent } from '@merit/desktop/app/core/components/profile-stats/profile-stats.component';
 import { SelectComponent } from '@merit/desktop/app/core/components/select/select.component';
+import { SendMethodComponent } from '@merit/desktop/app/core/components/send-method/send-method.component';
 import { ToolbarComponent } from '@merit/desktop/app/core/components/toolbar/toolbar.component';
 import { VaultsListComponent } from '@merit/desktop/app/core/components/vaults-list/vaults-list.component';
 import { WalletsListComponent } from '@merit/desktop/app/core/components/wallets-list/wallets-list.component';
@@ -31,6 +32,7 @@ export function getComponents() {
     VaultsListComponent,
     ProfileStatsComponent,
     FeeSelectorComponent,
+    SendMethodComponent,
     GetStartedTipsComponent,
   ];
 }
@@ -46,6 +48,6 @@ export function getComponents() {
     ClipModule,
   ],
   declarations: getComponents(),
-  exports: getComponents(),
+  exports: getComponents()
 })
 export class CoreComponentsModule {}

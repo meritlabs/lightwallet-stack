@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
+import { getEasySendURL } from '@merit/common/models/easy-send';
+import { ISendMethod } from '@merit/common/models/send-method';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletAction, selectConfirmedWallets } from '@merit/common/reducers/wallets.reducer';
 import { AddressService } from '@merit/common/services/address.service';
@@ -13,14 +14,14 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { RateService } from '@merit/common/services/rate.service';
-import { SendService } from '@merit/common/services/send.service';
+import { ISendTxData, SendService } from '@merit/common/services/send.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { cleanAddress, isAddress } from '@merit/common/utils/addresses';
 import { SendValidator } from '@merit/common/validators/send.validator';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { Store } from '@ngrx/store';
-import { clone, isEqual, omit } from 'lodash';
+import { isEqual, omit } from 'lodash';
 import 'rxjs/add/operator/isEmpty';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
@@ -42,14 +43,6 @@ import {
   withLatestFrom
 } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
-
-interface TxData {
-  txp: any;
-  easyFee: number;
-  easySend?: EasySend;
-  easySendUrl?: string;
-  referralsToSign?: any[];
-}
 
 interface Receipt {
   amount: number;
@@ -119,7 +112,7 @@ export class SendView implements OnInit {
   success: boolean;
   showTour: boolean = !('showTour' in localStorage && localStorage.getItem('showTour') === 'false');
 
-  txData$: Observable<TxData> = (this.formData.valueChanges as any).pipe(
+  txData$: Observable<ISendTxData> = (this.formData.valueChanges as any).pipe(
     debounceTime(500),
     distinctUntilChanged((before: any, after: any) => {
       const b: any = omit(before, 'wallet');
@@ -153,14 +146,14 @@ export class SendView implements OnInit {
             catchError((err: any) => {
               console.log(err);
               this.error = err.message || 'Unknown error';
-              return of({} as TxData);
+              return of({} as ISendTxData);
             })
           );
       }
 
-      return of({} as TxData);
+      return of({} as ISendTxData);
     }),
-    tap((txData: TxData) => {
+    tap((txData: ISendTxData) => {
       if (txData && txData.txp) this.canSend = true;
     }),
     share()
@@ -206,8 +199,6 @@ export class SendView implements OnInit {
         const { spendableAmount } = wallet ? wallet.status : 0;
 
         if (!txData || !txData.txp || this.success) {
-          this.success = void 0;
-
           return {
             amount: 0,
             fee: 0,
@@ -342,14 +333,8 @@ export class SendView implements OnInit {
       this.wallet.setValue(wallet);
   }
 
-  async updateTxType(type) {
-    if (type !== this.type.value) {
-      this.type.setValue(type);
-    }
-  }
-
-  private async createTx(formValue: any): Promise<TxData> {
-    let txData: Partial<TxData> = {};
+  private async createTx(formValue: any): Promise<ISendTxData> {
+    let txData: Partial<ISendTxData> = {};
     let { amountMrt, wallet, type, feeIncluded, password, address } = formValue;
 
     address = cleanAddress(address);
@@ -384,34 +369,19 @@ export class SendView implements OnInit {
       throw new Error('Error occurred when calculating transaction details');
     }
 
-    return txData as TxData;
+    return txData as ISendTxData;
   }
 
-  async send(txData: TxData) {
+  async send(txData: ISendTxData) {
     if (txData.easyFee) txData.txp.amount += txData.easyFee;
 
     const wallet = this.wallet.value;
 
-    txData.txp = await this.sendService.finalizeTxp(wallet.client, txData.txp, Boolean(this.feeIncluded.value));
+    txData.sendMethod = { type: this.type.value } as ISendMethod;
 
-    if (txData.referralsToSign) {
-      for (let referral of txData.referralsToSign) {
-        await wallet.client.sendReferral(referral);
-        await wallet.client.sendInvite(referral.address);
-      }
-    }
+    await this.sendService.send(txData, wallet.client);
 
-    if (!wallet.client.canSign() && !wallet.client.isPrivKeyExternal()) {
-      this.logger.info('No signing proposal: No private key');
-      await this.walletService.onlyPublish(wallet.client, txData.txp);
-    } else {
-      await this.walletService.publishAndSign(wallet.client, txData.txp);
-    }
-
-    if (this.type.value === 'easy') {
-      this.easySendUrl = txData.easySendUrl;
-      await this.persistenceService.addEasySend(clone(txData.easySend));
-    }
+    this.easySendUrl = txData.easySendUrl;
 
     setTimeout(() => {
       this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
