@@ -1,48 +1,28 @@
-import { AlertController, IonicPage, LoadingController, NavController, NavParams, Tabs } from 'ionic-angular';
-import { Component, ViewChild } from '@angular/core';
-import * as  _ from 'lodash';
-import { EasySend } from '@merit/common/models/easy-send';
+import { Component } from '@angular/core';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { TouchIdService } from '@merit/mobile/services/touch-id.service';
-import { WalletService } from '@merit/common/services/wallet.service';
-import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { RateService } from '@merit/common/services/rate.service';
+import { EasySend } from '@merit/common/models/easy-send';
+import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
 import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { ISendMethod, SendMethodDestination, SendMethodType } from '@merit/common/models/send-method';
-import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
-import { SlideToActionComponent } from '../../../../components/slide-to-action/slide-to-action';
+import { RateService } from '@merit/common/services/rate.service';
+import { ISendTxData, SendService } from '@merit/common/services/send.service';
+import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { TouchIdService } from '@merit/mobile/services/touch-id.service';
+import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import * as  _ from 'lodash';
 
 @IonicPage()
 @Component({
   selector: 'view-send-confirmation',
-  templateUrl: 'send-confirmation.html',
+  templateUrl: 'send-confirmation.html'
 })
 export class SendConfirmationView {
 
-  txData: {
-    amount: number; // micros
-    totalAmount: number; // micros
-    feeIncluded: boolean;
-    easyFee: number,
-    password: string;
-    recipient: {
-      label: string;
-      name: string;
-      emails?: Array<{ value: string }>;
-      phoneNumbers?: Array<{ value: string }>;
-    };
-    sendMethod: ISendMethod;
-    txp: any;
-    easySend?: EasySend;
-    easySendUrl?: string;
-    wallet: MeritWalletClient;
-    referralsToSign: Array<any>;
-  };
-
+  txData: ISendTxData;
   viewData: any;
-
   unlockValue: number = 0;
 
   constructor(navParams: NavParams,
@@ -56,7 +36,8 @@ export class SendConfirmationView {
               private rateService: RateService,
               private configService: ConfigService,
               private logger: LoggerService,
-              private persistenceService: PersistenceService2) {
+              private persistenceService: PersistenceService2,
+              private sendService: SendService) {
     this.txData = navParams.get('txData');
   }
 
@@ -72,7 +53,7 @@ export class SendConfirmationView {
 
     const viewData: any = {
       recipient: this.txData.recipient,
-      amount:  this.txData.amount,
+      amount: this.txData.amount,
       totalAmount: this.txData.feeIncluded ? this.txData.amount : this.txData.amount + this.txData.txp.fee + this.txData.easyFee,
       password: this.txData.password,
       feePercent: this.txData.txp.feePercent,
@@ -83,16 +64,16 @@ export class SendConfirmationView {
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
       methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'MeritMoney Link' : 'Classic Send',
-      destination: this.txData.sendMethod.alias ? '@'+this.txData.sendMethod.alias : this.txData.sendMethod.value
+      destination: this.txData.sendMethod.alias ? '@' + this.txData.sendMethod.alias : this.txData.sendMethod.value
     };
 
-    viewData.walletRemainingBalance =  this.txData.wallet.balance.totalAmount - viewData.totalAmount;
+    viewData.walletRemainingBalance = this.txData.wallet.balance.totalAmount - viewData.totalAmount;
 
-    const amountMrtLength = (this.rateService.microsToMrt(viewData.amount)+'').length;
+    const amountMrtLength = (this.rateService.microsToMrt(viewData.amount) + '').length;
 
     if (amountMrtLength < 5) {
       viewData.priceReviewClass = 'big';
-    } else if  (amountMrtLength < 9) {
+    } else if (amountMrtLength < 9) {
       viewData.priceReviewClass = 'medium';
     } else if (amountMrtLength < 12) {
       viewData.priceReviewClass = 'small';
@@ -117,8 +98,8 @@ export class SendConfirmationView {
             {
               name: 'password',
               placeholder: 'Password',
-              type: 'password',
-            },
+              type: 'password'
+            }
           ],
           buttons: [
             {
@@ -126,7 +107,7 @@ export class SendConfirmationView {
               role: 'cancel',
               handler: () => {
                 this.navCtrl.pop();
-              },
+              }
             },
             {
               text: 'Ok',
@@ -141,9 +122,9 @@ export class SendConfirmationView {
                     showPassPrompt(true);
                   }
                 }
-              },
-            },
-          ],
+              }
+            }
+          ]
         })
         .present();
     };
@@ -174,35 +155,26 @@ export class SendConfirmationView {
     } else {
 
       // if (parseInt(this.txData.amountUSD) >= this.CONFIRM_LIMIT_USD) {
-        if (this.touchIdService.isAvailable()) {
-          return showTouchIDPrompt();
-        } else {
-          return this.send();
-        }
+      if (this.touchIdService.isAvailable()) {
+        return showTouchIDPrompt();
+      } else {
+        return this.send();
+      }
       // }
     }
   }
 
-
   async send(walletPassword?) {
     const loadingSpinner = this.loadingCtrl.create({
       content: 'Sending transaction...',
-      dismissOnPageChange: true,
+      dismissOnPageChange: true
     });
     loadingSpinner.present();
 
     try {
-
-      if (this.txData.referralsToSign) {
-        for (let referral of this.txData.referralsToSign) {
-          await this.txData.wallet.sendReferral(referral);
-          await this.txData.wallet.sendInvite(referral.address);
-        }
-      }
-      await this.approveTx();
+      await this.sendService.send(this.txData, this.txData.wallet);
 
       if (this.txData.sendMethod.type == SendMethodType.Easy) {
-        this.persistenceService.addEasySend(this.txData.easySend);
         this.navCtrl.push('EasySendShareView', { txData: this.txData });
       } else {
         this.navCtrl.popToRoot();
@@ -215,15 +187,6 @@ export class SendConfirmationView {
       loadingSpinner.dismiss();
       this.txData.referralsToSign = [];
       if (walletPassword) this.walletService.encrypt(this.txData.wallet, walletPassword);
-    }
-  }
-
-  private approveTx() {
-    if (!this.txData.wallet.canSign() && !this.txData.wallet.isPrivKeyExternal()) {
-      this.logger.info('No signing proposal: No private key');
-      return this.walletService.onlyPublish(this.txData.wallet, this.txData.txp);
-    } else {
-      return this.walletService.publishAndSign(this.txData.wallet, this.txData.txp);
     }
   }
 

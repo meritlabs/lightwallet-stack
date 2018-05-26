@@ -2,12 +2,14 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { FileBackupView } from '@merit/desktop/app/core/backup/file-backup/file-backup.view';
 import { QrCodeBackupView } from '@merit/desktop/app/core/backup/qr-code-backup/qr-code-backup.view';
-import { InviteRequestsView } from '@merit/desktop/app/core/community/invites/invite-requests/invite-requests.view';
-import { SendInviteView } from '@merit/desktop/app/core/community/invites/send-invite/send-invite.view';
 import { GlobalSettingsView } from '@merit/desktop/app/core/global-settings/global-settings.view';
 import { SettingsPreferencesView } from '@merit/desktop/app/core/global-settings/settings-preferences/settings-preferences.view';
 import { SettingsSessionLogView } from '@merit/desktop/app/core/global-settings/settings-session-log/settings-session-log.view';
 import { SettingsTermsOfUseView } from '@merit/desktop/app/core/global-settings/settings-terms-of-use/settings-terms-of-use.view';
+import { InviteRequestsView } from '@merit/desktop/app/core/invites/invite-requests/invite-requests.view';
+import { InvitesHistoryView } from '@merit/desktop/app/core/invites/invites-history/invites-history.view';
+import { InvitesView } from '@merit/desktop/app/core/invites/invites.view';
+import { SendInviteView } from '@merit/desktop/app/core/invites/send-invite/send-invite.view';
 import { CreateWalletView } from '@merit/desktop/app/core/wallets/create-wallet/create-wallet.view';
 import { WalletDetailHistoryView } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details-history/wallet-details-history.view';
 import { WalletDetailView } from '@merit/desktop/app/core/wallets/wallet-details/wallet-details.view';
@@ -55,10 +57,16 @@ const routes: Routes = [
       },
       { path: 'receive', component: ReceiveView },
       { path: 'send', component: SendView },
+      {
+        path: 'invites', component: InvitesView, children: [
+          { path: 'send', component: SendInviteView },
+          { path: 'history', component: InvitesHistoryView },
+          { path: 'requests', component: InviteRequestsView },
+          { path: '**', redirectTo: 'requests' }
+        ]
+      },
       { path: 'history', component: HistoryView },
       { path: 'community', component: CommunityView },
-      { path: 'community/invite-requests', component: InviteRequestsView },
-      { path: 'community/send-invite', component: SendInviteView },
       {
         path: 'settings', component: GlobalSettingsView, children: [
           { path: '', component: SettingsPreferencesView },
