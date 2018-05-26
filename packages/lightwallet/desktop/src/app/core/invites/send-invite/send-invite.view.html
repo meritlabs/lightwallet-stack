@@ -1,15 +1,14 @@
+<message-box error *ngIf="(availableInvites$ | async) == 0">
+  You do not have any available invites to send.
+</message-box>
+<message-box success *ngIf="easySendUrl">
+  Your global send URL is ready, now you can share it:
+  <div class="easysend-url-container" [clip]="easySendUrl" (click)="onGlobalSendCopy()">
+    <small class="click_to_copy">Click to copy</small>
+    {{ easySendUrl }}
+  </div>
+</message-box>
 <div class="container--inner">
-  <message-box error *ngIf="(availableInvites$ | async) == 0">
-    You do not have any available invites to send.
-  </message-box>
-  <message-box success *ngIf="easySendUrl">
-    Your global send URL is ready, now you can share it:
-    <div class="easysend-url-container" [clip]="easySendUrl">
-      <small class="click_to_copy">Click to copy</small>
-      {{ easySendUrl }}
-    </div>
-  </message-box>
-
   <form [formGroup]="formData" (ngSubmit)="sendInvite()">
     <div class="sendMerit__form__group">
       <label for="" class="ui-label">Send from</label>

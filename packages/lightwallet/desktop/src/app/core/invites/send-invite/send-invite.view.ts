@@ -1,15 +1,10 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { getEasySendURL } from '@merit/common/models/easy-send';
 import { SendMethodType } from '@merit/common/models/send-method';
-import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
-import {
-  RefreshOneWalletTransactions,
-  selectSentInvites,
-  selectTransactionsLoading
-} from '@merit/common/reducers/transactions.reducer';
+import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
 import {
   RefreshOneWalletAction,
   selectInvites,
@@ -20,7 +15,6 @@ import { EasySendService } from '@merit/common/services/easy-send.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { cleanAddress } from '@merit/common/utils/addresses';
-import { AddressValidator } from '@merit/common/validators/address.validator';
 import { SendValidator } from '@merit/common/validators/send.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
@@ -60,6 +54,7 @@ export class SendInviteView {
   easySendUrl: string;
 
   get address() { return this.formData.get('address'); }
+
   get type() { return this.formData.get('type'); }
 
   constructor(private store: Store<IRootAppState>,
@@ -109,7 +104,7 @@ export class SendInviteView {
     } else {
       address = cleanAddress(address);
       address = await this.addressService.getAddressInfo(address);
-      await this.walletService.sendInvite(walletClient, address.address);
+      await walletClient.sendInvite(address.address);
     }
 
     try {
@@ -134,5 +129,9 @@ export class SendInviteView {
 
   selectWallet(wallet: DisplayWallet) {
     this.selectedWallet = wallet;
+  }
+
+  onGlobalSendCopy() {
+    this.toastCtrl.success('Copied to clipboard');
   }
 }
