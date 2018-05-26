@@ -1,58 +1,30 @@
 view-network {
 
-  ion-header.header {
-    background: linear-gradient(#282d50, #383c63);
+  .send-invite-button {
+    height: 40px;
+    line-height: 40px;
+    min-height: 40px;
+    margin: 8px 8px 4px;
+    width: calc(100% - 16px);
+    border-radius: 4px;
 
-    .toolbar-background {
-      background: transparent;
+    img {
+      margin-left: 8px;
+      height: 18px;
     }
+  }
 
-    ion-toolbar.toolbar {
-      ion-spinner.spinner {
-        svg > * {
-          stroke: white;
-        }
-        margin-bottom: 20px;
-        min-height: 35px;
-      }
-
-      ion-row {
-        text-align: center;
-        padding: 0;
-        margin: 0;
-
-        ion-col {
-          padding: 0;
-          margin: 0;
-
-          > small {
-            color: #acadbc;
-            font-size: 13px;
-            line-height: 15px;
-            display: block;
-          }
-
-          ion-avatar[img-icon] {
-            float: none;
-            margin: 12px auto 14px;
-            background: rgba(0,0,0,.17);
-          }
-
-          span.merit-amount {
-            color: white;
-            font-weight: 600;
-            font-size: 17px;
-            letter-spacing: -.47px;
-            padding-bottom: 24px;
-            display: block;
-
-            small {
-              display: block;
-              font-size: 13px;
-            }
-          }
-        }
-      }
+  .tell-people-button {
+    height: 40px;
+    line-height: 40px;
+    min-height: 40px;
+    margin: 8px 8px 4px;
+    width: calc(100% - 16px);
+    border-radius: 4px;
+    background: #0c0d29;
+    img {
+      margin-left: 8px;
+      height: 18px;
     }
   }
 
@@ -84,11 +56,23 @@ view-network {
     border-bottom: 1px solid $border-color;
     border-top: 1px solid $border-color;
 
-    &:not(:last-child) {
-      margin-bottom: 16px;
-    }
+    margin-top: 8px;
+    margin-bottom: 0px;
 
     position: relative;
+
+    .details {
+      color: transparentize(color($colors, primary), 0.2);
+      font-size: 12px;
+      font-weight: 600;
+      ion-badge {
+        height: 25px;
+        line-height: 25px;
+        padding: 0 5px;
+        margin-left: 5px;
+      }
+    }
+
 
     .locked-info {
       position: absolute;
@@ -132,6 +116,8 @@ view-network {
           margin: 15px auto;
           line-height: 15px;
         }
+
+
         .address-line {
           color: rgb(115, 129, 155);
           display: flex;
@@ -164,18 +150,14 @@ view-network {
     }
   }
 
-  ion-item-divider.item-divider {
-    span.merit-amount {
-      display: block;
-      color: map_get($colors, primary);
-      font-size: 13px;
-
-      small {
-        font-size: 11px;
-      }
+  ion-list.wallet {
+    box-shadow: 0 0 1px 0 color($colors, primary);
+    .wallet-title {
+      min-height: 35px;
+      height: 35px;
+      line-height: 35px;
     }
   }
-
 
 
 }

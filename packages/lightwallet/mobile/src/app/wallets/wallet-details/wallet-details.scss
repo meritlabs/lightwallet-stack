@@ -4,6 +4,15 @@
 
 wallet-details-view {
 
+  ion-content.content > .scroll-content {
+    background: #f6f8fa;
+  }
+  ion-list.list {
+    $border-color: transparentize(#d1d6dc, 0.5);
+    border-bottom: 1px solid $border-color;
+    border-top: 1px solid $border-color;
+  }
+
   .no-transactions {
     margin-top: 100px;
     text-align: center;
@@ -73,71 +82,6 @@ wallet-details-view {
     }
   }
 
-  .big-header {
-    padding-top: 0;
-    h2 {
-      font-weight: 400;
-    }
-
-    .amount-available {
-      font-size: 17px;
-      color: rgba(255, 255, 255, 0.74);
-    }
-
-    .action-buttons {
-      margin: 21px -18px -18px -18px;
-      height: 85px;
-      background: rgba(0, 0, 0, 0.08);
-      display: flex;
-      flex-direction: row;
-
-      > .button-cell {
-        height: inherit;
-        flex: 1;
-        position: relative;
-
-        &:first-child:after {
-          content: '';
-          height: 41px;
-          width: 1px;
-          display: block;
-          position: absolute;
-          right: 1px;
-          top: 23px;
-          background: rgba(255, 255, 255, .2);
-        }
-
-        button[ion-button].button {
-          height: inherit;
-          background: transparent;
-          box-shadow: none;
-          border: none;
-          width: 100%;
-          padding: 0;
-          margin: 0;
-
-          .button-inner {
-            .inner-container {
-              ion-icon {
-                font-size: 1.9em;
-                line-height: .67;
-                padding: 0;
-                pointer-events: none;
-                display: block;
-                margin-bottom: 12px;
-              }
-
-              span {
-                font-size: 11px;
-                letter-spacing: .13px;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
   ion-list.list {
     button[ion-item].item {
       ion-note.detail[item-end] {
@@ -147,6 +91,65 @@ wallet-details-view {
       }
     }
   }
+
+  .details {
+    color: transparentize(color($colors, primary), 0.2);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  ion-item-divider {
+    padding-top: 6px !important;
+    padding-bottom: 0 !important;
+  }
+
+  .sub-header {
+    border-bottom: 1px solid transparentize(#d1d6dc, 0.5);
+    ion-col {
+      text-align: center;
+      padding: 0;
+      background: #f6f8fa !important;
+      button {
+        box-shadow: none;
+        margin: 10px;
+        border: none;
+        height: 65px;
+        line-height: 60px;
+        width: calc(100% - 20px);
+        //background: rgba(0,0,0,0.05);
+        background: rgba(83, 185, 232, 0.75);
+        font-size: 18px;
+        ion-icon {
+          font-size: 30px;
+          vertical-align: middle;
+          display: inline-block;
+          margin-top: -3px;
+          margin-right: 3px;
+        }
+        span {
+          display: inline-block;
+          vertical-align: middle;
+        }
+      }
+    }
+    ion-col:nth-child(1) button {
+      margin-right: 0;
+    }
+    ion-col:nth-last-child(1) button {
+      margin-left: 0;
+    }
+
+  }
+  .stats {
+    h2 {
+      font-size: 16px !important;
+    }
+    ion-item.item  {
+      padding-top: 2.5px;
+      padding-bottom: 3px;
+    }
+  }
+
 }
 .ios wallet-details-view ion-header.header-ios {
   .toolbar-ios {
@@ -155,6 +158,7 @@ wallet-details-view {
   ion-title.title.title-ios .toolbar-title.toolbar-title-ios {
     color: white;
   }
+
 
 
 }
