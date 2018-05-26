@@ -109,6 +109,17 @@ export class EasyReceiveService {
     return amount - this.rateService.microsToMrt(await this.feeService.getEasyReceiveFee());
   }
 
+  async getInvitesAmount(txs: Array<any>) {
+    const tx = txs.find(tx => tx.invite);
+    return tx ? tx.amount : 0;
+  }
+
+
+  isInviteOnly(txs: Array<any>) {
+    return !txs.some(tx => !tx.invite);
+  }
+
+
   async validateEasyReceiptOnBlockchain(receipt: EasyReceipt, password = ''): Promise<any> {
     const walletClient = this.mwcService.getClient(null, {});
 

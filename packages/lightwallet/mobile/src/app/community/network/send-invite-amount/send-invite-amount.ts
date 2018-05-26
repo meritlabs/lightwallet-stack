@@ -1,10 +1,12 @@
-import { IonicPage, NavParams, NavController,  LoadingController, ModalController  } from 'ionic-angular';
+import { IonicPage, NavParams, NavController,  LoadingController, ModalController, AlertController, Platform  } from 'ionic-angular';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { SlideToActionComponent } from '../../../../components/slide-to-action/slide-to-action';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { EasySendService } from '@merit/common/services/easy-send.service';
+import { getEasySendURL } from '@merit/common/models/easy-send';
 
 
 @IonicPage()
@@ -22,6 +24,10 @@ export class SendInviteAmountView {
 
   public error:string;
 
+  public link:string;
+  copied: boolean;
+  showShareButton: boolean;
+
   @ViewChild('amount') amountInput: ElementRef;
 
   constructor(private navCtrl: NavController,
@@ -29,9 +35,14 @@ export class SendInviteAmountView {
               private profileService: ProfileService,
               private toastCtrl: ToastControllerService,
               private loadCtrl: LoadingController,
-              private modalCtrl: ModalController
+              private modalCtrl: ModalController,
+              private alertCtrl: AlertController,
+              private socialSharing: SocialSharing,
+              private platform: Platform,
+              private easySendService: EasySendService
   ) {
     this.address = this.navParams.get('address');
+    this.showShareButton = this.platform.is('cordova') && SocialSharing.installed();
   }
 
   async ionViewWillEnter() {
@@ -54,11 +65,18 @@ export class SendInviteAmountView {
       return this.toastCtrl.error('You don\'t have enough invites in your wallet for this transaction.');
     }
 
-    let loader = this.loadCtrl.create({ content: 'Sending invite...' });
+    let loader = this.loadCtrl.create({ content: 'Creating MeritInvite link...' });
     try {
       loader.present();
-      await this.wallet.sendInvite(this.address, this.formData.amount);
-      return this.navCtrl.setRoot('NetworkView');
+
+      const easySend = await this.easySendService.createEasySendScriptHash(this.wallet, '');
+      const referral = easySend.scriptReferralOpts;
+
+      await this.wallet.sendReferral(referral);
+      await this.wallet.sendInvite(referral.address, this.formData.amount);
+
+      this.link = getEasySendURL(easySend);
+
     } catch (e) {
       console.log(e);
       this.toastCtrl.error('Failed to send invite');
@@ -96,5 +114,37 @@ export class SendInviteAmountView {
   focusInput() {
     this.amountInput['_native']['nativeElement'].focus();
   }
+
+
+  copyToClipboard() {
+    this.copied = true;
+    this.toastCtrl.success('Copied to clipboard');
+  }
+
+
+  async toWallets() {
+    if (this.copied) {
+      this.navCtrl.pop();
+    } else {
+      this.alertCtrl.create({
+        title: 'Have you copied/shared your link?',
+        message: "Do not forget to copy or share your link, or you can lose invite",
+        buttons: [
+          { text: 'Cancel', role: 'cancel' },
+          { text: 'Ok', handler: () => {
+            this.navCtrl.pop();
+          } }
+        ]
+      }).present();
+    }
+  }
+
+  isSendAllowed() {
+    return (
+      !this.error && this.formData.amount
+    )
+  }
+
+
 
 }
