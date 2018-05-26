@@ -20,8 +20,7 @@
     "url": "https://github.com/meritlabs/lightwallet-stack"
   },
   "dependencies": {
-    "node-notifier": "^5.2.1",
-    "web-animations-js": "^2.3.1"
+    "node-notifier": "^5.2.1"
   },
   "devDependencies": {
     "@angular-devkit/core": "0.3.2",
@@ -51,6 +50,7 @@
     "uglifyjs-webpack-plugin": "^1.2.4",
     "url-loader": "^0.6.2",
     "webpack": "~3.11.0",
-    "webpack-dev-server": "2.11.0"
+    "webpack-dev-server": "2.11.0",
+    "web-animations-js": "^2.3.1"
   }
 }
