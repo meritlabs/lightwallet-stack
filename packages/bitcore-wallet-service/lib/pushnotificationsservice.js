@@ -425,7 +425,6 @@ PushNotificationsService.prototype._compileTemplate = function(template, extensi
 };
 
 PushNotificationsService.prototype._makeRequest = function(opts, cb) {
-  log.info("PNS: Making Request");
   var self = this;
 
   self.request({
