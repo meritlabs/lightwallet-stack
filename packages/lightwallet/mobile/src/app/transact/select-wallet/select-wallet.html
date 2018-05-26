@@ -10,14 +10,14 @@
 </ion-header>
 
 <ion-content no-bounce>
-  <!-- TODO indicate whether wallet is locked -->
   <div *ngIf="wallets">
-    <button ion-item detail-none *ngFor="let wallet of wallets" [class.selected]="selectedWallet.id == wallet.id"
+    <button ion-item detail-none *ngFor="let wallet of wallets" [class.selected]="selectedWallet?.id == wallet.id"
             (click)="select(wallet)">
       <ion-label>
-        <h2 translate>
+        <h2>
           {{wallet.name || wallet._id}}
         </h2>
+        <p *ngIf="wallet?.rootAlias">@{{wallet.rootAlias}}</p>
         <p>
           <span *ngIf="!wallet.confirmed">Not unlocked</span>
           <span *ngIf="wallet.confirmed">
@@ -34,6 +34,9 @@
 
             <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>
           </span>
+        </p>
+        <p *ngIf="showInvites">
+          Invites: {{wallet.availableInvites}}
         </p>
       </ion-label>
       <ion-note class="wallet-color-indicator" item-end>

@@ -118,7 +118,7 @@ export class WalletEffects {
 
   private calculateTotals(wallets: DisplayWallet[]): IWalletTotals {
     const totals: any = {
-      totalAmbassadorRewards: 0,
+      totalGrowthRewards: 0,
       totalMiningRewards: 0,
       totalNetworkValue: 0,
       totalWalletsBalance: 0,
@@ -131,7 +131,7 @@ export class WalletEffects {
     wallets.forEach(w => {
       totals.totalNetworkValue += w.totalNetworkValueMicro;
       totals.totalMiningRewards += w.miningRewardsMicro;
-      totals.totalAmbassadorRewards += w.ambassadorRewardsMicro;
+      totals.totalGrowthRewards += w.growthRewardsMicro;
       totals.totalCommunitySize += w.communitySize;
       totals.invites += w.availableInvites;
 
@@ -144,7 +144,7 @@ export class WalletEffects {
     return {
       totalNetworkValue: formatAmount(totals.totalNetworkValue, 'mrt'),
       totalMiningRewards: formatAmount(totals.totalMiningRewards, 'mrt'),
-      totalAmbassadorRewards: formatAmount(totals.totalAmbassadorRewards, 'mrt'),
+      totalGrowthRewards: formatAmount(totals.totalGrowthRewards, 'mrt'),
       totalWalletsBalance: formatAmount(totals.totalWalletsBalance, 'mrt'),
       totalWalletsBalanceFiat: this.txFormatService.formatAlternativeStr(totals.totalWalletsBalance),
       totalCommunitySize: totals.totalCommunitySize,

@@ -227,7 +227,7 @@ export class MeritMarketClient {
       message += timestamp;
     }
 
-    const signature = Bitcore.Message(path).sign(privkey);
+    const signature = Bitcore.Message(message).sign(privkey);
 
     return [signature, timestamp];
   };

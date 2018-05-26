@@ -1,6 +1,6 @@
 {
   "name": "lightwallet-desktop",
-  "version": "1.4.2",
+  "version": "1.5.1",
   "main": "electron.main.js",
   "description": "Lightwallet implementation for desktops",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
@@ -50,20 +50,7 @@
     "uglifyjs-webpack-plugin": "^1.2.4",
     "url-loader": "^0.6.2",
     "webpack": "~3.11.0",
-    "webpack-dev-server": "2.11.0"
-  },
-  "build": {
-    "appId": "wallet.merit.me",
-    "directories": {
-      "output": "electron-dist"
-    },
-    "productName": "Merit Lightwallet",
-    "mac": {
-      "category": "public.app-category.utilities",
-      "target": "dmg"
-    },
-    "linux": {
-      "target": "deb"
-    }
+    "webpack-dev-server": "2.11.0",
+    "web-animations-js": "^2.3.1"
   }
 }
