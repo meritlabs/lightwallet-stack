@@ -1,6 +1,6 @@
-<div class="container" #container>
+<div class="container" #container [class.disabled]="disabled">
   <div class="slider" #slider>
     <ion-icon name="ios-arrow-forward"></ion-icon>
   </div>
-  <div class="text">Slide to confirm</div>
+  <div class="text">{{text}}</div>
 </div>
