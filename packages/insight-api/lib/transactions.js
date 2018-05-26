@@ -170,30 +170,49 @@ TxController.prototype.transformOutput = function(options, output, index) {
 };
 
 TxController.prototype.transformInvTransaction = function(transaction) {
-  var self = this;
+  const self = this;
 
-  var valueOut = 0;
-  var vout = [];
-  for (var i = 0; i < transaction.outputs.length; i++) {
-    var output = transaction.outputs[i];
-    valueOut += output.micros;
-    if (output.script) {
-      var address = output.script.toAddress(self.node.network);
-      if (address) {
-        var obj = {};
-        obj[address.toString()] = output.micros;
-        vout.push(obj);
-      }
+  let valueOut = 0;
+
+  const inputAddresses = _.reduce(transaction.inputs, function(acc, input) {
+    if (!input.script) {
+      return acc;
     }
-  }
 
-  var isRBF = _.some(_.map(transaction.inputs, 'sequenceNumber'), function(seq) {
+    const address = input.script.toAddress(self.node.network);
+    if (!address) {
+      return acc;
+    }
+
+    return acc.add(address.toString());
+  }, new Set());
+
+  const vout = _.reduce(transaction.outputs, function(acc, output) {
+    valueOut += output.micros;
+    if (!output.script) {
+      return acc;
+    }
+
+    const address = output.script.toAddress(self.node.network);
+    if (!address) {
+      return acc;
+    }
+
+    const addresString = address.toString();
+    const obj = {
+      [addresString]: output.micros,
+      isChangeOutput: inputAddresses.has(addresString),
+    };
+    return acc.concat(obj);
+  }, []);
+
+  const isRBF = _.some(_.map(transaction.inputs, 'sequenceNumber'), function(seq) {
     return seq < MAXINT - 1;
   });
 
   // We want to know if a transaction is coinbase and invite so that we can handle it
   // in a relevant way in various wallets.
-  var transformed = {
+  const transformed = {
     txid: transaction.hash,
     valueOut: valueOut / 1e8,
     vout: vout,
