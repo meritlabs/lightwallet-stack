@@ -173,7 +173,7 @@ export class CoreView implements OnInit, AfterViewInit {
       title = `Cancel MeritMoney link with ${ amount } Merit?`
     }
 
-    const confirmDialog = this.confirmDialogCtrl.create(title, `You clicked on a GlobalSend link that you created.  Would you like to cancel it?`, [
+    const confirmDialog = this.confirmDialogCtrl.create(title, `You clicked on a ${ inviteOnly? 'MeritInvite' : 'MeritMoney' } link that you created.  Would you like to cancel it?`, [
       {
         text: 'Cancel ' + (inviteOnly? 'MeritInvite' : 'MeritMoney'),
         value: 'yes',
