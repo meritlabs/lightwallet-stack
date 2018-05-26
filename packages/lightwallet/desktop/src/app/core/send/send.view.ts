@@ -151,7 +151,7 @@ export class SendView implements OnInit {
           );
       }
 
-      return of({} as TxData);
+      return of({} as ISendTxData);
     }),
     tap((txData: ISendTxData) => {
       if (txData && txData.txp) this.canSend = true;
