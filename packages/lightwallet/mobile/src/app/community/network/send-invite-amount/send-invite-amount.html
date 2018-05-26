@@ -40,14 +40,14 @@
 
     <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length" [hidden]="link">
         <img src="assets/img/icons/invite.svg" color="primary" item-end>
-        <h2>Slide to create invite link</h2>
+        <h2>Slide to create MeritInvite link</h2>
         <p>Select number of invite tokens you want to send and slide right to create an invite link. This link can be shared any way you want.</p>
     </div>
 
 
     <ion-card *ngIf="link">
         <ion-card-header>
-            Your invite link
+            Your MeritInvite link
         </ion-card-header>
         <ion-card-content>
             <a (click)="copyToClipboard()" [clip]="link">{{ link }}</a>
