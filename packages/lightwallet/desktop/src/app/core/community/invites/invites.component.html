@@ -1,17 +1,17 @@
-<div class="wallets__group__wallet item" [routerLink]='"/community/invite-requests"'>
+<div class="wallets__group__wallet item" [routerLink]='"/invites/requests"'>
   <div class="network__personal-wallet__panel__col">
     <div class="network__personal-wallet__panel__icon">
       <img src="/assets/v1/icons/invites/invite.svg" alt="">
     </div>
     <div class="network__personal-wallet__panel__info">
-      <p class="network__personal-wallet__panel__info__small">Invite Requests</p>
+      <p class="network__personal-wallet__panel__info__small">Invite Waitlist</p>
     </div>
   </div>
   <div class="network__personal-wallet__panel__col counter">
     <p>{{ ((inviteRequests$ | async)?.length) || 0 }}</p>
   </div>
 </div>
-<div class="wallets__group__wallet item" [routerLink]='"/community/send-invite"'>
+<div class="wallets__group__wallet item" [routerLink]='"/invites/send"'>
   <div class="network__personal-wallet__panel__col">
     <div class="network__personal-wallet__panel__icon">
       <img src="/assets/v1/icons/invites/incoming_request.svg" alt="">

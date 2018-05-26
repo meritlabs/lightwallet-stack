@@ -53,7 +53,7 @@ export class SendInviteAmountView {
     }
   }
 
-  private async send() {
+  async send() {
     if (!this.wallet) {
       this.wallet = this.wallets.find(w => (w.availableInvites > 0));
     }
@@ -61,7 +61,11 @@ export class SendInviteAmountView {
       return this.toastCtrl.error('You have no active invites');
     }
 
-    let loader = this.loadCtrl.create({ content: 'Creating invite link...' });
+    if (this.wallet.availableInvites < this.formData.amount) {
+      return this.toastCtrl.error('You don\'t have enough invites in your wallet for this transaction.');
+    }
+
+    let loader = this.loadCtrl.create({ content: 'Creating MeritInvite link...' });
     try {
       loader.present();
 
@@ -81,10 +85,11 @@ export class SendInviteAmountView {
     }
   }
 
-  public selectWallet() {
-    const modal = this.modalCtrl.create('SelectInviteWalletModal', {
+  selectWallet() {
+    const modal = this.modalCtrl.create('SelectWalletModal', {
       selectedWallet: this.wallet,
-      availableWallets: this.wallets.filter((wallet) => wallet.availableInvites > 0)
+      showInvites: true,
+      availableWallets: this.wallets.filter(wallet => wallet.availableInvites > 0)
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
       if (wallet) {
@@ -95,14 +100,14 @@ export class SendInviteAmountView {
     return modal.present();
   }
 
-  public processAmount(amount) {
+  processAmount(amount) {
     this.error = '';
     if (amount > this.wallet.availableInvites) {
       this.error = 'Not enough invites';
     }
   }
 
-  public amountKeypress(key) {
+  amountKeypress(key) {
     if (key == 13) return this.amountInput['_native']['nativeElement'].blur();
   }
 
@@ -123,7 +128,7 @@ export class SendInviteAmountView {
     } else {
       this.alertCtrl.create({
         title: 'Have you copied/shared your link?',
-        message: "Do not forget to copy or share your link, or you can loose invite",
+        message: "Do not forget to copy or share your link, or you can lose invite",
         buttons: [
           { text: 'Cancel', role: 'cancel' },
           { text: 'Ok', handler: () => {

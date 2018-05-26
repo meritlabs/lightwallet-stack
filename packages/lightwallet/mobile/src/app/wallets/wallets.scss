@@ -1,7 +1,4 @@
 view-wallets {
-
-
-
   ion-header.header {
     //  background: linear-gradient(#282d50, #383c63);
     background: color($colors, primary);
@@ -66,14 +63,15 @@ view-wallets {
 
   ion-header  {
     ion-spinner.spinner {
-      position: absolute;
-      top: 2px;
-      right: 2px;
-      color: white;
-      &.spinner-ios {
+        position: absolute;
         top: 2px;
-        right: 1px;
-      }
+        right: 2px;
+        color: white;
+        &.spinner-ios {
+          top: 2px;
+          top: calc(2px + const(safe-area-inset-top));
+          top: calc(2px + env(safe-area-inset-top));right: 1px;
+        }
     }
   }
 
@@ -265,7 +263,7 @@ view-wallets {
       z-index: 1000;
       bottom: -10px;
       right: 15px;
-      border-top: 10px solid white; 
+      border-top: 10px solid white;
       border-left: 10px solid transparent;
       border-right: 10px solid transparent;
       border-bottom: 0;

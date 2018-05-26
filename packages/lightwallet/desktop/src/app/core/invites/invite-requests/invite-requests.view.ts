@@ -30,6 +30,10 @@ export class InviteRequestsView {
               private logger: LoggerService,
               private toastCtrl: ToastControllerService) {}
 
+              log(req) {
+                console.log('REQ IS ', req);
+              }
+
   async approveRequest(request: IUnlockRequest) {
     const availableInvites = await this.availableInvites$.pipe(take(1)).toPromise();
 
