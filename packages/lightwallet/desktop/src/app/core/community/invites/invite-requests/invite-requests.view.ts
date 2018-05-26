@@ -3,7 +3,8 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
 import {
-  selectInviteRequests, selectInvites,
+  selectInviteRequests,
+  selectInvites,
   selectWalletsWithInvites,
   UpdateInviteRequestsAction
 } from '@merit/common/reducers/wallets.reducer';
@@ -13,7 +14,7 @@ import { ConfirmDialogControllerService } from '@merit/desktop/app/components/co
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { map, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'view-invite-requests',
@@ -24,6 +25,8 @@ export class InviteRequestsView {
   inviteRequests$: Observable<IUnlockRequest[]> = this.store.select(selectInviteRequests);
   availableInvites$: Observable<number> = this.store.select(selectInvites);
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWalletsWithInvites);
+
+  sending: { [referralId: string]: boolean } = {};
 
   constructor(private store: Store<IRootAppState>,
               private confirmDialogCtrl: ConfirmDialogControllerService,
@@ -51,6 +54,7 @@ export class InviteRequestsView {
 
     dialog.onDidDismiss(async (value: string) => {
       if (value === 'yes') {
+        this.sending[request.referralId] = true;
         try {
           let wallet = request.walletClient;
           const availableInvites = wallet.invitesBalance;
@@ -74,8 +78,10 @@ export class InviteRequestsView {
           this.store.dispatch(new UpdateInviteRequestsAction(remainingRequests));
         } catch (err) {
           this.logger.error('Error sending invite', err);
-          this.toastCtrl.error('An error occurred while sending an invite.');
+          this.toastCtrl.error(err.message ? err.message : 'An error occurred while sending an invite.');
         }
+
+        this.sending[request.referralId] = false;
       }
     });
   }
