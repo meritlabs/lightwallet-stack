@@ -25,6 +25,7 @@ import { isEqual, omit } from 'lodash';
 import 'rxjs/add/operator/isEmpty';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import {
@@ -112,7 +113,7 @@ export class SendView implements OnInit {
   showTour: boolean = !('showTour' in localStorage && localStorage.getItem('showTour') === 'false');
 
   txData$: Observable<ISendTxData> = (this.formData.valueChanges as any).pipe(
-    debounceTime(250),
+    debounceTime(500),
     distinctUntilChanged((before: any, after: any) => {
       const b: any = omit(before, 'wallet');
       const a: any = omit(after, 'wallet');
@@ -137,63 +138,97 @@ export class SendView implements OnInit {
       }
       return of(formData);
     }),
-    filter(() => this.formData.valid),
-    tap(() => {
-      this.receiptLoading = true;
+    switchMap((formData) => {
+      if (this.formData.valid) {
+        this.receiptLoading = true;
+        return fromPromise(this.createTx(formData))
+          .pipe(
+            catchError((err: any) => {
+              console.log(err);
+              this.error = err.message || 'Unknown error';
+              return of({} as ISendTxData);
+            })
+          );
+      }
+
+      return of({} as TxData);
     }),
-    switchMap((formData) =>
-      fromPromise(this.createTx(formData))
-        .pipe(
-          catchError((err: any) => {
-            console.log(err);
-            this.error = err.message || 'Unknown error';
-            return of({} as ISendTxData);
-          })
-        )
-    ),
     tap((txData: ISendTxData) => {
       if (txData && txData.txp) this.canSend = true;
     }),
     share()
   );
 
+  submit: Subject<void> = new Subject<void>();
+  onSubmit$: Observable<boolean> = this.submit.asObservable()
+    .pipe(
+      withLatestFrom(this.txData$),
+      tap(() => {
+        this.error = null;
+        this.sending = true;
+        this.easySendUrl = null;
+      }),
+      switchMap(([_, txData]) =>
+        fromPromise(this.send(txData))
+          .pipe(
+            catchError(err => {
+              this.error = err.message;
+              return of(false);
+            })
+          )
+      ),
+      tap((success: boolean) => {
+        this.sending = false;
+        this.success = success;
+
+        if (success) {
+          this.resetFormData();
+        }
+      }),
+      startWith(false),
+      share()
+    );
+
+
   receiptLoading: boolean;
 
-  receipt$: Observable<Receipt> = this.txData$.pipe(
-    tap(() => {
-      this.receiptLoading = true;
-      this.easySendUrl = void 0;
-      this.success = void 0;
-    }),
-    map((txData) => {
-      const { feeIncluded, wallet } = this.formData.value;
-      const { spendableAmount } = wallet.status;
+  receipt$: Observable<Receipt> = combineLatest(this.txData$, this.onSubmit$)
+    .pipe(
+      map(([txData, submitSuccess]) => {
+        const { feeIncluded, wallet } = this.formData.value;
+        const { spendableAmount } = wallet ? wallet.status : 0;
 
-      if (!txData || !txData.txp) {
-        return {
-          amount: 0,
-          fee: 0,
-          total: 0,
-          inWallet: spendableAmount,
-          remaining: spendableAmount
+        if (!txData || !txData.txp || this.success) {
+          this.success = void 0;
+
+          return {
+            amount: 0,
+            fee: 0,
+            total: 0,
+            inWallet: spendableAmount,
+            remaining: spendableAmount
+          };
+        }
+
+        this.receiptLoading = true;
+        this.easySendUrl = void 0;
+        this.success = void 0;
+
+        const receipt: Receipt = {
+          amount: txData.txp.amount,
+          fee: txData.txp.fee + (txData.easyFee || 0),
+          total: feeIncluded ? txData.txp.amount : txData.txp.amount + txData.txp.fee,
+          inWallet: wallet.status.spendableAmount,
+          remaining: 0
         };
-      }
 
-      const receipt: Receipt = {
-        amount: txData.txp.amount,
-        fee: txData.txp.fee + (txData.easyFee || 0),
-        total: feeIncluded ? txData.txp.amount : txData.txp.amount + txData.txp.fee,
-        inWallet: wallet.status.spendableAmount,
-        remaining: 0
-      };
+        receipt.remaining = receipt.inWallet - receipt.total;
 
-      receipt.remaining = receipt.inWallet - receipt.total;
-
-      return receipt;
-    }),
-    tap(() => this.receiptLoading = false),
-    startWith({} as Receipt)
-  );
+        return receipt;
+      }),
+      tap(() => this.receiptLoading = false),
+      startWith({} as Receipt)
+    );
 
   amountFiat$: Observable<number> = this.amountMrt.valueChanges.pipe(
     withLatestFrom(this.selectedCurrency.valueChanges),
@@ -206,8 +241,6 @@ export class SendView implements OnInit {
       )
     )
   );
-
-  submit: Subject<void> = new Subject<void>();
 
   constructor(private route: ActivatedRoute,
               private store: Store<IRootAppState>,
@@ -245,32 +278,7 @@ export class SendView implements OnInit {
       tap(() => this.address.updateValueAndValidity({ onlySelf: false }))
     ).subscribe();
 
-    this.submit.asObservable()
-      .pipe(
-        withLatestFrom(this.txData$),
-        tap(() => {
-          this.error = null;
-          this.sending = true;
-          this.easySendUrl = null;
-        }),
-        switchMap(([_, txData]) =>
-          fromPromise(this.send(txData))
-            .pipe(
-              catchError(err => {
-                this.error = err.message;
-                return of(false);
-              })
-            )
-        ),
-        tap((success: boolean) => {
-          this.sending = false;
-          this.success = success;
-
-          if (success) {
-            this.resetFormData();
-          }
-        })
-      ).subscribe();
+    this.onSubmit$.subscribe();
   }
 
   onGlobalSendCopy() {

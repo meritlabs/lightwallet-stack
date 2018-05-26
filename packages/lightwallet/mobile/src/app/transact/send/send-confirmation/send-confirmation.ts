@@ -63,7 +63,7 @@ export class SendConfirmationView {
       walletCurrentBalance: this.txData.wallet.balance.totalAmount,
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
-      methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'Global Send' : 'Classic Send',
+      methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'MeritMoney Link' : 'Classic Send',
       destination: this.txData.sendMethod.alias ? '@' + this.txData.sendMethod.alias : this.txData.sendMethod.value
     };
 
@@ -129,48 +129,25 @@ export class SendConfirmationView {
         .present();
     };
 
-    let showNoPassPrompt = () => {
-      this.alertController
-        .create({
-          title: 'Confirm Send',
-          subTitle: 'Are you sure that you want to proceed with this transaction?',
-          buttons: [
-            {
-              text: 'Cancel',
-              role: 'cancel',
-              handler: () => {
-                this.navCtrl.pop();
-              }
-            },
-            {
-              text: 'Ok',
-              handler: () => {
-                this.send();
-              }
-            }
-          ]
-        })
-        .present();
-    };
-
     let showTouchIDPrompt = () => {
-      // TODO check if we need this
-      //this.alertController.create({
-      //  title: 'TouId required',
-      //  subTitle: 'Confirm transaction by your fingerprint',
-      //  buttons: [
-      //      { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop(); } }
-      //  ]
-      //}).present();
+      this.send();
+      // // TODO check if we need this
+      // //this.alertController.create({
+      // //  title: 'TouId required',
+      // //  subTitle: 'Confirm transaction by your fingerprint',
+      // //  buttons: [
+      // //      { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop(); } }
+      // //  ]
+      // //}).present();
 
-      this.touchIdService
-        .check()
-        .then(() => {
-          return this.send();
-        })
-        .catch(() => {
-          this.navCtrl.pop();
-        });
+      // this.touchIdService
+      //   .check()
+      //   .then(() => {
+      //     return this.send();
+      //   })
+      //   .catch(() => {
+      //     this.navCtrl.pop();
+      //   });
     };
 
     if (this.walletService.isEncrypted(this.txData.wallet)) {
@@ -181,7 +158,7 @@ export class SendConfirmationView {
       if (this.touchIdService.isAvailable()) {
         return showTouchIDPrompt();
       } else {
-        return showNoPassPrompt();
+        return this.send();
       }
       // }
     }
@@ -196,6 +173,13 @@ export class SendConfirmationView {
 
     try {
       await this.sendService.send(this.txData, this.txData.wallet);
+
+      if (this.txData.sendMethod.type == SendMethodType.Easy) {
+        this.navCtrl.push('EasySendShareView', { txData: this.txData });
+      } else {
+        this.navCtrl.popToRoot();
+        this.toastCtrl.success('Your transaction is complete');
+      }
     } catch (err) {
       this.logger.warn(err);
       return this.toastCtrl.error(err);
@@ -203,15 +187,6 @@ export class SendConfirmationView {
       loadingSpinner.dismiss();
       this.txData.referralsToSign = [];
       if (walletPassword) this.walletService.encrypt(this.txData.wallet, walletPassword);
-    }
-  }
-
-  private approveTx() {
-    if (!this.txData.wallet.canSign() && !this.txData.wallet.isPrivKeyExternal()) {
-      this.logger.info('No signing proposal: No private key');
-      return this.walletService.onlyPublish(this.txData.wallet, this.txData.txp);
-    } else {
-      return this.walletService.publishAndSign(this.txData.wallet, this.txData.txp);
     }
   }
 

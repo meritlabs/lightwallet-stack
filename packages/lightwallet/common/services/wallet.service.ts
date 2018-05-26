@@ -385,10 +385,6 @@ export class WalletService {
     return isEncrypted;
   }
 
-  sendInvite(wallet: MeritWalletClient, toAddress: string) {
-    return wallet.sendInvite(toAddress);
-  }
-
   createTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     return wallet.createTxProposal(txp);
   }
@@ -756,9 +752,9 @@ export class WalletService {
   /**
    * Gets the aggregate rewards for a list of addresses.
    * @param wallet
-   * @returns [{address, rewards: {mining, ambassador}}] An array of objects, each with an 'address' and a corresponding 'rewards' object that contains the 'mining' and 'ambassador' properties.
+   * @returns [{address, rewards: {mining, growth}}] An array of objects, each with an 'address' and a corresponding 'rewards' object that contains the 'mining' and 'growth' properties.
    */
-  async getRewards(wallet: MeritWalletClient): Promise<{ address: string; rewards: { mining: number; ambassador: number; } }[]> {
+  async getRewards(wallet: MeritWalletClient): Promise<{ address: string; rewards: { mining: number; growth: number; } }[]> {
     try {
       return await wallet.getRewards(wallet.getRootAddress());
     } catch (e) {
@@ -766,7 +762,7 @@ export class WalletService {
         address: wallet.displayAddress,
         rewards: {
           mining: 0,
-          ambassador: 0
+          growth: 0
         }
       }];
     }

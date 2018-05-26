@@ -61,7 +61,8 @@ export function getPages() {
     InvitesView,
     InvitesHistoryView,
     SendInviteView,
-    InviteRequestsView
+    InviteRequestsView,
+    SendInviteView,
   ];
 }
 
@@ -93,5 +94,4 @@ export function getPages() {
     WalletPasswordGuard
   ]
 })
-export class CoreModule {
-}
+export class CoreModule {}

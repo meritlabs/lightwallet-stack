@@ -9,9 +9,9 @@
 
 <button (click)="onClick('easy')" type="button" role="button" class="method" [class.active]="value === 'easy'">
             <span class="title">
-              Send via GlobalSend
+              Send via {{ invite? 'MeritInvite' : 'MeritMoney' }}
             </span>
   <span class="description">
-              Not sure if they have a Merit address?
+               Not sure if they have a Merit address?  Want to be able to cancel?
             </span>
 </button>

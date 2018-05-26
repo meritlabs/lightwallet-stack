@@ -1,4 +1,4 @@
-import { Component, forwardRef } from '@angular/core';
+import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { SendMethodType } from '@merit/common/models/send-method';
 
@@ -18,6 +18,9 @@ export class SendMethodComponent implements ControlValueAccessor {
   value: SendMethodType;
   onChange: Function = () => {};
   onTouched: Function = () => {};
+
+  @Input()
+  invite: boolean;
 
   writeValue(val: SendMethodType) {
     this.onChange(this.value = val);
