@@ -111,7 +111,7 @@ export class API {
   public totalNetworkValue: string;
   public displayAddress: string;
   public miningRewards: string;
-  public ambassadorRewards: string;
+  public growthRewards: string;
   public onConnectionError: any;
   public onAuthenticationError: any;
   public onConnectionRestored: any;
@@ -830,6 +830,7 @@ export class API {
    *
    */
   async sendInvite(toAddress: string, amount: number = 1, script = null, message: string = '', walletPassword: string = ''): Promise<any> {
+    amount = parseInt(amount as any);
     const opts = {
       invite: true,
       outputs: [_.pickBy({

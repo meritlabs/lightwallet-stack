@@ -88,6 +88,8 @@ export class SendService {
       }
     }
 
+    await this.approveTx(txData.txp, wallet);
+
     if (txData.sendMethod.type === SendMethodType.Easy) {
       await this.persistenceService.addEasySend(clone(txData.easySend));
     }

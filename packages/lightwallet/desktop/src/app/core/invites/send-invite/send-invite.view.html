@@ -17,7 +17,7 @@
                   cssClass="ui-input ui-input--select ui-input--form"></app-select>
     </div>
 
-    <send-method formControlName="type"></send-method>
+    <send-method formControlName="type" [invite]="true"></send-method>
 
     <ng-container *ngIf="type.value === 'classic'; else easySend">
       <div class="ui-input__wrapper ui-input__wrapper">

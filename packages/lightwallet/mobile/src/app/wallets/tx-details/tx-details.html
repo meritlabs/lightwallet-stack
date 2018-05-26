@@ -28,6 +28,11 @@
         Fee {{ tx.fee | toMRT }}
       </p>
     </div>
+    <div *ngIf="tx.isInvite && !tx.isWalletUnlock">
+      <h2 class="amount">
+        {{ isCredit? '' : '-' }}{{ tx.amount + ' INV' }}
+      </h2>
+    </div>
   </div>
 
   <div *ngIf="tx">
@@ -40,14 +45,14 @@
         <h2>{{ tx.displayWallet.name }}</h2>
       </ion-label>
     </ion-item>
-    <ng-container *ngIf="tx.easySendUrl && tx.type === 'globalsend'">
-      <button ion-item *ngIf="tx.easySendUrl" [clip]="tx.easySendUrl" (click)="onGlobalSendCopy()">
+    <ng-container *ngIf="tx.easySendUrl && tx.type === 'meritmoney'">
+      <button ion-item *ngIf="tx.easySendUrl" [clip]="tx.easySendUrl" (click)="onMeritMoneyCopy()">
         <ion-icon item-start name="copy" color="primary" merit-icon></ion-icon>
         <ion-label>
-          <h2>Copy Global Send Link</h2>
+          <h2>Copy MeritMoney Link</h2>
         </ion-label>
       </button>
-      <button ion-item *ngIf="!tx.easySend.cancelled" (click)="cancelGlobalSend()">
+      <button ion-item *ngIf="!tx.easySend.cancelled" (click)="cancelMeritMoney()">
         <ion-icon item-start name="md-close-circle" color="danger"></ion-icon>
         <ion-label>
           <h2>Cancel</h2>
