@@ -27,7 +27,8 @@ import { WalletsView } from './wallets/wallets.view';
 
 const routes: Routes = [
   {
-    path: '', component: CoreView,
+    path: '',
+    component: CoreView,
     children: [
       { path: 'dashboard', component: DashboardView },
       { path: 'wallets', component: WalletsView, pathMatch: 'full' },
@@ -35,15 +36,13 @@ const routes: Routes = [
       { path: 'wallets/import', loadChildren: '../import/import.module#ImportModule' },
       { path: 'wallets/import/qr-code', loadChildren: '../import/import-by-qr/import-by-qr.module#ImportByQrModule' },
       {
-        path: 'wallets/import/file',
-        loadChildren: '../import/import-with-file/import-with-file.module#ImportWithFileModule'
-      },
-      {
         path: 'wallets/import/phrase',
-        loadChildren: '../import/phrase-import/phrase-import.module#PhraseImportModule'
+        loadChildren: '../import/phrase-import/phrase-import.module#PhraseImportModule',
       },
       {
-        path: 'wallets/:id', component: WalletDetailView, children: [
+        path: 'wallets/:id',
+        component: WalletDetailView,
+        children: [
           { path: '', pathMatch: 'full', redirectTo: 'history' },
           { path: 'history', component: WalletDetailHistoryView },
           { path: 'settings', component: WalletSettingsView },
@@ -52,38 +51,38 @@ const routes: Routes = [
           { path: 'export', component: BackupView, pathMatch: 'full', canActivate: [WalletPasswordGuard] },
           { path: 'export/mnemonic', component: MnemonicPhraseView, canActivate: [WalletPasswordGuard] },
           { path: 'export/qr-code', component: QrCodeBackupView, canActivate: [WalletPasswordGuard] },
-          { path: 'export/file', component: FileBackupView, canActivate: [WalletPasswordGuard] }
-        ]
+        ],
       },
       { path: 'receive', component: ReceiveView },
       { path: 'send', component: SendView },
       {
-        path: 'invites', component: InvitesView, children: [
+        path: 'invites',
+        component: InvitesView,
+        children: [
           { path: 'send', component: SendInviteView },
           { path: 'history', component: InvitesHistoryView },
           { path: 'requests', component: InviteRequestsView },
-          { path: '**', redirectTo: 'requests' }
-        ]
+          { path: '**', redirectTo: 'requests' },
+        ],
       },
       { path: 'history', component: HistoryView },
       { path: 'community', component: CommunityView },
       {
-        path: 'settings', component: GlobalSettingsView, children: [
+        path: 'settings',
+        component: GlobalSettingsView,
+        children: [
           { path: '', component: SettingsPreferencesView },
           { path: 'terms-of-use', component: SettingsTermsOfUseView },
-          { path: 'session-log', component: SettingsSessionLogView }
-        ]
+          { path: 'session-log', component: SettingsSessionLogView },
+        ],
       },
-      { path: '**', redirectTo: 'dashboard' }
-    ]
-  }
+      { path: '**', redirectTo: 'dashboard' },
+    ],
+  },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes)
-  ],
-  exports: [RouterModule]
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule],
 })
-export class CoreRoutingModule {
-}
+export class CoreRoutingModule {}
