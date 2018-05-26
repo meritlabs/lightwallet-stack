@@ -62,7 +62,7 @@ const routes: Routes = [
           { path: 'send', component: SendInviteView },
           { path: 'history', component: InvitesHistoryView },
           { path: 'requests', component: InviteRequestsView },
-          { path: '**', redirectTo: 'history' }
+          { path: '**', redirectTo: 'requests' }
         ]
       },
       { path: 'history', component: HistoryView },
