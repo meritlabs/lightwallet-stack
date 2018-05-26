@@ -189,16 +189,19 @@ export class TransactView {
   }
 
   private async showCancelEasyReceivePrompt(receipt: EasyReceipt, data) {
-    const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
+
+    const amountStr = await this.getAmountStr(data.txs);
+    const name = (await this.easyReceiveService.isInviteOnly(data.txs)) ? 'MeritInvite' : 'MeritMoney';
+
     this.alertCtrl.create({
-      title: `Cancel your own MeritMoney?`,
-      message: `You clicked on a MeritMoney link that you created. Would you like to cancel MeritMoney with ${ amount } Merit?`,
+      title: `Cancel your own ${name} link?`,
+      message: `You clicked on a ${name} link that you created. Would you like to cancel ${name} link with ${ amountStr }?`,
       buttons: [
         {
           text: `Don't Cancel`
         },
         {
-          text: 'Cancel MeritMoney',
+          text: `Cancel ${name}`,
           handler: () => {
             this.cancelEasyReceipt(receipt);
           }
@@ -215,10 +218,10 @@ export class TransactView {
    */
   private async showConfirmEasyReceivePrompt(receipt: EasyReceipt, data) {
 
-    let amount = await this.easyReceiveService.getReceiverAmount(data.txs);
+    const amountStr = await this.getAmountStr(data.txs);
 
     this.alertCtrl.create({
-      title: `You've got ${amount} Merit!`,
+      title: `You've got ${amountStr}!`,
       buttons: [
         {
           text: 'Reject', role: 'cancel', handler: () => {
@@ -238,10 +241,21 @@ export class TransactView {
     }).present();
   }
 
+  private async getAmountStr(txs) {
+    let amountStr = '';
+    if (await this.easyReceiveService.isInviteOnly(txs)) {
+      const invitesAmount = await this.easyReceiveService.getInvitesAmount(txs);
+      amountStr = (invitesAmount == 1) ? 'Invite Token' : invitesAmount+' Invite tokens';
+    } else {
+      amountStr = await this.easyReceiveService.getReceiverAmount(txs)+' Merit';
+    }
+    return amountStr;
+  }
+
   private showSpentEasyReceiptAlert() {
     this.alertCtrl.create({
       title: 'Uh oh',
-      message: 'It seems that the Merit from this link has already been redeemed!',
+      message: 'It seems that the MeritLink has already been redeemed!',
       buttons: [
         'Ok'
       ]
@@ -252,7 +266,7 @@ export class TransactView {
     this.alertCtrl.create({
       title: 'Uh oh',
       subTitle: 'It seems that this transaction has expired. ',
-      message: 'The Merit from this link has not been lost! ' +
+      message: 'Transaction was returned to sender! ' +
       'You can ask the sender to make a new transaction.',
       buttons: [
         'Ok'
@@ -272,7 +286,7 @@ export class TransactView {
       this.logger.info('accepted easy send', acceptanceTx);
     } catch (err) {
       console.log(err);
-      this.toastCtrl.error('There was an error cancelling your MeritMoney.');
+      this.toastCtrl.error('There was an error cancelling your MeritMoney link.');
     }
   }
 

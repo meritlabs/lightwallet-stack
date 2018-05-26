@@ -197,4 +197,13 @@ export class ProfileService {
 
     this.persistenceService.storeProfile(profile);
   }
+
+  isCommunityPopupClosed() {
+    return this.persistenceService.isCommunityPopupClosed();
+  }
+
+  closeCommunityPopup() {
+    return this.persistenceService.closeCommunityPopup();
+  }
+
 }

@@ -1,0 +1,45 @@
+view-tell-people {
+  .illustration {
+    text-align: center;
+    padding: 25px;
+    color: #73819B;
+    display: flex;
+    align-items: center;
+    height: 100%;
+
+    ion-card {
+      margin: 15px 0;
+      width: 100%;
+      color: rgba(0,0,0,0.4);
+      position: relative;
+      .click-to-copy {
+        font-size: 10px;
+        color: rgba(0,0,0,0.7);
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+      }
+      ion-card-header {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        color: rgba(0,0,0,0.7);
+        height: 30px;
+        line-height: 30px;
+        padding: 0;
+        font-size: 12px;
+        background: #e9edf2;
+      }
+      p {
+        white-space: normal;
+      }
+      ion-avatar {
+        height: 75px;
+        width: 75px;
+        img {
+          height: 75px;
+          width: 75px;
+        }
+      }
+    }
+  }
+
+}

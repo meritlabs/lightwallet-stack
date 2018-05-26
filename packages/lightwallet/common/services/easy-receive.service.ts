@@ -109,6 +109,17 @@ export class EasyReceiveService {
     return amount - this.rateService.microsToMrt(await this.feeService.getEasyReceiveFee());
   }
 
+  async getInvitesAmount(txs: Array<any>) {
+    const tx = txs.find(tx => tx.invite);
+    return tx ? tx.amount : 0;
+  }
+
+
+  isInviteOnly(txs: Array<any>) {
+    return !txs.some(tx => !tx.invite);
+  }
+
+
   async validateEasyReceiptOnBlockchain(receipt: EasyReceipt, password = ''): Promise<any> {
     const walletClient = this.mwcService.getClient(null, {});
 
@@ -133,11 +144,11 @@ export class EasyReceiveService {
   }
 
   private async spendEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: any, destinationAddress: any): Promise<void> {
-    const invite = input.txs.find(tx => tx.invite);
-    await this.sendEasyReceiveTx(input, invite, destinationAddress, wallet);
+    // Claim invites
+    await Promise.all(input.txs.map(tx => tx.invite && this.sendEasyReceiveTx(input, tx, destinationAddress, wallet)));
 
-    const transact = input.txs.find(tx => !tx.invite);
-    await this.sendEasyReceiveTx(input, transact, destinationAddress, wallet);
+    // Claim txs
+    await Promise.all(input.txs.map(tx => !tx.invite && this.sendEasyReceiveTx(input, tx, destinationAddress, wallet)));
 
     return this.persistenceService.deletePendingEasyReceipt(receipt);
   }
