@@ -29,5 +29,12 @@ export class QuestsListView implements OnInit {
       status: 'new',
       icon: '/assets/v1/icons/award.svg',
     },
+    {
+      name: 'Spread master',
+      shortDescription: `Share Merit and increase your rating`,
+      status: 'new',
+      icon: '/assets/v1/icons/award.svg',
+      path: 'spread-master',
+    },
   ];
 }

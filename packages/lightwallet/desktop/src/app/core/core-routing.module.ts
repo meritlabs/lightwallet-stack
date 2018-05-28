@@ -26,6 +26,7 @@ import { SendView } from './send/send.view';
 import { WalletsView } from './wallets/wallets.view';
 import { QuestsView } from './quests/quests.view';
 import { QuestsListView } from './quests/quests-list/quests-list.view';
+import { SpreadMasterComponent } from './quests/tasks/spread-master/spread-master.component';
 
 const routes: Routes = [
   {
@@ -81,7 +82,10 @@ const routes: Routes = [
       {
         path: 'quests',
         component: QuestsView,
-        children: [{ path: '', component: QuestsListView }],
+        children: [
+          { path: '', component: QuestsListView },
+          { path: 'spread-master', component: SpreadMasterComponent },
+        ],
       },
       { path: '**', redirectTo: 'dashboard' },
     ],
