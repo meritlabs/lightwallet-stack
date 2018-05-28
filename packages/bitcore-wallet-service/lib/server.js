@@ -3201,14 +3201,15 @@ WalletService.prototype.getUnlockRequests = async function(opts, cb) {
         const acceptedAddresses = await localMeritDaemon.getMempoolAcceptedAddresses(addressStrs);
 
         const mapAndFilterReferrals = (referralObjs) => {
-            return referralObjs.reverse().map(r => Bitcore.Referral(r.raw, wallet.network)).filter(r => {
+            const referrals = _.map(referralObjs.reverse(), r => Bitcore.Referral(r.raw, wallet.network));
+            return _.filter(referrals, r => {
                 if (r.address.type == 'scripthash') return false; //do not count script hash addresses
                 return (addressStrs.indexOf(r.address.toString()) == -1); //filter our own unlock request
             });
         };
 
         const mempoolReferrals = mapAndFilterReferrals(await localMeritDaemon.getMempoolReferrals(addressStrs));
-        const mempoolRequests = mempoolReferrals.map(r => {
+        const mempoolRequests = _.map(mempoolReferrals, r => {
             const address = r.address.toString();
             const parentAddress = r.parentAddress.toString();
             const isConfirmed = acceptedAddresses.indexOf(address) != -1;
@@ -3216,7 +3217,7 @@ WalletService.prototype.getUnlockRequests = async function(opts, cb) {
         });
 
         const bcReferrals = mapAndFilterReferrals(await localMeritDaemon.getBlockchainReferrals(addressStrs));
-        const bcRequests = bcReferrals.map(r => {
+        const bcRequests = _.map(bcReferrals, r => {
             const address = r.address.toString();
             const parentAddress = r.parentAddress.toString();
             return { rId: r.hash, alias: r.alias, isConfirmed: true, address, parentAddress};
