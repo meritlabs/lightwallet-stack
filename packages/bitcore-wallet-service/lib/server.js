@@ -3183,47 +3183,57 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
   return cb(null, cache.current);
 };
 
+/**
+ * Receiving list of pending and accepted invite requests to current wallet address
+ * Pending requests are receiving from mempool, accepted requests are stored in blockchain
+ * (we don't care if address was unconfirmled after acceptance so we don't check current address status)
+ *
+ * @param opts
+ * @param cb
+ */
+const { promisify } = require('util');
+WalletService.prototype.getUnlockRequests = async function(opts, cb) {
 
-WalletService.prototype.getUnlockRequests = function(opts, cb) {
-    var self = this;
+    try {
 
-    self.getWallet({}, function(err, wallet) {
-        if (err) return cb(err);
+        let wallet = await promisify(this.getWallet.bind(this))({});
+        let addresses = await promisify(this.storage.fetchAddresses.bind(this.storage))(wallet.id);
+        if (addresses.length == 0) return cb(null, []);
+        const addressStrs = _.map(addresses, 'address');
 
-        self.storage.fetchAddresses(wallet.id, function(err, addresses) {
-            if (err) return cb(err);
+        //Receive addresses for requests that were accepted, but not in blockchain yet
+        const acceptedAddresses = await localMeritDaemon.getMempoolAcceptedAddresses(addressStrs);
 
-            if (addresses.length == 0) return cb(null, []);
-            var network = wallet.network;
-            var addressStrs = _.map(addresses, 'address');
-
-            var bc = self._getBlockchainExplorer(network);
-            if (!bc) return next(new Error('Could not get blockchain explorer instance'));
-            bc.getAddressReferrals(addressStrs, function(err, referrals) {
-                if (err) return cb(err);
-                self.storage.fetchInvitedAddresses(wallet.id, function (err, invitedAddresses) {
-                  if (err) return cb(err);
-                  var unlockRequests = referrals.map(function(referralObj) {
-                     return Bitcore.Referral(referralObj.raw, network);
-                    }).filter(function(referral) {
-                      if (referral.address.type == 'scripthash') return false; //do not count script hash addresses
-                      return (addressStrs.indexOf(referral.address.toString()) == -1); //filter our own unlock request
-                    }).map(function(referral) {
-
-                      return {
-                        referralId: referral.hash,
-                        address: referral.address.toString(),
-                        parentAddress: referral.parentAddress.toString(),
-                        alias: referral.alias,
-                        isConfirmed: (invitedAddresses.indexOf(referral.address.toString()) != -1)
-                      };
-                    });
-
-                  return cb(null, unlockRequests);
-                });
+        const mapAndFilterReferrals = (referralObjs) => {
+            const referrals = _.map(referralObjs.reverse(), r => Bitcore.Referral(r.raw, wallet.network));
+            return _.filter(referrals, r => {
+                if (r.address.type == 'scripthash') return false; //do not count script hash addresses
+                return (addressStrs.indexOf(r.address.toString()) == -1); //filter our own unlock request
             });
+        };
+
+        const mempoolReferrals = mapAndFilterReferrals(await localMeritDaemon.getMempoolReferrals(addressStrs));
+        const mempoolRequests = _.map(mempoolReferrals, r => {
+            const address = r.address.toString();
+            const parentAddress = r.parentAddress.toString();
+            const isConfirmed = acceptedAddresses.indexOf(address) != -1;
+            return { rId: r.hash, alias: r.alias, isConfirmed, address, parentAddress};
         });
-    });
+
+        const bcReferrals = mapAndFilterReferrals(await localMeritDaemon.getBlockchainReferrals(addressStrs));
+        const bcRequests = _.map(bcReferrals, r => {
+            const address = r.address.toString();
+            const parentAddress = r.parentAddress.toString();
+            return { rId: r.hash, alias: r.alias, isConfirmed: true, address, parentAddress};
+        });
+
+        let requests = mempoolRequests.concat(bcRequests);
+        cb(null, requests);
+
+    } catch (err) {
+        cb(err);
+    }
+
 };
 
 /**
