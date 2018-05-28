@@ -40,7 +40,6 @@ export class TransactionHistoryComponent {
   }
 
   isPoolReward(transaction: IDisplayTransaction) {
-    console.log(transaction.isPoolReward);
     return transaction.isPoolReward;
   }
 
