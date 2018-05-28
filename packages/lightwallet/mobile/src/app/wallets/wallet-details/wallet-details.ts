@@ -46,7 +46,7 @@ export class WalletDetailsView {
   async ngOnInit() {
     this.loading = true;
     this.wallet = this.navParams.get('wallet');
-    await this.getWalletHistory();
+    await Promise.all([this.getWalletHistory(), this.getCommunityInfo()]);
     this.loading = false;
 
     this.events.subscribe('Remote:IncomingTx', () => {
@@ -92,9 +92,9 @@ export class WalletDetailsView {
 
 
   private async getCommunityInfo() {
-    const rewards = await this.wallet.getRewards([this.wallet.getRootAddress()]);
-    this.wallet.miningRewards = rewards[0].mining;
-    this.wallet.growthRewards += rewards[0].growthRewards;
+    const addressesRewards = await this.wallet.getRewards([this.wallet.getRootAddress()]);
+    this.wallet.miningRewards = addressesRewards[0].rewards.mining;
+    this.wallet.growthRewards = addressesRewards[0].rewards.ambassador;
   }
 
   private async getWalletHistory() {

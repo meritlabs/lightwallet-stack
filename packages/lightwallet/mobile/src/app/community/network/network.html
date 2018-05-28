@@ -8,12 +8,14 @@
     Share your unlock code
     <img src="assets/img/icons/growth_dark.svg">
   </button>
-
   <button ion-button full primary navPush="SendInviteAmountView" [disabled]="!availableInvites" class="send-invite-button">
     Send invite token
     <img src="assets/img/icons/send.svg">
   </button>
 
+  <ion-item [hidden]="!loading">
+      Loading...
+  </ion-item>
 
 
   <ion-list no-lines [hidden]="loading">
