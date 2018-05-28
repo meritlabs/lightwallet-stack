@@ -125,13 +125,6 @@ export class NetworkView {
 
       if (addresses.length) {
 
-        // const getAnvMethods = () => addresses.map(async (a) => {
-        //   const anv = await this.wallets[0].getANV(a);
-        //   let w = network.wallets.find(w => w.referralAddress == a);
-        //   w.networkValue = anv;
-        //   network.networkValue += anv;
-        // });
-
         const getCommunitySizes = () => addresses.map(async (a) => {
           const { referralcount } = await this.wallets[0].getCommunityInfo(a);
           let w = network.wallets.find(w => w.referralAddress == a);
@@ -148,7 +141,7 @@ export class NetworkView {
           rewards.forEach(r => {
             let w = network.wallets.find(w => w.referralAddress == r.address);
             w.miningRewards = r.rewards.mining;
-            w.growthRewards = r.rewards.growth;
+            w.growthRewards = r.rewards.ambassador;
             network.miningRewards += w.miningRewards;
             network.growthRewards += w.growthRewards;
           });
