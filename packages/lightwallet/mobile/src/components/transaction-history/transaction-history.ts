@@ -24,7 +24,7 @@ export class TransactionHistoryComponent {
   }
 
   isCredit(transaction: IDisplayTransaction) {
-    return transaction.isCoinbase || transaction.action === TransactionAction.RECEIVED;
+    return transaction.isCoinbase || transaction.isPoolReward || transaction.action === TransactionAction.RECEIVED;
   }
 
   isInvite(transaction: IDisplayTransaction) {
