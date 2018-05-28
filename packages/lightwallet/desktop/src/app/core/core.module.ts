@@ -36,6 +36,7 @@ import { WalletDetailHistoryView } from './wallets/wallet-details/wallet-details
 import { WalletDetailView } from './wallets/wallet-details/wallet-details.view';
 import { WalletSettingsView } from './wallets/wallet-details/wallet-settings/wallet-settings.view';
 import { WalletsView } from './wallets/wallets.view';
+import { QuestsView } from './quests/quests.view';
 
 export function getPages() {
   return [
@@ -63,14 +64,12 @@ export function getPages() {
     SendInviteView,
     InviteRequestsView,
     SendInviteView,
+    QuestsView,
   ];
 }
 
 @NgModule({
-  entryComponents: [
-    CoreView,
-    ...getPages()
-  ],
+  entryComponents: [CoreView, ...getPages()],
   imports: [
     CommonModule,
     CoreRoutingModule,
@@ -82,16 +81,9 @@ export function getPages() {
     MomentModule,
     ClipModule,
     Ng4LoadingSpinnerModule,
-    CoreComponentsModule
+    CoreComponentsModule,
   ],
-  declarations: [
-    CoreView,
-    ...getPages(),
-    SendTourComponent,
-    WelcomeGuideComponent
-  ],
-  providers: [
-    WalletPasswordGuard
-  ]
+  declarations: [CoreView, ...getPages(), SendTourComponent, WelcomeGuideComponent],
+  providers: [WalletPasswordGuard],
 })
 export class CoreModule {}
