@@ -1,45 +1,78 @@
-.ios view-wallets {
-  .big-header {
-    text-align: center;
-    min-height: 269px;
+view-wallets {
+  ion-header.header {
+    //  background: linear-gradient(#282d50, #383c63);
+    background: color($colors, primary);
 
-    p {
-      font-weight: 400;
-      font-size: 17px;
-      letter-spacing: -.4px;
-      padding-top: 10px;
+    .toolbar-background {
+      background: transparent;
     }
 
-    h2.amount {
-      padding-top: 35px;
-      font-size: 35px;
-      font-weight: 400;
-      small {
-        font-size: inherit;
-        font-weight: inherit;
+    ion-toolbar.toolbar {
+      margin-top: 5px;
+      ion-spinner.spinner {
+        svg > * {
+          stroke: white;
+        }
+        margin-bottom: 20px;
+        min-height: 35px;
+      }
+
+      ion-row {
+        text-align: center;
+        padding: 0;
+        margin: 0;
+
+        ion-col {
+          padding: 0;
+          margin: 0;
+
+          > small {
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            line-height: 15px;
+            display: block;
+          }
+
+          ion-avatar[img-icon] {
+            float: none;
+            margin: 12px auto;
+            cursor: pointer;
+            margin-bottom: 8px;
+            background: rgba(0,0,0,.17);
+            box-shadow: 0 0 1px 1px #afdffc;
+          }
+
+          span.merit-amount {
+            color: white;
+            font-weight: 600;
+            font-size: 17px;
+            letter-spacing: -.47px;
+            padding-bottom: 24px;
+            display: block;
+            small {
+              display: block;
+              font-size: 13px;
+            }
+          }
+        }
       }
     }
-
-    h3.detail-fiat {
-      font-size: 17px;
-      font-weight: 400;
-    }
   }
-}
 
-view-wallets {
-  .big-header {
+
+  ion-header  {
     ion-spinner.spinner {
         position: absolute;
-        top: 24px;
-        right: 10px;
+        top: 2px;
+        right: 2px;
         color: white;
         &.spinner-ios {
-          top: 28px;
-          right: 13px;
+          top: 2px;
+          top: calc(2px + const(safe-area-inset-top));
+          top: calc(2px + env(safe-area-inset-top));right: 1px;
         }
     }
-
   }
 
   ion-list.list {
@@ -51,15 +84,17 @@ view-wallets {
     }
   }
 
-  ion-item.item.add-vault-block {
+  .add-vault-block {
     background: #e9edf2;
     border-radius: 8px;
-    margin: 10px 16px;
-    width: calc(100% - 16px - 16px);
-    padding-left: 20px;
-
-    &:after {
-      display: none;
+    margin: 0 16px;
+    ion-item {
+      padding-left: 20px;
+      border-radius: 8px;
+      background: #e9edf2;
+      &:after {
+        display: none;
+      }
     }
 
     ion-thumbnail[item-start] {
@@ -89,6 +124,14 @@ view-wallets {
       p {
         font-weight: 400;
       }
+    }
+
+    .vaults-more-info {
+      padding: 16px;
+      padding-top: 0;
+      font-weight: 400;
+      font-size: 13px;
+      color: #73819b;
     }
   }
 
@@ -126,6 +169,14 @@ view-wallets {
 
   .error {
     color: color($colors, danger) !important;
+  }
+
+  .scroll-content {
+    margin-top: 195px !important;
+  }
+
+  .wallets.list {
+    margin-bottom: 0;
   }
 
   .wallet {
@@ -183,10 +234,57 @@ view-wallets {
   }
 
   .vaults-section {
-      .item .detail {
-        font-size: 13px;
-        color: rgba(0,0,0,0.6);
-      }
+    margin-top: -30px;
+    .item .detail {
+      font-size: 13px;
+      color: rgba(0,0,0,0.6);
+    }
+  }
+
+  .popup-community {
+    position: absolute;
+    bottom: 10px;
+    right: 2.5%;
+    width: 250px;
+    text-align: center;
+    padding: 20px 35px;
+    padding-top: 30px;
+    color: rgba(0,0,0,0.8);
+    font-size: 13px;
+    background: white;
+    //border: 2px solid #0c0d29;
+    border: 2px solid rgba(75, 176, 221, 1);
+    box-shadow: 2px 2px 2px 2px rgba(12, 13, 41, 0.4);
+    z-index: 1000;
+    border-radius: 4px;
+    &:before, &:after {
+      content: "";
+      position: absolute;
+      z-index: 1000;
+      bottom: -10px;
+      right: 15px;
+      border-top: 10px solid white;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 0;
+    }
+    &:before {
+      border-top: 13px solid rgba(75, 176, 221, 1);
+      border-left: 13px solid transparent;
+      border-right: 13px solid transparent;
+      bottom: -13px;
+      right: 12px;
+    }
+
+    .close-button {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      font-size: 14px;
+      padding: 0 !important;
+      //color: rgba(75, 176, 221, 0.5);
+      color: rgba(12, 13, 41, 0.35);
+    }
   }
 
 }

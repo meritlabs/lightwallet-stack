@@ -24,6 +24,9 @@ export class WalletsView {
   loading: boolean; //initial load, no data displayed
   refreshing: boolean; //soft data refresh
 
+  showCommunityPopup: boolean;
+  communitySize: number;
+
   constructor(private navCtrl: NavController,
               private logger: LoggerService,
               private toastCtrl: ToastControllerService,
@@ -36,6 +39,7 @@ export class WalletsView {
 
   async ngOnInit() {
     this.logger.debug('Hello WalletsView :: IonViewDidLoad!');
+    this.showCommunityPopup = !(await this.profileService.isCommunityPopupClosed());
     this.platform.resume.subscribe(() => {
       this.logger.info('WalletView is going to refresh data on resume.');
       if (this.isActivePage) {
@@ -88,6 +92,18 @@ export class WalletsView {
     refresher.complete();
   }
 
+  async loadCommunitySize() {
+
+    let communitySize = 0;
+    const getCommunitySizes = () => this.wallets.map(async (w) => {
+      let { referralcount } =  await w.getCommunityInfo(w.rootAddress.toString());
+      communitySize += referralcount;
+    });
+    await Promise.all(getCommunitySizes());
+    this.communitySize = communitySize;
+
+  }
+
   toAddWallet() {
     let referralAddress = '';
     this.wallets.some(w => {
@@ -99,6 +115,7 @@ export class WalletsView {
   async updateAllInfo() {
     try {
       await this.profileService.refreshData();
+      await this.loadCommunitySize();
       this.setTotalValues();
     } catch (err) {
       this.logger.warn(err);
@@ -122,7 +139,11 @@ export class WalletsView {
     this.totalAmount = totalAmount;
   }
 
+  closeCommunityPopup() {
+    this.showCommunityPopup = false;
+    this.profileService.closeCommunityPopup();
+  }
+
 
 }
-
 

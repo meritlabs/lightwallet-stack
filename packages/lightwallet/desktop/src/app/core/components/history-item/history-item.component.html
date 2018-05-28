@@ -1,6 +1,6 @@
 <div class="icon">
   <img [src]="'/assets/v1/icons/' + image + '.svg'" alt="">
-  <img *ngIf="tx.type === 'globalsend'" [src]="'/assets/v1/icons/invite.svg'" alt="">
+  <img *ngIf="tx.type === 'meritmoney'" [src]="'/assets/v1/icons/invite.svg'" alt="">
 </div>
 <div class="info">
   <div>
@@ -13,11 +13,11 @@
     </div>
     <p class="date">{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
 
-    <ng-container *ngIf="tx.easySendUrl && tx.type === 'globalsend'">
-      <button (click)="showGlobalSendLink()"
-              class="ui-button ui-button--blue ui-button--sm">Show GlobalSend Link
+    <ng-container *ngIf="tx.easySendUrl && tx.type === 'meritmoney'">
+      <button (click)="showMeritMoneyLink()"
+              class="ui-button ui-button--blue ui-button--sm">Show MeritMoney Link
       </button>
-      <button *ngIf="!tx.easySend.cancelled" (click)="askCancelGlobalSend()"
+      <button *ngIf="!tx.easySend.cancelled" (click)="askCancelMeritMoney()"
               class="ui-button ui-button--red ui-button--sm">Cancel
       </button>
     </ng-container>

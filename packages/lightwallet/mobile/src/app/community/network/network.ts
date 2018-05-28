@@ -23,7 +23,7 @@ export class NetworkView {
   network:{
     communitySize: number,
     miningRewards: number,
-    ambassadorRewards: number
+    growthRewards: number
     wallets: Array<{
       name: string,
       referralAddress: string,
@@ -31,17 +31,19 @@ export class NetworkView {
       confirmed: boolean,
       communitySize: number
       miningRewards: number,
-      ambassadorRewards: number
+      growthRewards: number,
+      color: string
     }>
   } = {
     communitySize: 0,
     miningRewards: 0,
-    ambassadorRewards: 0,
+    growthRewards: 0,
     wallets: []
   };
 
   activeUnlockRequests: number;
   availableInvites: number;
+  pendingInvites: number;
   shareButtonAvailable: boolean;
 
   constructor(
@@ -98,7 +100,7 @@ export class NetworkView {
         communitySize: 0,
         networkValue: 0,
         miningRewards: 0,
-        ambassadorRewards: 0,
+        growthRewards: 0,
         wallets: this.wallets.map(w => { return {
           name: w.name,
           alias: w.rootAlias,
@@ -106,7 +108,8 @@ export class NetworkView {
           confirmed: w.confirmed,
           communitySize: 0,
           miningRewards: 0,
-          ambassadorRewards: 0
+          growthRewards: 0,
+          color: w.color
         }})
       };
 
@@ -114,16 +117,13 @@ export class NetworkView {
         return number + w.availableInvites;
       }, 0);
 
+      this.pendingInvites = this.wallets.reduce((number, w) => {
+        return number + w.pendingInvites;
+      }, 0);
+
       const addresses = network.wallets.map(w => w.referralAddress);
 
       if (addresses.length) {
-
-        // const getAnvMethods = () => addresses.map(async (a) => {
-        //   const anv = await this.wallets[0].getANV(a);
-        //   let w = network.wallets.find(w => w.referralAddress == a);
-        //   w.networkValue = anv;
-        //   network.networkValue += anv;
-        // });
 
         const getCommunitySizes = () => addresses.map(async (a) => {
           const { referralcount } = await this.wallets[0].getCommunityInfo(a);
@@ -141,9 +141,9 @@ export class NetworkView {
           rewards.forEach(r => {
             let w = network.wallets.find(w => w.referralAddress == r.address);
             w.miningRewards = r.rewards.mining;
-            w.ambassadorRewards = r.rewards.ambassador;
+            w.growthRewards = r.rewards.ambassador;
             network.miningRewards += w.miningRewards;
-            network.ambassadorRewards += w.ambassadorRewards;
+            network.growthRewards += w.growthRewards;
           });
         };
 

@@ -79,21 +79,20 @@ export class ReceiveView {
     if (this.loading) return;
     this.loading = true;
     this.wallets = await this.profileService.getWallets();
-    if (this.wallets) {
-      this.hasUnlockedWallets = this.wallets.some(w => {
-        if (w.confirmed) {
-          this.wallet = w;
-          this.generateAddress();
-          return true;
-        }
-      });
-    }
+
+    this.hasUnlockedWallets = this.wallets.some(w => {
+      if (w.confirmed) {
+        this.wallet = w;
+        return true;
+      }
+    });
 
     const { wallet } = this.navParams.data;
-
-    if (wallet) {
+    if (wallet && wallet.confirmed) {
       this.wallet = wallet;
     }
+
+    if (this.wallet)  this.generateAddress();
 
     this.loading = false;
   }

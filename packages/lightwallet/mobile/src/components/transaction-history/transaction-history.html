@@ -3,24 +3,22 @@
     <contact-avatar item-start *ngIf="isEasySend(tx)" [contact]="tx.contact"></contact-avatar>
     <ion-avatar img-icon item-start *ngIf="!isEasySend(tx)">
       <img *ngIf="isMiningReward(tx)" src="assets/img/icons/mining.svg" alt="" />
+      <img *ngIf="isPoolReward(tx)" src="assets/img/icons/mining.svg" alt="" />
       <img *ngIf="isUnlockRequest(tx)" src="assets/img/icons/send_request.svg" alt="" />
       <img *ngIf="isInvite(tx)" src="assets/img/icons/invite.svg" alt="" />
-      <img *ngIf="isAmbassadorReward(tx)" src="assets/img/icons/ambassador.svg" alt="" />
+      <img *ngIf="isGrowthReward(tx)" src="assets/img/icons/growth.svg" alt="" />
     </ion-avatar>
     <ion-label>
       <h2>{{ tx.name }}</h2>
       <p>{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
     </ion-label>
-    <ion-note *ngIf="!tx.isInvite" item-end>
+    <ion-note item-end *ngIf="!tx.isWalletUnlock">
       <span class="merit-amount" [class.credit]="isCredit(tx)">
-        {{ tx.amount | toMRT}}
+        {{ tx.isInvite? (tx.amount + ' INV') : (tx.amount | toMRT) }}
       </span>
-      <span class="fiat-amount">
+      <span *ngIf="!tx.isInvite" class="fiat-amount">
           {{ tx.amount | toFiat }}
       </span>
-    </ion-note>
-    <ion-note *ngIf="tx.isInvite && !tx.isCoinbase && tx.name !== 'Wallet Unlocked'" item-end class="merit-invite" [class.credit]="isCredit(tx)">
-      {{ isCredit(tx) ? 'Received' : 'Sent' }}
     </ion-note>
   </button>
 </ion-list>

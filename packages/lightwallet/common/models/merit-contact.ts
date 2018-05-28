@@ -1,5 +1,5 @@
-import { Address } from 'bitcore-lib';
 import { IContactField, IContactName, IContactProperties } from '@ionic-native/contacts';
+import { Address } from 'bitcore-lib';
 
 export interface IAddressBook {
   [key: string]: MeritContact;
@@ -13,13 +13,13 @@ export interface IMeritAddress {
 
 export class MeritContact implements IContactProperties {
 
-   id: string;
-   name: IContactName = { formatted: '' };
-   phoneNumbers: IContactField[] = [];
-   emails: IContactField[] = [];
-   photos: IContactField[] = [];
-   urls: Array<any> = [];
-   meritAddresses: Array<IMeritAddress> = [];
+  id: string;
+  name: IContactName = { formatted: '' };
+  phoneNumbers: IContactField[] = [];
+  emails: IContactField[] = [];
+  photos: IContactField[] = [];
+  urls: Array<any> = [];
+  meritAddresses: Array<IMeritAddress> = [];
 
   isValid() {
     if (!this.name) return false;
@@ -27,7 +27,7 @@ export class MeritContact implements IContactProperties {
     let isValid = true;
     this.meritAddresses.forEach((address) => {
       if (!address.network) {
-        isValid = false
+        isValid = false;
       } else {
         if (!Address.isValid(address.address)) isValid = false;
       }

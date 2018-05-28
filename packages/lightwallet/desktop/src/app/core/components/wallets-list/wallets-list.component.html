@@ -5,7 +5,7 @@
     </div>
     <div>
       <button type="button" name="button" class="ui-button ui-button--white
-        ui-button--loadWallet ui-button--sm" routerLink="/wallets/import">Import
+        ui-button--loadWallet ui-button--sm" routerLink="/wallets/import/phrase">Import
       </button>
       <button type="button" name="button" class="ui-button ui-button--sm
         ui-button--add ui-button--white" routerLink="/wallets/create">Create
@@ -22,6 +22,7 @@
         <div class="wallets__group__wallet__details">
           <div>
             <p class="large-black-text">{{ wallet.name }}</p>
+            <p class="alias" *ngIf="wallet.alias">{{ '@' + wallet.alias }}</p>
             <p class="regular-blue-text" *ngIf="!wallet.balanceHidden; else balanceHidden">{{ wallet.totalBalanceMicros | toMRT }}
               <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})
               </small>
@@ -35,9 +36,6 @@
           <div class="inline-right">
             <div class="controls">
               <p class="invites regular-blue-text">{{ wallet?.availableInvites || 0 }} Invites</p>
-              <p class="share-link" [clip]="shareLink(wallet)" [title]="shareLink(wallet)" (click)="onCopy($event, wallet.id)">
-                Copy share link
-              </p>
             </div>
             <merit-icon name="right-arrow"></merit-icon>
           </div>
