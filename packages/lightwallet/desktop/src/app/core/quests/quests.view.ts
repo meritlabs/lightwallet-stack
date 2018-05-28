@@ -14,14 +14,20 @@ export class QuestsView implements OnInit {
     {
       name: 'Who I`m',
       shortDescription: `Find your wallet @alias.`,
-      status: 'new',
-      icon: '',
+      status: 'compleate',
+      icon: '/assets/v1/icons/award.svg',
     },
     {
       name: 'BackUp rookie',
       shortDescription: `BackUp your wallet.`,
+      status: 'in progress',
+      icon: '/assets/v1/icons/award.svg',
+    },
+    {
+      name: 'Setup expret',
+      shortDescription: `Setup your LightWallet flow`,
       status: 'new',
-      icon: '',
+      icon: '/assets/v1/icons/award.svg',
     },
   ];
 }
