@@ -37,6 +37,7 @@ import { WalletDetailView } from './wallets/wallet-details/wallet-details.view';
 import { WalletSettingsView } from './wallets/wallet-details/wallet-settings/wallet-settings.view';
 import { WalletsView } from './wallets/wallets.view';
 import { QuestsView } from './quests/quests.view';
+import { QuestPreviewComponent } from './quests/quest-preview/quest-preview.component';
 
 export function getPages() {
   return [
@@ -83,7 +84,7 @@ export function getPages() {
     Ng4LoadingSpinnerModule,
     CoreComponentsModule,
   ],
-  declarations: [CoreView, ...getPages(), SendTourComponent, WelcomeGuideComponent],
+  declarations: [CoreView, ...getPages(), SendTourComponent, WelcomeGuideComponent, QuestPreviewComponent],
   providers: [WalletPasswordGuard],
 })
 export class CoreModule {}

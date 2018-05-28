@@ -4,6 +4,9 @@
 .quests_title
   margin-bottom: 20px
 .quests_description
+  border-bottom: 1px solid $blue
+  margin-bottom: 40px
+  padding-bottom: 40px
   +font(300, 18px, 26px)
   p
     margin-bottom: 10px
@@ -13,3 +16,11 @@
     margin: 0px 0px 10px 5px
     li
       margin-bottom: 5px
+.quests_wrap
+  display: flex
+  flex-flow: row wrap
+  justify-content: space-between
+  .quests_column
+    width: calc(50% - 40px)
+    .title
+      margin-bottom: 15px

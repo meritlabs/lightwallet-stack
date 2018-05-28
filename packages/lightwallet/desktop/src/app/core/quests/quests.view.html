@@ -11,5 +11,18 @@
     </ol>
     <p>Some kind of quests, will deliver to you a pure profit.</p>
   </div>
-
+  <div class="quests_wrap">
+    <div class="quests_column">
+      <div class="title title--secondary">
+        <p>Quests</p>
+      </div>
+      <app-quest-preview *ngFor="let quest of quests" [quest]=quest></app-quest-preview>
+    </div>
+    <div class="quests_column">
+      <div class="title title--secondary">
+        <p>Achievements</p>
+      </div>
+      <app-quest-preview *ngFor="let quest of quests" [quest]=quest></app-quest-preview>
+    </div>
+  </div>
 </div>
