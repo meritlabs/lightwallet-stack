@@ -24,6 +24,7 @@ import { HistoryView } from './history/history.view';
 import { ReceiveView } from './receive/receive.view';
 import { SendView } from './send/send.view';
 import { WalletsView } from './wallets/wallets.view';
+import { QuestsView } from './quests/quests.view';
 
 const routes: Routes = [
   {
@@ -76,6 +77,7 @@ const routes: Routes = [
           { path: 'session-log', component: SettingsSessionLogView },
         ],
       },
+      { path: 'quests', component: QuestsView },
       { path: '**', redirectTo: 'dashboard' },
     ],
   },
