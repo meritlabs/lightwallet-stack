@@ -1,0 +1,47 @@
+@import '~styles/v1/common/import-sass'
+.quest_preview
+  display: flex
+  padding-bottom: 20px
+  margin-bottom: 20px
+  border-bottom: 1px solid $grey-3
+  align-items: center
+  justify-content: space-between
+  position: relative
+  .icon
+    width: 60px
+    height: 60px
+    svg
+      width: 100%
+  .details
+    padding: 0 20px
+    width: 100%
+    box-sizing: border-box
+    .title
+      +font(300, 18px, 26px, $blue)
+      position: relative
+      display: inline-block
+    .description
+      +font(300, 15px, 26px, $grey-2)
+  .status
+    position: absolute
+    display: block
+    height: 15px
+    border-radius: 2px
+    color: $white
+    font-size: 10px
+    display: flex
+    justify-content: center
+    align-items: center
+    position: absolute
+    left: calc(100% + 5px)
+    top: -10px
+    box-shadow: 1px 1px 3px rgba(0,0,0, .3)
+    padding: 2px 4px 3px
+    &.new
+      background: $blue
+    &.compleate
+      background: rgb(8, 177, 105)
+    &.progress
+      background: rgb(255, 110, 5)
+      width: 56px
+    
