@@ -74,6 +74,6 @@ export class UnlockRequestsView {
   }
 
   toSendInvite() {
-    this.navCtrl.push('SendInviteView', { wallets: this.wallets });
+    this.navCtrl.push('SendInviteAmountView');
   }
 }
