@@ -38,6 +38,7 @@ import { WalletSettingsView } from './wallets/wallet-details/wallet-settings/wal
 import { WalletsView } from './wallets/wallets.view';
 import { QuestsView } from './quests/quests.view';
 import { QuestPreviewComponent } from './quests/quest-preview/quest-preview.component';
+import { QuestsListView } from './quests/quests-list/quests-list.view';
 
 export function getPages() {
   return [
@@ -66,6 +67,7 @@ export function getPages() {
     InviteRequestsView,
     SendInviteView,
     QuestsView,
+    QuestsListView,
   ];
 }
 
