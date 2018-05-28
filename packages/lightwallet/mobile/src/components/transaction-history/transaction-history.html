@@ -3,6 +3,7 @@
     <contact-avatar item-start *ngIf="isEasySend(tx)" [contact]="tx.contact"></contact-avatar>
     <ion-avatar img-icon item-start *ngIf="!isEasySend(tx)">
       <img *ngIf="isMiningReward(tx)" src="assets/img/icons/mining.svg" alt="" />
+      <img *ngIf="isPoolReward(tx)" src="assets/img/icons/mining.svg" alt="" />
       <img *ngIf="isUnlockRequest(tx)" src="assets/img/icons/send_request.svg" alt="" />
       <img *ngIf="isInvite(tx)" src="assets/img/icons/invite.svg" alt="" />
       <img *ngIf="isGrowthReward(tx)" src="assets/img/icons/growth.svg" alt="" />
