@@ -39,6 +39,11 @@ export class TransactionHistoryComponent {
     return this.isReward(transaction) && transaction.outputs[0].index === 0;
   }
 
+  isPoolReward(transaction: IDisplayTransaction) {
+    console.log(transaction.isPoolReward);
+    return transaction.isPoolReward;
+  }
+
   isEasySend(transaction: IDisplayTransaction) {
     return !transaction.isCoinbase && !transaction.isInvite;
   }
