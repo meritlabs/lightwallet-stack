@@ -148,7 +148,7 @@ export class NetworkView {
           rewards.forEach(r => {
             let w = network.wallets.find(w => w.referralAddress == r.address);
             w.miningRewards = r.rewards.mining;
-            w.growthRewards = r.rewards.growth;
+            w.growthRewards = r.rewards.ambassador;
             network.miningRewards += w.miningRewards;
             network.growthRewards += w.growthRewards;
           });
