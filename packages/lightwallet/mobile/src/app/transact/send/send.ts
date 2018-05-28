@@ -6,11 +6,11 @@ import { AddressService } from '@merit/common/services/address.service';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { ProfileService } from '@merit/common/services/profile.service';
+import { RateService } from '@merit/common/services/rate.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { Events, IonicPage, ModalController, NavController, NavParams, Slides, ToastController } from 'ionic-angular';
-import { RateService } from '@merit/common/services/rate.service';
 import * as _ from 'lodash';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
@@ -40,7 +40,7 @@ export class SendView {
     contacts: Array<MeritContact>,
     toNewEntity: { destination: string, contact: MeritContact },
     error: string
-  } = {contacts: [], toNewEntity: null, error: null };
+  } = { contacts: [], toNewEntity: null, error: null };
 
   hasUnlockedWallets: boolean;
   hasActiveInvites: boolean;
@@ -51,7 +51,7 @@ export class SendView {
   searchInProgress: boolean;
 
   constructor(private navCtrl: NavController,
-              private navParams: NavParams, 
+              private navParams: NavParams,
               private contactsService: ContactsService,
               private profileService: ProfileService,
               private addressService: AddressService,
@@ -90,7 +90,7 @@ export class SendView {
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;
     await this.updateRecentContacts();
-    return this.parseSearch();
+    await  this.parseSearch();
 
     this.events.subscribe('Remote:IncomingTx', () => {
       this.updateHasUnlocked();
@@ -138,7 +138,7 @@ export class SendView {
     }
 
     if (this.searchQuery.indexOf('micros') != -1) {
-      let microsStr:string = this.searchQuery.split('?micros=')[1];
+      let microsStr: string = this.searchQuery.split('?micros=')[1];
       this.searchQuery = this.searchQuery.split('?micros=')[0];
       this.amount = +microsStr;
     } else {
@@ -154,7 +154,7 @@ export class SendView {
   /**
    * Search users based on searchQuery
    * Looks both for contact list and for address/alias
-  */
+   */
   private async search() {
 
     const result = { contacts: [], toNewEntity: null, error: null };
@@ -176,7 +176,7 @@ export class SendView {
     result.contacts = this.contacts.filter(contact =>
       _.some(contact.meritAddresses, (meritAddress) => {
         if (meritAddress.address == input) return true;
-        return (meritAddress.alias && meritAddress.alias.match(input))
+        return (meritAddress.alias && meritAddress.alias.match(input));
       })
     );
 
@@ -222,7 +222,7 @@ export class SendView {
           contact: contact,
           amount: this.amount,
           isEasyEnabled: this.hasActiveInvites,
-          wallet: this.wallet, 
+          wallet: this.wallet,
           suggestedMethod: {
             type: SendMethodType.Classic,
             destination: SendMethodDestination.Address,
@@ -244,7 +244,7 @@ export class SendView {
           contact: contact,
           amount: this.amount,
           isEasyEnabled: this.hasActiveInvites,
-          wallet: this.wallet, 
+          wallet: this.wallet,
           suggestedMethod: {
             type: SendMethodType.Classic,
             destination: SendMethodDestination.Address,
@@ -262,7 +262,7 @@ export class SendView {
       return this.navCtrl.push('SendAmountView', {
         contact: contact,
         amount: this.amount,
-        wallet: this.wallet, 
+        wallet: this.wallet,
         suggestedMethod: {
           type: SendMethodType.Classic,
           destination: SendMethodDestination.Address,
@@ -325,7 +325,7 @@ export class SendView {
 
     this.navCtrl.push('SendAmountView', {
       suggestedMethod: { type: SendMethodType.Easy, wallet: this.wallet }
-    }); 
+    });
   }
 
   slideNext() {

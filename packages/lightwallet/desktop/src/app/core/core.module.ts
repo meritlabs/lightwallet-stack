@@ -2,39 +2,40 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
-import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { FileBackupView } from '@merit/desktop/app/core/backup/file-backup/file-backup.view';
 import { CoreComponentsModule } from '@merit/desktop/app/core/components/core-components.module';
+import { InviteRequestsView } from '@merit/desktop/app/core/invites/invite-requests/invite-requests.view';
+import { InvitesHistoryView } from '@merit/desktop/app/core/invites/invites-history/invites-history.view';
+import { InvitesView } from '@merit/desktop/app/core/invites/invites.view';
+import { SendInviteView } from '@merit/desktop/app/core/invites/send-invite/send-invite.view';
 import { WalletPasswordGuard } from '@merit/desktop/app/guards/wallet-password.guard';
-import { MomentModule } from 'ngx-moment';
 import { QRCodeModule } from 'angular2-qrcode';
+import { ClipModule } from 'ng2-clip';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
+import { MomentModule } from 'ngx-moment';
 import { BackupView } from './backup/backup.view';
 import { MnemonicPhraseView } from './backup/mnemonic-phrase/mnemonic-phrase.view';
 import { QrCodeBackupView } from './backup/qr-code-backup/qr-code-backup.view';
 import { CommunityView } from './community/community.view';
 import { InvitesComponent } from './community/invites/invites.component';
-import { InviteRequestsView } from './community/invites/invite-requests/invite-requests.view';
-import { SendInviteView } from './community/invites/send-invite/send-invite.view';
 import { CoreRoutingModule } from './core-routing.module';
 import { CoreView } from './core.component';
 import { DashboardView } from './dashboard/dashboard.view';
+import { WelcomeGuideComponent } from './dashboard/welcome-guide/welcome-guide.component';
 import { GlobalSettingsView } from './global-settings/global-settings.view';
 import { SettingsPreferencesView } from './global-settings/settings-preferences/settings-preferences.view';
 import { SettingsSessionLogView } from './global-settings/settings-session-log/settings-session-log.view';
 import { SettingsTermsOfUseView } from './global-settings/settings-terms-of-use/settings-terms-of-use.view';
 import { HistoryView } from './history/history.view';
 import { ReceiveView } from './receive/receive.view';
+import { SendTourComponent } from './send/send-tour/send-tour.component';
 import { SendView } from './send/send.view';
 import { CreateWalletView } from './wallets/create-wallet/create-wallet.view';
 import { WalletDetailHistoryView } from './wallets/wallet-details/wallet-details-history/wallet-details-history.view';
 import { WalletDetailView } from './wallets/wallet-details/wallet-details.view';
 import { WalletSettingsView } from './wallets/wallet-details/wallet-settings/wallet-settings.view';
 import { WalletsView } from './wallets/wallets.view';
-import { ClipModule } from 'ng2-clip';
-import { SendTourComponent } from './send/send-tour/send-tour.component';
-import { WelcomeGuideComponent } from './dashboard/welcome-guide/welcome-guide.component';
 
 export function getPages() {
   return [
@@ -57,13 +58,19 @@ export function getPages() {
     QrCodeBackupView,
     FileBackupView,
     InvitesComponent,
+    InvitesView,
+    InvitesHistoryView,
+    SendInviteView,
     InviteRequestsView,
     SendInviteView,
   ];
 }
 
 @NgModule({
-  entryComponents: [CoreView, ...getPages()],
+  entryComponents: [
+    CoreView,
+    ...getPages()
+  ],
   imports: [
     CommonModule,
     CoreRoutingModule,
@@ -75,9 +82,16 @@ export function getPages() {
     MomentModule,
     ClipModule,
     Ng4LoadingSpinnerModule,
-    CoreComponentsModule,
+    CoreComponentsModule
   ],
-  declarations: [CoreView, ...getPages(), SendTourComponent, WelcomeGuideComponent],
-  providers: [WalletPasswordGuard],
+  declarations: [
+    CoreView,
+    ...getPages(),
+    SendTourComponent,
+    WelcomeGuideComponent
+  ],
+  providers: [
+    WalletPasswordGuard
+  ]
 })
 export class CoreModule {}
