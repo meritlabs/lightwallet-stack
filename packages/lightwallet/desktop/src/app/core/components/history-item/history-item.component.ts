@@ -1,4 +1,3 @@
-import { get } from 'lodash';
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
