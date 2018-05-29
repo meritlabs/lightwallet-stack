@@ -2,7 +2,7 @@
   <div class="global-settings__title title--primary">
     <p>Mining</p>
   </div>
- <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+ <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async" cssClass="ui-input ui-input--select ui-input--form"></app-select>
  <div class="ui-label">CPU Utilization</div>
   
   <div class="range-slider">
