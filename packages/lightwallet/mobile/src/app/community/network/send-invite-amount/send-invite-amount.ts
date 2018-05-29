@@ -19,7 +19,7 @@ export class SendInviteAmountView {
   public  wallets: Array<MeritWalletClient>;
   public wallet: MeritWalletClient;
 
-  public formData = {amount: 1};
+  public formData = {amount: null};
   public address;
 
   public error:string;
@@ -51,6 +51,10 @@ export class SendInviteAmountView {
     if (!this.wallet) {
       this.error = 'You have no wallets with available invites now';
     }
+  }
+
+  async ionViewDidEnter() {
+    this.focusInput();
   }
 
   async send() {
