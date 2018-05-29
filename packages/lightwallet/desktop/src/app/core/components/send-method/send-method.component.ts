@@ -34,7 +34,7 @@ export class SendMethodComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  onClick(value: SendMethodType) {
-    this.writeValue(value);
+  onClick(value: string) {
+    this.writeValue(value as SendMethodType);
   }
 }
