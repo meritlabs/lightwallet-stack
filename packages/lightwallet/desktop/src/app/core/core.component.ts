@@ -20,6 +20,7 @@ import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
+import { ElectronService } from '@merit/desktop/services/electron.service';
 import { Store } from '@ngrx/store';
 import { Address, PublicKey } from 'bitcore-lib';
 import { map } from 'rxjs/operators';
@@ -69,11 +70,6 @@ export class CoreView implements OnInit, AfterViewInit {
       link: '/community',
     },
     {
-      name: 'Mining',
-      icon: '/assets/v1/icons/ui/aside-navigation/mine.svg',
-      link: '/mining'
-    },
-    {
       name: 'Settings',
       icon: '/assets/v1/icons/ui/aside-navigation/settings.svg',
       link: '/settings',
@@ -112,6 +108,15 @@ export class CoreView implements OnInit, AfterViewInit {
     this.easyReceiveService.cancelEasySendObservable$.subscribe(receipt => {
       this.processEasyReceipt(receipt, null, false, null, true);
     });
+
+    if (ElectronService.isElectronAvailable) {
+      this.topMenuItems.splice(this.topMenuItems.length-1, 0,
+        {
+          name: 'Mining',
+          icon: '/assets/v1/icons/ui/aside-navigation/mine.svg',
+          link: '/mining'
+        });
+    }
   }
 
   ngAfterViewInit() {
