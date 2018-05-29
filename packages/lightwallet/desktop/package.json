@@ -20,7 +20,8 @@
     "url": "https://github.com/meritlabs/lightwallet-stack"
   },
   "dependencies": {
-    "node-notifier": "^5.2.1"
+    "node-notifier": "^5.2.1",
+    "merit-miner-node": "../../../../merit-miner-node"
   },
   "devDependencies": {
     "@angular-devkit/core": "0.3.2",
