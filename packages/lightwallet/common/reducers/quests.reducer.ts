@@ -1,25 +1,36 @@
 import { Quest, Quests } from '@merit/common/models/quest';
-import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
+import { Action } from '@ngrx/store';
 
-export interface IQuestsState {
-  quests: Quests[];
-}
-
-const DEFAULT_STATE: IQuestsState = {
-  quests: [],
+const DEFAULT_STATE = {
+  quests: [
+    new Quest('1', '1', '1', '1', [{ name: '1' }], 1),
+    new Quest('2', '2', '2', '2', [{ name: '2' }], 2),
+    new Quest('3', '3', '3', '3', [{ name: '3' }], 3),
+  ],
 };
 
-export enum QuestsActionType {
-  Update = '[Quets] Update',
+export interface IQuestsState {
+  quests: Quest[];
 }
 
-export class UpdateQuestsAction implements Action {
-  type = QuestsActionType.Update;
+export function QuestsReducer(state: IQuestsState = DEFAULT_STATE, action: Action) {
+  switch (action.type) {
+    case QUEST_ACTION.LOAD_QUESTS:
+      return {
+        ...state,
+        quests: [...state.quests],
+      };
+    default:
+      return state;
+  }
 }
 
-export type QuestsAction = UpdateQuestsAction;
+export namespace QUEST_ACTION {
+  export const LOAD_QUESTS = 'LOAD_QUESTS';
+}
 
-export function QuestsReducer(state: IQuestsState, action: QuestsAction) {}
+export class LoadQuest implements Action {
+  readonly type = QUEST_ACTION.LOAD_QUESTS;
 
-export const selectQuestsState = createFeatureSelector<IQuestsState>('quests');
-export const selectQuests = createSelector(selectQuestsState, state => state.quests);
+  constructor(public payload: Quest) {}
+}
