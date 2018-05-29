@@ -120,7 +120,7 @@ export class API {
 
   public rootAddress: any;
   public rootAlias: string;
-  communitySize: number;
+  public communitySize: number;
 
   public balance: any;
   public invitesBalance: any;
@@ -526,6 +526,7 @@ export class API {
     wallet.rootAlias = obj.rootAlias || '';
     wallet.parentAddress = Bitcore.Address.fromString(obj.rootAddress, wallet.network);
     wallet.vaults = obj.vaults || [];
+    wallet.communitySize = obj.communitySize || 0;
     return wallet;
   }
 
@@ -540,6 +541,7 @@ export class API {
       invitesBalance: this.invitesBalance,
       pendingInvites: this.pendingInvites,
       availableInvites: this.availableInvites,
+      communitySize: this.communitySize,
       rootAddress: this.getRootAddress().toString(),
       rootAlias: this.rootAlias,
       parentAddress: this.parentAddress,
