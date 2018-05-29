@@ -1,5 +1,5 @@
 <div class="wrap">
-  <div class="close"></div>
+  <div class="close" (click)="dismiss.emit()"></div>
   <div *ngIf="selectedWallet">
     <div>
       <p>Every time to bring an active new member into the Merit community, your
@@ -25,4 +25,4 @@
     </ul>
   </div>
 </div>
-<div class="overlay"></div>
+<div class="overlay" (click)="dismiss.emit()"></div>

@@ -15,7 +15,7 @@
   </a>
 </div>
 <div class="divider"></div>
-<div class="shareButtton">
+<div class="shareButtton" (click)="shareActivate.emit()">
   <merit-icon name="share"></merit-icon> SHARE MY INVITE</div>
 <div class="right">
   <div class="box">
@@ -25,4 +25,3 @@
   </div>
   <app-notifications [notifications]="notifications$ | async" [hasNewNotifications]="totalUnreadNotifications$ | async"></app-notifications>
 </div>
-<app-share-box></app-share-box>
