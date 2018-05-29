@@ -111,7 +111,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
         }
       } else {
         if (tx.outputs.some(o => o.amount == 0 && _.get(o, 'data', '').toLowerCase().indexOf('pool') > -1)) {
-          tx.name = 'Pool Mining Reward';
+          tx.name = 'Pool Reward';
           tx.action = TransactionAction.POOL_REWARD;
           tx.isPoolReward = true;
         }
