@@ -1,8 +1,8 @@
 @import '~styles/v1/common/import-sass'
 
-\:host  
+.overlay 
   position: fixed
-  z-index: 99
+  z-index: 98
   background: rgba(0, 0, 0, .3)
   left: 0
   right: 0
@@ -11,6 +11,7 @@
   margin: auto
   display: block
 .wrap
+  z-index: 100
   position: fixed
   max-width: 500px
   max-height: 400px
@@ -18,7 +19,6 @@
   height: 100%
   background: $white
   box-shadow: 0 0 100px rgba(0, 0, 0, .5)
-  z-index: 100
   left: 0
   right: 0
   top: 0
@@ -26,3 +26,24 @@
   margin: auto
   border-radius: 10px
   padding: 40px 20px 0
+  .close
+    position: absolute
+    width: 30px
+    height: 30px
+    right: 20px
+    top: 30px
+    cursor: pointer
+    &:after,
+    &:before
+      content: ""
+      width: 30px
+      height: 1px
+      background-color: $dark-grey-blue
+      position: absolute
+      display: block
+      top: 0
+      left: 0
+    &:before
+      transform: rotate(45deg)
+    &:after
+      transform: rotate(-45deg)
