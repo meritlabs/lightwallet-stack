@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { selectWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
@@ -25,6 +25,8 @@ export class ShareBoxComponent implements OnInit {
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   selectedWallet: DisplayWallet;
+
+  @Output() dismiss: EventEmitter<void> = new EventEmitter<void>();
 
   async ngOnInit() {
     const wallets: DisplayWallet[] = await this.wallets$
