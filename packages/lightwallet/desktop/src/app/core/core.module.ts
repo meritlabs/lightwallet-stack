@@ -14,6 +14,7 @@ import { BackupView } from './backup/backup.view';
 import { MnemonicPhraseView } from './backup/mnemonic-phrase/mnemonic-phrase.view';
 import { QrCodeBackupView } from './backup/qr-code-backup/qr-code-backup.view';
 import { CommunityView } from './community/community.view';
+import { MiningView } from './mining/mining.view';
 import { InvitesComponent } from './community/invites/invites.component';
 import { InviteRequestsView } from './community/invites/invite-requests/invite-requests.view';
 import { SendInviteView } from './community/invites/send-invite/send-invite.view';
@@ -47,6 +48,7 @@ export function getPages() {
     WalletDetailView,
     WalletSettingsView,
     CommunityView,
+    MiningView,
     BackupView,
     MnemonicPhraseView,
     WalletDetailHistoryView,
