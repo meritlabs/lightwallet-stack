@@ -97,7 +97,7 @@ export class WalletsView {
     let communitySize = 0;
     const getCommunitySizes = () => this.wallets.map(async (w) => {
       let { referralcount } =  await w.getCommunityInfo(w.rootAddress.toString());
-      communitySize += referralcount;
+      return w.communitySize = referralcount;
     });
     await Promise.all(getCommunitySizes());
     this.communitySize = communitySize;
@@ -117,6 +117,7 @@ export class WalletsView {
       await this.profileService.refreshData();
       await this.loadCommunitySize();
       this.setTotalValues();
+      this.profileService.storeProfile();
     } catch (err) {
       this.logger.warn(err);
       this.toastCtrl.error(err.text || 'Unknown error');
@@ -137,6 +138,9 @@ export class WalletsView {
     }, 0);
 
     this.totalAmount = totalAmount;
+    this.communitySize = this.wallets.reduce((size, w) => {
+      return size + w.communitySize
+    }, 0);
   }
 
   closeCommunityPopup() {
