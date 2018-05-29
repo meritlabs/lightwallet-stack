@@ -1,5 +1,28 @@
 <div class="wrap">
-  <p>
-    share-box works!
-  </p>
+  <div class="close"></div>
+  <div *ngIf="selectedWallet">
+    <div>
+      <p>Every time to bring an active new member into the Merit community, your
+        <strong>growth score</strong> will increase. There is a growth lottery every minute, and a higher score earns you a higher
+        chance to win.</p>
+      <p>
+        <strong>Select wallet for invite link generation</strong>
+      </p>
+      <div>
+        <app-select *ngIf="selectedWallet" (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async"
+          cssClass="ui-input ui-input--select ui-input--form"></app-select>
+      </div>
+    </div>
+    <ul>
+      <li>
+        <ng-container *ngIf="selectedWallet">
+          copy direct invite link {{selectedWallet.alias}}
+        </ng-container>
+      </li>
+      <li>Tell your friends your share code:
+        <div id="pasteShareThis" class="shareBox addthis_share">{{initAddThis()}}</div>
+      </li>
+    </ul>
+  </div>
 </div>
+<div class="overlay"></div>

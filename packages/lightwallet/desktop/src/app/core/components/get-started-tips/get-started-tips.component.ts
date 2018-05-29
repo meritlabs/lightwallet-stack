@@ -18,9 +18,9 @@ declare global {
     trigger('showTips', [
       state('true', style({ maxHeight: '1000px', padding: '30px 20px' })),
       state('false', style({})),
-      transition('* => *', animate('300ms ease-in-out'))
-    ])
-  ]
+      transition('* => *', animate('300ms ease-in-out')),
+    ]),
+  ],
 })
 export class GetStartedTipsComponent implements OnInit, OnDestroy {
   constructor(private persistenceService: PersistenceService2) {}
@@ -47,26 +47,25 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy {
       window.addthis_share = {
         passthrough: {
           twitter: {
-            text: `${this.shareTitle}\n ${this.shareText}${alias}`
+            text: `${this.shareTitle}\n ${this.shareText}${alias}`,
           },
           linkedin: {
             title: this.shareTitle,
             text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-            description: `${this.shareTitle}\n ${this.shareText}${alias}`
+            description: `${this.shareTitle}\n ${this.shareText}${alias}`,
           },
           facebook: {
             title: this.shareTitle,
-            text: `${this.shareTitle}\n ${this.shareText}${alias}`
-          }
-        }
-      }
+            text: `${this.shareTitle}\n ${this.shareText}${alias}`,
+          },
+        },
+      };
     }
   }
 
   get wallets(): DisplayWallet[] {
     return this._wallets;
   }
-
 
   setTipType: string = 'all';
 
@@ -115,16 +114,16 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy {
   }
 
   show() {
-    return this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, this.active = true);
+    return this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, (this.active = true));
   }
 
   hide() {
-    return this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, this.active = false);
+    return this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, (this.active = false));
   }
 
   // rename to toggle
   showHide() {
-    return this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, this.active = !this.active);
+    return this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, (this.active = !this.active));
   }
 
   getArticleAction() {
