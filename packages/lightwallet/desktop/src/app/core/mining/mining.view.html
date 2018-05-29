@@ -9,4 +9,7 @@
     <input class="range-slider-range" id="cpu" type="range" min="0" max="100" value="50" step="1" onchange="rangevalue.value=value" />
     <output class="range-slider-value" id="rangevalue" for="cpu">CPU</output>
   </div>
+  <button class="ui-button ui-button--blue" (click)="toggleMining()">
+      {{isMining? 'Stop' : 'Start'}} Mining
+  </button>
 </div>
