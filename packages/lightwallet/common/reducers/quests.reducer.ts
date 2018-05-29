@@ -20,3 +20,6 @@ export class UpdateQuestsAction implements Action {
 export type QuestsAction = UpdateQuestsAction;
 
 export function QuestsReducer(state: IQuestsState, action: QuestsAction) {}
+
+export const selectQuestsState = createFeatureSelector<IQuestsState>('quests');
+export const selectQuests = createSelector(selectQuestsState, state => state.quests);
