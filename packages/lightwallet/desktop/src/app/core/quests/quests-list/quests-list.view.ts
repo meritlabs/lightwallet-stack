@@ -4,8 +4,7 @@ import { Store } from '@ngrx/store';
 
 import { Observable } from 'rxjs/Observable';
 
-import { Quests } from '@merit/common/models/quest';
-import { selectQuests } from '@merit/common/reducers/quests.reducer';
+import { Quests, Quest } from '@merit/common/models/quest';
 
 @Component({
   selector: 'app-quests-list',
@@ -15,35 +14,12 @@ import { selectQuests } from '@merit/common/reducers/quests.reducer';
 export class QuestsListView implements OnInit {
   constructor(private store: Store<IRootAppState>) {}
 
+  questState$: Observable<Quests> = this.store.select('quests');
+
   ngOnInit() {}
+  log(item) {
+    console.log(item);
+  }
 
-  quests$: Observable<Quests[]> = this.store.select(selectQuests);
-
-  quests: Object = [
-    {
-      name: 'Who I`m',
-      shortDescription: `Find your wallet @alias.`,
-      status: 'compleate',
-      icon: '/assets/v1/icons/award.svg',
-    },
-    {
-      name: 'BackUp rookie',
-      shortDescription: `BackUp your wallet.`,
-      status: 'in progress',
-      icon: '/assets/v1/icons/award.svg',
-    },
-    {
-      name: 'Setup expret',
-      shortDescription: `Setup your LightWallet flow`,
-      status: 'new',
-      icon: '/assets/v1/icons/award.svg',
-    },
-    {
-      name: 'Spread master',
-      shortDescription: `Share Merit and increase your rating`,
-      status: 'new',
-      icon: '/assets/v1/icons/award.svg',
-      path: 'spread-master',
-    },
-  ];
+  // quests$: Observable<Quest[]> = this.store.select(selectQuests);
 }
