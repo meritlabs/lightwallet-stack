@@ -1,0 +1,193 @@
+view-send-invite-amount {
+  .feeCalcError {
+    white-space: normal;
+    text-align: center;
+    color: color($colors, danger) !important;
+    font-weight: normal !important;
+    padding-top: 20px;
+  }
+
+  ion-avatar {
+    text-align: center;
+    color: color($colors, primary);
+    display: inline-block;
+    line-height: 40px;
+    letter-spacing: -1px;
+    border-radius: 50%;
+  }
+
+  ion-header.header {
+    h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      font-weight: normal;
+      color: #73819b;
+    }
+  }
+
+  ion-list {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .amount-area {
+    text-align: center;
+    height: 120px;
+
+   .main-amount {
+      text-align: center;
+
+      ion-item.item {
+        padding: 0 !important;
+        margin: 0;
+        background: transparent;
+
+        .item-inner {
+          padding: 0;
+        }
+
+        ion-input {
+          display: inline-block;
+        }
+
+        input.text-input {
+          margin: 0 !important;
+          text-align: center;
+          font-size: 80px;
+          color: #f6f8fa;
+          font-weight: normal;
+          display: inline-block;
+          width: 100%;
+
+          &::placeholder {
+            color: transparentize(white, .47);
+            text-shadow: none;
+            width: 100%;
+            font-size: 20px;
+            letter-spacing: -1.3px;
+          }
+        }
+      }
+    }
+  }
+
+  ion-icon[item-end] {
+    font-size: 14px;
+  }
+
+  ion-avatar.default {
+    box-shadow: 0 0 1px 1px $wallet-default-color;
+  }
+
+  .tooltip-button {
+    vertical-align: middle;
+    padding: 0;
+    margin: 0;
+    height: 20px;
+
+    ion-icon {
+      font-size: 20px;
+      color: #9ba6b9;
+      font-weight: 600;
+      width: 20px;
+    }
+  }
+
+  .amount-area,
+  .toolbar-background-ios {
+    background: transparent;
+  }
+
+  .toolbar-background-ios {
+    border-bottom: 2px solid;
+  }
+
+  .globalSendHeader {
+    background-image: linear-gradient(180deg, #106dda 0%, #00b1de 100%);
+
+    * {
+      color: #FFF;
+      background: transparent;
+    }
+  }
+
+  .whiteColor {
+    color: #FFF !important;
+  }
+
+  .big-header {
+    padding: 0;
+    min-height: 130px;
+  }
+
+  .global-illustration {
+    text-align: center;
+    padding: 0 20px;
+
+    h2 {
+      font-size: 17px;
+      margin-top: 20px;
+      color: rgb(45, 60, 80);
+    }
+
+    p {
+      font-size: 13px;
+      color: rgba(45, 60, 80, 0.6);
+    }
+
+    img {
+      margin-top: 20px;
+      width: 20%;
+      opacity: 0.8;
+    }
+  }
+
+  .card {
+    width: 312px;
+    box-shadow: 0 4px 16px rgba(69, 91, 99, 0.08);
+    background-color: #ffffff;
+    margin: 0 auto 33px;
+    border-radius: 20px;
+    padding: 10px 30px 0;
+    text-align: center;
+
+    a {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.14px;
+      line-height: 16px;
+      padding-bottom: 10px;
+      display: block;
+    }
+
+    .card-header {
+      color: rgba(0,0,0,0.5);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.58px;
+      text-transform: uppercase;
+    }
+
+    .row {
+      margin: 0 -30px;
+      width: calc(100% + 60px);
+      border-top: 1px solid #ededed;
+
+      .button-inner {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.84px;
+        line-height: 20px;
+      }
+    }
+  }
+  .error {
+    text-align: center;
+    color: color($colors, danger);
+  }
+}
+

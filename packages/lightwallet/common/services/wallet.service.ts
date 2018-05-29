@@ -1,39 +1,39 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Events } from 'ionic-angular/util/events';
-import * as _ from 'lodash';
 import { ENV } from '@app/env';
-
-import 'rxjs/add/observable/defer';
-import 'rxjs/add/observable/range';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/timer';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/operator/retryWhen';
-import 'rxjs/add/operator/zip';
-import 'rxjs/add/operator/mergeMap';
-import { LoggerService } from '@merit/common/services/logger.service';
-import { MWCService } from '@merit/common/services/mwc.service';
-import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { ConfigService } from '@merit/common/services/config.service';
-import { ProfileService } from '@merit/common/services/profile.service';
-import { PersistenceService } from '@merit/common/services/persistence.service';
-import { RateService } from '@merit/common/services/rate.service';
-import { PopupService } from '@merit/common/services/popup.service';
-import { LanguageService } from '@merit/common/services/language.service';
-import { MnemonicService } from '@merit/common/services/mnemonic.service';
-import { EasySendService } from '@merit/common/services/easy-send.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { EasySend } from '@merit/common/models/easy-send';
+import { FiatAmount } from '@merit/common/models/fiat-amount';
+import { ConfigService } from '@merit/common/services/config.service';
+import { EasySendService } from '@merit/common/services/easy-send.service';
+import { LanguageService } from '@merit/common/services/language.service';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { MnemonicService } from '@merit/common/services/mnemonic.service';
+import { MWCService } from '@merit/common/services/mwc.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
+import { PopupService } from '@merit/common/services/popup.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { RateService } from '@merit/common/services/rate.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { Events } from 'ionic-angular/util/events';
+import * as _ from 'lodash';
+
+import 'rxjs/add/observable/defer';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/range';
+import 'rxjs/add/observable/throw';
+import 'rxjs/add/observable/timer';
+import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/retryWhen';
+import 'rxjs/add/operator/zip';
+import { Observable } from 'rxjs/Observable';
 
 /* Refactor CheckList:
-  - Bwc Error provider
-  - Remove ongoingProcess provider, and handle Loading indicators in controllers
-  - Decouple the tight dependencies on ProfileService; and create logical separation concerns
-  - Ensure that anything returning a promise has promises through the stack.
-*/
+ - Bwc Error provider
+ - Remove ongoingProcess provider, and handle Loading indicators in controllers
+ - Decouple the tight dependencies on ProfileService; and create logical separation concerns
+ - Ensure that anything returning a promise has promises through the stack.
+ */
 
 @Injectable()
 export class WalletService {
@@ -383,10 +383,6 @@ export class WalletService {
     let isEncrypted = wallet.isPrivKeyEncrypted();
     if (isEncrypted) this.logger.debug('Wallet is encrypted');
     return isEncrypted;
-  }
-
-  sendInvite(wallet: MeritWalletClient, toAddress: string) {
-    return wallet.sendInvite(toAddress);
   }
 
   createTx(wallet: MeritWalletClient, txp: any): Promise<any> {
@@ -756,9 +752,10 @@ export class WalletService {
   /**
    * Gets the aggregate rewards for a list of addresses.
    * @param wallet
-   * @returns [{address, rewards: {mining, ambassador}}] An array of objects, each with an 'address' and a corresponding 'rewards' object that contains the 'mining' and 'ambassador' properties.
+   * @returns [{address, rewards: {mining, growth}}] An array of objects, each with an 'address' and a corresponding
+   *   'rewards' object that contains the 'mining' and 'growth' properties.
    */
-  async getRewards(wallet: MeritWalletClient): Promise<{ address: string; rewards: { mining: number; ambassador: number; } }[]> {
+  async getRewards(wallet: MeritWalletClient): Promise<{ address: string; rewards: { mining: number; growth: number; } }[]> {
     try {
       return await wallet.getRewards(wallet.getRootAddress());
     } catch (e) {
@@ -766,7 +763,7 @@ export class WalletService {
         address: wallet.displayAddress,
         rewards: {
           mining: 0,
-          ambassador: 0
+          growth: 0
         }
       }];
     }
@@ -1275,7 +1272,7 @@ export class WalletService {
     try {
       await walletClient.importFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
         account: opts.account || 0,
-        derivationStrategy: opts.derivationStrategy || 'BIP44',
+        derivationStrategy: opts.derivationStrategy || 'BIP44'
       });
 
       return this.profileService.addWallet(walletClient);
@@ -1323,7 +1320,6 @@ export class WalletService {
       throw new Error('Could not import. Check input file and spending password'); // TODO getTextCatalog
     }
   }
-
 
 
 }

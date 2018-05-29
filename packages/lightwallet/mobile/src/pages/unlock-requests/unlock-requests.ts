@@ -56,6 +56,12 @@ export class UnlockRequestsView {
     }, 0);
   }
 
+  async doRefresh(refreshser) {
+    Promise.all([this.profileService.refreshData(), this.unlockRequestService.loadRequestsData()]);
+    await this.ionViewWillEnter();
+    refreshser.complete();
+  }
+
   processRequest(request: IUnlockRequest) {
     if (!this.totalInvites) {
       return this.toastCtrl.error('You don\'t have any invites you can spend now');
@@ -68,6 +74,6 @@ export class UnlockRequestsView {
   }
 
   toSendInvite() {
-    this.navCtrl.push('SendInviteView', { wallets: this.wallets });
+    this.navCtrl.push('SendInviteAmountView');
   }
 }

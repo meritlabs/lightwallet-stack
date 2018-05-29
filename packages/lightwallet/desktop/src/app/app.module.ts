@@ -30,6 +30,7 @@ import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MarketLoginView } from './market/market-login/market-login.view';
+import { APP_BASE_HREF } from '@angular/common';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
@@ -39,10 +40,12 @@ export function loadConfigs(profileService: ProfileService, store: Store<IRootAp
   return async () => {
     const authorized = await profileService.isAuthorized();
 
-    store.dispatch(new UpdateAppAction({
-      loading: false,
-      authorized
-    }));
+    store.dispatch(
+      new UpdateAppAction({
+        loading: false,
+        authorized,
+      })
+    );
   };
 }
 
@@ -54,15 +57,12 @@ export function getProviders() {
     Platform,
     DOMController,
     DashboardGuard,
-    OnboardingGuard
+    OnboardingGuard,
   ];
 }
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    MarketLoginView
-  ],
+  declarations: [AppComponent, MarketLoginView],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -73,21 +73,16 @@ export function getProviders() {
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
-        deps: [HttpClient]
-      }
+        deps: [HttpClient],
+      },
     }),
     CommonProvidersModule.forRoot(),
     CommonPipesModule,
     StoreModule.forRoot(reducer),
     ReactiveFormsModule,
-    EffectsModule.forRoot([
-      AppEffects,
-      WalletEffects,
-      TransactionEffects,
-      NotificationEffects
-    ]),
+    EffectsModule.forRoot([AppEffects, WalletEffects, TransactionEffects, NotificationEffects]),
     SharedComponentsModule.forRoot(),
-    Ng4LoadingSpinnerModule.forRoot()
+    Ng4LoadingSpinnerModule.forRoot(),
   ],
   providers: [
     ...getProviders(),
@@ -95,10 +90,13 @@ export function getProviders() {
       provide: APP_INITIALIZER,
       useFactory: loadConfigs,
       deps: [ProfileService, Store],
-      multi: true
+      multi: true,
+    },
+    {
+      provide: APP_BASE_HREF,
+      useValue: '/',
     },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

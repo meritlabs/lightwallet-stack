@@ -24,7 +24,7 @@ export class TransactionHistoryComponent {
   }
 
   isCredit(transaction: IDisplayTransaction) {
-    return transaction.isCoinbase || transaction.action === TransactionAction.RECEIVED;
+    return transaction.isCoinbase || transaction.isPoolReward || transaction.action === TransactionAction.RECEIVED;
   }
 
   isInvite(transaction: IDisplayTransaction) {
@@ -39,12 +39,16 @@ export class TransactionHistoryComponent {
     return this.isReward(transaction) && transaction.outputs[0].index === 0;
   }
 
+  isPoolReward(transaction: IDisplayTransaction) {
+    return transaction.isPoolReward;
+  }
+
   isEasySend(transaction: IDisplayTransaction) {
     return !transaction.isCoinbase && !transaction.isInvite;
   }
 
-  isAmbassadorReward(transaction: IDisplayTransaction) {
-    return transaction.isAmbassadorReward;
+  isGrowthReward(transaction: IDisplayTransaction) {
+    return transaction.isGrowthReward;
   }
 
   private isReward(transaction: IDisplayTransaction) {

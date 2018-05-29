@@ -5,7 +5,7 @@ import { ContactsService } from '@merit/common/services/contacts.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
-import { Events, IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
+import { App, Events, IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
 import { PersistenceService2 } from '../../../../../common/services/persistence2.service';
 
 @IonicPage({
@@ -28,6 +28,7 @@ export class WalletDetailsView {
   txs: Array<any> = [];
 
   constructor(private navCtrl: NavController,
+              private app: App,
               private navParams: NavParams,
               private walletService: WalletService,
               private logger: LoggerService,
@@ -45,13 +46,15 @@ export class WalletDetailsView {
   async ngOnInit() {
     this.loading = true;
     this.wallet = this.navParams.get('wallet');
-    await this.getWalletHistory();
+    await Promise.all([this.getWalletHistory(), this.getCommunityInfo()]);
     this.loading = false;
 
     this.events.subscribe('Remote:IncomingTx', () => {
       this.wallet.getStatus();
       this.getWalletHistory();
+      this.getCommunityInfo();
     });
+
   }
 
   async deposit() {
@@ -69,8 +72,10 @@ export class WalletDetailsView {
   async send() {
     this.navCtrl.popToRoot();
     try {
+      const nav: Tab = this.tabsCtrl._tabs[3];
+      await nav.setRoot('SendView', { wallet: this.wallet });
+      await nav.popToRoot();
       await this.tabsCtrl.select(3);
-      await this.tabsCtrl.getActiveChildNavs()[0].popToRoot();
     } catch (e) {
       console.log(e);
     }
@@ -79,10 +84,18 @@ export class WalletDetailsView {
   async doRefresh(refresher) {
     this.refreshing = true;
     await this.getWalletHistory();
+    this.wallet.getStatus();
+    this.getCommunityInfo();
     this.refreshing = false;
     refresher.complete();
   }
 
+
+  private async getCommunityInfo() {
+    const addressesRewards = await this.wallet.getRewards([this.wallet.getRootAddress()]);
+    this.wallet.miningRewards = addressesRewards[0].rewards.mining;
+    this.wallet.growthRewards = addressesRewards[0].rewards.ambassador;
+  }
 
   private async getWalletHistory() {
     try {

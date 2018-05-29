@@ -32,14 +32,15 @@ export class HistoryItemComponent implements OnInit {
 
   constructor(
     private globalSendLinkCtrl: GlobalsendLinkPopupController,
-    private easyReceive: EasyReceiveService) {}
+    private easyReceive: EasyReceiveService
+  ) {}
 
   ngOnInit() {
     const { tx } = this;
 
     this.isConfirmed = tx.isCoinbase ? tx.isMature : true;
     this.isUnlockRequest = tx && tx.action === TransactionAction.UNLOCK;
-    this.isCredit = tx.isCoinbase || tx.action === TransactionAction.RECEIVED;
+    this.isCredit = tx.isCoinbase || tx.action === TransactionAction.RECEIVED || tx.isPoolReward;
     this.isInvite = tx.isInvite === true;
     this.isMiningReward = this.isReward && tx.outputs[0].index === 0;
     this.isEasySend = !this.isInvite && !this.isReward;
@@ -47,17 +48,18 @@ export class HistoryItemComponent implements OnInit {
       this.confirmationsExplanation = String(this.tx.confirmations) + ' block(s) confirmed from ' + COINBASE_CONFIRMATION_THRESHOLD;
     }
 
-    if (tx.isAmbassadorReward) this.image = 'ambassador';
+    if (tx.isGrowthReward) this.image = 'growth';
     else if (tx.isMiningReward) this.image = 'mining';
+    else if (tx.isPoolReward) this.image = 'mining';
     else if (tx.isInvite) this.image = 'invite';
     else this.image = 'merit';
   }
 
-  showGlobalSendLink() {
+  showMeritMoneyLink() {
     this.globalSendLinkCtrl.create(this.tx.easySendUrl);
   }
 
-  async askCancelGlobalSend() {
+  async askCancelMeritMoney() {
     this.easyReceive.cancelEasySend(this.tx.easySendUrl);
   }
 }

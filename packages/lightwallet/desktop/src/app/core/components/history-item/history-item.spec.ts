@@ -23,12 +23,11 @@ const BASE_TRANSACTION: Partial<IDisplayTransaction> = {
 @Injectable()
 class MockToastController {
   create() {}
-
   success() {}
 }
 
 @Injectable()
-class MockGlobalSendLinkPopupController {
+class MockMeritMoneyLinkPopupController {
   create() {}
 }
 
@@ -47,9 +46,9 @@ describe('History item component', () => {
         HistoryItemComponent
       ],
       providers: [
+        { provide: GlobalsendLinkPopupController, useClass: MockMeritMoneyLinkPopupController },
         { provide: ToastControllerService, useClass: MockToastController },
         { provide: EasyReceiveService, useClass: MockEasyReceiveService },
-        { provide: GlobalsendLinkPopupController, useClass: MockGlobalSendLinkPopupController }
       ],
       imports: [
         ClipModule,

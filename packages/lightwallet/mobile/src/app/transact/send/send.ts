@@ -6,12 +6,13 @@ import { AddressService } from '@merit/common/services/address.service';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { ProfileService } from '@merit/common/services/profile.service';
+import { RateService } from '@merit/common/services/rate.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
-import { Events, IonicPage, ModalController, NavController, Slides, ToastController } from 'ionic-angular';
-import { RateService } from '@merit/common/services/rate.service';
+import { Events, IonicPage, ModalController, NavController, NavParams, Slides, ToastController } from 'ionic-angular';
 import * as _ from 'lodash';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -39,16 +40,18 @@ export class SendView {
     contacts: Array<MeritContact>,
     toNewEntity: { destination: string, contact: MeritContact },
     error: string
-  } = {contacts: [], toNewEntity: null, error: null };
-
+  } = { contacts: [], toNewEntity: null, error: null };
 
   hasUnlockedWallets: boolean;
   hasActiveInvites: boolean;
   showSlider: boolean;
 
+  wallet: MeritWalletClient;
+
   searchInProgress: boolean;
 
   constructor(private navCtrl: NavController,
+              private navParams: NavParams,
               private contactsService: ContactsService,
               private profileService: ProfileService,
               private addressService: AddressService,
@@ -59,6 +62,7 @@ export class SendView {
               private toastCtrl: ToastController,
               private rateService: RateService
   ) {
+
   }
 
   private async updateHasUnlocked() {
@@ -80,18 +84,18 @@ export class SendView {
   }
 
   async ionViewWillEnter() {
+    this.wallet = this.navParams.data.wallet;
     this.loadingContacts = true;
     await this.updateHasUnlocked();
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;
     await this.updateRecentContacts();
-    return this.parseSearch();
+    await  this.parseSearch();
 
     this.events.subscribe('Remote:IncomingTx', () => {
       this.updateHasUnlocked();
     });
   }
-
 
   async updateRecentContacts() {
     const sendHistory = await this.addressService.getSendHistory();
@@ -134,7 +138,7 @@ export class SendView {
     }
 
     if (this.searchQuery.indexOf('micros') != -1) {
-      let microsStr:string = this.searchQuery.split('?micros=')[1];
+      let microsStr: string = this.searchQuery.split('?micros=')[1];
       this.searchQuery = this.searchQuery.split('?micros=')[0];
       this.amount = +microsStr;
     } else {
@@ -150,7 +154,7 @@ export class SendView {
   /**
    * Search users based on searchQuery
    * Looks both for contact list and for address/alias
-  */
+   */
   private async search() {
 
     const result = { contacts: [], toNewEntity: null, error: null };
@@ -172,7 +176,7 @@ export class SendView {
     result.contacts = this.contacts.filter(contact =>
       _.some(contact.meritAddresses, (meritAddress) => {
         if (meritAddress.address == input) return true;
-        return (meritAddress.alias && meritAddress.alias.match(input))
+        return (meritAddress.alias && meritAddress.alias.match(input));
       })
     );
 
@@ -218,6 +222,7 @@ export class SendView {
           contact: contact,
           amount: this.amount,
           isEasyEnabled: this.hasActiveInvites,
+          wallet: this.wallet,
           suggestedMethod: {
             type: SendMethodType.Classic,
             destination: SendMethodDestination.Address,
@@ -239,6 +244,7 @@ export class SendView {
           contact: contact,
           amount: this.amount,
           isEasyEnabled: this.hasActiveInvites,
+          wallet: this.wallet,
           suggestedMethod: {
             type: SendMethodType.Classic,
             destination: SendMethodDestination.Address,
@@ -256,6 +262,7 @@ export class SendView {
       return this.navCtrl.push('SendAmountView', {
         contact: contact,
         amount: this.amount,
+        wallet: this.wallet,
         suggestedMethod: {
           type: SendMethodType.Classic,
           destination: SendMethodDestination.Address,
@@ -273,6 +280,7 @@ export class SendView {
       modal.onDidDismiss((params) => {
         if (params) {
           params.amount = this.amount;
+          params.wallet = this.wallet;
           this.navCtrl.push('SendAmountView', params);
         }
       });
@@ -290,6 +298,7 @@ export class SendView {
     this.navCtrl.push('SendAmountView', {
       contact: entity.contact,
       amount: this.amount,
+      wallet: this.wallet,
       suggestedMethod: {
         type: SendMethodType.Classic,
         destination: SendMethodDestination.Address,
@@ -307,7 +316,7 @@ export class SendView {
   easySend() {
     if (!this.hasActiveInvites) {
       this.toastCtrl.create({
-        message: 'You do not have any available invites to use GlobalSend',
+        message: 'You do not have any available invites to use MeritMoney',
         duration: 4000,
         showCloseButton: true
       });
@@ -315,7 +324,7 @@ export class SendView {
     }
 
     this.navCtrl.push('SendAmountView', {
-      suggestedMethod: { type: SendMethodType.Easy }
+      suggestedMethod: { type: SendMethodType.Easy, wallet: this.wallet }
     });
   }
 
