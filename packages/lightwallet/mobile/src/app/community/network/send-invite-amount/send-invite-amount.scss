@@ -1,3 +1,15 @@
+.ios view-send-invite-amount  {
+  ion-footer.footer slide-to-action {
+    height: calc(80px + const(safe-area-inset-bottom));
+    height: calc(80px + env(safe-area-inset-bottom));
+
+    .container {
+      padding-bottom: const(safe-area-inset-bottom);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+  }
+}
+
 view-send-invite-amount {
   .feeCalcError {
     white-space: normal;
