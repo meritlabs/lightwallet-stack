@@ -44,7 +44,7 @@ export class TransactionHistoryComponent {
   }
 
   isEasySend(transaction: IDisplayTransaction) {
-    return !transaction.isCoinbase && !transaction.isInvite;
+    return !transaction.isCoinbase && !transaction.isInvite && !transaction.isPoolReward;
   }
 
   isGrowthReward(transaction: IDisplayTransaction) {
