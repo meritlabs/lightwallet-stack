@@ -1,0 +1,69 @@
+.task_wrap
+  display: flex
+  width: 100%
+.task_navigation
+  width: 100%
+  margin-bottom: 20px
+.navigation_back
+  position: relative
+  width: 30px
+  height: 30px
+  border-radius: 100%
+  background: $white
+  box-shadow: 0 0 2px rgba(0,0,0, .2)
+  display: block
+  margin-right: 20px
+  cursor: pointer
+  &:after
+    content: ""
+    display: block
+    mask-size: contain
+    mask-position: 50% 50%
+    mask-repeat: no-repeat
+    background: $blue
+    mask-image: url('/assets/v1/icons/back-chevron.svg')
+    height: 16px
+    width: 16px
+    top: 7px
+    position: relative
+    left: 5px
+.quests
+  padding: 50px 40px
+.quests_title
+  margin-bottom: 20px
+  display: flex
+  align-items: center
+.quests_description
+  border-bottom: 1px solid $blue
+  margin-bottom: 40px
+  padding-bottom: 40px
+  +font(300, 18px, 26px)
+  p
+    margin-bottom: 10px
+  ol
+    list-style-type: decimal
+    padding-left: 20px
+    margin: 0px 0px 10px 5px
+    li
+      margin-bottom: 5px
+.quests_wrap
+  display: flex
+  flex-flow: row wrap
+  justify-content: space-between
+.quests_task
+  display: flex
+  justify-content: space-between
+  .icon
+    width: 200px
+    img
+      width: 100%
+  .caption
+    width: calc(100% - 230px)
+  ul
+    li
+      margin-bottom: 5px
+    li:before
+      content: "✓"
+      color: $blue
+      opacity: .7
+      margin-right: 10px

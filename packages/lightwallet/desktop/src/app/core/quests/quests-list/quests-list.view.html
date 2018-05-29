@@ -1,12 +1,26 @@
-<div class="quests_column">
-  <div class="title title--secondary">
-    <p>Quests</p>
-  </div>
-  <app-quest-preview *ngFor="let quest of quests" [quest]=quest [hidden]="quest.status === 'compleate'"></app-quest-preview>
+<div class="quests_title title--primary">
+  <p>Welcom to Quests!</p>
 </div>
-<div class="quests_column">
-  <div class="title title--secondary">
-    <p>Achievements</p>
+<div class="quests_description">
+  <p>Here you can compleate our learning and profitable quests. After each quest you will receive some reward, which will provide
+    two tipes of the profit:</p>
+  <ol>
+    <li>Learnig</li>
+    <li>Your Merit World rating</li>
+  </ol>
+  <p>Some kind of quests, will deliver to you a pure profit.</p>
+</div>
+<div class="quests_wrap">
+  <div class="quests_column">
+    <div class="title title--secondary">
+      <p>Quests</p>
+    </div>
+    <app-quest-preview *ngFor="let quest of quests" [quest]=quest [hidden]="quest.status === 'compleate'"></app-quest-preview>
   </div>
-  <app-quest-preview *ngFor="let quest of quests" [quest]=quest [hidden]="quest.status !== 'compleate'"></app-quest-preview>
+  <div class="quests_column">
+    <div class="title title--secondary">
+      <p>Achievements</p>
+    </div>
+    <app-quest-preview *ngFor="let quest of quests" [quest]=quest [hidden]="quest.status !== 'compleate'"></app-quest-preview>
+  </div>
 </div>
