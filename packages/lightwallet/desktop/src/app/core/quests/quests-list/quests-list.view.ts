@@ -1,4 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { IRootAppState } from '@merit/common/reducers';
+import { Store } from '@ngrx/store';
+
+import { Observable } from 'rxjs/Observable';
+
+import { Quests } from '@merit/common/models/quest';
+import { selectQuests } from '@merit/common/reducers/quests.reducer';
 
 @Component({
   selector: 'app-quests-list',
@@ -6,9 +13,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./quests-list.view.sass'],
 })
 export class QuestsListView implements OnInit {
-  constructor() {}
+  constructor(private store: Store<IRootAppState>) {}
 
   ngOnInit() {}
+
+  quests$: Observable<Quests[]> = this.store.select(selectQuests);
 
   quests: Object = [
     {
