@@ -5,12 +5,34 @@
         <ion-spinner></ion-spinner>
     </ion-buttons>
   </ion-navbar>
+
+  <button ion-item text-left (click)="selectWallet()" detail-none class="send-from" *ngIf="wallets?.length" class="select-wallet">
+
+        <ion-avatar item-start img-icon [class.default]="!wallet.color"
+                    [style.box-shadow]="'0 0 0 2px ' + wallet.color">
+           <img src="assets/img/icons/wallet.svg">
+        </ion-avatar>
+        <h2>{{wallet?.name}}</h2>
+
+        <ion-icon name="ios-arrow-down" item-end></ion-icon>
+
+  </button>
+
+    <!--<button ion-item (click)="selectWallet()" detail-none *ngIf="wallets?.length" class="select-wallet">-->
+
+        <!--<h2>{{wallet?.name}} <span *ngIf="wallet?.alias"> | @{{wallet.alias}}</span></h2>-->
+        <!--<ion-icon name="ios-arrow-down" item-end></ion-icon>-->
+    <!--</button>-->
+
+
 </ion-header>
 
 <ion-content>
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
+
+
 
   <div class="no-transactions" *ngIf="!transactions?.length && !loading">
     You do not have any transactions
@@ -21,4 +43,9 @@
   </div>
 
   <transaction-history [transactions]="transactions"></transaction-history>
+
+  <ion-infinite-scroll (ionInfinite)="loadMoreHistory($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
 </ion-content>
