@@ -3,7 +3,9 @@ import { Component, ViewEncapsulation} from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { ElectronService } from '@merit/desktop/services/electron.service';
 import { Observable } from 'rxjs/Observable';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs/Subscription';
 import { WalletService } from '@merit/common/services/wallet.service';
 
 import {
@@ -24,19 +26,32 @@ export class MiningView {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   selectedWallet: DisplayWallet;
-  isMining: boolean;
 
   address: string;
   alias: string;
-  workers: number = 2;
-  threadsPerWorker: number = 2;
+  workers: number = 1;
+  threadsPerWorker: number = 1;
+  miningLabel: string;
+  updateTimer: any; 
+  minCores: number = 1;
+  maxCores: number;
+  cores: number;
+  miningSettings: any;
+  pools: any[];
+  selectedPool: any;
+
 
   constructor(
     private store: Store<IRootAppState>,
     private walletService: WalletService,
+    private persistenceService: PersistenceService2,
     private addressService: AddressService) {
 
+    this.maxCores = ElectronService.numberOfCores();
+
+    this.updateLabel();
   }
+
 
   async ngOnInit() {
     try {
@@ -44,6 +59,33 @@ export class MiningView {
             filter(w => w.length > 0), take(1)).toPromise();
 
       this.selectWallet(wallets[0]);
+      this.miningSettings = await this.persistenceService.getMinerSettings();
+      if(this.miningSettings.cores) {
+        this.cores = this.miningSettings.cores; 
+      } else {
+        this.cores = Math.max(this.minCores, this.maxCores / 2); 
+      }
+
+      if(this.miningSettings.pools) {
+        this.pools = this.miningSettings.pools;
+        this.selectedPool = this.miningSettings.selectedPool;
+      } else { 
+        this.pools = [
+          {
+            name: 'Merit Pool',
+            url: 'stratum+tcp://pool.merit.me:3333'
+          },
+          {
+            name: 'Parachute Pool',
+            url: 'stratum+tcp://parachute.merit.me:3333'
+          },
+          {
+            name: 'Custom',
+            url: ''
+          },
+        ];
+        this.selectedPool = this.pools[0];
+      }
     } catch (err) {
       if (err.text)
         console.log('Could not initialize: ', err.text);
@@ -59,13 +101,75 @@ export class MiningView {
     this.alias = info.alias;
   }
 
-  toggleMining() {
-    if(this.isMining) { 
-      ElectronService.stopMining();
-    } else {
-      ElectronService.startMining(this.address, this.workers, this.threadsPerWorker);
+  selectPool(pool: any) {
+    if(!pool) return;
+    this.selectedPool = pool;
+  }
+
+  isMining() {
+    return ElectronService.isMining();
+  }
+
+  isStopping() {
+    return ElectronService.isStopping();
+  }
+
+  mineButtonLabel()
+  {
+    if(this.isMining()) {
+      if(this.isStopping()) {
+        return 'Stopping';
+      } else { 
+        return 'Stop';
+      }
+    } 
+    return 'Start';
+  }
+
+  updateLabel()
+  {
+    this.miningLabel = this.mineButtonLabel();
+    if(this.isStopping()) {
+        this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
     }
-    this.isMining = !this.isMining;
+  }
+
+  computeUtilization() {
+    if(this.cores % 2 == 0) {
+      this.workers = this.cores / 2;
+      this.threadsPerWorker = 2;
+    } else {
+      this.workers = this.cores;
+      this.threadsPerWorker = 1;
+    }
+    console.log("cores:", this.cores, "workers:", this.workers, "threads:", this.threadsPerWorker);
+  }
+
+  setCores(e: any) {
+    this.cores = parseInt(e.target.value);
+  }
+
+  saveSettings() {
+    this.miningSettings.cores = this.cores;
+    this.miningSettings.pools = this.pools;
+    this.miningSettings.selectedPool = this.selectedPool;
+    this.persistenceService.setMiningSettings(this.miningSettings);
+  }
+
+  toggleMining() {
+    this.saveSettings();
+
+    if(this.isMining()) { 
+      if(!this.isStopping()) {
+        ElectronService.stopMining();
+        this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
+      }
+    } else {
+      this.computeUtilization();
+
+      ElectronService.startMining(this.selectedPool.url, this.address, this.workers, this.threadsPerWorker);
+      this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
+    }
   }
 
 }

@@ -2,14 +2,22 @@
   <div class="global-settings__title title--primary">
     <p>Mining</p>
   </div>
+ <div class="ui-label">Select Wallet</div>
  <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+
+ <div class="ui-label">Select Mining Pool</div>
+ <app-select (selectionEvent)="selectPool($event)" [selected]="selectedPool" [input]="pools" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+
  <div class="ui-label">CPU Utilization</div>
   
   <div class="range-slider">
-    <input class="range-slider-range" id="cpu" type="range" min="0" max="100" value="50" step="1" onchange="rangevalue.value=value" />
-    <output class="range-slider-value" id="rangevalue" for="cpu">CPU</output>
+      <input class="range-slider-range"  type="range" min="{{minCores}}" max="{{maxCores}}" value="{{cores}}" (change)="setCores($event)" step="1"/>
+      <output class="range-slider-value" (input)="cores">{{cores}}</output>
   </div>
-  <button class="ui-button ui-button--blue" (click)="toggleMining()">
-      {{isMining? 'Stop' : 'Start'}} Mining
-  </button>
+  <br/>
+  <p>
+    <button class="ui-button ui-button--blue" (click)="toggleMining()">
+        {{miningLabel}}
+    </button>
+  </p>
 </div>

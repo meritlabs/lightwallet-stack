@@ -9,7 +9,8 @@ export enum StorageKey {
   NotificationSettings = 'merit_notification_settings',
   Notifications = 'merit_notifications',
   EasySends = 'merit_easysends',
-  ViewSettingsPrefix = 'app_view_settings_'
+  ViewSettingsPrefix = 'app_view_settings_',
+  MiningSettings = 'mining_settings'
 }
 
 export enum ViewSettingsKey {
@@ -98,5 +99,13 @@ export class PersistenceService2 {
 
   getViewSettings(key: ViewSettingsKey) {
     return this.storage.get(StorageKey.ViewSettingsPrefix + key);
+  }
+
+  setMiningSettings(settings: any) {
+    return this.storage.set(StorageKey.MiningSettings, settings);
+  }
+
+  async getMinerSettings() {
+    return (await this.storage.get(StorageKey.WalletPreferencesPrefix)) || {};
   }
 }
