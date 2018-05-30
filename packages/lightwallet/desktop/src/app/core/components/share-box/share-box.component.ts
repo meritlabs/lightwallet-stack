@@ -25,7 +25,10 @@ export class ShareBoxComponent implements OnInit {
   constructor(private store: Store<IRootAppState>, private toastCtrl: ToastControllerService) {}
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
-  selectedWallet: DisplayWallet;
+  selectedWallet = {
+    id: null,
+    name: 'Select wallet',
+  };
   shareAlias: string;
   shareLink: string;
 
@@ -42,7 +45,10 @@ export class ShareBoxComponent implements OnInit {
 
     if (wallets.length > 0) {
       this.selectedWallet = wallets[0];
+      console.log(this.selectedWallet);
+
       this.selectWallet(wallets[0]);
+      this.initAddThis();
     }
   }
 

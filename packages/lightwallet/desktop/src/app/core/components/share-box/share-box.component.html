@@ -1,6 +1,6 @@
 <div class="wrap">
   <div class="close" (click)="closeWindow()"></div>
-  <div *ngIf="selectedWallet">
+  <div>
     <div>
       <p class="shareDescription">Every time to bring an active new member into the Merit community, your
         <strong>growth score</strong> will increase. There is a growth lottery every minute, and a higher score earns you a higher
@@ -11,8 +11,7 @@
           <p>
             <strong>Select wallet for invite link generation</strong>
           </p>
-          <app-select *ngIf="selectedWallet" (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async"
-            cssClass="ui-input ui-input--select ui-input--form"></app-select>
+          <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async" cssClass="ui-input ui-input--select ui-input--form"></app-select>
         </ng-container>
         <ng-template #singleWallet>
           <p>
@@ -25,7 +24,7 @@
     </div>
     <ul class="shareToolsList">
       <li>
-        <ng-container *ngIf="selectedWallet">
+        <ng-container>
           <span class="cation">
             <strong>1.</strong>
             {{shareAlias}}
@@ -38,7 +37,7 @@
           <strong>2.</strong>
           Share now
         </span>
-        <span id="pasteShareThis" class="shareBox addthis_share">{{initAddThis()}}</span>
+        <span id="pasteShareThis" class="shareBox addthis_share"></span>
       </li>
     </ul>
   </div>
