@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
 
@@ -22,7 +22,7 @@ declare global {
     ]),
   ],
 })
-export class GetStartedTipsComponent implements OnInit, OnDestroy {
+export class GetStartedTipsComponent implements OnInit {
   constructor(private persistenceService: PersistenceService2) {}
 
   active: boolean;
@@ -79,30 +79,7 @@ export class GetStartedTipsComponent implements OnInit, OnDestroy {
     if (this.setTipType !== 'all' && this.active !== true) {
       this.show();
     }
-
-    if (window.addthis_config && window.addthis_share) {
-      // move created shareThis into right container
-      const newParent = document.getElementById('pasteShareThis'),
-        oldParent = document.getElementById('shareThis');
-
-      while (oldParent.childNodes.length > 0) {
-        newParent.appendChild(oldParent.childNodes[0]);
-      }
-    }
   }
-
-  ngOnDestroy() {
-    if (!(window.addthis_config && window.addthis_share)) return;
-
-    // move created shareThis into right container
-    const newParent = document.getElementById('shareThis'),
-      oldParent = document.getElementById('pasteShareThis');
-
-    while (oldParent.childNodes.length > 0) {
-      newParent.appendChild(oldParent.childNodes[0]);
-    }
-  }
-
   setType(type: string) {
     this.setTipType = type;
     this.show();
