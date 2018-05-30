@@ -1,28 +1,46 @@
 <div class="wrap">
-  <div class="close" (click)="dismiss.emit()"></div>
+  <div class="close" (click)="closeWindow()"></div>
   <div *ngIf="selectedWallet">
     <div>
-      <p>Every time to bring an active new member into the Merit community, your
+      <p class="shareDescription">Every time to bring an active new member into the Merit community, your
         <strong>growth score</strong> will increase. There is a growth lottery every minute, and a higher score earns you a higher
         chance to win.</p>
-      <p>
-        <strong>Select wallet for invite link generation</strong>
-      </p>
-      <div>
-        <app-select *ngIf="selectedWallet" (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async"
-          cssClass="ui-input ui-input--select ui-input--form"></app-select>
+
+      <div class="walletSelection">
+        <ng-container *ngIf="(wallets$ | async)?.length > 1; else singleWallet">
+          <p>
+            <strong>Select wallet for invite link generation</strong>
+          </p>
+          <app-select *ngIf="selectedWallet" (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async"
+            cssClass="ui-input ui-input--select ui-input--form"></app-select>
+        </ng-container>
+        <ng-template #singleWallet>
+          <p>
+            <strong>Invite link will be generated from
+              <span class="highlight">{{shareAlias}}</span>
+            </strong>
+          </p>
+        </ng-template>
       </div>
     </div>
-    <ul>
+    <ul class="shareToolsList">
       <li>
         <ng-container *ngIf="selectedWallet">
-          copy direct invite link {{selectedWallet.alias}}
+          <span class="cation">
+            <strong>1.</strong>
+            {{shareAlias}}
+          </span>
+          <button class="ui-button ui-button--xs ui-button--blue" [clip]="shareLink" (click)="onCopy()">copy invite link</button>
         </ng-container>
       </li>
-      <li>Tell your friends your share code:
-        <div id="pasteShareThis" class="shareBox addthis_share">{{initAddThis()}}</div>
+      <li>
+        <span class="cation">
+          <strong>2.</strong>
+          Share now
+        </span>
+        <span id="pasteShareThis" class="shareBox addthis_share">{{initAddThis()}}</span>
       </li>
     </ul>
   </div>
 </div>
-<div class="overlay" (click)="dismiss.emit()"></div>
+<div class="overlay" (click)="closeWindow()"></div>
