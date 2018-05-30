@@ -13,7 +13,7 @@
 .wrap
   z-index: 100
   position: fixed
-  max-width: 500px
+  max-width: 560px
   max-height: 400px
   width: 100%
   height: 100%
@@ -25,7 +25,7 @@
   bottom: 20%
   margin: auto
   border-radius: 10px
-  padding: 40px 20px 0
+  padding: 60px 20px 0
   .close
     position: absolute
     width: 30px
@@ -47,3 +47,19 @@
       transform: rotate(45deg)
     &:after
       transform: rotate(-45deg)
+  .shareDescription
+    +font(300, 14px, 18px)
+    margin-bottom: 15px
+  .highlight
+    color: $blue
+  .walletSelection
+    margin-bottom: 20px
+    p
+      margin-bottom: 10px
+  .shareToolsList
+    li
+      margin-bottom: 20px
+      display: flex
+      align-items: center
+      .cation
+        margin-right: 10px

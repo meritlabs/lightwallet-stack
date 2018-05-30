@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { selectWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
@@ -7,6 +7,7 @@ import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
 import 'rxjs/add/operator/toPromise';
 import { filter, take, tap } from 'rxjs/operators';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 
 declare global {
   interface Window {
@@ -21,14 +22,16 @@ declare global {
   styleUrls: ['./share-box.component.sass'],
 })
 export class ShareBoxComponent implements OnInit {
-  constructor(private store: Store<IRootAppState>) {}
+  constructor(private store: Store<IRootAppState>, private toastCtrl: ToastControllerService) {}
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   selectedWallet: DisplayWallet;
+  shareAlias: string;
+  shareLink: string;
 
   shareTitle: string = 'Merit - digital currency for humans.';
   shareUrl: string = 'wallet.merit.me';
-  shareText: string = `Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth.\n Get wallet now, your activation code: @`;
+  shareText: string = `Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth.\n Get wallet now, your activation code: `;
 
   @Output() dismiss: EventEmitter<void> = new EventEmitter<void>();
 
@@ -36,22 +39,10 @@ export class ShareBoxComponent implements OnInit {
     const wallets: DisplayWallet[] = await this.wallets$
       .pipe(filter((wallets: DisplayWallet[]) => wallets.length > 0), take(1))
       .toPromise();
-    console.log(wallets);
 
     if (wallets.length > 0) {
       this.selectedWallet = wallets[0];
-    }
-  }
-  ngOnDestroy() {
-    if (!(window.addthis_config && window.addthis_share)) return;
-
-    // move created shareThis into right container
-    const newParent = document.getElementById('shareThis'),
-      oldParent = document.getElementById('pasteShareThis');
-    console.log(oldParent);
-
-    if (oldParent.childNodes.length > 0) {
-      newParent.appendChild(oldParent.childNodes[0]);
+      this.selectWallet(wallets[0]);
     }
   }
 
@@ -65,7 +56,7 @@ export class ShareBoxComponent implements OnInit {
         newParent.appendChild(oldParent.childNodes[0]);
       }
       if (window.addthis_config && window.addthis_share) {
-        let alias = this.selectedWallet.alias;
+        let alias = this.shareAlias;
 
         window.addthis_config.ui_email_title = this.shareTitle;
         window.addthis_config.ui_email_note = this.shareText + alias;
@@ -91,5 +82,27 @@ export class ShareBoxComponent implements OnInit {
 
   selectWallet(wallet: DisplayWallet) {
     this.selectedWallet = wallet;
+    if (wallet.alias) {
+      this.shareAlias = `@${wallet.alias}`;
+    } else {
+      this.shareAlias = wallet.referrerAddress;
+    }
+    this.shareLink = `${window.location.origin}?invite=${this.shareAlias}`;
+  }
+
+  onCopy() {
+    this.toastCtrl.success('Share link copied to clipboard!');
+  }
+  closeWindow() {
+    if (!(window.addthis_config && window.addthis_share)) return;
+
+    // move created shareThis into right container
+    const newParent = document.getElementById('shareThis'),
+      oldParent = document.getElementById('pasteShareThis');
+
+    while (oldParent.childNodes.length > 0) {
+      newParent.appendChild(oldParent.childNodes[0]);
+      this.dismiss.emit();
+    }
   }
 }
