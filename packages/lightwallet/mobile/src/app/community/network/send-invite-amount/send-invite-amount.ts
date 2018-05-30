@@ -27,6 +27,7 @@ export class SendInviteAmountView {
   public link:string;
   copied: boolean;
   showShareButton: boolean;
+  amountFocused: boolean;
 
   @ViewChild('amount') amountInput: ElementRef;
 
