@@ -89,6 +89,7 @@ export class HistoryView {
   }
 
   selectWallet() {
+    if (this.wallets.length == 1) return; 
     const modal = this.modalCtrl.create('SelectWalletModal', {
       selectedWallet: this.wallet,
       availableWallets: this.wallets

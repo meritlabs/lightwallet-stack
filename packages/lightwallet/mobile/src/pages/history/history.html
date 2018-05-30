@@ -15,7 +15,7 @@
         <h2>{{wallet?.name}}</h2>
         <p *ngIf="wallet?.rootAlias">@{{wallet?.rootAlias}}</p>
 
-        <ion-icon name="ios-arrow-down" item-end></ion-icon>
+        <ion-icon name="ios-arrow-down" item-end [hidden]="wallets?.length == 1"></ion-icon>
 
   </button>
 
