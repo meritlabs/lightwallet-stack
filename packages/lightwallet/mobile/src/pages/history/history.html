@@ -13,6 +13,7 @@
            <img src="assets/img/icons/wallet.svg">
         </ion-avatar>
         <h2>{{wallet?.name}}</h2>
+        <p *ngIf="wallet?.rootAlias">@{{wallet?.rootAlias}}</p>
 
         <ion-icon name="ios-arrow-down" item-end></ion-icon>
 
