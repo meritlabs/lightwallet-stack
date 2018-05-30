@@ -27,6 +27,7 @@ export class SendInviteAmountView {
   public link:string;
   copied: boolean;
   showShareButton: boolean;
+  amountFocused: boolean;
 
   @ViewChild('amount') amountInput: ElementRef;
 
@@ -80,6 +81,7 @@ export class SendInviteAmountView {
       await this.wallet.sendInvite(referral.address, this.formData.amount);
 
       this.link = getEasySendURL(easySend);
+      this.wallet.availableInvites -= this.formData.amount;
 
     } catch (e) {
       console.log(e);
