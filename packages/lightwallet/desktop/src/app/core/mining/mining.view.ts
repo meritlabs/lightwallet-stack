@@ -33,12 +33,15 @@ export class MiningView {
   threadsPerWorker: number = 1;
   miningLabel: string;
   updateTimer: any; 
+  statTimer: any; 
   minCores: number = 1;
   maxCores: number;
   cores: number;
   miningSettings: any;
   pools: any[];
   selectedPool: any;
+  mining: boolean = false;
+  stats: any;
 
 
   constructor(
@@ -48,7 +51,6 @@ export class MiningView {
     private addressService: AddressService) {
 
     this.maxCores = ElectronService.numberOfCores();
-
     this.updateLabel();
   }
 
@@ -85,6 +87,8 @@ export class MiningView {
           },
         ];
         this.selectedPool = this.pools[0];
+        this.updateStats();
+
       }
     } catch (err) {
       if (err.text)
@@ -156,19 +160,38 @@ export class MiningView {
     this.persistenceService.setMiningSettings(this.miningSettings);
   }
 
+  stopMining() {
+    if(!this.isStopping()) {
+      console.log("stats", this.stats);
+      ElectronService.stopMining();
+      this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
+      this.statTimer = setTimeout(this.updateStats.bind(this), 1000);
+    }
+  }
+
+  startMining() {
+    this.computeUtilization();
+
+    ElectronService.startMining(this.selectedPool.url, this.address, this.workers, this.threadsPerWorker);
+    this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
+    this.statTimer = setTimeout(this.updateStats.bind(this), 1000);
+  }
+
+  updateStats() {
+    this.mining = this.isMining();
+    this.stats = ElectronService.getMiningStats();
+    if(this.mining) {
+      this.statTimer = setTimeout(this.updateStats.bind(this), 1000);
+    }
+  }
+
   toggleMining() {
     this.saveSettings();
 
     if(this.isMining()) { 
-      if(!this.isStopping()) {
-        ElectronService.stopMining();
-        this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
-      }
+      this.stopMining();
     } else {
-      this.computeUtilization();
-
-      ElectronService.startMining(this.selectedPool.url, this.address, this.workers, this.threadsPerWorker);
-      this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
+      this.startMining();
     }
   }
 

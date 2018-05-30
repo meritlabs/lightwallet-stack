@@ -20,4 +20,8 @@
         {{miningLabel}}
     </button>
   </p>
+  <div *ngIf="mining">
+      <div class="ui-label">Stats</div>
+      <h2>Attempts {{stats.total.attempts}}</h2>
+  </div>
 </div>
