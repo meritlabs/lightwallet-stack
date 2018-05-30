@@ -26,21 +26,40 @@ export class ElectronService {
     return miner;
   }
 
-  static startMining(address: string, workers: number, threadsPerWorker: number) {
+  static isMining() {
     let m = ElectronService.getMinerInstance();
-    if(!m) { return; } 
+    if(!m) { return false; } 
 
-    let url = 'stratum+tcp://pool.merit.me:3333';
+    return m.IsStratumRunning() || m.IsMinerRunning();
+  }
+
+  static isStopping() {
+    let m = ElectronService.getMinerInstance();
+    if(!m) { return false; } 
+    return m.IsStratumStopping() || m.IsMinerStopping();
+  }
+
+  static startMining(url:string, address: string, workers: number, threadsPerWorker: number) {
+    let m = ElectronService.getMinerInstance();
+    if(!m) { return false; } 
+    
     m.ConnectToStratum(url, address);
     m.StartMiner(workers, threadsPerWorker);
+    return true;
   }
 
   static stopMining() {
     let m = ElectronService.getMinerInstance();
-    if(!m) { return; } 
+    if(!m) { return false; } 
 
     m.DisconnectStratum();
     m.StopMiner();
+    return true;
   }
 
+  static numberOfCores() {
+    let m = ElectronService.getMinerInstance();
+    if(!m) { return false; } 
+    return m.NumberOfCores();
+  }
 }
