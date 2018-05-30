@@ -93,6 +93,8 @@ export class HistoryView {
     modal.onDidDismiss((wallet) => {
       if (wallet) {
         this.wallet = wallet;
+        this.offset = 0;
+        this.loadHistory();
       }
     });
     return modal.present();
