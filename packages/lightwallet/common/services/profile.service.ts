@@ -15,6 +15,23 @@ export class ProfileService {
 
   public wallets: Array<MeritWalletClient>;
 
+  public communityInfo: {
+    communitySize: number,
+    networkValue: number,
+    miningRewards: number,
+    growthRewards: number,
+    wallets: Array<{
+      name: string,
+      alias: string,
+      referralAddress: string,
+      confirmed: boolean,
+      communitySize: number,
+      miningRewards: number,
+      growthRewards: number,
+      color: string
+    }>;
+  };
+
   constructor(
     private persistenceService: PersistenceService,
     private logger: LoggerService,
@@ -204,6 +221,65 @@ export class ProfileService {
 
   closeCommunityPopup() {
     return this.persistenceService.closeCommunityPopup();
+  }
+
+  async refreshCommunityInfo() {
+    await this.refreshData();
+    const wallets = await this.getWallets();
+
+    let network = {
+      communitySize: 0,
+      networkValue: 0,
+      miningRewards: 0,
+      growthRewards: 0,
+      wallets: wallets.map(w => { return {
+        name: w.name,
+        alias: w.rootAlias,
+        referralAddress: w.rootAddress.toString(),
+        confirmed: w.confirmed,
+        communitySize: 0,
+        miningRewards: 0,
+        growthRewards: 0,
+        color: w.color
+      }})
+    };
+
+    const addresses = network.wallets.map(w => w.referralAddress);
+
+    if (addresses.length) {
+
+      const getCommunitySizes = () => addresses.map(async (a) => {
+        const { referralcount } = await wallets[0].getCommunityInfo(a);
+        let w = network.wallets.find(w => w.referralAddress == a);
+        w.communitySize = referralcount;
+        network.communitySize += referralcount;
+      });
+
+      const getRewards = async () => {
+        const rewards = await this.wallets[0].getRewards(addresses);
+        rewards.forEach(r => {
+          let w = network.wallets.find(w => w.referralAddress == r.address);
+          w.miningRewards = r.rewards.mining;
+          w.growthRewards = r.rewards.ambassador;
+          network.miningRewards += w.miningRewards;
+          network.growthRewards += w.growthRewards;
+        });
+      };
+
+      await Promise.all([getRewards()].concat(getCommunitySizes()));
+    }
+
+    this.communityInfo = network;
+    this.persistenceService.storeCommunityInfo(this.communityInfo);
+    return network;
+  }
+
+  async getCommunityInfo() {
+    if (this.communityInfo == undefined) {
+      this.communityInfo = await this.persistenceService.getCommunityInfo();
+      if (!this.communityInfo) await this.refreshCommunityInfo();
+    }
+    return this.communityInfo;
   }
 
 }
