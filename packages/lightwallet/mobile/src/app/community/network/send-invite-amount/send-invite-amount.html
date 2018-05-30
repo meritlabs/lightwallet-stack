@@ -17,7 +17,10 @@
                             [(ngModel)]="formData.amount"
                             (ngModelChange)="processAmount($event)"
                             placeholder="Enter amount to send"
-                            (keypress)="amountKeypress($event.keyCode)">
+                            (keypress)="amountKeypress($event.keyCode)"
+                            (ionFocus)="amountFocused = true"
+                            (ionBlur)="amountFocused = false"
+                    >
                     </ion-input>
                 </ion-item>
                 <div class="amount-sm">Invite token<span *ngIf="formData.amount >1">s</span></div>
@@ -70,7 +73,7 @@
     </ion-card>
 
 
-    <ion-footer [hidden]="link">
+    <ion-footer [hidden]="link || amountFocused">
         <p [hidden]="!error" class="error">{{ error }}</p>
         <slide-to-action text="Slide to create link" (confirm)="send()" [disabled]="!isSendAllowed()"></slide-to-action>
     </ion-footer>
