@@ -62,4 +62,10 @@ export class ElectronService {
     if(!m) { return false; } 
     return m.NumberOfCores();
   }
+
+  static getMiningStats() {
+    let m = ElectronService.getMinerInstance();
+    if(!m) { return {}; } 
+    return m.MinerStats();
+  }
 }
