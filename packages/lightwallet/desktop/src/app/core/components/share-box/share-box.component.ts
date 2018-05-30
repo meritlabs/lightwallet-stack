@@ -67,6 +67,7 @@ export class ShareBoxComponent implements OnInit {
         window.addthis_config.ui_email_title = this.shareTitle;
         window.addthis_config.ui_email_note = this.shareText + alias;
         window.addthis_share = {
+          url: this.shareLink,
           passthrough: {
             twitter: {
               text: `${this.shareTitle}\n ${this.shareText}${alias}`,
@@ -78,7 +79,7 @@ export class ShareBoxComponent implements OnInit {
             },
             facebook: {
               title: this.shareTitle,
-              text: `${this.shareTitle}\n ${this.shareText}${alias}`,
+              description: `${this.shareTitle}\n ${this.shareText}${alias}`,
             },
           },
         };
