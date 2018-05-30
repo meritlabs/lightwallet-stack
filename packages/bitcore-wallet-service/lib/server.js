@@ -3249,7 +3249,7 @@ WalletService.prototype.getUnlockRequests = async function(opts, cb) {
 WalletService.prototype.getTxHistory = function(opts, cb) {
 
   var self = this;
-  if (opts.skip < 0 || opts.skip == opts.limit) {
+  if (opts.skip < 0) {
     log.warn("Invalid parameters sent to getTxHistory.");
     return cb(Errors.INVALID_PARAMETERS);
   }
