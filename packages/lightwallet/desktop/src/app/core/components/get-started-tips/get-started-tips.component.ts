@@ -29,38 +29,13 @@ export class GetStartedTipsComponent implements OnInit {
   getArticle: boolean;
   syncWallet: boolean;
   copy: string = 'COPY';
-  shareTitle: string = 'Merit - digital currency for humans.';
-  shareUrl: string = 'wallet.merit.me';
-  shareText: string = `Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth.\n Get wallet now, your activation code: @`;
+  showShare: boolean = false;
 
   private _wallets: DisplayWallet[];
 
   @Input()
   set wallets(val: DisplayWallet[]) {
     this._wallets = val;
-
-    if (val && val[0] && window.addthis_config && window.addthis_share) {
-      const { alias } = val[0];
-
-      window.addthis_config.ui_email_title = this.shareTitle;
-      window.addthis_config.ui_email_note = this.shareText + alias;
-      window.addthis_share = {
-        passthrough: {
-          twitter: {
-            text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-          },
-          linkedin: {
-            title: this.shareTitle,
-            text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-            description: `${this.shareTitle}\n ${this.shareText}${alias}`,
-          },
-          facebook: {
-            title: this.shareTitle,
-            text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-          },
-        },
-      };
-    }
   }
 
   get wallets(): DisplayWallet[] {
@@ -113,5 +88,12 @@ export class GetStartedTipsComponent implements OnInit {
 
   copyState() {
     this.copy = 'COPIED';
+  }
+  shareActivate(val) {
+    if (val) {
+      this.showShare = true;
+    } else {
+      this.showShare = false;
+    }
   }
 }
