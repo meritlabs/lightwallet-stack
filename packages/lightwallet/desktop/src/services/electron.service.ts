@@ -33,6 +33,13 @@ export class ElectronService {
     return m.IsStratumRunning() || m.IsMinerRunning();
   }
 
+  static isConnectedToPool() {
+    let m = ElectronService.getMinerInstance();
+    if(!m) { return false; } 
+
+    return m.IsStratumConnected();
+  }
+
   static isStopping() {
     let m = ElectronService.getMinerInstance();
     if(!m) { return false; } 

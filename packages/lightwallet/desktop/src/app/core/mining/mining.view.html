@@ -1,4 +1,5 @@
 <div class="global-settings container--inner">
+  <message-box error [hidden]="!error">{{ error }}</message-box>
   <div class="global-settings__title title--primary">
     <p>Mining</p>
   </div>
@@ -108,7 +109,7 @@
           </div>
           <div class="global-settings__group__item">
               <div class="global-settings__group__item__column global-settings__group__item__column--70">
-                  <label class="ui-label global-settings__group__item__title">Total Shares Submitted/s</label>
+                  <label class="ui-label global-settings__group__item__title">Shares Submitted/s</label>
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
