@@ -149,7 +149,6 @@ export class MiningView {
       this.workers = this.cores;
       this.threadsPerWorker = 1;
     }
-    console.log("cores:", this.cores, "workers:", this.workers, "threads:", this.threadsPerWorker);
   }
 
   setCores(e: any) {
