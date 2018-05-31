@@ -71,35 +71,29 @@ export class NetworkView {
 
   async ionViewWillEnter() {
     if (!this.loading) {
-      this.refreshing = true;
-      this.refreshData();
-      this.refreshing = false;
+      await this.refreshData();
     }
   }
 
   async doRefresh(refresher) {
-    this.refreshing = true;
     await this.refreshData();
-    this.refreshing = false;
     refresher.complete();
   }
 
   private async refreshData() {
     this.refreshing = true;
-    const refreshCommunity = async () => await this.profileService.refreshCommunityInfo();
-    const refreshTotalInfo = async () => {
-      await this.profileService.refreshData();
-      this.wallets = await this.profileService.getWallets();
-
-      this.availableInvites = this.wallets.reduce((number, w) => {
-        return number + w.availableInvites;
-      }, 0);
-
-      this.pendingInvites = this.wallets.reduce((number, w) => {
-        return number + w.pendingInvites;
-      }, 0);
+    const refreshCommunity = async () => {
+      this.network = await this.profileService.refreshCommunityInfo();
     };
-    await Promise.all([refreshTotalInfo(), refreshCommunity(), this.loadRequestsInfo()]);
+    await Promise.all([refreshCommunity(), this.loadRequestsInfo()]);
+
+    this.availableInvites = this.wallets.reduce((number, w) => {
+      return number + w.availableInvites;
+    }, 0);
+
+    this.pendingInvites = this.wallets.reduce((number, w) => {
+      return number + w.pendingInvites;
+    }, 0);
     this.refreshing = false;
   }
 
