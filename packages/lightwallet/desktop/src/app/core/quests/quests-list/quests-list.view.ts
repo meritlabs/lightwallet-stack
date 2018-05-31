@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
 import { Quests, Quest } from '@merit/common/models/quest';
+import { QuestsService } from '@merit/common/services/quests.service';
 
 @Component({
   selector: 'app-quests-list',
@@ -12,14 +13,14 @@ import { Quests, Quest } from '@merit/common/models/quest';
   styleUrls: ['./quests-list.view.sass'],
 })
 export class QuestsListView implements OnInit {
-  constructor(private store: Store<IRootAppState>) {}
+  constructor(private store: Store<IRootAppState>, private service: QuestsService) {}
 
   questState$: Observable<Quests> = this.store.select('quests');
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.service.loadQuests();
+  }
   log(item) {
     console.log(item);
   }
-
-  // quests$: Observable<Quest[]> = this.store.select(selectQuests);
 }
