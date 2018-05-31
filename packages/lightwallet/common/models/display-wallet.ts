@@ -132,7 +132,7 @@ export class DisplayWallet {
     // If we cannot properly fetch data, let's return wallets as-is.
     if (rewardsData && rewardsData.length > 0) {
       this.miningRewardsMicro = sumBy(rewardsData, 'rewards.mining');
-      this.growthRewardsMicro = sumBy(rewardsData, 'rewards.growth');
+      this.growthRewardsMicro = sumBy(rewardsData, 'rewards.ambassador');
       this.formatNetworkInfo();
     }
 
