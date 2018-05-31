@@ -46,6 +46,8 @@ export class HistoryView {
   }
 
   async ionViewWillEnter() {
+    this.wallets = await this.profileService.getWallets();
+    if (this.wallets.length) this.wallet = this.wallets[0];
     await this.loadHistory();
   }
 
@@ -92,7 +94,7 @@ export class HistoryView {
     if (this.wallets.length == 1) return; 
     const modal = this.modalCtrl.create('SelectWalletModal', {
       selectedWallet: this.wallet,
-      availableWallets: this.wallets
+      availableWallets: this.wallets.filter(w => w.confirmed)
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
       if (wallet) {
