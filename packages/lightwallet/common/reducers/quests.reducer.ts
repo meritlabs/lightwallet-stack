@@ -9,10 +9,9 @@ export interface IQuestsState {
   quests: Quest[];
 }
 
-export function QuestsReducer(state: IQuestsState = DEFAULT_STATE, action: Action) {
+export function QuestsReducer(state: IQuestsState = DEFAULT_STATE, action: QuestsAction) {
   switch (action.type) {
     case QuestsAction.LOAD_QUESTS:
-      console.log('called');
       return {
         ...state,
         quests: [...action.payload],
