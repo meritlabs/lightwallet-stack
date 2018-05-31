@@ -113,7 +113,13 @@ export class MeritAchivementClient {
           headers['X-Pubkey'] = privkey.toPublicKey().toString();
           headers['X-Signature'] = sig;
           headers['X-Timestamp'] = ts;
-          headers['X-Debug'] = debug;
+          console.log('----------------HEADERS_________________');
+
+          console.log(`signature: ${sig}`);
+          console.log(`timestamp: ${ts}`);
+          console.log(`pubkey: ${privkey.toPublicKey().toString()}`);
+
+          console.log('----------------HEADERS_________________');
         }
       }
 
