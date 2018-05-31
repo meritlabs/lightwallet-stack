@@ -42,7 +42,7 @@ export class MiningView {
   selectedPool: any;
   mining: boolean = false;
   stats: any;
-
+  error: string;
 
   constructor(
     private store: Store<IRootAppState>,
@@ -110,6 +110,7 @@ export class MiningView {
 
   selectPool(pool: any) {
     if(!pool) return;
+    this.error = null;
     this.selectedPool = pool;
   }
 
@@ -163,6 +164,7 @@ export class MiningView {
   }
 
   stopMining() {
+    this.error = null;
     if(!this.isStopping()) {
       console.log("stats", this.stats);
       ElectronService.stopMining();
@@ -171,18 +173,34 @@ export class MiningView {
     }
   }
 
+  isConnected() {
+    return ElectronService.isConnectedToPool();
+  }
+
   startMining() {
+    this.error = null;
     this.computeUtilization();
 
-    ElectronService.startMining(this.selectedPool.url, this.address, this.workers, this.threadsPerWorker);
-    this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
-    this.statTimer = setTimeout(this.updateStats.bind(this), 1000);
+    try
+    {
+      ElectronService.startMining(this.selectedPool.url, this.address, this.workers, this.threadsPerWorker);
+      this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
+      this.statTimer = setTimeout(this.updateStats.bind(this), 1000);
+    } catch (e) {
+      this.error = "Error Connecting to the Selected Pool";
+    }
   }
 
   updateStats() {
     this.mining = this.isMining();
     this.stats = ElectronService.getMiningStats();
+
     if(this.mining) {
+      if(this.isConnected()) {
+        this.error = null;
+      } else {
+        this.error = "Disconnected from Pool, Reconnecting...";
+      }
       this.statTimer = setTimeout(this.updateStats.bind(this), 1000);
     }
   }
