@@ -91,7 +91,8 @@ export class ReceiveView implements OnInit {
         take(1)
       ).toPromise();
       this.hasUnlockedWallet = wallets.length > 0;
-      this.selectWallet(wallets[0]);
+      this.selectedWallet = wallets[0];
+      await this.onWalletSelect();
     } catch (err) {
       if (err.text)
         console.log('Could not initialize: ', err.text);
@@ -107,10 +108,7 @@ export class ReceiveView implements OnInit {
     this.amountInFiat = `${$event.symbol} ${this.amount * $event.value}`;
   }
 
-  async selectWallet(wallet: DisplayWallet) {
-    if (!wallet) return;
-
-    this.selectedWallet = wallet;
+  async onWalletSelect() {
     this.changeAmount();
     this.address = this.selectedWallet.client.getRootAddress().toString();
     let info = await this.addressService.getAddressInfo(this.address);

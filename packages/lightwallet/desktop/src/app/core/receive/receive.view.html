@@ -22,7 +22,8 @@
       <div *ngIf="wallets$ | async as wallets; else empty">
         <div class="receiveMerit__form__group">
           <label for="" class="ui-label">Receive in</label>
-          <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" class="ui-input ui-input--select ui-input--form"></app-select>
+          <wallet-selctor [wallets]="wallets" [(ngModel)]="selectedWallet" (ngModelChange)="onWalletSelect()"></wallet-selctor>
+          <!--<app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" class="ui-input ui-input&#45;&#45;select ui-input&#45;&#45;form"></app-select>-->
         </div>
 
         <div *ngIf="address" class="receiveMerit__form__group">
