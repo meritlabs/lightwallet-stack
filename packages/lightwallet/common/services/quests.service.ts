@@ -9,6 +9,7 @@ import { LoadQuestsAction } from '@merit/common/reducers/quests.reducer';
 
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { MeritAchivementClient } from '@merit/common/achievements-client/api';
+import { MeritMarketClient } from '@merit/common/merit-market-client/api';
 import { ENV } from '@app/env';
 
 @Injectable()
@@ -21,15 +22,16 @@ export class QuestsService {
     private persistenceService: PersistenceService
   ) {}
 
-  loadQuests(): void {
-    this.persistenceService.getProfile().then(profile => {
-      MeritAchivementClient.fromObj(profile)
-        .get('/achievements/')
-        .then((res, err) => {
-          console.log(res);
-          console.log(err);
-        });
-    });
+  async loadQuests() {
+    let profile = await this.persistenceService.getProfile();
+
+    try {
+      const authData = await MeritAchivementClient.fromObj(profile).login();
+
+      console.log(authData);
+    } catch (e) {
+      console.log(e);
+    }
     // this.http
     //   .get(QuestsService.BASE_URL)
     //   .toPromise()
