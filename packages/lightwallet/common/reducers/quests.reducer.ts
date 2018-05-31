@@ -2,11 +2,7 @@ import { Quest, Quests } from '@merit/common/models/quest';
 import { Action } from '@ngrx/store';
 
 const DEFAULT_STATE = {
-  quests: [
-    new Quest('1', '1', '1', '1', [{ name: '1' }], 1),
-    new Quest('2', '2', '2', '2', [{ name: '2' }], 2),
-    new Quest('3', '3', '3', '3', [{ name: '3' }], 3),
-  ],
+  quests: [],
 };
 
 export interface IQuestsState {
@@ -15,22 +11,29 @@ export interface IQuestsState {
 
 export function QuestsReducer(state: IQuestsState = DEFAULT_STATE, action: Action) {
   switch (action.type) {
-    case QUEST_ACTION.LOAD_QUESTS:
+    case QuestsAction.LOAD_QUESTS:
+      console.log('called');
       return {
         ...state,
-        quests: [...state.quests],
+        quests: [...action.payload],
       };
     default:
       return state;
   }
 }
 
-export namespace QUEST_ACTION {
+export namespace QuestsAction {
   export const LOAD_QUESTS = 'LOAD_QUESTS';
 }
 
-export class LoadQuest implements Action {
-  readonly type = QUEST_ACTION.LOAD_QUESTS;
-
-  constructor(public payload: Quest) {}
+export interface LoadQuestsAction extends Action {
+  payload: Quest[];
 }
+
+export class LoadQuestsAction implements Action {
+  readonly type = QuestsAction.LOAD_QUESTS;
+
+  constructor(public payload: Quest[]) {}
+}
+
+export type QuestsAction = LoadQuestsAction;
