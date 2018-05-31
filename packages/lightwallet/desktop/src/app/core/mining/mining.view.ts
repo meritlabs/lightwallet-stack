@@ -81,10 +81,13 @@ export class MiningView {
             name: 'Parachute Pool',
             url: 'stratum+tcp://parachute.merit.me:3333'
           },
+          /*
+           * TODO : Add support for custom pools
           {
             name: 'Custom',
             url: ''
           },
+           */
         ];
         this.selectedPool = this.pools[0];
         this.updateStats();
