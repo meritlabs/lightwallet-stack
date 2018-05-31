@@ -2,26 +2,124 @@
   <div class="global-settings__title title--primary">
     <p>Mining</p>
   </div>
- <div class="ui-label">Select Wallet</div>
- <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+  <div [hidden]="mining">
+    <div class="ui-label">Select Wallet</div>
+    <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async" cssClass="ui-input ui-input--select ui-input--form"></app-select>
 
- <div class="ui-label">Select Mining Pool</div>
- <app-select (selectionEvent)="selectPool($event)" [selected]="selectedPool" [input]="pools" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+    <div class="ui-label">Select Mining Pool</div>
+    <app-select (selectionEvent)="selectPool($event)" [selected]="selectedPool" [input]="pools" cssClass="ui-input ui-input--select ui-input--form"></app-select>
 
- <div class="ui-label">CPU Utilization</div>
-  
-  <div class="range-slider">
-      <input class="range-slider-range"  type="range" min="{{minCores}}" max="{{maxCores}}" value="{{cores}}" (change)="setCores($event)" step="1"/>
-      <output class="range-slider-value" (input)="cores">{{cores}}</output>
+    <div class="ui-label">CPU Utilization</div>
+    
+    <div class="ui-label range-slider">
+        <input class="range-slider-range"  type="range" min="{{minCores}}" max="{{maxCores}}" value="{{cores}}" (change)="setCores($event)" step="1"/>
+        <output class="range-slider-value" (input)="cores">{{cores}}</output>
+    </div>
   </div>
-  <br/>
-  <p>
+  <div [hidden]="!mining">
+      <div class="global-settings__group">
+          <label class="ui-label global-settings__group__title">Summary</label>
+          <div class="global-settings__group__item">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                  <label class="ui-label global-settings__group__item__title">Wallet</label>
+              </div>
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+                  <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{selectedWallet.name}}</label>
+              </div>
+          </div>
+          <div class="global-settings__group__item">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                  <label class="ui-label global-settings__group__item__title">Pool Name</label>
+              </div>
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+                  <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{selectedPool.name}}</label>
+              </div>
+          </div>
+          <div class="global-settings__group__item">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                  <label class="ui-label global-settings__group__item__title">Pool Url</label>
+              </div>
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+                  <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{selectedPool.url}}</label>
+              </div>
+          </div>
+          <div class="global-settings__group__item">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                  <label class="ui-label global-settings__group__item__title">CPU Threads</label>
+              </div>
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+                  <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{cores}}</label>
+              </div>
+          </div>
+      </div>
+      <div class="global-settings__group">
+          <label class="ui-label global-settings__group__title">Total Counts</label>
+          <div class="global-settings__group__item">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                  <label class="ui-label global-settings__group__item__title">Total Attempts</label>
+              </div>
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+                  <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{stats.total.attempts + stats.current.attempts}}</label>
+              </div>
+          </div>
+          <div class="global-settings__group__item">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                  <label class="ui-label global-settings__group__item__title">Total Cycles Found</label>
+              </div>
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+                  <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{stats.total.cycles + stats.current.cycles}}</label>
+              </div>
+          </div>
+          <div class="global-settings__group__item">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                  <label class="ui-label global-settings__group__item__title">Total Shares Submitted</label>
+              </div>
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+                  <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{stats.total.shares + stats.current.shares}}</label>
+              </div>
+          </div>
+      </div>
+      <div class="global-settings__group">
+          <label class="ui-label global-settings__group__title">Mining Rates</label>
+          <div class="global-settings__group__item">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                  <label class="ui-label global-settings__group__item__title">Attempts/s</label>
+              </div>
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+                  <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{stats.total.attempts_per_second}}</label>
+              </div>
+          </div>
+          <div class="global-settings__group__item">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                  <label class="ui-label global-settings__group__item__title">Cycles Found/s</label>
+              </div>
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+                  <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{stats.total.cycles_per_second}}</label>
+              </div>
+          </div>
+          <div class="global-settings__group__item">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                  <label class="ui-label global-settings__group__item__title">Total Shares Submitted/s</label>
+              </div>
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+                  <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{stats.total.shares_per_second}}</label>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="ui-label">
     <button class="ui-button ui-button--blue" (click)="toggleMining()">
         {{miningLabel}}
     </button>
-  </p>
-  <div *ngIf="mining">
-      <div class="ui-label">Stats</div>
-      <h2>Attempts {{stats.total.attempts}}</h2>
   </div>
 </div>
