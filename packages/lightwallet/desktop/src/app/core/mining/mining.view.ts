@@ -198,7 +198,7 @@ export class MiningView {
     if(this.mining) {
       if(this.isConnected()) {
         this.error = null;
-      } else {
+      } else if(!this.isStopping()) {
         this.error = "Disconnected from Pool, Reconnecting...";
       }
       this.statTimer = setTimeout(this.updateStats.bind(this), 1000);
