@@ -9,7 +9,7 @@ import { Common } from '@merit/common/merit-wallet-client/lib/common';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { Logger } from '@merit/common/merit-wallet-client/lib/log';
 
-export interface AchivementClientOptions {
+export interface MeritAchivementOptions {
   baseUrl?: string;
   request?: any;
 }
@@ -22,8 +22,8 @@ export class MeritAchivementClient {
 
   public onAuthenticationError: any;
 
-  constructor(opts: AchivementClientOptions) {
-    this.baseUrl = opts.baseUrl || ENV.achievementApi;
+  constructor(opts: MeritAchivementOptions) {
+    this.baseUrl = opts.baseUrl || ENV.marketApi;
     this.request = opts.request || request;
 
     this.log = Logger.getInstance();
@@ -35,7 +35,7 @@ export class MeritAchivementClient {
 
   static fromObj(obj) {
     let client = new this({
-      baseUrl: obj.baseUrl || ENV.achievementApi,
+      baseUrl: obj.baseUrl || ENV.marketApi,
     });
 
     return client.import(obj.credentials);
@@ -43,10 +43,6 @@ export class MeritAchivementClient {
 
   login() {
     return this._doPostRequest('/sessions');
-  }
-
-  get(url) {
-    return this._doGetRequest(url);
   }
 
   /**
@@ -113,13 +109,7 @@ export class MeritAchivementClient {
           headers['X-Pubkey'] = privkey.toPublicKey().toString();
           headers['X-Signature'] = sig;
           headers['X-Timestamp'] = ts;
-          console.log('----------------HEADERS_________________');
-
-          console.log(`signature: ${sig}`);
-          console.log(`timestamp: ${ts}`);
-          console.log(`pubkey: ${privkey.toPublicKey().toString()}`);
-
-          console.log('----------------HEADERS_________________');
+          headers['X-Debug'] = debug;
         }
       }
 
