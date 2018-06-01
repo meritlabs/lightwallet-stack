@@ -90,29 +90,32 @@
         list-style-type: circle
         font-size: 1.25em
     &_checkbox
-      padding: 30px 0 30px
+      padding: 0px 0 10px
       strong
         font-size: 15px
         position: relative
         top: 2px
       &_wrap
+        display: flex
+        align-items: center
         strong
-          font-size: 1.3em
-        display: block
-        position: relative
-        padding-left: 35px
-        margin-bottom: 12px
-        cursor: pointer
-        font-size: 22px
-        -webkit-user-select: none
-        -moz-user-select: none
-        -ms-user-select: none
-        user-select: none
+          display: block
+          position: relative
+          padding-left: 35px
+          margin-bottom: 12px
+          cursor: pointer
+          font-size: 14px
+          font-size: 400
+          line-height: 20px
+          -webkit-user-select: none
+          -moz-user-select: none
+          -ms-user-select: none
+          user-select: none
         input
           position: absolute
           z-index: 2
           width: 100%
-          height: 30px
+          height: 100%
           cursor: pointer
           opacity: 0
           &:hover ~ .content_checkbox_checkmark
@@ -123,23 +126,26 @@
               display: block
         .content_checkbox_checkmark
           position: absolute
-          top: 0
           left: 0
-          height: 25px
-          width: 25px
+          top: 5px
+          height: 20px
+          width: 20px
+          border-radius: 4px
+          box-shadow: inset 0 0 2px rgba(0,0,0, .2)
           background-color: #eee
           &:after
-            left: 9px
-            top: 5px
+            left: 7px
+            top: 3px
             width: 5px
-            height: 10px
+            height: 8px
             border: solid white
-            border-width: 0 3px 3px 0
+            border-width: 0 2px 2px 0
             -webkit-transform: rotate(45deg)
             -ms-transform: rotate(45deg)
             transform: rotate(45deg)
     &_nextbutton
+      padding-top: 30px
       text-align: center
 
 .ui-input__group__tipbox
-  margin-bottom: 30px
+  margin-bottom: 10px
