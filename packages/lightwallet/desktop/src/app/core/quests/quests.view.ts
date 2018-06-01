@@ -15,6 +15,8 @@ export class QuestsView implements OnInit {
   async ngOnInit() {
     let profile = await this.persistenceService.getProfile();
 
+    console.log(profile);
+
     try {
       const authData = await MeritAchivementClient.fromObj(profile).login();
 
