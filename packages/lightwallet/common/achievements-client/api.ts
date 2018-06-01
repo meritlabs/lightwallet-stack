@@ -23,7 +23,7 @@ export class MeritAchivementClient {
   public onAuthenticationError: any;
 
   constructor(opts: MeritAchivementOptions) {
-    this.baseUrl = opts.baseUrl || ENV.marketApi;
+    this.baseUrl = opts.baseUrl || ENV.achievementApi;
     this.request = opts.request || request;
 
     this.log = Logger.getInstance();
@@ -35,7 +35,7 @@ export class MeritAchivementClient {
 
   static fromObj(obj) {
     let client = new this({
-      baseUrl: obj.baseUrl || ENV.marketApi,
+      baseUrl: obj.baseUrl || ENV.achievementApi,
     });
 
     return client.import(obj.credentials);
