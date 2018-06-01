@@ -23,36 +23,53 @@ import { AddressService } from '@merit/common/services/address.service';
 @Component({
   selector: 'view-unlock',
   templateUrl: './unlock.view.html',
-  styleUrls: ['./unlock.view.sass']
+  styleUrls: ['./unlock.view.sass'],
 })
 export class UnlockComponent {
   formData: FormGroup = this.formBuilder.group({
-    inviteCode: ['', [Validators.required, Validators.minLength(3)], [AddressValidator.validateAddress(this.mwcService)]],
-    alias: ['', [Validators.required, Validators.minLength(3)], [AddressValidator.validateAliasAvailability(this.mwcService)]]
+    inviteCode: [
+      '',
+      [Validators.required, Validators.minLength(3)],
+      [AddressValidator.validateAddress(this.mwcService)],
+    ],
+    alias: [
+      '',
+      [Validators.required, Validators.minLength(3)],
+      [AddressValidator.validateAliasAvailability(this.mwcService)],
+    ],
   });
 
   easyReceipt: EasyReceipt;
   creatingWallet: boolean;
   showAgreement: boolean;
   showGuide: boolean = !('showGuide' in localStorage && localStorage.getItem('showGuide') === 'false');
-  userAgreement: boolean;
+  userAgreement: object = {
+    activation: false,
+    mnemonic: false,
+  };
   invite = '';
 
-  get inviteCode() { return this.formData.get('inviteCode'); }
-  get alias() { return this.formData.get('alias'); }
+  get inviteCode() {
+    return this.formData.get('inviteCode');
+  }
+  get alias() {
+    return this.formData.get('alias');
+  }
 
-  constructor(private formBuilder: FormBuilder,
-              private mwcService: MWCService,
-              private walletService: WalletService,
-              private appSettings: AppSettingsService,
-              private pushNotificationsService: PushNotificationsService,
-              private logger: LoggerService,
-              private router: Router,
-              private store: Store<IRootAppState>,
-              private easyReceiveService: EasyReceiveService,
-              private addressService: AddressService,
-              private loadingCtrl: Ng4LoadingSpinnerService,
-              private toastCtrl: ToastControllerService) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private mwcService: MWCService,
+    private walletService: WalletService,
+    private appSettings: AppSettingsService,
+    private pushNotificationsService: PushNotificationsService,
+    private logger: LoggerService,
+    private router: Router,
+    private store: Store<IRootAppState>,
+    private easyReceiveService: EasyReceiveService,
+    private addressService: AddressService,
+    private loadingCtrl: Ng4LoadingSpinnerService,
+    private toastCtrl: ToastControllerService
+  ) {}
 
   async ngOnInit() {
     const receipts = await this.easyReceiveService.getPendingReceipts();
@@ -96,10 +113,12 @@ export class UnlockComponent {
       this.store.dispatch(new RefreshWalletsAction());
 
       // update state so we're allowed to access the dashboard
-      this.store.dispatch(new UpdateAppAction({
-        loading: false,
-        authorized: true
-      }));
+      this.store.dispatch(
+        new UpdateAppAction({
+          loading: false,
+          authorized: true,
+        })
+      );
 
       // good to go
       this.loadingCtrl.hide();
@@ -121,5 +140,4 @@ export class UnlockComponent {
       this.loadingCtrl.hide();
     });
   }
-
 }
