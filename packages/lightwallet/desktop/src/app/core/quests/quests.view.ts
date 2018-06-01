@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { PersistenceService } from '@merit/common/services/persistence.service';
+import { MeritAchivementClient } from '@merit/common/achievements-client/api';
+import { MeritMarketClient } from '@merit/common/merit-market-client/api';
+import { ENV } from '@app/env';
 
 @Component({
   selector: 'app-quests',
@@ -6,7 +10,17 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./quests.view.sass'],
 })
 export class QuestsView implements OnInit {
-  constructor() {}
+  constructor(private persistenceService: PersistenceService) {}
 
-  ngOnInit() {}
+  async ngOnInit() {
+    let profile = await this.persistenceService.getProfile();
+
+    try {
+      const authData = await MeritAchivementClient.fromObj(profile).login();
+
+      console.log(authData);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 }
