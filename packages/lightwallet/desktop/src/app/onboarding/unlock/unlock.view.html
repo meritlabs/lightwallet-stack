@@ -117,7 +117,8 @@
         </div>
       </div>
       <div class="unlock__form__group">
-        <button type="button" role="button" class="ui-button ui-button--blue ui-button--with-arrow" [disabled]="formData.invalid || formData.pending" (click)="showAgreement = !showAgreement">Next</button>
+        <button type="button" role="button" class="ui-button ui-button--blue ui-button--with-arrow" [disabled]="formData.invalid || formData.pending"
+          (click)="showAgreement = !showAgreement">Next</button>
       </div>
     </form>
     <div class="userAgreement" *ngIf="showAgreement">
@@ -139,29 +140,29 @@
           </p>
         </div>
         <div class="content_warning">
-          <ul>
-            <li>
-              The wallet will generate a 12-word passphrase for you; it will be displayed on the next page.
-            </li>
-            <li>
-              Your wallet will be created, but will not be activated until you are sent an invite token.
-            </li>
-            <li>
-              Once your wallet has been activated, you will be able to send and receive Merit.
-            </li>
-          </ul>
-        </div>
-        <div class="content_checkbox">
-          <div class="ui-checkbox">
-            <label class="content_checkbox_wrap">
-              <strong>I understand. Let's go!</strong>
-              <input type="checkbox" [(ngModel)]="userAgreement">
-              <span class="content_checkbox_checkmark"></span>
-            </label>
+          <div class="content_checkbox">
+            <div class="ui-checkbox">
+              <label class="content_checkbox_wrap">
+                <strong>The wallet will generate a 12-word passphrase for you; it will be displayed on the next page.</strong>
+                <input type="checkbox" [(ngModel)]="userAgreement.mnemonic">
+                <span class="content_checkbox_checkmark"></span>
+              </label>
+            </div>
+          </div>
+          <div class="content_checkbox">
+            <div class="ui-checkbox">
+              <label class="content_checkbox_wrap">
+                <strong>Your wallet will be created, but will not be activated until your invite is confirmed by the person who invited
+                  you. Once your invite is confirmed, it will take a few minutes to clear as a transaction on the blockchain.</strong>
+                <input type="checkbox" [(ngModel)]="userAgreement.activation">
+                <span class="content_checkbox_checkmark"></span>
+              </label>
+            </div>
           </div>
         </div>
         <div class="content_nextbutton">
-          <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="!userAgreement" (click)="onSubmit()">Show me my passphrase</button>
+          <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="!userAgreement.mnemonic || !userAgreement.activation"
+            (click)="onSubmit()">Show me my passphrase</button>
         </div>
       </div>
     </div>
