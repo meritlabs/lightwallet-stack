@@ -104,12 +104,23 @@ export class MeritAchivementClient {
           privkey = this.credentials.getDerivedXPrivKey('').deriveChild('m/0/0').privateKey;
 
           const debug = !ENV.production;
+          console.log(`=====\n ${debug} \n =======`);
           const [sig, ts] = this._signRequest(url, privkey, debug);
 
           headers['X-Pubkey'] = privkey.toPublicKey().toString();
           headers['X-Signature'] = sig;
           headers['X-Timestamp'] = ts;
-          headers['X-Debug'] = debug;
+
+          if (debug) {
+            headers['X-Debug'] = true;
+          }
+          console.log('----------------HEADERS_________________');
+
+          console.log(`signature: ${sig}`);
+          console.log(`timestamp: ${ts}`);
+          console.log(`pubkey: ${privkey.toPublicKey().toString()}`);
+
+          console.log('----------------HEADERS_________________');
         }
       }
 
@@ -218,11 +229,15 @@ export class MeritAchivementClient {
    */
   private _signRequest = function(path, privkey, debug): [string, number] {
     const timestamp = Date.now();
-    let message = path;
+    let message = '/achievement-engine/api/v1' + path;
 
     if (!debug) {
       message += timestamp;
     }
+
+    console.log("========");
+    console.log(`MSG: ${message}`);
+    console.log("========");
 
     const signature = Bitcore.Message(message).sign(privkey);
 
