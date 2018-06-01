@@ -18,9 +18,20 @@ export class QuestsView implements OnInit {
     console.log(profile);
 
     try {
-      const authData = await MeritAchivementClient.fromObj(profile).login();
+      const authDataMarket = await MeritMarketClient.fromObj(profile).login();
+      console.log(profile);
 
-      console.log(authData);
+      console.log(`Market`);
+      console.log(authDataMarket);
+    } catch (e) {
+      console.log(e);
+    }
+
+    try {
+      const authData = await MeritAchivementClient.fromObj(profile).login();
+      console.log(profile);
+
+      console.log(`Achivements: ${authData}`);
     } catch (e) {
       console.log(e);
     }
