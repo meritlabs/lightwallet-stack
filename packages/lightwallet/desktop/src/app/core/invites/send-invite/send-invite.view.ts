@@ -44,7 +44,8 @@ export class SendInviteView {
   formData: FormGroup = this.formBuilder.group({
     address: ['', [], [SendValidator.validateAddress(this.mwcService, true)]],
     type: ['easy'],
-    password: ['']
+    password: [''],
+    destination: ['', SendValidator.validateGlobalSendDestination]
   });
 
   showEmailMessage = false;
