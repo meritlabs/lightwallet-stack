@@ -1,6 +1,5 @@
 <ng4-loading-spinner></ng4-loading-spinner>
-<app-toolbar (shareActivate)="shareActivate(true)"></app-toolbar>
-<app-share-box *ngIf="showShare" (dismiss)="shareActivate(false)"></app-share-box>
+<app-toolbar></app-toolbar>
 <div class="container--fluid dashboard">
   <div class="dashboard__aside">
     <ul class="dashboard__aside__wrap">
@@ -10,9 +9,6 @@
         <ng-container *ngIf="item.badge | async as badge">
           <span class="badge" *ngIf="badge > 0">{{ badge }}</span>
         </ng-container>
-      </li>
-      <li class="dashboard__aside__item dashboard__aside__item--blue" (click)="shareActivate(true)">
-        <merit-icon name="share"></merit-icon> Share my invite
       </li>
     </ul>
     <ul class="dashboard__aside__wrap">
