@@ -52,7 +52,18 @@
     <ng-template #easySend>
       <div class="sendMerit__form__group">
         <label for="destination" class="ui-label">Destination &nbsp;<small>(optional)</small></label>
-        <input id="destination" type="text" class="ui-input ui-input--form ui-input--text" formControlName="destination" placeholder="Phone number or Email address">
+        <div class="ui-input__wrapper">
+          <input id="destination" type="text" class="ui-input ui-input--form ui-input--text" formControlName="destination" placeholder="Phone number or Email address">
+        </div>
+        <div class="input-errors" [hidden]="!destination.dirty || destination.valid">
+          <div [hidden]="!destination.hasError('InvalidDestination')">
+                <span class="tooltip-error">
+                  <span>
+                    Invalid phone number or email
+                  </span>
+                </span>
+          </div>
+        </div>
       </div>
       <div class="sendMerit__form__group">
         <label class="ui-label" *ngIf="selectedWallet?.status?.availableInvites">Password &nbsp;
