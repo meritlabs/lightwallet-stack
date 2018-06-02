@@ -519,11 +519,11 @@ Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs,
       id: {
         $gt: minId,
       },
-    }, {
-      readPreference: mongodb.ReadPreference.PRIMARY,
-    }).sort({
+    })
+    .sort({
       id: 1
-    }).toArray(function(err, result) {
+    })
+    .toArray(function(err, result) {
       if (err) return cb(err);
       if (!result) return cb();
       var notifications = _.map(result, function(notification) {
