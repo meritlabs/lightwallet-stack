@@ -15,6 +15,8 @@ var Defaults = Common.Defaults;
 var WalletService = require('./server');
 var Stats = require('./stats');
 
+const request = require('request');
+
 log.debug = log.verbose;
 log.level = 'verbose';
 
@@ -903,6 +905,22 @@ ExpressApp.prototype.start = function(opts, cb) {
     const dummy = [{"code": "USD", "name": "US Dollar", "rate": 0}];
     res.json(dummy);
     res.end();
+  });
+
+  router.post('/v1/globalsend', (req, res) => {
+    getServerWithAuth(req, res, () => {
+      request({
+        method: 'POST',
+        uri: 'http://localhost:8300/globalsend',
+        json: req.body
+      }, (err, response, body) => {
+        if (!error && parseInt(response.statusCode) === 200) {
+          res.send();
+        } else {
+          res.status(400).send();
+        }
+      });
+    });
   });
 
   this.app.use(opts.basePath || '/bws/api', router);
