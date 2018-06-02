@@ -12,9 +12,11 @@ import {
 } from '@merit/common/reducers/wallets.reducer';
 import { AddressService } from '@merit/common/services/address.service';
 import { EasySendService } from '@merit/common/services/easy-send.service';
+import { LoggerService } from '@merit/common/services/logger.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { cleanAddress } from '@merit/common/utils/addresses';
+import { getSendMethodDestinationType } from '@merit/common/utils/destination';
 import { SendValidator } from '@merit/common/validators/send.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
@@ -52,11 +54,13 @@ export class SendInviteView {
   emailSubject;
   emailBody;
 
+  success: boolean;
   easySendUrl: string;
+  easySendDelivered: boolean;
 
   get address() { return this.formData.get('address'); }
-
   get type() { return this.formData.get('type'); }
+  get destination() { return this.formData.get('destination'); }
 
   constructor(private store: Store<IRootAppState>,
               private formBuilder: FormBuilder,
@@ -65,7 +69,8 @@ export class SendInviteView {
               private toastCtrl: ToastControllerService,
               private addressService: AddressService,
               private loader: Ng4LoadingSpinnerService,
-              private easySendService: EasySendService) {}
+              private easySendService: EasySendService,
+              private logger: LoggerService) {}
 
   async ngOnInit() {
     const wallets: DisplayWallet[] = await this.wallets$.pipe(filter((wallets: DisplayWallet[]) => wallets.length > 0), take(1)).toPromise();
@@ -87,10 +92,10 @@ export class SendInviteView {
   }
 
   async sendInvite() {
-    this.easySendUrl = void 0;
+    this.easySendUrl = this.easySendDelivered = this.success = void 0;
     this.loader.show();
 
-    let { address, type, password } = this.formData.getRawValue();
+    let { address, type, password, destination } = this.formData.getRawValue();
 
     const walletClient = this.selectedWallet.client;
 
@@ -102,11 +107,31 @@ export class SendInviteView {
       await walletClient.sendInvite(referral.address);
 
       this.easySendUrl = getEasySendURL(easySend);
+
+      const destinationType = getSendMethodDestinationType(destination);
+
+      if (destination && destinationType) {
+        try {
+          await walletClient.deliverGlobalSend(easySend, {
+            type: SendMethodType.Easy,
+            destination: destinationType,
+            value: destination
+          });
+
+          this.easySendDelivered = true;
+        } catch (err) {
+          this.logger.error('Unable to deliver GlobalSend', err);
+          this.easySendDelivered = false;
+        }
+      }
+
     } else {
       address = cleanAddress(address);
       address = await this.addressService.getAddressInfo(address);
       await walletClient.sendInvite(address.address);
     }
+
+    this.success = true;
 
     try {
       this.store.dispatch(new RefreshOneWalletAction(this.selectedWallet.id, {

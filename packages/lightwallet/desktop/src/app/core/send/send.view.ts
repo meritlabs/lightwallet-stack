@@ -110,6 +110,10 @@ export class SendView implements OnInit {
     return this.formData.get('address');
   }
 
+  get destination() {
+    return this.formData.get('destination');
+  }
+
   canSend: boolean;
   sending: boolean;
   success: boolean;
@@ -384,7 +388,7 @@ export class SendView implements OnInit {
 
     if (txData.sendMethod.type === SendMethodType.Easy) {
       this.easySendUrl = txData.easySendUrl;
-      const destination = this.formData.get('destination').value;
+      const destination = this.destination.value;
       const destinationType = getSendMethodDestinationType(destination);
       if (destination && destinationType) {
         try {
