@@ -90,11 +90,7 @@ export class ShareBoxComponent implements OnInit {
 
   selectWallet(wallet: DisplayWallet) {
     this.selectedWallet = wallet;
-    if (wallet.alias) {
-      this.shareAlias = `@${wallet.alias}`;
-    } else {
-      this.shareAlias = wallet.referrerAddress;
-    }
+    this.shareAlias = wallet.alias || wallet.referrerAddress;
     this.shareLink = getShareLink(this.shareAlias);
   }
 
