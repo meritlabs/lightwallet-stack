@@ -1,6 +1,7 @@
 import { AbstractControl } from '@angular/forms';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { MWCService } from '@merit/common/services/mwc.service';
+import { validateEmail, validatePhoneNumber } from '@merit/common/utils/destination';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 
 export class SendValidator {
@@ -33,7 +34,13 @@ export class SendValidator {
   static validateGlobalSendDestination(control: AbstractControl) {
     const { value } = control;
 
-    if (control.parent && control.parent.get('type').value === 'classic') return null;
+    if (control.parent && control.parent.get('type').value === 'classic')
+      return null;
+
+    if (!validatePhoneNumber(value) && !validateEmail(value))
+      return {
+        InvalidDestination: true
+      };
 
     // validate email / phone number
 
