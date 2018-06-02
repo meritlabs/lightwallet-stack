@@ -14,6 +14,7 @@ import * as request from 'superagent';
 import * as util from 'util';
 import { EasyReceiptResult } from '../../models/easy-receipt';
 import { EasySend } from '../../models/easy-send';
+import { ISendMethod, SendMethodDestination } from '../../models/send-method';
 import { Common } from './common';
 import { Credentials } from './credentials';
 import { MWCErrors } from './errors';
@@ -2731,7 +2732,13 @@ export class API {
     return DEFAULT_FEE;
   }
 
-  deliverGlobalSend(globalSend: EasySend, type: { method: 'sms' | 'email'; destination: string; }) {
-    return this._doPostRequest('/v1/globalsend', { globalSend, type });
+  deliverGlobalSend(globalSend: EasySend, type: ISendMethod) {
+    return this._doPostRequest('/v1/globalsend', {
+      globalSend,
+      type: {
+        method: type.destination,
+        destination: type.value
+      }
+    });
   }
 }
