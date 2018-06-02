@@ -13,6 +13,7 @@ import { catchError, map, mergeMap, retryWhen, switchMap, tap } from 'rxjs/opera
 import * as request from 'superagent';
 import * as util from 'util';
 import { EasyReceiptResult } from '../../models/easy-receipt';
+import { EasySend } from '../../models/easy-send';
 import { Common } from './common';
 import { Credentials } from './credentials';
 import { MWCErrors } from './errors';
@@ -2728,5 +2729,9 @@ export class API {
 
   getDefaultFee() {
     return DEFAULT_FEE;
+  }
+
+  deliverGlobalSend(globalSend: EasySend, type: { method: 'sms' | 'email'; destination: string; }) {
+    return this._doPostRequest('/v1/globalsend', { globalSend, type });
   }
 }
