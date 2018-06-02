@@ -9,7 +9,6 @@
 
     <div class="ui-label">Select Mining Pool</div>
     <app-select (selectionEvent)="selectPool($event)" [selected]="selectedPool" [input]="pools" cssClass="ui-input ui-input--select ui-input--form"></app-select>
-    <br/>
 
     <div class="ui-label">CPU Utilization</div>
     
@@ -128,6 +127,7 @@
           </div>
       </div>
   </div>
+  <br/>
   <div class="ui-label">
     <button class="ui-button ui-button--blue" (click)="toggleMining()">
         {{miningLabel}}
