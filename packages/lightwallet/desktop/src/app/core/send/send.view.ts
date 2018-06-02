@@ -320,7 +320,7 @@ export class SendView implements OnInit {
       }
     }
 
-    this.type.setValue('classic', { emitEvent: false });
+    this.type.setValue('easy', { emitEvent: false });
 
     if (this.availableCurrencies.length) {
       this.selectCurrency(this.availableCurrencies[0]);
