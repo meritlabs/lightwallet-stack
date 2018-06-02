@@ -79,7 +79,7 @@ export class SendView implements OnInit {
     wallet: [null, SendValidator.validateWallet],
     type: [],
     password: [],
-    destination: ['']
+    destination: ['', SendValidator.validateGlobalSendDestination]
   });
 
   get amountMrt() {
