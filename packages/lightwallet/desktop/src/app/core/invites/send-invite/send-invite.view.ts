@@ -42,7 +42,6 @@ export class SendInviteView {
     password: ['']
   });
 
-  showEmailMessage = false;
   emailSubject;
   emailBody;
 
