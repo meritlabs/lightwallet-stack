@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { getEasySendURL } from '@merit/common/models/easy-send';
-import { ISendMethod } from '@merit/common/models/send-method';
+import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletAction, selectConfirmedWallets } from '@merit/common/reducers/wallets.reducer';
 import { AddressService } from '@merit/common/services/address.service';
@@ -18,6 +18,7 @@ import { ISendTxData, SendService } from '@merit/common/services/send.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { cleanAddress, isAddress } from '@merit/common/utils/addresses';
+import { getSendMethodDestinationType } from '@merit/common/utils/destination';
 import { SendValidator } from '@merit/common/validators/send.validator';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { Store } from '@ngrx/store';
@@ -67,6 +68,7 @@ export class SendView implements OnInit {
   availableCurrencies: Array<{ code: string; name: string; rate: number; }>;
 
   easySendUrl: string;
+  easySendDelivered: boolean;
   error: string;
 
   formData: FormGroup = this.formBuilder.group({
@@ -76,7 +78,8 @@ export class SendView implements OnInit {
     feeIncluded: [false],
     wallet: [null, SendValidator.validateWallet],
     type: [],
-    password: []
+    password: [],
+    destination: ['']
   });
 
   get amountMrt() {
@@ -164,9 +167,8 @@ export class SendView implements OnInit {
     .pipe(
       withLatestFrom(this.txData$),
       tap(() => {
-        this.error = null;
         this.sending = true;
-        this.easySendUrl = null;
+        this.error = this.easySendUrl = this.easySendDelivered = null;
       }),
       switchMap(([_, txData]) =>
         fromPromise(this.send(txData))
@@ -209,8 +211,7 @@ export class SendView implements OnInit {
         }
 
         this.receiptLoading = true;
-        this.easySendUrl = void 0;
-        this.success = void 0;
+        this.easySendUrl = this.easySendDelivered = this.success = void 0;
 
         const receipt: Receipt = {
           amount: txData.txp.amount,
@@ -381,7 +382,25 @@ export class SendView implements OnInit {
 
     await this.sendService.send(txData, wallet.client);
 
-    this.easySendUrl = txData.easySendUrl;
+    if (txData.sendMethod.type === SendMethodType.Easy) {
+      this.easySendUrl = txData.easySendUrl;
+      const destination = this.formData.get('destination').value;
+      const destinationType = getSendMethodDestinationType(destination);
+      if (destination && destinationType) {
+        try {
+          await wallet.client.deliverGlobalSend(txData.easySend, {
+            type: SendMethodType.Easy,
+            destination: destinationType,
+            value: destination
+          });
+
+          this.easySendDelivered = true;
+        } catch (err) {
+          this.logger.error('Unable to deliver GlobalSend', err);
+          this.easySendDelivered = false;
+        }
+      }
+    }
 
     setTimeout(() => {
       this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
