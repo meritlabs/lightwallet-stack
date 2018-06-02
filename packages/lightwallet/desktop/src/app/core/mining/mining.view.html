@@ -9,6 +9,7 @@
 
     <div class="ui-label">Select Mining Pool</div>
     <app-select (selectionEvent)="selectPool($event)" [selected]="selectedPool" [input]="pools" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+    <br/>
 
     <div class="ui-label">CPU Utilization</div>
     
@@ -36,6 +37,15 @@
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
                   global-settings__group__item__title--dark">{{selectedPool.name}}</label>
+              </div>
+          </div>
+          <div class="global-settings__group__item">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                  <label class="ui-label global-settings__group__item__title">Pool Website</label>
+              </div>
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+                  <a href="{{selectedPool.website}}" class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{selectedPool.website}}</a>
               </div>
           </div>
           <div class="global-settings__group__item">
