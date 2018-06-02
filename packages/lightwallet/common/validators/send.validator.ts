@@ -29,4 +29,14 @@ export class SendValidator {
 
     return null;
   }
+
+  static validateGlobalSendDestination(control: AbstractControl) {
+    const { value } = control;
+
+    if (control.parent && control.parent.get('type').value === 'classic') return null;
+
+    // validate email / phone number
+
+    return null;
+  }
 }
