@@ -91,6 +91,7 @@ export class MiningView {
         ];
         this.selectedPool = this.pools[0];
         this.updateStats();
+        ElectronService.setAgent();
 
       }
     } catch (err) {

@@ -2,6 +2,8 @@ declare const window: any;
 
 let miner;
 
+declare const WEBPACK_CONFIG: any;
+
 export class ElectronService {
 
   static get isElectronAvailable(): boolean {
@@ -24,6 +26,17 @@ export class ElectronService {
     }
 
     return miner;
+  }
+
+  static setAgent() {
+    let m = ElectronService.getMinerInstance();
+    if(!m) { return false; } 
+
+    let version = "0.0.0";
+    if (typeof WEBPACK_CONFIG !== 'undefined') {
+      version = WEBPACK_CONFIG.VERSION;
+    }
+    m.SetAgent("DLW", version);
   }
 
   static isMining() {
