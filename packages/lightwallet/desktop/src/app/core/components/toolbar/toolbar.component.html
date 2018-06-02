@@ -1,10 +1,3 @@
-<div class="dashboard__toolbar__currency-selector">
-  <!-- <app-select
-    (selectionEvent)="receiveSelection($event)"
-    [selected]="selectedCurrency"
-    [input]="availableCurrencies"
-    style="ui-button ui-button--white ui-button--md ui-button--with-caret ui-button--wallet-icon"></app-select> -->
-</div>
 <div class="balance">
   <ng-container *ngIf="totalsLoading$ | async">
     <loading-spinner></loading-spinner>
@@ -21,6 +14,9 @@
     Get started
   </a>
 </div>
+<div class="divider"></div>
+<div class="shareButtton" (click)="shareActivate.emit()">
+  <merit-icon name="share"></merit-icon> SHARE MY INVITE</div>
 <div class="right">
   <div class="box">
     <button role="button" (click)="refresh()" class="refresh-button" [class.refreshing]="walletsLoading$ | async" [disabled]="walletsLoading$ | async">
