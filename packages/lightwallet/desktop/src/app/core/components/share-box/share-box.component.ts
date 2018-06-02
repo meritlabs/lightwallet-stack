@@ -49,7 +49,7 @@ export class ShareBoxComponent implements OnInit {
     }
   }
 
-  initAddThis() {
+  private initAddThis() {
     if (window.addthis_config && window.addthis_share) {
       // move created shareThis into right container
       const newParent = document.getElementById('pasteShareThis'),
