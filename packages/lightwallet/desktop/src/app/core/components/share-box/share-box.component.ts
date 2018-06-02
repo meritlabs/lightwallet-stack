@@ -3,6 +3,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { getShareLink } from '@merit/common/utils/url';
 import { Store } from '@ngrx/store';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
@@ -14,6 +15,7 @@ declare global {
     addthis_share: any;
   }
 }
+
 
 @Component({
   selector: 'app-share-box',
@@ -32,7 +34,6 @@ export class ShareBoxComponent implements OnInit {
   shareLink: string;
 
   shareTitle: string = 'Merit - digital currency for humans.';
-  shareUrl: string = 'wallet.merit.me';
   shareText: string = `Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth.\n Get wallet now, your activation code: `;
 
   @Output() dismiss: EventEmitter<void> = new EventEmitter<void>();
@@ -94,7 +95,7 @@ export class ShareBoxComponent implements OnInit {
     } else {
       this.shareAlias = wallet.referrerAddress;
     }
-    this.shareLink = `${window.location.origin}?invite=${this.shareAlias}`;
+    this.shareLink = getShareLink(this.shareAlias);
   }
 
   onCopy() {
