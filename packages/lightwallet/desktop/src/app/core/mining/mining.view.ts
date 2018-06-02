@@ -75,10 +75,12 @@ export class MiningView {
         this.pools = [
           {
             name: 'Merit Pool',
+            website: 'https://pool.merit.me',
             url: 'stratum+tcp://pool.merit.me:3333'
           },
           {
             name: 'Parachute Pool',
+            website: 'https://parachute.merit.me',
             url: 'stratum+tcp://parachute.merit.me:3333'
           },
           /*
