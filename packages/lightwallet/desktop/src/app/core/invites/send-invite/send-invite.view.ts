@@ -43,7 +43,7 @@ export class SendInviteView {
 
   formData: FormGroup = this.formBuilder.group({
     address: ['', [], [SendValidator.validateAddress(this.mwcService, true)]],
-    type: ['classic'],
+    type: ['easy'],
     password: ['']
   });
 
