@@ -10,10 +10,10 @@
     <div class="ui-label">Select Mining Pool</div>
     <app-select (selectionEvent)="selectPool($event)" [selected]="selectedPool" [input]="pools" cssClass="ui-input ui-input--select ui-input--form"></app-select>
 
-    <div class="ui-label">CPU Utilization</div>
+    <div class="ui-label">CPU Threads</div>
     
     <div class="ui-label range-slider">
-        <input class="range-slider-range"  type="range" min="{{minCores}}" max="{{maxCores}}" value="{{cores}}" (change)="setCores($event)" step="1"/>
+        <input class="range-slider-range"  type="range" min="{{minCores}}" max="{{maxCores}}" value="{{cores}}" (input)="setCores($event)" (change)="setCores($event)" step="1"/>
         <output class="range-slider-value" (input)="cores">{{cores}}</output>
     </div>
   </div>
