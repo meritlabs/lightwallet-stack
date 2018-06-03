@@ -149,3 +149,36 @@
 
 .ui-input__group__tipbox
   margin-bottom: 10px
+
+.agreement_modal
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  margin: auto
+  width: 100vw
+  height: 100vh
+  max-width: 700px
+  max-height: 600px
+  position: absolute
+  background: $white
+  border-radius: 20px
+  overflow: hidden
+  box-sizing: border-box
+  box-shadow: 0 0 20px rgba(0,0,0, .15)
+  padding: 40px 20px
+  .modal
+    &_title
+      +font(500, 28px, 30px, $dark)
+      text-align: center
+      margin-bottom: 30px
+  .wallet_info
+    +font(400, 20px, 20px, $blue)
+    display: flex
+    justify-content: center
+    align-items: center
+    .ico
+      background: $grey-4
+      width: 40px
+      height: 40px
+      margin-right: 15px
