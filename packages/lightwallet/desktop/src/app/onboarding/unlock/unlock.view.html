@@ -1,6 +1,6 @@
 <ng4-loading-spinner></ng4-loading-spinner>
 <app-slider-guide *ngIf="showGuide" (hideGuide)="hideGuide()"></app-slider-guide>
-<div class="container--fluid unlock">
+<div class="container--fluid unlock" *ngIf="showAgreement">
   <div class="unlock__content container">
     <div class="container--fluid unlock__heading">
       <div class="unlock__heading__picture">
@@ -121,51 +121,6 @@
           (click)="showAgreement = !showAgreement">Next</button>
       </div>
     </form>
-    <div class="userAgreement" *ngIf="showAgreement">
-      <div class="userAgreement_content">
-        <h2 class="content_title">
-          <div class="import_back" (click)="showAgreement = !showAgreement">
-            <img src="/assets/v1/images/backup/back-icon.svg" alt="">
-          </div>Here We Go!
-        </h2>
-        <div class="content_details">
-          <p>Your wallet is going to be created with the following details:</p>
-        </div>
-        <div class="content_details">
-          <p>Invited by:
-            <strong>@{{inviteCode.value}}</strong>
-          </p>
-          <p>Your alias:
-            <strong>@{{alias.value}}</strong>
-          </p>
-        </div>
-        <div class="content_warning">
-          <div class="content_checkbox">
-            <div class="ui-checkbox">
-              <label class="content_checkbox_wrap">
-                <strong>The wallet will generate a 12-word passphrase for you; it will be displayed on the next page.</strong>
-                <input type="checkbox" [(ngModel)]="userAgreement.mnemonic">
-                <span class="content_checkbox_checkmark"></span>
-              </label>
-            </div>
-          </div>
-          <div class="content_checkbox">
-            <div class="ui-checkbox">
-              <label class="content_checkbox_wrap">
-                <strong>Your wallet will be created, but will not be activated until your invite is confirmed by the person who invited
-                  you. Once your invite is confirmed, it will take a few minutes to clear as a transaction on the blockchain.</strong>
-                <input type="checkbox" [(ngModel)]="userAgreement.activation">
-                <span class="content_checkbox_checkmark"></span>
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="content_nextbutton">
-          <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="!userAgreement.mnemonic || !userAgreement.activation"
-            (click)="onSubmit()">Show me my passphrase</button>
-        </div>
-      </div>
-    </div>
     <div class="already-member" [hidden]="!alias.hasError('AliasInUse')">
       <p>Yikes! It looks like you are trying to use an alias that is already taken.</p>
       <p>If you own this alias in another wallet, then you can
@@ -174,3 +129,71 @@
     </div>
   </div>
 </div>
+<div class="agreement_wrap" *ngIf="!showAgreement">
+  <div class="agreement_modal">
+    <div class="modal_title">
+      <p>Your Wallet is about to be created!</p>
+    </div>
+    <div class="wallet_info">
+      <span class="ico ico--wallet"></span>
+      <span class="info_name">@vlgutv{{alias.value}}</span>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<!-- <div class="userAgreement" *ngIf="showAgreement">
+  <div class="userAgreement_content">
+    <h2 class="content_title">
+      <div class="import_back" (click)="showAgreement = !showAgreement">
+        <img src="/assets/v1/images/backup/back-icon.svg" alt="">
+      </div>Here We Go!
+    </h2>
+    <div class="content_details">
+      <p>Your wallet is going to be created with the following details:</p>
+    </div>
+    <div class="content_details">
+      <p>Invited by:
+        <strong>@{{inviteCode.value}}</strong>
+      </p>
+      <p>Your alias:
+        <strong>@{{alias.value}}</strong>
+      </p>
+    </div>
+    <div class="content_warning">
+      <div class="content_checkbox">
+        <div class="ui-checkbox">
+          <label class="content_checkbox_wrap">
+            <strong>The wallet will generate a 12-word passphrase for you; it will be displayed on the next page.</strong>
+            <input type="checkbox" [(ngModel)]="userAgreement.mnemonic">
+            <span class="content_checkbox_checkmark"></span>
+          </label>
+        </div>
+      </div>
+      <div class="content_checkbox">
+        <div class="ui-checkbox">
+          <label class="content_checkbox_wrap">
+            <strong>Your wallet will be created, but will not be activated until your invite is confirmed by the person who invited
+              you. Once your invite is confirmed, it will take a few minutes to clear as a transaction on the blockchain.</strong>
+            <input type="checkbox" [(ngModel)]="userAgreement.activation">
+            <span class="content_checkbox_checkmark"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="content_nextbutton">
+      <button class="ui-button ui-button--blue ui-button--with-arrow" role="button" type="submit" [disabled]="!userAgreement.mnemonic || !userAgreement.activation"
+        (click)="onSubmit()">Show me my passphrase</button>
+    </div>
+  </div>
+</div> -->
