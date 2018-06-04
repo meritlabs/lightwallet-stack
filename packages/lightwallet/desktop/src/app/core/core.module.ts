@@ -22,7 +22,6 @@ import { InvitesComponent } from './community/invites/invites.component';
 import { CoreRoutingModule } from './core-routing.module';
 import { CoreView } from './core.component';
 import { DashboardView } from './dashboard/dashboard.view';
-import { WelcomeGuideComponent } from './dashboard/welcome-guide/welcome-guide.component';
 import { GlobalSettingsView } from './global-settings/global-settings.view';
 import { SettingsPreferencesView } from './global-settings/settings-preferences/settings-preferences.view';
 import { SettingsSessionLogView } from './global-settings/settings-session-log/settings-session-log.view';
@@ -82,7 +81,7 @@ export function getPages() {
     Ng4LoadingSpinnerModule,
     CoreComponentsModule,
   ],
-  declarations: [CoreView, ...getPages(), SendTourComponent, WelcomeGuideComponent, RecordPassphraseComponent],
+  declarations: [CoreView, ...getPages(), SendTourComponent, RecordPassphraseComponent],
   providers: [WalletPasswordGuard],
 })
 export class CoreModule {}
