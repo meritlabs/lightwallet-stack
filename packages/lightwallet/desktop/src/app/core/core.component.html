@@ -1,5 +1,5 @@
 <ng4-loading-spinner></ng4-loading-spinner>
-<ng-container *ngIf="recordPassphrase; else displayApp">
+<ng-container *ngIf="!recordPassphrase; else displayApp">
   <app-record-passphrase [wallets]="wallets$ | async" (dismiss)="onGuideDismiss()"></app-record-passphrase>
 </ng-container>
 <ng-template #displayApp>
