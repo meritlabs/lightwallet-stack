@@ -159,7 +159,7 @@
   width: 100vw
   height: 100vh
   max-width: 700px
-  max-height: 600px
+  max-height: 550px
   position: absolute
   background: $white
   border-radius: 20px
@@ -167,18 +167,62 @@
   box-sizing: border-box
   box-shadow: 0 0 20px rgba(0,0,0, .15)
   padding: 40px 20px
-  .modal
-    &_title
-      +font(500, 28px, 30px, $dark)
-      text-align: center
-      margin-bottom: 30px
+  .modal_title
+    +font(500, 28px, 30px, $EBONY_CLAY)
+    text-align: center
+    margin-bottom: 50px
   .wallet_info
-    +font(400, 20px, 20px, $blue)
+    +font(400, 20px, 20px, $EBONY_CLAY)
     display: flex
     justify-content: center
     align-items: center
+    margin-bottom: 45px
     .ico
-      background: $grey-4
+      background: $EBONY_CLAY
       width: 40px
       height: 40px
       margin-right: 15px
+  .items
+    box-sizing: border-box
+    max-width: 500px
+    width: 100%
+    margin: 0px auto
+    .item
+      display: flex
+      margin-bottom: 15px
+      .title
+        +font(500, 20px, 26px)
+      .ico
+        width: 35px
+        height: 35px
+        margin-right: 20px
+        background: $EBONY_CLAY
+      &--danger
+        color: $CINNABAR
+        .ico
+          background: $CINNABAR
+  .navigation
+    position: absolute
+    width: 100%
+    left: 0px
+    bottom: -15px
+    display: flex
+    justify-content: space-between
+    .item
+      display: flex
+      justify-content: center
+      align-items: center
+      background: $blue
+      height: 80px
+      width: 100%
+      +font(500, 18px, 18px, $white)
+      border: 0px
+      +transition(.1s, linear)
+      &--prev
+        border-right: 1px solid $white
+      &--next
+        border-left: 1px solid $white
+      &:hover
+        box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.2)
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.1)
+ 
