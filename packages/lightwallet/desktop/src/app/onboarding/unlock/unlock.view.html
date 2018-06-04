@@ -130,7 +130,8 @@
   </div>
 </div>
 <div class="agreement_wrap" *ngIf="!showAgreement">
-  <div class="agreement_modal">
+
+  <div class="agreement_modal" *ngIf="currentUnlockDialogStep === 0">
     <div class="modal_title">
       <p>Your Wallet is about to be created!</p>
     </div>
@@ -152,11 +153,40 @@
         </span>
       </div>
       <div class="navigation">
-        <button class="item item--prev">
+        <button class="item item--prev" (click)="unlockStep('prev')">
           Go Back
         </button>
-        <button class="item item--next">
+        <button class="item item--next" (click)="unlockStep('next')">
           Create Wallet
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="agreement_modal" *ngIf="currentUnlockDialogStep === 1">
+    <div class="modal_title">
+      <p>Activate Your Wallet!</p>
+    </div>
+    <div class="wallet_info">
+      <span class="ico ico--wallet"></span>
+      <span class="info_name">@vlgutv{{alias.value}}</span>
+    </div>
+    <div class="items">
+      <div class="item item--danger">
+        <span class="ico ico--lock"></span>
+        <span class="title">
+          Your wallet is currently inactive. As soon as your invite request is confirmed, you’ll be able to send and receive Merit.
+        </span>
+      </div>
+      <div class="item">
+        <span class="ico ico--invite"></span>
+        <span class="title">
+          Remind the person who invited you to accept your request!
+        </span>
+      </div>
+      <div class="navigation">
+        <button class="item item--full" (click)="unlockStep('next')">
+          Got It !
         </button>
       </div>
     </div>

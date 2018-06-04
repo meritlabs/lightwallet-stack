@@ -48,6 +48,7 @@ export class UnlockComponent {
     mnemonic: false,
   };
   invite = '';
+  currentUnlockDialogStep: number = 0;
 
   get inviteCode() {
     return this.formData.get('inviteCode');
@@ -139,5 +140,12 @@ export class UnlockComponent {
       this.router.navigateByUrl('onboarding');
       this.loadingCtrl.hide();
     });
+  }
+  unlockStep(val) {
+    if (val === 'next') {
+      this.currentUnlockDialogStep += 1;
+    } else if (val === 'prev') {
+      this.currentUnlockDialogStep -= 1;
+    }
   }
 }
