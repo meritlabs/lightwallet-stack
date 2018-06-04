@@ -51,7 +51,7 @@ export class ExportWalletView {
       });
     };
 
-    if (this.walletsService.isEncrypted(this.wallet)) {
+    if (this.wallet.isPrivKeyEncrypted()) {
 
       let showPrompt = (highlightInvalid = false) => {
         this.alertController.create({

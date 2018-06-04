@@ -120,8 +120,8 @@ export class VaultsService {
 
     const depositData = {amount: data.amount, address: vault.address, scriptPubKey: vault.scriptPubKey};
     const txp = await this.getDepositTxp(depositData, data.wallet);
-    const pubTxp = await this.walletService.publishTx(data.wallet, txp);
-    const signedTxp = await this.walletService.signTx(data.wallet, pubTxp, password);
+    const pubTxp = await this.walletService.publishTxp(data.wallet, txp);
+    const signedTxp = await this.walletService.signTx(data.wallet, pubTxp);
 
     vault.coins = [signedTxp];
     vault.name = data.vaultName;

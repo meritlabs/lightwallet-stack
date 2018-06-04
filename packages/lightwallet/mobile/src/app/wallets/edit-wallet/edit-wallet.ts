@@ -34,7 +34,7 @@ export class EditWalletView {
   }
 
   ionViewWillEnter() {
-    this.isWalletEncrypted = this.walletService.isEncrypted(this.wallet);
+    this.isWalletEncrypted = this.wallet.isPrivKeyEncrypted();
   }
 
   changeBalanceHidden(isHidden) {

@@ -354,7 +354,7 @@ export class SendAmountView {
 
   private async createTxp() {
 
-    if (this.walletService.isEncrypted(this.selectedWallet) && this.sendMethod.type == SendMethodType.Easy) {
+    if (this.selectedWallet.isPrivKeyEncrypted() && this.sendMethod.type == SendMethodType.Easy) {
       if (this.walletPassword) {
         this.walletService.decrypt(this.selectedWallet, this.walletPassword);
       } else {

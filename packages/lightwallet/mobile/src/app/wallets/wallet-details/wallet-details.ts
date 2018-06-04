@@ -27,6 +27,8 @@ export class WalletDetailsView {
 
   txs: Array<any> = [];
 
+  completeHistory: Array<any>;
+
   constructor(private navCtrl: NavController,
               private app: App,
               private navParams: NavParams,
@@ -108,7 +110,7 @@ export class WalletDetailsView {
   }
 
   private async formatHistory() {
-    this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, await this.persistenceService.getEasySends(), this.contactsService);
+    this.completeHistory = await formatWalletHistory(this.txs, this.wallet, await this.persistenceService.getEasySends(), this.contactsService);
   }
 
   async loadMoreHistory(infiniter) {

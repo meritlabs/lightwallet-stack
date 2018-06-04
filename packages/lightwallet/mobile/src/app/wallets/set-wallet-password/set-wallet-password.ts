@@ -25,7 +25,7 @@ export class SetWalletPasswordView {
               private toastCtrl: ToastControllerService,
               private walletService: WalletService) {
     this.wallet = navParams.get('wallet');
-    this.isWalletEncrypted = this.walletService.isEncrypted(this.wallet);
+    this.isWalletEncrypted = this.wallet.isPrivKeyEncrypted();
   }
 
   async removePassword() {
