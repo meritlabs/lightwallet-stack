@@ -52,6 +52,7 @@ export class MiningView {
 
     this.maxCores = ElectronService.numberOfCores();
     this.updateLabel();
+    this.pools = [];
   }
 
 

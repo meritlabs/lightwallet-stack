@@ -26,7 +26,7 @@
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{selectedWallet.name}}</label>
+                  global-settings__group__item__title--dark">{{selectedWallet ? selectedWallet.name : ''}}</label>
               </div>
           </div>
           <div class="global-settings__group__item">
@@ -35,7 +35,7 @@
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{selectedPool.name}}</label>
+                  global-settings__group__item__title--dark">{{selectedPool? selectedPool.name : ''}}</label>
               </div>
           </div>
           <div class="global-settings__group__item">
@@ -43,8 +43,8 @@
                   <label class="ui-label global-settings__group__item__title">Pool Website</label>
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
-                  <a href="{{selectedPool.website}}" class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{selectedPool.website}}</a>
+                  <a href="{{selectedPool ? selectedPool.website : ''}}" class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{selectedPool ? selectedPool.website : ''}}</a>
               </div>
           </div>
           <div class="global-settings__group__item">
@@ -53,7 +53,7 @@
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{selectedPool.url}}</label>
+                  global-settings__group__item__title--dark">{{selectedPool? selectedPool.url : ''}}</label>
               </div>
           </div>
           <div class="global-settings__group__item">
@@ -74,7 +74,7 @@
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{stats.total.attempts + stats.current.attempts}}</label>
+                  global-settings__group__item__title--dark">{{stats ? stats.total.attempts + stats.current.attempts : ''}}</label>
               </div>
           </div>
           <div class="global-settings__group__item">
@@ -83,7 +83,7 @@
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{stats.total.cycles + stats.current.cycles}}</label>
+                  global-settings__group__item__title--dark">{{stats ? stats.total.cycles + stats.current.cycles : ''}}</label>
               </div>
           </div>
           <div class="global-settings__group__item">
@@ -92,7 +92,7 @@
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{stats.total.shares + stats.current.shares}}</label>
+                  global-settings__group__item__title--dark">{{stats ? stats.total.shares + stats.current.shares : ''}}</label>
               </div>
           </div>
       </div>
@@ -104,7 +104,7 @@
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{stats.total.attempts_per_second}}</label>
+                  global-settings__group__item__title--dark">{{stats ? stats.total.attempts_per_second : ''}}</label>
               </div>
           </div>
           <div class="global-settings__group__item">
@@ -113,7 +113,7 @@
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{stats.total.cycles_per_second}}</label>
+                  global-settings__group__item__title--dark">{{stats ? stats.total.cycles_per_second : ''}}</label>
               </div>
           </div>
           <div class="global-settings__group__item">
@@ -122,7 +122,7 @@
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{stats.total.shares_per_second}}</label>
+                  global-settings__group__item__title--dark">{{stats ? stats.total.shares_per_second : ''}}</label>
               </div>
           </div>
       </div>
