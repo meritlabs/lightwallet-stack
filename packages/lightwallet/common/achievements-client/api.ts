@@ -229,7 +229,7 @@ export class MeritAchivementClient {
    */
   private _signRequest = function(path, privkey, debug): [string, number] {
     const timestamp = Date.now();
-    let message = '/achievement-engine/api/v1' + path;
+    let message = '/achivement-engine/api/v1/sessions';
 
     if (!debug) {
       message += timestamp;
