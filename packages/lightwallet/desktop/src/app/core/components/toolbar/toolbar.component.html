@@ -1,10 +1,3 @@
-<div class="dashboard__toolbar__currency-selector">
-  <!-- <app-select
-    (selectionEvent)="receiveSelection($event)"
-    [selected]="selectedCurrency"
-    [input]="availableCurrencies"
-    style="ui-button ui-button--white ui-button--md ui-button--with-caret ui-button--wallet-icon"></app-select> -->
-</div>
 <div class="balance">
   <ng-container *ngIf="totalsLoading$ | async">
     <loading-spinner></loading-spinner>

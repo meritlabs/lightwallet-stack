@@ -169,8 +169,12 @@ Service.prototype.start = function(done) {
     },
     function(next) {
       // Push notification service
-      var pushNotificationService = new PushNotificationService();
-      pushNotificationService.start(config, next);
+      if (config.pushNotificationsOpts) {
+        var pushNotificationService = new PushNotificationService();
+        pushNotificationService.start(config, next);
+      } else {
+        setImmediate(next);
+      }
     },
     function(next) {
       self._startWalletService(config, next);
