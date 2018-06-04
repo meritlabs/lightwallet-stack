@@ -61,15 +61,21 @@ export class MiningView {
       const wallets = await this.wallets$.pipe(
             filter(w => w.length > 0), take(1)).toPromise();
 
-      this.selectWallet(wallets[0]);
       this.miningSettings = await this.persistenceService.getMinerSettings();
+
+      if(this.miningSettings.selectedWallet) {
+        this.selectWallet(this.miningSettings.selectedWallet, false);
+      } else {
+        this.selectWallet(wallets[0], false);
+      }
+
       if(this.miningSettings.cores) {
         this.cores = this.miningSettings.cores; 
       } else {
         this.cores = Math.max(this.minCores, this.maxCores / 2); 
       }
 
-      if(this.miningSettings.pools) {
+      if(this.miningSettings.selectedPool) {
         this.pools = this.miningSettings.pools;
         this.selectedPool = this.miningSettings.selectedPool;
       } else { 
@@ -94,28 +100,32 @@ export class MiningView {
         ];
         this.selectedPool = this.pools[0];
         this.updateStats();
-        ElectronService.setAgent();
-
       }
+      this.saveSettings();
+      ElectronService.setAgent();
     } catch (err) {
       if (err.text)
         console.log('Could not initialize: ', err.text);
     }
   }
 
-  async selectWallet(wallet: DisplayWallet) {
+  async selectWallet(wallet: DisplayWallet, save: boolean) {
     if (!wallet) return;
 
     this.selectedWallet = wallet;
     this.address = this.selectedWallet.client.getRootAddress().toString();
     let info = await this.addressService.getAddressInfo(this.address);
     this.alias = info.alias;
+    if(save) {
+      this.saveSettings();
+    }
   }
 
   selectPool(pool: any) {
     if(!pool) return;
     this.error = null;
     this.selectedPool = pool;
+    this.saveSettings();
   }
 
   isMining() {
@@ -158,6 +168,7 @@ export class MiningView {
 
   setCores(e: any) {
     this.cores = parseInt(e.target.value);
+    this.saveSettings();
   }
 
   saveSettings() {

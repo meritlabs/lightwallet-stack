@@ -5,7 +5,7 @@
   </div>
   <div [hidden]="mining">
     <div class="ui-label">Select Wallet</div>
-    <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+    <app-select (selectionEvent)="selectWallet($event, true)" [selected]="selectedWallet" [input]="wallets$ | async" cssClass="ui-input ui-input--select ui-input--form"></app-select>
 
     <div class="ui-label">Select Mining Pool</div>
     <app-select (selectionEvent)="selectPool($event)" [selected]="selectedPool" [input]="pools" cssClass="ui-input ui-input--select ui-input--form"></app-select>

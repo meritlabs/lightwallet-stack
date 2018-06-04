@@ -106,6 +106,6 @@ export class PersistenceService2 {
   }
 
   async getMinerSettings() {
-    return (await this.storage.get(StorageKey.WalletPreferencesPrefix)) || {};
+    return (await this.storage.get(StorageKey.MiningSettings)) || {};
   }
 }
