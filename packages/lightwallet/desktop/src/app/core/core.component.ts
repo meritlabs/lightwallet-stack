@@ -13,7 +13,6 @@ import {
 } from '@merit/common/reducers/wallets.reducer';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
@@ -26,6 +25,7 @@ import { map } from 'rxjs/operators';
 import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/common/reducers/wallets.reducer';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Observable } from 'rxjs/Observable';
+import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
 
 @Component({
   selector: 'view-core',
@@ -93,6 +93,7 @@ export class CoreView implements OnInit, AfterViewInit {
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
+  recordPassphrase: boolean = true;
 
   constructor(
     private pushNotificationsService: PushNotificationsService,
@@ -104,10 +105,15 @@ export class CoreView implements OnInit, AfterViewInit {
     private profileService: ProfileService,
     private store: Store<IRootAppState>,
     private persistenceService2: PersistenceService2,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private persistenceService: PersistenceService2
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.recordPassphrase = Boolean(await this.persistenceService.getViewSettings(ViewSettingsKey.recordPassphrase));
+
+    console.log(this.recordPassphrase);
+
     this.processPendingEasyReceipts();
     this.pushNotificationsService.init();
     this.easyReceiveService.cancelEasySendObservable$.subscribe(receipt => {
@@ -410,9 +416,7 @@ export class CoreView implements OnInit, AfterViewInit {
     }
   }
 
-  recordPassphrase: boolean = true;
-
   onGuideDismiss() {
-    this.recordPassphrase = false;
+    return this.persistenceService.setViewSettings(ViewSettingsKey.recordPassphrase, (this.recordPassphrase = true));
   }
 }
