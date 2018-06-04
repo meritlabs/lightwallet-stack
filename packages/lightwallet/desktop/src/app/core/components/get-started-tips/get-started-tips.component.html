@@ -6,11 +6,9 @@
         <h4 class="StarterTips_title">
           How do I grow my Community?
         </h4>
-        <p>Every time to bring an active new member into the Merit community, your
-          <strong>growth score</strong> will
-          increase. There is a growth lottery every minute, and a higher score earns you a higher
-          chance to win. To grow
-          your community, you can:</p>
+        <p>When you bring an active new member into the Merit community, your
+          <strong>growth score</strong> will increase. There is a growth lottery every minute, and a higher score earns you a higher
+          chance to win. To grow your community, you can:</p>
         <ul>
           <li>
             Tell your friends your share code:
@@ -152,3 +150,4 @@
     </blockquote>
   </div>
 </div>
+<app-share-box *ngIf="showShare" (dismiss)="shareActivate(false)"></app-share-box>

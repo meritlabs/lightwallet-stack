@@ -10,6 +10,9 @@
           <span class="badge" *ngIf="badge > 0">{{ badge }}</span>
         </ng-container>
       </li>
+      <li class="dashboard__aside__item dashboard__aside__item--blue" (click)="shareActivate(true)">
+        <merit-icon name="share"></merit-icon>Invite Others
+      </li>
     </ul>
     <ul class="dashboard__aside__wrap">
       <li *ngFor="let item of bottomMenuItems" class="dashboard__aside__item">
