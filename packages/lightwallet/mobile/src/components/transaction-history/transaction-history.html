@@ -9,7 +9,10 @@
       <img *ngIf="isGrowthReward(tx)" src="assets/img/icons/growth.svg" alt="" />
     </ion-avatar>
     <ion-label>
-      <h2>{{ tx.name }}</h2>
+      <h2>
+          {{ tx.name }}
+          <ion-icon color="primary" *ngIf="tx.easySendUrl" class="icon" name="link"></ion-icon>
+      </h2>
       <p>{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
     </ion-label>
     <ion-note item-end *ngIf="!tx.isWalletUnlock">
@@ -19,6 +22,12 @@
       <span *ngIf="!tx.isInvite" class="fiat-amount">
           {{ tx.amount | toFiat }}
       </span>
+
     </ion-note>
+
+    <button ion-button clear icon-only item-end>
+        <ion-icon name="ios-arrow-forward" class="arrow"></ion-icon>
+    </button>
+
   </button>
 </ion-list>

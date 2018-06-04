@@ -55,11 +55,11 @@
       <button ion-item *ngIf="!tx.easySend.cancelled" (click)="cancelMeritMoney()">
         <ion-icon item-start name="md-close-circle" color="danger"></ion-icon>
         <ion-label>
-          <h2>Cancel</h2>
+          <h2>Cancel transaction</h2>
         </ion-label>
       </button>
     </ng-container>
-    <ion-item class="confirmation-status" [class.confirmed]="isConfirmed" text-wrap no-lines>
+    <ion-item class="confirmation-status" [class.confirmed]="isConfirmed" text-wrap no-lines *ngIf="!isEasySend">
       <ion-avatar img-icon item-start>
         <img [src]="'assets/img/icons/' + (isConfirmed? 'done' : 'timeout') + '.svg'" alt="">
       </ion-avatar>

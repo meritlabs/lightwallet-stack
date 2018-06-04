@@ -1,6 +1,16 @@
 transaction-history {
   ion-list.list {
 
+    .icon {
+      margin-top: -2px;
+      font-size: 15px;
+      vertical-align: top;
+    }
+
+    .arrow {
+      color: #999;
+    }
+
     // transaction action specific styles
     button[ion-item].item {
       &.unlock {
