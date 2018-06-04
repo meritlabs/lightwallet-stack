@@ -105,14 +105,11 @@ export class CoreView implements OnInit, AfterViewInit {
     private profileService: ProfileService,
     private store: Store<IRootAppState>,
     private persistenceService2: PersistenceService2,
-    private domSanitizer: DomSanitizer,
-    private persistenceService: PersistenceService2
+    private domSanitizer: DomSanitizer
   ) {}
 
   async ngOnInit() {
-    this.recordPassphrase = Boolean(await this.persistenceService.getViewSettings(ViewSettingsKey.recordPassphrase));
-
-    console.log(this.recordPassphrase);
+    this.recordPassphrase = Boolean(await this.persistenceService2.getViewSettings(ViewSettingsKey.recordPassphrase));
 
     this.processPendingEasyReceipts();
     this.pushNotificationsService.init();
@@ -417,6 +414,6 @@ export class CoreView implements OnInit, AfterViewInit {
   }
 
   onGuideDismiss() {
-    return this.persistenceService.setViewSettings(ViewSettingsKey.recordPassphrase, (this.recordPassphrase = true));
+    return this.persistenceService2.setViewSettings(ViewSettingsKey.recordPassphrase, (this.recordPassphrase = true));
   }
 }
