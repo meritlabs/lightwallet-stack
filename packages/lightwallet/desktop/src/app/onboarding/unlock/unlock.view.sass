@@ -149,6 +149,21 @@
 
 .ui-input__group__tipbox
   margin-bottom: 10px
+  position: absolute
+  opacity: 0
+  background: $dark
+  z-index: 2
+  &.active
+    animation-name: showTipBox
+    animation-duration: .5s
+    animation-delay: 1s
+    animation-fill-mode: forwards
+
+@keyframes showTipBox
+  0%
+    opacity: 0
+  100%
+    opacity: 1
 
 .agreement_modal
   top: 0

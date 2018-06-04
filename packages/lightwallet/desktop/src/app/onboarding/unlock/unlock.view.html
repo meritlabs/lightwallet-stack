@@ -66,7 +66,7 @@
             </span>
           </div>
         </div>
-        <div class="ui-input__group__tipbox" *ngIf="!inviteCode.valid">
+        <div class="ui-input__group__tipbox" *ngIf="!inviteCode.valid" [class.active]="!inviteCode.valid">
           Please enter the invite code you were given, which is usually the alias of the sender.
           <hr>
           <small>
@@ -103,7 +103,7 @@
             </span>
           </div>
         </div>
-        <div class="ui-input__group__tipbox" *ngIf="!alias.valid && !alias.hasError('AliasInUse')">
+        <div class="ui-input__group__tipbox" *ngIf="!alias.valid && !alias.hasError('AliasInUse')" [class.active]="!alias.valid && !alias.hasError('AliasInUse')">
           Each wallet should have a unique alias. Aliases cannot be shared across multiple wallets. Please note that aliases cannot
           be changed after creation.
           <hr>
