@@ -5,6 +5,9 @@
   display: block
   width: 100vw
   height: 100vh
+  display: flex
+  justify-content: center
+  align-items: center
 
 .agreement_modal
   top: 0
@@ -38,31 +41,11 @@
       width: 40px
       height: 40px
       margin-right: 15px
-  .items
-    box-sizing: border-box
-    max-width: 500px
-    width: 100%
-    margin: 0px auto
-    .item
-      display: flex
-      margin-bottom: 15px
-      .title
-        +font(500, 20px, 26px)
-        width: calc(100% - 55px)
-      .ico
-        width: 35px
-        height: 35px
-        margin-right: 20px
-        background: $EBONY_CLAY
-      &--danger
-        color: $CINNABAR
-        .ico
-          background: $CINNABAR
   .navigation
     position: absolute
     width: 100%
-    left: 0px
-    bottom: -15px
+    left: 0
+    bottom: 0
     display: flex
     justify-content: space-between
     .item
@@ -95,6 +78,8 @@
     border-radius: 4px
     position: relative
     text-align: center
+    font-size: 28px
+    line-height: 35px
     .clip
       position: absolute
       width: 90px
@@ -102,8 +87,12 @@
       left: 0
       right: 0
       top: 0
+      line-height: 14px
+      font-size: 14px
       .ui-button
         width: 100%
         border-top: 0
         border-top-left-radius: 0
         border-top-right-radius: 0
+  .blured
+    filter: blur(5px)

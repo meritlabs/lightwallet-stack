@@ -23,6 +23,9 @@ import { ToastControllerService } from '@merit/desktop/app/components/toast-noti
 import { Store } from '@ngrx/store';
 import { Address, PublicKey } from 'bitcore-lib';
 import { map } from 'rxjs/operators';
+import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/common/reducers/wallets.reducer';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'view-core',
@@ -87,6 +90,9 @@ export class CoreView implements OnInit, AfterViewInit {
       external: true,
     },
   ];
+
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
+  walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
 
   constructor(
     private pushNotificationsService: PushNotificationsService,
@@ -402,5 +408,11 @@ export class CoreView implements OnInit, AfterViewInit {
     } else {
       this.showShare = false;
     }
+  }
+
+  recordPassphrase: boolean = true;
+
+  onGuideDismiss() {
+    this.recordPassphrase = false;
   }
 }
