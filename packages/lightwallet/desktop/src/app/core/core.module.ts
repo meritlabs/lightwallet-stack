@@ -36,10 +36,10 @@ import { WalletDetailHistoryView } from './wallets/wallet-details/wallet-details
 import { WalletDetailView } from './wallets/wallet-details/wallet-details.view';
 import { WalletSettingsView } from './wallets/wallet-details/wallet-settings/wallet-settings.view';
 import { WalletsView } from './wallets/wallets.view';
-import { QuestsView } from './quests/quests.view';
-import { QuestPreviewComponent } from './quests/quest-preview/quest-preview.component';
-import { QuestsListView } from './quests/quests-list/quests-list.view';
-import { SpreadMasterComponent } from './quests/tasks/spread-master/spread-master.component';
+import { WalletSetupView } from './wallet-setup/wallet-setup.view';
+import { TaskPreviewComponent } from './wallet-setup/task-preview/task-preview.component';
+import { WalletSetupListView } from './wallet-setup/wallet-setup-list/wallet-setup-list.view';
+import { SpreadMasterComponent } from './wallet-setup/tasks/spread-master/spread-master.component';
 
 export function getPages() {
   return [
@@ -67,8 +67,8 @@ export function getPages() {
     SendInviteView,
     InviteRequestsView,
     SendInviteView,
-    QuestsView,
-    QuestsListView,
+    WalletSetupView,
+    WalletSetupListView,
   ];
 }
 
@@ -87,7 +87,14 @@ export function getPages() {
     Ng4LoadingSpinnerModule,
     CoreComponentsModule,
   ],
-  declarations: [CoreView, ...getPages(), SendTourComponent, WelcomeGuideComponent, QuestPreviewComponent, SpreadMasterComponent],
+  declarations: [
+    CoreView,
+    ...getPages(),
+    SendTourComponent,
+    WelcomeGuideComponent,
+    TaskPreviewComponent,
+    SpreadMasterComponent,
+  ],
   providers: [WalletPasswordGuard],
 })
 export class CoreModule {}

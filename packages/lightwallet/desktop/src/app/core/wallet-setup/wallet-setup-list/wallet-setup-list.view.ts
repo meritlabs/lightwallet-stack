@@ -8,11 +8,11 @@ import { Quests, Quest } from '@merit/common/models/quest';
 import { QuestsService } from '@merit/common/services/quests.service';
 
 @Component({
-  selector: 'app-quests-list',
-  templateUrl: './quests-list.view.html',
-  styleUrls: ['./quests-list.view.sass'],
+  selector: 'app-wallet-setup-list',
+  templateUrl: './wallet-setup-list.view.html',
+  styleUrls: ['./wallet-setup-list.view.sass'],
 })
-export class QuestsListView implements OnInit {
+export class WalletSetupListView implements OnInit {
   constructor(private store: Store<IRootAppState>, private service: QuestsService) {}
 
   questState$: Observable<Quests> = this.store.select('quests');

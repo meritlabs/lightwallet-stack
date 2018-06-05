@@ -24,9 +24,9 @@ import { HistoryView } from './history/history.view';
 import { ReceiveView } from './receive/receive.view';
 import { SendView } from './send/send.view';
 import { WalletsView } from './wallets/wallets.view';
-import { QuestsView } from './quests/quests.view';
-import { QuestsListView } from './quests/quests-list/quests-list.view';
-import { SpreadMasterComponent } from './quests/tasks/spread-master/spread-master.component';
+import { WalletSetupView } from './wallet-setup/wallet-setup.view';
+import { WalletSetupListView } from './wallet-setup/wallet-setup-list/wallet-setup-list.view';
+import { SpreadMasterComponent } from './wallet-setup/tasks/spread-master/spread-master.component';
 
 const routes: Routes = [
   {
@@ -80,10 +80,10 @@ const routes: Routes = [
         ],
       },
       {
-        path: 'quests',
-        component: QuestsView,
+        path: 'wallet-setup',
+        component: WalletSetupView,
         children: [
-          { path: '', component: QuestsListView },
+          { path: '', component: WalletSetupListView },
           { path: 'spread-master', component: SpreadMasterComponent },
         ],
       },
