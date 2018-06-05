@@ -11,6 +11,9 @@
           <span class="badge" *ngIf="badge > 0">{{ badge }}</span>
         </ng-container>
       </li>
+      <li class="dashboard__aside__item dashboard__aside__item--setup" [routerLink]="'/wallet-setup'">
+        <merit-icon name="setup"></merit-icon>Wallet Setup Progress
+      </li>
       <li class="dashboard__aside__item dashboard__aside__item--blue" (click)="shareActivate(true)">
         <merit-icon name="share"></merit-icon>Invite Others
       </li>
