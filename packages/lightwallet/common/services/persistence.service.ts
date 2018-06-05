@@ -38,7 +38,8 @@ const Keys = {
   HIDDEN_REQUESTS_ADDRESSES: 'hiddenRequestsAddresses',
   ACTIVE_UNLOCK_REQUESTS_NUMBER: 'activeUnlockRequests',
   PAGES_VISITED: 'pagesVisited',
-  COMMUNITY_POPUP_CLOSED: 'communityPopupClosed' 
+  COMMUNITY_POPUP_CLOSED: 'communityPopupClosed',
+  COMMUNITY_INFO: 'communityInfo'
 };
 
 @Injectable()
@@ -436,6 +437,14 @@ export class PersistenceService {
 
   async closeCommunityPopup() {
     return this.storage.set(Keys.COMMUNITY_POPUP_CLOSED, true);
+  }
+
+  async storeCommunityInfo(communityInfo) {
+    return this.storage.set(Keys.COMMUNITY_INFO, communityInfo); 
+  }
+
+  async getCommunityInfo() {
+    return this.storage.get(Keys.COMMUNITY_INFO);
   }
 
   private get(key: any) {

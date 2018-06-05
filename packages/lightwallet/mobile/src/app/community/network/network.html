@@ -8,18 +8,21 @@
     Share your unlock code
     <img src="assets/img/icons/growth_dark.svg">
   </button>
-
   <button ion-button full primary navPush="SendInviteAmountView" [disabled]="!availableInvites" class="send-invite-button">
     Send invite token
     <img src="assets/img/icons/send.svg">
   </button>
 
+  <div class="loading-indicator" [hidden]="!loading">
+      <div>Loading community data...</div>
+  </div>
 
 
   <ion-list no-lines [hidden]="loading">
     <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: wallets }">
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/network.svg">
+        <ion-spinner color="primary" name="crescent" [hidden]="!refreshing"></ion-spinner>
       </ion-avatar>
       <ion-label>
         <h2>People invited</h2>
@@ -34,6 +37,7 @@
     <ion-item class="pending-unlock-requests">
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/invite.svg">
+            <ion-spinner color="primary" name="crescent" [hidden]="!refreshing"></ion-spinner>
         </ion-avatar>
         <ion-label>
           <h2>Invite tokens</h2>
@@ -44,6 +48,7 @@
     <ion-item class="pending-unlock-requests">
         <ion-avatar item-start img-icon>
             <img src="assets/img/icons/growth.svg" alt="">
+            <ion-spinner color="primary" name="crescent" [hidden]="!refreshing"></ion-spinner>
         </ion-avatar>
         <ion-label>
           <h2>Growth rewards</h2>

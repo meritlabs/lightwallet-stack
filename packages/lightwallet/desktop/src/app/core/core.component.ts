@@ -393,4 +393,14 @@ export class CoreView implements OnInit, AfterViewInit {
       this.toastCtrl.error('There was an error rejecting the Merit');
     }
   }
+
+  showShare: boolean = false;
+
+  shareActivate(val) {
+    if (val) {
+      this.showShare = true;
+    } else {
+      this.showShare = false;
+    }
+  }
 }
