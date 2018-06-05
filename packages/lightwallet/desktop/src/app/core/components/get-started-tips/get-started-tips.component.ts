@@ -2,6 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
+import { ElectronService } from '@merit/desktop/services/electron.service';
 
 declare global {
   interface Window {
@@ -23,13 +24,17 @@ declare global {
   ],
 })
 export class GetStartedTipsComponent implements OnInit {
-  constructor(private persistenceService: PersistenceService2) {}
 
   active: boolean;
   getArticle: boolean;
   syncWallet: boolean;
   copy: string = 'COPY';
   showShare: boolean = false;
+  isElectron: boolean = false;
+
+  constructor(private persistenceService: PersistenceService2) {
+    this.isElectron = ElectronService.isElectronAvailable;
+  }
 
   private _wallets: DisplayWallet[];
 

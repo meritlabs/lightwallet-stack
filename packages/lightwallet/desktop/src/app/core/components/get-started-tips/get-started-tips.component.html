@@ -40,7 +40,7 @@
         <h4 class="StarterTips_title">
           How to get Security Rewards?
         </h4>
-        <ul>
+        <ul *ngIf="!isElectron">
           <li>
             Security mining requires a desktop computer. You can mine using the full-node Merit wallet or the Merit Standalone miner.
             Get started by
@@ -53,6 +53,29 @@
             free
             <a href="https://pool.merit.me/" target="blank">zero-fee pool</a> that allows you to mine along with other members of the community, increasing your chances
             of winning security rewards.
+          </li>
+        </ul>
+        <ul *ngIf="isElectron">
+          <li>
+              You can start mining by selecting Mining on the left navigation window.
+              You can select a Mining Pool you want to join and start mining right away.
+          </li>
+          <li>
+            Because there are many security miners in the Merit community, most users will want to join a mining pool. Merit offers a
+            free
+            <a href="https://pool.merit.me/" target="blank">zero-fee pool</a> that allows you to mine along with other members of the community, increasing your chances
+            of winning security rewards.
+          </li>
+          <li>
+            Alternatively, You can mine using the full-node Merit Core Client.
+            This client is a decentralized way to mine and does not require a mining pool.
+            However, this will require better hardware and may take a long time before
+            you see a mining reward.
+            
+            Get started by
+            <a href="https://www.merit.me/technology/#get-core-client" target="blank">downloading the Merit Core Client</a> and importing your wallet using your 12-word passphrase. You can read more about
+            how to
+            <a (click)="syncWalletAction()">sync your wallet.</a>
           </li>
         </ul>
       </div>
