@@ -25,7 +25,7 @@ export class SendConfirmationView {
   viewData: any;
   unlockValue: number = 0;
 
-  constructor(navParams: NavParams,
+  constructor(private navParams: NavParams,
               private navCtrl: NavController,
               private toastCtrl: ToastControllerService,
               private alertController: AlertController,
@@ -64,7 +64,8 @@ export class SendConfirmationView {
       feeIncluded: this.txData.feeIncluded,
       fiatCode: this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
       methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'MeritMoney Link' : 'Classic Send',
-      destination: this.txData.sendMethod.alias ? '@' + this.txData.sendMethod.alias : this.txData.sendMethod.value
+      destination: this.txData.sendMethod.alias ? '@' + this.txData.sendMethod.alias : this.txData.sendMethod.value,
+      easySendDelivered: this.navParams.get('easySendDelivered')
     };
 
     viewData.walletRemainingBalance = this.txData.wallet.balance.totalAmount - viewData.totalAmount;
@@ -174,8 +175,20 @@ export class SendConfirmationView {
     try {
       await this.sendService.send(this.txData, this.txData.wallet);
 
-      if (this.txData.sendMethod.type == SendMethodType.Easy) {
-        this.navCtrl.push('EasySendShareView', { txData: this.txData });
+      if (this.txData.sendMethod.type === SendMethodType.Easy) {
+        let easySendDelivered;
+
+        if (this.txData.sendMethod.destination === SendMethodDestination.Email || this.txData.sendMethod.destination === SendMethodDestination.Sms) {
+          try {
+            await this.txData.wallet.deliverGlobalSend(this.txData.easySend, { type: SendMethodType.Easy, destination: this.txData.sendMethod.destination, value: this.txData.sendMethod.value });
+            easySendDelivered = true;
+          } catch (err) {
+            this.logger.error('Unable to deliver GlobalSend', err);
+            easySendDelivered = false;
+          }
+        }
+
+        this.navCtrl.push('EasySendShareView', { txData: this.txData, easySendDelivered });
       } else {
         this.navCtrl.popToRoot();
         this.toastCtrl.success('Your transaction is complete');

@@ -26,6 +26,7 @@ import {
   NavParams
 } from 'ionic-angular';
 import * as _ from 'lodash';
+import { getSendMethodDestinationType } from '../../../../../../common/utils/destination';
 
 @IonicPage()
 @Component({
@@ -44,7 +45,14 @@ export class SendAmountView {
   public feeLoading: boolean;
 
   public amount = { micros: 0, mrt: 0, fiat: 0 };
-  public formData = { amount: '', password: '', confirmPassword: '', nbBlocks: 10080, validTill: '' };
+  public formData = {
+    amount: '',
+    password: '',
+    confirmPassword: '',
+    nbBlocks: 10080,
+    validTill: '',
+    destination: ''
+  };
 
   public readonly CURRENCY_TYPE_MRT = 'mrt';
   public readonly CURRENCY_TYPE_FIAT = 'fiat';
@@ -293,10 +301,24 @@ export class SendAmountView {
       dismissOnPageChange: true
     });
     loadingSpinner.present();
+
+    if (this.sendMethod.type === SendMethodType.Easy) {
+      const destinationType = getSendMethodDestinationType(this.formData.destination);
+
+      if (destinationType) {
+        this.sendMethod.destination = destinationType;
+        this.sendMethod.value = this.formData.destination;
+      }
+    }
+
+
     try {
       this.txData.txp.amount += this.txData.easyFee;
       this.txData.feeIncluded = this.feeIncluded;
-      this.navCtrl.push('SendConfirmationView', { txData: this.txData, referralsToSign: this.referralsToSign });
+      this.navCtrl.push('SendConfirmationView', {
+        txData: this.txData,
+        referralsToSign: this.referralsToSign
+      });
     } catch (e) {
       this.logger.warn(e);
     } finally {
