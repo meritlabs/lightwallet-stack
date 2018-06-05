@@ -15,12 +15,12 @@
     <div class="title title--secondary">
       <p>Quests</p>
     </div>
-    <app-quest-preview *ngFor="let quest of (questState$ | async)?.quests" [quest]=quest [hidden]="quest.status === 'compleate'"></app-quest-preview>
+    <app-task-preview *ngFor="let quest of (questState$ | async)?.quests" [quest]=quest [hidden]="quest.status === 'compleate'"></app-task-preview>
   </div>
   <div class="quests_column">
     <div class="title title--secondary">
       <p>Achievements</p>
     </div>
-    <app-quest-preview *ngFor="let quest of (questState$ | async)?.quests" [quest]=quest [hidden]="quest.status === 'compleate'"></app-quest-preview>
+    <app-task-preview *ngFor="let quest of (questState$ | async)?.quests" [quest]=quest [hidden]="quest.status === 'compleate'"></app-task-preview>
   </div>
 </div>

@@ -5,11 +5,11 @@ import { MeritMarketClient } from '@merit/common/merit-market-client/api';
 import { ENV } from '@app/env';
 
 @Component({
-  selector: 'app-quests',
-  templateUrl: './quests.view.html',
-  styleUrls: ['./quests.view.sass'],
+  selector: 'app-wallet-setup',
+  templateUrl: './wallet-setup.view.html',
+  styleUrls: ['./wallet-setup.view.sass'],
 })
-export class QuestsView implements OnInit {
+export class WalletSetupView implements OnInit {
   constructor(private persistenceService: PersistenceService) {}
 
   async ngOnInit() {
