@@ -143,9 +143,9 @@ export class UnlockComponent {
   }
   unlockStep(val) {
     if (val === 'next') {
-      this.currentUnlockDialogStep += 1;
+      this.currentUnlockDialogStep++;
     } else if (val === 'prev') {
-      this.currentUnlockDialogStep -= 1;
+      this.currentUnlockDialogStep--;
     }
   }
 }
