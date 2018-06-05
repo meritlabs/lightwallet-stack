@@ -2734,7 +2734,7 @@ export class API {
 
   deliverGlobalSend(globalSend: EasySend, type: ISendMethod) {
     return this._doPostRequest('/v1/globalsend', {
-      globalSend,
+      globalSend: _.pick(globalSend, ['secret', 'senderPubKey', 'senderName', 'blockTimeout', 'parentAddress', 'inviteOnly']),
       type: {
         method: type.destination,
         destination: type.value
