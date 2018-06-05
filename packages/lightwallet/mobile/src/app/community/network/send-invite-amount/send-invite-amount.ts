@@ -19,7 +19,7 @@ export class SendInviteAmountView {
   public  wallets: Array<MeritWalletClient>;
   public wallet: MeritWalletClient;
 
-  public formData = {amount: 1};
+  public formData = {amount: null};
   public address;
 
   public error:string;
@@ -27,6 +27,7 @@ export class SendInviteAmountView {
   public link:string;
   copied: boolean;
   showShareButton: boolean;
+  amountFocused: boolean;
 
   @ViewChild('amount') amountInput: ElementRef;
 
@@ -53,6 +54,10 @@ export class SendInviteAmountView {
     }
   }
 
+  async ionViewDidEnter() {
+    this.focusInput();
+  }
+
   async send() {
     if (!this.wallet) {
       this.wallet = this.wallets.find(w => (w.availableInvites > 0));
@@ -76,6 +81,7 @@ export class SendInviteAmountView {
       await this.wallet.sendInvite(referral.address, this.formData.amount);
 
       this.link = getEasySendURL(easySend);
+      this.wallet.availableInvites -= this.formData.amount;
 
     } catch (e) {
       console.log(e);

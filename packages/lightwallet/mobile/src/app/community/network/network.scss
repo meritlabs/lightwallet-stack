@@ -159,5 +159,32 @@ view-network {
     }
   }
 
+  .loading-indicator {
+    height: calc(100% - 96px);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: rgba(0,0,0,0.5);
+    font-size: 16px;
+    div {
+      margin: 0 auto;
+    }
+  }
+
+  ion-avatar {
+    position: relative;
+    .spinner {
+      position: absolute;
+      top: -6px !important;
+      left: -6px;
+      z-index: 10000;
+      opacity: 0.4;
+    }
+    * {
+      width: 52px;
+      height: 52px;
+    }
+  }
 
 }

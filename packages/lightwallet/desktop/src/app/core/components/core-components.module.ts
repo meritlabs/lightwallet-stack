@@ -19,6 +19,7 @@ import { ClipModule } from 'ng2-clip';
 import { HistoryItemComponent } from './history-item/history-item.component';
 import { HistoryListComponent } from './history-list/history-list.component';
 import { GetStartedTipsComponent } from './get-started-tips/get-started-tips.component';
+import { ShareBoxComponent } from './share-box/share-box.component';
 
 export function getComponents() {
   return [
@@ -34,6 +35,7 @@ export function getComponents() {
     FeeSelectorComponent,
     SendMethodComponent,
     GetStartedTipsComponent,
+    ShareBoxComponent,
   ];
 }
 

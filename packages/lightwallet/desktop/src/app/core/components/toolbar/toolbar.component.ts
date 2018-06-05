@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, EventEmitter, Output } from '@angular/core';
 import { IRootAppState } from '@merit/common/reducers';
 import {
   INotification,
@@ -22,7 +22,6 @@ import { tap } from 'rxjs/operators';
 })
 export class ToolbarComponent {
   showMenu: boolean = false;
-
   availableCurrencies: any = [
     {
       name: 'USD',
@@ -59,6 +58,8 @@ export class ToolbarComponent {
   totalUnreadNotifications$: Observable<number> = this.store.select(selectTotalUnreadNotifications);
 
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
+
+  @Output() shareActivate: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private store: Store<IRootAppState>) {}
 

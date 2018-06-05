@@ -40,7 +40,7 @@ export class HistoryItemComponent implements OnInit {
 
     this.isConfirmed = tx.isCoinbase ? tx.isMature : true;
     this.isUnlockRequest = tx && tx.action === TransactionAction.UNLOCK;
-    this.isCredit = tx.isCoinbase || tx.action === TransactionAction.RECEIVED;
+    this.isCredit = tx.isCoinbase || tx.action === TransactionAction.RECEIVED || tx.isPoolReward;
     this.isInvite = tx.isInvite === true;
     this.isMiningReward = this.isReward && tx.outputs[0].index === 0;
     this.isEasySend = !this.isInvite && !this.isReward;
@@ -50,6 +50,7 @@ export class HistoryItemComponent implements OnInit {
 
     if (tx.isGrowthReward) this.image = 'growth';
     else if (tx.isMiningReward) this.image = 'mining';
+    else if (tx.isPoolReward) this.image = 'mining';
     else if (tx.isInvite) this.image = 'invite';
     else this.image = 'merit';
   }
