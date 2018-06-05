@@ -913,8 +913,8 @@ ExpressApp.prototype.start = function(opts, cb) {
         method: 'POST',
         uri: 'http://localhost:8300/globalsend',
         json: req.body
-      }, (err, response, body) => {
-        if (!error && parseInt(response.statusCode) === 200) {
+      }, (err, response) => {
+        if (!err && parseInt(response.statusCode) === 200) {
           res.send();
         } else {
           res.status(400).send();
