@@ -69,11 +69,6 @@ export class CoreView implements OnInit, AfterViewInit {
       link: '/community',
     },
     {
-      name: 'Wallet Setup',
-      icon: '/assets/v1/icons/ui/aside-navigation/quest.svg',
-      link: '/wallet-setup',
-    },
-    {
       name: 'Settings',
       icon: '/assets/v1/icons/ui/aside-navigation/settings.svg',
       link: '/settings',
