@@ -1,15 +1,12 @@
-<div class="quest_preview">
+<div class="wallet-setup_preview">
   <div class="icon">
-    <img src="{{quest.icon}}" alt="">
+    <!-- <img src="{{quest.icon}}" alt=""> -->
   </div>
   <div class="details">
     <div class="title">
       <p>{{quest.name}}</p>
-      <div class="status" [ngClass]="{'new': quest.status === 'new', 'progress': quest.status === 'in progress', 'compleate': quest.status === 'compleate'}">
-        <p>{{quest.status}}</p>
-      </div>
     </div>
     <p class="description">{{quest.shortDescription}}</p>
   </div>
-  <button class="ui-button ui-button--green ui-button--sm" *ngIf="quest.status !== 'compleate'" [routerLink]="[quest.path]">START</button>
+  <button class="ui-button ui-button--green ui-button--sm" *ngIf="quest.status !== 'compleate'" [routerLink]="[quest.path]">show</button>
 </div>
