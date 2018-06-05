@@ -1,25 +1,16 @@
-<div class="quests_title title--primary">
-  <p>Welcom to Quests!</p>
+<div class="wallet-setup_title title--primary">
+  <p>Wallet setup tracker</p>
 </div>
-<div class="quests_description">
-  <p>Here you can compleate our learning and profitable quests. After each quest you will receive some reward, which will provide
-    two tipes of the profit:</p>
-  <ol>
-    <li>Learnig</li>
-    <li>Your Merit World rating</li>
-  </ol>
-  <p>Some kind of quests, will deliver to you a pure profit.</p>
-</div>
-<div class="quests_wrap">
-  <div class="quests_column">
+<div class="wallet-setup_wrap">
+  <div class="wallet-setup_column">
     <div class="title title--secondary">
-      <p>Quests</p>
+      <p>To do</p>
     </div>
     <app-task-preview *ngFor="let quest of (questState$ | async)?.quests" [quest]=quest [hidden]="quest.status === 'compleate'"></app-task-preview>
   </div>
-  <div class="quests_column">
+  <div class="wallet-setup_column">
     <div class="title title--secondary">
-      <p>Achievements</p>
+      <p>Complete</p>
     </div>
     <app-task-preview *ngFor="let quest of (questState$ | async)?.quests" [quest]=quest [hidden]="quest.status === 'compleate'"></app-task-preview>
   </div>
