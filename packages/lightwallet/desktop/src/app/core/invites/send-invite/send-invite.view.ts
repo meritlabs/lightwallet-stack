@@ -101,6 +101,8 @@ export class SendInviteView {
 
     if (type === SendMethodType.Easy) {
       const easySend = await this.easySendService.createEasySendScriptHash(walletClient, password);
+      easySend.inviteOnly = true;
+
       const referral = easySend.scriptReferralOpts;
 
       await walletClient.sendReferral(referral);
