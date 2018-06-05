@@ -1,6 +1,18 @@
+@import '~styles/v1/common/import-sass'
+
 \:host
   width: 100%
-  .quests_column
+  .wallet-setup_column
     width: calc(50% - 40px)
     .title
-      margin-bottom: 15px
+      margin-bottom: 20px
+  .readiness
+    display: flex
+    align-items: flex-end
+    +font(600, 50px, 50px, $blue)
+    margin-bottom: 30px
+    merit-icon
+      width: 150px
+      height: 125px
+      margin-right: 40px
+      background: linear-gradient(to right, $blue 50%,$slate-grey 50%);
