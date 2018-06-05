@@ -1,9 +1,9 @@
 <ion-header no-border>
-    <ion-navbar color="primary">
-        <ion-title>
-            Creating MeritInvite link
-        </ion-title>
-    </ion-navbar>
+  <ion-navbar color="primary">
+    <ion-title>
+      Creating MeritInvite link
+    </ion-title>
+  </ion-navbar>
 </ion-header>
 <ion-content no-bounce>
   <div class="big-header">
@@ -49,49 +49,58 @@
   </ion-list>
 
 
-
-    <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length" [hidden]="link">
-        <img src="assets/img/icons/invite.svg" color="primary" item-end>
-        <h2>Slide to create MeritInvite link</h2>
-        <p>Select number of invite tokens you want to send and slide right to create an invite link. This link can be shared any way you want.</p>
-    </div>
-
-
-    <ion-card *ngIf="link">
-        <ion-card-header>
-            Your MeritInvite link
-        </ion-card-header>
-        <ion-card-content>
-            <a (click)="copyToClipboard()" [clip]="link">{{ link }}</a>
-        </ion-card-content>
-
-        <ion-row>
-            <ion-col>
-                <button ion-button icon-left clear small (click)="copyToClipboard()" [clip]="link">
-                    <ion-icon name="clipboard"></ion-icon>
-                    <div>Copy</div>
-                </button>
-            </ion-col>
-            <ion-col [hidden]="!showShareButton">
-                <button ion-button icon-left clear small (click)="share()">
-                    <ion-icon name="share"></ion-icon>
-                    <div>Share</div>
-                </button>
-            </ion-col>
-        </ion-row>
-    </ion-card>
+  <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length" [hidden]="link">
+    <img src="assets/img/icons/invite.svg" color="primary" item-end>
+    <h2>Slide to create MeritInvite link</h2>
+    <p>Select number of invite tokens you want to send and slide right to create an invite link. This link can be shared
+      any way you want.</p>
+  </div>
 
 
-    <ion-footer [hidden]="link || amountFocused">
-        <p [hidden]="!error" class="error">{{ error }}</p>
-        <slide-to-action text="Slide to create link" (confirm)="send()" [disabled]="!isSendAllowed()"></slide-to-action>
-    </ion-footer>
+  <ion-card *ngIf="link">
+    <ion-card-header text-wrap>
+      <p *ngIf="easySendDelivered === undefined">
+        Your MeritMoney Link is now ready to share:
+      </p>
+      <p *ngIf="easySendDelivered === true">
+        Your MeritMoney Link is ready and was successfully delivered to your recipient!
+      </p>
+      <p *ngIf="easySendDelivered === false">
+        Your MeritMoney Link is ready, however, we were not able to deliver it to your recipient. You can copy the
+        link and send it to them directly:
+      </p>
+    </ion-card-header>
+    <ion-card-content>
+      <a (click)="copyToClipboard()" [clip]="link">{{ link }}</a>
+    </ion-card-content>
 
-
-    <div class="footer" *ngIf="link">
-        <button ion-button class="action-button" (click)="toWallets()">
-            Back to wallets
+    <ion-row>
+      <ion-col>
+        <button ion-button icon-left clear small (click)="copyToClipboard()" [clip]="link">
+          <ion-icon name="clipboard"></ion-icon>
+          <div>Copy</div>
         </button>
-    </div>
+      </ion-col>
+      <ion-col [hidden]="!showShareButton">
+        <button ion-button icon-left clear small (click)="share()">
+          <ion-icon name="share"></ion-icon>
+          <div>Share</div>
+        </button>
+      </ion-col>
+    </ion-row>
+  </ion-card>
+
+
+  <ion-footer [hidden]="link || amountFocused">
+    <p [hidden]="!error" class="error">{{ error }}</p>
+    <slide-to-action text="Slide to create link" (confirm)="send()" [disabled]="!isSendAllowed()"></slide-to-action>
+  </ion-footer>
+
+
+  <div class="footer" *ngIf="link">
+    <button ion-button class="action-button" (click)="toWallets()">
+      Back to wallets
+    </button>
+  </div>
 
 </ion-content>

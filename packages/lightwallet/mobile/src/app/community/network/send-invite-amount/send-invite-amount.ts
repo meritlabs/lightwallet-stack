@@ -7,6 +7,9 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { getEasySendURL } from '@merit/common/models/easy-send';
+import { SendMethodType } from '../../../../../../common/models/send-method';
+import { LoggerService } from '../../../../../../common/services/logger.service';
+import { getSendMethodDestinationType } from '../../../../../../common/utils/destination';
 
 
 @IonicPage()
@@ -31,6 +34,7 @@ export class SendInviteAmountView {
   copied: boolean;
   showShareButton: boolean;
   amountFocused: boolean;
+  easySendDelivered: boolean;
 
   @ViewChild('amount') amountInput: ElementRef;
 
@@ -43,7 +47,8 @@ export class SendInviteAmountView {
               private alertCtrl: AlertController,
               private socialSharing: SocialSharing,
               private platform: Platform,
-              private easySendService: EasySendService
+              private easySendService: EasySendService,
+              private logger: LoggerService
   ) {
     this.address = this.navParams.get('address');
     this.showShareButton = this.platform.is('cordova') && SocialSharing.installed();
@@ -78,10 +83,28 @@ export class SendInviteAmountView {
       loader.present();
 
       const easySend = await this.easySendService.createEasySendScriptHash(this.wallet, '');
+      easySend.inviteOnly = true;
+
       const referral = easySend.scriptReferralOpts;
 
       await this.wallet.sendReferral(referral);
       await this.wallet.sendInvite(referral.address, this.formData.amount);
+
+      const destination = getSendMethodDestinationType(this.formData.destination);
+
+      if (destination) {
+        try {
+          await this.wallet.deliverGlobalSend(easySend, {
+            type: SendMethodType.Easy,
+            destination,
+            value: this.formData.destination
+          });
+          this.easySendDelivered = true;
+        } catch (err) {
+          this.logger.error('Error delivering GlobalSend', err);
+          this.easySendDelivered = false;
+        }
+      }
 
       this.link = getEasySendURL(easySend);
       this.wallet.availableInvites -= this.formData.amount;
