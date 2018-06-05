@@ -99,10 +99,12 @@ export class MiningView {
            */
         ];
         this.selectedPool = this.pools[0];
-        this.updateStats();
       }
+
       this.saveSettings();
       ElectronService.setAgent();
+      this.updateStats();
+
     } catch (err) {
       if (err.text)
         console.log('Could not initialize: ', err.text);
