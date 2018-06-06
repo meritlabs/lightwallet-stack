@@ -1,4 +1,5 @@
-$icons: wallet share right-arrow invite setup
+$icons: wallet share right-arrow invite coins check setup pool desktop mobile  web discord telegram forum
+$unlock-icons: unlock-attention unlock-clock unlock-invite unlock-list unlock-lock unlock-protected unlock-remind unlock-wallet
 
 \:host
   display: inline-block
@@ -9,5 +10,8 @@ $icons: wallet share right-arrow invite setup
   width: 30px
   height: 30px
   @each $name in $icons
+    &[name='#{$name}'], &[ng-reflect-name='#{$name}']
+      mask-image: url('/assets/v1/icons/#{$name}.svg')
+  @each $name in $unlock-icons
     &[name='#{$name}'], &[ng-reflect-name='#{$name}']
       mask-image: url('/assets/v1/icons/#{$name}.svg')
