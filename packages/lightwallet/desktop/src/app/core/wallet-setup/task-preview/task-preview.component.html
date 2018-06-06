@@ -5,11 +5,9 @@
   </div>
   <div class="details">
     <div class="details_title">
-      <p>{{quest.name}}</p>
+      <p>
+        <a href="">{{quest.name}}</a>
+      </p>
     </div>
-    <p class="details_description">
-      here should be short description... {{quest.shortDescription}}
-    </p>
   </div>
-  <button class="ui-button ui-button--green ui-button--sm" *ngIf="quest.status !== 'compleate'" [routerLink]="[quest.path]">PROCEED</button>
 </div>

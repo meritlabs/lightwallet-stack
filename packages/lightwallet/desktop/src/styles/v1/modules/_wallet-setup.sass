@@ -87,9 +87,12 @@
     width: 100%
     box-sizing: border-box
     &_title
-      +font(300, 18px, 26px, $blue)
+      +font(300, 18px, 26px)
       position: relative
       display: inline-block
+      a
+        text-decoration: underline
+        color: $blue
     &_description
       +font(300, 15px, 26px, $grey-2)
     &_settings
