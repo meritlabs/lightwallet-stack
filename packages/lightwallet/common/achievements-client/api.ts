@@ -44,6 +44,9 @@ export class MeritAchivementClient {
   login() {
     return this._doPostRequest('/sessions');
   }
+  getAll(token) {
+    return this._doGetRequest('/achievements/', token);
+  }
 
   /**
    * Import wallets
@@ -68,8 +71,8 @@ export class MeritAchivementClient {
    * @param {String} url
    * @param {Callback} cb
    */
-  _doGetRequest(url: string): Promise<any> {
-    return this._doRequest('get', url, {}).then(res => res.body);
+  _doGetRequest(url: string, token: string): Promise<any> {
+    return this._doRequest('get', url, {}, token).then(res => res.body);
   }
 
   /**
@@ -92,7 +95,7 @@ export class MeritAchivementClient {
    * @param {String} url
    * @param {Object} args
    */
-  protected _doRequest(method: string, url: string, args?: any): Promise<{ body: any; header: any }> {
+  protected _doRequest(method: string, url: string, args?: any, token?: string): Promise<{ body: any; header: any }> {
     return new Promise((resolve, reject) => {
       let headers = {};
 
@@ -111,16 +114,13 @@ export class MeritAchivementClient {
           headers['X-Signature'] = sig;
           headers['X-Timestamp'] = ts;
 
+          if (token) {
+            headers['X-Token'] = token;
+          }
+
           if (debug) {
             headers['X-Debug'] = true;
           }
-          console.log('----------------HEADERS_________________');
-
-          console.log(`signature: ${sig}`);
-          console.log(`timestamp: ${ts}`);
-          console.log(`pubkey: ${privkey.toPublicKey().toString()}`);
-
-          console.log('----------------HEADERS_________________');
         }
       }
 
@@ -235,9 +235,9 @@ export class MeritAchivementClient {
       message += timestamp;
     }
 
-    console.log("========");
+    console.log('========');
     console.log(`MSG: ${message}`);
-    console.log("========");
+    console.log('========');
 
     const signature = Bitcore.Message(message).sign(privkey);
 
