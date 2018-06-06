@@ -109,21 +109,6 @@ function accessWallet(target, key: string, descriptor: any) {
 @Injectable()
 export class WalletService {
 
-  // TODO: Implement wallet model.
-  private wallets: { [walletId: string]: MeritWalletClient; } = <any>{};
-
-  // Ratio low amount warning (fee/amount) in incoming TX
-  private LOW_AMOUNT_RATIO: number = 0.15;
-
-  // Ratio of "many utxos" warning in total balance (fee/amount)
-  private TOTAL_LOW_WARNING_RATIO: number = .3;
-
-  private WALLET_STATUS_MAX_TRIES: number = 7;
-  private WALLET_STATUS_DELAY_BETWEEN_TRIES: number = 1.4 * 1000;
-  private SOFT_CONFIRMATION_LIMIT: number = 12;
-  private SAFE_CONFIRMATIONS: number = 6;
-
-  //private errors: any = this.bwcService.getErrors();
 
   constructor(private logger: LoggerService,
               private mwcService: MWCService,
@@ -387,8 +372,9 @@ export class WalletService {
   /** ================ PREFERENCES METHODS ========================  **/
 
   async setHiddenBalanceOption(walletId: string, hideBalance: boolean): Promise<void> {
-    if (this.wallets[walletId]) {
-      this.wallets[walletId].balanceHidden = hideBalance;
+    const wallets = this.profileService.getWallets();
+    let wallet = wallets.find(w => w.id == walletId);
+    if (wallet) {
       await this.persistenceService.setHideBalanceFlag(walletId, String(hideBalance));
     }
   }
