@@ -139,260 +139,9 @@ export class WalletService {
               private events: Events,
               private alertCtrl: AlertController
   ) {
-    this.logger.info('Hello WalletService Service');
   }
 
 
-  invalidateCache(wallet: MeritWalletClient) {
-    if (wallet.cachedStatus)
-      wallet.cachedStatus.isValid = false;
-
-    if (wallet.completeHistory)
-      wallet.completeHistory.isValid = false;
-
-    if (wallet.cachedActivity)
-      wallet.cachedActivity.isValid = false;
-
-    if (wallet.cachedTxps)
-      wallet.cachedTxps.isValid = false;
-  }
-
-  async getStatus(wallet: MeritWalletClient, opts?: any): Promise<any> {
-    opts = opts || {};
-    const walletId = wallet.id;
-
-    return new Promise((resolve, reject) => {
-      let processPendingTxps = async (status: any): Promise<any> => {
-        status = status || {};
-        let txps = await status.pendingTxps;
-        let now = Math.floor(Date.now() / 1000);
-
-        wallet.pendingTxps = await Promise.all(txps.map(async (tx: any) => {
-          const pTx = await this.txFormatService.processTx(tx);
-
-          // no future transactions...
-          if (pTx.createdOn > now)
-            pTx.createdOn = now;
-
-          pTx.wallet = wallet;
-
-          if (!pTx.wallet) {
-            this.logger.error('no wallet at pTxp?');
-            return;
-          }
-
-          let action: any = _.find(pTx.actions, {
-            copayerId: pTx.wallet.copayerId
-          });
-
-          if (!action && pTx.status == 'pending') {
-            pTx.pendingForUs = true;
-          }
-
-          if (action && action.type == 'accept') {
-            pTx.statusForUs = 'accepted';
-          } else if (action && action.type == 'reject') {
-            pTx.statusForUs = 'rejected';
-          } else {
-            pTx.statusForUs = 'pending';
-          }
-
-          if (!pTx.deleteLockTime)
-            pTx.canBeRemoved = true;
-
-          return pTx;
-        }));
-
-      };
-
-      //TODO: Separate, clarify, and tighten usage of Rate and Tx-Format service below.
-      let cacheBalance = (wallet: MeritWalletClient, status: any): Promise<any> => {
-        return new Promise((resolve, reject) => {
-          if (!status.balance) return resolve();
-
-          let configGet: any = this.configService.get();
-          let config: any = configGet.wallet;
-
-          let cache = wallet.cachedStatus;
-
-          // Address with Balance
-          cache.balanceByAddress = status.balance.byAddress;
-
-          // Total wallet balance is same regardless of 'spend unconfirmed funds' setting.
-          cache.totalBalanceMicros = status.balance.totalAmount;
-
-          if (status.invitesBalance) {
-            cache.availableInvites = Math.max(0, status.invitesBalance.totalConfirmedAmount - 1);
-          }
-
-          cache.pendingCoinbaseAmount = status.balance.totalPendingCoinbaseAmount;
-
-          // Spend unconfirmed funds
-          if (config.spendUnconfirmed) {
-            cache.lockedBalanceSat = status.balance.lockedAmount;
-            cache.availableBalanceSat = status.balance.availableAmount;
-            cache.totalBytesToSendMax = status.balance.totalBytesToSendMax;
-            cache.pendingAmount = 0;
-            cache.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
-          } else {
-            cache.lockedBalanceSat = status.balance.lockedConfirmedAmount;
-            cache.availableBalanceSat = status.balance.availableConfirmedAmount;
-            cache.totalBytesToSendMax = status.balance.totalBytesToSendConfirmedMax;
-            cache.pendingAmount = status.balance.totalAmount - status.balance.totalConfirmedAmount;
-            cache.spendableAmount = status.balance.totalConfirmedAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
-          }
-          cache.confirmedAmount = status.balance.totalConfirmedAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
-
-          // Selected unit
-          cache.unitToMicro = config.settings.unitToMicro;
-          cache.satToUnit = 1 / cache.unitToMicro;
-
-          //STR
-          cache.totalBalanceStr = this.txFormatService.formatAmountStr(cache.totalBalanceMicros);
-          cache.lockedBalanceStr = this.txFormatService.formatAmountStr(cache.lockedBalanceSat);
-          cache.availableBalanceStr = this.txFormatService.formatAmountStr(cache.availableBalanceSat);
-          cache.spendableBalanceStr = this.txFormatService.formatAmountStr(cache.spendableAmount);
-          cache.pendingBalanceStr = this.txFormatService.formatAmountStr(cache.pendingAmount);
-
-          cache.alternativeName = config.settings.alternativeName;
-          cache.alternativeIsoCode = config.settings.alternativeIsoCode;
-
-          // Check address
-          return this.isAddressUsed(wallet, status.balance.byAddress).then((used) => {
-            if (used) {
-              this.logger.debug('Address used. Creating new');
-              // Force new address
-              return this.getAddress(wallet, true).then((addr) => {
-                this.logger.debug('New address: ', addr);
-              });
-            }
-          }).then(() => {
-            return this.rateService.loadRates().then(() => {
-
-              let totalBalanceAlternative = this.rateService.fromMicrosToFiat(cache.totalBalanceMicros, cache.alternativeIsoCode);
-              let totalBalanceAlternativeStr = this.rateService.fromMicrosToFiat(cache.totalBalanceMicros, cache.alternativeIsoCode);
-              let pendingBalanceAlternative = this.rateService.fromMicrosToFiat(cache.pendingAmount, cache.alternativeIsoCode);
-              let lockedBalanceAlternative = this.rateService.fromMicrosToFiat(cache.lockedBalanceSat, cache.alternativeIsoCode);
-              let spendableBalanceAlternative = this.rateService.fromMicrosToFiat(cache.spendableAmount, cache.alternativeIsoCode);
-              let alternativeConversionRate = this.rateService.fromMicrosToFiat(100000000, cache.alternativeIsoCode);
-
-              cache.totalBalanceAlternative = new FiatAmount(totalBalanceAlternative);
-              cache.totalBalanceAlternativeStr = cache.totalBalanceAlternative.amountStr;
-              cache.pendingBalanceAlternative = new FiatAmount(pendingBalanceAlternative);
-              cache.lockedBalanceAlternative = new FiatAmount(lockedBalanceAlternative);
-              cache.spendableBalanceAlternative = new FiatAmount(spendableBalanceAlternative);
-              cache.alternativeConversionRate = new FiatAmount(alternativeConversionRate);
-
-              cache.alternativeBalanceAvailable = totalBalanceAlternative > 0;
-              cache.isRateAvailable = true;
-              return resolve();
-            }).catch((err) => {
-              // We don't want to blow up the promise chain if the rateService is down.
-              // TODO: Fallback to last known conversion rate.
-              this.logger.warn('Could not get rates from rateService.');
-              return resolve();
-            });
-          }).catch((err) => {
-            return reject(err);
-          });
-        });
-      };
-
-      let isStatusCached = (): any => {
-        return wallet.cachedStatus && wallet.cachedStatus.isValid;
-      };
-
-      let cacheStatus = (status: any): Promise<any> => {
-        if (status.wallet && status.wallet.scanStatus == 'running') return;
-
-        wallet.cachedStatus = status || {};
-        let cache = wallet.cachedStatus;
-        cache.statusUpdatedOn = Date.now();
-        cache.isValid = true;
-        cache.email = status.preferences ? status.preferences.email : null;
-        return cacheBalance(wallet, status);
-      };
-
-      let walletStatusHash = (status: any): any => {
-        return status ? status.balance.totalAmount : wallet.totalBalanceMicros;
-      };
-
-      let _getStatus = async (initStatusHash: any, tries: number): Promise<any> => {
-        return new Promise(async (resolve, reject) => {
-          if (isStatusCached() && !opts.force) {
-            this.logger.debug('Wallet status cache hit:' + wallet.id);
-            return cacheStatus(wallet.cachedStatus).then(() => {
-              return processPendingTxps(wallet.cachedStatus).then(() => {
-                return resolve(wallet.cachedStatus);
-              });
-            }).catch((err) => {
-              this.logger.debug('Error in caching status:' + err);
-            });
-          }
-
-          tries = tries || 0;
-
-          try {
-            const status = await wallet.getStatus({});
-            let currentStatusHash = walletStatusHash(status);
-            this.logger.debug('Status update. hash:' + currentStatusHash + ' Try:' + tries);
-            if (opts.untilItChanges && initStatusHash == currentStatusHash && tries < this.WALLET_STATUS_MAX_TRIES && walletId == wallet.credentials.walletId) {
-
-              return new Promise<any>((resolve) => {
-                setTimeout(() => {
-                  this.logger.debug('Retrying update... ' + walletId + ' Try:' + tries);
-                  resolve(_getStatus(initStatusHash, ++tries));
-                }, this.WALLET_STATUS_DELAY_BETWEEN_TRIES * tries);
-              });
-            }
-
-
-            await processPendingTxps(status);
-            await cacheStatus(status);
-            wallet.scanning = status.wallet && status.wallet.scanStatus == 'running';
-            return resolve(status);
-
-          } catch (err) {
-            this.logger.error('Could not get the status!');
-            this.logger.error(err);
-            return reject(err);
-          }
-
-        });
-      };
-
-      return _getStatus(walletStatusHash(null), 0).then((status) => {
-        return resolve(status);
-      }).catch((err) => {
-        this.logger.warn('Error getting status: ', err);
-        return reject(err);
-      });
-    });
-
-  }
-
-  async getAddress(wallet: MeritWalletClient, forceNew: boolean): Promise<any> {
-
-    const addr = await this.persistenceService.getLastAddress(wallet.id);
-    if (!forceNew && addr) return addr;
-
-    if (!wallet.isComplete())
-      throw new Error('WALLET_NOT_COMPLETE');
-
-    try {
-      const address = await wallet.createAddress({});
-      await this.persistenceService.storeLastAddress(wallet.id, address);
-      return address;
-    } catch (err) {
-      if (err.code == MWCErrors.MAIN_ADDRESS_GAP_REACHED.code && !forceNew) {
-        const address = await this.getMainAddress(wallet);
-        await this.persistenceService.storeLastAddress(wallet.id, address);
-        return address;
-      }
-
-      throw err;
-    }
-  }
 
   // Approx utxo amount, from which the uxto is economically redeemable
   getLowAmount(wallet: MeritWalletClient, feeLevels: any, nbOutputs?: number) {
@@ -459,6 +208,8 @@ export class WalletService {
     return isEncrypted;
   }
 
+
+
   createTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     return wallet.createTxProposal(txp);
   }
@@ -473,13 +224,15 @@ export class WalletService {
     }
   }
 
-  signTx(wallet: MeritWalletClient, txp: any, password: string): Promise<any> {
+  @accessWallet
+  signTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     if (!wallet || !txp)
       throw new Error('MISSING_PARAMETER');
 
-    return wallet.signTxProposal(txp, password);
+    return wallet.signTxProposal(txp);
   }
 
+  @accessWallet
   broadcastTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     if (_.isEmpty(txp) || _.isEmpty(wallet))
       throw new Error('MISSING_PARAMETER');
@@ -490,6 +243,7 @@ export class WalletService {
     return wallet.broadcastTxProposal(txp);
   }
 
+  @accessWallet
   rejectTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     if (_.isEmpty(txp) || _.isEmpty(wallet))
       throw new Error('MISSING_PARAMETER');
@@ -497,6 +251,7 @@ export class WalletService {
     return wallet.rejectTxProposal(txp, null);
   }
 
+  @accessWallet
   async removeTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     if (_.isEmpty(txp) || _.isEmpty(wallet))
       throw new Error('MISSING_PARAMETER');
@@ -504,7 +259,6 @@ export class WalletService {
     await wallet.removeTxProposal(txp);
 
     this.logger.debug('Transaction removed');
-    this.invalidateCache(wallet);
   }
 
   private updateRemotePreferencesFor(clients: any[], prefs: any): Promise<any> {
@@ -534,16 +288,6 @@ export class WalletService {
     });
   }
 
-  async startScan(wallet: MeritWalletClient): Promise<any> {
-    this.logger.debug('Scanning wallet ' + wallet.id);
-    if (!wallet.isComplete())
-      throw new Error('Wallet is not complete');
-
-    wallet.scanning = true;
-    return wallet.startScan({
-      includeCopayerBranches: true
-    });
-  }
 
   // TODO add typings for `opts`
   async createWallet(opts: any) {
@@ -585,45 +329,6 @@ export class WalletService {
     return this.profileService.wallets[walletId];
   };
 
-  expireAddress(wallet: MeritWalletClient): Promise<any> {
-    this.logger.debug('Cleaning Address ' + wallet.id);
-    return this.persistenceService.clearLastAddress(wallet.id);
-  }
-
-  async getMainAddresses(wallet: MeritWalletClient, opts: any = {}): Promise<Array<any>> {
-    opts.reverse = true;
-    const addresses = await wallet.getMainAddresses(opts);
-    return addresses.map(address => address.address);
-  }
-
-  getBalance(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
-    return wallet.getBalance(opts);
-  }
-
-  getInvitesBalance(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
-    return wallet.getInvitesBalance(opts);
-  }
-
-  async getLowUtxos(wallet: any, levels: any): Promise<any> {
-    const resp = await wallet.getUtxos();
-
-    if (!resp || !resp.length) throw '';
-
-    const minFee = this.getMinFee(wallet, levels, resp.length);
-    const balance = _.sumBy(resp, 'micros');
-
-    // for 2 outputs
-    const lowAmount = this.getLowAmount(wallet, levels);
-    const lowUtxos = resp.filter(x => x.micros < lowAmount);
-
-    return {
-      allUtxos: resp || [],
-      lowUtxos: lowUtxos || [],
-      warning: minFee / balance > this.TOTAL_LOW_WARNING_RATIO,
-      minFee: minFee
-    };
-  }
-
   createDefaultWallet(parentAddress: string, alias: string) {
     const opts: any = {
       m: 1,
@@ -635,14 +340,6 @@ export class WalletService {
     return this.createWallet(opts);
   }
 
-  isReady(wallet: MeritWalletClient): string {
-    if (!wallet.isComplete())
-      return 'WALLET_NOT_COMPLETE';
-    if (wallet.needsBackup)
-      return 'WALLET_NEEDS_BACKUP';
-    return null;
-  }
-
   encrypt(wallet: MeritWalletClient, password: string): Promise<any> {
     wallet.encryptPrivateKey(password, {});
     return this.profileService.updateWallet(wallet);
@@ -652,52 +349,19 @@ export class WalletService {
     return wallet.decryptPrivateKey(password);
   }
 
-  async handleEncryptedWallet(wallet: MeritWalletClient): Promise<any> {
-    if (!this.isEncrypted(wallet)) return;
-    const password: string = await this.askPassword(wallet.name, 'Enter Spending Password');
-
-    if (!password)
-      throw new Error('No password');
-
-    if (!wallet.checkPassword(password))
-      throw new Error('Wrong password');
-
-    return password;
-  }
-
   async reject(wallet: MeritWalletClient, txp: any): Promise<any> {
     const txpr = await this.rejectTx(wallet, txp);
-    this.invalidateCache(wallet);
     return txpr;
   }
 
+  @accessWallet
   async onlyPublish(wallet: MeritWalletClient, txp: any): Promise<any> {
     const publishedTxp = await this.publishTx(wallet, txp);
-    this.invalidateCache(wallet);
     this.events.publish('Local:Tx:Publish', publishedTxp);
   }
 
-  prepare(wallet: MeritWalletClient): Promise<any> {
-    return this.handleEncryptedWallet(wallet);
-    // TODO: rewrite this when integrating Fingerprint service
-
-    // return new Promise((resolve, reject) => {
-    //   return this.touchidService.checkWallet(wallet).then(() => {
-    //     return this.handleEncryptedWallet(wallet).then((password: string) => {
-    //       return resolve(password);
-    //     }).catch((err) => {
-    //       return reject(err);
-    //     });
-    //   }).catch((err) => {
-    //     return reject(err);
-    //   });
-    // });
-  }
-
+  @accessWallet
   async publishAndSign(wallet: MeritWalletClient, txp: any): Promise<any> {
-    this.logger.info('@@PS: ENTER');
-    const password = await this.prepare(wallet);
-    this.logger.info('@@PS: AFTER PREPARE');
 
     if (txp.status == 'pending') {
       this.logger.info('@@PS: PENDING');
@@ -707,7 +371,7 @@ export class WalletService {
       this.logger.info('@@PS: AFTER PublishTx');
     }
 
-    return this.signAndBroadcast(wallet, txp, password);
+    return this.signAndBroadcast(wallet, txp);
   }
 
   async getEncodedWalletInfo(wallet: MeritWalletClient, password: string): Promise<any> {
@@ -748,41 +412,6 @@ export class WalletService {
     }
   }
 
-  // setTouchId(wallet: MeritWalletClient, enabled: boolean): Promise<any> {
-  //   return new Promise((resolve, reject) => {
-  //     var opts = {
-  //       touchIdFor: {}
-  //     };
-  //     opts.touchIdFor[wallet.id] = enabled;
-  //
-  //     return this.touchidService.checkWallet(wallet).then(() => {
-  //       this.configService.set(opts);
-  //       return resolve();
-  //     }).catch((err) => {
-  //       opts.touchIdFor[wallet.id] = !enabled;
-  //       this.logger.debug('Error with fingerprint:' + err);
-  //       this.configService.set(opts);
-  //       return reject(err);
-  //     });
-  //   });
-  // }
-
-  // getKeys(wallet: MeritWalletClient): Promise<any> {
-  //   return new Promise((resolve, reject) => {
-  //     return this.prepare(wallet).then((password: string) => {
-  //       let keys;
-  //       try {
-  //         keys = wallet.getKeys(password);
-  //       } catch (e) {
-  //         return reject(e);
-  //       }
-  //       return resolve(keys);
-  //     }).catch((err) => {
-  //       return reject(err);
-  //     });
-  //   });
-  // };
-
   async setHiddenBalanceOption(walletId: string, hideBalance: boolean): Promise<void> {
     if (this.wallets[walletId]) {
       this.wallets[walletId].balanceHidden = hideBalance;
@@ -790,30 +419,9 @@ export class WalletService {
     }
   }
 
-  getSendMaxInfo(wallet: MeritWalletClient, opts: any = {}): Promise<any> {
-    return wallet.getSendMaxInfo(opts);
-  };
-
   getProtocolHandler(wallet: MeritWalletClient): string {
     return 'merit';
   }
-
-  copyCopayers(wallet: MeritWalletClient, newWallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let walletPrivKey = this.mwcService.getBitcore().PrivateKey.fromString(wallet.credentials.walletPrivKey);
-      let copayer = 1;
-      let i = 0;
-
-      _.each(wallet.credentials.publicKeyRing, (item) => {
-        let name = item.copayerName || ('copayer ' + copayer++);
-        return newWallet.doJoinWallet(newWallet.credentials.walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {}).then((err) => {
-          //Ignore error is copayer already in wallet
-          if (err && !(err == MWCErrors.COPAYER_IN_WALLET)) return reject(err);
-          if (++i == wallet.credentials.publicKeyRing.length) return resolve();
-        });
-      });
-    });
-  };
 
   /**
    * Gets the ANV for a list of addresses.
@@ -843,45 +451,6 @@ export class WalletService {
     }
   }
 
-  // Check address
-  private isAddressUsed(wallet: MeritWalletClient, byAddress: Array<any>): Promise<any> {
-    return new Promise((resolve, reject) => {
-      return this.persistenceService.getLastAddress(wallet.id).then((addr) => {
-        let used = _.find(byAddress, {
-          address: addr
-        });
-        return resolve(used);
-      }).catch((err) => {
-        return reject(err);
-      });
-    });
-  }
-
-  private createAddress(wallet: MeritWalletClient): Promise<any> {
-    return new Promise((resolve, reject) => {
-      return wallet.createAddress({}).then((address) => {
-        return resolve(address);
-      }).catch((err) => {
-        if (err.code == MWCErrors.MAIN_ADDRESS_GAP_REACHED.code) {
-          return this.getMainAddress(wallet).then((address) => {
-            return resolve(address);
-          });
-        } else {
-          return reject(err);
-        }
-      });
-
-    });
-  }
-
-  private getMainAddress(wallet: MeritWalletClient) {
-    return wallet.getMainAddresses({
-      reverse: true,
-      limit: 1
-    }).then((addr) => {
-      return Promise.resolve(addr[0].address);
-    });
-  }
 
   private getSavedTxs(walletId: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -968,7 +537,7 @@ export class WalletService {
       }
     };
 
-    const easySends = await this.getPendingEasySends(wallet);
+    const easySends = await this.easySendService.updatePendingEasySends(wallet);
     const txsFromLocal: any = await this.getSavedTxs(walletId);
 
     fixTxsUnit(txsFromLocal);
@@ -1178,20 +747,16 @@ export class WalletService {
     return parseInt((size * (1 + safetyMargin)).toFixed(0));
   }
 
-  // An alert dialog
-  private askPassword(name: string, title: string): Promise<any> {
-    return this.popupService.prompt(title, name, null, null);
-  };
 
-  private signAndBroadcast(wallet: MeritWalletClient, publishedTxp: any, password: any): Promise<any> {
+  @accessWallet
+  private signAndBroadcast(wallet: MeritWalletClient, publishedTxp: any): Promise<any> {
     this.logger.info('@@SB: ENTRY');
 
     return new Promise((resolve, reject) => {
 
-      return this.signTx(wallet, publishedTxp, password).then((signedTxp: any) => {
+      return this.signTx(wallet, publishedTxp).then((signedTxp: any) => {
         this.logger.info('@@SB: After Sign');
 
-        this.invalidateCache(wallet);
         if (signedTxp.status == 'accepted') {
           return this.broadcastTx(wallet, signedTxp).then((broadcastedTxp: any) => {
             this.logger.info('@@SB: AfterBroadCast');
@@ -1325,9 +890,6 @@ export class WalletService {
     return walletClient;
   }
 
-  private getPendingEasySends(wallet: MeritWalletClient): Promise<EasySend[]> {
-    return this.easySendService.updatePendingEasySends(wallet);
-  }
 
   private txIsPendingEasySend(tx, easySends: EasySend[]): boolean {
     return _.includes(_.map(easySends, 'txid'), tx.txid);
