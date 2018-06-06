@@ -7,7 +7,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { getEasySendURL } from '@merit/common/models/easy-send';
-
+import { WalletService } from '@merit/common/services/wallet.service';
 
 @IonicPage()
 @Component({
@@ -40,7 +40,8 @@ export class SendInviteAmountView {
               private alertCtrl: AlertController,
               private socialSharing: SocialSharing,
               private platform: Platform,
-              private easySendService: EasySendService
+              private easySendService: EasySendService,
+              private walletService: WalletService
   ) {
     this.address = this.navParams.get('address');
     this.showShareButton = this.platform.is('cordova') && SocialSharing.installed();
@@ -78,7 +79,7 @@ export class SendInviteAmountView {
       const referral = easySend.scriptReferralOpts;
 
       await this.wallet.sendReferral(referral);
-      await this.wallet.sendInvite(referral.address, this.formData.amount);
+      await this.walletService.sendInvite(referral.address, this.formData.amount);
 
       this.link = getEasySendURL(easySend);
       this.wallet.availableInvites -= this.formData.amount;

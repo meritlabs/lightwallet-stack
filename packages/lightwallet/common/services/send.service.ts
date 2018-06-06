@@ -84,7 +84,7 @@ export class SendService {
     if (txData.referralsToSign) {
       for (let referral of txData.referralsToSign) {
         await wallet.sendReferral(referral);
-        await wallet.sendInvite(referral.address);
+        await this.walletService.sendInvite(wallet, referral.address);
       }
     }
 
