@@ -1,12 +1,15 @@
 <div class="wallet-setup_preview">
   <div class="icon">
-    <!-- <img src="{{quest.icon}}" alt=""> -->
+    <merit-icon name="setup"></merit-icon>
+    <strong>+2%</strong>
   </div>
   <div class="details">
     <div class="title">
       <p>{{quest.name}}</p>
     </div>
-    <p class="description">{{quest.shortDescription}}</p>
+    <p class="description">
+      here should be short description... {{quest.shortDescription}}
+    </p>
   </div>
-  <button class="ui-button ui-button--green ui-button--sm" *ngIf="quest.status !== 'compleate'" [routerLink]="[quest.path]">show</button>
+  <button class="ui-button ui-button--green ui-button--sm" *ngIf="quest.status !== 'compleate'" [routerLink]="[quest.path]">PROCEED</button>
 </div>
