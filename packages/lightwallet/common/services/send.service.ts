@@ -8,6 +8,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { clone } from 'lodash';
+import { Events } from 'ionic-angular/util/events';
 
 export interface ISendTxData {
   amount?: number; // micros
@@ -35,8 +36,10 @@ export interface ISendTxData {
 export class SendService {
   constructor(private feeService: FeeService,
               private walletService: WalletService,
-              private loggerService: LoggerService,
-              private persistenceService: PersistenceService2) {}
+              private logger: LoggerService,
+              private events: Events,
+              private persistenceService: PersistenceService2
+  ) {}
 
   async prepareTxp(wallet: MeritWalletClient, amount: number, toAddress: string) {
     if (amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big');
@@ -95,12 +98,45 @@ export class SendService {
     }
   }
 
+  public async publishAndSign( txp: any, wallet: MeritWalletClient): Promise<any> {
+
+    if (txp.status != 'pending') {
+      txp =  await wallet.publishTxProposal({ txp });
+    } else {
+      this.logger.info('TXP IS PENDING');
+    }
+    return this.signAndBroadcast(wallet, txp);
+  }
+
   private async approveTx(txp: any, wallet: MeritWalletClient) {
     if (!wallet.canSign() && !wallet.isPrivKeyExternal()) {
-      this.loggerService.info('No signing proposal: No private key');
-      await this.walletService.onlyPublish(wallet, txp);
+      this.logger.info('No signing proposal: No private key');
+      await this.publishTxp(txp, wallet);
     } else {
-      await this.walletService.publishAndSign(wallet, txp);
+      await this.publishAndSign(txp, wallet);
     }
   }
+
+
+  private async publishTxp(txp: any, wallet: MeritWalletClient) {
+    const publishedTxp = await wallet.publishTxProposal({ txp });
+    this.events.publish('Local:Tx:Publish', publishedTxp);
+  }
+
+
+  private async signAndBroadcast(wallet: MeritWalletClient, publishedTxp: any): Promise<any> {
+
+    const signedTxp = await wallet.signTxProposal(publishedTxp, null);
+
+    if (signedTxp.status == 'accepted') {
+      const broadcastedTxp = await  wallet.broadcastTxProposal(signedTxp);
+      this.events.publish('Local:Tx:Broadcast', broadcastedTxp);
+      return broadcastedTxp;
+    } else {
+      this.events.publish('Local:Tx:Signed', signedTxp);
+      return signedTxp;
+    }
+  }
+
+
 }

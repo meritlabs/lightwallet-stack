@@ -150,7 +150,7 @@ export class SendConfirmationView {
       //   });
     };
 
-    if (this.walletService.isEncrypted(this.txData.wallet)) {
+    if (this.txData.wallet.isPrivKeyEncrypted()) {
       return showPassPrompt();
     } else {
 

@@ -81,10 +81,6 @@ export class API {
 
   // Mutated from other services (namely wallet.service and profile.service)
   public id: string; // TODO: Re-evaluate where this belongs.
-  public completeHistory: any; // This is mutated from Wallet.Service.ts; for now.
-  public cachedStatus: any;
-  public cachedActivity: any;
-  public cachedTxps: any;
   public pendingTxps: any;
   public totalBalanceMicros: number;
   public scanning: boolean;
@@ -2635,6 +2631,23 @@ export class API {
 
     return this._doGetRequest(url);
   };
+
+  encryptGlobalSendLink(link: string) {
+    return this._encryptMessage(link, this.credentials.sharedEncryptingKey);
+  }
+
+  decryptGlobalSendLink(link: string) {
+    return this._encryptMessage(link, this.credentials.sharedEncryptingKey);
+  }
+
+  registerGlobalSend() {
+
+  }
+
+
+
+
+
 
   /**
    * Get wallet status based on a string identifier (one of: walletId, address, txid)
