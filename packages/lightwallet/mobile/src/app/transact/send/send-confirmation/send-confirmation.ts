@@ -116,7 +116,7 @@ export class SendConfirmationView {
                   showPassPrompt(true);
                 } else {
                   try {
-                    this.walletService.decrypt(this.txData.wallet, data.password);
+                    this.walletService.decryptWallet(this.txData.wallet, data.password);
                     this.send(data.password);
                   } catch (e) {
                     showPassPrompt(true);
@@ -150,7 +150,7 @@ export class SendConfirmationView {
       //   });
     };
 
-    if (this.walletService.isEncrypted(this.txData.wallet)) {
+    if (this.walletService.isWalletEncrypted(this.txData.wallet)) {
       return showPassPrompt();
     } else {
 
@@ -186,7 +186,7 @@ export class SendConfirmationView {
     } finally {
       loadingSpinner.dismiss();
       this.txData.referralsToSign = [];
-      if (walletPassword) this.walletService.encrypt(this.txData.wallet, walletPassword);
+      if (walletPassword) this.walletService.encryptWallet(this.txData.wallet, walletPassword);
     }
   }
 
