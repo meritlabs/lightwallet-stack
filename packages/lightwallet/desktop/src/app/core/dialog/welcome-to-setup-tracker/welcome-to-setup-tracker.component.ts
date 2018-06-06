@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-welcome-to-setup-tracker',
   templateUrl: './welcome-to-setup-tracker.component.html',
-  styleUrls: ['./welcome-to-setup-tracker.component.sass']
+  styleUrls: ['./welcome-to-setup-tracker.component.sass'],
 })
-export class WelcomeToSetupTrackerComponent implements OnInit {
+export class WelcomeToSetupTrackerComponent {
+  constructor(private formBuilder: FormBuilder) {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  formData: FormGroup = this.formBuilder.group({
+    trackerStatus: true,
+  });
 }

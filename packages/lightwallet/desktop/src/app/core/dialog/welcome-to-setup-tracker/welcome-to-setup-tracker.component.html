@@ -6,8 +6,27 @@
     <div class="wallet_info">
 
     </div>
-    <div class="items">
-
+    <div class="description">
+      <p>
+        Need help getting started? We're here to make sure setting up your wallet and getting up and running with Merit is as easy
+        as possible!
+      </p>
+      <ul>
+        <li>Look for the progress icon
+          <merit-icon name="setup"></merit-icon> throughtout the app. The icon indicates there is a setup action you can take to customize your wallet
+          and get more involved in the Merit ecosystem.</li>
+        <li>
+          Access the Setup Tracker in the left side navigation menu to track your overall progress and learn about all there is to
+          do the Merit App.
+        </li>
+        <li>
+          <form [formGroup]="formData" class="settings">
+            <p>If you don't want to setup your wallet, you can disable Setup tracker
+              <ui-checkbox formControlName="trackerStatus"></ui-checkbox>
+            </p>
+          </form>
+        </li>
+      </ul>
     </div>
     <div class="navigation">
       <button class="item item--full" (click)="dismiss.emit()">
