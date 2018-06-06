@@ -212,80 +212,44 @@ export class WalletService {
 
   /** =================== CREATE WALLET METHODS ================ */
 
+  createDefaultWallet(parentAddress: string, alias: string) {
+    return this.createWallet({ parentAddress, alias });
+  }
+
   // TODO add typings for `opts`
   async createWallet(opts: any) {
-    const wallet = await this.doCreateWallet(opts);
-    wallet.name = opts.name || 'Personal Wallet';
-    await this.profileService.addWallet(wallet);
-    return wallet;
-  }
-
-  createDefaultWallet(parentAddress: string, alias: string) {
-    const opts: any = {
-      m: 1,
-      n: 1,
-      networkName: ENV.network,
-      parentAddress,
-      alias
-    };
-    return this.createWallet(opts);
-  }
-
-
-  // Creates a wallet on BWC/BWS
-  private async doCreateWallet(opts: any): Promise<any> {
     const showOpts = _.clone(opts);
     if (showOpts.extendedPrivateKey) showOpts.extendedPrivateKey = '[hidden]';
     if (showOpts.mnemonic) showOpts.mnemonic = '[hidden]';
 
     this.logger.debug('Creating Wallet:', showOpts);
 
-    const seed = async () => {
-      const walletClient: MeritWalletClient = await this.seedWallet(opts);
-      let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
-      let myName = opts.myName || 'me'; // TODO GetTextCatalog
+    const wallet: MeritWalletClient = await this.seedWallet(opts);
+    let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
+    let myName = opts.myName || 'me'; // TODO GetTextCatalog
+    let m = opts.m || 1;
+    let n = opts.n || 1;
 
-      await walletClient.createWallet(name, myName, opts.m, opts.n, {
-        network: opts.networkName,
-        singleAddress: opts.singleAddress,
-        walletPrivKey: opts.walletPrivKey,
-        parentAddress: opts.parentAddress,
-        alias: opts.alias
-      });
+    await wallet.createWallet(name, myName, m, n, {
+      network: ENV.network,
+      singleAddress: opts.singleAddress,
+      walletPrivKey: opts.walletPrivKey,
+      parentAddress: opts.parentAddress,
+      alias: opts.alias
+    });
 
-      // TODO: Subscribe to ReferralTxConfirmation
-      return walletClient;
-    };
-
-    return Observable.defer(() => seed())
-      .retryWhen(errors =>
-        errors
-          .zip(Observable.range(1, 3))
-          .mergeMap(([err, i]) => {
-            this.logger.warn('Error creating wallet in DCW: ', err);
-            if (err == MWCErrors.CONNECTION_ERROR && i < 3) {
-              return Observable.timer(2000);
-            }
-
-            if (err && err.message === 'Checksum mismatch') {
-              err = MWCErrors.REFERRER_INVALID;
-            }
-
-            return Observable.throw(err);
-          })
-      )
-      .toPromise();
+    await this.profileService.addWallet(wallet);
+    // TODO: Subscribe to ReferralTxConfirmation
+    return wallet;
   }
 
   // TODO: Rename this.
   private async seedWallet(opts: any): Promise<MeritWalletClient> {
-    opts = opts ? opts : {};
+
     let walletClient = this.mwcService.getClient(null, opts);
-    let network = opts.networkName || ENV.network;
 
     if (opts.mnemonic) {
       try {
-        // TODO: Type the walletClient
         return this.mnemonicService.seedFromMnemonic(opts, walletClient);
       } catch (ex) {
         this.logger.info(ex);
@@ -294,7 +258,7 @@ export class WalletService {
     } else if (opts.extendedPrivateKey) {
       try {
         walletClient.seedFromExtendedPrivateKey(opts.extendedPrivateKey, {
-          network: network,
+          network:  ENV.network,
           account: opts.account || 0,
           derivationStrategy: opts.derivationStrategy || 'BIP44'
         });
@@ -314,27 +278,11 @@ export class WalletService {
         throw new Error('Could not create using the specified extended key'); // TODO GetTextCatalog
       }
     } else {
-      let lang = this.languageService.getCurrent();
-      try {
         walletClient.seedFromRandomWithMnemonic({
-          network: network,
+          network:  ENV.network,
           passphrase: opts.passphrase,
-          language: lang,
           account: 0
         });
-      } catch (e) {
-        this.logger.info('Error creating recovery phrase: ' + e.message);
-        if (e.message.indexOf('language') > 0) {
-          this.logger.info('Using default language for recovery phrase');
-          walletClient.seedFromRandomWithMnemonic({
-            network: network,
-            passphrase: opts.passphrase,
-            account: 0
-          });
-        } else {
-          throw new Error(e);
-        }
-      }
     }
     return walletClient;
   }
@@ -372,11 +320,7 @@ export class WalletService {
   /** ================ PREFERENCES METHODS ========================  **/
 
   async setHiddenBalanceOption(walletId: string, hideBalance: boolean): Promise<void> {
-    const wallets = this.profileService.getWallets();
-    let wallet = wallets.find(w => w.id == walletId);
-    if (wallet) {
       await this.persistenceService.setHideBalanceFlag(walletId, String(hideBalance));
-    }
   }
 
   private updateRemotePreferencesFor(clients: any[], prefs: any): Promise<any> {
