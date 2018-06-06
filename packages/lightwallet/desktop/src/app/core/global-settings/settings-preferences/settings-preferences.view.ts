@@ -5,7 +5,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { DeleteWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
-import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { isWalletEncrypted } from '@merit/common/utils/wallet';
@@ -24,10 +24,9 @@ declare const WEBPACK_CONFIG: any;
 @Component({
   selector: 'view-settings-preferences',
   templateUrl: './settings-preferences.view.html',
-  styleUrls: ['./settings-preferences.view.sass']
+  styleUrls: ['./settings-preferences.view.sass'],
 })
 export class SettingsPreferencesView implements OnInit, OnDestroy {
-
   get isElectron(): boolean {
     return ElectronService.isElectronAvailable;
   }
@@ -35,7 +34,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
   formData: FormGroup = this.formBuilder.group({
     pushNotifications: false,
     emailNotifications: false,
-    email: [''] // TODO(ibby): validate email
+    email: [''], // TODO(ibby): validate email
   });
 
   get emailNotificationsEnabled() {
@@ -47,18 +46,19 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
 
   private subs: any[] = [];
 
-
-  constructor(private formBuilder: FormBuilder,
-              private state: State<IRootAppState>,
-              private persistenceService: PersistenceService2,
-              private emailNotificationsService: EmailNotificationsService,
-              private pushNotificationsService: PushNotificationsService,
-              private toastCtrl: ToastControllerService,
-              private confirmDialogCtrl: ConfirmDialogControllerService,
-              private passwordPromptCtrl: PasswordPromptController,
-              private profileService: ProfileService,
-              private store: Store<IRootAppState>,
-              private router: Router) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private state: State<IRootAppState>,
+    private persistenceService: PersistenceService2,
+    private emailNotificationsService: EmailNotificationsService,
+    private pushNotificationsService: PushNotificationsService,
+    private toastCtrl: ToastControllerService,
+    private confirmDialogCtrl: ConfirmDialogControllerService,
+    private passwordPromptCtrl: PasswordPromptController,
+    private profileService: ProfileService,
+    private store: Store<IRootAppState>,
+    private router: Router
+  ) {
     if (typeof WEBPACK_CONFIG !== 'undefined') {
       this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
       this.version = WEBPACK_CONFIG.VERSION;
@@ -81,8 +81,9 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     );
 
     this.subs.push(
-      this.formData.get('pushNotifications').valueChanges
-        .pipe(
+      this.formData
+        .get('pushNotifications')
+        .valueChanges.pipe(
           debounceTime(100),
           tap((enabled: boolean) => {
             if (enabled) {
@@ -103,7 +104,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
           tap(() =>
             this.emailNotificationsService.updateEmail({
               enabled: this.formData.get('emailNotifications').value,
-              email: this.formData.get('email').value
+              email: this.formData.get('email').value,
             })
           )
         )
@@ -116,8 +117,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
   ngOnDestroy() {
     try {
       this.subs.forEach(sub => sub.unsubscribe());
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   logout() {
@@ -128,11 +128,11 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
         {
           text: 'Delete',
           value: 'delete',
-          class: 'primary danger'
+          class: 'primary danger',
         },
         {
-          text: 'Cancel'
-        }
+          text: 'Cancel',
+        },
       ]
     );
 
@@ -140,20 +140,27 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
       if (value === 'delete') {
         // TODO delete vaults
         try {
-          const wallets = await this.store.select(selectWallets).pipe(take(1)).toPromise();
-          await Promise.all(wallets.map(async (wallet: DisplayWallet) => {
-            if (isWalletEncrypted(wallet.client)) {
-              await new Promise<void>((resolve, reject) => {
-                this.passwordPromptCtrl.createForWallet(wallet)
-                  .onDidDismiss((password: string) => {
+          const wallets = await this.store
+            .select(selectWallets)
+            .pipe(take(1))
+            .toPromise();
+          await Promise.all(
+            wallets.map(async (wallet: DisplayWallet) => {
+              if (isWalletEncrypted(wallet.client)) {
+                await new Promise<void>((resolve, reject) => {
+                  this.passwordPromptCtrl.createForWallet(wallet).onDidDismiss((password: string) => {
                     if (password) resolve();
                     else reject('You must decrypt you wallet before deleting it.');
                   });
-              });
-            }
+                });
+              }
 
-            this.store.dispatch(new DeleteWalletAction(wallet.id));
-          }));
+              this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, false);
+              this.persistenceService.setViewSettings(ViewSettingsKey.recordPassphrase, false);
+
+              this.store.dispatch(new DeleteWalletAction(wallet.id));
+            })
+          );
 
           this.toastCtrl.success('All wallets are now deleted!');
         } catch (e) {
