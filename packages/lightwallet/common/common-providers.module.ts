@@ -23,7 +23,7 @@ import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { VaultsService } from '@merit/common/services/vaults.service';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { QuestsService } from '@merit/common/services/quests.service';
+import { AchievementsService } from '@merit/common/services/achievements.service';
 
 @NgModule()
 export class CommonProvidersModule {
@@ -55,7 +55,7 @@ export class CommonProvidersModule {
         AddressService,
         UnlockRequestService,
         WalletService,
-        QuestsService,
+        AchievementsService,
       ],
     };
   }

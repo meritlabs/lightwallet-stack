@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
 import { Quests, Quest } from '@merit/common/models/quest';
-import { QuestsService } from '@merit/common/services/quests.service';
+import { AchievementsService } from '@merit/common/services/achievements.service';
 
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -15,7 +15,11 @@ import { FormBuilder, FormGroup } from '@angular/forms';
   styleUrls: ['./wallet-setup-list.view.sass'],
 })
 export class WalletSetupListView implements OnInit {
-  constructor(private store: Store<IRootAppState>, private service: QuestsService, private formBuilder: FormBuilder) {}
+  constructor(
+    private store: Store<IRootAppState>,
+    private service: AchievementsService,
+    private formBuilder: FormBuilder
+  ) {}
 
   questState$: Observable<Quests> = this.store.select('quests');
 
@@ -24,7 +28,7 @@ export class WalletSetupListView implements OnInit {
   });
 
   ngOnInit() {
-    this.service.loadQuests();
+    this.service.loadaAchievements();
   }
   log(item) {
     console.log(item);
