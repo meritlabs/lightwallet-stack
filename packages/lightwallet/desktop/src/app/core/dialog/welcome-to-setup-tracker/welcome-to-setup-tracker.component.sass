@@ -1,7 +1,7 @@
 @import "~styles/v1/common/import-sass"
 
 \:host
-  background: rgba(255, 255, 255,  .2 )
+  background: rgba(255, 255, 255,  .2)
   display: block
   width: 100vw
   height: 100vh
@@ -33,18 +33,23 @@
   .modal_title
     +font(500, 28px, 30px, $ebony-clay)
     text-align: center
-    margin-bottom: 50px
-  .wallet_info
-    +font(400, 20px, 20px, $ebony-clay)
-    display: flex
-    justify-content: center
-    align-items: center
-    margin-bottom: 45px
+    margin-bottom: 30px
+  .description
+    +font(400, 18px, 24px, $ebony-clay)
+    max-width: 500px
+    width: 100%
+    margin: 0 auto
     merit-icon
-      background: $ebony-clay
-      width: 40px
-      height: 40px
-      margin-right: 15px
+      background: $blue
+      width: 25px
+      height: 20px
+    p, ul li
+      margin-bottom: 18px
+    ul
+      list-style-type: decimal
+      padding-left: 20px
+    .settings ui-checkbox
+      display: inline-block
   .navigation
     position: absolute
     width: 100%
@@ -62,41 +67,6 @@
       +font(500, 18px, 18px, $white)
       border: 0px
       +transition(.1s, linear)
-      &--prev
-        border-right: 1px solid $white
-      &--next
-        border-left: 1px solid $white
       &:hover
         box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.2)
         text-shadow: 0 0 5px rgba(0, 0, 0, 0.1)
- 
-.mnemonic
-  &_button
-    text-align: center
-  .ui-button
-    margin-bottom: 20px
-  .box
-    border: 1px solid $blue
-    font-weight: bold
-    padding: 40px 20px 20px
-    border-radius: 4px
-    position: relative
-    text-align: center
-    font-size: 28px
-    line-height: 35px
-    .clip
-      position: absolute
-      width: 90px
-      margin: auto
-      left: 0
-      right: 0
-      top: 0
-      line-height: 14px
-      font-size: 14px
-      .ui-button
-        width: 100%
-        border-top: 0
-        border-top-left-radius: 0
-        border-top-right-radius: 0
-  .blured
-    filter: blur(5px)
