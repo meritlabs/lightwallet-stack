@@ -2,11 +2,11 @@ import { Achievement, Achievements } from '@merit/common/models/achievement';
 import { Action } from '@ngrx/store';
 
 const DEFAULT_STATE = {
-  quests: [],
+  achievements: [],
 };
 
 export interface IAchivementsState {
-  quests: Achievement[];
+  achievements: Achievement[];
 }
 
 export function AchivementsReducer(state: IAchivementsState = DEFAULT_STATE, action: AchivementsAction) {
@@ -14,7 +14,7 @@ export function AchivementsReducer(state: IAchivementsState = DEFAULT_STATE, act
     case AchivementsAction.LOAD_QUESTS:
       return {
         ...state,
-        quests: [...action.payload],
+        achievements: [...action.payload],
       };
     default:
       return state;

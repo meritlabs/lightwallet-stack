@@ -10,5 +10,5 @@ export class Achievement {
 }
 
 export interface Achievements {
-  quests: Achievement[];
+  achievements: Achievement[];
 }
