@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 
 import { Observable } from 'rxjs/Observable';
 
-import { Quests, Quest } from '@merit/common/models/quest';
+import { Achievements, Achievement } from '@merit/common/models/achievement';
 import { AchievementsService } from '@merit/common/services/achievements.service';
 
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -21,7 +21,7 @@ export class WalletSetupListView implements OnInit {
     private formBuilder: FormBuilder
   ) {}
 
-  questState$: Observable<Quests> = this.store.select('quests');
+  questState$: Observable<Achievements> = this.store.select('quests');
 
   formData: FormGroup = this.formBuilder.group({
     trackerStatus: true,

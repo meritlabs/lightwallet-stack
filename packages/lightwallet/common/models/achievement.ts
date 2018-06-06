@@ -1,4 +1,4 @@
-export class Quest {
+export class Achievement {
   constructor(
     slug: string,
     name: string,
@@ -9,6 +9,6 @@ export class Quest {
   ) {}
 }
 
-export interface Quests {
-  quests: Quest[];
+export interface Achievements {
+  quests: Achievement[];
 }
