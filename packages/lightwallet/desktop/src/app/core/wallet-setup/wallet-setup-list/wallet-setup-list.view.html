@@ -1,13 +1,36 @@
 <div class="wallet-setup_title title--primary">
   <p>Wallet setup tracker</p>
 </div>
-<div class="wallet-setup_description">
-  <div class="readiness">
-    <merit-icon name="setup"></merit-icon>
-    50%
+<div class="wallet-setup_wrap">
+  <div class="wallet-setup_column">
+    <div class="wallet-setup_preview wallet-setup_preview--settings">
+      <div class="icon">
+        <merit-icon name="setup"></merit-icon>
+      </div>
+      <form [formGroup]="formData" class="details_settings">
+        <div class="details_title">
+          <p>Disable Setup Tracker</p>
+        </div>
+        <div class="global-settings__group__item__column global-settings__group__item__column--30">
+          <ui-checkbox formControlName="trackerStatus"></ui-checkbox>
+        </div>
+      </form>
+    </div>
   </div>
-  <div class="caption">
-    <p>Here should be a caption for this feature =)</p>
+  <div class="wallet-setup_column">
+    <div class="wallet-setup_description">
+      <div class="readiness">
+        <merit-icon name="setup"></merit-icon>
+        <div>
+          <p class="title">
+            50%
+          </p>
+          <div class="caption">
+            <p>Your wallet setup readiness</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <div class="wallet-setup_wrap">

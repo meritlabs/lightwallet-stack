@@ -34,9 +34,7 @@
   display: flex
   align-items: center
 .wallet-setup_description
-  border-bottom: 1px solid $blue
-  margin-bottom: 40px
-  padding-bottom: 40px
+  padding-bottom: 20px
   +font(300, 18px, 26px)
   p
     margin-bottom: 10px
@@ -67,3 +65,46 @@
       color: $blue
       opacity: .7
       margin-right: 10px
+.wallet-setup_preview
+  display: flex
+  margin-bottom: 30px
+  align-items: center
+  justify-content: space-between
+  position: relative
+  background: $white
+  border-radius: 5px
+  box-shadow: 2px 2px 10px rgba(0,0,0, .1)
+  padding: 20px
+  .icon
+    width: 60px
+    height: 60px
+    merit-icon
+      opacity: .4
+    strong
+      +font(900, 12px, 12px, $blue)
+  .details
+    padding: 0 20px
+    width: 100%
+    box-sizing: border-box
+    &_title
+      +font(300, 18px, 26px, $blue)
+      position: relative
+      display: inline-block
+    &_description
+      +font(300, 15px, 26px, $grey-2)
+    &_settings
+      display: flex
+      align-items: center
+.wallet-setup_preview--settings
+  justify-content: flex-start
+  .icon
+    align-items: center
+    justify-content: center
+    display: flex
+    merit-icon
+      background: $blue
+      opacity: 1
+  ui-checkbox
+    position: relative
+    margin-left: 10px
+    top: 2px

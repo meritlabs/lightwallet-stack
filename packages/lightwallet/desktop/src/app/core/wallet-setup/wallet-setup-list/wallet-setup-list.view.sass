@@ -5,14 +5,21 @@
   .wallet-setup_column
     width: calc(50% - 40px)
     .title
-      margin-bottom: 20px
+      +font(600, 22px, 30px, $blue)
+      margin-bottom: 30px
   .readiness
     display: flex
+    margin-right: 30px
     align-items: flex-end
-    +font(600, 50px, 50px, $blue)
-    margin-bottom: 30px
     merit-icon
-      width: 150px
-      height: 125px
-      margin-right: 40px
+      width: 120px
+      height: 95px
+      margin-right: 20px
       background: linear-gradient(to right, $blue 50%,$slate-grey 50%);
+    .title
+      +font(600, 50px, 50px, $blue)
+      margin-bottom: 10px
+    .caption
+      +font(400, 18px, 24px)
+      p
+        margin-bottom: 0
