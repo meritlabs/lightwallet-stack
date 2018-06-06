@@ -37,6 +37,9 @@ export class SendValidator {
     if (control.parent && control.parent.get('type').value === 'classic')
       return null;
 
+    if (!value || value.trim() == '')
+      return null;
+
     if (!validatePhoneNumber(value) && !validateEmail(value))
       return {
         InvalidDestination: true

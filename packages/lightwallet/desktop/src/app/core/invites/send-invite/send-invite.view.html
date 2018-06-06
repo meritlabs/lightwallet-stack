@@ -7,14 +7,12 @@
     <ng-container *ngIf="easySendDelivered === undefined">
       Your MeritMoney Link is now ready to share:
     </ng-container>
-    <ng-template #easySendDelivered>
-      <ng-container *ngIf="easySendDelivered === true">
-        Your MeritInvite Link is ready and was successfully delivered to your recipient!
-      </ng-container>
-      <ng-container *ngIf="easySendDelivered === false">
-        Your MeritInvite Link is ready, however, we were not able to deliver it to your recipient. You can copy the link and send it to them directly:
-      </ng-container>
-    </ng-template>
+    <ng-container *ngIf="easySendDelivered === true">
+      Your MeritInvite Link is ready and was successfully delivered to your recipient!
+    </ng-container>
+    <ng-container *ngIf="easySendDelivered === false">
+      Your MeritInvite Link is ready, however, we were not able to deliver it to your recipient. You can copy the link and send it to them directly:
+    </ng-container>
     <div class="easysend-url-container" [clip]="easySendUrl" (click)="onGlobalSendCopy()">
       <small class="click_to_copy">Click to copy</small>
       {{ easySendUrl }}
