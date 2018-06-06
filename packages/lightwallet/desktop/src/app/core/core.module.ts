@@ -22,7 +22,6 @@ import { InvitesComponent } from './community/invites/invites.component';
 import { CoreRoutingModule } from './core-routing.module';
 import { CoreView } from './core.component';
 import { DashboardView } from './dashboard/dashboard.view';
-import { WelcomeGuideComponent } from './dashboard/welcome-guide/welcome-guide.component';
 import { GlobalSettingsView } from './global-settings/global-settings.view';
 import { SettingsPreferencesView } from './global-settings/settings-preferences/settings-preferences.view';
 import { SettingsSessionLogView } from './global-settings/settings-session-log/settings-session-log.view';
@@ -40,6 +39,7 @@ import { WalletSetupView } from './wallet-setup/wallet-setup.view';
 import { TaskPreviewComponent } from './wallet-setup/task-preview/task-preview.component';
 import { WalletSetupListView } from './wallet-setup/wallet-setup-list/wallet-setup-list.view';
 import { SpreadMasterComponent } from './wallet-setup/tasks/spread-master/spread-master.component';
+import { RecordPassphraseComponent } from './dialog/record-passphrase/record-passphrase.component';
 
 export function getPages() {
   return [
@@ -91,7 +91,7 @@ export function getPages() {
     CoreView,
     ...getPages(),
     SendTourComponent,
-    WelcomeGuideComponent,
+    RecordPassphraseComponent,
     TaskPreviewComponent,
     SpreadMasterComponent,
   ],

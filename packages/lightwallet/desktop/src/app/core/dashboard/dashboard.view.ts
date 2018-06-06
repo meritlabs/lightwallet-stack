@@ -13,29 +13,25 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'view-dashboard',
   templateUrl: './dashboard.view.html',
-  styleUrls: ['./dashboard.view.sass']
+  styleUrls: ['./dashboard.view.sass'],
 })
 export class DashboardView {
-
-  showGuide: boolean = !('hideWalletWelcomeWindow' in localStorage && localStorage.getItem('hideWalletWelcomeWindow') === 'true');
+  showGuide: boolean = !(
+    'hideWalletWelcomeWindow' in localStorage && localStorage.getItem('hideWalletWelcomeWindow') === 'true'
+  );
   amount: number = null;
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   totals$: Observable<any> = this.store.select(selectWalletTotals);
-  transactions$: Observable<IDisplayTransaction[]> = this.store.select(selectTransactions).pipe(
-    map((transactions: IDisplayTransaction[]) => isArray(transactions) ? transactions.slice(0, 5) : [])
-  );
+  transactions$: Observable<IDisplayTransaction[]> = this.store
+    .select(selectTransactions)
+    .pipe(map((transactions: IDisplayTransaction[]) => (isArray(transactions) ? transactions.slice(0, 5) : [])));
   transactionsLoading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
 
   constructor(private store: Store<IRootAppState>, private sanitizer: DomSanitizer) {}
 
   getHistoryStyle(length: number) {
-    return this.sanitizer.bypassSecurityTrustStyle('height: ' + (length * 110) + 'px');
-  }
-
-  onGuideDismiss() {
-    localStorage.setItem('hideWalletWelcomeWindow', 'true');
-    this.showGuide = false;
+    return this.sanitizer.bypassSecurityTrustStyle('height: ' + length * 110 + 'px');
   }
 
   sendSubmit($event) {
