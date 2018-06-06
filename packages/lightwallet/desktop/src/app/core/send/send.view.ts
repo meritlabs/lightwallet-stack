@@ -77,7 +77,7 @@ export class SendView implements OnInit {
     selectedCurrency: [],
     feeIncluded: [false],
     wallet: [null, SendValidator.validateWallet],
-    type: [],
+    type: [SendMethodType.Easy],
     password: [],
     destination: ['', SendValidator.validateGlobalSendDestination]
   });
@@ -277,7 +277,7 @@ export class SendView implements OnInit {
     }
 
     this.type.valueChanges.pipe(
-      filter((value: string) => (value === 'easy' && this.address.invalid) || (value === 'classic' && this.address.valid && !this.address.value)),
+      filter((value: string) => (value === SendMethodType.Easy && this.address.invalid) || (value === SendMethodType.Classic && this.address.valid && !this.address.value)),
       tap(() => this.address.updateValueAndValidity({ onlySelf: false }))
     ).subscribe();
 
