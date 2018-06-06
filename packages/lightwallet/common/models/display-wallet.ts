@@ -116,7 +116,7 @@ export class DisplayWallet {
   }
 
   async updateStatus() {
-    this.client.status = await this.walletService.getStatus(this.client, { force: true });
+    this.client.status = await this.client.getStatus();
     this.inviteRequests = (await this.client.getUnlockRequests())
       .filter((request: IUnlockRequest) => !request.isConfirmed)
       .map((request: IUnlockRequest) => {

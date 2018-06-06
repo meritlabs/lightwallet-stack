@@ -113,7 +113,8 @@ export class VaultsService {
       network: data.wallet.credentials.network
     };
 
-    const password = await this.walletService.prepare(data.wallet);
+    //todo use wallet decrypt-encrypt decorator
+    //const password = await this.walletService.prepare(data.wallet);
     await data.wallet.sendReferral(scriptReferralOpts);
     await data.wallet.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toHex());
     vault.scriptPubKey = vault.scriptPubKey.toBuffer().toString('hex');
@@ -121,7 +122,8 @@ export class VaultsService {
     const depositData = {amount: data.amount, address: vault.address, scriptPubKey: vault.scriptPubKey};
     const txp = await this.getDepositTxp(depositData, data.wallet);
     const pubTxp = await this.walletService.publishTx(data.wallet, txp);
-    const signedTxp = await this.walletService.signTx(data.wallet, pubTxp, password);
+    //todo wallet should be decrypted by the moment
+    const signedTxp = await this.walletService.signTx(data.wallet, pubTxp);
 
     vault.coins = [signedTxp];
     vault.name = data.vaultName;

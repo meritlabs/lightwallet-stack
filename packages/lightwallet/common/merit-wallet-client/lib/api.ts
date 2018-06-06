@@ -2262,7 +2262,7 @@ export class API {
    * @param {Object} txp
    * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
    */
-  async signTxProposal(txp: any, password: string): Promise<any> {
+  async signTxProposal(txp: any, password?: string): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     $.checkArgument(txp.creatorId);
 
