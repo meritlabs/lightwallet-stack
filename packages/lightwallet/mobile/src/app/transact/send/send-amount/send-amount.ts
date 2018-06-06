@@ -354,9 +354,9 @@ export class SendAmountView {
 
   private async createTxp() {
 
-    if (this.walletService.isEncrypted(this.selectedWallet) && this.sendMethod.type == SendMethodType.Easy) {
+    if (this.walletService.isWalletEncrypted(this.selectedWallet) && this.sendMethod.type == SendMethodType.Easy) {
       if (this.walletPassword) {
-        this.walletService.decrypt(this.selectedWallet, this.walletPassword);
+        this.walletService.decryptWallet(this.selectedWallet, this.walletPassword);
       } else {
         try {
           await this.getPassword();
@@ -400,7 +400,7 @@ export class SendAmountView {
     } finally {
       this.feeLoading = false;
       if (this.walletPassword) {
-        this.walletService.encrypt(this.selectedWallet, this.walletPassword);
+        this.walletService.encryptWallet(this.selectedWallet, this.walletPassword);
       }
     }
 
@@ -434,7 +434,7 @@ export class SendAmountView {
                   this.getPassword(true);
                 } else {
                   try {
-                    this.walletService.decrypt(this.txData.wallet, data.password);
+                    this.walletService.decryptWallet(this.txData.wallet, data.password);
                     this.walletPassword = data.password;
                     resolve();
                   } catch (e) {
