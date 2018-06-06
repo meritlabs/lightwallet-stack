@@ -27,9 +27,18 @@ export class MarketLoginView implements OnInit {
     try {
       const authData = await MeritMarketClient.fromObj(profile).login();
 
-
       if (authData.token) {
-        window.location.replace(`${ENV.marketUrl}?token=${encodeURIComponent(authData.token)}`);
+        // in case we're in a top window just redirect to market
+        if (!window.opener) {
+          window.location.replace(`${ENV.marketUrl}?token=${encodeURIComponent(authData.token)}`);
+        } else {
+          // else we're in a popup and can send token trough postMessage
+          const message = JSON.stringify({
+            message: "Lightwallet.API.MarketAuth",
+            data: { token: authData.token }
+          });
+          window.opener.postMessage(message, ENV.marketUrl);
+        }
       }
     } catch (e) {
       this.error = true;
