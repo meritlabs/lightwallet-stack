@@ -206,6 +206,10 @@ export class ProfileService {
   }
 
   storeProfile() {
+
+    /** do not save profile if we have wallet in temporary mode */
+    if (this.wallets.find(w => !w.credentialsSaveAllowed)) return;
+
     let profile = {
       version: '2.0.0',
       wallets: this.wallets.map(w => w.toObj()),

@@ -127,6 +127,9 @@ export class API {
   public availableInvites: number = 0;
   public pendingInvites: number = 0;
 
+  /** is disabled when wallet is temporary decrypted */
+  public credentialsSaveAllowed: boolean = true;
+
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
     this.request = opts.request || request;

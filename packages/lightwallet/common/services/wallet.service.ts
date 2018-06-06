@@ -16,6 +16,7 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { Events } from 'ionic-angular/util/events';
+import { AlertController } from 'ionic-angular';
 import * as _ from 'lodash';
 
 import 'rxjs/add/observable/defer';
@@ -28,13 +29,83 @@ import 'rxjs/add/operator/retryWhen';
 import 'rxjs/add/operator/zip';
 import { Observable } from 'rxjs/Observable';
 
+
+function accessWallet(target, key: string, descriptor: any) {
+
+  function askForPassword(wallet) {
+    return new Promise((resolve, reject) => {
+      let showPassPrompt = (highlightInvalid = false) => {
+        this.alertCtrl
+          .create({
+            title: 'Enter spending password',
+            cssClass: highlightInvalid ? 'invalid-input-prompt password-prompt' : 'password-prompt',
+            inputs: [ { name: 'password', placeholder: 'Password', type: 'text' } ],
+            buttons: [
+              {text: 'Cancel', role: 'cancel', handler: () => { reject(); }},
+              { text: 'Ok', handler: data => {
+                if (!data.password) {
+                  showPassPrompt(true);
+                } else {
+                  try {
+                    wallet.decryptPrivateKey(data.password);
+                    wallet.encryptPrivateKey(data.password);
+                    resolve(data.password);
+                  } catch (e) {
+                    showPassPrompt(true);
+                  }
+                }
+              }
+              }
+            ]
+          }).present();
+      };
+
+      showPassPrompt();
+    });
+  }
+
+  return {
+    value: async function (...args:any[]) {
+
+      let wallet = args[0];
+      if (!wallet || !wallet.credentials) {
+        throw new Error(`first argument of ${key} method should be type of MeritWalletClient so we can check access`);
+      }
+
+      let password = null;
+      if (wallet.isPrivKeyEncrypted()) {
+        try {
+          password = await askForPassword.apply(this, [wallet]);
+        } catch (e) {
+          throw new Error('No access to wallet');
+        }
+      }
+
+      if (password) {
+        wallet.decryptPrivateKey(password);
+        wallet.credentialsSaveAllowed = false;
+      }
+      try {
+        var result = await descriptor.value.apply(this, args);
+      } finally {
+        if (password) {
+          wallet.encryptPrivateKey(password);
+          wallet.credentialsSaveAllowed = false;
+        }
+      }
+      return result;
+    }
+
+  };
+}
+
+
 /* Refactor CheckList:
  - Bwc Error provider
  - Remove ongoingProcess provider, and handle Loading indicators in controllers
  - Decouple the tight dependencies on ProfileService; and create logical separation concerns
  - Ensure that anything returning a promise has promises through the stack.
  */
-
 @Injectable()
 export class WalletService {
 
@@ -65,9 +136,12 @@ export class WalletService {
               private languageService: LanguageService,
               private mnemonicService: MnemonicService,
               private easySendService: EasySendService,
-              private events: Events) {
+              private events: Events,
+              private alertCtrl: AlertController
+  ) {
     this.logger.info('Hello WalletService Service');
   }
+
 
   invalidateCache(wallet: MeritWalletClient) {
     if (wallet.cachedStatus)
@@ -1320,6 +1394,5 @@ export class WalletService {
       throw new Error('Could not import. Check input file and spending password'); // TODO getTextCatalog
     }
   }
-
 
 }
