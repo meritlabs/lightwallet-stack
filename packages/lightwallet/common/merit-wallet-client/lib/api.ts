@@ -826,37 +826,6 @@ export class API {
     });
   };
 
-  /**
-   * Create and send invite tx to a given address
-   *
-   * @param {string} toAddress - merit address to send invite to
-   * @param {number=} amount - number of invites to send. defaults to 1
-   * @param {string=} message - message to send to a receiver
-   *
-   */
-  async sendInvite(toAddress: string, amount: number = 1, script = null, message: string = '', walletPassword: string = ''): Promise<any> {
-    amount = parseInt(amount as any);
-    const opts = {
-      invite: true,
-      outputs: [_.pickBy({
-        amount,
-        toAddress,
-        message,
-        script
-      })]
-    };
-
-    let txp = await this.createTxProposal(opts);
-    txp = await this.publishTxProposal({ txp });
-    txp = await this.signTxProposal(txp, walletPassword);
-
-    await this.getStatus();
-    if (this.availableInvites == 0) throw new Error('You do not have free invites you can send');
-
-    txp = await this.broadcastTxProposal(txp);
-
-    return txp;
-  }
 
   /**
    * Open a wallet and try to complete the public key ring.

@@ -88,83 +88,8 @@ export class SendConfirmationView {
     return this.txData && !_.isEmpty(this.txData.txp);
   }
 
-  approve() {
-    let showPassPrompt = (highlightInvalid = false) => {
-      this.alertController
-        .create({
-          title: 'Enter spending password',
-          cssClass: highlightInvalid ? 'invalid-input-prompt' : '',
-          inputs: [
-            {
-              name: 'password',
-              placeholder: 'Password',
-              type: 'password'
-            }
-          ],
-          buttons: [
-            {
-              text: 'Cancel',
-              role: 'cancel',
-              handler: () => {
-                this.navCtrl.pop();
-              }
-            },
-            {
-              text: 'Ok',
-              handler: data => {
-                if (!data.password) {
-                  showPassPrompt(true);
-                } else {
-                  try {
-                    this.walletService.decryptWallet(this.txData.wallet, data.password);
-                    this.send(data.password);
-                  } catch (e) {
-                    showPassPrompt(true);
-                  }
-                }
-              }
-            }
-          ]
-        })
-        .present();
-    };
 
-    let showTouchIDPrompt = () => {
-      this.send();
-      // // TODO check if we need this
-      // //this.alertController.create({
-      // //  title: 'TouId required',
-      // //  subTitle: 'Confirm transaction by your fingerprint',
-      // //  buttons: [
-      // //      { text: 'Cancel', role: 'cancel',handler: () => { this.navCtrl.pop(); } }
-      // //  ]
-      // //}).present();
-
-      // this.touchIdService
-      //   .check()
-      //   .then(() => {
-      //     return this.send();
-      //   })
-      //   .catch(() => {
-      //     this.navCtrl.pop();
-      //   });
-    };
-
-    if (this.walletService.isWalletEncrypted(this.txData.wallet)) {
-      return showPassPrompt();
-    } else {
-
-      // if (parseInt(this.txData.amountUSD) >= this.CONFIRM_LIMIT_USD) {
-      if (this.touchIdService.isAvailable()) {
-        return showTouchIDPrompt();
-      } else {
-        return this.send();
-      }
-      // }
-    }
-  }
-
-  async send(walletPassword?) {
+  async send() {
     const loadingSpinner = this.loadingCtrl.create({
       content: 'Sending transaction...',
       dismissOnPageChange: true
@@ -186,7 +111,6 @@ export class SendConfirmationView {
     } finally {
       loadingSpinner.dismiss();
       this.txData.referralsToSign = [];
-      if (walletPassword) this.walletService.encryptWallet(this.txData.wallet, walletPassword);
     }
   }
 

@@ -210,6 +210,39 @@ export class WalletService {
 
   }
 
+  /**
+   * Create and send invite tx to a given address
+   *
+   * @param {string} toAddress - merit address to send invite to
+   * @param {number=} amount - number of invites to send. defaults to 1
+   * @param {string=} message - message to send to a receiver
+   *
+   */
+  @accessWallet
+  async sendInvite(wallet:MeritWalletClient, toAddress: string, amount: number = 1, script = null, message: string = ''): Promise<any> {
+    amount = parseInt(amount as any);
+    const opts = {
+      invite: true,
+      outputs: [_.pickBy({
+        amount,
+        toAddress,
+        message,
+        script
+      })]
+    };
+
+    let txp = await wallet.createTxProposal(opts);
+    txp = await wallet.publishTxProposal({ txp });
+    txp = await wallet.signTxProposal(txp);
+
+    await wallet.getStatus();
+    if (wallet.availableInvites == 0) throw new Error('You do not have free invites you can send');
+
+    txp = await wallet.broadcastTxProposal(txp);
+
+    return txp;
+  }
+
   /** =================== CREATE WALLET METHODS ================ */
 
   createDefaultWallet(parentAddress: string, alias: string) {
