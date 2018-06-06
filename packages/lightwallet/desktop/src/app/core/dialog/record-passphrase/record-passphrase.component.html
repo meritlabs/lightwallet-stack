@@ -1,0 +1,38 @@
+<div class="agreement_wrap">
+  <div class="agreement_modal" *ngIf="wallets[0]">
+    <div class="modal_title">
+      <p>Record Your Passphrase!</p>
+    </div>
+    <div class="wallet_info">
+      <merit-icon name="unlock-wallet"></merit-icon>
+      <span class="info_name">{{wallets[0].alias}}</span>
+    </div>
+    <div class="items">
+      <div class="mnemonic">
+        <div class="mnemonic_button">
+        </div>
+        <div class="box">
+          <div class="clip" [clip]="wallets[0].client.getMnemonic()">
+            <button type="button" name="button" class="ui-button ui-button--white ui-button--sm" (click)="copyState()">
+              {{ copy }}
+            </button>
+          </div>
+          <p [class.blured]="!showPhrase">
+            {{ wallets[0].client.getMnemonic() }}
+          </p>
+        </div>
+      </div>
+      <div class="navigation">
+        <ng-container *ngIf="!showPhrase">
+          <button class="item item--full" (click)="showPhrase = true">
+            Show my passphrase
+          </button>
+        </ng-container>
+        <button class="item item--full" *ngIf="showPhrase" (click)="dismiss.emit()">
+          Okay, Got it!
+        </button>
+      </div>
+    </div>
+  </div>
+  <loading-spinner-small *ngIf="!wallets[0]"></loading-spinner-small>
+</div>

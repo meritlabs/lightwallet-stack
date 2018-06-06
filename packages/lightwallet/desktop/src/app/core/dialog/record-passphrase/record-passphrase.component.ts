@@ -1,17 +1,18 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @Component({
-  selector: 'app-welcome-guide',
-  templateUrl: './welcome-guide.component.html',
-  styleUrls: ['./welcome-guide.component.sass']
+  selector: 'app-record-passphrase',
+  templateUrl: './record-passphrase.component.html',
+  styleUrls: ['./record-passphrase.component.sass'],
 })
+export class RecordPassphraseComponent {
+  constructor() {}
 
-export class WelcomeGuideComponent {
   @Input() wallets: DisplayWallet[];
   @Output() dismiss: EventEmitter<void> = new EventEmitter<void>();
   copy: string = 'COPY';
-  showPhrase: boolean;
+  showPhrase: boolean = false;
 
   copyState() {
     this.copy = 'COPIED';
