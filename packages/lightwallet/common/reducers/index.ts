@@ -9,7 +9,7 @@ export interface IRootAppState {
   wallets: IWalletsState;
   transactions: ITransactionsState;
   notifications: INotificationsState;
-  quests: IAchivementsState;
+  achievement: IAchivementsState;
 }
 
 export const reducer = {
@@ -17,5 +17,5 @@ export const reducer = {
   app: appReducer,
   transactions: transactionsReducer,
   notifications: notificationsReducer,
-  quests: AchivementsReducer,
+  achievement: AchivementsReducer,
 };
