@@ -1,36 +1,20 @@
 import { Injectable } from '@angular/core';
 import { ENV } from '@app/env';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { EasySend } from '@merit/common/models/easy-send';
-import { FiatAmount } from '@merit/common/models/fiat-amount';
-import { ConfigService } from '@merit/common/services/config.service';
 import { EasySendService } from '@merit/common/services/easy-send.service';
-import { LanguageService } from '@merit/common/services/language.service';
+import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MnemonicService } from '@merit/common/services/mnemonic.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
-import { PopupService } from '@merit/common/services/popup.service';
 import { ProfileService } from '@merit/common/services/profile.service';
-import { RateService } from '@merit/common/services/rate.service';
-import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { Events } from 'ionic-angular/util/events';
 import { AlertController } from 'ionic-angular';
 import * as _ from 'lodash';
 
-import 'rxjs/add/observable/defer';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/range';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/observable/timer';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/retryWhen';
-import 'rxjs/add/operator/zip';
-import { Observable } from 'rxjs/Observable';
 
-
-function accessWallet(target, key: string, descriptor: any) {
+export function accessWallet(target, key: string, descriptor: any) {
 
   function askForPassword(wallet) {
     return new Promise((resolve, reject) => {
@@ -67,6 +51,8 @@ function accessWallet(target, key: string, descriptor: any) {
   return {
     value: async function (...args:any[]) {
 
+      console.log('check');
+
       let wallet = args[0];
       if (!wallet || !wallet.credentials) {
         throw new Error(`first argument of ${key} method should be type of MeritWalletClient so we can check access`);
@@ -77,6 +63,7 @@ function accessWallet(target, key: string, descriptor: any) {
         try {
           password = await askForPassword.apply(this, [wallet]);
         } catch (e) {
+          this.logger.warn(e);
           throw new Error('No access to wallet');
         }
       }
@@ -99,26 +86,15 @@ function accessWallet(target, key: string, descriptor: any) {
   };
 }
 
-
-/* Refactor CheckList:
- - Bwc Error provider
- - Remove ongoingProcess provider, and handle Loading indicators in controllers
- - Decouple the tight dependencies on ProfileService; and create logical separation concerns
- - Ensure that anything returning a promise has promises through the stack.
- */
 @Injectable()
 export class WalletService {
 
 
   constructor(private logger: LoggerService,
               private mwcService: MWCService,
-              private txFormatService: TxFormatService,
               private configService: ConfigService,
               private profileService: ProfileService,
               private persistenceService: PersistenceService,
-              private rateService: RateService,
-              private popupService: PopupService,
-              private languageService: LanguageService,
               private mnemonicService: MnemonicService,
               private easySendService: EasySendService,
               private events: Events,
@@ -169,6 +145,12 @@ export class WalletService {
   }
 
   @accessWallet
+  broadcastRawTx(wallet: MeritWalletClient, opts) {
+    console.log(opts);
+    wallet.broadcastRawTx(opts);
+  }
+
+  @accessWallet
   rejectTx(wallet: MeritWalletClient, txp: any): Promise<any> {
     return wallet.rejectTxProposal(txp, null);
   }
@@ -196,7 +178,6 @@ export class WalletService {
 
   @accessWallet
   private async signAndBroadcast(wallet: MeritWalletClient, publishedTxp: any): Promise<any> {
-
     let signedTxp = await this.signTx(wallet, publishedTxp);
 
     if (signedTxp.status == 'accepted') {
@@ -207,7 +188,6 @@ export class WalletService {
       this.events.publish('Local:Tx:Signed', signedTxp);
       return signedTxp;
     }
-
   }
 
   /**
@@ -241,6 +221,22 @@ export class WalletService {
     txp = await wallet.broadcastTxProposal(txp);
 
     return txp;
+  }
+
+  @accessWallet
+  async sendMeritInvite(wallet: MeritWalletClient, invitesNumber: number) {
+    const easySend = await this.easySendService.createEasySendScriptHash(wallet);
+
+    const referral = easySend.scriptReferralOpts;
+    await wallet.sendReferral(referral);
+
+    await this.sendInvite(wallet, referral.address, invitesNumber);
+    return easySend;
+  }
+
+  @accessWallet
+  async sendMeritMoney(wallet: MeritWalletClient) {
+
   }
 
   /** =================== CREATE WALLET METHODS ================ */
