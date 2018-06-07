@@ -80,17 +80,10 @@ export class SendAmountView {
               private navParams: NavParams,
               private configService: ConfigService,
               private rateService: RateService,
-              private feeService: FeeService,
               private profileService: ProfileService,
-              private txFormatService: TxFormatService,
               private modalCtrl: ModalController,
-              private toastCtrl: ToastControllerService,
               private alertCtrl: AlertController,
-              private easySendService: EasySendService,
-              private easyReceiveService: EasyReceiveService,
-              private walletService: WalletService,
               private loadingCtrl: LoadingController,
-              private logger: LoggerService,
               private sendService: SendService,
               private events: Events
   ) {
@@ -117,7 +110,7 @@ export class SendAmountView {
     let passedAmount = this.navParams.get('amount');
     if (passedAmount) {
       this.formData.amount = String(this.rateService.microsToMrt(passedAmount));
-      this.createTxp();
+      //this.createTxp();
     }
 
     await this.updateAmount();
@@ -130,6 +123,7 @@ export class SendAmountView {
     this.chooseAppropriateWallet();
 
     this.loading = false;
+    this.updateTxData();
 
     this.events.subscribe('Remote:IncomingTx', () => {
       this.profileService.refreshData();
@@ -271,8 +265,8 @@ export class SendAmountView {
   public isSendAllowed() {
     return (
       this.amount.micros > 0
-      && !_.isNil(this.txData)
-      && !_.isNil(this.txData.txp)
+      && this.selectedWallet
+      && !this.feeCalcError
       && (!this.formData.password || this.formData.password === this.formData.confirmPassword)
     );
   }
@@ -286,111 +280,125 @@ export class SendAmountView {
   }
 
   public async toConfirm() {
-    if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
-      this.feeCalcError = 'Passwords do not match';
-      return this.txData.txp = null;
-    }
 
-    let loadingSpinner = this.loadingCtrl.create({
-      content: 'Preparing transaction...',
+    const loader = this.loadingCtrl.create({
+      content: 'Calculating fee...',
       dismissOnPageChange: true
     });
-    loadingSpinner.present();
-    try {
-      this.txData.txp.amount += this.txData.easyFee;
-      this.txData.feeIncluded = this.feeIncluded;
-      this.navCtrl.push('SendConfirmationView', { txData: this.txData, referralsToSign: this.referralsToSign });
-    } catch (e) {
-      this.logger.warn(e);
-    } finally {
-      loadingSpinner.dismiss();
-    }
-  }
-
-  selectExpirationDate() {
-    const modal = this.modalCtrl.create('SendValidTillView', { nbBlocks: this.formData.nbBlocks }, MERIT_MODAL_OPTS);
-    modal.present();
-    modal.onDidDismiss((nbBlocks) => {
-      if (nbBlocks) this.formData.nbBlocks = nbBlocks;
-      this.updateTxData();
-    });
-  }
-
-  public async updateTxData() {
-
-    this.feeLoading = true;
-    this.feeCalcError = null;
-    this.feePercent = null;
-
-    if (!this.amount.micros) {
-      this.txData = null;
-      this.feeLoading = false;
-      return this.createTxpDebounce.cancel();
-    } else if (this.amount.micros > this.selectedWallet.balance.spendableAmount) {
-      this.feeCalcError = 'Amount is too big';
-      this.txData = null;
-      this.feeLoading = false;
-      return this.createTxpDebounce.cancel();
-    } else {
-
-      this.txData = {
-        txp: null,
-        wallet: this.selectedWallet,
-        amount: this.amount.micros,
-        feeAmount: null,
-        password: this.formData.password,
-        totalAmount: this.amount.micros,
-        recipient: this.recipient,
-        sendMethod: this.sendMethod,
-        feeIncluded: this.feeIncluded,
-        timeout: this.formData.nbBlocks,
-        easyFee: 0
-      };
-
-      this.createTxpDebounce();
-    }
-  }
-
-  private createTxpDebounce = _.debounce(() => {
-    this.createTxp();
-  }, 1000);
-
-  private async createTxp() {
-
-    if (this.amount.micros == this.selectedWallet.balance.spendableAmount) this.feeIncluded = true;
+    loader.present();
 
     try {
+      let fee = await this.sendService.estimateFee(this.selectedWallet, this.amount.micros,  (this.sendMethod.type == SendMethodType.Easy), this.sendMethod.value);
 
       if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
         this.feeCalcError = 'Passwords do not match';
-        return this.txData.txp = null;
       }
 
-      if (this.sendMethod.type == SendMethodType.Easy) {
-
-        let easySend = await this.easySendService.bulidScript(this.txData.wallet);
-        this.sendMethod.value = Address(easySend.script.getAddressInfo()).toString();
-
-        if (!this.feeIncluded) { //if fee is included we pay also easyreceive tx, so recipient can have the exact amount that is displayed
-          this.txData.easyFee = await this.feeService.getEasyReceiveFee();
-        }
-
-      }
-
-      this.txData.txp = await this.sendService.prepareTxp(this.txData.wallet, this.amount.micros, this.sendMethod.value);
-
-      //this.txData.txp = await this.sendService.prepareTxp(this.txData.wallet, this.amount.micros, );
-
-    } catch (err) {
-      this.txData.txp = null;
-      this.logger.warn(err);
-      if (err.message) this.feeCalcError = err.message;
-      return this.toastCtrl.error(err.message || 'Unknown error');
+      this.navCtrl.push('SendConfirmationView', {
+        amount: this.amount.micros,
+        password: this.formData.password,
+        fee: fee,
+        wallet: this.selectedWallet,
+        feeIncluded: this.feeIncluded,
+        sendMethod: this.sendMethod.type,
+        toAddress: this.sendMethod.value || 'MeritMoney link'
+      });
+    } catch (e) {
+      console.log(e);
+      return this.feeCalcError = e.message;
     } finally {
-      this.feeLoading = false;
+      loader.dismiss();
     }
 
   }
+
+
+  public async updateTxData() {
+
+    //this.feeLoading = true;
+    this.feeCalcError = null;
+    this.feePercent = null;
+
+    if (!this.selectedWallet) {
+      return this.feeCalcError = 'No wallet selected';
+    }
+
+    if (this.amount.micros > this.selectedWallet.balance.spendableAmount) {
+      return this.feeCalcError = 'Amount is too big';
+    }
+
+    if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
+      return this.feeCalcError = 'Passwords do not match';
+    }
+  }
+
+  //  if (!this.amount.micros) {
+  //    this.txData = null;
+  //    this.feeLoading = false;
+  //    return this.createTxpDebounce.cancel();
+  //  } else if (this.amount.micros > this.selectedWallet.balance.spendableAmount) {
+  //    this.feeCalcError = 'Amount is too big';
+  //    this.txData = null;
+  //    this.feeLoading = false;
+  //    return this.createTxpDebounce.cancel();
+  //  } else {
+  //
+  //    this.txData = {
+  //      txp: null,
+  //      wallet: this.selectedWallet,
+  //      amount: this.amount.micros,
+  //      feeAmount: null,
+  //      password: this.formData.password,
+  //      totalAmount: this.amount.micros,
+  //      recipient: this.recipient,
+  //      sendMethod: this.sendMethod,
+  //      feeIncluded: this.feeIncluded,
+  //      timeout: this.formData.nbBlocks,
+  //      easyFee: 0
+  //    };
+  //
+  //    this.createTxpDebounce();
+  //  }
+  //}
+
+  //private createTxpDebounce = _.debounce(() => {
+  //  this.createTxp();
+  //}, 1000);
+  //
+  //private async createTxp() {
+  //
+  //  if (this.amount.micros == this.selectedWallet.balance.spendableAmount) this.feeIncluded = true;
+  //
+  //  try {
+  //
+  //    if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
+  //      this.feeCalcError = 'Passwords do not match';
+  //      return this.txData.txp = null;
+  //    }
+  //
+  //    if (this.sendMethod.type == SendMethodType.Easy) {
+  //
+  //      let easySend = await this.easySendService.bulidScript(this.txData.wallet);
+  //      this.sendMethod.value = Address(easySend.script.getAddressInfo()).toString();
+  //
+  //      if (!this.feeIncluded) { //if fee is included we pay also easyreceive tx, so recipient can have the exact amount that is displayed
+  //        this.txData.easyFee = await this.feeService.getEasyReceiveFee();
+  //      }
+  //
+  //    }
+  //
+  //    this.txData.txp = await this.sendService.prepareTxp(this.txData.wallet, this.amount.micros, this.sendMethod.value);
+  //
+  //  } catch (err) {
+  //    this.txData.txp = null;
+  //    this.logger.warn(err);
+  //    if (err.message) this.feeCalcError = err.message;
+  //    return this.toastCtrl.error(err.message || 'Unknown error');
+  //  } finally {
+  //    this.feeLoading = false;
+  //  }
+  //
+  //}
 
 
 

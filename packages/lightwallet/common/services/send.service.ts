@@ -8,6 +8,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { clone } from 'lodash';
+import { EasySendService } from '@merit/common/services/easy-send.service';
 
 export interface ISendTxData {
   amount?: number; // micros
@@ -36,6 +37,7 @@ export class SendService {
   constructor(private feeService: FeeService,
               private walletService: WalletService,
               private loggerService: LoggerService,
+              private easySendService: EasySendService,
               private persistenceService: PersistenceService2) {}
 
   async prepareTxp(wallet: MeritWalletClient, amount: number, toAddress: string) {
@@ -103,4 +105,24 @@ export class SendService {
       await this.walletService.publishAndSign(wallet, txp);
     }
   }
+
+
+  private async estimateFee(wallet, amount, isEasySend, toAddress?) {
+
+    if (isEasySend) {
+      const script = await this.easySendService.bulidScript(wallet);
+      const address = script.script.toHex();
+      console.log(address, 'address');
+      const txp = await this.prepareTxp(wallet, amount, address);
+      const sendFee = txp.fee;
+      const receiveFee = await this.easySendService.getEasyReceiveFee();
+      return sendFee + receiveFee;
+    } else {
+      let txp = await this.prepareTxp(wallet, amount, toAddress);
+      return txp.fee;
+    }
+
+  }
+
+
 }

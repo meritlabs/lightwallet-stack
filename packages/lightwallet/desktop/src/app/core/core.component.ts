@@ -243,7 +243,7 @@ export class CoreView implements OnInit, AfterViewInit {
 
       const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
 
-      this.logger.info('Accepted easy send', acceptanceTx);
+      this.logger.info('Canceled easy send', acceptanceTx);
       this.store.dispatch(
         new RefreshOneWalletAction(wallet.id, {
           skipShareCode: true,
