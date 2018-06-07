@@ -8,6 +8,7 @@ const DEFAULT_STATE = {
     id: '',
     userId: '',
     isSetupTrackerEnabled: true,
+    isWelcomeDialogEnabled: true,
   },
 };
 
@@ -16,6 +17,7 @@ export interface IAchivementsState {
   token: string;
   settings: {
     isSetupTrackerEnabled: boolean;
+    isWelcomeDialogEnabled: boolean;
   };
 }
 

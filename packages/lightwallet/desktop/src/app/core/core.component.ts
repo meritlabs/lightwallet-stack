@@ -26,6 +26,8 @@ import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Observable } from 'rxjs/Observable';
 import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
+import { Achievements, Achievement } from '@merit/common/models/achievement';
+import { AchievementsService } from '@merit/common/services/achievements.service';
 
 @Component({
   selector: 'view-core',
@@ -94,6 +96,7 @@ export class CoreView implements OnInit, AfterViewInit {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   recordPassphrase: boolean = true;
+  isWelcomeDialogEnabled: boolean;
 
   constructor(
     private pushNotificationsService: PushNotificationsService,
@@ -105,10 +108,18 @@ export class CoreView implements OnInit, AfterViewInit {
     private profileService: ProfileService,
     private store: Store<IRootAppState>,
     private persistenceService2: PersistenceService2,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private AchievementsService: AchievementsService
   ) {}
 
   async ngOnInit() {
+    await this.AchievementsService.getSettings();
+    await this.AchievementsService.getAchievements();
+
+    await this.store.select('achievements').subscribe(res => {
+      this.isWelcomeDialogEnabled = res.settings.isWelcomeDialogEnabled;
+    });
+
     this.recordPassphrase = Boolean(await this.persistenceService2.getViewSettings(ViewSettingsKey.recordPassphrase));
 
     this.processPendingEasyReceipts();

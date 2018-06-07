@@ -12,5 +12,5 @@ export class Achievement {
 export interface Achievements {
   achievements: Achievement[];
   token: string;
-  settings: { isSetupTrackerEnabled: boolean };
+  settings: { isSetupTrackerEnabled: boolean; isWelcomeDialogEnabled: boolean };
 }
