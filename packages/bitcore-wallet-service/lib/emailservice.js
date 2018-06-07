@@ -363,7 +363,7 @@ EmailService.prototype._checkShouldSendEmail = function(notification, cb) {
 };
 
 EmailService.prototype.sendEmail = function(notification, cb) {
-  log.warn(`\EmailService: RECEIVED NOTIFICATION: ${JSON.stringify(notification)}\n\n`)
+  log.warn(`\nEmailService: RECEIVED NOTIFICATION: ${JSON.stringify(notification)}\n\n`)
   var self = this;
 
   cb = cb || function() {};
@@ -375,7 +375,7 @@ EmailService.prototype.sendEmail = function(notification, cb) {
     }
 
     if (!isLocked) {
-      log.debug(`Notification ${notification.id} is already locked, skipping.`);
+      log.warn(`Notification ${notification.id} is already locked, skipping.`);
       return cb();
     }
 
