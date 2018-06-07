@@ -41,14 +41,13 @@ export class HistoryView {
   async ionViewDidLoad() {
     this.loading = true;
     this.wallets = await this.profileService.getWallets();
-    if (this.wallets.length) this.wallet = this.wallets[0];
+    this.selectDefaultWallet();
     await this.loadHistory();
   }
 
   async ionViewWillEnter() {
     this.wallets = await this.profileService.getWallets();
-    if (this.wallets.length) this.wallet = this.wallets[0];
-    await this.loadHistory();
+    await this.refreshHistory();
   }
 
   async doRefresh(refresher: any) {
@@ -71,6 +70,12 @@ export class HistoryView {
     this.txs = await this.wallet.getTxHistory({ skip: 0, limit: this.limit, includeExtendedInfo: true });
     await this.formatHistory();
     this.loading = false;
+  }
+
+  selectDefaultWallet() {
+    let wallet = this.wallets.find(w => w.confirmed);
+    if (!wallet) wallet = this.wallets[0];
+    this.wallet = wallet;
   }
 
   async loadMoreHistory(infiniter) {
