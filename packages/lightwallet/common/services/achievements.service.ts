@@ -4,9 +4,10 @@ import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
-import { LoadAchivementsAction } from '@merit/common/reducers/achivement.reducer';
+import { LoadAchivementsAction, GetAuthorizeToken } from '@merit/common/reducers/achivement.reducer';
 import { MeritAchivementClient } from '@merit/common/achievements-client/api';
 import { PersistenceService } from '@merit/common/services/persistence.service';
+import { filter, map, take } from 'rxjs/operators';
 
 @Injectable()
 export class AchievementsService {
@@ -18,15 +19,24 @@ export class AchievementsService {
     private persistenceService: PersistenceService
   ) {}
 
-  async loadaAchievements() {
+  async getToken() {
     let profile = await this.persistenceService.getProfile();
+    const authData = await MeritAchivementClient.fromObj(profile).login();
+    this.store.dispatch(new GetAuthorizeToken(authData.token));
+    return authData.token;
+  }
 
-    try {
-      const authData = await MeritAchivementClient.fromObj(profile).login(),
-        getWalletAchivements = await MeritAchivementClient.fromObj(profile).getAll(authData.token);
-      this.store.dispatch(new LoadAchivementsAction(getWalletAchivements));
-    } catch (e) {
-      console.log(e);
+  async loadaAchievements() {
+    let profile = await this.persistenceService.getProfile(),
+      token,
+      getWalletAchivements;
+    await this.store.select('achievements').subscribe(res => (token = res.token));
+    if (token) {
+      getWalletAchivements = await MeritAchivementClient.fromObj(profile).getAll(token);
+    } else {
+      getWalletAchivements = await MeritAchivementClient.fromObj(profile).getAll(await this.getToken());
     }
+
+    this.store.dispatch(new LoadAchivementsAction(getWalletAchivements));
   }
 }

@@ -11,4 +11,6 @@ export class Achievement {
 
 export interface Achievements {
   achievements: Achievement[];
+  token: string;
+  settings: Object;
 }

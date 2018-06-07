@@ -3,18 +3,27 @@ import { Action } from '@ngrx/store';
 
 const DEFAULT_STATE = {
   achievements: [],
+  token: '',
+  settings: {},
 };
 
 export interface IAchivementsState {
   achievements: Achievement[];
+  token: string;
+  settings: Object;
 }
 
 export function AchivementsReducer(state: IAchivementsState = DEFAULT_STATE, action: AchivementsAction) {
   switch (action.type) {
-    case AchivementsAction.LOAD_QUESTS:
+    case AchivementsAction.LoadAchivements:
       return {
         ...state,
         achievements: [...action.payload],
+      };
+    case AchivementsAction.GetAuthorizeToken:
+      return {
+        ...state,
+        token: [...action.payload],
       };
     default:
       return state;
@@ -22,7 +31,18 @@ export function AchivementsReducer(state: IAchivementsState = DEFAULT_STATE, act
 }
 
 export namespace AchivementsAction {
-  export const LOAD_QUESTS = 'LOAD_QUESTS';
+  export const LoadAchivements = 'LoadAchivements',
+    GetAuthorizeToken = 'GetAuthorizeToken';
+}
+
+export interface GetAuthorizeToken extends Action {
+  payload: Achievement[];
+}
+
+export class GetAuthorizeToken implements Action {
+  readonly type = AchivementsAction.GetAuthorizeToken;
+
+  constructor(public payload: Achievement[]) {}
 }
 
 export interface LoadAchivementsAction extends Action {
@@ -30,9 +50,9 @@ export interface LoadAchivementsAction extends Action {
 }
 
 export class LoadAchivementsAction implements Action {
-  readonly type = AchivementsAction.LOAD_QUESTS;
+  readonly type = AchivementsAction.LoadAchivements;
 
   constructor(public payload: Achievement[]) {}
 }
 
-export type AchivementsAction = LoadAchivementsAction;
+export type AchivementsAction = LoadAchivementsAction & GetAuthorizeToken;
