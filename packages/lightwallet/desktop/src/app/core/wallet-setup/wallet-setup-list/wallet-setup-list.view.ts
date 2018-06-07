@@ -17,7 +17,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class WalletSetupListView implements OnInit {
   constructor(
     private store: Store<IRootAppState>,
-    private service: AchievementsService,
+    private AchievementsService: AchievementsService,
     private formBuilder: FormBuilder
   ) {}
 
@@ -27,10 +27,8 @@ export class WalletSetupListView implements OnInit {
     trackerStatus: true,
   });
 
-  ngOnInit() {
-    this.service.loadaAchievements();
-  }
-  log(item) {
-    console.log(item);
+  async ngOnInit() {
+    await this.AchievementsService.getSettings();
+    await this.AchievementsService.getAchievements();
   }
 }
