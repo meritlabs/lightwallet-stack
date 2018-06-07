@@ -9,10 +9,10 @@
       </div>
       <form [formGroup]="formData" class="details_settings">
         <div class="details_title">
-          <p>Disable Setup Tracker</p>
+          <p>{{ formData.controls.isSetupTrackerEnabled.value ? 'Disable' : 'Enable' }} Setup Tracker</p>
         </div>
         <div class="global-settings__group__item__column global-settings__group__item__column--30">
-          <ui-checkbox formControlName="isSetupTrackerEnabled" (click)="trackerStatus(formData.controls.isSetupTrackerEnabled)"></ui-checkbox>
+          <ui-checkbox formControlName="isSetupTrackerEnabled" (click)="trackerStatus()"></ui-checkbox>
         </div>
       </form>
     </div>
