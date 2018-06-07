@@ -8,7 +8,7 @@ import { FeeService } from '@merit/common/services/fee.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { Address, HDPrivateKey, PrivateKey, Script} from 'bitcore-lib';
 import {accessWallet} from "./wallet.service";
-import { AlertController } from 'ionic-angular'; 
+import { AlertController } from 'ionic-angular';
 
 @Injectable()
 export class EasySendService {

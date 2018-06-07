@@ -283,7 +283,7 @@ export class TransactView {
 
       const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
       this.events.publish('Remote:IncomingTx');
-      this.logger.info('accepted easy send', acceptanceTx);
+      this.logger.info('Canceled easy send', acceptanceTx);
     } catch (err) {
       console.log(err);
       this.toastCtrl.error('There was an error cancelling your MeritMoney link.');
@@ -298,7 +298,6 @@ export class TransactView {
       if (!wallet) throw new Error('Could not retrieve wallet');
 
       const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(wallet, receipt, data, wallet.rootAddress.toString());
-
       this.logger.info('accepted easy send', acceptanceTx);
 
       this.events.publish('Remote:IncomingTx'); // update wallet info
