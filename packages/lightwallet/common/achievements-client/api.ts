@@ -44,8 +44,8 @@ export class MeritAchivementClient {
   login() {
     return this._doPostRequest('/sessions');
   }
-  getAll(token) {
-    return this._doGetRequest('/achievements/', token);
+  getData(token, url) {
+    return this._doGetRequest(url, token);
   }
 
   /**

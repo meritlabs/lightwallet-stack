@@ -38,7 +38,6 @@
     <div class="title title--secondary">
       <p>To do</p>
     </div>
-    {{log(questState$ | async)}}
     <app-task-preview *ngFor="let quest of (questState$ | async)?.achievements" [quest]=quest [hidden]="quest.status === 'compleate'"></app-task-preview>
   </div>
   <div class="wallet-setup_column">
