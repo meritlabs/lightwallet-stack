@@ -1,7 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ENV } from '@app/env';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
-import { getEasySendURL } from '@merit/common/models/easy-send';
 import { MeritContact } from '@merit/common/models/merit-contact';
 import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
 import { ConfigService } from '@merit/common/services/config.service';
@@ -26,6 +25,10 @@ import {
   NavParams
 } from 'ionic-angular';
 import * as _ from 'lodash';
+
+
+import { Address } from 'bitcore-lib';
+
 
 @IonicPage()
 @Component({
@@ -140,7 +143,7 @@ export class SendAmountView {
         this.selectedWallet = this.wallets.find(w => w.confirmed);
         const passedAmount = this.navParams.get('amount') || 0;
         this.selectedWallet = this.wallets.find(w => {
-          return (w.balance.spendableAmount >= passedAmount) && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
+          return (w.balance.spendableAmount > 0) && (w.balance.spendableAmount >= passedAmount) && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
         });
       }
     }
@@ -354,19 +357,6 @@ export class SendAmountView {
 
   private async createTxp() {
 
-    if (this.walletService.isWalletEncrypted(this.selectedWallet) && this.sendMethod.type == SendMethodType.Easy) {
-      if (this.walletPassword) {
-        this.walletService.decryptWallet(this.selectedWallet, this.walletPassword);
-      } else {
-        try {
-          await this.getPassword();
-        } catch (e) {
-          this.feeCalcError = 'Password required for encrypted wallet';
-          return this.txData.txp = null;
-        }
-      }
-    }
-
     if (this.amount.micros == this.selectedWallet.balance.spendableAmount) this.feeIncluded = true;
 
     try {
@@ -378,19 +368,18 @@ export class SendAmountView {
 
       if (this.sendMethod.type == SendMethodType.Easy) {
 
-        const easySend = await  this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password);
-        this.txData.easySend = easySend;
-        this.txData.txp = await this.easySendService.prepareTxp(this.txData.wallet, this.amount.micros, easySend);
-        this.txData.easySendUrl = getEasySendURL(easySend);
-        this.txData.referralsToSign = [easySend.scriptReferralOpts];
+        let easySend = await this.easySendService.bulidScript(this.txData.wallet);
+        this.sendMethod.value = Address(easySend.script.getAddressInfo()).toString();
 
         if (!this.feeIncluded) { //if fee is included we pay also easyreceive tx, so recipient can have the exact amount that is displayed
           this.txData.easyFee = await this.feeService.getEasyReceiveFee();
         }
 
-      } else {
-        this.txData.txp = await this.sendService.prepareTxp(this.txData.wallet, this.amount.micros, this.sendMethod.value);
       }
+
+      this.txData.txp = await this.sendService.prepareTxp(this.txData.wallet, this.amount.micros, this.sendMethod.value);
+
+      //this.txData.txp = await this.sendService.prepareTxp(this.txData.wallet, this.amount.micros, );
 
     } catch (err) {
       this.txData.txp = null;
@@ -399,55 +388,10 @@ export class SendAmountView {
       return this.toastCtrl.error(err.message || 'Unknown error');
     } finally {
       this.feeLoading = false;
-      if (this.walletPassword) {
-        this.walletService.encryptWallet(this.selectedWallet, this.walletPassword);
-      }
     }
 
   }
 
-  private getPassword(highlightInvalid = false) {
-    return new Promise((resolve, reject) => {
-      this.alertCtrl
-        .create({
-          title: 'Enter spending password',
-          cssClass: highlightInvalid ? 'invalid-input-prompt' : '',
-          inputs: [
-            {
-              name: 'password',
-              placeholder: 'Password',
-              type: 'password'
-            }
-          ],
-          buttons: [
-            {
-              text: 'Cancel',
-              role: 'cancel',
-              handler: () => {
-                reject();
-              }
-            },
-            {
-              text: 'Ok',
-              handler: data => {
-                if (!data.password) {
-                  this.getPassword(true);
-                } else {
-                  try {
-                    this.walletService.decryptWallet(this.txData.wallet, data.password);
-                    this.walletPassword = data.password;
-                    resolve();
-                  } catch (e) {
-                    this.getPassword(true);
-                  }
-                }
-              }
-            }
-          ]
-        })
-        .present();
-    });
 
-  }
 
 }

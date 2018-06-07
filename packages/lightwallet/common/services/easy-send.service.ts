@@ -7,6 +7,8 @@ import { AddressService } from '@merit/common/services/address.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { Address, HDPrivateKey, PrivateKey, Script} from 'bitcore-lib';
+import {accessWallet} from "./wallet.service";
+import { AlertController } from 'ionic-angular'; 
 
 @Injectable()
 export class EasySendService {
@@ -17,9 +19,11 @@ export class EasySendService {
     private feeService: FeeService,
     private persistenceService: PersistenceService,
     @Optional() private socialSharing: SocialSharing,
-    private addressService: AddressService
+    private addressService: AddressService,
+    public alertCtrl: AlertController
   ) {}
 
+  @accessWallet
   async createEasySendScriptHash(wallet: MeritWalletClient, password?: string): Promise<EasySend> {
     const rootKey = HDPrivateKey.fromString(wallet.credentials.xPrivKey);
     const signPrivKey = rootKey.privateKey;
@@ -128,7 +132,7 @@ export class EasySendService {
   /**
    * Create an easySend script
    */
-  private async bulidScript(wallet, passphrase?: string, timeout = this.DEFAULT_TIMEOUT): Promise<EasySend> {
+  async bulidScript(wallet, passphrase?: string, timeout = this.DEFAULT_TIMEOUT): Promise<EasySend> {
     passphrase = passphrase || '';
     const pubKey = wallet.getRootAddressPubkey();
     const rcvPair = PrivateKey.forNewEasySend(passphrase, ENV.network);

@@ -12,7 +12,10 @@ import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { TouchIdService } from '@merit/mobile/services/touch-id.service';
 import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { EasySendService } from '@merit/common/services/easy-send.service';
 import * as  _ from 'lodash';
+import { getEasySendURL } from '@merit/common/models/easy-send';
+
 
 @IonicPage()
 @Component({
@@ -37,7 +40,9 @@ export class SendConfirmationView {
               private configService: ConfigService,
               private logger: LoggerService,
               private persistenceService: PersistenceService2,
-              private sendService: SendService) {
+              private sendService: SendService,
+              private easySendService: EasySendService
+  ) {
     this.txData = navParams.get('txData');
   }
 
@@ -90,6 +95,7 @@ export class SendConfirmationView {
 
 
   async send() {
+
     const loadingSpinner = this.loadingCtrl.create({
       content: 'Sending transaction...',
       dismissOnPageChange: true
@@ -97,6 +103,15 @@ export class SendConfirmationView {
     loadingSpinner.present();
 
     try {
+
+      if (this.txData.sendMethod.type == SendMethodType.Easy) {
+        const easySend = await this.easySendService.createEasySendScriptHash(this.txData.wallet); //todo password removed
+        this.txData.easySend = easySend;
+        this.txData.txp = await this.easySendService.prepareTxp(this.txData.wallet, this.txData.txp.amount, easySend);
+        this.txData.easySendUrl = getEasySendURL(easySend);
+        this.txData.referralsToSign = [easySend.scriptReferralOpts];
+      }
+
       await this.sendService.send(this.txData, this.txData.wallet);
 
       if (this.txData.sendMethod.type == SendMethodType.Easy) {
