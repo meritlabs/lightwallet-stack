@@ -10,5 +10,8 @@ export class TaskPreviewComponent implements OnInit {
 
   ngOnInit() {}
 
-  @Input() quest: Object;
+  @Input() goal: Object;
+  log(val) {
+    console.log(val);
+  }
 }

@@ -38,12 +38,12 @@
     <div class="title title--secondary">
       <p>To do</p>
     </div>
-    <app-task-preview *ngFor="let quest of (questState$ | async)?.achievements" [quest]=quest [hidden]="quest.status === 'compleate'"></app-task-preview>
+    <app-task-preview *ngFor="let goal of (goalsState$ | async)?.achievements" [goal]=goal [hidden]="goal.status !== 0"></app-task-preview>
   </div>
   <div class="wallet-setup_column">
     <div class="title title--secondary">
       <p>Complete</p>
     </div>
-    <!-- <app-task-preview *ngFor="let quest of (questState$ | async)?.quests" [quest]=quest [hidden]="quest.status === 'compleate'"></app-task-preview> -->
+    <app-task-preview *ngFor="let goal of (goalsState$ | async)?.goals" [goal]=goal [hidden]="goal.status !== 1"></app-task-preview>
   </div>
 </div>
