@@ -150,7 +150,7 @@ PushNotificationsService.prototype._sendPushNotifications = function(notificatio
     }
 
     if (!isLocked) {
-      log.debug(`Notification ${notification.id} is already locked, skipping.`);
+      log.warn(`Notification ${notification.id} is already locked, skipping.`);
       return cb();
     }
 
