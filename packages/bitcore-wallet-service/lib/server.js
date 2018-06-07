@@ -881,7 +881,7 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
     walletId: walletId,
   });
 
-  this.storage.storeNotification(walletId, notification, () => {
+  this.storage.storeNotification(notification, () => {
     this.messageBroker.send(notification);
     return cb();
   });
