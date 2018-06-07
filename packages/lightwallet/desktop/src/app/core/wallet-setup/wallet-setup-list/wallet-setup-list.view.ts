@@ -29,9 +29,6 @@ export class WalletSetupListView implements OnInit {
   });
 
   async ngOnInit() {
-    await this.AchievementsService.getSettings();
-    await this.AchievementsService.getAchievements();
-
     await this.store.select('achievements').subscribe(res => {
       this.trackerSettings = res.settings;
       this.formData.patchValue({
