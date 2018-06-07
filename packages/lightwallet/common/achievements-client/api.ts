@@ -44,8 +44,13 @@ export class MeritAchivementClient {
   login() {
     return this._doPostRequest('/sessions');
   }
+
   getData(token, url) {
     return this._doGetRequest(url, token);
+  }
+
+  setData(url, args, token) {
+    return this._doPostRequest(url, args, token);
   }
 
   /**
@@ -83,8 +88,8 @@ export class MeritAchivementClient {
    * @param {Object} args
    * @param {Callback} cb
    */
-  _doPostRequest(url: string, args: any = {}): Promise<any> {
-    return this._doRequest('post', url, args).then(res => res.body);
+  _doPostRequest(url: string, args: any = {}, token?: string): Promise<any> {
+    return this._doRequest('post', url, args, token).then(res => res.body);
   }
 
   /**
@@ -106,9 +111,8 @@ export class MeritAchivementClient {
           delete args['_requestPrivKey'];
           privkey = this.credentials.getDerivedXPrivKey('').deriveChild('m/0/0').privateKey;
 
-          const debug = !ENV.production;
-          console.log(`=====\n ${debug} \n =======`);
-          const [sig, ts] = this._signRequest(url, privkey, debug);
+          const debug = !ENV.production,
+            [sig, ts] = this._signRequest(url, privkey, debug);
 
           headers['X-Pubkey'] = privkey.toPublicKey().toString();
           headers['X-Signature'] = sig;
@@ -158,7 +162,11 @@ export class MeritAchivementClient {
 
             this.log.error('HTTP Error:' + res.status);
 
-            if (!res.body) return reject(new Error(res.status.toString()));
+            if (res.accepted && res.statusCode === 202) {
+              return resolve(res);
+            } else if (!res.body) {
+              return reject(new Error(res.status.toString()));
+            }
 
             return reject(this._parseError(res.body));
           }

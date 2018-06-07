@@ -14,26 +14,24 @@ const DEFAULT_STATE = {
 export interface IAchivementsState {
   achievements: Achievement[];
   token: string;
-  settings: Object;
+  settings: {
+    isSetupTrackerEnabled: boolean;
+  };
 }
 
 export function AchivementsReducer(state: IAchivementsState = DEFAULT_STATE, action: AchivementsAction) {
   switch (action.type) {
     case AchivementsAction.LoadAchivements:
-      console.log(action);
-
       return {
         ...state,
         achievements: [...action.achievements],
       };
-    case AchivementsAction.GetAuthorizeTokenAction:
-      console.log(action);
+    case AchivementsAction.SetAuthorizeTokenAction:
       return {
         ...state,
         token: action.token,
       };
-    case AchivementsAction.GetAchivementsSettingsAction:
-      console.log(action);
+    case AchivementsAction.SetAchivementsSettingsAction:
       return {
         ...state,
         settings: action.settings,
@@ -45,38 +43,38 @@ export function AchivementsReducer(state: IAchivementsState = DEFAULT_STATE, act
 
 export namespace AchivementsAction {
   export const LoadAchivements = 'LoadAchivements',
-    GetAuthorizeTokenAction = 'GetAuthorizeTokenAction',
-    GetAchivementsSettingsAction = 'GetAchivementsSettingsAction';
+    SetAuthorizeTokenAction = 'SetAuthorizeTokenAction',
+    SetAchivementsSettingsAction = 'SetAchivementsSettingsAction';
 }
 
-export interface GetAuthorizeTokenAction extends Action {
+export interface SetAuthorizeTokenAction extends Action {
   token: string;
 }
 
-export class GetAuthorizeTokenAction implements Action {
-  readonly type = AchivementsAction.GetAuthorizeTokenAction;
+export class SetAuthorizeTokenAction implements Action {
+  readonly type = AchivementsAction.SetAuthorizeTokenAction;
 
   constructor(public token: string) {}
 }
 
-export interface GetAchivementsSettingsAction extends Action {
+export interface SetAchivementsSettingsAction extends Action {
   settings: {};
 }
 
-export class GetAchivementsSettingsAction implements Action {
-  readonly type = AchivementsAction.GetAchivementsSettingsAction;
+export class SetAchivementsSettingsAction implements Action {
+  readonly type = AchivementsAction.SetAchivementsSettingsAction;
 
   constructor(public settings: {}) {}
 }
 
-export interface LoadAchivementsAction extends Action {
+export interface SetAchivementsAction extends Action {
   achievements: Achievement[];
 }
 
-export class LoadAchivementsAction implements Action {
+export class SetAchivementsAction implements Action {
   readonly type = AchivementsAction.LoadAchivements;
 
   constructor(public achievements: Achievement[]) {}
 }
 
-export type AchivementsAction = LoadAchivementsAction & GetAuthorizeTokenAction & GetAchivementsSettingsAction;
+export type AchivementsAction = SetAchivementsAction & SetAuthorizeTokenAction & SetAchivementsSettingsAction;
