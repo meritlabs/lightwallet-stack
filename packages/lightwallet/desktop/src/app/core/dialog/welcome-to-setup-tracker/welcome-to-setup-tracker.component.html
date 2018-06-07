@@ -21,15 +21,16 @@
         </li>
         <li>
           <form [formGroup]="formData" class="settings">
-            <p>If you don't want to setup your wallet, you can disable Setup tracker
-              <ui-checkbox formControlName="trackerStatus"></ui-checkbox>
+            <p>If you don't want to setup your wallet, you can {{ formData.controls.isSetupTrackerEnabled.value ? 'disable'
+              : 'enable' }} Setup tracker
+              <ui-checkbox formControlName="isSetupTrackerEnabled" (click)="changeTrackerState()"></ui-checkbox>
             </p>
           </form>
         </li>
       </ul>
     </div>
     <div class="navigation">
-      <button class="item item--full" (click)="dismiss.emit()">
+      <button class="item item--full" (click)="closeAndSave()">
         Okay, Got it!
       </button>
     </div>
