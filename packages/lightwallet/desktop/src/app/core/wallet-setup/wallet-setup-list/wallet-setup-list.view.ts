@@ -43,4 +43,7 @@ export class WalletSetupListView implements OnInit {
     this.trackerSettings.isSetupTrackerEnabled = !this.trackerSettings.isSetupTrackerEnabled;
     this.AchievementsService.setSettings(this.trackerSettings);
   }
+  log(val) {
+    console.log(val);
+  }
 }
