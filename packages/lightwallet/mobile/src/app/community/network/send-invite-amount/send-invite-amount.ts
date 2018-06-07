@@ -75,11 +75,7 @@ export class SendInviteAmountView {
     try {
       loader.present();
 
-      const easySend = await this.easySendService.createEasySendScriptHash(this.wallet, '');
-      const referral = easySend.scriptReferralOpts;
-
-      await this.wallet.sendReferral(referral);
-      await this.walletService.sendInvite(referral.address, this.formData.amount);
+      const easySend = await this.walletService.sendMeritInvite(this.wallet, this.formData.amount);
 
       this.link = getEasySendURL(easySend);
       this.wallet.availableInvites -= this.formData.amount;

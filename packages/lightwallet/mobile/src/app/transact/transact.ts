@@ -297,7 +297,7 @@ export class TransactView {
       let wallet = wallets[0];
       if (!wallet) throw new Error('Could not retrieve wallet');
 
-      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, wallet.rootAddress.toString());
+      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(wallet, receipt, data, wallet.rootAddress.toString());
 
       this.logger.info('accepted easy send', acceptanceTx);
 

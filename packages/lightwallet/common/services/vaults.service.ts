@@ -116,7 +116,7 @@ export class VaultsService {
     //todo use wallet decrypt-encrypt decorator
     //const password = await this.walletService.prepare(data.wallet);
     await data.wallet.sendReferral(scriptReferralOpts);
-    await data.wallet.sendInvite(scriptReferralOpts.address, 1, vault.scriptPubKey.toHex());
+    await this.walletService.sendInvite(data.wallet, scriptReferralOpts.address, 1, vault.scriptPubKey.toHex());
     vault.scriptPubKey = vault.scriptPubKey.toBuffer().toString('hex');
 
     const depositData = {amount: data.amount, address: vault.address, scriptPubKey: vault.scriptPubKey};
