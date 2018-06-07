@@ -291,7 +291,7 @@ Storage.prototype.mustFetchPendingTx = function(walletId, txProposalId, cb, last
 
       if (!results || results.length < 1 || !results[0]) {
         return cb(new Error("TX_NOT_FOUND"));
-      } 
+      }
       const areAnyPending = results.some(result => result.isPending)
       if (!areAnyPending) return cb(new Error("TX_NOT_PENDING"))
       var result = results[0];
@@ -304,7 +304,7 @@ Storage.prototype.mustFetchPendingTx = function(walletId, txProposalId, cb, last
     }, function(err, result) {
       if (err) return cb(err);
       if (!result) return cb(new Error("TX_NOT_FOUND"));
-      if (!result.isPending) return cb(new Error("TX_NOT_PENDING"));      
+      if (!result.isPending) return cb(new Error("TX_NOT_PENDING"));
       return self._completeTxData(walletId, Model.TxProposal.fromObj(result), cb);
     });
   }
@@ -534,11 +534,42 @@ Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs,
     });
 };
 
-// TODO: remove walletId from signature
-Storage.prototype.storeNotification = function(walletId, notification, cb) {
+Storage.prototype.storeNotification = function(notification, cb) {
   this.db.collection(collections.NOTIFICATIONS).insert(notification, {
     w: 1
   }, cb);
+};
+
+Storage.prototype.fetchAndLockNotificationForPushes = function(notification, cb) {
+  notification.lockForPushNotifications();
+  this.db.collection(collections.NOTIFICATIONS).findOneAndUpdate({
+    id: notification.id,
+    walletId: notification.walletId,
+    lockedForPushNotifications: false,
+  }, notification, {
+    readPreference: mongodb.ReadPreference.PRIMARY,
+    writeConcern: { w: "majority", wtimeout: 5000 },
+    new: true,
+    returnOriginal: false,
+  }, function(err, result) {
+    cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
+  });
+};
+
+Storage.prototype.fetchAndLockNotificationForEmails = function(notification, cb) {
+  notification.lockForEmailNotifications();
+  this.db.collection(collections.NOTIFICATIONS).findOneAndUpdate({
+    id: notification.id,
+    walletId: notification.walletId,
+    lockedForEmailNotifications: false,
+  }, notification, {
+    readPreference: mongodb.ReadPreference.PRIMARY,
+    writeConcern: { w: "majority", wtimeout: 5000 },
+    new: true,
+    returnOriginal: false,
+  }, function(err, result) {
+    cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
+  });
 };
 
 // TODO: remove walletId from signature

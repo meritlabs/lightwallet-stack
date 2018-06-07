@@ -12,6 +12,8 @@ var Utils = require('./common/utils');
 var Model = require('./model');
 var sjcl = require('sjcl');
 var log = require('npmlog');
+var Model = require('./model');
+var Notification = Model.Notification;
 log.debug = log.verbose;
 
 var PUSHNOTIFICATIONS_TYPES = {
@@ -137,101 +139,115 @@ PushNotificationsService.prototype.start = function(opts, cb) {
 };
 
 PushNotificationsService.prototype._sendPushNotifications = function(notification, cb) {
+  log.warn(`\nPushNotificationsService: RECEIVED NOTIFICATION: ${JSON.stringify(notification)}\n\n`);
   var self = this;
   cb = cb || function() {};
 
-  var notifType = PUSHNOTIFICATIONS_TYPES[notification.type];
-  if (!notifType) return cb();
+  this.storage.fetchAndLockNotificationForPushes(Notification.fromObj(notification), function(err, isLocked) {
+    if (err) {
+      log.warn(`Notification ${notification.id} could not be locked. ${err}`);
+      return cb();
+    }
 
-  log.debug('Notification received: ' + notification.type);
-  log.debug(JSON.stringify(notification));
+    if (!isLocked) {
+      log.debug(`Notification ${notification.id} is already locked, skipping.`);
+      return cb();
+    }
 
-  self._checkShouldSendNotif(notification, function(err, should) {
-    if (err) return cb(err);
+    var notifType = PUSHNOTIFICATIONS_TYPES[notification.type];
+    if (!notifType) return cb();
 
-    log.debug('Should send notification: ', should);
-    if (!should) return cb();
+    log.debug('Notification received: ' + notification.type);
+    log.debug(JSON.stringify(notification));
 
-    self._getRecipientsList(notification, notifType, function(err, recipientsList) {
+    self._checkShouldSendNotif(notification, function(err, should) {
       if (err) return cb(err);
-      if (!recipientsList) {
-        log.warn('Recipient list is empty, skipping notifications.');
-        return cb();
-      }
 
-      async.waterfall([
+      log.debug('Should send notification: ', should);
+      if (!should) return cb();
 
-        function(next) {
-          self._readAndApplyTemplates(notification, notifType, recipientsList, next);
-        },
-        function(contents, next) {
-          async.map(recipientsList, function(recipient, next) {
-            const content = contents[recipient.language];
-
-            self.storage.fetchPushNotificationSubs(recipient.copayerId, function(err, subs) {
-              if (err) return next(err);
-
-              const notifications = _.map(subs, function(sub) {
-                const pushNotification = {
-                  to: sub.token,
-                  priority: 'high',
-                  notification: {
-                    title: content.plain.subject,
-                    body: content.plain.body,
-                    sound: "default",
-                    click_action: "FCM_PLUGIN_ACTIVITY",
-                    icon: "fcm_push_icon",
-                  },
-                  data: {
-                    id: notification.id,
-                    walletId: notification.walletId,
-                    copayerId: recipient.copayerId,
-                    type: notification.type,
-                    ...notification.data
-                  }
-                };
-
-                if (sub.platform === 'web') {
-                  pushNotification.notification.click_action = sub.packageName;
-                  pushNotification.notification.icon = '/assets/v1/icons/merit-512x512.png';
-                } else if (sub.packageName) {
-                  pushNotification.restricted_package_name = sub.packageName;
-                }
-
-                return pushNotification;
-              });
-              return next(err, notifications);
-            });
-          }, function(err, allNotifications) {
-            if (err) return next(err);
-            return next(null, _.flatten(allNotifications));
-          });
-        },
-        function(notifications, next) {
-          async.each(notifications,
-            function(notification, next) {
-              self._makeRequest(notification, function(err, response) {
-                if (err) log.error("Could not send push notification: ", err);
-                if (response) {
-                  log.debug('Request status: ', response.statusCode);
-                  log.debug('Request message: ', response.statusMessage);
-                  log.debug('Request body: ', response.request.body);
-                }
-                next();
-              });
-            },
-            function(err) {
-              return next(err);
-            }
-          );
-        },
-      ], function(err) {
-        if (err) {
-          log.error('An error ocurred generating notification', err);
+      self._getRecipientsList(notification, notifType, function(err, recipientsList) {
+        if (err) return cb(err);
+        if (!recipientsList) {
+          log.warn('Recipient list is empty, skipping notifications.');
+          return cb();
         }
-        return cb(err);
+
+        async.waterfall([
+
+          function(next) {
+            self._readAndApplyTemplates(notification, notifType, recipientsList, next);
+          },
+          function(contents, next) {
+            async.map(recipientsList, function(recipient, next) {
+              const content = contents[recipient.language];
+
+              self.storage.fetchPushNotificationSubs(recipient.copayerId, function(err, subs) {
+                if (err) return next(err);
+
+                const notifications = _.map(subs, function(sub) {
+                  const pushNotification = {
+                    to: sub.token,
+                    priority: 'high',
+                    notification: {
+                      title: content.plain.subject,
+                      body: content.plain.body,
+                      sound: "default",
+                      click_action: "FCM_PLUGIN_ACTIVITY",
+                      icon: "fcm_push_icon",
+                    },
+                    data: {
+                      id: notification.id,
+                      walletId: notification.walletId,
+                      copayerId: recipient.copayerId,
+                      type: notification.type,
+                      ...notification.data
+                    }
+                  };
+
+                  if (sub.platform === 'web') {
+                    pushNotification.notification.click_action = sub.packageName;
+                    pushNotification.notification.icon = '/assets/v1/icons/merit-512x512.png';
+                  } else if (sub.packageName) {
+                    pushNotification.restricted_package_name = sub.packageName;
+                  }
+
+                  return pushNotification;
+                });
+                return next(err, notifications);
+              });
+            }, function(err, allNotifications) {
+              if (err) return next(err);
+              return next(null, _.flatten(allNotifications));
+            });
+          },
+          function(notifications, next) {
+            async.each(notifications,
+              function(notification, next) {
+                self._makeRequest(notification, function(err, response) {
+                  if (err) log.error("Could not send push notification: ", err);
+                  if (response) {
+                    log.debug('Request status: ', response.statusCode);
+                    log.debug('Request message: ', response.statusMessage);
+                    log.debug('Request body: ', response.request.body);
+                  }
+                  next();
+                });
+              },
+              function(err) {
+                return next(err);
+              }
+            );
+          },
+        ], function(err) {
+          if (err) {
+            log.error('An error ocurred generating notification', err);
+          }
+          return cb(err);
+        });
       });
     });
+
   });
 };
 

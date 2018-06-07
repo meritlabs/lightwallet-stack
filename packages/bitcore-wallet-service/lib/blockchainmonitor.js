@@ -469,8 +469,7 @@ BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {
-
-  this.storage.storeNotification(notification.walletId, notification, (err, doc) => {
+  this.storage.storeNotification(notification, (err, doc) => {
     if (doc) {
       this.messageBroker.send(notification);
     }
