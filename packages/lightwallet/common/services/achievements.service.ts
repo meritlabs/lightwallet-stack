@@ -5,13 +5,12 @@ import { IRootAppState } from '@merit/common/reducers';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import {
-  LoadAchivementsAction,
-  GetAuthorizeTokenAction,
-  GetAchivementsSettingsAction,
+  SetAchivementsAction,
+  SetAuthorizeTokenAction,
+  SetAchivementsSettingsAction,
 } from '@merit/common/reducers/achivement.reducer';
 import { MeritAchivementClient } from '@merit/common/achievements-client/api';
 import { PersistenceService } from '@merit/common/services/persistence.service';
-import { filter, map, take } from 'rxjs/operators';
 
 @Injectable()
 export class AchievementsService {
@@ -31,7 +30,7 @@ export class AchievementsService {
     if (!token) {
       const authData = await MeritAchivementClient.fromObj(profile).login();
       result = authData.token;
-      await this.store.dispatch(new GetAuthorizeTokenAction(authData.token));
+      await this.store.dispatch(new SetAuthorizeTokenAction(authData.token));
     } else {
       result = token;
     }
@@ -45,7 +44,7 @@ export class AchievementsService {
         '/achievements/'
       );
 
-    this.store.dispatch(new LoadAchivementsAction(getWalletAchivements));
+    this.store.dispatch(new SetAchivementsAction(getWalletAchivements));
   }
 
   async getSettings() {
@@ -57,6 +56,12 @@ export class AchievementsService {
 
     console.log(getAchivementsSettings);
 
-    this.store.dispatch(new GetAchivementsSettingsAction(getAchivementsSettings));
+    this.store.dispatch(new SetAchivementsSettingsAction(getAchivementsSettings));
+  }
+
+  async setSettings(settings) {
+    let profile = await this.persistenceService.getProfile();
+    await MeritAchivementClient.fromObj(profile).setData('/settings/', settings, await this.getToken());
+    this.store.dispatch(new SetAchivementsSettingsAction(settings));
   }
 }

@@ -22,13 +22,25 @@ export class WalletSetupListView implements OnInit {
   ) {}
 
   questState$: Observable<Achievements> = this.store.select('achievements');
+  trackerSettings: any;
 
   formData: FormGroup = this.formBuilder.group({
-    trackerStatus: true,
+    isSetupTrackerEnabled: false,
   });
 
   async ngOnInit() {
     await this.AchievementsService.getSettings();
     await this.AchievementsService.getAchievements();
+
+    await this.store.select('achievements').subscribe(res => {
+      this.trackerSettings = res.settings;
+      this.formData.patchValue({
+        isSetupTrackerEnabled: res.settings.isSetupTrackerEnabled,
+      });
+    });
+  }
+  trackerStatus() {
+    this.trackerSettings.isSetupTrackerEnabled = !this.trackerSettings.isSetupTrackerEnabled;
+    this.AchievementsService.setSettings(this.trackerSettings);
   }
 }

@@ -12,7 +12,7 @@
           <p>Disable Setup Tracker</p>
         </div>
         <div class="global-settings__group__item__column global-settings__group__item__column--30">
-          <ui-checkbox formControlName="trackerStatus"></ui-checkbox>
+          <ui-checkbox formControlName="isSetupTrackerEnabled" (click)="trackerStatus(formData.controls.isSetupTrackerEnabled)"></ui-checkbox>
         </div>
       </form>
     </div>
