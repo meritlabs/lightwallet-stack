@@ -1,13 +1,14 @@
 <div class="wallet-setup_preview">
   <div class="icon">
     <merit-icon name="setup"></merit-icon>
-    <strong>+2%</strong>
   </div>
   <div class="details">
     <div class="details_title">
       <p>
-        <a href="">{{quest.name}}</a>
+        {{goal.title}}
+        <span class="link" [routerLink]="'/' + goal.route">{{goal.linkTitle}}</span>
       </p>
     </div>
   </div>
+  {{log(goal)}}
 </div>

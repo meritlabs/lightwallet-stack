@@ -21,7 +21,7 @@ export class WalletSetupListView implements OnInit {
     private formBuilder: FormBuilder
   ) {}
 
-  questState$: Observable<Achievements> = this.store.select('achievements');
+  goalsState$: Observable<Achievements> = this.store.select('achievements');
   trackerSettings: any;
 
   formData: FormGroup = this.formBuilder.group({
