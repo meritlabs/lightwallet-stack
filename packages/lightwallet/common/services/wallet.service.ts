@@ -21,7 +21,7 @@ export function accessWallet(target, key: string, descriptor: any) {
       let showPassPrompt = (highlightInvalid = false) => {
         this.alertCtrl
           .create({
-            title: 'Enter spending password',
+            title: 'Enter wallet password',
             cssClass: highlightInvalid ? 'invalid-input-prompt password-prompt' : 'password-prompt',
             inputs: [ { name: 'password', placeholder: 'Password', type: 'text' } ],
             buttons: [
@@ -51,9 +51,8 @@ export function accessWallet(target, key: string, descriptor: any) {
   return {
     value: async function (...args:any[]) {
 
-      console.log('check');
-
       let wallet = args[0];
+      console.log(wallet, 'WALLET');
       if (!wallet || !wallet.credentials) {
         throw new Error(`first argument of ${key} method should be type of MeritWalletClient so we can check access`);
       }
