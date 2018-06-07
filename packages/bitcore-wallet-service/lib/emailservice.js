@@ -370,12 +370,12 @@ EmailService.prototype.sendEmail = function(notification, cb) {
 
   this.storage.fetchAndLockNotificationForEmails(Notification.fromObj(notification), function(err, isLocked) {
     if (err) {
-      log.warn(`Notification ${notification.id} could not be locked. ${err}`);
+      log.warn('Notification ' + notification.id + ' could not be locked.', err);
       return cb();
     }
 
     if (!isLocked) {
-      log.warn(`Notification ${notification.id} is already locked, skipping.`);
+      log.warn('Notification ' + notification.id + 'is already locked, skipping.');
       return cb();
     }
 
