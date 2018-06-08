@@ -469,9 +469,12 @@ BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {
-  this.storage.storeNotification(notification, (err, doc) => {
-    if (doc) {
+  this.storage.storeNotification(notification, (err, created) => {
+    if (created) {
+      log.info("Nottification is created, broadcasting.")
       this.messageBroker.send(notification);
+    } else {
+      log.info("Nottification is already created, skipping.")
     }
     if (cb) {
       return cb();

@@ -535,9 +535,20 @@ Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs,
 };
 
 Storage.prototype.storeNotification = function(notification, cb) {
-  this.db.collection(collections.NOTIFICATIONS).insert(notification, {
-    w: 1
-  }, cb);
+  this.db.collection(collections.NOTIFICATIONS).update({
+    walletId: notification.walletId,
+    type: notification.type,
+    data: {
+      address: notification.data.address,
+      txid: notification.data.txid,
+    },
+  }, notification, {
+    writeConcern: { w: "majority", wtimeout: 5000 },
+    upsert: true,
+  }, function(err, result) {
+    console.log(err, JSON.stringify(result));
+    cb(err, !(result.n > 0 && result.nModified > 0));
+  });
 };
 
 Storage.prototype.fetchAndLockNotificationForPushes = function(notification, cb) {
