@@ -52,7 +52,6 @@ export function accessWallet(target, key: string, descriptor: any) {
     value: async function (...args:any[]) {
 
       let wallet = args[0];
-      console.log(wallet, 'WALLET');
       if (!wallet || !wallet.credentials) {
         throw new Error(`first argument of ${key} method should be type of MeritWalletClient so we can check access`);
       }
@@ -62,7 +61,7 @@ export function accessWallet(target, key: string, descriptor: any) {
         try {
           password = await askForPassword.apply(this, [wallet]);
         } catch (e) {
-          this.logger.warn(e);
+          console.warn(e);
           throw new Error('No access to wallet');
         }
       }

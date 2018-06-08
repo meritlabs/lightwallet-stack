@@ -10,11 +10,15 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { clone } from 'lodash';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { Address } from 'bitcore-lib';
+import { accessWallet } from "./wallet.service";
+import { AlertController } from 'ionic-angular';
+import { getEasySendURL } from '@merit/common/models/easy-send';
 
 export interface ISendTxData {
   amount?: number; // micros
   totalAmount?: number; // micros
-  feeAmount?: number; // micros
+  totalAmount?: number; // micros
+  fee?: number; // micros
   feeIncluded?: boolean;
   easyFee?: number,
   password?: string;
@@ -39,6 +43,7 @@ export class SendService {
               private walletService: WalletService,
               private loggerService: LoggerService,
               private easySendService: EasySendService,
+              private alertCtrl: AlertController,
               private persistenceService: PersistenceService2) {}
 
   async prepareTxp(wallet: MeritWalletClient, amount: number, toAddress: string) {
@@ -81,7 +86,18 @@ export class SendService {
     return wallet.createTxProposal(txp);
   }
 
-  async send(txData: ISendTxData, wallet: MeritWalletClient) {
+  @accessWallet
+  async send(wallet: MeritWalletClient, txData: ISendTxData) {
+
+    if (txData.sendMethod.type == SendMethodType.Easy)  {
+      const easySend = await this.easySendService.createEasySendScriptHash(wallet); //todo password removed
+      txData.easySend = easySend;
+      txData.txp = await this.easySendService.prepareTxp(wallet, txData.amount, easySend);
+      txData.easySendUrl = getEasySendURL(easySend);
+      txData.referralsToSign = [easySend.scriptReferralOpts];
+    } else {
+      txData.txp = await this.prepareTxp(wallet, txData.amount, txData.toAddress);
+    }
     txData.txp = await this.finalizeTxp(wallet, txData.txp, Boolean(txData.feeIncluded));
 
     if (txData.referralsToSign) {
@@ -96,6 +112,8 @@ export class SendService {
     if (txData.sendMethod.type === SendMethodType.Easy) {
       await this.persistenceService.addEasySend(clone(txData.easySend));
     }
+
+    return txData;
   }
 
   private async approveTx(txp: any, wallet: MeritWalletClient) {
