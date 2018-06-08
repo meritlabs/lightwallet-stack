@@ -20,6 +20,7 @@ import { HistoryItemComponent } from './history-item/history-item.component';
 import { HistoryListComponent } from './history-list/history-list.component';
 import { GetStartedTipsComponent } from './get-started-tips/get-started-tips.component';
 import { ShareBoxComponent } from './share-box/share-box.component';
+import { TaskConfirmComponent } from '@merit/desktop/app/core/dialog/task-confirm/task-confirm.component';
 
 export function getComponents() {
   return [
@@ -36,6 +37,7 @@ export function getComponents() {
     SendMethodComponent,
     GetStartedTipsComponent,
     ShareBoxComponent,
+    TaskConfirmComponent,
   ];
 }
 
