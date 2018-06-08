@@ -3,6 +3,7 @@ import { walletsReducer, IWalletsState } from '@merit/common/reducers/wallets.re
 import { ITransactionsState, transactionsReducer } from '@merit/common/reducers/transactions.reducer';
 import { INotificationsState, notificationsReducer } from '@merit/common/reducers/notifications.reducer';
 import { IAchivementsState, AchivementsReducer } from '@merit/common/reducers/achivement.reducer';
+import { IInterfaceState, InterfaceReducer } from '@merit/common/reducers/interface-preferences.reducer';
 
 export interface IRootAppState {
   app: IAppState;
@@ -10,6 +11,7 @@ export interface IRootAppState {
   transactions: ITransactionsState;
   notifications: INotificationsState;
   achievements: IAchivementsState;
+  interface: IInterfaceState;
 }
 
 export const reducer = {
@@ -18,4 +20,5 @@ export const reducer = {
   transactions: transactionsReducer,
   notifications: notificationsReducer,
   achievements: AchivementsReducer,
+  interface: InterfaceReducer,
 };
