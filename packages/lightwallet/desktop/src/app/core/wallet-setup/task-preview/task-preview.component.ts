@@ -10,18 +10,20 @@ import { AchievementsService } from '@merit/common/services/achievements.service
 export class TaskPreviewComponent implements OnInit {
   constructor(private AchievementsService: AchievementsService) {}
 
-  @Input() goal: Achievement;
+  @Input() goal;
   @Input() wallet;
+  @Input() isComplete;
 
   async ngOnInit() {
     this._completeWalletConfirmationGoal();
   }
 
   _completeWalletConfirmationGoal() {
-    let isConfirmed: boolean = this.wallet.confirmed;
-    if (isConfirmed && this.goal.name === 'Create Wallet' && this.goal.status !== 1) {
-      console.log(this.goal);
-      this.AchievementsService.updateGoal(this.goal.id, 0);
+    let isConfirmed: boolean = this.wallet.confirmed,
+      goal: Achievement = this.goal;
+    if (isConfirmed && goal.name === 'Create Wallet' && goal.status !== 1) {
+      console.log(goal);
+      this.AchievementsService.updateGoal(goal.id, 0);
     }
   }
 }
