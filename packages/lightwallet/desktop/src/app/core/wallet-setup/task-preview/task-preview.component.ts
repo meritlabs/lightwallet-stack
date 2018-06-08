@@ -44,6 +44,8 @@ export class TaskPreviewComponent implements OnInit {
       case 'Share your invite code':
         this.store.dispatch(new SetShareDialogAction(true));
         return this.router.navigate(['/wallets']);
+      case 'Name Your Wallet':
+        return this.router.navigate([`/wallets/${this.wallet.id}/settings`]);
       default:
         return this.router.navigate(['/wallets']);
     }

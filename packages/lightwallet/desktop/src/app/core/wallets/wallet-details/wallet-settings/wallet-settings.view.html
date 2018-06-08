@@ -1,17 +1,13 @@
 <ng-container *ngIf="wallet; else walletLoading">
   <form [formGroup]="settingsForm">
     <div class="wallet-settings__group">
+      <app-task-confirm [goalName]="'Name Your Wallet'"></app-task-confirm>
       <label class="ui-label">Edit wallet name</label>
-      <input type="text" name="" formControlName="name" placeholder="Enter wallet name here"
-             class="ui-input ui-input--form ui-input--text">
+      <input type="text" name="" formControlName="name" placeholder="Enter wallet name here" class="ui-input ui-input--form ui-input--text">
     </div>
     <div class="wallet-settings__group">
       <label class="ui-label">Select identification color</label>
-      <app-select
-        (selectionEvent)="selectColor($event)"
-        [selected]="selectedColor"
-        [input]="availableColors"
-        cssClass="ui-input ui-input--select ui-input--form ui-input--color"></app-select>
+      <app-select (selectionEvent)="selectColor($event)" [selected]="selectedColor" [input]="availableColors" cssClass="ui-input ui-input--select ui-input--form ui-input--color"></app-select>
     </div>
     <div class="wallet-settings__group wallet-settings__group__checkbox">
       <label class="ui-label">Hide balance</label>
@@ -24,7 +20,9 @@
 
       <ng-container *ngIf="isWalletEncrypted">
         <div class="wallet-settings__group">
-          <label class="ui-label"><small>Current password</small></label>
+          <label class="ui-label">
+            <small>Current password</small>
+          </label>
           <input type="password" formControlName="currentPassword" name="" class="ui-input ui-input--form ui-input--text">
           <div class="input-errors" [hidden]="!currentPassword.dirty || currentPassword.valid">
             <div [hidden]="!currentPassword.hasError('required')">Current password is required</div>
@@ -34,7 +32,9 @@
       </ng-container>
 
       <div class="wallet-settings__group">
-        <label class="ui-label"><small>Password</small></label>
+        <label class="ui-label">
+          <small>Password</small>
+        </label>
         <input type="password" formControlName="password" name="" class="ui-input ui-input--form ui-input--text">
         <div class="input-errors" [hidden]="!password.dirty || password.valid">
           <div [hidden]="!password.hasError('required')">Password is required</div>
@@ -42,7 +42,9 @@
       </div>
 
       <div class="wallet-settings__group">
-        <label class="ui-label"><small>Confirm password</small></label>
+        <label class="ui-label">
+          <small>Confirm password</small>
+        </label>
         <input type="password" formControlName="repeatPassword" name="" class="ui-input ui-input--form ui-input--text">
         <div class="input-errors" [hidden]="!repeatPassword.dirty || repeatPassword.valid">
           <div [hidden]="!repeatPassword.hasError('required')">Password is required</div>
@@ -52,9 +54,10 @@
 
       <div class="wallet-settings__group submit__password">
         <div class="submit__password__warning">
-          <p><strong>WARNING</strong></p>
-          <p>This password cannot be recovered. If the password is lost,
-            there is no way could recover your funds!</p>
+          <p>
+            <strong>WARNING</strong>
+          </p>
+          <p>This password cannot be recovered. If the password is lost, there is no way could recover your funds!</p>
         </div>
         <button type="submit" role="button" [disabled]="passwordChangeForm.invalid" class="ui-button ui-button--blue ui-button--md">SUBMIT</button>
       </div>
