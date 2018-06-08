@@ -23,13 +23,11 @@ export class UnlockRequestsView {
 
   showHiddenRequests: boolean;
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private toastCtrl: ToastControllerService,
-    private unlockRequestService: UnlockRequestService,
-    private profileService: ProfileService
-  ) {
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private toastCtrl: ToastControllerService,
+              private unlockRequestService: UnlockRequestService,
+              private profileService: ProfileService) {
   }
 
   async ionViewWillEnter() {
@@ -56,10 +54,10 @@ export class UnlockRequestsView {
     }, 0);
   }
 
-  async doRefresh(refreshser) {
+  async doRefresh(refresher) {
     Promise.all([this.profileService.refreshData(), this.unlockRequestService.loadRequestsData()]);
     await this.ionViewWillEnter();
-    refreshser.complete();
+    refresher.complete();
   }
 
   processRequest(request: IUnlockRequest) {
