@@ -4,9 +4,9 @@
   </div>
   <div class="details">
     <div class="details_title">
-      <p>
+      <p (click)="action(goal.name)">
         {{goal.title}}
-        <span class="link" [routerLink]="'/' + goal.route">{{goal.linkTitle}}</span>
+        <span class="link">{{goal.linkTitle}}</span>
       </p>
     </div>
   </div>
