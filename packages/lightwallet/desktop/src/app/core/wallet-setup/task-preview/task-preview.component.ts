@@ -52,6 +52,10 @@ export class TaskPreviewComponent implements OnInit {
         return this.router.navigate([`/settings`]);
       case 'Confirm your backup Phrase':
         return this.router.navigate([`/wallets/${this.wallet.id}/export/mnemonic`]);
+      case 'Set a advanced Wallet Password':
+        return this.router.navigate([`/wallets/${this.wallet.id}/settings`]);
+      case 'Add friends to your invite waitlist':
+        return this.router.navigate([`/invites/requests`]);
       default:
         return this.router.navigate(['/wallets']);
     }
