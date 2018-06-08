@@ -28,7 +28,7 @@
             </ng-template>
           </div>
           <div class="wallet__invites">
-            <merit-icon name="invite"></merit-icon> Available invites: {{ wallet.availableInvites }}
+            <merit-icon name="invite"></merit-icon> Available invites: {{ wallet.availableInvites }}&nbsp;<span *ngIf="wallet.pendingInvites">&nbsp;(+{{wallet.pendingInvites}} pending)</span>
           </div>
           <div class="wallet__navigation">
             <div class="wallet__button wallet__button--send" [routerLink]="'/send'">
