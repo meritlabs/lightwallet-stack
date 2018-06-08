@@ -4,16 +4,12 @@ import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { MeritContact } from '@merit/common/models/merit-contact';
 import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
 import { ConfigService } from '@merit/common/services/config.service';
-import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
-import { EasySendService } from '@merit/common/services/easy-send.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { ISendTxData, SendService } from '@merit/common/services/send.service';
 import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
-import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { WalletService } from '@merit/common/services/wallet.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import {
   AlertController,
@@ -24,10 +20,6 @@ import {
   NavController,
   NavParams
 } from 'ionic-angular';
-import * as _ from 'lodash';
-
-
-import { Address } from 'bitcore-lib';
 
 
 @IonicPage()
@@ -44,17 +36,12 @@ export class SendAmountView {
 
   public txData: ISendTxData;
   public feeCalcError: string;
-  public feeLoading: boolean;
 
   public amount = { micros: 0, mrt: 0, fiat: 0 };
   public formData = { amount: '', password: '', confirmPassword: '', nbBlocks: 10080, validTill: '' };
 
   public readonly CURRENCY_TYPE_MRT = 'mrt';
   public readonly CURRENCY_TYPE_FIAT = 'fiat';
-
-  public readonly MINUTE_PER_BLOCK = 1;
-
-  public availableAmountMicros: number = 0;
 
   public wallets: Array<any>;
   public selectedWallet: any;
@@ -65,11 +52,6 @@ export class SendAmountView {
   public feePercent: number;
   public feeIncluded: boolean = false;
   public feeTogglerEnabled: boolean = true;
-  private referralsToSign: Array<any>;
-
-  private walletPassword: string;
-
-  private allowUnconfirmed: boolean = true;
 
   private loading: boolean = true;
 
@@ -156,7 +138,6 @@ export class SendAmountView {
     modal.onDidDismiss(async (wallet) => {
       if (wallet) {
         this.selectedWallet = wallet;
-        this.walletPassword = '';
         this.updateTxData();
       }
     });
@@ -332,75 +313,6 @@ export class SendAmountView {
       return this.feeCalcError = 'Passwords do not match';
     }
   }
-
-  //  if (!this.amount.micros) {
-  //    this.txData = null;
-  //    this.feeLoading = false;
-  //    return this.createTxpDebounce.cancel();
-  //  } else if (this.amount.micros > this.selectedWallet.balance.spendableAmount) {
-  //    this.feeCalcError = 'Amount is too big';
-  //    this.txData = null;
-  //    this.feeLoading = false;
-  //    return this.createTxpDebounce.cancel();
-  //  } else {
-  //
-  //    this.txData = {
-  //      txp: null,
-  //      wallet: this.selectedWallet,
-  //      amount: this.amount.micros,
-  //      feeAmount: null,
-  //      password: this.formData.password,
-  //      totalAmount: this.amount.micros,
-  //      recipient: this.recipient,
-  //      sendMethod: this.sendMethod,
-  //      feeIncluded: this.feeIncluded,
-  //      timeout: this.formData.nbBlocks,
-  //      easyFee: 0
-  //    };
-  //
-  //    this.createTxpDebounce();
-  //  }
-  //}
-
-  //private createTxpDebounce = _.debounce(() => {
-  //  this.createTxp();
-  //}, 1000);
-  //
-  //private async createTxp() {
-  //
-  //  if (this.amount.micros == this.selectedWallet.balance.spendableAmount) this.feeIncluded = true;
-  //
-  //  try {
-  //
-  //    if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
-  //      this.feeCalcError = 'Passwords do not match';
-  //      return this.txData.txp = null;
-  //    }
-  //
-  //    if (this.sendMethod.type == SendMethodType.Easy) {
-  //
-  //      let easySend = await this.easySendService.bulidScript(this.txData.wallet);
-  //      this.sendMethod.value = Address(easySend.script.getAddressInfo()).toString();
-  //
-  //      if (!this.feeIncluded) { //if fee is included we pay also easyreceive tx, so recipient can have the exact amount that is displayed
-  //        this.txData.easyFee = await this.feeService.getEasyReceiveFee();
-  //      }
-  //
-  //    }
-  //
-  //    this.txData.txp = await this.sendService.prepareTxp(this.txData.wallet, this.amount.micros, this.sendMethod.value);
-  //
-  //  } catch (err) {
-  //    this.txData.txp = null;
-  //    this.logger.warn(err);
-  //    if (err.message) this.feeCalcError = err.message;
-  //    return this.toastCtrl.error(err.message || 'Unknown error');
-  //  } finally {
-  //    this.feeLoading = false;
-  //  }
-  //
-  //}
-
 
 
 }
