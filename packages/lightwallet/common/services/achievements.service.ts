@@ -8,6 +8,7 @@ import {
   SetAchivementsAction,
   SetAuthorizeTokenAction,
   SetAchivementsSettingsAction,
+  CompleteAchivementAction,
 } from '@merit/common/reducers/achivement.reducer';
 import { MeritAchivementClient } from '@merit/common/achievements-client/api';
 import { PersistenceService } from '@merit/common/services/persistence.service';
@@ -54,8 +55,6 @@ export class AchievementsService {
         '/settings/'
       );
 
-    console.log(getAchivementsSettings);
-
     this.store.dispatch(new SetAchivementsSettingsAction(getAchivementsSettings));
   }
 
@@ -72,6 +71,6 @@ export class AchievementsService {
       {},
       await this.getToken()
     );
-    // this.store.dispatch(new SetAchivementsSettingsAction(settings));
+    this.store.dispatch(new CompleteAchivementAction({ id: id, step: step }));
   }
 }

@@ -26,4 +26,8 @@ export class TaskConfirmComponent implements OnInit {
       console.log(this.task);
     });
   }
+
+  finishTask() {
+    this.AchievementsService.updateGoal(this.task.id, 0);
+  }
 }

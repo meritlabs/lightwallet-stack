@@ -38,6 +38,15 @@ export function AchivementsReducer(state: IAchivementsState = DEFAULT_STATE, act
         ...state,
         settings: action.settings,
       };
+    case AchivementsAction.CompleteAchivementAction:
+      let task: any = state.achievements.filter((item: any) => item.id === action.completeTask.id)[0],
+        index = state.achievements.indexOf(task);
+      if (task.conditions.length === 1) task.status = 1;
+      state.achievements[index] = task;
+      return {
+        ...state,
+        achievements: state.achievements,
+      };
     default:
       return state;
   }
@@ -46,7 +55,8 @@ export function AchivementsReducer(state: IAchivementsState = DEFAULT_STATE, act
 export namespace AchivementsAction {
   export const LoadAchivements = 'LoadAchivements',
     SetAuthorizeTokenAction = 'SetAuthorizeTokenAction',
-    SetAchivementsSettingsAction = 'SetAchivementsSettingsAction';
+    SetAchivementsSettingsAction = 'SetAchivementsSettingsAction',
+    CompleteAchivementAction = 'CompleteAchivementAction';
 }
 
 export interface SetAuthorizeTokenAction extends Action {
@@ -69,6 +79,16 @@ export class SetAchivementsSettingsAction implements Action {
   constructor(public settings: {}) {}
 }
 
+export interface CompleteAchivementAction extends Action {
+  completeTask: any;
+}
+
+export class CompleteAchivementAction implements Action {
+  readonly type = AchivementsAction.CompleteAchivementAction;
+
+  constructor(public completeTask: any) {}
+}
+
 export interface SetAchivementsAction extends Action {
   achievements: Achievement[];
 }
@@ -79,4 +99,7 @@ export class SetAchivementsAction implements Action {
   constructor(public achievements: Achievement[]) {}
 }
 
-export type AchivementsAction = SetAchivementsAction & SetAuthorizeTokenAction & SetAchivementsSettingsAction;
+export type AchivementsAction = SetAchivementsAction &
+  SetAuthorizeTokenAction &
+  SetAchivementsSettingsAction &
+  CompleteAchivementAction;
