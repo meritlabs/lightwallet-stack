@@ -1,5 +1,7 @@
 export class Achievement {
   constructor(
+    id: string,
+    goalId: string,
     slug: number,
     route: string,
     name: string,
