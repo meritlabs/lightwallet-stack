@@ -24,6 +24,9 @@ BlockchainMonitor.prototype.start = function(opts, cb) {
 
   var self = this;
 
+  self.pushNotificationServiceEnabled = !!opts.pushNotificationsOpts;
+  self.emailNotificationServiceEnabled = !!opts.emailOpts;
+
   async.parallel([
 
     function(done) {
@@ -469,6 +472,8 @@ BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {
+  if (!(this.pushNotificationServiceEnabled || this.emailNotificationServiceEnabled)) return;
+
   this.storage.storeNotification(notification, (err, created) => {
     if (created) {
       log.info("Notification is created, broadcasting.")

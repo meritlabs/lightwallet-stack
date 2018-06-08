@@ -545,7 +545,6 @@ Storage.prototype.storeNotification = function(notification, cb) {
       condition = {
         walletId: notification.walletId,
         type: notification.type,
-        'data.address': notification.data.address,
         'data.txid': notification.data.txid,
       };
       break;
@@ -572,7 +571,7 @@ Storage.prototype.storeNotification = function(notification, cb) {
       };
       break;
   }
-  console.log(condition);
+  console.log('CONDITION', JSON.stringify(condition));
   this.db.collection(collections.NOTIFICATIONS).update(condition, notification, {
     writeConcern: { w: "majority", wtimeout: 5000 },
     upsert: true,
