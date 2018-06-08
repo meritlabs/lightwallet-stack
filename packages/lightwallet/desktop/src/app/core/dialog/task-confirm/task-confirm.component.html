@@ -1,0 +1,17 @@
+<ng-container *ngIf="trackerSettings && task">
+  <div class="taskConfirm">
+    <div class="icon">
+      <merit-icon name="setup"></merit-icon>
+    </div>
+    <div class="details">
+      <div class="details_title">
+        <p (click)="action(goal.name)">
+          {{task?.name}}
+        </p>
+      </div>
+      <div class="details_description">
+        {{task?.description}}
+      </div>
+    </div>
+  </div>
+</ng-container>
