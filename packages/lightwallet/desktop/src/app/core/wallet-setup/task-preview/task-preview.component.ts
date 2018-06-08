@@ -50,6 +50,8 @@ export class TaskPreviewComponent implements OnInit {
         return this.router.navigate([`/wallets/${this.wallet.id}/settings`]);
       case 'Enable Email Notifications':
         return this.router.navigate([`/settings`]);
+      case 'Confirm your backup Phrase':
+        return this.router.navigate([`/wallets/${this.wallet.id}/export/mnemonic`]);
       default:
         return this.router.navigate(['/wallets']);
     }
