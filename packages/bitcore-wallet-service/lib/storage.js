@@ -535,14 +535,45 @@ Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs,
 };
 
 Storage.prototype.storeNotification = function(notification, cb) {
-  this.db.collection(collections.NOTIFICATIONS).update({
-    walletId: notification.walletId,
-    type: notification.type,
-    data: {
-      address: notification.data.address,
-      txid: notification.data.txid,
-    },
-  }, notification, {
+  var condition = {};
+  switch (notification.type) {
+    case 'IncomingCoinbase':
+    case 'IncomingInvite':
+    case 'WalletUnlocked':
+    case 'VaultConfirmation':
+    case 'IncomingTx':
+      condition = {
+        walletId: notification.walletId,
+        type: notification.type,
+        'data.address': notification.data.address,
+        'data.txid': notification.data.txid,
+      };
+      break;
+    case 'NewIncomingReferralTx':
+      condition = {
+        walletId: notification.walletId,
+        type: notification.type,
+        'data.address': notification.data.address,
+      };
+      break;
+    case 'NewBlock':
+      condition = {
+        walletId: notification.walletId,
+        type: notification.type,
+        'data.hash': notification.data.hash,
+        'data.netowrk': notification.data.network,
+      };
+      break;
+    default:
+      condition = {
+        walletId: notification.walletId,
+        type: notification.type,
+        'data.adderss': notification.data.address,
+      };
+      break;
+  }
+  console.log(condition);
+  this.db.collection(collections.NOTIFICATIONS).update(condition, notification, {
     writeConcern: { w: "majority", wtimeout: 5000 },
     upsert: true,
   }, function(err, result) {
