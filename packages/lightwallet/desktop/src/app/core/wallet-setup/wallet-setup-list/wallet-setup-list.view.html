@@ -36,14 +36,20 @@
 <div class="wallet-setup_wrap">
   <div class="wallet-setup_column">
     <div class="title title--secondary">
-      <p>To do</p>
+      <p>
+        <merit-icon name="setup"></merit-icon>To do</p>
     </div>
-    <app-task-preview *ngFor="let goal of (goalsState$ | async)?.achievements" [goal]=goal [hidden]="goal.status !== 0"></app-task-preview>
+    <ng-container *ngIf="wallet">
+      <app-task-preview *ngFor="let goal of (goalsState$ | async)?.achievements" [wallet]="wallet" [goal]=goal [hidden]="goal.status !== 0"></app-task-preview>
+    </ng-container>
   </div>
   <div class="wallet-setup_column">
     <div class="title title--secondary">
-      <p>Complete</p>
+      <p>
+        <merit-icon name="setup"></merit-icon>Complete</p>
     </div>
-    <app-task-preview *ngFor="let goal of (goalsState$ | async)?.goals" [goal]=goal [hidden]="goal.status !== 1"></app-task-preview>
+    <ng-container *ngIf="wallet">
+      <app-task-preview *ngFor="let goal of (goalsState$ | async)?.achievements" [wallet]="wallet" [goal]=goal [hidden]="goal.status !== 1"></app-task-preview>
+    </ng-container>
   </div>
 </div>
