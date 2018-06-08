@@ -29,7 +29,6 @@ import { Events } from 'ionic-angular/util/events';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { MarketLoginView } from './market/market-login/market-login.view';
 import { APP_BASE_HREF } from '@angular/common';
 
 export function createTranslateLoader(http: HttpClient) {
@@ -62,7 +61,7 @@ export function getProviders() {
 }
 
 @NgModule({
-  declarations: [AppComponent, MarketLoginView],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
