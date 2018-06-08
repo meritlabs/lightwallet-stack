@@ -3,18 +3,19 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
 import {
+  IgnoreInviteRequestAction,
   selectInviteRequests,
   selectInvites,
   selectWalletsWithInvites,
   UpdateInviteRequestsAction
 } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { IUnlockRequest } from '@merit/common/services/unlock-request.service';
+import { IUnlockRequest, UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { take } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'view-invite-requests',
@@ -41,7 +42,7 @@ export class InviteRequestsView {
       return;
     }
 
-    const dialog = this.confirmDialogCtrl.create('Confirm action', 'Are you sure you would like to send an invite to this address?', [
+    const dialog = this.confirmDialogCtrl.create('Send Invite Token', 'Are you sure you would like to send an invite to this address?', [
       {
         text: 'Yes',
         value: 'yes',
@@ -82,6 +83,25 @@ export class InviteRequestsView {
         }
 
         this.sending[request.referralId] = false;
+      }
+    });
+  }
+
+  ignoreRequest(request: IUnlockRequest) {
+    const dialog = this.confirmDialogCtrl.create('Ignore Invite Request', 'Are you sure you would like to ignore this invite request?', [
+      {
+        text: 'Yes',
+        value: 'yes',
+        class: 'primary'
+      },
+      {
+        text: 'No'
+      }
+    ]);
+
+    dialog.onDidDismiss(async (value: string) => {
+      if (value === 'yes') {
+        this.store.dispatch(new IgnoreInviteRequestAction(request.address));
       }
     });
   }
