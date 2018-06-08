@@ -294,15 +294,16 @@ export class SendAmountView {
         this.feeCalcError = 'Passwords do not match';
       }
 
-      this.navCtrl.push('SendConfirmationView', {
+      this.navCtrl.push('SendConfirmationView', {txData: {
         amount: this.amount.micros,
         password: this.formData.password,
         fee: fee,
         wallet: this.selectedWallet,
         feeIncluded: this.feeIncluded,
-        sendMethod: this.sendMethod.type,
-        toAddress: this.sendMethod.value || 'MeritMoney link'
-      });
+        sendMethod: this.sendMethod,
+        toAddress: this.sendMethod.value || 'MeritMoney link',
+        recipient: this.recipient
+      }});
     } catch (e) {
       console.log(e);
       return this.feeCalcError = e.message;
