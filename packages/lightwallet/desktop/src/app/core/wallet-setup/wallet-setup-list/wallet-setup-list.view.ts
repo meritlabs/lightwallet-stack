@@ -26,6 +26,7 @@ export class WalletSetupListView implements OnInit {
 
   goalsState$: Observable<Achievements> = this.store.select('achievements');
   trackerSettings: any;
+  toDo: any;
 
   formData: FormGroup = this.formBuilder.group({
     isSetupTrackerEnabled: false,
@@ -46,11 +47,15 @@ export class WalletSetupListView implements OnInit {
       this.wallet = res[0];
     });
     await this.goalsState$.subscribe(res => {
-      let complete = res.achievements.filter((item: any) => item.status === 1).length,
+      let toDo = res.achievements.filter((item: any) => item.status === 0),
+        complete = res.achievements.length - toDo.length,
         total = res.achievements.length,
         readiness = complete / total * 100;
+
       this.readiness = parseFloat(readiness.toFixed(2));
       this.readinessBackground = `linear-gradient(to right, #00b0dd ${this.readiness}%, #555b70 ${this.readiness}%)`;
+
+      this.toDo = toDo;
     });
   }
   trackerStatus() {

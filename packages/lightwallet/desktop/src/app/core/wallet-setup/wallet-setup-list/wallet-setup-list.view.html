@@ -33,24 +33,29 @@
     </div>
   </div>
 </div>
-<div class="wallet-setup_wrap">
-  <div class="wallet-setup_column">
-    <div class="title title--toDo">
-      <merit-icon name="setup"></merit-icon>
-      <p>To do</p>
+<ng-container *ngIf="wallet">
+  <div class="wallet-setup_wrap">
+    <div class="wallet-setup_column">
+      <div class="title title--toDo">
+        <merit-icon name="setup"></merit-icon>
+        <p>To do</p>
+      </div>
+      <ng-container *ngIf="toDo.length > 0; else toDoIsEmpty">
+        <app-task-preview *ngFor="let goal of toDo" [wallet]="wallet" [goal]=goal [hidden]="goal.status !== 0"></app-task-preview>
+      </ng-container>
+      <ng-template #toDoIsEmpty>
+        <p>
+          Looks like all tasks are done!
+        </p>
+      </ng-template>
     </div>
-    <ng-container *ngIf="wallet">
-      <app-task-preview *ngFor="let goal of (goalsState$ | async)?.achievements" [wallet]="wallet" [goal]=goal [hidden]="goal.status !== 0"></app-task-preview>
-    </ng-container>
-  </div>
-  <div class="wallet-setup_column">
-    <div class="title title--complete">
-      <merit-icon name="setup"></merit-icon>
-      <p>Complete</p>
-    </div>
-    <ng-container *ngIf="wallet">
+    <div class="wallet-setup_column">
+      <div class="title title--complete">
+        <merit-icon name="setup"></merit-icon>
+        <p>Complete</p>
+      </div>
       <app-task-preview *ngFor="let goal of (goalsState$ | async)?.achievements" [isComplete]="true" [wallet]="wallet" [goal]=goal
         [hidden]="goal.status !== 1"></app-task-preview>
-    </ng-container>
+    </div>
   </div>
-</div>
+</ng-container>
