@@ -9,6 +9,9 @@
       <label class="ui-label">Select identification color</label>
       <app-select (selectionEvent)="selectColor($event)" [selected]="selectedColor" [input]="availableColors" cssClass="ui-input ui-input--select ui-input--form ui-input--color"></app-select>
     </div>
+    <div class="wallet-settings__group">
+      <app-task-confirm [goalName]="'Hide your wallet balance'" [isDone]="settingsForm.controls.balanceHidden.value"></app-task-confirm>
+    </div>
     <div class="wallet-settings__group wallet-settings__group__checkbox">
       <label class="ui-label">Hide balance</label>
       <ui-checkbox formControlName="balanceHidden"></ui-checkbox>

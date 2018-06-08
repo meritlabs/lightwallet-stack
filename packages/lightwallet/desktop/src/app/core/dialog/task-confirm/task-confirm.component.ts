@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
 
@@ -16,6 +16,7 @@ export class TaskConfirmComponent implements OnInit {
   constructor(private store: Store<IRootAppState>, private AchievementsService: AchievementsService) {}
 
   @Input() goalName: string;
+  @Input() isDone: boolean;
   trackerSettings: boolean = false;
   task: any;
 
@@ -23,8 +24,18 @@ export class TaskConfirmComponent implements OnInit {
     await this.store.select('achievements').subscribe(res => {
       this.trackerSettings = res.settings.isSetupTrackerEnabled;
       this.task = res.achievements.filter((item: any) => item.name === this.goalName)[0];
-      console.log(this.task);
     });
+  }
+  ngOnChanges(changes: SimpleChanges) {
+    switch (this.goalName) {
+      case 'Hide your wallet balance':
+        if (this.isDone) {
+          this.finishTask();
+        }
+        return;
+      default:
+        return;
+    }
   }
 
   finishTask() {
