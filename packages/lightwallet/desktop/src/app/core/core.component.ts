@@ -28,6 +28,7 @@ import { Observable } from 'rxjs/Observable';
 import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
 import { Achievements, Achievement } from '@merit/common/models/achievement';
 import { AchievementsService } from '@merit/common/services/achievements.service';
+import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 
 @Component({
   selector: 'view-core',
@@ -97,6 +98,7 @@ export class CoreView implements OnInit, AfterViewInit {
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   recordPassphrase: boolean = true;
   isWelcomeDialogEnabled: boolean;
+  showShare$: Observable<any> = this.store.select('interface');
 
   constructor(
     private pushNotificationsService: PushNotificationsService,
@@ -414,17 +416,11 @@ export class CoreView implements OnInit, AfterViewInit {
     }
   }
 
-  showShare: boolean = false;
-
-  shareActivate(val) {
-    if (val) {
-      this.showShare = true;
-    } else {
-      this.showShare = false;
-    }
-  }
-
   onGuideDismiss() {
     return this.persistenceService2.setViewSettings(ViewSettingsKey.recordPassphrase, (this.recordPassphrase = true));
+  }
+
+  shareActivate() {
+    this.store.dispatch(new SetShareDialogAction(true));
   }
 }

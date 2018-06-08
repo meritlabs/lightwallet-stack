@@ -8,6 +8,7 @@ import { Store } from '@ngrx/store';
 import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
 import { filter, take } from 'rxjs/operators';
+import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 
 declare global {
   interface Window {
@@ -16,11 +17,10 @@ declare global {
   }
 }
 
-
 @Component({
   selector: 'app-share-box',
   templateUrl: './share-box.component.html',
-  styleUrls: ['./share-box.component.sass']
+  styleUrls: ['./share-box.component.sass'],
 })
 export class ShareBoxComponent implements OnInit {
   constructor(private store: Store<IRootAppState>, private toastCtrl: ToastControllerService) {}
@@ -28,7 +28,7 @@ export class ShareBoxComponent implements OnInit {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   selectedWallet = {
     id: null,
-    name: 'Select wallet'
+    name: 'Select wallet',
   };
   shareAlias: string;
   shareLink: string;
@@ -70,19 +70,19 @@ export class ShareBoxComponent implements OnInit {
           description: `${this.shareTitle}\n ${this.shareText}${alias}`,
           passthrough: {
             twitter: {
-              text: `${this.shareTitle}\n ${this.shareText}${alias}`
+              text: `${this.shareTitle}\n ${this.shareText}${alias}`,
             },
             linkedin: {
               title: this.shareTitle,
               text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-              description: `${this.shareTitle}\n ${this.shareText}${alias}`
+              description: `${this.shareTitle}\n ${this.shareText}${alias}`,
             },
             facebook: {
               title: this.shareTitle,
               text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-              description: `${this.shareTitle}\n ${this.shareText}${alias}`
-            }
-          }
+              description: `${this.shareTitle}\n ${this.shareText}${alias}`,
+            },
+          },
         };
       }
     }
@@ -109,6 +109,6 @@ export class ShareBoxComponent implements OnInit {
       }
     }
 
-    this.dismiss.emit();
+    this.store.dispatch(new SetShareDialogAction(false));
   }
 }

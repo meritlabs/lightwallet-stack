@@ -2,6 +2,9 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
+import { Store } from '@ngrx/store';
+import { IRootAppState } from '@merit/common/reducers';
+import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 
 declare global {
   interface Window {
@@ -23,13 +26,12 @@ declare global {
   ],
 })
 export class GetStartedTipsComponent implements OnInit {
-  constructor(private persistenceService: PersistenceService2) {}
+  constructor(private persistenceService: PersistenceService2, private store: Store<IRootAppState>) {}
 
   active: boolean;
   getArticle: boolean;
   syncWallet: boolean;
   copy: string = 'COPY';
-  showShare: boolean = false;
 
   private _wallets: DisplayWallet[];
 
@@ -89,11 +91,7 @@ export class GetStartedTipsComponent implements OnInit {
   copyState() {
     this.copy = 'COPIED';
   }
-  shareActivate(val) {
-    if (val) {
-      this.showShare = true;
-    } else {
-      this.showShare = false;
-    }
+  showShare() {
+    this.store.dispatch(new SetShareDialogAction(true));
   }
 }
