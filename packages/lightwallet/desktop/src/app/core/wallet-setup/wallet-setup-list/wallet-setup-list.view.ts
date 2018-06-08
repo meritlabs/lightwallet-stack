@@ -32,6 +32,8 @@ export class WalletSetupListView implements OnInit {
   });
 
   wallet;
+  readiness: number;
+  readinessBackground: string;
 
   async ngOnInit() {
     await this.store.select('achievements').subscribe(res => {
@@ -42,6 +44,13 @@ export class WalletSetupListView implements OnInit {
     });
     await this.store.select(selectWallets).subscribe(res => {
       this.wallet = res[0];
+    });
+    await this.goalsState$.subscribe(res => {
+      let complete = res.achievements.filter((item: any) => item.status === 1).length,
+        total = res.achievements.length,
+        readiness = complete / total * 100;
+      this.readiness = parseFloat(readiness.toFixed(2));
+      this.readinessBackground = `linear-gradient(to right, #00b0dd ${this.readiness}%, #555b70 ${this.readiness}%)`;
     });
   }
   trackerStatus() {

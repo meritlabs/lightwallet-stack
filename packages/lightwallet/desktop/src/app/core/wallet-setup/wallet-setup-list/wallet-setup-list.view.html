@@ -20,10 +20,10 @@
   <div class="wallet-setup_column">
     <div class="wallet-setup_description">
       <div class="readiness">
-        <merit-icon name="setup"></merit-icon>
+        <merit-icon name="setup" [style.background]="readinessBackground"></merit-icon>
         <div>
           <p class="title">
-            50%
+            {{readiness}}%
           </p>
           <div class="caption">
             <p>Your wallet setup readiness</p>
