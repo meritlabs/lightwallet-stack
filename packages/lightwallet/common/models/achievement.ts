@@ -1,8 +1,11 @@
 export class Achievement {
   constructor(
-    slug: string,
+    slug: number,
+    route: string,
     name: string,
     description: string,
+    title: string,
+    linkTitle: string,
     image: string,
     conditions: Array<{ name: string }>,
     version: number
