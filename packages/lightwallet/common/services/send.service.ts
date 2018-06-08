@@ -9,6 +9,7 @@ import { PersistenceService2 } from '@merit/common/services/persistence2.service
 import { WalletService } from '@merit/common/services/wallet.service';
 import { clone } from 'lodash';
 import { EasySendService } from '@merit/common/services/easy-send.service';
+import { Address } from 'bitcore-lib';
 
 export interface ISendTxData {
   amount?: number; // micros
@@ -107,15 +108,15 @@ export class SendService {
   }
 
 
-  private async estimateFee(wallet, amount, isEasySend, toAddress?) {
+  async estimateFee(wallet, amount, isEasySend, toAddress?) {
 
     if (isEasySend) {
-      const script = await this.easySendService.bulidScript(wallet);
-      const address = script.script.toHex();
-      console.log(address, 'address');
+      const easySend = await this.easySendService.bulidScript(wallet);
+      const address = Address(easySend.script.getAddressInfo()).toString();
+      console.log(wallet, amount,  address, 'address');
       const txp = await this.prepareTxp(wallet, amount, address);
       const sendFee = txp.fee;
-      const receiveFee = await this.easySendService.getEasyReceiveFee();
+      const receiveFee = await this.feeService.getEasyReceiveFee();
       return sendFee + receiveFee;
     } else {
       let txp = await this.prepareTxp(wallet, amount, toAddress);
