@@ -64,4 +64,14 @@ export class AchievementsService {
     await MeritAchivementClient.fromObj(profile).setData('/settings/', settings, await this.getToken());
     this.store.dispatch(new SetAchivementsSettingsAction(settings));
   }
+
+  async updateGoal(id, step) {
+    let profile = await this.persistenceService.getProfile();
+    await MeritAchivementClient.fromObj(profile).setData(
+      `/achievements/${id}/step/${step}/complete`,
+      {},
+      await this.getToken()
+    );
+    // this.store.dispatch(new SetAchivementsSettingsAction(settings));
+  }
 }
