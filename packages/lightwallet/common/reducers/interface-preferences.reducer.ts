@@ -11,6 +11,8 @@ export interface IInterfaceState {
 export function InterfaceReducer(state: IInterfaceState = DEFAULT_STATE, action: InterfaceAction) {
   switch (action.type) {
     case InterfaceAction.InterfaceState:
+      console.log(action);
+
       return {
         ...state,
         isShareDialogDisplayed: action.isShareDialogDisplayed,
