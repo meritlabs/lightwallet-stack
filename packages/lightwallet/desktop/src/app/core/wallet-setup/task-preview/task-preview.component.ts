@@ -2,6 +2,9 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Achievement } from '@merit/common/models/achievement';
 import { AchievementsService } from '@merit/common/services/achievements.service';
 import { Router } from '@angular/router';
+import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
+import { Store } from '@ngrx/store';
+import { IRootAppState } from '@merit/common/reducers';
 
 @Component({
   selector: 'app-task-preview',
@@ -9,7 +12,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./task-preview.component.sass'],
 })
 export class TaskPreviewComponent implements OnInit {
-  constructor(private AchievementsService: AchievementsService, private router: Router) {}
+  constructor(
+    private AchievementsService: AchievementsService,
+    private router: Router,
+    private store: Store<IRootAppState>
+  ) {}
 
   @Input() goal;
   @Input() wallet;
@@ -35,9 +42,8 @@ export class TaskPreviewComponent implements OnInit {
 
     switch (val) {
       case 'Share your invite code':
-        console.log(val);
-
-        return;
+        this.store.dispatch(new SetShareDialogAction(true));
+        return this.router.navigate(['/wallets']);
       default:
         return this.router.navigate(['/wallets']);
     }
