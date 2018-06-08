@@ -9,6 +9,9 @@ import { AchievementsService } from '@merit/common/services/achievements.service
 
 import { FormBuilder, FormGroup } from '@angular/forms';
 
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/common/reducers/wallets.reducer';
+
 @Component({
   selector: 'app-wallet-setup-list',
   templateUrl: './wallet-setup-list.view.html',
@@ -28,12 +31,17 @@ export class WalletSetupListView implements OnInit {
     isSetupTrackerEnabled: false,
   });
 
+  wallet;
+
   async ngOnInit() {
     await this.store.select('achievements').subscribe(res => {
       this.trackerSettings = res.settings;
       this.formData.patchValue({
         isSetupTrackerEnabled: res.settings.isSetupTrackerEnabled,
       });
+    });
+    await this.store.select(selectWallets).subscribe(res => {
+      this.wallet = res[0];
     });
   }
   trackerStatus() {
