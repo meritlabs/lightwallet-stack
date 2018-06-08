@@ -1,4 +1,4 @@
-<ng-container *ngIf="trackerSettings && task">
+<ng-container *ngIf="trackerSettings && task && task?.status !== 1">
   <div class="taskConfirm">
     <div class="icon">
       <merit-icon name="setup"></merit-icon>
@@ -13,7 +13,7 @@
         {{task?.description}}
       </div>
     </div>
-    <div class="done">
+    <div class="done" (click)="finishTask()">
       <merit-icon name="check"></merit-icon>
       DONE
     </div>
