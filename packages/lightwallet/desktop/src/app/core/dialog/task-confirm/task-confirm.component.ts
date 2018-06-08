@@ -33,12 +33,19 @@ export class TaskConfirmComponent implements OnInit {
           this.finishTask();
         }
         return;
+      case 'Enable Email Notifications':
+        if (this.isDone) {
+          this.finishTask();
+        }
+        return;
       default:
         return;
     }
   }
 
   finishTask() {
-    this.AchievementsService.updateGoal(this.task.id, 0);
+    if (this.task) {
+      this.AchievementsService.updateGoal(this.task.id, 0);
+    }
   }
 }

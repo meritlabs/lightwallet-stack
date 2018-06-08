@@ -48,6 +48,8 @@ export class TaskPreviewComponent implements OnInit {
         return this.router.navigate([`/wallets/${this.wallet.id}/settings`]);
       case 'Hide your wallet balance':
         return this.router.navigate([`/wallets/${this.wallet.id}/settings`]);
+      case 'Enable Email Notifications':
+        return this.router.navigate([`/settings`]);
       default:
         return this.router.navigate(['/wallets']);
     }
