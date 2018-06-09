@@ -5,7 +5,7 @@
       <p class="shareDescription">When you bring an active new member into the Merit community, your
         <strong>growth score</strong> will increase. There is a growth lottery every minute, and a higher score earns you a higher
         chance to win.</p>
-      <app-task-confirm [goalName]="'Share your invite code'"></app-task-confirm>
+      <app-task-confirm [goalName]="'Share your invite code'" [arrow]="'bottom'"></app-task-confirm>
       <div class="walletSelection">
         <ng-container *ngIf="(wallets$ | async)?.length > 1; else singleWallet">
           <p>

@@ -1,7 +1,7 @@
 <ng-container *ngIf="wallet; else walletLoading">
   <form [formGroup]="settingsForm">
     <div class="wallet-settings__group">
-      <app-task-confirm [goalName]="'Name Your Wallet'"></app-task-confirm>
+      <app-task-confirm [goalName]="'Name Your Wallet'" [arrow]="'bottom'"></app-task-confirm>
       <label class="ui-label">Edit wallet name</label>
       <input type="text" name="" formControlName="name" placeholder="Enter wallet name here" class="ui-input ui-input--form ui-input--text">
     </div>
@@ -10,7 +10,7 @@
       <app-select (selectionEvent)="selectColor($event)" [selected]="selectedColor" [input]="availableColors" cssClass="ui-input ui-input--select ui-input--form ui-input--color"></app-select>
     </div>
     <div class="wallet-settings__group">
-      <app-task-confirm [goalName]="'Hide your wallet balance'" [isDone]="settingsForm.controls.balanceHidden.value"></app-task-confirm>
+      <app-task-confirm [goalName]="'Hide your wallet balance'" [isDone]="settingsForm.controls.balanceHidden.value" [arrow]="'bottom'"></app-task-confirm>
     </div>
     <div class="wallet-settings__group wallet-settings__group__checkbox">
       <label class="ui-label">Hide balance</label>
@@ -35,7 +35,7 @@
       </ng-container>
 
       <div class="wallet-settings__group">
-        <app-task-confirm [goalName]="'Set a advanced Wallet Password'"></app-task-confirm>
+        <app-task-confirm [goalName]="'Set a advanced Wallet Password'" [arrow]="'bottom'"></app-task-confirm>
         <label class="ui-label">
           <small>Password</small>
         </label>
