@@ -3,11 +3,18 @@
     <merit-icon name="setup"></merit-icon>
   </div>
   <div class="details">
-    <div class="details_title">
-      <p (click)="action(goal.name)">
-        {{goal.title}}
-        <span class="link">{{goal.linkTitle}}</span>
-      </p>
-    </div>
+    <ng-container *ngIf="isComplete; else notComplete">
+      <div class="details_title">
+        <p>{{goal.name}}</p>
+      </div>
+    </ng-container>
+    <ng-template #notComplete>
+      <div class="details_title">
+        <p (click)="action(goal.name)">
+          {{goal.title}}
+          <span class="link">{{goal.linkTitle}}</span>
+        </p>
+      </div>
+    </ng-template>
   </div>
 </div>
