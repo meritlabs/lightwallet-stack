@@ -17,6 +17,7 @@ export class TaskConfirmComponent implements OnInit {
 
   @Input() goalName: string;
   @Input() isDone: boolean;
+  @Input() arrow: string;
   trackerSettings: boolean = false;
   task: any;
 

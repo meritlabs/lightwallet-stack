@@ -47,4 +47,23 @@
       width: 15px
       margin-right: 2px
       background: $dark-green
+  &.arrow
+    &:after
+      content: ""
+      display: block
+      width: 0px
+      height: 0px
+      border-left: 7px solid transparent
+      border-right: 7px solid transparent
+      border-bottom: 7px solid $blue
+      position: absolute
+    &-bottom:after
+      left: 3px
+      bottom: -7px
+      transform: rotate(180deg)
+    &-topRight:after
+      right: 3px
+      top: -7px
+
+
 
