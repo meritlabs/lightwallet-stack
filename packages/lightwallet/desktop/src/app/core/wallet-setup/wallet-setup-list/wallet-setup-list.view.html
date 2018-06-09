@@ -44,9 +44,9 @@
         <app-task-preview *ngFor="let goal of toDo" [wallet]="wallet" [goal]=goal [hidden]="goal.status !== 0"></app-task-preview>
       </ng-container>
       <ng-template #toDoIsEmpty>
-        <p>
-          Looks like all tasks are done!
-        </p>
+        <div class="completeNotification">
+          Congratulations! All task are complete!
+        </div>
       </ng-template>
     </div>
     <div class="wallet-setup_column">
