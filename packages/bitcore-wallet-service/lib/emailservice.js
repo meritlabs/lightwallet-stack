@@ -93,7 +93,12 @@ var EMAIL_TYPES = {
     filename: 'referral_rejected',
     notifyDoer: true,
     notifyOthers: false,
-  }
+  },
+  'IncomingPoolPayment': {
+    filename: 'pool_payment',
+    notifyDoer: true,
+    notifyOthers: false,
+  },
 };
 
 
