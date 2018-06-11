@@ -75,7 +75,6 @@ export class WalletSetupListView implements OnInit {
   }
   trackerStatus() {
     this.trackerSettings.isSetupTrackerEnabled = !this.trackerSettings.isSetupTrackerEnabled;
-    this.trackerSettings.isWelcomeDialogEnabled = !this.trackerSettings.isWelcomeDialogEnabled;
     this.AchievementsService.setSettings(this.trackerSettings);
   }
 
