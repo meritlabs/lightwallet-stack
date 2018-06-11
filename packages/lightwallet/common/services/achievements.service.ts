@@ -75,6 +75,11 @@ export class AchievementsService {
     this.store.dispatch(new CompleteAchivementAction({ id: id, step: step }));
   }
 
+  async reLogin() {
+    await this.store.dispatch(new SetAuthorizeTokenAction(null));
+    this.getAchievements();
+  }
+
   async _getProfile() {
     let settings: any = this.store.select('interface'),
       profile = await this.persistenceService.getProfile(),
