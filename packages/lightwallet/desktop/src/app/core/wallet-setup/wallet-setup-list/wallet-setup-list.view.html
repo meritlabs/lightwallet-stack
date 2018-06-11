@@ -16,6 +16,8 @@
         </div>
       </form>
     </div>
+    <label class="ui-label global-settings__group__item__title" for="email">Set Wallet</label>
+    <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" cssClass="ui-input ui-input--select ui-input--form"></app-select>
   </div>
   <div class="wallet-setup_column">
     <div class="wallet-setup_description">

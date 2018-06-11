@@ -32,9 +32,15 @@ export class WalletSetupListView implements OnInit {
     isSetupTrackerEnabled: false,
   });
 
-  wallet;
+  wallet: any;
   readiness: number;
   readinessBackground: string;
+
+  wallets: any;
+  selectedWallet = {
+    id: null,
+    name: 'Select wallet',
+  };
 
   async ngOnInit() {
     await this.store.select('achievements').subscribe(res => {
@@ -44,6 +50,7 @@ export class WalletSetupListView implements OnInit {
       });
     });
     await this.store.select(selectWallets).subscribe(res => {
+      this.wallets = res;
       this.wallet = res[0];
     });
     await this.goalsState$.subscribe(res => {
@@ -63,6 +70,12 @@ export class WalletSetupListView implements OnInit {
     this.trackerSettings.isWelcomeDialogEnabled = !this.trackerSettings.isWelcomeDialogEnabled;
     this.AchievementsService.setSettings(this.trackerSettings);
   }
+
+  selectWallet(wallet: DisplayWallet) {
+    this.selectedWallet = wallet;
+    console.log(this.selectedWallet);
+  }
+
   log(val) {
     console.log(val);
   }
