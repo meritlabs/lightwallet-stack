@@ -25,10 +25,11 @@ import { map } from 'rxjs/operators';
 import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/common/reducers/wallets.reducer';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Observable } from 'rxjs/Observable';
-import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
+import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { Achievements, Achievement } from '@merit/common/models/achievement';
 import { AchievementsService } from '@merit/common/services/achievements.service';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
+import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 
 @Component({
   selector: 'view-core',
@@ -98,7 +99,7 @@ export class CoreView implements OnInit, AfterViewInit {
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   recordPassphrase: boolean = true;
   isWelcomeDialogEnabled: boolean;
-  showShare$: Observable<any> = this.store.select('interface');
+  showShare: boolean;
 
   constructor(
     private pushNotificationsService: PushNotificationsService,
@@ -111,18 +112,35 @@ export class CoreView implements OnInit, AfterViewInit {
     private store: Store<IRootAppState>,
     private persistenceService2: PersistenceService2,
     private domSanitizer: DomSanitizer,
-    private AchievementsService: AchievementsService
+    private AchievementsService: AchievementsService,
+    private InterfacePreferencesService: InterfacePreferencesService
   ) {}
 
   async ngOnInit() {
-    await this.AchievementsService.getSettings();
-    await this.AchievementsService.getAchievements();
+    let primaryWallet = await this.persistenceService2.getUserSettings(UserSettingsKey.primaryWalletID);
+
+    if (primaryWallet) {
+    } else {
+      this.wallets$.subscribe(res => {
+        let activeWallet = res.filter((item: any) => item.confirmed === true);
+        if (activeWallet.length > 0) {
+          this.InterfacePreferencesService.setPrimaryWallet(activeWallet[0].id);
+        }
+      });
+    }
+    this.store.select('interface').subscribe(res => {
+      this.showShare = res.isShareDialogDisplayed;
+      if (res.primaryWallet) {
+        this.AchievementsService.getSettings();
+        this.AchievementsService.getAchievements();
+      }
+    });
 
     await this.store.select('achievements').subscribe(res => {
       this.isWelcomeDialogEnabled = res.settings.isWelcomeDialogEnabled;
     });
 
-    this.recordPassphrase = Boolean(await this.persistenceService2.getViewSettings(ViewSettingsKey.recordPassphrase));
+    this.recordPassphrase = Boolean(await this.persistenceService2.getUserSettings(UserSettingsKey.recordPassphrase));
 
     this.processPendingEasyReceipts();
     this.pushNotificationsService.init();
@@ -417,7 +435,7 @@ export class CoreView implements OnInit, AfterViewInit {
   }
 
   onGuideDismiss() {
-    return this.persistenceService2.setViewSettings(ViewSettingsKey.recordPassphrase, (this.recordPassphrase = true));
+    return this.persistenceService2.setUserSettings(UserSettingsKey.recordPassphrase, (this.recordPassphrase = true));
   }
 
   shareActivate() {

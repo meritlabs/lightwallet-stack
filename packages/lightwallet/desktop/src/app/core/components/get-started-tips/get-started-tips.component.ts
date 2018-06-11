@@ -1,7 +1,7 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
+import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
@@ -47,7 +47,7 @@ export class GetStartedTipsComponent implements OnInit {
   setTipType: string = 'all';
 
   async ngOnInit() {
-    const getActiveState = Boolean(await this.persistenceService.getViewSettings(ViewSettingsKey.GetStartedTips));
+    const getActiveState = Boolean(await this.persistenceService.getUserSettings(UserSettingsKey.GetStartedTips));
 
     if (getActiveState !== false) {
       this.show();
@@ -68,16 +68,16 @@ export class GetStartedTipsComponent implements OnInit {
   }
 
   show() {
-    return this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, (this.active = true));
+    return this.persistenceService.setUserSettings(UserSettingsKey.GetStartedTips, (this.active = true));
   }
 
   hide() {
-    return this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, (this.active = false));
+    return this.persistenceService.setUserSettings(UserSettingsKey.GetStartedTips, (this.active = false));
   }
 
   // rename to toggle
   showHide() {
-    return this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, (this.active = !this.active));
+    return this.persistenceService.setUserSettings(UserSettingsKey.GetStartedTips, (this.active = !this.active));
   }
 
   getArticleAction() {
