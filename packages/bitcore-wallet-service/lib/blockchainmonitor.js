@@ -194,8 +194,6 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
     return acc.concat(result);
   }, []);
 
-  const isPool = data.vout.some(o => o.amount == 0 && _.get(o, 'data', '').toLowerCase().indexOf('pool') > -1);
-
   // Let's roll up any vouts that go to the same address.
   // TODO: Probably a more efficient way to do the below.
   //
@@ -245,11 +243,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
                 notificationType = 'WalletUnlocked';
               }
           } else {
-            if (isPool) {
-              notificationType = 'IncomingPoolPayment';
-            } else {
               notificationType = 'IncomingTx';
-            }
           }
 
           log.info(`${notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${out.address} ]`);
