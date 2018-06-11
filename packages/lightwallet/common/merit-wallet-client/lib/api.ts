@@ -12,7 +12,8 @@ import { interval } from 'rxjs/observable/interval';
 import { catchError, map, mergeMap, retryWhen, switchMap, tap } from 'rxjs/operators';
 import * as request from 'superagent';
 import * as util from 'util';
-import { EasyReceiptResult } from '../../models/easy-receipt';
+import { EasyReceiptResult, EasyReceipt } from '../../models/easy-receipt';
+import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
 import { Common } from './common';
 import { Credentials } from './credentials';
 import { MWCErrors } from './errors';
@@ -2701,4 +2702,24 @@ export class API {
   getDefaultFee() {
     return DEFAULT_FEE;
   }
+
+  registerGlobalSend(easySend: EasySend) {
+    return this._doPostRequest(`/v1/register_globalsend`, {globalsend: this.encryptGlobalSend(easySend)});
+  }
+
+  async getGlobalSendHistory() {
+    $.checkState(this.credentials);
+    const globalSends = await this._doGetRequest(`/v1/globalsend_history`);
+    return globalSends.map(g => JSON.parse(this.decryptGlobalSend(g.globalsend)) );
+  }
+
+  private encryptGlobalSend(easySend: EasySend) {
+    return this._encryptMessage(JSON.stringify(easySend), this.credentials.personalEncryptingKey);
+  }
+
+  private decryptGlobalSend(data) {
+    return this._decryptMessage(data, this.credentials.personalEncryptingKey);
+  }
+
+
 }
