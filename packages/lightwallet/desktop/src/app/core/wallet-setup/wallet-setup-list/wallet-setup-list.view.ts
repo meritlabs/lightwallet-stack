@@ -11,6 +11,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/common/reducers/wallets.reducer';
+import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 
 @Component({
   selector: 'app-wallet-setup-list',
@@ -21,7 +22,8 @@ export class WalletSetupListView implements OnInit {
   constructor(
     private store: Store<IRootAppState>,
     private AchievementsService: AchievementsService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private InterfacePreferencesService: InterfacePreferencesService
   ) {}
 
   goalsState$: Observable<Achievements> = this.store.select('achievements');
@@ -37,10 +39,7 @@ export class WalletSetupListView implements OnInit {
   readinessBackground: string;
 
   wallets: any;
-  selectedWallet = {
-    id: null,
-    name: 'Select wallet',
-  };
+  selectedWallet: any;
 
   async ngOnInit() {
     await this.store.select('achievements').subscribe(res => {
@@ -53,6 +52,7 @@ export class WalletSetupListView implements OnInit {
       this.wallets = res;
       this.wallet = res[0];
     });
+
     await this.goalsState$.subscribe(res => {
       let toDo = res.achievements.filter((item: any) => item.status === 0),
         complete = res.achievements.length - toDo.length,
@@ -71,12 +71,9 @@ export class WalletSetupListView implements OnInit {
     this.AchievementsService.setSettings(this.trackerSettings);
   }
 
-  selectWallet(wallet: DisplayWallet) {
+  async selectWallet(wallet: DisplayWallet) {
     this.selectedWallet = wallet;
-    console.log(this.selectedWallet);
-  }
-
-  log(val) {
-    console.log(val);
+    this.InterfacePreferencesService.setPrimaryWallet(wallet.id);
+    await this.AchievementsService.reLogin();
   }
 }
