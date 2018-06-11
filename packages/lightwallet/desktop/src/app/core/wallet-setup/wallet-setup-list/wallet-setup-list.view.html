@@ -1,70 +1,75 @@
-<div class="wallet-setup_title title--primary">
-  <p>Wallet setup tracker</p>
-</div>
-<div class="wallet-setup_wrap">
-  <div class="wallet-setup_column">
-    <div class="wallet-setup_preview wallet-setup_preview--settings">
-      <div class="icon">
-        <merit-icon name="setup"></merit-icon>
-      </div>
-      <form [formGroup]="formData" class="details_settings">
-        <div class="details_title">
-          <p>{{ formData.controls.isSetupTrackerEnabled.value ? 'Disable' : 'Enable' }} Setup Tracker</p>
-        </div>
-        <div class="global-settings__group__item__column global-settings__group__item__column--30">
-          <ui-checkbox formControlName="isSetupTrackerEnabled" (click)="trackerStatus()"></ui-checkbox>
-        </div>
-      </form>
-    </div>
-
-    <ng-container *ngIf="wallets">
-      <div class="wallet-setup_preview wallet-setup_preview--settings">
-        <div class="selectBox">
-          <label class="ui-label global-settings__group__item__title" for="email">Set Wallet for achievements saving</label>
-          <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" cssClass="ui-input ui-input--select ui-input--form"></app-select>
-        </div>
-      </div>
-    </ng-container>
+<ng-container *ngIf="isConfirmed; else notConfirmed">
+  <div class="wallet-setup_title title--primary">
+    <p>Wallet setup tracker</p>
   </div>
-  <div class="wallet-setup_column">
-    <div class="wallet-setup_description">
-      <div class="readiness">
-        <merit-icon name="setup" [style.background]="readinessBackground"></merit-icon>
-        <div>
-          <p class="title">
-            {{readiness}}%
-          </p>
-          <div class="caption">
-            <p>Your wallet setup readiness</p>
+  <div class="wallet-setup_wrap">
+    <div class="wallet-setup_column">
+      <div class="wallet-setup_preview wallet-setup_preview--settings">
+        <div class="icon">
+          <merit-icon name="setup"></merit-icon>
+        </div>
+        <form [formGroup]="formData" class="details_settings">
+          <div class="details_title">
+            <p>{{ formData.controls.isSetupTrackerEnabled.value ? 'Disable' : 'Enable' }} Setup Tracker</p>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <ui-checkbox formControlName="isSetupTrackerEnabled" (click)="trackerStatus()"></ui-checkbox>
+          </div>
+        </form>
+      </div>
+
+      <ng-container *ngIf="wallets">
+        <div class="wallet-setup_preview wallet-setup_preview--settings">
+          <div class="selectBox">
+            <label class="ui-label global-settings__group__item__title" for="email">Set Wallet for achievements saving</label>
+            <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <div class="wallet-setup_column">
+      <div class="wallet-setup_description">
+        <div class="readiness">
+          <merit-icon name="setup" [style.background]="readinessBackground"></merit-icon>
+          <div>
+            <p class="title">
+              {{readiness}}%
+            </p>
+            <div class="caption">
+              <p>Your wallet setup readiness</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-<ng-container *ngIf="wallet">
-  <div class="wallet-setup_wrap">
-    <div class="wallet-setup_column">
-      <div class="title title--toDo">
-        <merit-icon name="setup"></merit-icon>
-        <p>To do</p>
-      </div>
-      <ng-container *ngIf="toDo.length > 0; else toDoIsEmpty">
-        <app-task-preview *ngFor="let goal of toDo" [wallet]="wallet" [goal]=goal [hidden]="goal.status !== 0"></app-task-preview>
-      </ng-container>
-      <ng-template #toDoIsEmpty>
-        <div class="completeNotification">
-          Congratulations! All task are complete!
+  <ng-container *ngIf="wallet">
+    <div class="wallet-setup_wrap">
+      <div class="wallet-setup_column">
+        <div class="title title--toDo">
+          <merit-icon name="setup"></merit-icon>
+          <p>To do</p>
         </div>
-      </ng-template>
-    </div>
-    <div class="wallet-setup_column">
-      <div class="title title--complete">
-        <merit-icon name="setup"></merit-icon>
-        <p>Complete</p>
+        <ng-container *ngIf="toDo.length > 0; else toDoIsEmpty">
+          <app-task-preview *ngFor="let goal of toDo" [wallet]="wallet" [goal]=goal [hidden]="goal.status !== 0"></app-task-preview>
+        </ng-container>
+        <ng-template #toDoIsEmpty>
+          <div class="completeNotification">
+            Congratulations! All task are complete!
+          </div>
+        </ng-template>
       </div>
-      <app-task-preview *ngFor="let goal of (goalsState$ | async)?.achievements" [isComplete]="true" [wallet]="wallet" [goal]=goal
-        [hidden]="goal.status !== 1"></app-task-preview>
+      <div class="wallet-setup_column">
+        <div class="title title--complete">
+          <merit-icon name="setup"></merit-icon>
+          <p>Complete</p>
+        </div>
+        <app-task-preview *ngFor="let goal of (goalsState$ | async)?.achievements" [isComplete]="true" [wallet]="wallet" [goal]=goal
+          [hidden]="goal.status !== 1"></app-task-preview>
+      </div>
     </div>
-  </div>
+  </ng-container>
 </ng-container>
+<ng-template #notConfirmed>
+  <app-lock-screen></app-lock-screen>
+</ng-template>

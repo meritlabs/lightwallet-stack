@@ -42,15 +42,9 @@ export class WalletSetupListView implements OnInit {
 
   wallets: any;
   selectedWallet: any;
+  isConfirmed: boolean;
 
   async ngOnInit() {
-    await this.store.select('achievements').subscribe(res => {
-      this.trackerSettings = res.settings;
-      this.formData.patchValue({
-        isSetupTrackerEnabled: res.settings.isSetupTrackerEnabled,
-      });
-    });
-
     let primaryWallet = await this.persistenceService2.getUserSettings(UserSettingsKey.primaryWalletID);
 
     await this.store.select(selectWallets).subscribe(res => {
@@ -58,20 +52,31 @@ export class WalletSetupListView implements OnInit {
       this.wallet = res[0];
       res.forEach((item: any) => {
         if (item.id === primaryWallet) this.selectedWallet = item;
+        this.wallet = item;
+        this.isConfirmed = item.confirmed;
       });
     });
 
-    await this.goalsState$.subscribe(res => {
-      let toDo = res.achievements.filter((item: any) => item.status === 0),
-        complete = res.achievements.length - toDo.length,
-        total = res.achievements.length,
-        readiness = complete / total * 100;
+    if (this.isConfirmed) {
+      await this.store.select('achievements').subscribe(res => {
+        this.trackerSettings = res.settings;
+        this.formData.patchValue({
+          isSetupTrackerEnabled: res.settings.isSetupTrackerEnabled,
+        });
+      });
 
-      this.readiness = parseFloat(readiness.toFixed(2));
-      this.readinessBackground = `linear-gradient(to right, #00b0dd ${this.readiness}%, #555b70 ${this.readiness}%)`;
+      await this.goalsState$.subscribe(res => {
+        let toDo = res.achievements.filter((item: any) => item.status === 0),
+          complete = res.achievements.length - toDo.length,
+          total = res.achievements.length,
+          readiness = complete / total * 100;
 
-      this.toDo = toDo;
-    });
+        this.readiness = parseFloat(readiness.toFixed(2));
+        this.readinessBackground = `linear-gradient(to right, #00b0dd ${this.readiness}%, #555b70 ${this.readiness}%)`;
+
+        this.toDo = toDo;
+      });
+    }
   }
   trackerStatus() {
     this.trackerSettings.isSetupTrackerEnabled = !this.trackerSettings.isSetupTrackerEnabled;
