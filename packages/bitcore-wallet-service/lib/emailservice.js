@@ -39,6 +39,11 @@ var EMAIL_TYPES = {
     notifyDoer: true,
     notifyOthers: true,
   },
+  'OutgoingInviteTx': {
+    filename: 'outgoing_invite_tx',
+    notifyDoer: true,
+    notifyOthers: true,
+  },
   'IncomingTx': {
     filename: 'incoming_tx',
     notifyDoer: true,
@@ -46,6 +51,11 @@ var EMAIL_TYPES = {
   },
   'IncomingInvite': {
     filename: 'incoming_tx',
+    notifyDoer: true,
+    notifyOthers: true
+  },
+  'WalletUnlocked': {
+    filename: 'wallet_unlocked',
     notifyDoer: true,
     notifyOthers: true
   },
