@@ -8,7 +8,7 @@ const DEFAULT_STATE = {
     id: '',
     userId: '',
     isSetupTrackerEnabled: true,
-    isWelcomeDialogEnabled: true,
+    isWelcomeDialogEnabled: false,
   },
 };
 

@@ -92,7 +92,7 @@ export class CoreView implements OnInit, AfterViewInit {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   recordPassphrase: boolean = true;
-  isWelcomeDialogEnabled: boolean;
+  isWelcomeDialogEnabled: boolean = false;
   showShare: boolean;
 
   constructor(
@@ -111,6 +111,10 @@ export class CoreView implements OnInit, AfterViewInit {
   ) {}
 
   async ngOnInit() {
+    await this.store.select('achievements').subscribe(res => {
+      this.isWelcomeDialogEnabled = res.settings.isWelcomeDialogEnabled;
+    });
+
     let primaryWallet = await this.persistenceService2.getUserSettings(UserSettingsKey.primaryWalletID);
 
     if (primaryWallet) {
@@ -129,10 +133,6 @@ export class CoreView implements OnInit, AfterViewInit {
         this.AchievementsService.getSettings();
         this.AchievementsService.getAchievements();
       }
-    });
-
-    await this.store.select('achievements').subscribe(res => {
-      this.isWelcomeDialogEnabled = res.settings.isWelcomeDialogEnabled;
     });
 
     this.recordPassphrase = Boolean(await this.persistenceService2.getUserSettings(UserSettingsKey.recordPassphrase));
