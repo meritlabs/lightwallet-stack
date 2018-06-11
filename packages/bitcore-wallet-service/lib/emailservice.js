@@ -50,7 +50,7 @@ var EMAIL_TYPES = {
     notifyOthers: true,
   },
   'IncomingInvite': {
-    filename: 'incoming_tx',
+    filename: 'incoming_invite',
     notifyDoer: true,
     notifyOthers: true
   },
@@ -266,10 +266,10 @@ EmailService.prototype._getDataForTemplate = function(notification, recipient, c
 
   var data = _.cloneDeep(notification.data);
   data.subjectPrefix = _.trim(self.subjectPrefix) + ' ';
-  if (data.amount && !data.isInvite) {
+  if (data.amount) {
     try {
       var unit = recipient.unit.toLowerCase();
-      data.amount = Utils.formatAmount(+data.amount, unit) + ' ' + UNIT_LABELS[unit];
+      data.amount = data.isInvite ? data.amount + ' invites' : Utils.formatAmount(+data.amount, unit) + ' ' + UNIT_LABELS[unit];
     } catch (ex) {
       return cb(new Error('Could not format amount', ex));
     }

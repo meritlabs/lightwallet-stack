@@ -233,6 +233,8 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
 
           var walletId = address.walletId;
 
+          console.log("\n\n DATA: \n" + JSON.stringify(data) + "\n\n");
+
           let notificationType = '';
           if (data.isCoinbase) {
               notificationType = 'IncomingCoinbase';
