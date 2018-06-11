@@ -37,6 +37,7 @@ export class MeritAchivementClient {
     let client = new this({
       baseUrl: obj.baseUrl || ENV.achievementApi,
     });
+
     return client.import(obj.credentials);
   }
 
