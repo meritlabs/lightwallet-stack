@@ -266,7 +266,7 @@ EmailService.prototype._getDataForTemplate = function(notification, recipient, c
 
   var data = _.cloneDeep(notification.data);
   data.subjectPrefix = _.trim(self.subjectPrefix) + ' ';
-  if (data.amount && !data.isInvitet) {
+  if (data.amount && !data.isInvite) {
     try {
       var unit = recipient.unit.toLowerCase();
       data.amount = Utils.formatAmount(+data.amount, unit) + ' ' + UNIT_LABELS[unit];
