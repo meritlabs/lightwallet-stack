@@ -77,7 +77,10 @@ var PUSHNOTIFICATIONS_TYPES = {
   'VaultWasRejected': {
     filename: 'vault_rejected',
     notifyCreatorOnly: true,
-  }
+  },
+  'IncomingPoolPayment': {
+    filename: 'pool_payment',
+  },
 };
 
 function PushNotificationsService() {};
