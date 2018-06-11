@@ -5,7 +5,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { DeleteWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
-import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
+import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { isWalletEncrypted } from '@merit/common/utils/wallet';
@@ -155,8 +155,8 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
                 });
               }
 
-              this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, false);
-              this.persistenceService.setViewSettings(ViewSettingsKey.recordPassphrase, false);
+              this.persistenceService.setUserSettings(UserSettingsKey.GetStartedTips, false);
+              this.persistenceService.setUserSettings(UserSettingsKey.recordPassphrase, false);
 
               this.store.dispatch(new DeleteWalletAction(wallet.id));
             })
