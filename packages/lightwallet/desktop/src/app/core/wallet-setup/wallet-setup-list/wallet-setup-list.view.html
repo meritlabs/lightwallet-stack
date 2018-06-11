@@ -16,9 +16,14 @@
         </div>
       </form>
     </div>
+
     <ng-container *ngIf="wallets">
-      <label class="ui-label global-settings__group__item__title" for="email">Set Wallet for achievements saving</label>
-      <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+      <div class="wallet-setup_preview wallet-setup_preview--settings">
+        <div class="selectBox">
+          <label class="ui-label global-settings__group__item__title" for="email">Set Wallet for achievements saving</label>
+          <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+        </div>
+      </div>
     </ng-container>
   </div>
   <div class="wallet-setup_column">

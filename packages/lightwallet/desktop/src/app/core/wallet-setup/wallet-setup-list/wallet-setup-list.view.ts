@@ -4,14 +4,15 @@ import { Store } from '@ngrx/store';
 
 import { Observable } from 'rxjs/Observable';
 
-import { Achievements, Achievement } from '@merit/common/models/achievement';
+import { Achievements } from '@merit/common/models/achievement';
 import { AchievementsService } from '@merit/common/services/achievements.service';
 
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/common/reducers/wallets.reducer';
+import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
+import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 
 @Component({
   selector: 'app-wallet-setup-list',
@@ -23,6 +24,7 @@ export class WalletSetupListView implements OnInit {
     private store: Store<IRootAppState>,
     private AchievementsService: AchievementsService,
     private formBuilder: FormBuilder,
+    private persistenceService2: PersistenceService2,
     private InterfacePreferencesService: InterfacePreferencesService
   ) {}
 
@@ -48,9 +50,15 @@ export class WalletSetupListView implements OnInit {
         isSetupTrackerEnabled: res.settings.isSetupTrackerEnabled,
       });
     });
+
+    let primaryWallet = await this.persistenceService2.getUserSettings(UserSettingsKey.primaryWalletID);
+
     await this.store.select(selectWallets).subscribe(res => {
       this.wallets = res;
       this.wallet = res[0];
+      res.forEach((item: any) => {
+        if (item.id === primaryWallet) this.selectedWallet = item;
+      });
     });
 
     await this.goalsState$.subscribe(res => {
