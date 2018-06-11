@@ -33,6 +33,7 @@ var collections = {
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
   REFERRAL_TX_CONFIRMATION_SUBS: 'referral_confirmation_subs',
   VAULTS: 'vaults',
+  GLOBALSENDS: 'globalSends'
 };
 
 var Storage = function(opts) {
@@ -1317,6 +1318,18 @@ Storage.prototype.setVaultConfirmed = function(tx, txId, cb) {
     w: 1,
     upsert: false,
   }, cb);
+};
+
+Storage.prototype.registerGlobalSend = function(walletAddress, globalsend, cb) {
+  this.db.collection(collections.GLOBALSENDS).insertOne({ walletAddress, globalsend }, {w: 1 }, cb);
+};
+
+Storage.prototype.getGlobalSends = function(walletAddress, cb) {
+  this.db.collection(collections.GLOBALSENDS).find({ walletAddress }).toArray(function(err, result) {
+      if (err) return cb(err);
+      if (!result) return cb();
+      return cb(null, result);
+  });
 };
 
 Storage.collections = collections;

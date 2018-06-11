@@ -4,7 +4,7 @@ var _ = require('lodash');
 var $ = require('preconditions').singleton();
 var async = require('async');
 var config = require('../config');
-
+const { promisify } = require('util');
 
 var EmailValidator = require('email-validator');
 var Stringify = require('json-stable-stringify');
@@ -3191,7 +3191,6 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
  * @param opts
  * @param cb
  */
-const { promisify } = require('util');
 WalletService.prototype.getUnlockRequests = async function(opts, cb) {
 
     try {
@@ -4165,6 +4164,23 @@ WalletService.prototype.updateVaultInfo = function(opts, cb) {
                 return cb(null, vault);
             })
         });
+    });
+};
+
+WalletService.prototype.registerGlobalSend = async function(opts, cb) {
+    const address = await promisify(this.getRootAddress.bind(this))();
+    this.storage.registerGlobalSend(address.toString(), opts.globalsend, (err) => {
+        if (err) return cb(err);
+        cb(null);
+    });
+};
+
+
+WalletService.prototype.getGlobalSends = async function(opts, cb) {
+    const address = await promisify(this.getRootAddress.bind(this))();
+    this.storage.getGlobalSends(address.toString(), (err, links) => {
+        if (err) return cb(err);
+        return cb(null, links);
     });
 };
 
