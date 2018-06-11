@@ -229,6 +229,7 @@ export class WalletService {
     await wallet.sendReferral(referral);
 
     await this.sendInvite(wallet, referral.address, invitesNumber);
+    await wallet.registerGlobalSend(easySend);
     return easySend;
   }
 
