@@ -902,6 +902,7 @@ WalletService.prototype._notifyTxProposalAction = function(type, txp, extraArgs,
     amount: txp.getTotalAmount(),
     message: txp.message,
   }, extraArgs);
+
   self._notify(type, data, {}, cb);
 };
 
@@ -2883,8 +2884,9 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
     var extraArgs = {
       txid: txp.txid,
     };
-    if (opts.byThirdParty) {
-      self._notifyTxProposalAction('OutgoingTxByThirdParty', txp, extraArgs);
+
+    if (txp.isInvite) {
+      self._notifyTxProposalAction('OutgoingInviteTx', txp, extraArgs);
     } else {
       self._notifyTxProposalAction('OutgoingTx', txp, extraArgs);
     }

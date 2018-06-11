@@ -29,6 +29,9 @@ var PUSHNOTIFICATIONS_TYPES = {
   'OutgoingTx': {
     filename: 'outgoing_tx',
   },
+  'OutgoingInviteTx': {
+    filename: 'outgoing_invite_tx',
+  },
   'IncomingTx': {
     filename: 'incoming_tx',
   },
