@@ -12,7 +12,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
   const easySendsByAddress = {};
 
   easySends.forEach((easySend: EasySend) => {
-    if (easySend.scriptAddress) {
+    if (easySend && easySend.scriptAddress) {
       easySendsByAddress[easySend.scriptAddress] = easySend;
     }
   });
