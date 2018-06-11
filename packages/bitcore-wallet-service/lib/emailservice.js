@@ -266,7 +266,7 @@ EmailService.prototype._getDataForTemplate = function(notification, recipient, c
 
   var data = _.cloneDeep(notification.data);
   data.subjectPrefix = _.trim(self.subjectPrefix) + ' ';
-  if (data.amount) {
+  if (data.amount && !data.isInvitet) {
     try {
       var unit = recipient.unit.toLowerCase();
       data.amount = Utils.formatAmount(+data.amount, unit) + ' ' + UNIT_LABELS[unit];
@@ -282,9 +282,11 @@ EmailService.prototype._getDataForTemplate = function(notification, recipient, c
     data.walletName = wallet.name;
     data.walletM = wallet.m;
     data.walletN = wallet.n;
+
     var copayer = _.find(wallet.copayers, {
       id: notification.creatorId
     });
+
     if (copayer) {
       data.copayerId = copayer.id;
       data.copayerName = copayer.name;

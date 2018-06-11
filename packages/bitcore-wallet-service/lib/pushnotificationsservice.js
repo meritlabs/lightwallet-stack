@@ -94,13 +94,15 @@ PushNotificationsService.prototype.start = function(opts, cb) {
   function _readDirectories(basePath, cb) {
     fs.readdir(basePath, function(err, files) {
       if (err) return cb(err);
-      async.filter(files, function(file, next) {
-        fs.stat(path.join(basePath, file), function(err, stats) {
-          return next(!err && stats.isDirectory());
-        });
-      }, function(dirs) {
-        return cb(null, dirs);
-      });
+
+      const dirs = _.reduce(files, function(dirs, file) {
+        if (fs.lstatSync(path.join(basePath, file)).isDirectory()) {
+          dirs.push(file);
+        }
+        return dirs;
+      }, []);
+
+      return cb(null, dirs);
     });
   };
 
@@ -279,7 +281,6 @@ PushNotificationsService.prototype._getRecipientsList = function(notification, n
       if (_.isEmpty(preferences)) preferences = [];
 
       var recipientPreferences = _.compact(_.map(preferences, function(p) {
-
         if (!_.includes(self.availableLanguages, p.language)) {
           if (p.language)
             log.warn('Language for notifications "' + p.language + '" not available.');
@@ -352,8 +353,7 @@ PushNotificationsService.prototype._readAndApplyTemplates = function(notificatio
 PushNotificationsService.prototype._getDataForTemplate = function(notification, recipient, cb) {
   var self = this;
   var UNIT_LABELS = {
-    mrt: 'MRT',
-    bit: 'bits'
+    mrt: 'MRT'
   };
 
   var data = _.cloneDeep(notification.data);
