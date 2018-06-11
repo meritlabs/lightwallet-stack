@@ -535,49 +535,11 @@ Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs,
 };
 
 Storage.prototype.storeNotification = function(notification, cb) {
-  var condition = {};
-  switch (notification.type) {
-    case 'IncomingCoinbase':
-    case 'IncomingInvite':
-    case 'WalletUnlocked':
-    case 'VaultConfirmation':
-    case 'IncomingTx':
-      condition = {
-        walletId: notification.walletId,
-        type: notification.type,
-        'data.txid': notification.data.txid,
-      };
-      break;
-    case 'NewIncomingReferralTx':
-      condition = {
-        walletId: notification.walletId,
-        type: notification.type,
-        'data.address': notification.data.address,
-      };
-      break;
-    case 'NewBlock':
-      condition = {
-        walletId: notification.walletId,
-        type: notification.type,
-        'data.hash': notification.data.hash,
-        'data.netowrk': notification.data.network,
-      };
-      break;
-    default:
-      condition = {
-        walletId: notification.walletId,
-        type: notification.type,
-        'data.adderss': notification.data.address,
-      };
-      break;
-  }
-  console.log('CONDITION', JSON.stringify(condition));
-  this.db.collection(collections.NOTIFICATIONS).update(condition, notification, {
-    writeConcern: { w: "majority", wtimeout: 5000 },
-    upsert: true,
+  this.db.collection(collections.NOTIFICATIONS).insert(notification, {
+    w: "majority",
   }, function(err, result) {
     console.log(err, JSON.stringify(result));
-    cb(err, !(result.n > 0 && result.nModified > 0));
+    cb(err, result);
   });
 };
 
@@ -589,6 +551,7 @@ Storage.prototype.fetchAndLockNotificationForPushes = function(notification, cb)
     lockedForPushNotifications: false,
   }, notification, {
     readPreference: mongodb.ReadPreference.PRIMARY,
+    w: "majority",
     writeConcern: { w: "majority", wtimeout: 5000 },
     new: true,
     returnOriginal: false,
@@ -605,6 +568,7 @@ Storage.prototype.fetchAndLockNotificationForEmails = function(notification, cb)
     lockedForEmailNotifications: false,
   }, notification, {
     readPreference: mongodb.ReadPreference.PRIMARY,
+    w: "majority",
     writeConcern: { w: "majority", wtimeout: 5000 },
     new: true,
     returnOriginal: false,
