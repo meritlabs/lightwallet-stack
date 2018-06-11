@@ -24,6 +24,7 @@ import { UnlockRequestService } from '@merit/common/services/unlock-request.serv
 import { VaultsService } from '@merit/common/services/vaults.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { AchievementsService } from '@merit/common/services/achievements.service';
+import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 
 @NgModule()
 export class CommonProvidersModule {
@@ -56,6 +57,7 @@ export class CommonProvidersModule {
         UnlockRequestService,
         WalletService,
         AchievementsService,
+        InterfacePreferencesService,
       ],
     };
   }
