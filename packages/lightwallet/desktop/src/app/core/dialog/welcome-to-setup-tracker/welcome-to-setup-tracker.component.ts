@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { AchievementsService } from '@merit/common/services/achievements.service';
 import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-welcome-to-setup-tracker',
@@ -13,7 +14,8 @@ export class WelcomeToSetupTrackerComponent {
   constructor(
     private formBuilder: FormBuilder,
     private store: Store<IRootAppState>,
-    private AchievementsService: AchievementsService
+    private AchievementsService: AchievementsService,
+    private router: Router
   ) {}
 
   trackerSettings: any;
@@ -36,6 +38,7 @@ export class WelcomeToSetupTrackerComponent {
   }
 
   closeAndSave() {
+    this.router.navigate([`/wallet-setup`]);
     this.trackerSettings.isWelcomeDialogEnabled = !this.trackerSettings.isWelcomeDialogEnabled;
     this.AchievementsService.setSettings(this.trackerSettings);
   }

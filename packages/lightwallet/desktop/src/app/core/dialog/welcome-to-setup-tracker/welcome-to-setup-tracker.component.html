@@ -8,30 +8,26 @@
     </div>
     <div class="description">
       <p>
-        Need help getting started? We're here to make sure setting up your wallet and getting up and running with Merit is as easy
+        Need help getting started? We’re here to make sure setting up your wallet and getting up and running with Merit is as easy
         as possible!
       </p>
       <ul>
-        <li>Look for the progress icon
-          <merit-icon name="setup"></merit-icon> throughtout the app. The icon indicates there is a setup action you can take to customize your wallet
-          and get more involved in the Merit ecosystem.</li>
         <li>
-          Access the Setup Tracker in the left side navigation menu to track your overall progress and learn about all there is to
-          do the Merit App.
+          <strong>Access the Setup Tracker</strong> in the left side navigation menu at any time to track your overall progress and
+          learn about all there is to do in the Merit app.</li>
+        <li>
+          <strong>Look for the progress icon</strong>
+          <merit-icon name="setup"></merit-icon> throughout the app. Clicking the icon will display explanations for important features throughout
+          the app.
         </li>
         <li>
-          <form [formGroup]="formData" class="settings">
-            <p>If you don't want to setup your wallet, you can {{ formData.controls.isSetupTrackerEnabled.value ? 'disable'
-              : 'enable' }} Setup tracker
-              <ui-checkbox formControlName="isSetupTrackerEnabled" (click)="changeTrackerState()"></ui-checkbox>
-            </p>
-          </form>
+          <strong>Already an expert?</strong> Navigate to the Setup Tracker and disable the feature.
         </li>
       </ul>
     </div>
     <div class="navigation">
       <button class="item item--full" (click)="closeAndSave()">
-        Okay, Got it!
+        Take me to the Setup Tracker!
       </button>
     </div>
   </div>
