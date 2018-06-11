@@ -2,22 +2,26 @@ import { Action } from '@ngrx/store';
 
 const DEFAULT_STATE = {
   isShareDialogDisplayed: false,
+  primaryWallet: '',
 };
 
 export interface IInterfaceState {
   isShareDialogDisplayed: boolean;
+  primaryWallet: string;
 }
 
 export function InterfaceReducer(state: IInterfaceState = DEFAULT_STATE, action: InterfaceAction) {
   switch (action.type) {
     case InterfaceAction.InterfaceState:
-      console.log(action);
-
       return {
         ...state,
         isShareDialogDisplayed: action.isShareDialogDisplayed,
       };
-
+    case InterfaceAction.primaryWallet:
+      return {
+        ...state,
+        primaryWallet: action.primaryWallet,
+      };
     default:
       return state;
   }
@@ -25,6 +29,7 @@ export function InterfaceReducer(state: IInterfaceState = DEFAULT_STATE, action:
 
 export namespace InterfaceAction {
   export const InterfaceState = 'InterfaceState';
+  export const primaryWallet = 'primaryWallet';
 }
 
 export interface SetShareDialogAction extends Action {
@@ -37,4 +42,14 @@ export class SetShareDialogAction implements Action {
   constructor(public isShareDialogDisplayed: boolean) {}
 }
 
-export type InterfaceAction = SetShareDialogAction;
+export interface setPrimaryWallet extends Action {
+  primaryWallet: string;
+}
+
+export class setPrimaryWallet implements Action {
+  readonly type = InterfaceAction.primaryWallet;
+
+  constructor(public primaryWallet: string) {}
+}
+
+export type InterfaceAction = SetShareDialogAction & setPrimaryWallet;

@@ -12,9 +12,10 @@ export enum StorageKey {
   ViewSettingsPrefix = 'app_view_settings_',
 }
 
-export enum ViewSettingsKey {
+export enum UserSettingsKey {
   GetStartedTips = 'get_started_tips',
   recordPassphrase = 'record_passphrase',
+  primaryWalletID = 'primary_wallet_id',
 }
 
 export interface INotificationSettings {
@@ -93,11 +94,11 @@ export class PersistenceService2 {
     return (await this.storage.get(StorageKey.EasySends)) || [];
   }
 
-  setViewSettings(key: ViewSettingsKey, value: any) {
+  setUserSettings(key: UserSettingsKey, value: any) {
     return this.storage.set(StorageKey.ViewSettingsPrefix + key, value);
   }
 
-  getViewSettings(key: ViewSettingsKey) {
+  getUserSettings(key: UserSettingsKey) {
     return this.storage.get(StorageKey.ViewSettingsPrefix + key);
   }
 }
