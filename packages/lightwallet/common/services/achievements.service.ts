@@ -24,9 +24,10 @@ export class AchievementsService {
   ) {}
 
   async getToken() {
-    let profile = await this.persistenceService.getProfile(),
+    let profile = await this._getProfile(),
       token,
       result;
+
     await this.store.select('achievements').subscribe(res => (token = res.token));
     if (!token) {
       const authData = await MeritAchivementClient.fromObj(profile).login();
@@ -39,7 +40,7 @@ export class AchievementsService {
   }
 
   async getAchievements() {
-    let profile = await this.persistenceService.getProfile(),
+    let profile = await this._getProfile(),
       getWalletAchivements = await MeritAchivementClient.fromObj(profile).getData(
         await this.getToken(),
         '/achievements/'
@@ -49,7 +50,7 @@ export class AchievementsService {
   }
 
   async getSettings() {
-    let profile = await this.persistenceService.getProfile(),
+    let profile = await this._getProfile(),
       getAchivementsSettings = await MeritAchivementClient.fromObj(profile).getData(
         await this.getToken(),
         '/settings/'
@@ -59,18 +60,41 @@ export class AchievementsService {
   }
 
   async setSettings(settings) {
-    let profile = await this.persistenceService.getProfile();
+    let profile = await this._getProfile();
     await MeritAchivementClient.fromObj(profile).setData('/settings/', settings, await this.getToken());
     this.store.dispatch(new SetAchivementsSettingsAction(settings));
   }
 
   async updateGoal(id, step) {
-    let profile = await this.persistenceService.getProfile();
+    let profile = await this._getProfile();
     await MeritAchivementClient.fromObj(profile).setData(
       `/achievements/${id}/step/${step}/complete`,
       {},
       await this.getToken()
     );
     this.store.dispatch(new CompleteAchivementAction({ id: id, step: step }));
+  }
+
+  async _getProfile() {
+    let settings: any = this.store.select('interface'),
+      profile = await this.persistenceService.getProfile(),
+      loginProfile: any = {
+        version: '',
+        wallets: [],
+        credentials: [],
+      };
+    await settings.subscribe(res => {
+      if (profile.credentials.length > 1) {
+        profile.credentials.filter((item: any) => {
+          if (JSON.parse(item).walletId === res.primaryWallet) {
+            loginProfile.version = profile.version;
+            loginProfile.credentials = [item];
+          }
+        });
+      } else {
+        loginProfile = profile;
+      }
+    });
+    return loginProfile;
   }
 }
