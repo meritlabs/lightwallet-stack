@@ -6,7 +6,7 @@ import { IDisplayTransaction } from '@merit/common/models/transaction';
   templateUrl: './history-list.component.html',
   styleUrls: ['./history-list.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class HistoryListComponent {
   @Input() transactions: IDisplayTransaction[];
@@ -14,4 +14,12 @@ export class HistoryListComponent {
   @Input() widget: boolean;
 
   viewPortItems: IDisplayTransaction[];
+  isInviteMined: boolean = false;
+
+  completeInviteMinigTask() {
+    let result = this.transactions.filter((item: any) => item.action === 'invite' || item.isInvite === true);
+    console.log(result.length);
+
+    if (result.length > 0) this.isInviteMined = true;
+  }
 }

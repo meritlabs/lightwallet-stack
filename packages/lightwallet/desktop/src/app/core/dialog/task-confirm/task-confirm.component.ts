@@ -47,6 +47,11 @@ export class TaskConfirmComponent implements OnInit {
           this.finishTask();
         }
         return;
+      case 'Mine an invite':
+        if (this.isDone) {
+          this.finishTask();
+        }
+        return;
       default:
         return;
     }
