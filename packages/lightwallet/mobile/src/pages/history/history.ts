@@ -43,6 +43,10 @@ export class HistoryView {
     this.wallets = await this.profileService.getWallets();
     this.selectDefaultWallet();
     await this.loadHistory();
+
+    this.events.subscribe('globalSendCancelled', () => {
+      this.refreshHistory();
+    });
   }
 
   async ionViewWillEnter() {
@@ -94,7 +98,6 @@ export class HistoryView {
   private async formatHistory() {
     const easySends = await this.wallet.getGlobalSendHistory();
     this.transactions = await formatWalletHistory(this.txs, this.wallet, easySends, this.contactsService);
-    console.log(this.transactions);
   }
 
   selectWallet() {

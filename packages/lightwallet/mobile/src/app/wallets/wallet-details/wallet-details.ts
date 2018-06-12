@@ -55,6 +55,10 @@ export class WalletDetailsView {
       this.getCommunityInfo();
     });
 
+    this.events.subscribe('globalSendCancelled', () => {
+      this.getWalletHistory();
+    });
+
   }
 
   async deposit() {
