@@ -26,6 +26,7 @@ BlockchainMonitor.prototype.start = function(opts, cb) {
 
   self.pushNotificationServiceEnabled = !!opts.pushNotificationsOpts;
   self.emailNotificationServiceEnabled = !!opts.emailOpts;
+  self.delay = opts.notificationDelay ? opts.notificationDelay * 1000 : 0;
 
   async.parallel([
 
@@ -251,32 +252,34 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
           log.info(`${notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${out.address} ]`);
 
           var fromTs = Date.now() - 24 * 3600 * 1000;
-          self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {
-            if (err) return next(err);
-            var alreadyNotified = _.some(notifications, function(n) {
-              return n.type == notificationType && n.data && n.data.txid == data.txid;
-            });
-            if (alreadyNotified) {
-              log.info(`The incoming tx ${data.txid} was already notified`);
-              return next(null);
-            }
+          setTimeout(function() {
+            self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {
+              if (err) return next(err);
+              var alreadyNotified = _.some(notifications, function(n) {
+                return n.type == notificationType && n.data && n.data.txid == data.txid;
+              });
+              if (alreadyNotified) {
+                log.info(`The incoming tx ${data.txid} was already notified`);
+                return next(null);
+              }
 
-            var notification = Notification.create({
-              type: notificationType,
-              data: {
-                txid: data.txid,
-                address: out.address,
-                amount: out.amount,
-                isInvite: data.isInvite,
-              },
-              walletId: walletId,
-            });
-            self.storage.softResetTxHistoryCache(walletId, function() {
-              self._updateActiveAddress(address, function() {
-                self._storeAndBroadcastNotification(notification, next);
+              var notification = Notification.create({
+                type: notificationType,
+                data: {
+                  txid: data.txid,
+                  address: out.address,
+                  amount: out.amount,
+                  isInvite: data.isInvite,
+                },
+                walletId: walletId,
+              });
+              self.storage.softResetTxHistoryCache(walletId, function() {
+                self._updateActiveAddress(address, function() {
+                  self._storeAndBroadcastNotification(notification, next);
+                });
               });
             });
-          });
+          }, self.delay);
         });
     });
   }, function(err) {
