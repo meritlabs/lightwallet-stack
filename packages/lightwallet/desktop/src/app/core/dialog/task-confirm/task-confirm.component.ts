@@ -27,8 +27,8 @@ export class TaskConfirmComponent implements OnInit {
     await this.store.select('achievements').subscribe(res => {
       this.trackerSettings = res.settings.isSetupTrackerEnabled;
       this.achv = res.achievements.filter((item: any) => item.name === this.achvName)[0];
+      if (this.achv) this.task = this.achv.conditions.filter((item: any) => item.name === this.goalName)[0];
     });
-    this.task = this.achv.conditions.filter((item: any) => item.name === this.goalName)[0];
   }
   ngOnChanges(changes: SimpleChanges) {
     switch (this.goalName) {
