@@ -112,6 +112,7 @@ PushNotificationsService.prototype.start = function(opts, cb) {
   self.subjectPrefix = opts.pushNotificationsOpts.subjectPrefix || '';
   self.pushServerUrl = opts.pushNotificationsOpts.pushServerUrl;
   self.authorizationKey = opts.pushNotificationsOpts.authorizationKey;
+  self.delay = opts.pushNotificationsOpts.delay ? opts.pushNotificationsOpts.delay * 1000 : 0;
 
   if (!self.authorizationKey) return cb(new Error('Missing authorizationKey attribute in configuration.'))
 
@@ -148,115 +149,117 @@ PushNotificationsService.prototype.start = function(opts, cb) {
 
 PushNotificationsService.prototype._sendPushNotifications = function(notification, cb) {
   log.warn(`\nPushNotificationsService: RECEIVED NOTIFICATION: ${JSON.stringify(notification)}\n\n`);
-  var self = this;
+  const self = this;
   cb = cb || function() {};
 
-  this.storage.fetchAndLockNotificationForPushes(Notification.fromObj(notification), function(err, isLocked) {
-    if (err) {
-      log.warn('Notification ' + notification.id + ' could not be locked.', err);
-      return cb();
-    }
+  setTimeout(function() {
+    self.storage.fetchAndLockNotificationForPushes(Notification.fromObj(notification), function(err, isLocked) {
+      if (err) {
+        log.warn('Notification ' + notification.id + ' could not be locked.', err);
+        return cb();
+      }
 
-    if (!isLocked) {
-      log.warn('Notification ' + notification.id + 'is already locked, skipping.');
-      return cb();
-    }
+      if (!isLocked) {
+        log.warn('Notification ' + notification.id + 'is already locked, skipping.');
+        return cb();
+      }
 
-    var notifType = PUSHNOTIFICATIONS_TYPES[notification.type];
-    if (!notifType) return cb();
+      const notifType = PUSHNOTIFICATIONS_TYPES[notification.type];
+      if (!notifType) return cb();
 
-    log.debug('Notification received: ' + notification.type);
-    log.debug(JSON.stringify(notification));
+      log.debug('Notification received: ' + notification.type);
+      log.debug(JSON.stringify(notification));
 
-    self._checkShouldSendNotif(notification, function(err, should) {
-      if (err) return cb(err);
-
-      log.debug('Should send notification: ', should);
-      if (!should) return cb();
-
-      self._getRecipientsList(notification, notifType, function(err, recipientsList) {
+      self._checkShouldSendNotif(notification, function(err, should) {
         if (err) return cb(err);
-        if (!recipientsList) {
-          log.warn('Recipient list is empty, skipping notifications.');
-          return cb();
-        }
 
-        async.waterfall([
+        log.debug('Should send notification: ', should);
+        if (!should) return cb();
 
-          function(next) {
-            self._readAndApplyTemplates(notification, notifType, recipientsList, next);
-          },
-          function(contents, next) {
-            async.map(recipientsList, function(recipient, next) {
-              const content = contents[recipient.language];
-
-              self.storage.fetchPushNotificationSubs(recipient.copayerId, function(err, subs) {
-                if (err) return next(err);
-
-                const notifications = _.map(subs, function(sub) {
-                  const pushNotification = {
-                    to: sub.token,
-                    priority: 'high',
-                    notification: {
-                      title: content.plain.subject,
-                      body: content.plain.body,
-                      sound: "default",
-                      click_action: "FCM_PLUGIN_ACTIVITY",
-                      icon: "fcm_push_icon",
-                    },
-                    data: {
-                      id: notification.id,
-                      walletId: notification.walletId,
-                      copayerId: recipient.copayerId,
-                      type: notification.type,
-                      ...notification.data
-                    }
-                  };
-
-                  if (sub.platform === 'web') {
-                    pushNotification.notification.click_action = sub.packageName;
-                    pushNotification.notification.icon = '/assets/v1/icons/merit-512x512.png';
-                  } else if (sub.packageName) {
-                    pushNotification.restricted_package_name = sub.packageName;
-                  }
-
-                  return pushNotification;
-                });
-                return next(err, notifications);
-              });
-            }, function(err, allNotifications) {
-              if (err) return next(err);
-              return next(null, _.flatten(allNotifications));
-            });
-          },
-          function(notifications, next) {
-            async.each(notifications,
-              function(notification, next) {
-                self._makeRequest(notification, function(err, response) {
-                  if (err) log.error("Could not send push notification: ", err);
-                  if (response) {
-                    log.debug('Request status: ', response.statusCode);
-                    log.debug('Request message: ', response.statusMessage);
-                    log.debug('Request body: ', response.request.body);
-                  }
-                  next();
-                });
-              },
-              function(err) {
-                return next(err);
-              }
-            );
-          },
-        ], function(err) {
-          if (err) {
-            log.error('An error ocurred generating notification', err);
+        self._getRecipientsList(notification, notifType, function(err, recipientsList) {
+          if (err) return cb(err);
+          if (!recipientsList) {
+            log.warn('Recipient list is empty, skipping notifications.');
+            return cb();
           }
-          return cb(err);
+
+          async.waterfall([
+
+            function(next) {
+              self._readAndApplyTemplates(notification, notifType, recipientsList, next);
+            },
+            function(contents, next) {
+              async.map(recipientsList, function(recipient, next) {
+                const content = contents[recipient.language];
+
+                self.storage.fetchPushNotificationSubs(recipient.copayerId, function(err, subs) {
+                  if (err) return next(err);
+
+                  const notifications = _.map(subs, function(sub) {
+                    const pushNotification = {
+                      to: sub.token,
+                      priority: 'high',
+                      notification: {
+                        title: content.plain.subject,
+                        body: content.plain.body,
+                        sound: "default",
+                        click_action: "FCM_PLUGIN_ACTIVITY",
+                        icon: "fcm_push_icon",
+                      },
+                      data: {
+                        id: notification.id,
+                        walletId: notification.walletId,
+                        copayerId: recipient.copayerId,
+                        type: notification.type,
+                        ...notification.data
+                      }
+                    };
+
+                    if (sub.platform === 'web') {
+                      pushNotification.notification.click_action = sub.packageName;
+                      pushNotification.notification.icon = '/assets/v1/icons/merit-512x512.png';
+                    } else if (sub.packageName) {
+                      pushNotification.restricted_package_name = sub.packageName;
+                    }
+
+                    return pushNotification;
+                  });
+                  return next(err, notifications);
+                });
+              }, function(err, allNotifications) {
+                if (err) return next(err);
+                return next(null, _.flatten(allNotifications));
+              });
+            },
+            function(notifications, next) {
+              async.each(notifications,
+                function(notification, next) {
+                  self._makeRequest(notification, function(err, response) {
+                    if (err) log.error("Could not send push notification: ", err);
+                    if (response) {
+                      log.debug('Request status: ', response.statusCode);
+                      log.debug('Request message: ', response.statusMessage);
+                      log.debug('Request body: ', response.request.body);
+                    }
+                    next();
+                  });
+                },
+                function(err) {
+                  return next(err);
+                }
+              );
+            },
+          ], function(err) {
+            if (err) {
+              log.error('An error ocurred generating notification', err);
+            }
+            return cb(err);
+          });
         });
       });
-    });
 
-  });
+    });
+  }, self.delay);
 };
 
 PushNotificationsService.prototype._checkShouldSendNotif = function(notification, cb) {
