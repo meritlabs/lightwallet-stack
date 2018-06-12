@@ -18,7 +18,7 @@ export function accessWallet(target, key: string, descriptor: any) {
 
   function askForPassword(wallet) {
     return new Promise((resolve, reject) => {
-      let showPassPrompt = (highlightInvalid = false) => {
+      const showPassPrompt = (highlightInvalid = false) => {
         this.alertCtrl
           .create({
             title: 'Enter wallet password',
@@ -70,8 +70,10 @@ export function accessWallet(target, key: string, descriptor: any) {
         wallet.decryptPrivateKey(password);
         wallet.credentialsSaveAllowed = false;
       }
+
+      let result = null;
       try {
-        var result = await descriptor.value.apply(this, args);
+        result = await descriptor.value.apply(this, args);
       } finally {
         if (password) {
           wallet.encryptPrivateKey(password);
@@ -326,7 +328,7 @@ export class WalletService {
     if (wallet.credentials.derivationStrategy != 'BIP44' || !wallet.canSign())
       throw new Error('Exporting via QR not supported for this wallet'); //TODO gettextcatalog
 
-    let keys = wallet.getKeys(password);
+    const keys = wallet.getKeys(password);
     if (keys.mnemonic) {
       info = {
         type: encodingType.mnemonic,

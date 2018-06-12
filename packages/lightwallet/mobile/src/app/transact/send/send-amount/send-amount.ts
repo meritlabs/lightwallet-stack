@@ -67,7 +67,8 @@ export class SendAmountView {
               private alertCtrl: AlertController,
               private loadingCtrl: LoadingController,
               private sendService: SendService,
-              private events: Events
+              private events: Events,
+              private logger: LoggerService
   ) {
     this.recipient = this.navParams.get('contact');
     this.sendMethod = this.navParams.get('suggestedMethod');
@@ -269,7 +270,7 @@ export class SendAmountView {
     loader.present();
 
     try {
-      let fee = await this.sendService.estimateFee(this.selectedWallet, this.amount.micros,  (this.sendMethod.type == SendMethodType.Easy), this.sendMethod.value);
+      const fee = await this.sendService.estimateFee(this.selectedWallet, this.amount.micros,  (this.sendMethod.type == SendMethodType.Easy), this.sendMethod.value);
 
       if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
         this.feeCalcError = 'Passwords do not match';
@@ -286,7 +287,7 @@ export class SendAmountView {
         recipient: this.recipient
       }});
     } catch (e) {
-      console.log(e);
+      this.logger.warn(e);
       return this.feeCalcError = e.message;
     } finally {
       loader.dismiss();
