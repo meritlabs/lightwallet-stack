@@ -8,7 +8,7 @@
       <p class="name">
         {{goal.name}}
       </p>
-      <ul *ngIf="goal?.conditions?.length > 1">
+      <ul *ngIf="goal?.conditions?.length > 0">
         <li *ngFor="let task of goal.conditions">
           <ng-container *ngIf="task.status !== 1; else done">
             <span class="link">
