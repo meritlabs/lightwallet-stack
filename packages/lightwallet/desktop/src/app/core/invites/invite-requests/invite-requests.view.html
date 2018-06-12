@@ -1,4 +1,4 @@
-<app-task-confirm [goalName]="'Add friends to your invite waitlist'"></app-task-confirm>
+<app-task-confirm [achvName]="'Fast Starter'" [goalName]="'Add a friend to your invite waitlist'"></app-task-confirm>
 <ng-container *ngIf="inviteRequests$ | async as inviteRequests; else loading">
   <ng-container *ngIf="inviteRequests.length; else noRequests">
     <div *ngFor="let request of inviteRequests" class="invite-request-list">
