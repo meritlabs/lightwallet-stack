@@ -45,21 +45,22 @@
         <h2>{{ tx.displayWallet.name }}</h2>
       </ion-label>
     </ion-item>
-    <ng-container *ngIf="tx.easySendUrl && tx.type === 'meritmoney'">
-      <button ion-item *ngIf="tx.easySendUrl" [clip]="tx.easySendUrl" (click)="onMeritMoneyCopy()">
+    <ng-container *ngIf="tx.easySendUrl && (tx.type === 'meritmoney' || tx.type === 'meritinvite')">
+      <button ion-item *ngIf="tx.easySendUrl && !isCancelled" [clip]="tx.easySendUrl" (click)="onMeritMoneyCopy()">
         <ion-icon item-start name="copy" color="primary" merit-icon></ion-icon>
         <ion-label>
-          <h2>Copy MeritMoney Link</h2>
+          <h2 *ngIf="tx.type == 'meritmoney'">Copy MeritMoney Link</h2>
+          <h2 *ngIf="tx.type == 'meritinvite'">Copy MeritInvite Link</h2>
         </ion-label>
       </button>
-      <button ion-item *ngIf="!tx.easySend.cancelled" (click)="cancelMeritMoney()">
+      <button ion-item *ngIf="!isCancelled" (click)="cancelMeritMoney()">
         <ion-icon item-start name="md-close-circle" color="danger"></ion-icon>
         <ion-label>
-          <h2>Cancel</h2>
+          <h2>Cancel transaction</h2>
         </ion-label>
       </button>
     </ng-container>
-    <ion-item class="confirmation-status" [class.confirmed]="isConfirmed" text-wrap no-lines>
+    <ion-item class="confirmation-status" [class.confirmed]="isConfirmed" text-wrap no-lines *ngIf="!tx.easySendUrl">
       <ion-avatar img-icon item-start>
         <img [src]="'assets/img/icons/' + (isConfirmed? 'done' : 'timeout') + '.svg'" alt="">
       </ion-avatar>
@@ -68,6 +69,16 @@
         <p *ngIf="!isConfirmed">{{ confirmationsExplanation }}</p>
       </ion-label>
     </ion-item>
+
+    <ion-item  class="cancelled-status" text-wrap no-lines *ngIf="isEasySend && isCancelled">
+      <ion-avatar img-icon item-start>
+          <ion-icon item-start name="md-close-circle" color="danger"></ion-icon>
+      </ion-avatar>
+      <ion-label>
+          <h2>Cancelled</h2>
+      </ion-label>
+    </ion-item>
+
     <div class="info-box" *ngIf="!isConfirmed">
       You have money available, but it cannot be spent until it confirms on the blockchain.
       Wait some time. Usually 5-10 mins.

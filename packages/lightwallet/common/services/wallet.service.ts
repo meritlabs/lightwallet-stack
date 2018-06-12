@@ -144,7 +144,6 @@ export class WalletService {
 
   @accessWallet
   broadcastRawTx(wallet: MeritWalletClient, opts) {
-    console.log(opts);
     wallet.broadcastRawTx(opts);
   }
 
@@ -229,13 +228,13 @@ export class WalletService {
     await wallet.sendReferral(referral);
 
     await this.sendInvite(wallet, referral.address, invitesNumber);
+
+    await wallet.registerGlobalSend(easySend);
+
+
     return easySend;
   }
 
-  @accessWallet
-  async sendMeritMoney(wallet: MeritWalletClient) {
-
-  }
 
   /** =================== CREATE WALLET METHODS ================ */
 
