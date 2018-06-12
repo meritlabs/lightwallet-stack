@@ -18,8 +18,7 @@ export class HistoryListComponent {
 
   completeInviteMinigTask() {
     let result = this.transactions.filter((item: any) => item.action === 'invite' || item.isInvite === true);
-    console.log(result.length);
 
-    if (result.length > 0) this.isInviteMined = true;
+    if (result.length > 1) this.isInviteMined = true;
   }
 }
