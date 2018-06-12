@@ -3768,6 +3768,20 @@ WalletService.prototype.pushNotificationsUnsubscribe = function(opts, cb) {
   self.storage.removePushNotificationSub(self.copayerId, opts.token, cb);
 };
 
+WalletService.prototype.smsNotificationsSubscribe = function(opts, cb) {
+  if (!checkRequired(opts, ['phoneNumber'], cb)) return;
+  const sub = Model.SmsNotificationSub.create({
+    walletId: this.walletId
+  });
+
+  self.storage.storeSmsNotificationSub(sub, cb);
+};
+
+WalletService.prototype.smsNotificationsUnsubscribe = function(cb) {
+  self.storage.removeSmsNotificationSub(this.walletId, cb);
+};
+
+
 /**
  * Subscribe this copayer to the specified tx to get a notification when the tx confirms.
  * @param {Object} opts
