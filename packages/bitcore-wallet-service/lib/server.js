@@ -4169,7 +4169,15 @@ WalletService.prototype.updateVaultInfo = function(opts, cb) {
 
 WalletService.prototype.registerGlobalSend = async function(opts, cb) {
     const address = await promisify(this.getRootAddress.bind(this))();
-    this.storage.registerGlobalSend(address.toString(), opts.globalsend, (err) => {
+    this.storage.registerGlobalSend(address.toString(), opts.scriptAddress, opts.globalsend, (err) => {
+        if (err) return cb(err);
+        cb(null);
+    });
+};
+
+WalletService.prototype.cancelGlobalSend = async function(opts, cb) {
+    const address = await promisify(this.getRootAddress.bind(this))();
+    this.storage.cancelGlobalSend(address.toString(), opts.scriptAddress, (err) => {
         if (err) return cb(err);
         cb(null);
     });

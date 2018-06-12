@@ -49,6 +49,8 @@ export class TxDetailsView {
 
   cancelMeritMoney() {
     this.easyReceive.cancelEasySend(this.tx.easySendUrl);
+    this.tx.cancelled = true;
+    this.isCancelled = true;
     return this.viewCtrl.dismiss();
   }
 

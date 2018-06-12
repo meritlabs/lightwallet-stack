@@ -288,8 +288,7 @@ export class EasyReceiveService {
     if (transact)
       await this.sendEasyReceiveTx(input, transact, destAddress, wallet);
 
-    await this.persistenceService2.cancelEasySend(scriptAddress);
-    await this.persistenceService.deletePendingEasyReceipt(receipt);
+    await wallet.cancelGlobalSend(scriptAddress.toString());
 
     return {
       invite: invite,
