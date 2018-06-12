@@ -2606,6 +2606,10 @@ export class API {
     return this._doDeleteRequest('/v1/sms-notifications');
   }
 
+  getSmsNotificationSubscription() {
+    return this._doGetRequestWithLogin('/v1/sms-notifications');
+  }
+
   /**
    * Listen to a tx for its first confirmation.
    * @param {Object} opts

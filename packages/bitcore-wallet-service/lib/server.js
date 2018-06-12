@@ -3781,6 +3781,9 @@ WalletService.prototype.smsNotificationsUnsubscribe = function(cb) {
   self.storage.removeSmsNotificationSub(this.walletId, cb);
 };
 
+WalletService.prototype.getSmsNotificationSubscription = function(cb) {
+  self.storage.fetchSmsNotificationSub(this.walletId, cb);
+};
 
 /**
  * Subscribe this copayer to the specified tx to get a notification when the tx confirms.
