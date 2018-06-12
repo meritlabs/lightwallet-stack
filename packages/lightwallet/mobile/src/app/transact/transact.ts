@@ -198,7 +198,10 @@ export class TransactView {
       message: `You clicked on a ${name} link that you created. Would you like to cancel ${name} link with ${ amountStr }?`,
       buttons: [
         {
-          text: `Don't Cancel`
+          text: `Don't Cancel`,
+          handler: () => {
+            this.easyReceiveService.deletePendingReceipt(receipt);
+          }
         },
         {
           text: `Cancel ${name}`,
