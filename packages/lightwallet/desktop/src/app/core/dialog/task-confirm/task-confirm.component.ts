@@ -37,7 +37,12 @@ export class TaskConfirmComponent implements OnInit {
           this.finishTask();
         }
         return;
-      case 'Enable Email Notifications':
+      case 'Confirm an invite request':
+        if (this.isDone) {
+          this.finishTask();
+        }
+        return;
+      case 'Add a friend to your invite waitlist':
         if (this.isDone) {
           this.finishTask();
         }
