@@ -25,4 +25,4 @@
     </ng-container>
   </div>
 </div>
-<app-welcome-guide *ngIf="showGuide" [wallets]="wallets$ | async" (dismiss)="onGuideDismiss()"></app-welcome-guide>
+<app-welcome-guide *ngIf="!showGuide" [wallets]="wallets$ | async" (dismiss)="onGuideDismiss()"></app-welcome-guide>
