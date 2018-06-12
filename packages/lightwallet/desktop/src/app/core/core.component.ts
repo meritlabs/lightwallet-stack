@@ -119,10 +119,7 @@ export class CoreView implements OnInit, AfterViewInit {
 
     if (primaryWallet) {
       this.InterfacePreferencesService.setPrimaryWallet(primaryWallet);
-      console.log('1');
     } else {
-      console.log('2');
-
       this.wallets$.subscribe(res => {
         let activeWallet = res.filter((item: any) => item.confirmed === true);
         if (activeWallet.length > 0) {

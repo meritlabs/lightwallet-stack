@@ -12,6 +12,7 @@ import {
 } from '@merit/common/reducers/achivement.reducer';
 import { MeritAchivementClient } from '@merit/common/achievements-client/api';
 import { PersistenceService } from '@merit/common/services/persistence.service';
+import { Achievement } from '@merit/common/models/achievement';
 
 @Injectable()
 export class AchievementsService {
@@ -47,6 +48,27 @@ export class AchievementsService {
       );
 
     this.store.dispatch(new SetAchivementsAction(getWalletAchivements));
+  }
+
+  async getLockedAchievements() {
+    let lockedAcievents = [
+      {
+        id: 'u0',
+        goalId: 'u0',
+        slug: 0,
+        route: 'unlock',
+        name: 'Creator',
+        description: 'Wallet unlock',
+        title: 'Wallet unlock',
+        linkTitle: 'Unlock',
+        image: '',
+        conditions: [{ name: 'Create wallet', status: 1 }, { name: 'Unlock wallet', status: 0 }],
+        status: 0,
+        version: 0,
+      },
+    ];
+
+    this.store.dispatch(new SetAchivementsAction(lockedAcievents));
   }
 
   async getSettings() {
