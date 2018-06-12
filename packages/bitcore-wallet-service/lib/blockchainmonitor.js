@@ -474,7 +474,7 @@ BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {
-  if (!(this.pushNotificationServiceEnabled || this.emailNotificationServiceEnabled)) return;
+  if (!(this.pushNotificationServiceEnabled || this.emailNotificationServiceEnabled)) return cb();
 
   this.storage.storeNotification(notification, (err, created) => {
     if (created) {
