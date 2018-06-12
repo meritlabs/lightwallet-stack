@@ -2594,6 +2594,18 @@ export class API {
     return this._doDeleteRequest(url);
   };
 
+  smsNotificationsSubscribe(phoneNumber: string, platform?: string) {
+    return this._doPostRequest('/v1/sms-notifications', {
+      phoneNumber,
+      platform,
+      walletId: this.id
+    });
+  }
+
+  smsNotificationsUnsubscribe() {
+    return this._doDeleteRequest('/v1/sms-notifications');
+  }
+
   /**
    * Listen to a tx for its first confirmation.
    * @param {Object} opts
