@@ -13,6 +13,7 @@ import { Address, crypto, HDPrivateKey, HDPublicKey, PrivateKey, PublicKey, Scri
 import { Subject } from 'rxjs/Subject';
 import { WalletService, accessWallet } from "@merit/common/services/wallet.service";
 import { AlertController } from 'ionic-angular';
+import { Events } from 'ionic-angular/util/events';
 
 @Injectable()
 export class EasyReceiveService {
@@ -25,7 +26,8 @@ export class EasyReceiveService {
     private ledger: LedgerService,
     private rateService: RateService,
     private walletService: WalletService,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private events: Events
   ) {
   }
 
@@ -288,8 +290,9 @@ export class EasyReceiveService {
     if (transact)
       await this.sendEasyReceiveTx(input, transact, destAddress, wallet);
 
-    await this.persistenceService2.cancelEasySend(scriptAddress);
-    await this.persistenceService.deletePendingEasyReceipt(receipt);
+    await wallet.cancelGlobalSend(scriptAddress.toString());
+
+    this.events.publish('globalSendCancelled', scriptAddress.toString());
 
     return {
       invite: invite,

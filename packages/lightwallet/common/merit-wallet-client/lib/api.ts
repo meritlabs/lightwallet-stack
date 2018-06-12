@@ -12,7 +12,8 @@ import { interval } from 'rxjs/observable/interval';
 import { catchError, map, mergeMap, retryWhen, switchMap, tap } from 'rxjs/operators';
 import * as request from 'superagent';
 import * as util from 'util';
-import { EasyReceiptResult } from '../../models/easy-receipt';
+import { EasyReceiptResult, EasyReceipt } from '../../models/easy-receipt';
+import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
 import { Common } from './common';
 import { Credentials } from './credentials';
 import { MWCErrors } from './errors';
@@ -2701,4 +2702,44 @@ export class API {
   getDefaultFee() {
     return DEFAULT_FEE;
   }
+
+  /**
+   * registering global send on MWS so we can access history from any device
+   */
+  registerGlobalSend(easySend: EasySend) {
+    $.checkState(this.credentials);
+    console.log(easySend, 'refistering global send');
+    return this._doPostRequest(`/v1/register_globalsend`, {scriptAddress: easySend.scriptAddress, globalsend: this.encryptGlobalSend(easySend)});
+  }
+
+  /**
+   * Mark globalsend as cancelled
+   */
+  cancelGlobalSend(scriptAddress: string) {
+    $.checkState(this.credentials);
+    return this._doPostRequest(`/v1/cancel_globalsend`, { scriptAddress });
+  }
+
+  /**
+   * receiving sent globalsends to add links to history and make them cancellable
+   */
+  async getGlobalSendHistory() {
+    $.checkState(this.credentials);
+    const globalSends = await this._doGetRequest(`/v1/globalsend_history`);
+    return globalSends.map(g => {
+      let globalSend = JSON.parse(this.decryptGlobalSend(g.globalsend));
+      globalSend.cancelled = g.cancelled;
+      return globalSend;
+    } );
+  }
+
+  private encryptGlobalSend(easySend: EasySend) {
+    return this._encryptMessage(JSON.stringify(easySend), this.credentials.personalEncryptingKey);
+  }
+
+  private decryptGlobalSend(data) {
+    return this._decryptMessage(data, this.credentials.personalEncryptingKey);
+  }
+
+
 }

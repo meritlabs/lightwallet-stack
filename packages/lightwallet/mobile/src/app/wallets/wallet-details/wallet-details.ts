@@ -55,6 +55,10 @@ export class WalletDetailsView {
       this.getCommunityInfo();
     });
 
+    this.events.subscribe('globalSendCancelled', () => {
+      this.getWalletHistory();
+    });
+
   }
 
   async deposit() {
@@ -108,7 +112,8 @@ export class WalletDetailsView {
   }
 
   private async formatHistory() {
-    this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, await this.persistenceService.getEasySends(), this.contactsService);
+    const easySends = await this.wallet.getGlobalSendHistory();
+    this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, easySends, this.contactsService);
   }
 
   async loadMoreHistory(infiniter) {

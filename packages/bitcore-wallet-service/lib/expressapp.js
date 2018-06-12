@@ -905,6 +905,34 @@ ExpressApp.prototype.start = function(opts, cb) {
     res.end();
   });
 
+  router.post('/v1/register_globalsend', function(req, res) {
+      getServerWithAuth(req, res, function(server) {
+          server.registerGlobalSend(req.body, function(err) {
+              if (err) return returnError(err, res, req);
+              res.json('ok').end();
+          });
+      });
+  });
+
+  router.post('/v1/cancel_globalsend', function(req, res) {
+      getServerWithAuth(req, res, function(server) {
+          server.cancelGlobalSend(req.body, function(err) {
+              if (err) return returnError(err, res, req);
+              res.json('ok').end();
+          });
+      });
+  });
+
+  router.get('/v1/globalsend_history', function(req, res) {
+      getServerWithAuth(req, res, function(server) {
+          server.getGlobalSends(req, function(err, links) {
+              if (err) return returnError(err, res, req);
+              res.json(links).end();
+          });
+      });
+  });
+
+
   this.app.use(opts.basePath || '/bws/api', router);
 
   // Pass bitcore node to th walletService to initialize it.
