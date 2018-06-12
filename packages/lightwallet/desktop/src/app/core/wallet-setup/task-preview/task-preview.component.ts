@@ -34,18 +34,18 @@ export class TaskPreviewComponent implements OnInit {
     this.readinessBackground = `linear-gradient(to right, #74cd4f ${readiness}%, #555b7033 ${readiness}%)`;
   }
 
-  _completeWalletConfirmationGoal() {
+  async _completeWalletConfirmationGoal() {
     let isConfirmed: boolean = this.wallet.confirmed,
       goal: any = this.goal;
-    if (isConfirmed && goal.name === 'Create Wallet' && goal.status !== 1) {
-      console.log(goal);
-      this.AchievementsService.updateGoal(goal.id, 0);
+    if (isConfirmed && goal.name === 'Creator' && goal.status !== 1 && goal.version !== 0) {
+      await this.AchievementsService.updateGoal(goal.id, 1);
+      await this.AchievementsService.updateGoal(goal.id, 2);
     }
   }
 
   action(val) {
     switch (val) {
-      case 'Share your invite code':
+      case 'Invite Your Friends to Merit!':
         this.store.dispatch(new SetShareDialogAction(true));
         return this.router.navigate(['/wallets']);
       case 'Name Your Wallet':
