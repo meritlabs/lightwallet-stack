@@ -1,16 +1,12 @@
-import { AfterViewInit, Component, OnInit, Sanitizer, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ENV } from '@app/env';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
-import { RefreshOneWalletTransactions, UpdateOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
-import {
-  RefreshOneWalletAction,
-  selectInviteRequests,
-  selectNumberOfInviteRequests,
-} from '@merit/common/reducers/wallets.reducer';
+import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
+import { RefreshOneWalletAction, selectNumberOfInviteRequests } from '@merit/common/reducers/wallets.reducer';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
@@ -22,57 +18,56 @@ import { PasswordPromptController } from '@merit/desktop/app/components/password
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { Address, PublicKey } from 'bitcore-lib';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'view-core',
   templateUrl: './core.component.html',
   styleUrls: ['./core.component.sass'],
-  encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.None
 })
 export class CoreView implements OnInit, AfterViewInit {
   topMenuItems: any[] = [
     {
       name: 'Dashboard',
       icon: '/assets/v1/icons/ui/aside-navigation/home.svg',
-      link: '/dashboard',
+      link: '/dashboard'
     },
     {
       name: 'Invites',
       icon: '/assets/v1/icons/invites/invite.svg',
       link: '/invites',
-      badge: this.store.select(selectNumberOfInviteRequests),
+      badge: this.store.select(selectNumberOfInviteRequests)
     },
     {
       name: 'Wallets',
       icon: '/assets/v1/icons/ui/aside-navigation/wallet.svg',
-      link: '/wallets',
+      link: '/wallets'
     },
     {
       name: 'Receive Merit',
       icon: '/assets/v1/icons/ui/aside-navigation/receive.svg',
-      link: '/receive',
+      link: '/receive'
     },
     {
       name: 'Send Merit',
       icon: '/assets/v1/icons/ui/aside-navigation/send.svg',
-      link: '/send',
+      link: '/send'
     },
     {
       name: 'History',
       icon: '/assets/v1/icons/ui/aside-navigation/history.svg',
-      link: '/history',
+      link: '/history'
     },
     {
       name: 'Community',
       icon: '/assets/v1/icons/ui/aside-navigation/network.svg',
-      link: '/community',
+      link: '/community'
     },
     {
       name: 'Settings',
       icon: '/assets/v1/icons/ui/aside-navigation/settings.svg',
-      link: '/settings',
-    },
+      link: '/settings'
+    }
   ];
   bottomMenuItems: any[] = [
     // {
@@ -84,9 +79,11 @@ export class CoreView implements OnInit, AfterViewInit {
       name: 'Help & Support',
       icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
       link: 'https://www.merit.me/get-involved/#join-the-conversation',
-      external: true,
-    },
+      external: true
+    }
   ];
+
+  showShare: boolean;
 
   constructor(
     private pushNotificationsService: PushNotificationsService,
@@ -117,6 +114,10 @@ export class CoreView implements OnInit, AfterViewInit {
     return this.domSanitizer.bypassSecurityTrustStyle(
       `mask-image: url('${icon}'); -webkit-mask-image: url('${icon}');`
     );
+  }
+
+  shareActivate(val) {
+    this.showShare = Boolean(val);
   }
 
   private showPasswordEasyReceivePrompt(receipt: EasyReceipt, processAll: boolean, wallet?: MeritWalletClient) {
@@ -160,12 +161,12 @@ export class CoreView implements OnInit, AfterViewInit {
       {
         text: 'Yes',
         value: 'yes',
-        class: 'primary',
+        class: 'primary'
       },
       {
         text: 'No',
-        value: 'no',
-      },
+        value: 'no'
+      }
     ]);
 
     confirmDialog.onDidDismiss((val: string) => {
@@ -200,17 +201,17 @@ export class CoreView implements OnInit, AfterViewInit {
       title,
       `You clicked on a ${
         inviteOnly ? 'MeritInvite' : 'MeritMoney'
-      } link that you created.  Would you like to cancel it?`,
+        } link that you created.  Would you like to cancel it?`,
       [
         {
           text: 'Cancel ' + (inviteOnly ? 'MeritInvite' : 'MeritMoney'),
           value: 'yes',
-          class: 'primary',
+          class: 'primary'
         },
         {
-          text: "Don't Cancel",
-          value: 'no',
-        },
+          text: 'Don\'t Cancel',
+          value: 'no'
+        }
       ]
     );
 
@@ -239,7 +240,7 @@ export class CoreView implements OnInit, AfterViewInit {
         new RefreshOneWalletAction(wallet.id, {
           skipShareCode: true,
           skipRewards: true,
-          skipAlias: true,
+          skipAlias: true
         })
       );
     } catch (err) {
@@ -261,7 +262,7 @@ export class CoreView implements OnInit, AfterViewInit {
         new RefreshOneWalletAction(wallet.id, {
           skipShareCode: true,
           skipRewards: true,
-          skipAlias: true,
+          skipAlias: true
         })
       );
     } catch (err) {
@@ -272,7 +273,7 @@ export class CoreView implements OnInit, AfterViewInit {
 
   private showSpentEasyReceiptAlert() {
     this.confirmDialogCtrl.create('Uh oh', 'It seems that the Merit from this link has already been redeemed!', [
-      { text: 'Ok' },
+      { text: 'Ok' }
     ]);
   }
 
@@ -394,13 +395,4 @@ export class CoreView implements OnInit, AfterViewInit {
     }
   }
 
-  showShare: boolean = false;
-
-  shareActivate(val) {
-    if (val) {
-      this.showShare = true;
-    } else {
-      this.showShare = false;
-    }
-  }
 }
