@@ -16,16 +16,19 @@ export class TaskConfirmComponent implements OnInit {
   constructor(private store: Store<IRootAppState>, private AchievementsService: AchievementsService) {}
 
   @Input() goalName: string;
+  @Input() achvName: string;
   @Input() isDone: boolean;
   @Input() arrow: string;
   trackerSettings: boolean = false;
+  achv: any;
   task: any;
 
   async ngOnInit() {
     await this.store.select('achievements').subscribe(res => {
       this.trackerSettings = res.settings.isSetupTrackerEnabled;
-      this.task = res.achievements.filter((item: any) => item.name === this.goalName)[0];
+      this.achv = res.achievements.filter((item: any) => item.name === this.achvName)[0];
     });
+    this.task = this.achv.conditions.filter((item: any) => item.name === this.goalName)[0];
   }
   ngOnChanges(changes: SimpleChanges) {
     switch (this.goalName) {
@@ -45,8 +48,8 @@ export class TaskConfirmComponent implements OnInit {
   }
 
   finishTask() {
-    if (this.task) {
-      this.AchievementsService.updateGoal(this.task.id, 0);
+    if (this.achv) {
+      this.AchievementsService.updateGoal(this.achv.id, this.task.slug);
     }
   }
 }
