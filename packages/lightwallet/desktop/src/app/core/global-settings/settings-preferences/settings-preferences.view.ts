@@ -18,6 +18,7 @@ import { isEmpty } from 'lodash';
 import 'rxjs/add/operator/toPromise';
 import { merge } from 'rxjs/observable/merge';
 import { debounceTime, filter, take, tap } from 'rxjs/operators';
+import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 
 declare const WEBPACK_CONFIG: any;
 
@@ -57,7 +58,8 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     private passwordPromptCtrl: PasswordPromptController,
     private profileService: ProfileService,
     private store: Store<IRootAppState>,
-    private router: Router
+    private router: Router,
+    private InterfacePreferencesService: InterfacePreferencesService
   ) {
     if (typeof WEBPACK_CONFIG !== 'undefined') {
       this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
@@ -157,6 +159,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
 
               this.persistenceService.setUserSettings(UserSettingsKey.GetStartedTips, false);
               this.persistenceService.setUserSettings(UserSettingsKey.recordPassphrase, false);
+              this.InterfacePreferencesService.setPrimaryWallet(null);
 
               this.store.dispatch(new DeleteWalletAction(wallet.id));
             })
