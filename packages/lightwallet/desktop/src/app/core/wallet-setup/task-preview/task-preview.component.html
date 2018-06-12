@@ -1,7 +1,7 @@
 <div class="wallet-setup_preview" [class.complete]="isComplete">
   <div class="icon">
     <img src="/assets/v1/icons/{{goal.image}}.svg" alt="">
-    <div class="progress"></div>
+    <div class="progress" [style.background]="readinessBackground"></div>
   </div>
   <div class="details">
     <div class="details">
