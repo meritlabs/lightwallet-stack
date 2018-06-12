@@ -76,4 +76,5 @@ export interface IDisplayTransaction extends ITransaction {
   easySend?: EasySend;
   easySendUrl?: string;
   isSpent: boolean;
+  cancelled: boolean;
 }

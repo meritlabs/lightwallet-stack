@@ -2703,14 +2703,31 @@ export class API {
     return DEFAULT_FEE;
   }
 
+  /**
+   * registering global send on MWS so we can access history from any device
+   */
   registerGlobalSend(easySend: EasySend) {
-    return this._doPostRequest(`/v1/register_globalsend`, {globalsend: this.encryptGlobalSend(easySend)});
+    return this._doPostRequest(`/v1/register_globalsend`, {scriptAddress: easySend.scriptAddress, globalsend: this.encryptGlobalSend(easySend)});
   }
 
+  /**
+   * Mark globalsend as cancelled
+   */
+  cancelGlobalSend(scriptAddress: string) {
+    return this._doPostRequest(`/v1/cancel_globalsend`, { scriptAddress });
+  }
+
+  /**
+   * receiving sent globalsends to add links to history and make them cancellable
+   */
   async getGlobalSendHistory() {
     $.checkState(this.credentials);
     const globalSends = await this._doGetRequest(`/v1/globalsend_history`);
-    return globalSends.map(g => JSON.parse(this.decryptGlobalSend(g.globalsend)) );
+    return globalSends.map(g => {
+      let globalSend = JSON.parse(this.decryptGlobalSend(g.globalsend));
+      globalSend.cancelled = g.cancelled;
+      return globalSend;
+    } );
   }
 
   private encryptGlobalSend(easySend: EasySend) {

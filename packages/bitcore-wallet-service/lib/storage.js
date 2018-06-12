@@ -1320,8 +1320,13 @@ Storage.prototype.setVaultConfirmed = function(tx, txId, cb) {
   }, cb);
 };
 
-Storage.prototype.registerGlobalSend = function(walletAddress, globalsend, cb) {
-  this.db.collection(collections.GLOBALSENDS).insertOne({ walletAddress, globalsend }, {w: 1 }, cb);
+Storage.prototype.registerGlobalSend = function(walletAddress, scriptAddress, globalsend, cb) {
+  this.db.collection(collections.GLOBALSENDS).insertOne({ walletAddress, scriptAddress, globalsend }, {w: 1 }, cb);
+};
+
+Storage.prototype.cancelGlobalSend = function(walletAddress, scriptAddress, cb) {
+
+  this.db.collection(collections.GLOBALSENDS).findOneAndUpdate({ walletAddress, scriptAddress}, { $set: {cancelled: true} }, {w: 1, upsert: false}, cb);
 };
 
 Storage.prototype.getGlobalSends = function(walletAddress, cb) {

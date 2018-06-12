@@ -914,6 +914,15 @@ ExpressApp.prototype.start = function(opts, cb) {
       });
   });
 
+  router.post('/v1/cancel_globalsend', function(req, res) {
+      getServerWithAuth(req, res, function(server) {
+          server.cancelGlobalSend(req.body, function(err) {
+              if (err) return returnError(err, res, req);
+              res.json('ok').end();
+          });
+      });
+  });
+
   router.get('/v1/globalsend_history', function(req, res) {
       getServerWithAuth(req, res, function(server) {
           server.getGlobalSends(req, function(err, links) {
