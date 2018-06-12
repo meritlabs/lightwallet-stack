@@ -2708,6 +2708,7 @@ export class API {
    */
   registerGlobalSend(easySend: EasySend) {
     $.checkState(this.credentials);
+    console.log(easySend, 'refistering global send');
     return this._doPostRequest(`/v1/register_globalsend`, {scriptAddress: easySend.scriptAddress, globalsend: this.encryptGlobalSend(easySend)});
   }
 
