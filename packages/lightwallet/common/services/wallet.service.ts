@@ -144,7 +144,6 @@ export class WalletService {
 
   @accessWallet
   broadcastRawTx(wallet: MeritWalletClient, opts) {
-    console.log(opts);
     wallet.broadcastRawTx(opts);
   }
 
