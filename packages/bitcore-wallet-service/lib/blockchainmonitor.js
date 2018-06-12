@@ -157,18 +157,21 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, process
         if (err)
           log.error('Could not save TX');
 
-        var args = {
-          txProposalId: txp.id,
-          txid: data.txid,
-          amount: txp.getTotalAmount(),
-        };
+        self._afterNotificationsCheck(self.walletId, null, 'OutgoingTxByThirdParty', _.noop, function() {
 
-        var notification = Notification.create({
-          type: 'OutgoingTxByThirdParty',
-          data: args,
-          walletId: walletId,
+          var args = {
+            txProposalId: txp.id,
+            txid: data.txid,
+            amount: txp.getTotalAmount(),
+          };
+
+          var notification = Notification.create({
+            type: 'OutgoingTxByThirdParty',
+            data: args,
+            walletId: walletId,
+          });
+          self._storeAndBroadcastNotification(notification);
         });
-        self._storeAndBroadcastNotification(notification);
       });
     });
   });
@@ -251,19 +254,9 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
 
           log.info(`${notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${out.address} ]`);
 
-          var fromTs = Date.now() - 24 * 3600 * 1000;
-          setTimeout(function() {
-            self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {
-              if (err) return next(err);
-              var alreadyNotified = _.some(notifications, function(n) {
-                return n.type == notificationType && n.data && n.data.txid == data.txid;
-              });
-              if (alreadyNotified) {
-                log.info(`The incoming tx ${data.txid} was already notified`);
-                return next(null);
-              }
+          self._afterNotificationsCheck(walletId, null, notificationType, next, function() {
 
-              var notification = Notification.create({
+              const notification = Notification.create({
                 type: notificationType,
                 data: {
                   txid: data.txid,
@@ -278,12 +271,32 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
                   self._storeAndBroadcastNotification(notification, next);
                 });
               });
-            });
-          }, self.delay);
+          });
         });
     });
   }, function(err) {
     return;
+  });
+};
+
+BlockchainMonitor.prototype._afterNotificationsCheck = function(walletId, notificationId, notificationType, next, cb) {
+  const self = this;
+  const fromTs = Date.now() - 24 * 3600 * 1000;
+  setTimeout(function() {
+    self.storage.fetchNotifications(walletId, notificationId, fromTs, function(err, notifications) {
+      if (err) return next(err);
+
+      const  alreadyNotified = _.some(notifications, function(n) {
+        return n.type == notificationType && n.data && n.data.txid == data.txid;
+      });
+
+      if (alreadyNotified) {
+        log.info(`The incoming tx ${data.txid} was already notified`);
+        return next(null);
+      }
+
+      return cb();
+    });
   });
 };
 
@@ -333,25 +346,27 @@ BlockchainMonitor.prototype._handleTxConfirmations = function (network, txids) {
       log.info('New tx confirmation ' + sub.txid);
       sub.isActive = false;
 
-      this.storage.storeTxConfirmationSub(sub, err => {
-        if (err) {
-          return cb(err);
-        }
+      self._afterNotificationsCheck(sub.walletId, null, 'TxConfirmation', _.noop, function() {
+        this.storage.storeTxConfirmationSub(sub, err => {
+          if (err) {
+            return cb(err);
+          }
 
-        const notification = Notification.create({
-          type: 'TxConfirmation',
-          walletId: sub.walletId,
-          creatorId: sub.copayerId,
-          data: {
-            txid: sub.txid,
-            network: network,
-            // TODO: amount
-          },
+          const notification = Notification.create({
+            type: 'TxConfirmation',
+            walletId: sub.walletId,
+            creatorId: sub.copayerId,
+            data: {
+              txid: sub.txid,
+              network: network,
+              // TODO: amount
+            },
+          });
+
+          this._storeAndBroadcastNotification(notification, cb);
         });
-
-        this._storeAndBroadcastNotification(notification, cb);
+        return cb(null);
       });
-      return cb(null);
     });
   };
 
@@ -396,24 +411,26 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function(network, ref
     async.each(triggered, (sub, cb) => {
       log.info('New referral confirmation ' + sub.address);
       sub.isActive = false;
-      this.storage.storeTxConfirmationSub(sub, (err) => {
-        if (err) {
-          log.error(`Could not update confirmation with address: ${sub.address}`);
-          return cb(err);
-        }
+      self._afterNotificationsCheck(sub.walletId, null, 'ReferralConfirmation', _.noop, function() {
+        this.storage.storeTxConfirmationSub(sub, (err) => {
+          if (err) {
+            log.error(`Could not update confirmation with address: ${sub.address}`);
+            return cb(err);
+          }
 
-        const notification = Notification.create({
-          type: 'ReferralConfirmation',
-          creatorId: sub.copayerId,
-          walletId: sub.walletId,
-          data: sub,
-        });
+          const notification = Notification.create({
+            type: 'ReferralConfirmation',
+            creatorId: sub.copayerId,
+            walletId: sub.walletId,
+            data: sub,
+          });
 
-        this._storeAndBroadcastNotification(notification, () => {
-          log.info(`Referral confirmation with code ${sub.address} successfully sent`);
+          this._storeAndBroadcastNotification(notification, () => {
+            log.info(`Referral confirmation with code ${sub.address} successfully sent`);
+          });
         });
+        return cb(null);
       });
-      return cb(null);
     });
   });
 };
@@ -439,15 +456,17 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, txids)
           return;
         }
 
-        const notification = Notification.create({
-          type: 'VaultConfirmation',
-          creatorId: tx.copayerId,
-          walletId: tx.walletId,
-          data: result,
-        });
+        self._afterNotificationsCheck(tx.walletId, null, 'VaultConfirmation', _.noop, function() {
+          const notification = Notification.create({
+            type: 'VaultConfirmation',
+            creatorId: tx.copayerId,
+            walletId: tx.walletId,
+            data: result,
+          });
 
-        this._storeAndBroadcastNotification(notification, function () {
-          log.info(`Vault confirmation with code ${txId} successfully sent`);
+          this._storeAndBroadcastNotification(notification, function () {
+            log.info(`Vault confirmation with code ${txId} successfully sent`);
+          });
         });
       });
     });
