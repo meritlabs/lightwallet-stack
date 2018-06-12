@@ -33,6 +33,7 @@ var collections = {
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
   REFERRAL_TX_CONFIRMATION_SUBS: 'referral_confirmation_subs',
   VAULTS: 'vaults',
+  SMS_NOTIFICATION_SUBS: 'sms_notification_subs'
 };
 
 var Storage = function(opts) {
@@ -290,7 +291,7 @@ Storage.prototype.mustFetchPendingTx = function(walletId, txProposalId, cb, last
 
       if (!results || results.length < 1 || !results[0]) {
         return cb(new Error("TX_NOT_FOUND"));
-      } 
+      }
       const areAnyPending = results.some(result => result.isPending)
       if (!areAnyPending) return cb(new Error("TX_NOT_PENDING"))
       var result = results[0];
@@ -303,7 +304,7 @@ Storage.prototype.mustFetchPendingTx = function(walletId, txProposalId, cb, last
     }, function(err, result) {
       if (err) return cb(err);
       if (!result) return cb(new Error("TX_NOT_FOUND"));
-      if (!result.isPending) return cb(new Error("TX_NOT_PENDING"));      
+      if (!result.isPending) return cb(new Error("TX_NOT_PENDING"));
       return self._completeTxData(walletId, Model.TxProposal.fromObj(result), cb);
     });
   }
@@ -1142,6 +1143,31 @@ Storage.prototype.removePushNotificationSub = function(copayerId, token, cb) {
   }, {
     w: 1
   }, cb);
+};
+
+Storage.prototype.storeSmsNotificationSub = function(walletId, phoneNumber, cb) {
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS).update({
+    walletId,
+    phoneNumber: phoneNumber
+  }, {
+    w: 1,
+    upsert: true
+  }, cb);
+};
+
+Storage.prototype.fetchSmsNotificationSub = function(walletId, cb) {
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS)
+    .fetch({ walletId })
+    .toArray((err, result) => {
+      if (err) return cb(err);
+      if (!result) return cb();
+
+      return cb(null, Model.SmsNotificationSub.fromObj(result[0]));
+    });
+};
+
+Storage.prototype.removeSmsNotificationSub = function(walletId, cb) {
+  this.db.collection(collections.PUSH_NOTIFICATION_SUBS).remove({ walletId }, { w: 1 }, cb);
 };
 
 Storage.prototype.fetchActiveTxConfirmationSubs = function(copayerId, cb) {
