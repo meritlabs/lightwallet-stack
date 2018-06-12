@@ -397,71 +397,77 @@ EmailService.prototype.sendEmail = function(notification, cb) {
         log.warn('Notification ' + notification.id + 'is already locked, skipping.');
         return cb();
       }
+      self.storage.fetchNotification(notification, function(err, notification) {
+        if (err) {
+          log.warn('Could not update notification state: ' + notification.id, err);
+          return cb();
+        }
 
-      var emailType = EMAIL_TYPES[notification.type];
-      if (!emailType) return cb();
+        var emailType = EMAIL_TYPES[notification.type];
+        if (!emailType) return cb();
 
-      self._checkShouldSendEmail(notification, function(err, should) {
-        if (err) return cb(err);
-        if (!should) return cb();
+        self._checkShouldSendEmail(notification, function(err, should) {
+          if (err) return cb(err);
+          if (!should) return cb();
 
-        self._getRecipientsList(notification, emailType, function(err, recipientsList) {
-          if (_.isEmpty(recipientsList)) return cb();
+          self._getRecipientsList(notification, emailType, function(err, recipientsList) {
+            if (_.isEmpty(recipientsList)) return cb();
 
-          // TODO: Optimize so one process does not have to wait until all others are done
-          // Instead set a flag somewhere in the db to indicate that this process is free
-          // to serve another request.
-          self.lock.runLocked('email-' + notification.id, cb, function(cb) {
-            self.storage.fetchEmailByNotification(notification.id, function(err, email) {
-              if (err) return cb(err);
-              if (email) return cb();
+            // TODO: Optimize so one process does not have to wait until all others are done
+            // Instead set a flag somewhere in the db to indicate that this process is free
+            // to serve another request.
+            self.lock.runLocked('email-' + notification.id, cb, function(cb) {
+              self.storage.fetchEmailByNotification(notification.id, function(err, email) {
+                if (err) return cb(err);
+                if (email) return cb();
 
-              async.waterfall([
+                async.waterfall([
 
-                function(next) {
-                  self._readAndApplyTemplates(notification, emailType, recipientsList, next);
-                },
-                function(contents, next) {
+                  function(next) {
+                    self._readAndApplyTemplates(notification, emailType, recipientsList, next);
+                  },
+                  function(contents, next) {
 
-                  async.map(recipientsList, function(recipient, next) {
-                    var content = contents[recipient.language];
-                    // ToDo; improve it too, it's the result of asyncs in _readAndApplyTemplates
-                    _.map(content, function(instance) {
-                      var email = Model.Email.create({
-                        walletId: notification.walletId,
-                        copayerId: recipient.copayerId,
-                        from: self.from,
-                        to: recipient.emailAddress,
-                        subject: instance.plain.subject,
-                        bodyPlain: instance.plain.body,
-                        bodyHtml: instance.html ? instance.html.body : null,
-                        notificationId: notification.id,
+                    async.map(recipientsList, function(recipient, next) {
+                      var content = contents[recipient.language];
+                      // ToDo; improve it too, it's the result of asyncs in _readAndApplyTemplates
+                      _.map(content, function(instance) {
+                        var email = Model.Email.create({
+                          walletId: notification.walletId,
+                          copayerId: recipient.copayerId,
+                          from: self.from,
+                          to: recipient.emailAddress,
+                          subject: instance.plain.subject,
+                          bodyPlain: instance.plain.body,
+                          bodyHtml: instance.html ? instance.html.body : null,
+                          notificationId: notification.id,
+                        });
+                        self.storage.storeEmail(email, function(err) {
+                          return next(err, email);
+                        });
                       });
-                      self.storage.storeEmail(email, function(err) {
-                        return next(err, email);
+                    }, next);
+                  },
+                  function(emails, next) {
+                    async.each(emails, function(email, next) {
+                      self._send(email, function(err) {
+                        if (err) {
+                          email.setFail();
+                        } else {
+                          email.setSent();
+                        }
+                        self.storage.storeEmail(email, next);
                       });
+                    }, function(err) {
+                      return next();
                     });
-                  }, next);
-                },
-                function(emails, next) {
-                  async.each(emails, function(email, next) {
-                    self._send(email, function(err) {
-                      if (err) {
-                        email.setFail();
-                      } else {
-                        email.setSent();
-                      }
-                      self.storage.storeEmail(email, next);
-                    });
-                  }, function(err) {
-                    return next();
-                  });
-                },
-              ], function(err) {
-                if (err) {
-                  log.error('An error ocurred generating email notification', err);
-                }
-                return cb(err);
+                  },
+                ], function(err) {
+                  if (err) {
+                    log.error('An error ocurred generating email notification', err);
+                  }
+                  return cb(err);
+                });
               });
             });
           });
