@@ -49,6 +49,7 @@ export class TxDetailsView {
 
   cancelMeritMoney() {
     this.easyReceive.cancelEasySend(this.tx.easySendUrl);
+    return this.viewCtrl.dismiss();
   }
 
   async ngOnInit() {
