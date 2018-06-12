@@ -124,6 +124,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
       tx.type = 'meritmoney';
       tx.easySend = easySend;
       tx.easySendUrl = getEasySendURL(easySend);
+      tx.cancelled = easySend.cancelled;
     }
 
     return tx;

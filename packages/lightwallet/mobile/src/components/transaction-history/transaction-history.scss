@@ -27,6 +27,12 @@ transaction-history {
       vertical-align: top;
     }
 
+    .cancelled {
+      font-size: 10px;
+      color: color($colors, danger);
+      vertical-align: top;
+    }
+
     .arrow {
        color: #999;
     }
