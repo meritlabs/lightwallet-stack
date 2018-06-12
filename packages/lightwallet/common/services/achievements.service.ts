@@ -61,7 +61,7 @@ export class AchievementsService {
         description: 'Wallet unlock',
         title: 'Wallet unlock',
         linkTitle: 'Unlock',
-        image: '',
+        image: 'achi-creator',
         conditions: [{ name: 'Create wallet', status: 1 }, { name: 'Unlock wallet', status: 0 }],
         status: 0,
         version: 0,
