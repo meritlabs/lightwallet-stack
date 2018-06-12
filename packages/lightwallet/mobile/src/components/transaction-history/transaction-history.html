@@ -1,12 +1,13 @@
 <ion-list>
   <button ion-item detail-none *ngFor="let tx of transactions; trackBy: tx?.txid" (click)="viewTxDetails(tx)">
     <contact-avatar item-start *ngIf="tx.easySendUrl && !tx.isInvite"  [contact]="tx.contact"></contact-avatar>
-    <ion-avatar img-icon item-start *ngIf="tx.easySendUrl">
+    <ion-avatar img-icon item-start *ngIf="!tx.easySendUrl || tx.isInvite">
       <img *ngIf="isMiningReward(tx)" src="assets/img/icons/mining.svg" alt="" />
       <img *ngIf="isPoolReward(tx)" src="assets/img/icons/mining.svg" alt="" />
       <img *ngIf="isUnlockRequest(tx)" src="assets/img/icons/send_request.svg" alt="" />
       <img *ngIf="isInvite(tx)" src="assets/img/icons/invite.svg" alt="" />
       <img *ngIf="isGrowthReward(tx)" src="assets/img/icons/growth.svg" alt="" />
+      <img *ngIf="isRegularTx(tx)" src="assets/img/icons/merit.svg" alt="" />
     </ion-avatar>
     <ion-label>
       <h2>

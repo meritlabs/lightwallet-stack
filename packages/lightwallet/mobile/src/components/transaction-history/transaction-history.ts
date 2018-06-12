@@ -51,6 +51,10 @@ export class TransactionHistoryComponent {
     return transaction.isGrowthReward;
   }
 
+  isRegularTx(transaction: IDisplayTransaction) {
+    return !transaction.isGrowthReward && !transaction.easySendUrl && !transaction.isPoolReward && !transaction.isInvite && !transaction.isCoinbase;
+  }
+
   private isReward(transaction: IDisplayTransaction) {
     try {
       return Boolean(transaction.isCoinbase) && transaction.outputs[0] && !isNaN(transaction.outputs[0].index) && !transaction.isInvite;
