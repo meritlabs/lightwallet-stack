@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
@@ -8,6 +8,7 @@ import { EmailNotificationsService } from '@merit/common/services/email-notifica
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 import { isWalletEncrypted } from '@merit/common/utils/wallet';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
@@ -33,13 +34,19 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
   }
 
   formData: FormGroup = this.formBuilder.group({
-    pushNotifications: false,
-    emailNotifications: false,
-    email: [''] // TODO(ibby): validate email
+    pushNotifications: [false],
+    emailNotifications: [false],
+    email: [''],
+    smsNotifications: [false],
+    phoneNumber: ['', [Validators.minLength(10), Validators.pattern(/\d+/)]]
   });
 
   get emailNotificationsEnabled() {
     return this.formData.get('emailNotifications').value == true;
+  }
+
+  get smsNotificationsEnabled() {
+    return this.formData.get('smsNotifications').value == true;
   }
 
   commitHash: string;
@@ -58,7 +65,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
               private passwordPromptCtrl: PasswordPromptController,
               private profileService: ProfileService,
               private store: Store<IRootAppState>,
-              private router: Router) {
+              private smsNotificationsService: SmsNotificationsService) {
     if (typeof WEBPACK_CONFIG !== 'undefined') {
       this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
       this.version = WEBPACK_CONFIG.VERSION;
@@ -69,6 +76,13 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     const settings = await this.persistenceService.getNotificationSettings();
     if (!isEmpty(settings)) {
       this.formData.setValue(settings, { emitEvent: false });
+    }
+
+    const status = await this.smsNotificationsService.getSmsSubscriptionStatus();
+
+    if (status && status.enabled) {
+      this.formData.get('smsNotifications').setValue(status.enabled, { emitValue: false });
+      this.formData.get('phoneNumber').setValue(status.phoneNumber, { emitValue: false });
     }
 
     this.subs.push(
