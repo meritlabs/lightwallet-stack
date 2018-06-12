@@ -11,7 +11,8 @@
     <ion-label>
       <h2>
           {{ tx.name }}
-          <ion-icon color="primary" *ngIf="tx.easySendUrl" class="icon" name="link"></ion-icon>
+          <ion-icon color="primary" *ngIf="tx.easySendUrl && !tx.cancelled" class="icon" name="link"></ion-icon>
+          <b class="cancelled" *ngIf="tx.easySendUrl && tx.cancelled">cancelled</b>
       </h2>
       <p>{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
     </ion-label>
