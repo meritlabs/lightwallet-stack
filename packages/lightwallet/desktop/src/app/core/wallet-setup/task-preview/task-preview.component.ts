@@ -48,18 +48,13 @@ export class TaskPreviewComponent implements OnInit {
       case 'Invite Your Friends to Merit!':
         this.store.dispatch(new SetShareDialogAction(true));
         return this.router.navigate(['/wallets']);
-      case 'Name Your Wallet':
-        return this.router.navigate([`/wallets/${this.wallet.id}/settings`]);
-      case 'Hide your wallet balance':
-        return this.router.navigate([`/wallets/${this.wallet.id}/settings`]);
-      case 'Enable Email Notifications':
-        return this.router.navigate([`/settings`]);
-      case 'Confirm your backup Phrase':
-        return this.router.navigate([`/wallets/${this.wallet.id}/export/mnemonic`]);
-      case 'Set a advanced Wallet Password':
-        return this.router.navigate([`/wallets/${this.wallet.id}/settings`]);
-      case 'Add friends to your invite waitlist':
+      case 'Add a friend to your invite waitlist':
         return this.router.navigate([`/invites/requests`]);
+      case 'Confirm an invite request':
+        return this.router.navigate([`/invites/requests`]);
+      case 'Mine an invite':
+        return this.router.navigate([`/invites/history`]);
+
       default:
         return this.router.navigate(['/wallets']);
     }

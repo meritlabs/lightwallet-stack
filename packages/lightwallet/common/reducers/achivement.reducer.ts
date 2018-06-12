@@ -46,7 +46,7 @@ export function AchivementsReducer(state: IAchivementsState = DEFAULT_STATE, act
       condition.status = 2;
       task.conditions[cIndex] = condition;
 
-      if (task.conditions.length === cIndex + 1) {
+      if (task.conditions.length === condition.slug) {
         task.status = 2;
       }
 
