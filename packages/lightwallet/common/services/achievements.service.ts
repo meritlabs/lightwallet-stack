@@ -89,11 +89,11 @@ export class AchievementsService {
 
   async updateGoal(id, step) {
     let profile = await this._getProfile();
-    // await MeritAchivementClient.fromObj(profile).setData(
-    //   `/achievements/${id}/step/${step}/complete`,
-    //   {},
-    //   await this.getToken()
-    // );
+    await MeritAchivementClient.fromObj(profile).setData(
+      `/achievements/${id}/step/${step}/complete`,
+      {},
+      await this.getToken()
+    );
     this.store.dispatch(new CompleteAchivementAction({ id: id, step: step }));
   }
 
