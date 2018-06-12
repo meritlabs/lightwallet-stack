@@ -12,6 +12,7 @@ import { TransactionEffects } from '@merit/common/effects/transaction.effects';
 import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { IRootAppState, reducer } from '@merit/common/reducers';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
+import { AlertService } from '@merit/common/services/alert.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
@@ -20,6 +21,7 @@ import { DOMController } from '@merit/desktop/app/components/dom.controller';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { DashboardGuard } from '@merit/desktop/app/guards/dashboard.guard';
 import { OnboardingGuard } from '@merit/desktop/app/guards/onboarding.guard';
+import { DesktopAlertService } from '@merit/desktop/services/desktop-alert.service';
 import { EffectsModule } from '@ngrx/effects';
 import { Store, StoreModule } from '@ngrx/store';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -53,6 +55,7 @@ export function getProviders() {
   return [
     PollingNotificationsService,
     { provide: PushNotificationsService, useClass: WebPushNotificationsService },
+    { provide: AlertService, useClass: DesktopAlertService },
     Events,
     Platform,
     DOMController,

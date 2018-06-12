@@ -22,7 +22,7 @@ export class HistoryView {
 
   loading: boolean;
   refreshing: boolean;
-  wallets: Array<MeritWalletClient>;
+  wallets: Array<MeritWalletClient> = [];
   wallet: MeritWalletClient;
 
   offset: number = 0;
@@ -41,14 +41,17 @@ export class HistoryView {
   async ionViewDidLoad() {
     this.loading = true;
     this.wallets = await this.profileService.getWallets();
-    if (this.wallets.length) this.wallet = this.wallets[0];
+    this.selectDefaultWallet();
     await this.loadHistory();
+
+    this.events.subscribe('globalSendCancelled', () => {
+      this.refreshHistory();
+    });
   }
 
   async ionViewWillEnter() {
     this.wallets = await this.profileService.getWallets();
-    if (this.wallets.length) this.wallet = this.wallets[0];
-    await this.loadHistory();
+    await this.refreshHistory();
   }
 
   async doRefresh(refresher: any) {
@@ -73,6 +76,11 @@ export class HistoryView {
     this.loading = false;
   }
 
+  selectDefaultWallet() {
+    let wallet = this.wallets.find(w => w.confirmed);
+    this.wallet = wallet ? wallet : this.wallets[0];
+  }
+
   async loadMoreHistory(infiniter) {
 
     this.offset += this.limit;
@@ -87,7 +95,8 @@ export class HistoryView {
   }
 
   private async formatHistory() {
-    this.transactions = await formatWalletHistory(this.txs, this.wallet, await this.persistenceService.getEasySends(), this.contactsService);
+    const easySends = await this.wallet.getGlobalSendHistory();
+    this.transactions = await formatWalletHistory(this.txs, this.wallet, easySends, this.contactsService);
   }
 
   selectWallet() {

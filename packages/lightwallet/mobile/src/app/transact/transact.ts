@@ -198,7 +198,10 @@ export class TransactView {
       message: `You clicked on a ${name} link that you created. Would you like to cancel ${name} link with ${ amountStr }?`,
       buttons: [
         {
-          text: `Don't Cancel`
+          text: `Don't Cancel`,
+          handler: () => {
+            this.easyReceiveService.deletePendingReceipt(receipt);
+          }
         },
         {
           text: `Cancel ${name}`,
@@ -283,7 +286,7 @@ export class TransactView {
 
       const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
       this.events.publish('Remote:IncomingTx');
-      this.logger.info('accepted easy send', acceptanceTx);
+      this.logger.info('Canceled easy send', acceptanceTx);
     } catch (err) {
       console.log(err);
       this.toastCtrl.error('There was an error cancelling your MeritMoney link.');
@@ -297,8 +300,7 @@ export class TransactView {
       let wallet = wallets[0];
       if (!wallet) throw new Error('Could not retrieve wallet');
 
-      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, wallet.rootAddress.toString());
-
+      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(wallet, receipt, data, wallet.rootAddress.toString());
       this.logger.info('accepted easy send', acceptanceTx);
 
       this.events.publish('Remote:IncomingTx'); // update wallet info
