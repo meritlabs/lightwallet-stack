@@ -54,7 +54,8 @@ export class TaskPreviewComponent implements OnInit {
         return this.router.navigate([`/invites/requests`]);
       case 'Mine an invite':
         return this.router.navigate([`/invites/history`]);
-
+      case 'Unlock wallet':
+        return this.router.navigate([`/history`]);
       default:
         return this.router.navigate(['/wallets']);
     }
