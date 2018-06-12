@@ -120,8 +120,8 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
     if (easySendsByAddress[tx.addressTo]) {
       const easySend = easySendsByAddress[tx.addressTo];
-      tx.name = 'MeritMoney';
-      tx.type = 'meritmoney';
+      tx.name = tx.isInvite ? 'MeritInvite' : 'MeritMoney';
+      tx.type =  tx.isInvite ? 'meritinvite' : 'meritmoney';
       tx.easySend = easySend;
       tx.easySendUrl = getEasySendURL(easySend);
       tx.cancelled = easySend.cancelled;

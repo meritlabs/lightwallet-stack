@@ -94,6 +94,7 @@ export class HistoryView {
   private async formatHistory() {
     const easySends = await this.wallet.getGlobalSendHistory();
     this.transactions = await formatWalletHistory(this.txs, this.wallet, easySends, this.contactsService);
+    console.log(this.transactions);
   }
 
   selectWallet() {
