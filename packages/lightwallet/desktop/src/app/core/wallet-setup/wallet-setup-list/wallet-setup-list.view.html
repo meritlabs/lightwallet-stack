@@ -59,13 +59,14 @@
         </div>
       </ng-template>
     </div>
-    <div class="wallet-setup_column">
-      <div class="title title--complete">
-        <merit-icon name="setup"></merit-icon>
-        <p>Complete</p>
+    <ng-container *ngIf="done?.length > 0">
+      <div class="wallet-setup_column">
+        <div class="title title--complete">
+          <merit-icon name="setup"></merit-icon>
+          <p>Complete</p>
+        </div>
+        <app-task-preview *ngFor="let goal of done" [isComplete]="true" [wallet]="wallet" [goal]=goal [hidden]="goal.status !== 1"></app-task-preview>
       </div>
-      <app-task-preview *ngFor="let goal of (goalsState$ | async)?.achievements" [isComplete]="true" [wallet]="wallet" [goal]=goal
-        [hidden]="goal.status !== 1"></app-task-preview>
-    </div>
+    </ng-container>
   </div>
 </ng-container>
