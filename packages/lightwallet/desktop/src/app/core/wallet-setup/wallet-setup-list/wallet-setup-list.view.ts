@@ -72,7 +72,7 @@ export class WalletSetupListView implements OnInit {
 
     await this.goalsState$.subscribe(res => {
       let toDo = res.achievements.filter((item: any) => item.status === 0),
-        done = res.achievements.filter((item: any) => item.status === 1),
+        done = res.achievements.filter((item: any) => item.status === 2),
         complete = res.achievements.length - toDo.length,
         total = res.achievements.length,
         readiness = complete / total * 100;
