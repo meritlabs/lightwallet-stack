@@ -48,22 +48,21 @@ export class WalletSetupListView implements OnInit {
   async ngOnInit() {
     let primaryWallet = await this.persistenceService2.getUserSettings(UserSettingsKey.primaryWalletID);
 
-    if (!this.isConfirmed) {
-      this.AchievementsService.getLockedAchievements();
-    }
-
     await this.store.select(selectWallets).subscribe(res => {
       this.wallets = res.filter((item: any) => item.confirmed === true);
       this.wallet = res[0];
       res.forEach((item: any) => {
-        if (item.id === primaryWallet) this.selectedWallet = item;
-        this.wallet = item;
-        this.isConfirmed = item.confirmed;
+        if (item.id === primaryWallet) {
+          this.selectedWallet = item;
+          if (!item.confirmed) {
+            this.AchievementsService.getLockedAchievements();
+          }
+          this.isConfirmed = item.confirmed;
+          this.wallet = item;
+        }
       });
     });
     await this.store.select('achievements').subscribe(res => {
-      console.log(res);
-
       this.trackerSettings = res.settings;
       this.formData.patchValue({
         isSetupTrackerEnabled: res.settings.isSetupTrackerEnabled,
