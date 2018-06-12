@@ -47,26 +47,27 @@ export class WalletSetupListView implements OnInit {
     await this.store.select(selectWallets).subscribe(res => {
       this.wallets = res.filter((item: any) => item.confirmed === true);
 
+      if (this.wallets.length === 0) {
+        this.AchievementsService.getLockedAchievements();
+      }
       res.forEach((item: any) => {
         if (item.id === primaryWallet) {
           this.selectedWallet = item;
-          if (!item.confirmed) {
-            this.AchievementsService.getLockedAchievements();
-          }
           this.isConfirmed = item.confirmed;
+        } else if (!primaryWallet && !item.confirmed) {
+          this.selectedWallet = item;
         }
       });
     });
-    await this.store.select('achievements').subscribe(res => {
+    await this.goalsState$.subscribe(res => {
       this.trackerSettings = res.settings;
       this.formData.patchValue({
         isSetupTrackerEnabled: res.settings.isSetupTrackerEnabled,
       });
-    });
 
-    await this.goalsState$.subscribe(res => {
       let toDo = res.achievements.filter((item: any) => item.status !== 2),
         done = res.achievements.filter((item: any) => item.status === 2);
+      console.log(toDo);
 
       this.toDo = toDo;
       this.done = done;
