@@ -23,9 +23,15 @@ export class TaskPreviewComponent implements OnInit {
   @Input() isComplete;
 
   route: string;
+  readinessBackground: string;
 
   async ngOnInit() {
     this._completeWalletConfirmationGoal();
+    let toDo = this.goal.conditions.filter((item: any) => item.status === 0),
+      complete = this.goal.conditions.length - toDo.length,
+      total = this.goal.conditions.length,
+      readiness = complete / total * 100;
+    this.readinessBackground = `linear-gradient(to right, #74cd4f ${readiness}%, #555b7033 ${readiness}%)`;
   }
 
   _completeWalletConfirmationGoal() {
@@ -38,8 +44,6 @@ export class TaskPreviewComponent implements OnInit {
   }
 
   action(val) {
-    console.log(val);
-
     switch (val) {
       case 'Share your invite code':
         this.store.dispatch(new SetShareDialogAction(true));
