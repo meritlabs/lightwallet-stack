@@ -50,6 +50,33 @@
       </form>
     </ion-item-group>
 
+    <ion-item text-wrap>
+      <ion-label>
+        <h2 translate>
+          Enable SMS notifications
+        </h2>
+      </ion-label>
+      <ion-toggle [(ngModel)]="smsNotifications" (ngModelChange)="smsNotificationsChange()"></ion-toggle>
+    </ion-item>
+
+    <ion-item-group *ngIf="smsNotifications">
+
+      <ion-item translate text-wrap>
+        <ion-icon item-start color="success" name="ios-information-circle-outline"></ion-icon>
+        You'll receive SMS notifications about payments sent and received from your wallets.
+      </ion-item>
+
+      <form [formGroup]="smsForm" enter-to-next>
+        <ion-item>
+          <ion-label stacked>
+            Phone number
+          </ion-label>
+          <ion-input formControlName="phoneNumber" type="tel" placeholder="Enter your phone number"></ion-input>
+        </ion-item>
+      </form>
+    </ion-item-group>
+
+
   </ion-list>
 
   <div padding-left padding-right *ngIf="emailNotifications">

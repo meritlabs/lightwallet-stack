@@ -1,20 +1,27 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
-import { ConfigService } from '@merit/common/services/config.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
-import { PlatformService } from '@merit/common/services/platform.service';
-import { EmailValidator } from '@merit/common/validators/email.validator';
+import { ConfigService } from '@merit/common/services/config.service';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
+import { PlatformService } from '@merit/common/services/platform.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { EmailValidator } from '@merit/common/validators/email.validator';
+import { IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { SmsNotificationsService } from '../../../../../common/services/sms-notifications.service';
 
 @IonicPage()
 @Component({
   selector: 'notifications-view',
-  templateUrl: 'notifications.html',
+  templateUrl: 'notifications.html'
 })
 export class NotificationsView {
-  emailForm: FormGroup;
+  emailForm: FormGroup = this.formBuilder.group({
+    email: ['', Validators.compose([Validators.required, <any>(EmailValidator.isValid(this.configService, this.emailService))])]
+  });
+
+  smsForm: FormGroup = this.formBuilder.group({
+    phoneNumber: ['', [Validators.minLength(10), Validators.pattern(/\d+/)]]
+  });
 
   appName: string;
   usePushNotifications: boolean;
@@ -24,6 +31,7 @@ export class NotificationsView {
   confirmedTxsNotifications: boolean;
 
   emailNotifications: boolean;
+  smsNotifications: boolean;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -33,11 +41,13 @@ export class NotificationsView {
               private platformService: PlatformService,
               private pushService: PushNotificationsService,
               private emailService: EmailNotificationsService,
-              private loadingCtrl: LoadingController
-  ) {
-    this.emailForm = this.formBuilder.group({
-      email: ['', Validators.compose([Validators.required, <any>(EmailValidator.isValid(configService, emailService))])]
-    });
+              private loadingCtrl: LoadingController,
+              private smsNotificationsService: SmsNotificationsService
+  ) {}
+
+  async ngOnInit() {
+    const status = await this.smsNotificationsService.getSmsSubscriptionStatus();
+    this.smsNotifications = status.enabled;
   }
 
   ionViewDidLoad() {
@@ -57,7 +67,7 @@ export class NotificationsView {
     }
     else
       return this.pushService.disable();
-  };
+  }
 
   emailNotificationsChange() {
     let opts = {
@@ -65,7 +75,19 @@ export class NotificationsView {
       email: this.emailForm.value.email
     };
     this.emailService.updateEmail(opts);
-  };
+  }
+
+  smsNotificationsChange() {
+    if (!this.smsNotifications) {
+      return this.smsNotificationsService.setSmsSubscription(false);
+    }
+
+    const phoneNumber = this.smsForm.get('phoneNumber');
+
+    if (phoneNumber.valid) {
+      return this.smsNotificationsService.setSmsSubscription(true, phoneNumber.value, this.platformService.isIOS? 'ios' : this.platformService.isAndroid? 'android' : 'desktop')
+    }
+  }
 
   async saveEmail() {
     let loader = this.loadingCtrl.create({
@@ -79,7 +101,7 @@ export class NotificationsView {
     });
     loader.dismiss();
     this.navCtrl.pop();
-  };
+  }
 
   private updateConfig() {
     let config = this.configService.get();
@@ -95,6 +117,6 @@ export class NotificationsView {
     });
 
     this.emailNotifications = config.emailNotifications ? config.emailNotifications.enabled : false;
-  };
+  }
 
 }
