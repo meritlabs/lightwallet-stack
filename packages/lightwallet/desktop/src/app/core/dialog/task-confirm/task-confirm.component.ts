@@ -32,7 +32,7 @@ export class TaskConfirmComponent implements OnInit {
   }
   ngOnChanges(changes: SimpleChanges) {
     switch (this.goalName) {
-      case 'Hide your wallet balance':
+      case 'Invite Your Friends to Merit!':
         if (this.isDone) {
           this.finishTask();
         }

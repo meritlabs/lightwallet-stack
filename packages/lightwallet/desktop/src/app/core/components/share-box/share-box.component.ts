@@ -32,6 +32,7 @@ export class ShareBoxComponent implements OnInit {
   };
   shareAlias: string;
   shareLink: string;
+  goalIsDone: boolean;
 
   shareTitle: string = 'Merit - digital currency for humans.';
   shareText: string = `Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth.\n Get wallet now, your activation code: `;
@@ -95,6 +96,7 @@ export class ShareBoxComponent implements OnInit {
   }
 
   onCopy() {
+    this.goalIsDone = true;
     this.toastCtrl.success('Share link copied to clipboard!');
   }
 
