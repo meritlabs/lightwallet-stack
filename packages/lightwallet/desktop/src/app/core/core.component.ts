@@ -115,10 +115,16 @@ export class CoreView implements OnInit, AfterViewInit {
       this.isWelcomeDialogEnabled = res.settings.isWelcomeDialogEnabled;
     });
 
+    await this.store.select('interface').subscribe(res => {
+      this.showShare = res.isShareDialogDisplayed;
+    });
+
     let primaryWallet = await this.persistenceService2.getUserSettings(UserSettingsKey.primaryWalletID);
 
     if (primaryWallet) {
       this.InterfacePreferencesService.setPrimaryWallet(primaryWallet);
+      await this.AchievementsService.getSettings();
+      await this.AchievementsService.getAchievements();
     } else {
       this.wallets$.subscribe(res => {
         let activeWallet = res.filter((item: any) => item.confirmed === true);
@@ -127,13 +133,6 @@ export class CoreView implements OnInit, AfterViewInit {
         }
       });
     }
-    this.store.select('interface').subscribe(res => {
-      this.showShare = res.isShareDialogDisplayed;
-      if (res.primaryWallet) {
-        this.AchievementsService.getSettings();
-        this.AchievementsService.getAchievements();
-      }
-    });
 
     this.recordPassphrase = Boolean(await this.persistenceService2.getUserSettings(UserSettingsKey.recordPassphrase));
 
