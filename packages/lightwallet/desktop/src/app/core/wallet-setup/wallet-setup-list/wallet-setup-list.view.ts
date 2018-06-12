@@ -37,10 +37,6 @@ export class WalletSetupListView implements OnInit {
     isSetupTrackerEnabled: false,
   });
 
-  wallet: any;
-  readiness: number;
-  readinessBackground: string;
-
   wallets: any;
   selectedWallet: any;
   isConfirmed: boolean = false;
@@ -50,7 +46,7 @@ export class WalletSetupListView implements OnInit {
 
     await this.store.select(selectWallets).subscribe(res => {
       this.wallets = res.filter((item: any) => item.confirmed === true);
-      this.wallet = res[0];
+
       res.forEach((item: any) => {
         if (item.id === primaryWallet) {
           this.selectedWallet = item;
@@ -58,7 +54,6 @@ export class WalletSetupListView implements OnInit {
             this.AchievementsService.getLockedAchievements();
           }
           this.isConfirmed = item.confirmed;
-          this.wallet = item;
         }
       });
     });
@@ -71,13 +66,7 @@ export class WalletSetupListView implements OnInit {
 
     await this.goalsState$.subscribe(res => {
       let toDo = res.achievements.filter((item: any) => item.status === 0),
-        done = res.achievements.filter((item: any) => item.status === 2),
-        complete = res.achievements.length - toDo.length,
-        total = res.achievements.length,
-        readiness = complete / total * 100;
-
-      this.readiness = parseFloat(readiness.toFixed(2));
-      this.readinessBackground = `linear-gradient(to right, #00b0dd ${this.readiness}%, #555b70 ${this.readiness}%)`;
+        done = res.achievements.filter((item: any) => item.status === 2);
 
       this.toDo = toDo;
       this.done = done;
