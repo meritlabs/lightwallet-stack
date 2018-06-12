@@ -36,7 +36,7 @@
         <p>To do</p>
       </div>
       <ng-container *ngIf="toDo?.length > 0; else toDoIsEmpty">
-        <app-task-preview *ngFor="let goal of toDo" [wallet]="selectedWallet" [goal]=goal [hidden]="goal.status !== 0"></app-task-preview>
+        <app-task-preview *ngFor="let goal of toDo" [wallet]="selectedWallet" [goal]=goal></app-task-preview>
       </ng-container>
       <ng-template #toDoIsEmpty>
         <div class="completeNotification">

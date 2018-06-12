@@ -65,7 +65,7 @@ export class WalletSetupListView implements OnInit {
     });
 
     await this.goalsState$.subscribe(res => {
-      let toDo = res.achievements.filter((item: any) => item.status === 0),
+      let toDo = res.achievements.filter((item: any) => item.status !== 2),
         done = res.achievements.filter((item: any) => item.status === 2);
 
       this.toDo = toDo;
