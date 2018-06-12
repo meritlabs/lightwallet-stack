@@ -33,7 +33,7 @@ var collections = {
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
   REFERRAL_TX_CONFIRMATION_SUBS: 'referral_confirmation_subs',
   VAULTS: 'vaults',
-  GLOBALSENDS: 'globalSends'
+  GLOBALSENDS: 'global_sends'
 };
 
 var Storage = function(opts) {
@@ -1332,7 +1332,6 @@ Storage.prototype.cancelGlobalSend = function(walletAddress, scriptAddress, cb) 
 Storage.prototype.getGlobalSends = function(walletAddress, cb) {
   this.db.collection(collections.GLOBALSENDS).find({ walletAddress }).toArray(function(err, result) {
       if (err) return cb(err);
-      if (!result) return cb();
       return cb(null, result);
   });
 };

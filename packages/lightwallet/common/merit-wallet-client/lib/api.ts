@@ -2707,6 +2707,7 @@ export class API {
    * registering global send on MWS so we can access history from any device
    */
   registerGlobalSend(easySend: EasySend) {
+    $.checkState(this.credentials);
     return this._doPostRequest(`/v1/register_globalsend`, {scriptAddress: easySend.scriptAddress, globalsend: this.encryptGlobalSend(easySend)});
   }
 
@@ -2714,6 +2715,7 @@ export class API {
    * Mark globalsend as cancelled
    */
   cancelGlobalSend(scriptAddress: string) {
+    $.checkState(this.credentials);
     return this._doPostRequest(`/v1/cancel_globalsend`, { scriptAddress });
   }
 
