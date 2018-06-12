@@ -13,7 +13,7 @@
         {{task?.description}}
       </div>
     </div>
-    <div class="done" (click)="finishTask()">
+    <div class="done" (click)="finishTask()" *ngIf="isDone === null">
       <merit-icon name="check"></merit-icon>
       DONE
     </div>

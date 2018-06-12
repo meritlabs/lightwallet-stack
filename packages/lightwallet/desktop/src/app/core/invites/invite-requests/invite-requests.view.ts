@@ -62,6 +62,7 @@ export class InviteRequestsView {
 
     dialog.onDidDismiss(async (value: string) => {
       if (value === 'yes') {
+        this.isInviteSent = true;
         this.sending[request.referralId] = true;
         try {
           let wallet = request.walletClient;
@@ -92,7 +93,6 @@ export class InviteRequestsView {
         }
 
         this.sending[request.referralId] = false;
-        this.isInviteSent = true;
       }
     });
   }

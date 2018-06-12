@@ -2,14 +2,17 @@
   <loading-spinner-small></loading-spinner-small>
 </ng-container>
 <ng-template #loaded>
+  <div class="container--inner">
+    <app-task-confirm [achvName]="'Fast Starter'" [goalName]="'Mine an invite'" [isDone]="isInviteMined"></app-task-confirm>
+    {{completeInviteMinigTask()}}
+  </div>
   <ng-container *ngIf="transactions?.length; else noItems">
     <virtual-scroll [items]="transactions" (update)="viewPortItems = $event">
       <div class="container--inner" #container>
         <history-item *ngFor="let tx of viewPortItems" [tx]="tx"></history-item>
       </div>
     </virtual-scroll>
-    <div [routerLink]='"/history"' *ngIf="widget"
-         class="ui-button ui-button--blue">SHOW FULL HISTORY</div>
+    <div [routerLink]='"/history"' *ngIf="widget" class="ui-button ui-button--blue">SHOW FULL HISTORY</div>
   </ng-container>
   <ng-template #noItems>
     <div class="noItems" *ngIf="!transactions?.length">
