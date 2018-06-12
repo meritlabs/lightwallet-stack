@@ -13,7 +13,7 @@ import { MWCService } from '@merit/common/services/mwc.service';
 @Injectable()
 export class ProfileService {
 
-  public wallets: Array<MeritWalletClient>;
+  public wallets: Array<MeritWalletClient> = [];
 
   public communityInfo: {
     communitySize: number,

@@ -22,7 +22,7 @@ export class HistoryView {
 
   loading: boolean;
   refreshing: boolean;
-  wallets: Array<MeritWalletClient>;
+  wallets: Array<MeritWalletClient> = [];
   wallet: MeritWalletClient;
 
   offset: number = 0;
@@ -78,8 +78,7 @@ export class HistoryView {
 
   selectDefaultWallet() {
     let wallet = this.wallets.find(w => w.confirmed);
-    if (!wallet) wallet = this.wallets[0];
-    this.wallet = wallet;
+    this.wallet = wallet ? wallet : this.wallets[0];
   }
 
   async loadMoreHistory(infiniter) {
