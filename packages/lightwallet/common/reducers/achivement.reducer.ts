@@ -40,9 +40,18 @@ export function AchivementsReducer(state: IAchivementsState = DEFAULT_STATE, act
       };
     case AchivementsAction.CompleteAchivementAction:
       let task: any = state.achievements.filter((item: any) => item.id === action.completeTask.id)[0],
-        index = state.achievements.indexOf(task);
-      if (task.conditions.length === 1) task.status = 1;
+        index = state.achievements.indexOf(task),
+        condition: any = task.conditions.filter((item: any) => item.slug === action.completeTask.step)[0],
+        cIndex = state.achievements.indexOf(condition);
+      condition.status = 2;
+      task.conditions[cIndex] = condition;
+
+      if (task.conditions.length === cIndex + 1) {
+        task.status = 2;
+      }
+
       state.achievements[index] = task;
+
       return {
         ...state,
         achievements: state.achievements,
