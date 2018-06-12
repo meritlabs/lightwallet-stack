@@ -543,6 +543,20 @@ Storage.prototype.storeNotification = function(notification, cb) {
   });
 };
 
+Storage.prototype.fetchNotification = function(notification, cb) {
+  this.db.collection(collections.NOTIFICATIONS).find({
+    id: notification.id,
+    walletId: notification.walletId,
+  }, {
+    readPreference: mongodb.ReadPreference.PRIMARY,
+  }).toArray(function(err, result) {
+    console.log(err, result);
+    if (err) return cb(err);
+    if (!result || _.isEmpty(result)) return cb();
+    cb(null, result[0]);
+  });
+};
+
 Storage.prototype.fetchAndLockNotificationForPushes = function(notification, cb) {
   notification.lockForPushNotifications();
   this.db.collection(collections.NOTIFICATIONS).findOneAndUpdate({
