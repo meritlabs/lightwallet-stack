@@ -243,7 +243,7 @@ export class CoreView implements OnInit, AfterViewInit {
 
       const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
 
-      this.logger.info('Accepted easy send', acceptanceTx);
+      this.logger.info('Canceled easy send', acceptanceTx);
       this.store.dispatch(
         new RefreshOneWalletAction(wallet.id, {
           skipShareCode: true,
@@ -263,7 +263,7 @@ export class CoreView implements OnInit, AfterViewInit {
       if (!wallet) throw 'no wallet';
 
       const address = wallet.getRootAddress();
-      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.toString());
+      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(wallet, receipt, data, address.toString());
 
       this.logger.info('accepted easy send', acceptanceTx);
       this.store.dispatch(
