@@ -20,12 +20,16 @@ export interface INotificationSettings {
   emailNotifications: boolean;
   pushNotifications: boolean;
   email: string;
+  smsNotifications: boolean;
+  phoneNumber: string;
 }
 
 const DEFAULT_NOTIFICATION_SETTINGS: INotificationSettings = {
   email: '',
   emailNotifications: false,
-  pushNotifications: true
+  pushNotifications: true,
+  smsNotifications: false,
+  phoneNumber: ''
 };
 
 /**
@@ -48,8 +52,11 @@ export class PersistenceService2 {
   }
 
   async getNotificationSettings(): Promise<INotificationSettings> {
-    const settings = await this.storage.get(StorageKey.NotificationSettings);
-    return isEmpty(settings)? DEFAULT_NOTIFICATION_SETTINGS : settings;
+    const settings = (await this.storage.get(StorageKey.NotificationSettings)) || {};
+    return {
+      ...DEFAULT_NOTIFICATION_SETTINGS,
+      ...settings
+    };
   }
 
   setNotifications(notifications: INotification[]) {
