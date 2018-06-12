@@ -21,6 +21,7 @@ export class TxDetailsView {
   isInvite: boolean;
   isMiningReward: boolean;
   isEasySend: boolean;
+  isCancelled: boolean;
   isConfirmed: boolean;
   image: string = 'merit';
 
@@ -59,6 +60,7 @@ export class TxDetailsView {
     this.isInvite = tx.isInvite === true;
     this.isMiningReward = this.isReward && tx.outputs[0].index === 0;
     this.isEasySend = !this.isInvite && !this.isReward;
+    this.isCancelled = tx.cancelled;
     if (!tx.isConfirmed) {
       this.confirmationsExplanation = String(tx.confirmations) + ' block(s) confirmed from ' + COINBASE_CONFIRMATION_THRESHOLD;
     }
