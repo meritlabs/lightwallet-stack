@@ -1,0 +1,25 @@
+<ion-content>
+  <ion-grid align-items-center justify-content-center text-center>
+    <ion-row>
+      <ion-col>
+        <p>
+          Enter your phone number to subscribe to SMS notifications.
+          You can change this setting at any time from your app settings.
+        </p>
+
+        <form [formGroup]="formData" (ngSubmit)="submit()">
+          <ion-item>
+            <ion-label stacked>Phone number</ion-label>
+            <ion-input formControlName="phoneNumber" placeholder="Enter your phone number"></ion-input>
+          </ion-item>
+          <br>
+          <button ion-button large type="submit" [disabled]="formData.invalid">Save number</button>
+        </form>
+
+        <br>
+
+        <button ion-button large clear (click)="skip()">No thanks</button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
