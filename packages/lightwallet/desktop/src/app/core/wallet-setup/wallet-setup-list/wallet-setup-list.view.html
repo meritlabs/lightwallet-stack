@@ -28,7 +28,7 @@
     </ng-container>
   </div>
 </div>
-<ng-container *ngIf="selectedWallet">
+<ng-container *ngIf="selectedWallet; else noData">
   <div class="wallet-setup_wrap">
     <div class="wallet-setup_column">
       <div class="title title--toDo">
@@ -56,3 +56,10 @@
     </ng-container>
   </div>
 </ng-container>
+<ng-template #noData>
+  <div class="refresh">
+    Nothing displayed?
+    <br>
+    <button class="ui-button ui-button--sm ui-button--blue" (click)="refresh()">REFRESH NOW</button>
+  </div>
+</ng-template>
