@@ -6,9 +6,8 @@ import { EasySend } from '@merit/common/models/easy-send';
 import { AddressService } from '@merit/common/services/address.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
-import { Address, HDPrivateKey, PrivateKey, Script} from 'bitcore-lib';
-import { accessWallet } from "@merit/common/services/wallet.service";
-import { AlertService } from "@merit/common/services/alert.service";
+import { accessWallet } from '@merit/common/services/wallet.service';
+import { Address, HDPrivateKey, PrivateKey, Script } from 'bitcore-lib';
 
 @Injectable()
 export class EasySendService {
@@ -19,9 +18,7 @@ export class EasySendService {
     private feeService: FeeService,
     private persistenceService: PersistenceService,
     @Optional() private socialSharing: SocialSharing,
-    private addressService: AddressService,
-    private alertCtrl: AlertService
-  ) {}
+    private addressService: AddressService) {}
 
   @accessWallet
   async createEasySendScriptHash(wallet: MeritWalletClient, password?: string): Promise<EasySend> {
@@ -158,6 +155,5 @@ export class EasySendService {
       inviteOnly: false
     };
   }
-
 
 }

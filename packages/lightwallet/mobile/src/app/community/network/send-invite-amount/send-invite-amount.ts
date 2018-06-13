@@ -30,7 +30,8 @@ export class SendInviteAmountView {
   wallets: Array<MeritWalletClient>;
   wallet: MeritWalletClient;
   formData = {
-    amount: null
+    amount: null,
+    destination: ''
   };
   address;
   error: string;
