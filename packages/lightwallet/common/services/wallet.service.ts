@@ -225,8 +225,8 @@ export class WalletService {
   }
 
   @accessWallet
-  async sendMeritInvite(wallet: MeritWalletClient, invitesNumber: number) {
-    const easySend = await this.easySendService.createEasySendScriptHash(wallet);
+  async sendMeritInvite(wallet: MeritWalletClient, invitesNumber: number = 1, password?: string) {
+    const easySend = await this.easySendService.createEasySendScriptHash(wallet, password);
 
     const referral = easySend.scriptReferralOpts;
     await wallet.sendReferral(referral);

@@ -87,7 +87,7 @@ export class SendInviteView {
     const walletClient = this.selectedWallet.client;
 
     if (type === SendMethodType.Easy) {
-      const easySend = await this.walletService.sendMeritInvite(walletClient, 1);
+      const easySend = await this.walletService.sendMeritInvite(walletClient, 1, password);
       this.easySendUrl = getEasySendURL(easySend);
     } else {
       address = cleanAddress(address);
