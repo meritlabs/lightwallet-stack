@@ -41,12 +41,28 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     phoneNumber: ['', [Validators.minLength(10), Validators.pattern(/\d+/)]]
   });
 
+  get emailNotifications() {
+    return this.formData.get('emailNotifications');
+  }
+
   get emailNotificationsEnabled() {
-    return this.formData.get('emailNotifications').value == true;
+    return this.emailNotifications.value == true;
+  }
+
+  get email() {
+    return this.formData.get('email');
+  }
+
+  get smsNotifications() {
+    return this.formData.get('smsNotifications');
   }
 
   get smsNotificationsEnabled() {
-    return this.formData.get('smsNotifications').value == true;
+    return this.smsNotifications.value == true;
+  }
+
+  get phoneNumber() {
+    return this.formData.get('phoneNumber');
   }
 
   commitHash: string;
@@ -113,9 +129,9 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     );
 
     this.subs.push(
-      merge(this.formData.get('email').valueChanges, this.formData.get('emailNotifications').valueChanges)
+      merge(this.email.valueChanges, this.emailNotifications.valueChanges)
         .pipe(
-          filter(() => this.formData.valid),
+          filter(() => this.emailNotifications.value == false || this.email.valid),
           tap(() => this.savingEmail = true),
           debounceTime(500),
           switchMap(() =>
@@ -134,7 +150,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     this.subs.push(
       merge(this.formData.get('smsNotifications').valueChanges, this.formData.get('phoneNumber').valueChanges)
         .pipe(
-          filter(() => this.formData.valid),
+          filter(() => this.smsNotifications.value == false || this.phoneNumber.valid),
           tap(() => this.savingPhoneNumber = true),
           debounceTime(500),
           switchMap(() =>
