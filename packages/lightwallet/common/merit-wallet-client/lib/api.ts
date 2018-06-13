@@ -2579,7 +2579,7 @@ export class API {
   }
 
   getSmsNotificationSubscription() {
-    return this._doGetRequestWithLogin('/v1/sms-notifications');
+    return this._doGetRequest('/v1/sms-notifications');
   }
 
   /**
