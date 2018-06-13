@@ -107,6 +107,10 @@ Storage.prototype._createIndexes = function() {
   this.db.collection(collections.VAULTS).createIndex({
     initialTxId: 1,
   });
+  this.db.collection(collections.KNOWN_MESSAGES).createIndex({
+     type: 1, txid: 1, blockHash: 1
+    }, { unique: true }
+  )
 };
 
 Storage.prototype.connect = function(opts, cb) {
