@@ -1163,8 +1163,7 @@ Storage.prototype.storeSmsNotificationSub = function(walletId, phoneNumber, cb) 
 
 Storage.prototype.fetchSmsNotificationSub = function(walletId, cb) {
   this.db.collection(collections.SMS_NOTIFICATION_SUBS)
-    .findOne({ walletId })
-    .toArray((err, result) => {
+    .findOne({ walletId }, (err, result) => {
       if (err) return cb(err);
       if (!result) return cb();
 
