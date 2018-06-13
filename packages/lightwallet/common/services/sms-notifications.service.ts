@@ -32,6 +32,9 @@ export class SmsNotificationsService {
   }
 
   async setSmsSubscription(enabled: boolean, phoneNumber?: string, platform?: string) {
+    if (enabled && !phoneNumber)
+      return;
+
     const wallets = await this.profileService.getWallets();
     let promises;
 
