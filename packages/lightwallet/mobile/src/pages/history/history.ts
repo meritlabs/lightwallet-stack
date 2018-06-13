@@ -1,54 +1,58 @@
 import { Component } from '@angular/core';
-import { IonicPage, Events, ModalController } from 'ionic-angular';
-import { flatten, sortBy } from 'lodash';
-import { WalletService } from '@merit/common/services/wallet.service';
-import { AddressService } from '@merit/common/services/address.service';
-import { ProfileService } from '@merit/common/services/profile.service';
-import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { createDisplayWallet, DisplayWallet } from '@merit/common/models/display-wallet';
-import { formatWalletHistory } from '@merit/common/utils/transactions';
-import { PersistenceService2 } from '../../../../common/services/persistence2.service';
+import { AddressService } from '@merit/common/services/address.service';
+import { ContactsService } from '@merit/common/services/contacts.service';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { FeeService } from '@merit/common/services/fee.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
+import { formatWalletHistory } from '@merit/common/utils/transactions';
+import { IonicPage, ModalController } from 'ionic-angular';
 
 @IonicPage()
 @Component({
   selector: 'view-history',
-  templateUrl: 'history.html',
+  templateUrl: 'history.html'
 })
 export class HistoryView {
-  transactions:  Array<any> = [];
+  transactions: Array<any> = [];
   txs: Array<any> = [];
 
   loading: boolean;
   refreshing: boolean;
-  wallets: Array<MeritWalletClient>;
+  wallets: Array<MeritWalletClient> = [];
   wallet: MeritWalletClient;
 
   offset: number = 0;
   limit: number = 10;
 
-  constructor(private walletService: WalletService,
-              private profileService: ProfileService,
-              private addressService: AddressService,
+  constructor(private profileService: ProfileService,
               private contactsService: ContactsService,
-              private events: Events,
-              private persistenceService: PersistenceService2,
-              private modalCtrl: ModalController
+              private modalCtrl: ModalController,
+              private easyReceiveService: EasyReceiveService,
+              private feeService: FeeService
   ) {
   }
 
   async ionViewDidLoad() {
     this.loading = true;
     this.wallets = await this.profileService.getWallets();
-    if (this.wallets.length) this.wallet = this.wallets[0];
+    this.selectDefaultWallet();
     await this.loadHistory();
+
+    this.easyReceiveService.cancelledEasySend$
+      .subscribe(() => {
+        this.refreshHistory();
+      });
   }
 
   async ionViewWillEnter() {
     this.wallets = await this.profileService.getWallets();
-    if (this.wallets.length) this.wallet = this.wallets[0];
-    await this.loadHistory();
+    this.selectDefaultWallet();
+    await this.refreshHistory();
   }
 
   async doRefresh(refresher: any) {
@@ -73,6 +77,11 @@ export class HistoryView {
     this.loading = false;
   }
 
+  selectDefaultWallet() {
+    let wallet = this.wallets.find(w => w.confirmed);
+    this.wallet = wallet ? wallet : this.wallets[0];
+  }
+
   async loadMoreHistory(infiniter) {
 
     this.offset += this.limit;
@@ -87,11 +96,12 @@ export class HistoryView {
   }
 
   private async formatHistory() {
-    this.transactions = await formatWalletHistory(this.txs, this.wallet, await this.persistenceService.getEasySends(), this.contactsService);
+    const easySends = await this.wallet.getGlobalSendHistory();
+    this.transactions = await formatWalletHistory(this.txs, this.wallet, easySends, this.feeService,  this.contactsService);
   }
 
   selectWallet() {
-    if (this.wallets.length == 1) return; 
+    if (this.wallets.length == 1) return;
     const modal = this.modalCtrl.create('SelectWalletModal', {
       selectedWallet: this.wallet,
       availableWallets: this.wallets.filter(w => w.confirmed)

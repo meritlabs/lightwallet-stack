@@ -1,20 +1,15 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ENV } from '@app/env';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
-import { getEasySendURL } from '@merit/common/models/easy-send';
 import { MeritContact } from '@merit/common/models/merit-contact';
 import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
 import { ConfigService } from '@merit/common/services/config.service';
-import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
-import { EasySendService } from '@merit/common/services/easy-send.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { ISendTxData, SendService } from '@merit/common/services/send.service';
 import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
-import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { WalletService } from '@merit/common/services/wallet.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import {
   AlertController,
@@ -25,7 +20,7 @@ import {
   NavController,
   NavParams
 } from 'ionic-angular';
-import * as _ from 'lodash';
+
 
 @IonicPage()
 @Component({
@@ -41,17 +36,12 @@ export class SendAmountView {
 
   public txData: ISendTxData;
   public feeCalcError: string;
-  public feeLoading: boolean;
 
   public amount = { micros: 0, mrt: 0, fiat: 0 };
   public formData = { amount: '', password: '', confirmPassword: '', nbBlocks: 10080, validTill: '' };
 
   public readonly CURRENCY_TYPE_MRT = 'mrt';
   public readonly CURRENCY_TYPE_FIAT = 'fiat';
-
-  public readonly MINUTE_PER_BLOCK = 1;
-
-  public availableAmountMicros: number = 0;
 
   public wallets: Array<any>;
   public selectedWallet: any;
@@ -62,11 +52,6 @@ export class SendAmountView {
   public feePercent: number;
   public feeIncluded: boolean = false;
   public feeTogglerEnabled: boolean = true;
-  private referralsToSign: Array<any>;
-
-  private walletPassword: string;
-
-  private allowUnconfirmed: boolean = true;
 
   private loading: boolean = true;
 
@@ -77,19 +62,13 @@ export class SendAmountView {
               private navParams: NavParams,
               private configService: ConfigService,
               private rateService: RateService,
-              private feeService: FeeService,
               private profileService: ProfileService,
-              private txFormatService: TxFormatService,
               private modalCtrl: ModalController,
-              private toastCtrl: ToastControllerService,
               private alertCtrl: AlertController,
-              private easySendService: EasySendService,
-              private easyReceiveService: EasyReceiveService,
-              private walletService: WalletService,
               private loadingCtrl: LoadingController,
-              private logger: LoggerService,
               private sendService: SendService,
-              private events: Events
+              private events: Events,
+              private logger: LoggerService
   ) {
     this.recipient = this.navParams.get('contact');
     this.sendMethod = this.navParams.get('suggestedMethod');
@@ -114,7 +93,7 @@ export class SendAmountView {
     let passedAmount = this.navParams.get('amount');
     if (passedAmount) {
       this.formData.amount = String(this.rateService.microsToMrt(passedAmount));
-      this.createTxp();
+      //this.createTxp();
     }
 
     await this.updateAmount();
@@ -127,6 +106,7 @@ export class SendAmountView {
     this.chooseAppropriateWallet();
 
     this.loading = false;
+    this.updateTxData();
 
     this.events.subscribe('Remote:IncomingTx', () => {
       this.profileService.refreshData();
@@ -140,7 +120,7 @@ export class SendAmountView {
         this.selectedWallet = this.wallets.find(w => w.confirmed);
         const passedAmount = this.navParams.get('amount') || 0;
         this.selectedWallet = this.wallets.find(w => {
-          return (w.balance.spendableAmount >= passedAmount) && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
+          return (w.balance.spendableAmount > 0) && (w.balance.spendableAmount >= passedAmount) && (this.sendMethod.type != SendMethodType.Easy || w.availableInvites)
         });
       }
     }
@@ -159,7 +139,6 @@ export class SendAmountView {
     modal.onDidDismiss(async (wallet) => {
       if (wallet) {
         this.selectedWallet = wallet;
-        this.walletPassword = '';
         this.updateTxData();
       }
     });
@@ -268,8 +247,8 @@ export class SendAmountView {
   public isSendAllowed() {
     return (
       this.amount.micros > 0
-      && !_.isNil(this.txData)
-      && !_.isNil(this.txData.txp)
+      && this.selectedWallet
+      && !this.feeCalcError
       && (!this.formData.password || this.formData.password === this.formData.confirmPassword)
     );
   }
@@ -283,171 +262,58 @@ export class SendAmountView {
   }
 
   public async toConfirm() {
-    if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
-      this.feeCalcError = 'Passwords do not match';
-      return this.txData.txp = null;
-    }
 
-    let loadingSpinner = this.loadingCtrl.create({
-      content: 'Preparing transaction...',
+    const loader = this.loadingCtrl.create({
+      content: 'Calculating fee...',
       dismissOnPageChange: true
     });
-    loadingSpinner.present();
-    try {
-      this.txData.txp.amount += this.txData.easyFee;
-      this.txData.feeIncluded = this.feeIncluded;
-      this.navCtrl.push('SendConfirmationView', { txData: this.txData, referralsToSign: this.referralsToSign });
-    } catch (e) {
-      this.logger.warn(e);
-    } finally {
-      loadingSpinner.dismiss();
-    }
-  }
-
-  selectExpirationDate() {
-    const modal = this.modalCtrl.create('SendValidTillView', { nbBlocks: this.formData.nbBlocks }, MERIT_MODAL_OPTS);
-    modal.present();
-    modal.onDidDismiss((nbBlocks) => {
-      if (nbBlocks) this.formData.nbBlocks = nbBlocks;
-      this.updateTxData();
-    });
-  }
-
-  public async updateTxData() {
-
-    this.feeLoading = true;
-    this.feeCalcError = null;
-    this.feePercent = null;
-
-    if (!this.amount.micros) {
-      this.txData = null;
-      this.feeLoading = false;
-      return this.createTxpDebounce.cancel();
-    } else if (this.amount.micros > this.selectedWallet.balance.spendableAmount) {
-      this.feeCalcError = 'Amount is too big';
-      this.txData = null;
-      this.feeLoading = false;
-      return this.createTxpDebounce.cancel();
-    } else {
-
-      this.txData = {
-        txp: null,
-        wallet: this.selectedWallet,
-        amount: this.amount.micros,
-        feeAmount: null,
-        password: this.formData.password,
-        totalAmount: this.amount.micros,
-        recipient: this.recipient,
-        sendMethod: this.sendMethod,
-        feeIncluded: this.feeIncluded,
-        timeout: this.formData.nbBlocks,
-        easyFee: 0
-      };
-
-      this.createTxpDebounce();
-    }
-  }
-
-  private createTxpDebounce = _.debounce(() => {
-    this.createTxp();
-  }, 1000);
-
-  private async createTxp() {
-
-    if (this.walletService.isEncrypted(this.selectedWallet) && this.sendMethod.type == SendMethodType.Easy) {
-      if (this.walletPassword) {
-        this.walletService.decrypt(this.selectedWallet, this.walletPassword);
-      } else {
-        try {
-          await this.getPassword();
-        } catch (e) {
-          this.feeCalcError = 'Password required for encrypted wallet';
-          return this.txData.txp = null;
-        }
-      }
-    }
-
-    if (this.amount.micros == this.selectedWallet.balance.spendableAmount) this.feeIncluded = true;
+    loader.present();
 
     try {
+      const fee = await this.sendService.estimateFee(this.selectedWallet, this.amount.micros,  (this.sendMethod.type == SendMethodType.Easy), this.sendMethod.value);
 
       if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
         this.feeCalcError = 'Passwords do not match';
-        return this.txData.txp = null;
       }
 
-      if (this.sendMethod.type == SendMethodType.Easy) {
-
-        const easySend = await  this.easySendService.createEasySendScriptHash(this.txData.wallet, this.formData.password);
-        this.txData.easySend = easySend;
-        this.txData.txp = await this.easySendService.prepareTxp(this.txData.wallet, this.amount.micros, easySend);
-        this.txData.easySendUrl = getEasySendURL(easySend);
-        this.txData.referralsToSign = [easySend.scriptReferralOpts];
-
-        if (!this.feeIncluded) { //if fee is included we pay also easyreceive tx, so recipient can have the exact amount that is displayed
-          this.txData.easyFee = await this.feeService.getEasyReceiveFee();
-        }
-
-      } else {
-        this.txData.txp = await this.sendService.prepareTxp(this.txData.wallet, this.amount.micros, this.sendMethod.value);
-      }
-
-    } catch (err) {
-      this.txData.txp = null;
-      this.logger.warn(err);
-      if (err.message) this.feeCalcError = err.message;
-      return this.toastCtrl.error(err.message || 'Unknown error');
+      this.navCtrl.push('SendConfirmationView', {txData: {
+        amount: this.amount.micros,
+        password: this.formData.password,
+        fee: fee,
+        wallet: this.selectedWallet,
+        feeIncluded: this.feeIncluded,
+        sendMethod: this.sendMethod,
+        toAddress: this.sendMethod.value || 'MeritMoney link',
+        recipient: this.recipient
+      }});
+    } catch (e) {
+      this.logger.warn(e);
+      return this.feeCalcError = e.message;
     } finally {
-      this.feeLoading = false;
-      if (this.walletPassword) {
-        this.walletService.encrypt(this.selectedWallet, this.walletPassword);
-      }
+      loader.dismiss();
     }
 
   }
 
-  private getPassword(highlightInvalid = false) {
-    return new Promise((resolve, reject) => {
-      this.alertCtrl
-        .create({
-          title: 'Enter spending password',
-          cssClass: highlightInvalid ? 'invalid-input-prompt' : '',
-          inputs: [
-            {
-              name: 'password',
-              placeholder: 'Password',
-              type: 'password'
-            }
-          ],
-          buttons: [
-            {
-              text: 'Cancel',
-              role: 'cancel',
-              handler: () => {
-                reject();
-              }
-            },
-            {
-              text: 'Ok',
-              handler: data => {
-                if (!data.password) {
-                  this.getPassword(true);
-                } else {
-                  try {
-                    this.walletService.decrypt(this.txData.wallet, data.password);
-                    this.walletPassword = data.password;
-                    resolve();
-                  } catch (e) {
-                    this.getPassword(true);
-                  }
-                }
-              }
-            }
-          ]
-        })
-        .present();
-    });
 
+  public async updateTxData() {
+
+    //this.feeLoading = true;
+    this.feeCalcError = null;
+    this.feePercent = null;
+
+    if (!this.selectedWallet) {
+      return this.feeCalcError = 'No wallet selected';
+    }
+
+    if (this.amount.micros > this.selectedWallet.balance.spendableAmount) {
+      return this.feeCalcError = 'Amount is too big';
+    }
+
+    if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
+      return this.feeCalcError = 'Passwords do not match';
+    }
   }
+
 
 }

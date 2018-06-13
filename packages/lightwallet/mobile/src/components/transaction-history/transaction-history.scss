@@ -21,6 +21,22 @@ transaction-history {
       }
     }
 
+    .icon {
+      margin-top: -2px;
+      font-size: 15px;
+      vertical-align: top;
+    }
+
+    .cancelled {
+      font-size: 10px;
+      color: color($colors, danger);
+      vertical-align: top;
+    }
+
+    .arrow {
+       color: #999;
+    }
+
     button[ion-item].item {
       // *** iOS ***
       ion-label.label.label-ios {
