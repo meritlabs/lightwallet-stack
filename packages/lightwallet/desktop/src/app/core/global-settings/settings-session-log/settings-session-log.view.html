@@ -4,17 +4,17 @@
 </div>
 <div class="global-settings__group session-log">
   <div class="session-log__filter">
-    <div class="session-log__filter__item active"  (click)="setLevel(0)">
-      <span class="ico ico--check"></span>Error
+    <div class="session-log__filter__item active" (click)="setLevel(0)">
+      <merit-icon name="check"></merit-icon>Error
     </div>
     <div class="session-log__filter__item" [ngClass]="logLevel > 0? 'active' : ''" (click)="setLevel(1)">
-      <span class="ico ico--check"></span>Warning
+      <merit-icon name="check"></merit-icon>Warning
     </div>
     <div class="session-log__filter__item" [ngClass]="logLevel > 1? 'active' : ''" (click)="setLevel(2)">
-      <span class="ico ico--check"></span>Info
+      <merit-icon name="check"></merit-icon>Info
     </div>
     <div class="session-log__filter__item" [ngClass]="logLevel > 2? 'active' : ''" (click)="setLevel(3)">
-      <span class="ico ico--check"></span>Debug
+      <merit-icon name="check"></merit-icon>Debug
     </div>
   </div>
   <div class="ui-wysiwyg ui-wysiwyg--log session-log__window">
@@ -22,8 +22,9 @@
       No logs for selected level
     </p>
     <p *ngFor="let l of filteredLogs" [ngClass]="getLogLevelName(l.level)">
-      <b>[{{l.timestamp|amDateFormat}}]</b> <b>[{{getLogLevelName(l.level)}}]</b> <span
-      *ngFor="let message of l.arguments">{{message}} </span>
+      <b>[{{l.timestamp|amDateFormat}}]</b>
+      <b>[{{getLogLevelName(l.level)}}]</b>
+      <span *ngFor="let message of l.arguments">{{message}} </span>
     </p>
   </div>
 </div>
