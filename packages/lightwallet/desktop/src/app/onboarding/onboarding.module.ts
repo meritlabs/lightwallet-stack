@@ -19,6 +19,7 @@ import { GuideWentFromDesktopComponent } from './app-start-up/guide-went-from-de
 import { InvitedUserComponent } from './app-start-up/invited-user/invited-user.component';
 import { GuideBeginnersHelpComponent } from './app-start-up/guide-beginners-help/guide-beginners-help.component';
 import { SliderGuideComponent } from './slider-guide/slider-guide.component';
+import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 
 @NgModule({
   imports: [
@@ -29,8 +30,22 @@ import { SliderGuideComponent } from './slider-guide/slider-guide.component';
     RouterModule,
     NgxCarouselModule,
     CommonPipesModule,
-    Ng4LoadingSpinnerModule
+    Ng4LoadingSpinnerModule,
+    SharedComponentsModule.forRoot(),
   ],
-  declarations: [OnboardView, UnlockComponent, OnboardingRootComponent, WorryFreeComponent, SendingMeritComponent, YourWayComponent, ThatsItComponent, AppStartUpComponent, GuideWentFromDesktopComponent, InvitedUserComponent, GuideBeginnersHelpComponent, SliderGuideComponent]
+  declarations: [
+    OnboardView,
+    UnlockComponent,
+    OnboardingRootComponent,
+    WorryFreeComponent,
+    SendingMeritComponent,
+    YourWayComponent,
+    ThatsItComponent,
+    AppStartUpComponent,
+    GuideWentFromDesktopComponent,
+    InvitedUserComponent,
+    GuideBeginnersHelpComponent,
+    SliderGuideComponent,
+  ],
 })
-export class OnboardingModule { }
+export class OnboardingModule {}
