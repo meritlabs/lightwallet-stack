@@ -1150,12 +1150,9 @@ Storage.prototype.removePushNotificationSub = function(copayerId, token, cb) {
   }, cb);
 };
 
-Storage.prototype.storeSmsNotificationSub = function(walletId, phoneNumber, cb) {
+Storage.prototype.storeSmsNotificationSub = function(sub, cb) {
   this.db.collection(collections.SMS_NOTIFICATION_SUBS)
-    .update({
-      walletId,
-      phoneNumber: phoneNumber
-    }, {
+    .update(sub, {
       w: 1,
       upsert: true
     }, cb);
