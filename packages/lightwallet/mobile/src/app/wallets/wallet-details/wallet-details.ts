@@ -8,6 +8,7 @@ import { PersistenceService2 } from '@merit/common/services/persistence2.service
 import { WalletService } from '@merit/common/services/wallet.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
 import { App, Events, IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
+import { FeeService } from "@merit/common/services/fee.service";
 
 @IonicPage({
   segment: 'wallet/:walletId',
@@ -37,7 +38,8 @@ export class WalletDetailsView {
               private events: Events,
               private contactsService: ContactsService,
               private persistenceService: PersistenceService2,
-              private easyReceiveService: EasyReceiveService
+              private easyReceiveService: EasyReceiveService,
+              private feeService: FeeService
   ) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
@@ -114,7 +116,7 @@ export class WalletDetailsView {
 
   private async formatHistory() {
     const easySends = await this.wallet.getGlobalSendHistory();
-    this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, easySends, this.contactsService);
+    this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, easySends, this.feeService, this.contactsService);
   }
 
   async loadMoreHistory(infiniter) {
