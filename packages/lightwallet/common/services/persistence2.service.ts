@@ -14,7 +14,8 @@ export enum StorageKey {
 
 export enum ViewSettingsKey {
   GetStartedTips = 'get_started_tips',
-  recordPassphrase = 'record_passphrase'
+  recordPassphrase = 'record_passphrase',
+  SmsNotificationsPrompt = 'sms_notifications_prompt'
 }
 
 export interface INotificationSettings {
