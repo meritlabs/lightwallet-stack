@@ -110,7 +110,7 @@ Storage.prototype._createIndexes = function() {
   this.db.collection(collections.KNOWN_MESSAGES).createIndex({
      type: 1, txid: 1, blockHash: 1
     }, { unique: true }
-  )
+  );
 };
 
 Storage.prototype.connect = function(opts, cb) {
@@ -1396,6 +1396,7 @@ Storage.prototype.checkKnownMessages = function(data, cb) {
     writeConcern: { w: "majority", wtimeout: 5000 },
     new: true,
     returnOriginal: false,
+    upsert: true,
   }, function(err, result) {
     cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
   });
