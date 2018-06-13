@@ -3,9 +3,12 @@ import * as _ from 'lodash';
 import { IDisplayTransaction, ITransactionIO, TransactionAction } from '@merit/common/models/transaction';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritWalletClient } from "@merit/common/merit-wallet-client";
+import { FeeService } from "@merit/common/services/fee.service";
 
-export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [], contactsProvider?: ContactsService): Promise<IDisplayTransaction[]> {
+export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [],  feeService: FeeService, contactsProvider?: ContactsService): Promise<IDisplayTransaction[]> {
   if (_.isEmpty(walletHistory)) return [];
+
+  const easyReceiveFee = await feeService.getEasyReceiveFee();
 
   walletHistory = _.sortBy(walletHistory, 'time');
 
@@ -129,17 +132,24 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
       tx.cancelled = easySend.cancelled;
       if (tx.type == 'meritmoney') {
         meritMoneyAddresses.push(tx.addressTo);
+        tx.fees += easyReceiveFee;
+        tx.amount -= easyReceiveFee;
       }
     }
 
     return tx;
   }));
-
   // remove meritmoney invites so we  have only one tx for meritmoney
   return walletHistory
     .filter(t => {
-      if (t.type != 'meritinvite') return true;
-      return meritMoneyAddresses.indexOf(t.addressTo) == -1;
+
+      if (meritMoneyAddresses.indexOf(t.addressFrom) != -1) return false; //filtering out txs from cancelled MeritMoney/MeritInvite
+
+      if (t.type == 'meritinvite') {
+        if (meritMoneyAddresses.indexOf(t.addressTo) != -1) return false; //filtering out invites txs that were part of MeritMoney
+      }
+
+      return true;
     })
     .reverse();
 }
