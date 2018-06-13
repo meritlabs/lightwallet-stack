@@ -12,7 +12,6 @@ import { interval } from 'rxjs/observable/interval';
 import { catchError, map, mergeMap, retryWhen, switchMap, tap } from 'rxjs/operators';
 import * as request from 'superagent';
 import * as util from 'util';
-import { EasyReceiptResult } from '../../models/easy-receipt';
 import { ISendMethod, SendMethodDestination } from '../../models/send-method';
 import { EasyReceiptResult, EasyReceipt } from '../../models/easy-receipt';
 import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
