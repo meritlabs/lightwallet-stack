@@ -1,7 +1,7 @@
 import { Achievement, Achievements } from '@merit/common/models/achievement';
 import { Action } from '@ngrx/store';
 
-const DEFAULT_STATE = {
+const DEFAULT_STATE: IAchivementsState = {
   achievements: [],
   token: '',
   settings: {
@@ -16,6 +16,8 @@ export interface IAchivementsState {
   achievements: Achievement[];
   token: string;
   settings: {
+    id: string;
+    userId: string;
     isSetupTrackerEnabled: boolean;
     isWelcomeDialogEnabled: boolean;
   };
