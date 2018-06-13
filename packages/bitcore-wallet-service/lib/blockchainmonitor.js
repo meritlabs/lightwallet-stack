@@ -92,9 +92,40 @@ BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
   socket.on('connect_error', function() {
     log.error('Error connecting to ' + explorer.getConnectionInfo());
   });
+
   socket.on('tx', _.bind(self._handleIncomingTx, self, network));
   socket.on('block', _.bind(self._handleNewBlock, self, network));
   socket.on('referral', _.bind(self._handleIncomingReferral, self));
+};
+
+BlockchainMonitor.prototype._handleIncomingTx = function(network, data) {
+  // for (let i = 0; i < 5; i++) {
+  //   setTimeout(() => {
+      // console.log('\n\nITETRATION ' + i + '\n\n');
+      this._handleThirdPartyBroadcasts(data);
+      this._handleIncomingPayments(data, network);
+    // }, i * 10000);
+  // }
+};
+
+BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
+  this._notifyNewBlock(network, hash);
+
+  const explorer = this.explorers[network];
+  if (!explorer) {
+    return;
+  }
+
+  explorer.getBlock(hash, (err, block) => {
+    if (err) {
+      log.error('Could not fetch block', hash, err);
+      return;
+    }
+
+    this._handleTxConfirmations(network, block.tx);
+    this._handleReferralConfirmations(network, block.referrals);
+    this._handleVaultConfirmations(network, block.tx);
+  });
 };
 
 BlockchainMonitor.prototype._handleIncomingReferral = function(data) {
@@ -226,7 +257,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
 
   const explorer = this.explorers[network];
 
-  async.each(
+  async.eachSeries(
     filteredOutputs,
     function(out, next) {
       //checking if address is confirmed
@@ -312,11 +343,6 @@ BlockchainMonitor.prototype._updateActiveAddress = function(address, cb) {
     }
     return cb(err);
   });
-};
-
-BlockchainMonitor.prototype._handleIncomingTx = function(network, data) {
-  this._handleThirdPartyBroadcasts(data);
-  this._handleIncomingPayments(data, network);
 };
 
 BlockchainMonitor.prototype._notifyNewBlock = function(network, hash) {
@@ -472,26 +498,6 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, txids)
     });
 
     return cb(null);
-  });
-};
-
-BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
-  this._notifyNewBlock(network, hash);
-
-  const explorer = this.explorers[network];
-  if (!explorer) {
-    return;
-  }
-
-  explorer.getBlock(hash, (err, block) => {
-    if (err) {
-      log.error('Could not fetch block', hash, err);
-      return;
-    }
-
-    this._handleTxConfirmations(network, block.tx);
-    this._handleReferralConfirmations(network, block.referrals);
-    this._handleVaultConfirmations(network, block.tx);
   });
 };
 
