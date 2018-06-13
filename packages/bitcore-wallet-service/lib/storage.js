@@ -107,6 +107,10 @@ Storage.prototype._createIndexes = function() {
   this.db.collection(collections.VAULTS).createIndex({
     initialTxId: 1,
   });
+
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS).createIndex({
+    walletId: 1
+  });
 };
 
 Storage.prototype.connect = function(opts, cb) {
