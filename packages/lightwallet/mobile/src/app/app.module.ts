@@ -39,6 +39,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MomentModule } from 'ngx-moment';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { AlertService } from '@merit/common/services/alert.service';
+import { MobileAlertService } from '../services/mobile-alert.service';
 import { MobileToastControllerService } from '../services/mobile-toast-controller.service';
 
 export function getProviders() {
@@ -47,6 +49,7 @@ export function getProviders() {
     { provide: PushNotificationsService, useClass: MobilePushNotificationsService },
     { provide: PollingNotificationsService, useClass: MobilePollingNotificationsService },
     { provide: ToastControllerService, useClass: MobileToastControllerService },
+    { provide: AlertService, useClass: MobileAlertService },
     ContactsService,
     AddressScannerService,
     DeepLinkService,

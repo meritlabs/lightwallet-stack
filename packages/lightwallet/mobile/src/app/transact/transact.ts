@@ -119,7 +119,10 @@ export class TransactView {
     if (!txs.length) return this.showPasswordEasyReceivePrompt(receipt, isRetry, processAll);
 
     const wallets = await this.profileService.getWallets();
-    const wallet = wallets[0];
+    let wallet = wallets.find(w => {
+      return (w.getRootAddress().toString() == receipt.parentAddress);
+    });
+    if (!wallet) wallet = wallets[0];
 
     //Decide if the wallet is the sender of the Global Send.
     //We will prompt here to cancel the global send instead.
@@ -198,7 +201,10 @@ export class TransactView {
       message: `You clicked on a ${name} link that you created. Would you like to cancel ${name} link with ${ amountStr }?`,
       buttons: [
         {
-          text: `Don't Cancel`
+          text: `Don't Cancel`,
+          handler: () => {
+            this.easyReceiveService.deletePendingReceipt(receipt);
+          }
         },
         {
           text: `Cancel ${name}`,
@@ -278,12 +284,15 @@ export class TransactView {
   private async cancelEasyReceipt(receipt: EasyReceipt): Promise<any> {
     try {
       const wallets = await this.profileService.getWallets();
-      let wallet = wallets[0];
+      let wallet = wallets.find(w => {
+       return (w.getRootAddress().toString() == receipt.parentAddress);
+      });
+      if (!wallet) wallet = wallets[0];
       if (!wallet) throw new Error('Could not retrieve wallet');
 
       const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
       this.events.publish('Remote:IncomingTx');
-      this.logger.info('accepted easy send', acceptanceTx);
+      this.logger.info('Canceled easy send', acceptanceTx);
     } catch (err) {
       console.log(err);
       this.toastCtrl.error('There was an error cancelling your MeritMoney link.');
@@ -297,8 +306,7 @@ export class TransactView {
       let wallet = wallets[0];
       if (!wallet) throw new Error('Could not retrieve wallet');
 
-      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, wallet.rootAddress.toString());
-
+      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(wallet, receipt, data, wallet.rootAddress.toString());
       this.logger.info('accepted easy send', acceptanceTx);
 
       this.events.publish('Remote:IncomingTx'); // update wallet info

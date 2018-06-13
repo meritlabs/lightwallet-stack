@@ -221,7 +221,7 @@ export class CreateWalletView {
       }
 
       if (password) {
-        promises.push(this.walletService.encrypt(wallet, password));
+        promises.push(this.walletService.encryptWallet(wallet, password));
       }
 
       if (color) {
