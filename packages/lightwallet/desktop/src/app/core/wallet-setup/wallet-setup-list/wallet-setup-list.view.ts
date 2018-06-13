@@ -83,4 +83,7 @@ export class WalletSetupListView implements OnInit {
     this.InterfacePreferencesService.setPrimaryWallet(wallet.id);
     await this.AchievementsService.reLogin();
   }
+  refresh() {
+    location.reload();
+  }
 }
