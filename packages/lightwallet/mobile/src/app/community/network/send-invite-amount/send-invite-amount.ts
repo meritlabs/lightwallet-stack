@@ -16,10 +16,12 @@ import { WalletService } from '@merit/common/services/wallet.service';
 })
 export class SendInviteAmountView {
 
-  public  wallets: Array<MeritWalletClient>;
+  public wallets: Array<MeritWalletClient>;
   public wallet: MeritWalletClient;
 
-  public formData = {amount: null};
+  public formData = {
+    amount: null
+  };
   public address;
 
   public error:string;
