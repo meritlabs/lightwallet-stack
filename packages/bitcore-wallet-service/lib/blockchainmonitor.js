@@ -103,7 +103,8 @@ BlockchainMonitor.prototype._handleIncomingTx = function (network, data) {
 
   const identity = {
     type: 'INCOMING_TX',
-    txid: data.txid
+    txid: data.txid,
+    blockHash: null,
   };
   self._uniqueMessageProcessing(identity, function () {
     self._handleThirdPartyBroadcasts(data);
@@ -115,7 +116,8 @@ BlockchainMonitor.prototype._handleNewBlock = function (network, hash) {
   const self = this;
   const identity = {
     type: 'NEW_BLOCK',
-    blockHash: hash
+    blockHash: hash,
+    txid: null,
   };
   self._uniqueMessageProcessing(identity, function () {
     self._notifyNewBlock(network, hash);
@@ -145,7 +147,8 @@ BlockchainMonitor.prototype._handleIncomingReferral = function (data) {
 
   const identity = {
     type: 'INCOMING_REFERRAL',
-    txid: data.hash
+    txid: data.hash,
+    blockHash: null,
   };
   self._uniqueMessageProcessing(identity, function () {
     self.storage.fetchReferralByCodeHash(data.address, function (err, referral) {
