@@ -25,7 +25,7 @@
         {{ isCredit? '' : tx.alternativeAmountStr? '-' : '' }}{{tx.alternativeAmountStr | toFiat : tx.amount | async}}
       </h3>
       <p class="fee" *ngIf="!tx.isCoinbase">
-        Fee {{ tx.fee | toMRT }}
+        Fee {{ tx.fees | toMRT }}
       </p>
     </div>
     <div *ngIf="tx.isInvite && !tx.isWalletUnlock">
