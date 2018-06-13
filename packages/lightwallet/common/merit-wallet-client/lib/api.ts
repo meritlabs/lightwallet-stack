@@ -13,8 +13,9 @@ import { catchError, map, mergeMap, retryWhen, switchMap, tap } from 'rxjs/opera
 import * as request from 'superagent';
 import * as util from 'util';
 import { EasyReceiptResult } from '../../models/easy-receipt';
-import { EasySend } from '../../models/easy-send';
 import { ISendMethod, SendMethodDestination } from '../../models/send-method';
+import { EasyReceiptResult, EasyReceipt } from '../../models/easy-receipt';
+import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
 import { Common } from './common';
 import { Credentials } from './credentials';
 import { MWCErrors } from './errors';
@@ -128,6 +129,9 @@ export class API {
   public invitesBalance: any;
   public availableInvites: number = 0;
   public pendingInvites: number = 0;
+
+  /** is disabled when wallet is temporary decrypted */
+  public credentialsSaveAllowed: boolean = true;
 
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -825,37 +829,6 @@ export class API {
     });
   };
 
-  /**
-   * Create and send invite tx to a given address
-   *
-   * @param {string} toAddress - merit address to send invite to
-   * @param {number=} amount - number of invites to send. defaults to 1
-   * @param {string=} message - message to send to a receiver
-   *
-   */
-  async sendInvite(toAddress: string, amount: number = 1, script = null, message: string = '', walletPassword: string = ''): Promise<any> {
-    amount = parseInt(amount as any);
-    const opts = {
-      invite: true,
-      outputs: [_.pickBy({
-        amount,
-        toAddress,
-        message,
-        script
-      })]
-    };
-
-    let txp = await this.createTxProposal(opts);
-    txp = await this.publishTxProposal({ txp });
-    txp = await this.signTxProposal(txp, walletPassword);
-
-    await this.getStatus();
-    if (this.availableInvites == 0) throw new Error('You do not have free invites you can send');
-
-    txp = await this.broadcastTxProposal(txp);
-
-    return txp;
-  }
 
   /**
    * Open a wallet and try to complete the public key ring.
@@ -2261,7 +2234,7 @@ export class API {
    * @param {Object} txp
    * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
    */
-  async signTxProposal(txp: any, password: string): Promise<any> {
+  async signTxProposal(txp: any, password?: string): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     $.checkArgument(txp.creatorId);
 
@@ -2757,4 +2730,43 @@ export class API {
       }
     });
   }
+
+  /**
+   * registering global send on MWS so we can access history from any device
+   */
+  registerGlobalSend(easySend: EasySend) {
+    $.checkState(this.credentials);
+    return this._doPostRequest(`/v1/register_globalsend`, {scriptAddress: easySend.scriptAddress, globalsend: this.encryptGlobalSend(easySend)});
+  }
+
+  /**
+   * Mark globalsend as cancelled
+   */
+  cancelGlobalSend(scriptAddress: string) {
+    $.checkState(this.credentials);
+    return this._doPostRequest(`/v1/cancel_globalsend`, { scriptAddress });
+  }
+
+  /**
+   * receiving sent globalsends to add links to history and make them cancellable
+   */
+  async getGlobalSendHistory() {
+    $.checkState(this.credentials);
+    const globalSends = await this._doGetRequest(`/v1/globalsend_history`);
+    return globalSends.map(g => {
+      let globalSend = JSON.parse(this.decryptGlobalSend(g.globalsend));
+      globalSend.cancelled = g.cancelled;
+      return globalSend;
+    } );
+  }
+
+  private encryptGlobalSend(easySend: EasySend) {
+    return this._encryptMessage(JSON.stringify(easySend), this.credentials.personalEncryptingKey);
+  }
+
+  private decryptGlobalSend(data) {
+    return this._decryptMessage(data, this.credentials.personalEncryptingKey);
+  }
+
+
 }

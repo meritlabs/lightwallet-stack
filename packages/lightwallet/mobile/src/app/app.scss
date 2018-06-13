@@ -804,7 +804,7 @@ $v-tab-send-selected-icon: url("../img/tab-icons/ico-send-selected.svg") !defaul
   }
 }
 
-.password-input {
+.password-input, .password-prompt input[type="text"] {
   text-security:disc;
   -webkit-text-security:disc;
   -mox-text-security:disc;
@@ -814,6 +814,8 @@ $v-tab-send-selected-icon: url("../img/tab-icons/ico-send-selected.svg") !defaul
     -mox-text-security:none;
   }
 }
+
+
 
 .wallet-selector {
   ion-icon[item-end] {

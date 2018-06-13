@@ -13,7 +13,8 @@ export enum StorageKey {
 }
 
 export enum ViewSettingsKey {
-  GetStartedTips = 'get_started_tips'
+  GetStartedTips = 'get_started_tips',
+  recordPassphrase = 'record_passphrase'
 }
 
 export interface INotificationSettings {
@@ -54,8 +55,8 @@ export class PersistenceService2 {
   async getNotificationSettings(): Promise<INotificationSettings> {
     const settings = (await this.storage.get(StorageKey.NotificationSettings)) || {};
     return {
-      ...DEFAULT_NOTIFICATION_SETTINGS,
-      ...settings
+      ... DEFAULT_NOTIFICATION_SETTINGS ,
+      ... settings
     };
   }
 
@@ -82,7 +83,7 @@ export class PersistenceService2 {
 
     if (idx != -1) {
       easySends[idx].cancelled = true;
-      console.log("FOUND:", easySends[idx]);
+      console.log('FOUND:', easySends[idx]);
       await this.setEasySends(easySends);
       return true;
     } else {

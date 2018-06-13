@@ -1,5 +1,6 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { AddressService } from '@merit/common/services/address.service';
+import { AlertService } from '@merit/common/services/alert.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { ConfigService } from '@merit/common/services/config.service';
 import { ContactsService } from '@merit/common/services/contacts.service';
@@ -55,6 +56,7 @@ export class CommonProvidersModule {
         AddressService,
         UnlockRequestService,
         WalletService,
+        AlertService,
         SmsNotificationsService
       ]
     };

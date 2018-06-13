@@ -9,7 +9,6 @@ import { RefreshOneWalletTransactions } from '@merit/common/reducers/transaction
 import { RefreshOneWalletAction, selectNumberOfInviteRequests } from '@merit/common/reducers/wallets.reducer';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
@@ -18,6 +17,11 @@ import { PasswordPromptController } from '@merit/desktop/app/components/password
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { Address, PublicKey } from 'bitcore-lib';
+import { map } from 'rxjs/operators';
+import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/common/reducers/wallets.reducer';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { Observable } from 'rxjs/Observable';
+import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
 
 @Component({
   selector: 'view-core',
@@ -85,6 +89,10 @@ export class CoreView implements OnInit, AfterViewInit {
 
   showShare: boolean;
 
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
+  walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
+  recordPassphrase: boolean = true;
+
   constructor(
     private pushNotificationsService: PushNotificationsService,
     private easyReceiveService: EasyReceiveService,
@@ -98,7 +106,9 @@ export class CoreView implements OnInit, AfterViewInit {
     private domSanitizer: DomSanitizer
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.recordPassphrase = Boolean(await this.persistenceService2.getViewSettings(ViewSettingsKey.recordPassphrase));
+
     this.processPendingEasyReceipts();
     this.pushNotificationsService.init();
     this.easyReceiveService.cancelEasySendObservable$.subscribe(receipt => {
@@ -118,6 +128,10 @@ export class CoreView implements OnInit, AfterViewInit {
 
   shareActivate(val) {
     this.showShare = Boolean(val);
+  }
+
+  onGuideDismiss() {
+    return this.persistenceService2.setViewSettings(ViewSettingsKey.recordPassphrase, (this.recordPassphrase = true));
   }
 
   private showPasswordEasyReceivePrompt(receipt: EasyReceipt, processAll: boolean, wallet?: MeritWalletClient) {
@@ -235,7 +249,7 @@ export class CoreView implements OnInit, AfterViewInit {
 
       const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
 
-      this.logger.info('Accepted easy send', acceptanceTx);
+      this.logger.info('Cancelled easy send', acceptanceTx);
       this.store.dispatch(
         new RefreshOneWalletAction(wallet.id, {
           skipShareCode: true,
@@ -255,7 +269,7 @@ export class CoreView implements OnInit, AfterViewInit {
       if (!wallet) throw 'no wallet';
 
       const address = wallet.getRootAddress();
-      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.toString());
+      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(wallet, receipt, data, address.toString());
 
       this.logger.info('accepted easy send', acceptanceTx);
       this.store.dispatch(
@@ -394,5 +408,4 @@ export class CoreView implements OnInit, AfterViewInit {
       this.toastCtrl.error('There was an error rejecting the Merit');
     }
   }
-
 }
