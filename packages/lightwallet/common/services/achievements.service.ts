@@ -5,10 +5,10 @@ import { IRootAppState } from '@merit/common/reducers';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import {
-  SetAchivementsAction,
-  SetAuthorizeTokenAction,
-  SetAchivementsSettingsAction,
-  CompleteAchivementAction,
+  SetAchievementsAction,
+  SetAuthorizeToken,
+  SetAchievementsSettings,
+  CompleteAchivement,
 } from '@merit/common/reducers/achivement.reducer';
 import { MeritAchivementClient } from '@merit/common/achievements-client/api';
 import { PersistenceService } from '@merit/common/services/persistence.service';
@@ -33,7 +33,7 @@ export class AchievementsService {
     if (!token) {
       const authData = await MeritAchivementClient.fromObj(profile).login();
       result = authData.token;
-      await this.store.dispatch(new SetAuthorizeTokenAction(authData.token));
+      await this.store.dispatch(new SetAuthorizeToken(authData.token));
     } else {
       result = token;
     }
@@ -47,7 +47,7 @@ export class AchievementsService {
         '/achievements/'
       );
 
-    this.store.dispatch(new SetAchivementsAction(getWalletAchivements));
+    this.store.dispatch(new SetAchievementsAction(getWalletAchivements));
   }
 
   async getLockedAchievements() {
@@ -68,7 +68,7 @@ export class AchievementsService {
       },
     ];
 
-    this.store.dispatch(new SetAchivementsAction(lockedAcievents));
+    this.store.dispatch(new SetAchievementsAction(lockedAcievents));
   }
 
   async getSettings() {
@@ -78,13 +78,13 @@ export class AchievementsService {
         '/settings/'
       );
 
-    this.store.dispatch(new SetAchivementsSettingsAction(getAchivementsSettings));
+    this.store.dispatch(new SetAchievementsSettings(getAchivementsSettings));
   }
 
   async setSettings(settings) {
     let profile = await this._getProfile();
     await MeritAchivementClient.fromObj(profile).setData('/settings/', settings, await this.getToken());
-    this.store.dispatch(new SetAchivementsSettingsAction(settings));
+    this.store.dispatch(new SetAchievementsSettings(settings));
   }
 
   async updateGoal(id, step) {
@@ -94,11 +94,11 @@ export class AchievementsService {
       {},
       await this.getToken()
     );
-    this.store.dispatch(new CompleteAchivementAction({ id: id, step: step }));
+    this.store.dispatch(new CompleteAchivement({ id: id, step: step }));
   }
 
   async reLogin() {
-    await this.store.dispatch(new SetAuthorizeTokenAction(null));
+    await this.store.dispatch(new SetAuthorizeToken(null));
     this.getAchievements();
   }
 
