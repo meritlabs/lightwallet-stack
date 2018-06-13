@@ -40,3 +40,5 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
     });
   });
 };
+
+module.exports = SmsNotificationService;
