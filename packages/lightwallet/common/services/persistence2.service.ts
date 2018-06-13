@@ -108,4 +108,10 @@ export class PersistenceService2 {
   getViewSettings(key: ViewSettingsKey) {
     return this.storage.get(StorageKey.ViewSettingsPrefix + key);
   }
+
+  async resetViewSettings() {
+    for (let key in ViewSettingsKey) {
+      await this.setViewSettings(ViewSettingsKey[key] as ViewSettingsKey, false);
+    }
+  }
 }

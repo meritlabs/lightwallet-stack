@@ -25,6 +25,9 @@
                class="ui-input ui-input--form ui-input--text"
                formControlName="email"
                placeholder="Enter your email address to receive notifications">
+        <div *ngIf="formData.get('email').valid && savingEmail === false">
+          Saved!
+        </div>
       </div>
     </div>
 
@@ -43,9 +46,11 @@
                class="ui-input ui-input--form ui-input--text"
                formControlName="phoneNumber"
                placeholder="Enter your phone number to receive SMS notifications">
+        <div *ngIf="formData.get('phoneNumber').valid && savingPhoneNumber === false">
+          Saved!
+        </div>
       </div>
     </div>
-
   </div>
 </form>
 <div class="global-settings__group">
