@@ -118,9 +118,9 @@ BlockchainMonitor.prototype._handleNewBlock = function (network, hash) {
     blockHash: hash
   };
   self._uniqueMessageProcessing(identity, function () {
-    this._notifyNewBlock(network, hash);
+    self._notifyNewBlock(network, hash);
 
-    const explorer = this.explorers[network];
+    const explorer = self.explorers[network];
     if (!explorer) {
       return;
     }
@@ -131,9 +131,9 @@ BlockchainMonitor.prototype._handleNewBlock = function (network, hash) {
         return;
       }
 
-      this._handleTxConfirmations(network, block.tx);
-      this._handleReferralConfirmations(network, block.referrals);
-      this._handleVaultConfirmations(network, block.tx);
+      self._handleTxConfirmations(network, block.tx);
+      self._handleReferralConfirmations(network, block.referrals);
+      self._handleVaultConfirmations(network, block.tx);
     });
   });
 };
