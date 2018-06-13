@@ -282,7 +282,7 @@ export class TransactView {
 
 
   private async cancelEasyReceipt(receipt: EasyReceipt): Promise<any> {
-    try {;
+    try {
       const wallets = await this.profileService.getWallets();
       let wallet = wallets.find(w => {
        return (w.getRootAddress().toString() == receipt.parentAddress);
