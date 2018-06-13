@@ -7,6 +7,7 @@ import { EasyReceiveService } from '@merit/common/services/easy-receive.service'
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { WalletService } from '@merit/common/services/wallet.service';
+import { FeeService } from '@merit/common/services/fee.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
 import { IonicPage, ModalController } from 'ionic-angular';
@@ -31,7 +32,9 @@ export class HistoryView {
   constructor(private profileService: ProfileService,
               private contactsService: ContactsService,
               private modalCtrl: ModalController,
-              private easyReceiveService: EasyReceiveService) {
+              private easyReceiveService: EasyReceiveService,
+              private feeService: FeeService
+  ) {
   }
 
   async ionViewDidLoad() {
@@ -94,7 +97,7 @@ export class HistoryView {
 
   private async formatHistory() {
     const easySends = await this.wallet.getGlobalSendHistory();
-    this.transactions = await formatWalletHistory(this.txs, this.wallet, easySends, this.contactsService);
+    this.transactions = await formatWalletHistory(this.txs, this.wallet, easySends, this.feeService,  this.contactsService);
   }
 
   selectWallet() {
