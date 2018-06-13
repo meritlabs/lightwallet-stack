@@ -937,7 +937,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     getServerWithAuth(req, res, () => {
       request({
         method: 'POST',
-        uri: 'http://localhost:8300/globalsend',
+        uri: opts.meritMessagingUrl + '/globalsend',
         json: req.body
       }, (err, response) => {
         if (!err && parseInt(response.statusCode) === 200) {
