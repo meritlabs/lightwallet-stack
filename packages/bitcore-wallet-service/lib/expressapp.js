@@ -709,7 +709,7 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   router.post('/v1/sms-notifications', (req, res) => {
     getServerWithAuth(req, res, server => {
-      server.smsNotificationsSubscribe(req.body, (err, res) => {
+      server.smsNotificationsSubscribe(req.body, (err, response) => {
         if (err) return returnError(err, res, req);
         res.json(response);
       });
@@ -718,7 +718,7 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   router.delete('/v1/sms-notifications', (req, res) => {
     getServerWithAuth(req, res, server => {
-      server.smsNotificationsUnsubscribe((err, res) => {
+      server.smsNotificationsUnsubscribe((err, response) => {
         if (err) return returnError(err, res, req);
         res.json(response);
       });
@@ -727,7 +727,7 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   router.get('/v1/sms-notifications', (req, res) => {
     getServerWithAuth(req, res, server => {
-      server.getSmsNotificationSubscription((err, res) => {
+      server.getSmsNotificationSubscription((err, response) => {
         if (err) return returnError(err, res, req);
         res.json(response);
       });
