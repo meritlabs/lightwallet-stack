@@ -9,11 +9,10 @@ import { MWCService } from '@merit/common/services/mwc.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { RateService } from '@merit/common/services/rate.service';
+import { accessWallet, WalletService } from '@merit/common/services/wallet.service';
 import { Address, crypto, HDPrivateKey, HDPublicKey, PrivateKey, PublicKey, Script, Transaction } from 'bitcore-lib';
 import { Subject } from 'rxjs/Subject';
-import { WalletService, accessWallet } from "@merit/common/services/wallet.service";
-import { AlertController } from 'ionic-angular';
-import { Events } from 'ionic-angular/util/events';
+import { AlertService } from "@merit/common/services/alert.service";
 
 @Injectable()
 export class EasyReceiveService {
@@ -26,15 +25,16 @@ export class EasyReceiveService {
     private ledger: LedgerService,
     private rateService: RateService,
     private walletService: WalletService,
-    private alertCtrl: AlertController,
-    private events: Events
+    private alertCtrl: AlertService
   ) {
   }
 
   private cancelEasySendSource = new Subject<EasyReceipt>();
+  private cancelledEasySendSource = new Subject<EasyReceipt>();
   private easyReceiptsSource = new Subject<EasyReceipt>();
 
   cancelEasySendObservable$ = this.cancelEasySendSource.asObservable();
+  cancelledEasySend$ = this.cancelledEasySendSource.asObservable();
   easyReceipts$ = this.easyReceiptsSource.asObservable();
 
   parseEasySendUrl(url: string) {
@@ -84,10 +84,10 @@ export class EasyReceiveService {
 
   @accessWallet
   acceptEasyReceipt(
-                    wallet: MeritWalletClient,
-                    receipt: EasyReceipt,
-                    input: any,
-                    destinationAddress: any): Promise<void> {
+    wallet: MeritWalletClient,
+    receipt: EasyReceipt,
+    input: any,
+    destinationAddress: any): Promise<void> {
     return this.spendEasyReceipt(receipt, wallet, input, destinationAddress);
   }
 
@@ -165,7 +165,10 @@ export class EasyReceiveService {
     if (!tx.invite) tx.amount = this.rateService.mrtToMicro(tx.amount);
     const fee = tx.invite ? 0 : await this.feeService.getEasyReceiveFee();
     const txp = await this.buildEasySendRedeemTransaction(input, tx, destinationAddress, fee);
-    return this.walletService.broadcastRawTx(wallet, { rawTx: txp.serialize({ disableSmallFees: tx.invite }), network: ENV.network });
+    return this.walletService.broadcastRawTx(wallet, {
+      rawTx: txp.serialize({ disableSmallFees: tx.invite }),
+      network: ENV.network
+    });
   }
 
   generateEasyScipt(receipt: EasyReceipt, password: string) {
@@ -292,7 +295,7 @@ export class EasyReceiveService {
 
     await wallet.cancelGlobalSend(scriptAddress.toString());
 
-    this.events.publish('globalSendCancelled', scriptAddress.toString());
+    this.cancelledEasySendSource.next(scriptAddress.toString());
 
     return {
       invite: invite,

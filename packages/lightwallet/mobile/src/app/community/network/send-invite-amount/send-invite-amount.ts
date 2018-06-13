@@ -1,16 +1,24 @@
-import { IonicPage, NavParams, NavController,  LoadingController, ModalController, AlertController, Platform  } from 'ionic-angular';
-import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { ProfileService } from '@merit/common/services/profile.service';
-import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
-import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { EasySendService } from '@merit/common/services/easy-send.service';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { getEasySendURL } from '@merit/common/models/easy-send';
 import { SendMethodType } from '@merit/common/models/send-method';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { getSendMethodDestinationType } from '@merit/common/utils/destination';
+import { EasySendService } from '@merit/common/services/easy-send.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { WalletService } from '@merit/common/services/wallet.service';
+import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
+import {
+  AlertController,
+  IonicPage,
+  LoadingController,
+  ModalController,
+  NavController,
+  NavParams,
+  Platform
+} from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -19,18 +27,16 @@ import { WalletService } from '@merit/common/services/wallet.service';
 })
 export class SendInviteAmountView {
 
-  public  wallets: Array<MeritWalletClient>;
-  public wallet: MeritWalletClient;
-
-  public formData = {
+  wallets: Array<MeritWalletClient>;
+  wallet: MeritWalletClient;
+  formData = {
     amount: null,
     destination: ''
   };
-  public address;
+  address;
+  error: string;
+  link: string;
 
-  public error:string;
-
-  public link:string;
   copied: boolean;
   showShareButton: boolean;
   amountFocused: boolean;
@@ -63,7 +69,7 @@ export class SendInviteAmountView {
     }
   }
 
-  async ionViewDidEnter() {
+  ionViewDidEnter() {
     this.focusInput();
   }
 
@@ -79,7 +85,7 @@ export class SendInviteAmountView {
       return this.toastCtrl.error('You don\'t have enough invites in your wallet for this transaction.');
     }
 
-    let loader = this.loadCtrl.create({ content: 'Creating MeritInvite link...' });
+    const loader = this.loadCtrl.create({ content: 'Creating MeritInvite link...' });
     try {
       loader.present();
 
@@ -155,12 +161,14 @@ export class SendInviteAmountView {
     } else {
       this.alertCtrl.create({
         title: 'Have you copied/shared your link?',
-        message: "Do not forget to copy or share your link, or you can lose invite",
+        message: 'Do not forget to copy or share your link, or you can lose invite',
         buttons: [
           { text: 'Cancel', role: 'cancel' },
-          { text: 'Ok', handler: () => {
-            this.navCtrl.pop();
-          } }
+          {
+            text: 'Ok', handler: () => {
+              this.navCtrl.pop();
+            }
+          }
         ]
       }).present();
     }
@@ -169,9 +177,7 @@ export class SendInviteAmountView {
   isSendAllowed() {
     return (
       !this.error && this.formData.amount
-    )
+    );
   }
-
-
 
 }
