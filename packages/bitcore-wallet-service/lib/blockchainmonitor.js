@@ -182,12 +182,13 @@ BlockchainMonitor.prototype._uniqueMessageProcessing = function (identity, cb) {
 
   self.storage.findKnownMessages(identity, function (err, found) {
     if (err) {
-      log.warn('Could not check message', err);
+      log.warn('Could not check message', identity, err);
       return;
     }
 
     if (found) {
-      log.debug('Message is already processed');
+      const logData = identity.txid ? `transaction ${identity.txid}` : `block ${identity.blockHash}`;
+      log.info(`Message of type ${identity.type} for ${logData} is already processed`);
       return;
     }
 
@@ -316,8 +317,6 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
           }
 
           var walletId = address.walletId;
-
-          console.log('\n\n DATA: \n' + JSON.stringify(data) + '\n\n');
 
           let notificationType = '';
           if (data.isCoinbase) {

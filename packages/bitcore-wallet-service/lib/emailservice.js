@@ -386,7 +386,6 @@ EmailService.prototype._checkShouldSendEmail = function (notification, cb) {
 };
 
 EmailService.prototype.sendEmail = function (notification, cb) {
-  log.warn(`\nEmailService: RECEIVED NOTIFICATION: ${JSON.stringify(notification)}\n\n`)
   const self = this;
 
   cb = cb || function () {};

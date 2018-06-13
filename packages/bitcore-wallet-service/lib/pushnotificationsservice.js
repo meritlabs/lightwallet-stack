@@ -147,7 +147,6 @@ PushNotificationsService.prototype.start = function (opts, cb) {
 };
 
 PushNotificationsService.prototype._sendPushNotifications = function (notification, cb) {
-  log.warn(`\nPushNotificationsService: RECEIVED NOTIFICATION: ${JSON.stringify(notification)}\n\n`);
   const self = this;
   cb = cb || function () {};
 
