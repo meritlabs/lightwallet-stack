@@ -17,6 +17,8 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
     }
   });
 
+  let meritMoneyAddresses = []; // registering merit money transactions so we can hide bound invite transactions
+
   let pendingString;
 
   walletHistory = await Promise.all(walletHistory.map(async (tx: IDisplayTransaction, i: number) => {
@@ -125,6 +127,9 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
       tx.easySend = easySend;
       tx.easySendUrl = getEasySendURL(easySend);
       tx.cancelled = easySend.cancelled;
+      if (tx.type == 'meritmoney') {
+        meritMoneyAddresses.push(tx.addressTo);
+      }
     }
 
     return tx;
@@ -132,6 +137,9 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
   // remove meritmoney invites so we  have only one tx for meritmoney
   return walletHistory
-    .filter(t => !(t.type == 'meritmoney' && t.isInvite))
+    .filter(t => {
+      if (t.type != 'meritinvite') return true;
+      return meritMoneyAddresses.indexOf(t.addressTo) == -1;
+    })
     .reverse();
 }
