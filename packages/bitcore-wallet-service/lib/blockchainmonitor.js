@@ -180,7 +180,7 @@ BlockchainMonitor.prototype._handleIncomingReferral = function (data) {
 BlockchainMonitor.prototype._uniqueMessageProcessing = function (identity, cb) {
   const self = this;
 
-  self.storage.findKnownMessages(identity, function (err, found) {
+  self.storage.checkKnownMessages(identity, function (err, found) {
     if (err) {
       log.warn('Could not check message', identity, err);
       return;
@@ -192,9 +192,7 @@ BlockchainMonitor.prototype._uniqueMessageProcessing = function (identity, cb) {
       return;
     }
 
-    self.storage.storeKnownMessage(identity, function () {
-      return cb();
-    });
+    return cb();
   });
 };
 

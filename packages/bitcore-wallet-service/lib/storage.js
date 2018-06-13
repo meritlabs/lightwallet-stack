@@ -1396,7 +1396,7 @@ Storage.prototype.storeKnownMessage = function(data, cb) {
     if (err) return cb(err);
     return cb(null, result);
   });
-}
+};
 
 Storage.prototype.findKnownMessages = function(data, cb) {
   this.db.collection(collections.KNOWN_MESSAGES).find(
@@ -1406,7 +1406,20 @@ Storage.prototype.findKnownMessages = function(data, cb) {
     if (err) return cb(err);
     return cb(null, !_.isEmpty(result));
   });
-}
+};
+
+Storage.prototype.checkKnownMessages = function(data, cb) {
+  this.db.collection(collections.KNOWN_MESSAGES).findOneAndUpdate(data, data, {
+    readPreference: mongodb.ReadPreference.PRIMARY,
+    w: "majority",
+    writeConcern: { w: "majority", wtimeout: 5000 },
+    new: true,
+    returnOriginal: false,
+  }, function(err, result) {
+    console.log('\n\n' + JSON.stringify(result) + '\n\n');
+    cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.ok);
+  });
+};
 
 Storage.collections = collections;
 module.exports = Storage;
