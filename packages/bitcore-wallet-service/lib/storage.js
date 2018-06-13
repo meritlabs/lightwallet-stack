@@ -37,12 +37,12 @@ var collections = {
   KNOWN_MESSAGES: 'known_messages',
 };
 
-var Storage = function(opts) {
+var Storage = function (opts) {
   opts = opts || {};
   this.db = opts.db;
 };
 
-Storage.prototype._createIndexes = function() {
+Storage.prototype._createIndexes = function () {
   this.db.collection(collections.WALLETS).createIndex({
     id: 1
   });
@@ -108,12 +108,15 @@ Storage.prototype._createIndexes = function() {
     initialTxId: 1,
   });
   this.db.collection(collections.KNOWN_MESSAGES).createIndex({
-     type: 1, txid: 1, blockHash: 1
-    }, { unique: true }
-  );
+    type: 1,
+    txid: 1,
+    blockHash: 1
+  }, {
+    unique: true
+  });
 };
 
-Storage.prototype.connect = function(opts, cb) {
+Storage.prototype.connect = function (opts, cb) {
   var self = this;
 
   opts = opts || {};
@@ -121,7 +124,7 @@ Storage.prototype.connect = function(opts, cb) {
   if (this.db) return cb();
 
   var config = opts.mongoDb || {};
-  mongodb.MongoClient.connect(config.uri, function(err, db) {
+  mongodb.MongoClient.connect(config.uri, function (err, db) {
     if (err) {
       log.error('Unable to connect to the mongoDB. Check the credentials.');
       return cb(err);
@@ -134,26 +137,26 @@ Storage.prototype.connect = function(opts, cb) {
 };
 
 
-Storage.prototype.disconnect = function(cb) {
+Storage.prototype.disconnect = function (cb) {
   var self = this;
-  this.db.close(true, function(err) {
+  this.db.close(true, function (err) {
     if (err) return cb(err);
     self.db = null;
     return cb();
   });
 };
 
-Storage.prototype.fetchWallet = function(id, cb) {
+Storage.prototype.fetchWallet = function (id, cb) {
   this.db.collection(collections.WALLETS).findOne({
     id: id
-  }, function(err, result) {
+  }, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
     return cb(null, Model.Wallet.fromObj(result));
   });
 };
 
-Storage.prototype.storeWallet = function(wallet, cb) {
+Storage.prototype.storeWallet = function (wallet, cb) {
   this.db.collection(collections.WALLETS).update({
     id: wallet.id
   }, wallet.toObject(), {
@@ -162,10 +165,10 @@ Storage.prototype.storeWallet = function(wallet, cb) {
   }, cb);
 };
 
-Storage.prototype.storeWalletAndUpdateCopayersLookup = function(wallet, cb) {
+Storage.prototype.storeWalletAndUpdateCopayersLookup = function (wallet, cb) {
   var self = this;
 
-  var copayerLookups = _.map(wallet.copayers, function(copayer) {
+  var copayerLookups = _.map(wallet.copayers, function (copayer) {
     $.checkState(copayer.requestPubKeys);
     return {
       copayerId: copayer.id,
@@ -178,22 +181,22 @@ Storage.prototype.storeWalletAndUpdateCopayersLookup = function(wallet, cb) {
     walletId: wallet.id
   }, {
     w: 1
-  }, function(err) {
+  }, function (err) {
     if (err) return cb(err);
     self.db.collection(collections.COPAYERS_LOOKUP).insert(copayerLookups, {
       w: 1
-    }, function(err) {
+    }, function (err) {
       if (err) return cb(err);
       return self.storeWallet(wallet, cb);
     });
   });
 };
 
-Storage.prototype.fetchCopayerLookup = function(copayerId, cb) {
+Storage.prototype.fetchCopayerLookup = function (copayerId, cb) {
 
   this.db.collection(collections.COPAYERS_LOOKUP).findOne({
     copayerId: copayerId
-  }, function(err, result) {
+  }, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
 
@@ -209,15 +212,15 @@ Storage.prototype.fetchCopayerLookup = function(copayerId, cb) {
 };
 
 // TODO: should be done client-side
-Storage.prototype._completeTxData = function(walletId, txs, cb) {
+Storage.prototype._completeTxData = function (walletId, txs, cb) {
   var self = this;
 
-  self.fetchWallet(walletId, function(err, wallet) {
+  self.fetchWallet(walletId, function (err, wallet) {
     if (err) return cb(err);
-    _.each([].concat(txs), function(tx) {
+    _.each([].concat(txs), function (tx) {
       tx.derivationStrategy = wallet.derivationStrategy || 'BIP45';
       tx.creatorName = wallet.getCopayer(tx.creatorId).name;
-      _.each(tx.actions, function(action) {
+      _.each(tx.actions, function (action) {
         action.copayerName = wallet.getCopayer(action.copayerId).name;
       });
 
@@ -230,13 +233,13 @@ Storage.prototype._completeTxData = function(walletId, txs, cb) {
 };
 
 // TODO: remove walletId from signature
-Storage.prototype.fetchTx = function(walletId, txProposalId, cb) {
+Storage.prototype.fetchTx = function (walletId, txProposalId, cb) {
   var self = this;
 
   this.db.collection(collections.TXS).findOne({
     id: txProposalId,
     walletId: walletId
-  }, function(err, result) {
+  }, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
     return self._completeTxData(walletId, Model.TxProposal.fromObj(result), cb);
@@ -245,7 +248,7 @@ Storage.prototype.fetchTx = function(walletId, txProposalId, cb) {
 
 // This is an explicit fetch method that returns an error if a TX is not found.
 // We need this approach to ensure that we preserve the integrity of retry logic
-Storage.prototype.mustFetchTx = function(walletId, txProposalId, cb, last) {
+Storage.prototype.mustFetchTx = function (walletId, txProposalId, cb, last) {
   var self = this;
 
   last = !!last;
@@ -257,7 +260,7 @@ Storage.prototype.mustFetchTx = function(walletId, txProposalId, cb, last) {
     }, {
       limit: 1,
       readPreference: mongodb.ReadPreference.PRIMARY,
-    }).toArray(function(err, results) {
+    }).toArray(function (err, results) {
       if (err) return cb(err);
 
       if (!results || results.length < 1 || !results[0]) return cb(new Error("TX_NOT_FOUND"));
@@ -269,7 +272,7 @@ Storage.prototype.mustFetchTx = function(walletId, txProposalId, cb, last) {
     this.db.collection(collections.TXS).findOne({
       id: txProposalId,
       walletId: walletId
-    }, function(err, result) {
+    }, function (err, result) {
       if (err) return cb(err);
       if (!result) return cb(new Error("TX_NOT_FOUND"));
       return self._completeTxData(walletId, Model.TxProposal.fromObj(result), cb);
@@ -279,7 +282,7 @@ Storage.prototype.mustFetchTx = function(walletId, txProposalId, cb, last) {
 
 // This is an explicit fetch method that returns an error if a TX is not found.
 // We need this approach to ensure that we preserve the integrity of retry logic
-Storage.prototype.mustFetchPendingTx = function(walletId, txProposalId, cb, last) {
+Storage.prototype.mustFetchPendingTx = function (walletId, txProposalId, cb, last) {
   var self = this;
 
   last = !!last;
@@ -291,7 +294,7 @@ Storage.prototype.mustFetchPendingTx = function(walletId, txProposalId, cb, last
     }, {
       limit: 1,
       readPreference: mongodb.ReadPreference.PRIMARY,
-    }).toArray(function(err, results) {
+    }).toArray(function (err, results) {
       if (err) return cb(err);
 
       if (!results || results.length < 1 || !results[0]) {
@@ -306,7 +309,7 @@ Storage.prototype.mustFetchPendingTx = function(walletId, txProposalId, cb, last
     this.db.collection(collections.TXS).findOne({
       id: txProposalId,
       walletId: walletId
-    }, function(err, result) {
+    }, function (err, result) {
       if (err) return cb(err);
       if (!result) return cb(new Error("TX_NOT_FOUND"));
       if (!result.isPending) return cb(new Error("TX_NOT_PENDING"));
@@ -317,12 +320,12 @@ Storage.prototype.mustFetchPendingTx = function(walletId, txProposalId, cb, last
 
 
 
-Storage.prototype.fetchTxByHash = function(hash, cb) {
+Storage.prototype.fetchTxByHash = function (hash, cb) {
   var self = this;
 
   this.db.collection(collections.TXS).findOne({
     txid: hash,
-  }, function(err, result) {
+  }, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
 
@@ -330,7 +333,7 @@ Storage.prototype.fetchTxByHash = function(hash, cb) {
   });
 };
 
-Storage.prototype.fetchLastTxs = function(walletId, creatorId, limit, cb) {
+Storage.prototype.fetchLastTxs = function (walletId, creatorId, limit, cb) {
   var self = this;
 
   this.db.collection(collections.TXS).find({
@@ -340,10 +343,10 @@ Storage.prototype.fetchLastTxs = function(walletId, creatorId, limit, cb) {
     limit: limit || 5
   }).sort({
     createdOn: -1
-  }).toArray(function(err, result) {
+  }).toArray(function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
-    var txs = _.map(result, function(tx) {
+    var txs = _.map(result, function (tx) {
       return Model.TxProposal.fromObj(tx);
     });
     return cb(null, txs);
@@ -352,7 +355,7 @@ Storage.prototype.fetchLastTxs = function(walletId, creatorId, limit, cb) {
 
 
 
-Storage.prototype.fetchPendingTxs = function(walletId, cb) {
+Storage.prototype.fetchPendingTxs = function (walletId, cb) {
   var self = this;
 
   self.db.collection(collections.TXS).find({
@@ -360,10 +363,10 @@ Storage.prototype.fetchPendingTxs = function(walletId, cb) {
     isPending: true,
   }).sort({
     createdOn: -1
-  }).toArray(function(err, result) {
+  }).toArray(function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
-    var txs = _.map(result, function(tx) {
+    var txs = _.map(result, function (tx) {
       return Model.TxProposal.fromObj(tx);
     });
     return self._completeTxData(walletId, txs, cb);
@@ -378,7 +381,7 @@ Storage.prototype.fetchPendingTxs = function(walletId, cb) {
  * @param opts.maxTs
  * @param opts.limit
  */
-Storage.prototype.fetchTxs = function(walletId, opts, cb) {
+Storage.prototype.fetchTxs = function (walletId, opts, cb) {
   var self = this;
 
   opts = opts || {};
@@ -397,10 +400,10 @@ Storage.prototype.fetchTxs = function(walletId, opts, cb) {
 
   this.db.collection(collections.TXS).find(filter, mods).sort({
     createdOn: -1
-  }).toArray(function(err, result) {
+  }).toArray(function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
-    var txs = _.map(result, function(tx) {
+    var txs = _.map(result, function (tx) {
       return Model.TxProposal.fromObj(tx);
     });
     return self._completeTxData(walletId, txs, cb);
@@ -415,7 +418,7 @@ Storage.prototype.fetchTxs = function(walletId, opts, cb) {
  * @param opts.maxTs
  * @param opts.limit
  */
-Storage.prototype.fetchBroadcastedTxs = function(walletId, opts, cb) {
+Storage.prototype.fetchBroadcastedTxs = function (walletId, opts, cb) {
   var self = this;
 
   opts = opts || {};
@@ -435,17 +438,17 @@ Storage.prototype.fetchBroadcastedTxs = function(walletId, opts, cb) {
 
   this.db.collection(collections.TXS).find(filter, mods).sort({
     createdOn: -1
-  }).toArray(function(err, result) {
+  }).toArray(function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
-    var txs = _.map(result, function(tx) {
+    var txs = _.map(result, function (tx) {
       return Model.TxProposal.fromObj(tx);
     });
     return self._completeTxData(walletId, txs, cb);
   });
 };
 
-Storage.prototype.fetchInvitedAddresses = function(walletId, cb) {
+Storage.prototype.fetchInvitedAddresses = function (walletId, cb) {
 
   var filter = {
     isInvite: true,
@@ -454,19 +457,21 @@ Storage.prototype.fetchInvitedAddresses = function(walletId, cb) {
   };
 
   var fields = {
-      outputs: 1
+    outputs: 1
   };
 
-  this.db.collection(collections.TXS).find(filter, fields).sort({broadcastedOn: -1}).toArray(function(err, result) {
+  this.db.collection(collections.TXS).find(filter, fields).sort({
+    broadcastedOn: -1
+  }).toArray(function (err, result) {
     if (err) return cb(err);
     if (!result) return cb(null, []);
 
-    var addresses = result.reduce(function(addrs, tx) {
+    var addresses = result.reduce(function (addrs, tx) {
 
       return addrs.concat(
-        tx.outputs.filter(function(output) {
+        tx.outputs.filter(function (output) {
           return (addrs.indexOf(output.address) == -1);
-        }).map(function(output) {
+        }).map(function (output) {
           return output.toAddress;
         })
       );
@@ -476,14 +481,14 @@ Storage.prototype.fetchInvitedAddresses = function(walletId, cb) {
   });
 };
 
-Storage.prototype.fetchReferralByCodeHash = function(codeHash, cb) {
+Storage.prototype.fetchReferralByCodeHash = function (codeHash, cb) {
   const self = this;
 
   const filter = {
     codeHash,
   };
 
-  self.db.collection(collections.REFERRALS).find(filter, function(err, result) {
+  self.db.collection(collections.REFERRALS).find(filter, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
 
@@ -491,7 +496,7 @@ Storage.prototype.fetchReferralByCodeHash = function(codeHash, cb) {
   });
 };
 
-Storage.prototype.storeReferral = function(referral, cb) {
+Storage.prototype.storeReferral = function (referral, cb) {
   this.db.collection(collections.REFERRALS).update({
     address: referral.address,
   }, referral, {
@@ -507,7 +512,7 @@ Storage.prototype.storeReferral = function(referral, cb) {
  * @param {Number} minTs
  * @returns {Notification[]} Notifications
  */
-Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs, cb) {
+Storage.prototype.fetchNotifications = function (walletId, notificationId, minTs, cb) {
   function makeId(timestamp) {
     return _.padStart(timestamp, 14, '0') + _.repeat('0', 4);
   };
@@ -529,38 +534,38 @@ Storage.prototype.fetchNotifications = function(walletId, notificationId, minTs,
       readPreference: mongodb.ReadPreference.PRIMARY,
     }).sort({
       id: 1
-    }).toArray(function(err, result) {
+    }).toArray(function (err, result) {
       if (err) return cb(err);
       if (!result) return cb();
-      var notifications = _.map(result, function(notification) {
+      var notifications = _.map(result, function (notification) {
         return Model.Notification.fromObj(notification);
       });
       return cb(null, notifications);
     });
 };
 
-Storage.prototype.storeNotification = function(notification, cb) {
+Storage.prototype.storeNotification = function (notification, cb) {
   this.db.collection(collections.NOTIFICATIONS).insert(notification, {
     w: "majority",
-  }, function(err, result) {
+  }, function (err, result) {
     cb(err, result);
   });
 };
 
-Storage.prototype.fetchNotification = function(notification, cb) {
+Storage.prototype.fetchNotification = function (notification, cb) {
   this.db.collection(collections.NOTIFICATIONS).find({
     id: notification.id,
     walletId: notification.walletId,
   }, {
     readPreference: mongodb.ReadPreference.PRIMARY,
-  }).toArray(function(err, result) {
+  }).toArray(function (err, result) {
     if (err) return cb(err);
     if (!result || _.isEmpty(result)) return cb();
     cb(null, result[0]);
   });
 };
 
-Storage.prototype.fetchAndLockNotificationForPushes = function(notification, cb) {
+Storage.prototype.fetchAndLockNotificationForPushes = function (notification, cb) {
   notification.lockForPushNotifications();
   this.db.collection(collections.NOTIFICATIONS).findOneAndUpdate({
     id: notification.id,
@@ -569,15 +574,18 @@ Storage.prototype.fetchAndLockNotificationForPushes = function(notification, cb)
   }, notification, {
     readPreference: mongodb.ReadPreference.PRIMARY,
     w: "majority",
-    writeConcern: { w: "majority", wtimeout: 5000 },
+    writeConcern: {
+      w: "majority",
+      wtimeout: 5000
+    },
     new: true,
     returnOriginal: false,
-  }, function(err, result) {
+  }, function (err, result) {
     cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
   });
 };
 
-Storage.prototype.fetchAndLockNotificationForEmails = function(notification, cb) {
+Storage.prototype.fetchAndLockNotificationForEmails = function (notification, cb) {
   notification.lockForEmailNotifications();
   this.db.collection(collections.NOTIFICATIONS).findOneAndUpdate({
     id: notification.id,
@@ -586,16 +594,19 @@ Storage.prototype.fetchAndLockNotificationForEmails = function(notification, cb)
   }, notification, {
     readPreference: mongodb.ReadPreference.PRIMARY,
     w: "majority",
-    writeConcern: { w: "majority", wtimeout: 5000 },
+    writeConcern: {
+      w: "majority",
+      wtimeout: 5000
+    },
     new: true,
     returnOriginal: false,
-  }, function(err, result) {
+  }, function (err, result) {
     cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
   });
 };
 
 // TODO: remove walletId from signature
-Storage.prototype.storeTx = function(walletId, txp, cb) {
+Storage.prototype.storeTx = function (walletId, txp, cb) {
   this.db.collection(collections.TXS).update({
     id: txp.id,
     walletId: walletId
@@ -605,7 +616,7 @@ Storage.prototype.storeTx = function(walletId, txp, cb) {
   }, cb);
 };
 
-Storage.prototype.removeTx = function(walletId, txProposalId, cb) {
+Storage.prototype.removeTx = function (walletId, txProposalId, cb) {
   this.db.collection(collections.TXS).findAndRemove({
     id: txProposalId,
     walletId: walletId
@@ -614,19 +625,19 @@ Storage.prototype.removeTx = function(walletId, txProposalId, cb) {
   }, cb);
 };
 
-Storage.prototype.removeWallet = function(walletId, cb) {
+Storage.prototype.removeWallet = function (walletId, cb) {
   var self = this;
 
   async.parallel([
 
-    function(next) {
+    function (next) {
       self.db.collection(collections.WALLETS).findAndRemove({
         id: walletId
       }, next);
     },
-    function(next) {
+    function (next) {
       var otherCollections = _.without(_.values(collections), collections.WALLETS);
-      async.each(otherCollections, function(col, next) {
+      async.each(otherCollections, function (col, next) {
         self.db.collection(col).remove({
           walletId: walletId
         }, next);
@@ -636,7 +647,7 @@ Storage.prototype.removeWallet = function(walletId, cb) {
 };
 
 
-Storage.prototype.fetchAddresses = function(walletId, cb) {
+Storage.prototype.fetchAddresses = function (walletId, cb) {
   var self = this;
 
   this.db.collection(collections.ADDRESSES).find({
@@ -644,23 +655,23 @@ Storage.prototype.fetchAddresses = function(walletId, cb) {
     signed: true,
   }).sort({
     createdOn: 1
-  }).toArray(function(err, result) {
+  }).toArray(function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
-    var addresses = _.map(result, function(address) {
+    var addresses = _.map(result, function (address) {
       return Model.Address.fromObj(address);
     });
     return cb(null, addresses);
   });
 };
 
-Storage.prototype.countAddresses = function(walletId, cb) {
+Storage.prototype.countAddresses = function (walletId, cb) {
   this.db.collection(collections.ADDRESSES).find({
     walletId: walletId,
   }).count(cb);
 };
 
-Storage.prototype.storeAddress = function(address, cb) {
+Storage.prototype.storeAddress = function (address, cb) {
   var self = this;
 
   self.db.collection(collections.ADDRESSES).update({
@@ -671,7 +682,7 @@ Storage.prototype.storeAddress = function(address, cb) {
   }, cb);
 };
 
-Storage.prototype.storeAddressAndWallet = function(wallet, addresses, cb) {
+Storage.prototype.storeAddressAndWallet = function (wallet, addresses, cb) {
   var self = this;
 
   function saveAddresses(addresses, cb) {
@@ -684,12 +695,12 @@ Storage.prototype.storeAddressAndWallet = function(wallet, addresses, cb) {
   var addresses = [].concat(addresses);
   if (addresses.length == 0) return cb();
 
-  async.filter(addresses, function(address, next) {
+  async.filter(addresses, function (address, next) {
     self.db.collection(collections.ADDRESSES).findOne({
       address: address.address,
     }, {
       walletId: true,
-    }, function(err, result) {
+    }, function (err, result) {
       if (err || !result) return next(true);
       if (result.walletId != wallet.id) {
         log.warn('Address ' + address.address + ' exists in more than one wallet.');
@@ -698,34 +709,34 @@ Storage.prototype.storeAddressAndWallet = function(wallet, addresses, cb) {
       // Ignore if address was already in wallet
       return next(false);
     });
-  }, function(newAddresses) {
+  }, function (newAddresses) {
     if (newAddresses) {
-        saveAddresses(addresses, function(err) {
-            if (err) return cb(err);
-            self.storeWallet(wallet, cb);
-        });
+      saveAddresses(addresses, function (err) {
+        if (err) return cb(err);
+        self.storeWallet(wallet, cb);
+      });
     } else {
       return cb(null);
     }
   });
 };
 
-Storage.prototype.fetchAddress = function(address, cb) {
+Storage.prototype.fetchAddress = function (address, cb) {
   var self = this;
 
   this.db.collection(collections.ADDRESSES).findOne({
     address: address,
-  }, function(err, result) {
+  }, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
     return cb(null, Model.Address.fromObj(result));
   });
 };
 
-Storage.prototype.fetchPreferences = function(walletId, copayerId, cb) {
+Storage.prototype.fetchPreferences = function (walletId, copayerId, cb) {
   this.db.collection(collections.PREFERENCES).find({
     walletId: walletId,
-  }).toArray(function(err, result) {
+  }).toArray(function (err, result) {
     if (err) return cb(err);
 
     if (copayerId) {
@@ -735,7 +746,7 @@ Storage.prototype.fetchPreferences = function(walletId, copayerId, cb) {
     }
     if (!result) return cb();
 
-    var preferences = _.map([].concat(result), function(r) {
+    var preferences = _.map([].concat(result), function (r) {
       return Model.Preferences.fromObj(r);
     });
     if (copayerId) {
@@ -745,7 +756,7 @@ Storage.prototype.fetchPreferences = function(walletId, copayerId, cb) {
   });
 };
 
-Storage.prototype.storePreferences = function(preferences, cb) {
+Storage.prototype.storePreferences = function (preferences, cb) {
   this.db.collection(collections.PREFERENCES).update({
     walletId: preferences.walletId,
     copayerId: preferences.copayerId,
@@ -755,7 +766,7 @@ Storage.prototype.storePreferences = function(preferences, cb) {
   }, cb);
 };
 
-Storage.prototype.storeEmail = function(email, cb) {
+Storage.prototype.storeEmail = function (email, cb) {
   this.db.collection(collections.EMAIL_QUEUE).update({
     id: email.id,
   }, email, {
@@ -764,20 +775,20 @@ Storage.prototype.storeEmail = function(email, cb) {
   }, cb);
 };
 
-Storage.prototype.fetchUnsentEmails = function(cb) {
+Storage.prototype.fetchUnsentEmails = function (cb) {
   this.db.collection(collections.EMAIL_QUEUE).find({
     status: 'pending',
-  }).toArray(function(err, result) {
+  }).toArray(function (err, result) {
     if (err) return cb(err);
     if (!result || _.isEmpty(result)) return cb(null, []);
     return cb(null, Model.Email.fromObj(result));
   });
 };
 
-Storage.prototype.fetchEmailByNotification = function(notificationId, cb) {
+Storage.prototype.fetchEmailByNotification = function (notificationId, cb) {
   this.db.collection(collections.EMAIL_QUEUE).findOne({
     notificationId: notificationId,
-  }, function(err, result) {
+  }, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
 
@@ -785,12 +796,12 @@ Storage.prototype.fetchEmailByNotification = function(notificationId, cb) {
   });
 };
 
-Storage.prototype.cleanActiveAddresses = function(walletId, cb) {
+Storage.prototype.cleanActiveAddresses = function (walletId, cb) {
   var self = this;
 
   async.series([
 
-    function(next) {
+    function (next) {
       self.db.collection(collections.CACHE).remove({
         walletId: walletId,
         type: 'activeAddresses',
@@ -798,7 +809,7 @@ Storage.prototype.cleanActiveAddresses = function(walletId, cb) {
         w: 1
       }, next);
     },
-    function(next) {
+    function (next) {
       self.db.collection(collections.CACHE).insert({
         walletId: walletId,
         type: 'activeAddresses',
@@ -810,10 +821,10 @@ Storage.prototype.cleanActiveAddresses = function(walletId, cb) {
   ], cb);
 };
 
-Storage.prototype.storeActiveAddresses = function(walletId, addresses, cb) {
+Storage.prototype.storeActiveAddresses = function (walletId, addresses, cb) {
   var self = this;
 
-  async.each(addresses, function(address, next) {
+  async.each(addresses, function (address, next) {
     var record = {
       walletId: walletId,
       type: 'activeAddresses',
@@ -830,63 +841,63 @@ Storage.prototype.storeActiveAddresses = function(walletId, addresses, cb) {
   }, cb);
 };
 
-Storage.prototype.getReferralsHistoryCache = function(walletId, from, to, cb) {
-    var self = this;
-    $.checkArgument(from >= 0);
-    $.checkArgument(from <= to);
+Storage.prototype.getReferralsHistoryCache = function (walletId, from, to, cb) {
+  var self = this;
+  $.checkArgument(from >= 0);
+  $.checkArgument(from <= to);
 
-    self.db.collection(collections.CACHE).findOne({
-        walletId: walletId,
-        type: 'referralsCacheStatus',
-        key: null
-    }, function(err, result) {
-        if (err) return cb(err);
-        if (!result) return cb();
-        if (!result.isUpdated) return cb();
+  self.db.collection(collections.CACHE).findOne({
+    walletId: walletId,
+    type: 'referralsCacheStatus',
+    key: null
+  }, function (err, result) {
+    if (err) return cb(err);
+    if (!result) return cb();
+    if (!result.isUpdated) return cb();
 
-        // Reverse indexes
-        var fwdIndex = result.totalItems - to;
+    // Reverse indexes
+    var fwdIndex = result.totalItems - to;
 
-        if (fwdIndex < 0) {
-            fwdIndex = 0;
-        }
+    if (fwdIndex < 0) {
+      fwdIndex = 0;
+    }
 
-        var end = result.totalItems - from;
+    var end = result.totalItems - from;
 
-        // nothing to return
-        if (end <= 0) return cb(null, []);
+    // nothing to return
+    if (end <= 0) return cb(null, []);
 
-        // Cache is OK.
-        self.db.collection(collections.CACHE).find({
-            walletId: walletId,
-            type: 'referralsCache',
-            key: {
-                $gte: fwdIndex,
-                $lt: end
-            }
-        }).sort({
-            key: -1
-        }).toArray(function(err, result) {
-            if (err) return cb(err);
+    // Cache is OK.
+    self.db.collection(collections.CACHE).find({
+      walletId: walletId,
+      type: 'referralsCache',
+      key: {
+        $gte: fwdIndex,
+        $lt: end
+      }
+    }).sort({
+      key: -1
+    }).toArray(function (err, result) {
+      if (err) return cb(err);
 
-            if (!result) return cb();
+      if (!result) return cb();
 
-            if (result.length < end - fwdIndex) {
-                // some items are not yet defined.
-                return cb();
-            }
+      if (result.length < end - fwdIndex) {
+        // some items are not yet defined.
+        return cb();
+      }
 
-            var referals = _.map(result, 'referral');
-            return cb(null, referals);
-        });
+      var referals = _.map(result, 'referral');
+      return cb(null, referals);
     });
+  });
 };
 
 // --------         ---------------------------  Total
 //           > Time >
 //                       ^to     <=  ^from
 //                       ^fwdIndex  =>  ^end
-Storage.prototype.getTxHistoryCache = function(walletId, from, to, cb) {
+Storage.prototype.getTxHistoryCache = function (walletId, from, to, cb) {
   var self = this;
   $.checkArgument(from >= 0);
   $.checkArgument(from <= to);
@@ -895,7 +906,7 @@ Storage.prototype.getTxHistoryCache = function(walletId, from, to, cb) {
     walletId: walletId,
     type: 'historyCacheStatus',
     key: null
-  }, function(err, result) {
+  }, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
     if (!result.isUpdated) return cb();
@@ -922,7 +933,7 @@ Storage.prototype.getTxHistoryCache = function(walletId, from, to, cb) {
       },
     }).sort({
       key: -1,
-    }).toArray(function(err, result) {
+    }).toArray(function (err, result) {
       if (err) return cb(err);
 
       if (!result) return cb();
@@ -938,7 +949,7 @@ Storage.prototype.getTxHistoryCache = function(walletId, from, to, cb) {
   })
 };
 
-Storage.prototype.softResetAllTxHistoryCache = function(cb) {
+Storage.prototype.softResetAllTxHistoryCache = function (cb) {
   this.db.collection(collections.CACHE).update({
     type: 'historyCacheStatus',
   }, {
@@ -948,7 +959,7 @@ Storage.prototype.softResetAllTxHistoryCache = function(cb) {
   }, cb);
 };
 
-Storage.prototype.softResetTxHistoryCache = function(walletId, cb) {
+Storage.prototype.softResetTxHistoryCache = function (walletId, cb) {
   this.db.collection(collections.CACHE).update({
     walletId: walletId,
     type: 'historyCacheStatus',
@@ -961,14 +972,14 @@ Storage.prototype.softResetTxHistoryCache = function(walletId, cb) {
   }, cb);
 };
 
-Storage.prototype.clearTxHistoryCache = function(walletId, cb) {
+Storage.prototype.clearTxHistoryCache = function (walletId, cb) {
   var self = this;
   self.db.collection(collections.CACHE).remove({
     walletId: walletId,
     type: 'historyCache',
   }, {
     multi: 1
-  }, function(err) {
+  }, function (err) {
     if (err) return cb(err);
     self.db.collection(collections.CACHE).remove({
       walletId: walletId,
@@ -981,7 +992,7 @@ Storage.prototype.clearTxHistoryCache = function(walletId, cb) {
 };
 
 // items should be in CHRONOLOGICAL order
-Storage.prototype.storeTxHistoryCache = function(walletId, totalItems, firstPosition, items, cb) {
+Storage.prototype.storeTxHistoryCache = function (walletId, totalItems, firstPosition, items, cb) {
   $.shouldBeNumber(firstPosition);
   $.checkArgument(firstPosition >= 0);
   $.shouldBeNumber(totalItems);
@@ -989,13 +1000,13 @@ Storage.prototype.storeTxHistoryCache = function(walletId, totalItems, firstPosi
 
   var self = this;
 
-  _.each(items, function(item, i) {
+  _.each(items, function (item, i) {
     item.position = firstPosition + i;
   });
   var cacheIsComplete = (firstPosition == 0);
 
   // TODO: check txid uniqness?
-  async.each(items, function(item, next) {
+  async.each(items, function (item, next) {
     var pos = item.position;
     delete item.position;
     self.db.collection(collections.CACHE).update({
@@ -1011,7 +1022,7 @@ Storage.prototype.storeTxHistoryCache = function(walletId, totalItems, firstPosi
       w: 1,
       upsert: true,
     }, next);
-  }, function(err) {
+  }, function (err) {
     if (err) return cb(err);
 
     self.db.collection(collections.CACHE).update({
@@ -1037,13 +1048,13 @@ Storage.prototype.storeTxHistoryCache = function(walletId, totalItems, firstPosi
 
 
 
-Storage.prototype.fetchActiveAddresses = function(walletId, cb) {
+Storage.prototype.fetchActiveAddresses = function (walletId, cb) {
   var self = this;
 
   self.db.collection(collections.CACHE).find({
     walletId: walletId,
     type: 'activeAddresses',
-  }).toArray(function(err, result) {
+  }).toArray(function (err, result) {
     if (err) return cb(err);
     if (_.isEmpty(result)) return cb();
 
@@ -1051,11 +1062,11 @@ Storage.prototype.fetchActiveAddresses = function(walletId, cb) {
   });
 };
 
-Storage.prototype.storeFiatRate = function(providerName, rates, cb) {
+Storage.prototype.storeFiatRate = function (providerName, rates, cb) {
   var self = this;
 
   var now = Date.now();
-  async.each(rates, function(rate, next) {
+  async.each(rates, function (rate, next) {
     self.db.collection(collections.FIAT_RATES).insert({
       provider: providerName,
       ts: now,
@@ -1067,7 +1078,7 @@ Storage.prototype.storeFiatRate = function(providerName, rates, cb) {
   }, cb);
 };
 
-Storage.prototype.fetchFiatRate = function(providerName, code, ts, cb) {
+Storage.prototype.fetchFiatRate = function (providerName, code, ts, cb) {
   var self = this;
   self.db.collection(collections.FIAT_RATES).find({
     provider: providerName,
@@ -1077,19 +1088,19 @@ Storage.prototype.fetchFiatRate = function(providerName, code, ts, cb) {
     },
   }).sort({
     ts: -1
-  }).limit(1).toArray(function(err, result) {
+  }).limit(1).toArray(function (err, result) {
     if (err || _.isEmpty(result)) return cb(err);
     return cb(null, result[0]);
   });
 };
 
-Storage.prototype.fetchTxNote = function(walletId, txid, cb) {
+Storage.prototype.fetchTxNote = function (walletId, txid, cb) {
   var self = this;
 
   self.db.collection(collections.TX_NOTES).findOne({
     walletId: walletId,
     txid: txid,
-  }, function(err, result) {
+  }, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
     return self._completeTxNotesData(walletId, Model.TxNote.fromObj(result), cb);
@@ -1097,12 +1108,12 @@ Storage.prototype.fetchTxNote = function(walletId, txid, cb) {
 };
 
 // TODO: should be done client-side
-Storage.prototype._completeTxNotesData = function(walletId, notes, cb) {
+Storage.prototype._completeTxNotesData = function (walletId, notes, cb) {
   var self = this;
 
-  self.fetchWallet(walletId, function(err, wallet) {
+  self.fetchWallet(walletId, function (err, wallet) {
     if (err) return cb(err);
-    _.each([].concat(notes), function(note) {
+    _.each([].concat(notes), function (note) {
       note.editedByName = wallet.getCopayer(note.editedBy).name;
     });
     return cb(null, notes);
@@ -1115,7 +1126,7 @@ Storage.prototype._completeTxNotesData = function(walletId, notes, cb) {
  * @param walletId
  * @param opts.minTs
  */
-Storage.prototype.fetchTxNotes = function(walletId, opts, cb) {
+Storage.prototype.fetchTxNotes = function (walletId, opts, cb) {
   var self = this;
 
   var filter = {
@@ -1124,16 +1135,16 @@ Storage.prototype.fetchTxNotes = function(walletId, opts, cb) {
   if (_.isNumber(opts.minTs)) filter.editedOn = {
     $gte: opts.minTs
   };
-  this.db.collection(collections.TX_NOTES).find(filter).toArray(function(err, result) {
+  this.db.collection(collections.TX_NOTES).find(filter).toArray(function (err, result) {
     if (err) return cb(err);
-    var notes = _.compact(_.map(result, function(note) {
+    var notes = _.compact(_.map(result, function (note) {
       return Model.TxNote.fromObj(note);
     }));
     return self._completeTxNotesData(walletId, notes, cb);
   });
 };
 
-Storage.prototype.storeTxNote = function(txNote, cb) {
+Storage.prototype.storeTxNote = function (txNote, cb) {
   this.db.collection(collections.TX_NOTES).update({
     txid: txNote.txid,
     walletId: txNote.walletId
@@ -1143,19 +1154,19 @@ Storage.prototype.storeTxNote = function(txNote, cb) {
   }, cb);
 };
 
-Storage.prototype.getSession = function(copayerId, cb) {
+Storage.prototype.getSession = function (copayerId, cb) {
   var self = this;
 
   self.db.collection(collections.SESSIONS).findOne({
       copayerId: copayerId,
     },
-    function(err, result) {
+    function (err, result) {
       if (err || !result) return cb(err);
       return cb(null, Model.Session.fromObj(result));
     });
 };
 
-Storage.prototype.storeSession = function(session, cb) {
+Storage.prototype.storeSession = function (session, cb) {
   this.db.collection(collections.SESSIONS).update({
     copayerId: session.copayerId,
   }, session.toObject(), {
@@ -1164,22 +1175,22 @@ Storage.prototype.storeSession = function(session, cb) {
   }, cb);
 };
 
-Storage.prototype.fetchPushNotificationSubs = function(copayerId, cb) {
+Storage.prototype.fetchPushNotificationSubs = function (copayerId, cb) {
   this.db.collection(collections.PUSH_NOTIFICATION_SUBS).find({
     copayerId: copayerId,
-  }).toArray(function(err, result) {
+  }).toArray(function (err, result) {
     if (err) return cb(err);
 
     if (!result) return cb();
 
-    var tokens = _.map([].concat(result), function(r) {
+    var tokens = _.map([].concat(result), function (r) {
       return Model.PushNotificationSub.fromObj(r);
     });
     return cb(null, tokens);
   });
 };
 
-Storage.prototype.storePushNotificationSub = function(pushNotificationSub, cb) {
+Storage.prototype.storePushNotificationSub = function (pushNotificationSub, cb) {
   this.db.collection(collections.PUSH_NOTIFICATION_SUBS).update({
     copayerId: pushNotificationSub.copayerId,
     token: pushNotificationSub.token,
@@ -1189,7 +1200,7 @@ Storage.prototype.storePushNotificationSub = function(pushNotificationSub, cb) {
   }, cb);
 };
 
-Storage.prototype.removePushNotificationSub = function(copayerId, token, cb) {
+Storage.prototype.removePushNotificationSub = function (copayerId, token, cb) {
   this.db.collection(collections.PUSH_NOTIFICATION_SUBS).remove({
     copayerId: copayerId,
     token: token,
@@ -1198,19 +1209,19 @@ Storage.prototype.removePushNotificationSub = function(copayerId, token, cb) {
   }, cb);
 };
 
-Storage.prototype.fetchActiveTxConfirmationSubs = function(copayerId, cb) {
+Storage.prototype.fetchActiveTxConfirmationSubs = function (copayerId, cb) {
   var filter = {
     isActive: true
   };
   if (copayerId) filter.copayerId = copayerId;
 
   this.db.collection(collections.TX_CONFIRMATION_SUBS).find(filter)
-    .toArray(function(err, result) {
+    .toArray(function (err, result) {
       if (err) return cb(err);
 
       if (!result) return cb();
 
-      var subs = _.map([].concat(result), function(r) {
+      var subs = _.map([].concat(result), function (r) {
         return Model.TxConfirmationSub.fromObj(r);
       });
       return cb(null, subs);
@@ -1218,25 +1229,25 @@ Storage.prototype.fetchActiveTxConfirmationSubs = function(copayerId, cb) {
 };
 
 
-Storage.prototype.fetchActiveReferralConfirmationSubs = function(cb) {
+Storage.prototype.fetchActiveReferralConfirmationSubs = function (cb) {
   const filter = {
     isActive: true
   };
 
   this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).find(filter)
-    .toArray(function(err, result) {
+    .toArray(function (err, result) {
       if (err) return cb(err);
 
       if (!result) return cb();
 
-      const subs = _.map([].concat(result), function(r) {
+      const subs = _.map([].concat(result), function (r) {
         return Model.ReferralTxConfirmationSub.fromObj(r);
       });
       return cb(null, subs);
     });
 };
 
-Storage.prototype.storeTxConfirmationSub = function(txConfirmationSub, cb) {
+Storage.prototype.storeTxConfirmationSub = function (txConfirmationSub, cb) {
   this.db.collection(collections.TX_CONFIRMATION_SUBS).update({
     copayerId: txConfirmationSub.copayerId,
     txid: txConfirmationSub.txid,
@@ -1246,7 +1257,7 @@ Storage.prototype.storeTxConfirmationSub = function(txConfirmationSub, cb) {
   }, cb);
 };
 
-Storage.prototype.removeTxConfirmationSub = function(copayerId, txid, cb) {
+Storage.prototype.removeTxConfirmationSub = function (copayerId, txid, cb) {
   this.db.collection(collections.TX_CONFIRMATION_SUBS).remove({
     copayerId: copayerId,
     txid: txid,
@@ -1255,7 +1266,7 @@ Storage.prototype.removeTxConfirmationSub = function(copayerId, txid, cb) {
   }, cb);
 };
 
-Storage.prototype.storeReferralTxConfirmationSub = function(referralConfirmationSub, cb) {
+Storage.prototype.storeReferralTxConfirmationSub = function (referralConfirmationSub, cb) {
   this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).update({
     copayerId: referralConfirmationSub.copayerId,
     codeHash: referralConfirmationSub.codeHash,
@@ -1265,7 +1276,7 @@ Storage.prototype.storeReferralTxConfirmationSub = function(referralConfirmation
   }, cb);
 };
 
-Storage.prototype.removeReferralTxConfirmationSub = function(copayerId, codeHash, cb) {
+Storage.prototype.removeReferralTxConfirmationSub = function (copayerId, codeHash, cb) {
   this.db.collection(collections.REFERRAL_TX_CONFIRMATION_SUBS).remove({
     codeHash: codeHash,
   }, {
@@ -1275,15 +1286,15 @@ Storage.prototype.removeReferralTxConfirmationSub = function(copayerId, codeHash
 };
 
 
-Storage.prototype._dump = function(cb, fn) {
+Storage.prototype._dump = function (cb, fn) {
   fn = fn || console.log;
-  cb = cb || function() {};
+  cb = cb || function () {};
 
   var self = this;
-  this.db.collections(function(err, collections) {
+  this.db.collections(function (err, collections) {
     if (err) return cb(err);
-    async.eachSeries(collections, function(col, next) {
-      col.find().toArray(function(err, items) {
+    async.eachSeries(collections, function (col, next) {
+      col.find().toArray(function (err, items) {
         fn('--------', col.s.name);
         fn(items);
         fn('------------------------------------------------------------------\n\n');
@@ -1296,10 +1307,10 @@ Storage.prototype._dump = function(cb, fn) {
 /**
  * Vaults
  */
-Storage.prototype.fetchVaults = function(copayerId, cb) {
+Storage.prototype.fetchVaults = function (copayerId, cb) {
   this.db.collection(collections.VAULTS).find({
     copayerId,
-  }).toArray(function(err, result) {
+  }).toArray(function (err, result) {
     if (err) return cb(err);
 
     if (!result) return cb();
@@ -1308,7 +1319,7 @@ Storage.prototype.fetchVaults = function(copayerId, cb) {
   });
 };
 
-Storage.prototype.storeVault = function(copayerId, walletId, vaultTx, cb) {
+Storage.prototype.storeVault = function (copayerId, walletId, vaultTx, cb) {
   this.db.collection(collections.VAULTS).insertOne({
     copayerId,
     walletId,
@@ -1318,7 +1329,7 @@ Storage.prototype.storeVault = function(copayerId, walletId, vaultTx, cb) {
   }, cb);
 };
 
-Storage.prototype.updateVault = function(copayerId, vaultTx, cb) {
+Storage.prototype.updateVault = function (copayerId, vaultTx, cb) {
   vaultTx._id = new ObjectID(vaultTx._id);
   this.db.collection(collections.VAULTS).update({
     copayerId,
@@ -1329,10 +1340,10 @@ Storage.prototype.updateVault = function(copayerId, vaultTx, cb) {
   }, cb);
 };
 
-Storage.prototype.fetchVaultByInitialTxId = function(txId, cb) {
+Storage.prototype.fetchVaultByInitialTxId = function (txId, cb) {
   this.db.collection(collections.VAULTS).findOne({
     initialTxId: txId,
-  }, function(err, result) {
+  }, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
 
@@ -1340,10 +1351,10 @@ Storage.prototype.fetchVaultByInitialTxId = function(txId, cb) {
   });
 };
 
-Storage.prototype.fetchVaultById = function(id, cb) {
+Storage.prototype.fetchVaultById = function (id, cb) {
   this.db.collection(collections.VAULTS).findOne({
     _id: new ObjectID(id),
-  }, function(err, result) {
+  }, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
 
@@ -1351,11 +1362,11 @@ Storage.prototype.fetchVaultById = function(id, cb) {
   });
 };
 
-Storage.prototype.fetchVaultByCopayerId = function(copayerId, id, cb) {
+Storage.prototype.fetchVaultByCopayerId = function (copayerId, id, cb) {
   this.db.collection(collections.VAULTS).findOne({
     copayerId,
     _id: new ObjectID(id),
-  }, function(err, result) {
+  }, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
 
@@ -1363,7 +1374,7 @@ Storage.prototype.fetchVaultByCopayerId = function(copayerId, id, cb) {
   });
 };
 
-Storage.prototype.setVaultConfirmed = function(tx, txId, cb) {
+Storage.prototype.setVaultConfirmed = function (tx, txId, cb) {
   tx.status = Bitcore.Vault.Vault.VaultStates.APPROVED;
   this.db.collection(collections.VAULTS).update({
     initialTxId: tx.initialTxId,
@@ -1373,31 +1384,52 @@ Storage.prototype.setVaultConfirmed = function(tx, txId, cb) {
   }, cb);
 };
 
-Storage.prototype.registerGlobalSend = function(walletAddress, scriptAddress, globalsend, cb) {
-  this.db.collection(collections.GLOBALSENDS).insertOne({ walletAddress, scriptAddress, globalsend }, {w: 1 }, cb);
+Storage.prototype.registerGlobalSend = function (walletAddress, scriptAddress, globalsend, cb) {
+  this.db.collection(collections.GLOBALSENDS).insertOne({
+    walletAddress,
+    scriptAddress,
+    globalsend
+  }, {
+    w: 1
+  }, cb);
 };
 
-Storage.prototype.cancelGlobalSend = function(walletAddress, scriptAddress, cb) {
+Storage.prototype.cancelGlobalSend = function (walletAddress, scriptAddress, cb) {
 
-  this.db.collection(collections.GLOBALSENDS).findOneAndUpdate({ walletAddress, scriptAddress}, { $set: {cancelled: true} }, {w: 1, upsert: false}, cb);
+  this.db.collection(collections.GLOBALSENDS).findOneAndUpdate({
+    walletAddress,
+    scriptAddress
+  }, {
+    $set: {
+      cancelled: true
+    }
+  }, {
+    w: 1,
+    upsert: false
+  }, cb);
 };
 
-Storage.prototype.getGlobalSends = function(walletAddress, cb) {
-  this.db.collection(collections.GLOBALSENDS).find({ walletAddress }).toArray(function(err, result) {
-      if (err) return cb(err);
-      return cb(null, result);
+Storage.prototype.getGlobalSends = function (walletAddress, cb) {
+  this.db.collection(collections.GLOBALSENDS).find({
+    walletAddress
+  }).toArray(function (err, result) {
+    if (err) return cb(err);
+    return cb(null, result);
   });
 };
 
-Storage.prototype.checkKnownMessages = function(data, cb) {
+Storage.prototype.checkKnownMessages = function (data, cb) {
   this.db.collection(collections.KNOWN_MESSAGES).findOneAndUpdate(data, data, {
     readPreference: mongodb.ReadPreference.PRIMARY,
     w: "majority",
-    writeConcern: { w: "majority", wtimeout: 5000 },
+    writeConcern: {
+      w: "majority",
+      wtimeout: 5000
+    },
     new: true,
     returnOriginal: false,
     upsert: true,
-  }, function(err, result) {
+  }, function (err, result) {
     cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
   });
 };
