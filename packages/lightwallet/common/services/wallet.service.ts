@@ -160,13 +160,15 @@ export class WalletService {
   /**
    * Create and send invite tx to a given address
    *
+   * @param {MeritWalletClient} wallet
    * @param {string} toAddress - merit address to send invite to
-   * @param {number=} amount - number of invites to send. defaults to 1
-   * @param {string=} message - message to send to a receiver
+   * @param {number=1} [amount] - number of invites to send. defaults to 1
+   * @param {string} [script]
+   * @param {string} [message] - message to send to a receiver
    *
    */
   @accessWallet
-  async sendInvite(wallet:MeritWalletClient, toAddress: string, amount: number = 1, script = null, message: string = ''): Promise<any> {
+  async sendInvite(wallet: MeritWalletClient, toAddress: string, amount: number = 1, script = null, message: string = ''): Promise<any> {
     amount = parseInt(amount as any);
     const opts = {
       invite: true,
@@ -191,8 +193,8 @@ export class WalletService {
   }
 
   @accessWallet
-  async sendMeritInvite(wallet: MeritWalletClient, invitesNumber: number) {
-    const easySend = await this.easySendService.createEasySendScriptHash(wallet);
+  async sendMeritInvite(wallet: MeritWalletClient, invitesNumber: number = 1, password?: string) {
+    const easySend = await this.easySendService.createEasySendScriptHash(wallet, password);
 
     const referral = easySend.scriptReferralOpts;
     await wallet.sendReferral(referral);
@@ -200,7 +202,6 @@ export class WalletService {
     await this.sendInvite(wallet, referral.address, invitesNumber);
 
     await wallet.registerGlobalSend(easySend);
-
 
     return easySend;
   }
