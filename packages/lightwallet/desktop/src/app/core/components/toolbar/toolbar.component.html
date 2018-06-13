@@ -7,7 +7,6 @@
     </div>
     <div class="title">
       Advanced toolbar
-      <span class="notification">!</span>
     </div>
   </div>
   <div class="divider"></div>
@@ -98,7 +97,10 @@
     <div class="description">
       <p>Every time to bring an active new member into the Merit community, your
         <strong>growth score</strong> will increase. There is a growth lottery every minute, and a higher score earns you a higher
-        chance to win. To grow your community, you can:</p>
+        chance to win. To grow your community, you can:
+        <span class="link" (click)="shareNow()">share your invite</span>
+      </p>
     </div>
   </div>
 </div>
+<div class="hideAdvancedToolbar" *ngIf="showAdvTb" (click)="showAdvTb = !showAdvTb"></div>
