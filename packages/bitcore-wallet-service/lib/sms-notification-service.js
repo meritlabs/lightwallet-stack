@@ -1,4 +1,6 @@
 const request = require('request');
+const MessageBroker = require('./messagebroker');
+const Storage = require('./storage');
 
 function SmsNotificationService(opts) {
   this.messageBroker = opts.messageBroker || new MessageBroker(opts.messageBrokerOpts);
@@ -14,7 +16,7 @@ function SmsNotificationService(opts) {
 }
 
 SmsNotificationService.prototype.sendSMS = function(notification, cb) {
-  if (notification.type == 'NewTxProposal') return cb();
+  if (notification.type === 'NewTxProposal') return cb();
 
   this.storage.fetchSmsNotificationSub(notification.walletId, (err, recipient) => {
     if (err) return cb(err);
