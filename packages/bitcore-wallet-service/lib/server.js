@@ -3773,15 +3773,15 @@ WalletService.prototype.smsNotificationsSubscribe = function(opts, cb) {
     walletId: this.walletId
   });
 
-  self.storage.storeSmsNotificationSub(sub, cb);
+  this.storage.storeSmsNotificationSub(sub, cb);
 };
 
 WalletService.prototype.smsNotificationsUnsubscribe = function(cb) {
-  self.storage.removeSmsNotificationSub(this.walletId, cb);
+  this.storage.removeSmsNotificationSub(this.walletId, cb);
 };
 
 WalletService.prototype.getSmsNotificationSubscription = function(cb) {
-  self.storage.fetchSmsNotificationSub(this.walletId, cb);
+  this.storage.fetchSmsNotificationSub(this.walletId, cb);
 };
 
 /**
