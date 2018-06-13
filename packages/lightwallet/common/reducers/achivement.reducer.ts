@@ -1,7 +1,7 @@
 import { Achievement, Achievements } from '@merit/common/models/achievement';
 import { Action } from '@ngrx/store';
 
-const DEFAULT_STATE: IAchivementsState = {
+const DEFAULT_STATE: IAchievementsState = {
   achievements: [],
   token: '',
   settings: {
@@ -12,7 +12,7 @@ const DEFAULT_STATE: IAchivementsState = {
   },
 };
 
-export interface IAchivementsState {
+export interface IAchievementsState {
   achievements: Achievement[];
   token: string;
   settings: {
@@ -23,24 +23,24 @@ export interface IAchivementsState {
   };
 }
 
-export function AchivementsReducer(state: IAchivementsState = DEFAULT_STATE, action: AchivementsAction) {
+export function AchievementsReducer(state: IAchievementsState = DEFAULT_STATE, action: AchievementsAction) {
   switch (action.type) {
-    case AchivementsAction.LoadAchivements:
+    case AchievementsActionType.LoadAchievements:
       return {
         ...state,
         achievements: [...action.achievements],
       };
-    case AchivementsAction.SetAuthorizeTokenAction:
+    case AchievementsActionType.SetAuthorizeToken:
       return {
         ...state,
         token: action.token,
       };
-    case AchivementsAction.SetAchivementsSettingsAction:
+    case AchievementsActionType.SetAchievementsSettings:
       return {
         ...state,
         settings: action.settings,
       };
-    case AchivementsAction.CompleteAchivementAction:
+    case AchievementsActionType.CompleteAchivement:
       let task: any = state.achievements.filter((item: any) => item.id === action.completeTask.id)[0],
         index = state.achievements.indexOf(task),
         condition: any = task.conditions.filter((item: any) => item.slug === action.completeTask.step)[0],
@@ -63,54 +63,38 @@ export function AchivementsReducer(state: IAchivementsState = DEFAULT_STATE, act
   }
 }
 
-export namespace AchivementsAction {
-  export const LoadAchivements = 'LoadAchivements',
-    SetAuthorizeTokenAction = 'SetAuthorizeTokenAction',
-    SetAchivementsSettingsAction = 'SetAchivementsSettingsAction',
-    CompleteAchivementAction = 'CompleteAchivementAction';
+export enum AchievementsActionType {
+  LoadAchievements = '[Achievements] Load Achievements',
+  SetAuthorizeToken = '[Achievements] Set authorize token',
+  SetAchievementsSettings = '[Achievements] Set achievements aettings',
+  CompleteAchivement = '[Achievements] Complete achivement',
 }
 
-export interface SetAuthorizeTokenAction extends Action {
-  token: string;
-}
-
-export class SetAuthorizeTokenAction implements Action {
-  readonly type = AchivementsAction.SetAuthorizeTokenAction;
+export class SetAuthorizeToken implements Action {
+  type = AchievementsActionType.SetAuthorizeToken;
 
   constructor(public token: string) {}
 }
 
-export interface SetAchivementsSettingsAction extends Action {
-  settings: {};
-}
-
-export class SetAchivementsSettingsAction implements Action {
-  readonly type = AchivementsAction.SetAchivementsSettingsAction;
+export class SetAchievementsSettings implements Action {
+  type = AchievementsActionType.SetAchievementsSettings;
 
   constructor(public settings: {}) {}
 }
 
-export interface CompleteAchivementAction extends Action {
-  completeTask: any;
-}
-
-export class CompleteAchivementAction implements Action {
-  readonly type = AchivementsAction.CompleteAchivementAction;
+export class CompleteAchivement implements Action {
+  type = AchievementsActionType.CompleteAchivement;
 
   constructor(public completeTask: any) {}
 }
 
-export interface SetAchivementsAction extends Action {
-  achievements: Achievement[];
-}
-
-export class SetAchivementsAction implements Action {
-  readonly type = AchivementsAction.LoadAchivements;
+export class SetAchievementsAction implements Action {
+  type = AchievementsActionType.LoadAchievements;
 
   constructor(public achievements: Achievement[]) {}
 }
 
-export type AchivementsAction = SetAchivementsAction &
-  SetAuthorizeTokenAction &
-  SetAchivementsSettingsAction &
-  CompleteAchivementAction;
+export type AchievementsAction = SetAchievementsAction &
+  SetAuthorizeToken &
+  SetAchievementsSettings &
+  CompleteAchivement;
