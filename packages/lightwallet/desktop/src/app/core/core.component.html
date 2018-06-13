@@ -3,6 +3,7 @@
   <app-record-passphrase [wallets]="wallets$ | async" (dismiss)="onGuideDismiss()"></app-record-passphrase>
 </ng-container>
 <ng-template #displayApp>
+  <app-wallet-unlock-alert></app-wallet-unlock-alert>
   <app-toolbar (shareActivate)="shareActivate(true)"></app-toolbar>
   <app-share-box *ngIf="showShare" (dismiss)="shareActivate(false)"></app-share-box>
   <div class="container--fluid dashboard">
