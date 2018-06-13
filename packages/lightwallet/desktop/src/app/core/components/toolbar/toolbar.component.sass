@@ -158,6 +158,8 @@
     width: 20%
   .column:nth-child(3)
     width: 30%
+    &:after
+      display: none
   .column:nth-child(4)
     width: 30%
     &:after
@@ -174,6 +176,10 @@
       left: -15px
   .description
     +font(300, 14px, 22px, $gun-metal)
+    .link
+      text-decoration: underline
+      cursor: pointer
+      color: $blue
   ul li 
     margin-bottom: 10px
     a
@@ -203,3 +209,10 @@
     height: 16px
     width: 20px
     margin-right: 5px
+.hideAdvancedToolbar
+  position: fixed
+  height: calc(100vh - #{$advanced-toolbar-height} - #{$toolbar-height})
+  width: 100%
+  bottom: 0
+  left: 0
+  z-index: 100
