@@ -3771,13 +3771,11 @@ WalletService.prototype.smsNotificationsSubscribe = function(opts, cb) {
   if (!opts.phoneNumber)
     return cb('Phone number was not provided');
 
-  const sub = Model.SmsNotificationSub.create({
+  this.storage.storeSmsNotificationSub({
     walletId: this.walletId,
     phoneNumber: opts.phoneNumber,
     platform: opts.platform
-  });
-
-  this.storage.storeSmsNotificationSub(sub, cb);
+  }, cb);
 };
 
 WalletService.prototype.smsNotificationsUnsubscribe = function(cb) {
