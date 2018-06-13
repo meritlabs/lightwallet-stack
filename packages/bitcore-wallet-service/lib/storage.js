@@ -33,7 +33,8 @@ var collections = {
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
   REFERRAL_TX_CONFIRMATION_SUBS: 'referral_confirmation_subs',
   VAULTS: 'vaults',
-  GLOBALSENDS: 'global_sends'
+  GLOBALSENDS: 'global_sends',
+  KNOWN_MESSAGES: 'known_messages',
 };
 
 var Storage = function(opts) {
@@ -1385,6 +1386,25 @@ Storage.prototype.getGlobalSends = function(walletAddress, cb) {
       return cb(null, result);
   });
 };
+
+Storage.prototype.storeKnownMessage = function(data, cb) {
+  this.db.collection(collections.KNOWN_MESSAGES).insert(data, {
+    w: "majority",
+  }, function(err, result) {
+    if (err) return cb(err);
+    return cb(null, result);
+  });
+}
+
+Storage.prototype.findKnownMessages = function(data, cb) {
+  this.db.collection(collections.KNOWN_MESSAGES).find(
+    data,
+    {readPreference: mongodb.ReadPreference.PRIMARY }
+  ).toArray(function(err, result) {
+    if (err) return cb(err);
+    return cb(null, !_.isEmpty(result));
+  });
+}
 
 Storage.collections = collections;
 module.exports = Storage;
