@@ -16,11 +16,14 @@ function SmsNotificationService(opts) {
 }
 
 SmsNotificationService.prototype.sendSMS = function(notification, cb) {
+  cb = cb || (() => {});
   if (notification.type === 'NewTxProposal') return cb();
 
   this.storage.fetchSmsNotificationSub(notification.walletId, (err, recipient) => {
     if (err) return cb(err);
     if (!recipient) return cb();
+
+    console.log('Sending SMS notification', notification, recipient);
 
     request({
       method: 'POST',
@@ -35,9 +38,9 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
       }
     }, (err, response) => {
       if (!err && parseInt(response.statusCode) === 200) {
-        cb(err || 'Unexpected error');
-      } else {
         cb();
+      } else {
+        cb(err || 'Unexpected error');
       }
     });
   });
