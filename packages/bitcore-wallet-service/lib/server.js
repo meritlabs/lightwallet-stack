@@ -2885,7 +2885,9 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
       txid: txp.txid,
     };
 
-    if (txp.isInvite) {
+    if (opts.byThirdParty && !txp.isInvite) {
+      self._notifyTxProposalAction('OutgoingTxByThirdParty', txp, extraArgs);
+    } else if (txp.isInvite) {
       self._notifyTxProposalAction('OutgoingInviteTx', txp, extraArgs);
     } else {
       self._notifyTxProposalAction('OutgoingTx', txp, extraArgs);

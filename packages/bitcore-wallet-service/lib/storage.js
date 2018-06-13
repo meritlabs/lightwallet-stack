@@ -543,7 +543,6 @@ Storage.prototype.storeNotification = function(notification, cb) {
   this.db.collection(collections.NOTIFICATIONS).insert(notification, {
     w: "majority",
   }, function(err, result) {
-    console.log(err, JSON.stringify(result));
     cb(err, result);
   });
 };
@@ -555,7 +554,6 @@ Storage.prototype.fetchNotification = function(notification, cb) {
   }, {
     readPreference: mongodb.ReadPreference.PRIMARY,
   }).toArray(function(err, result) {
-    console.log(err, result);
     if (err) return cb(err);
     if (!result || _.isEmpty(result)) return cb();
     cb(null, result[0]);
