@@ -10,43 +10,11 @@ import { MWCService } from '@merit/common/services/mwc.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { Events } from 'ionic-angular/util/events';
-import { AlertController } from 'ionic-angular';
 import * as _ from 'lodash';
+import { AlertService } from "@merit/common/services/alert.service";
 
 
 export function accessWallet(target, key: string, descriptor: any) {
-
-  function askForPassword(wallet) {
-    return new Promise((resolve, reject) => {
-      const showPassPrompt = (highlightInvalid = false) => {
-        this.alertCtrl
-          .create({
-            title: 'Enter wallet password',
-            cssClass: highlightInvalid ? 'invalid-input-prompt password-prompt' : 'password-prompt',
-            inputs: [ { name: 'password', placeholder: 'Password', type: 'text' } ],
-            buttons: [
-              {text: 'Cancel', role: 'cancel', handler: () => { reject(); }},
-              { text: 'Ok', handler: data => {
-                if (!data.password) {
-                  showPassPrompt(true);
-                } else {
-                  try {
-                    wallet.decryptPrivateKey(data.password);
-                    wallet.encryptPrivateKey(data.password);
-                    resolve(data.password);
-                  } catch (e) {
-                    showPassPrompt(true);
-                  }
-                }
-              }
-              }
-            ]
-          }).present();
-      };
-
-      showPassPrompt();
-    });
-  }
 
   return {
     value: async function (...args:any[]) {
@@ -59,7 +27,7 @@ export function accessWallet(target, key: string, descriptor: any) {
       let password = null;
       if (wallet.isPrivKeyEncrypted()) {
         try {
-          password = await askForPassword.apply(this, [wallet]);
+          password = await  this.alertCtrl.promptForWalletPassword(wallet);
         } catch (e) {
           console.warn(e);
           throw new Error('No access to wallet');
@@ -98,7 +66,7 @@ export class WalletService {
               private mnemonicService: MnemonicService,
               private easySendService: EasySendService,
               private events: Events,
-              private alertCtrl: AlertController
+              private alertCtrl: AlertService
   ) {
   }
 
@@ -192,13 +160,15 @@ export class WalletService {
   /**
    * Create and send invite tx to a given address
    *
+   * @param {MeritWalletClient} wallet
    * @param {string} toAddress - merit address to send invite to
-   * @param {number=} amount - number of invites to send. defaults to 1
-   * @param {string=} message - message to send to a receiver
+   * @param {number=1} [amount] - number of invites to send. defaults to 1
+   * @param {string} [script]
+   * @param {string} [message] - message to send to a receiver
    *
    */
   @accessWallet
-  async sendInvite(wallet:MeritWalletClient, toAddress: string, amount: number = 1, script = null, message: string = ''): Promise<any> {
+  async sendInvite(wallet: MeritWalletClient, toAddress: string, amount: number = 1, script = null, message: string = ''): Promise<any> {
     amount = parseInt(amount as any);
     const opts = {
       invite: true,
@@ -223,8 +193,8 @@ export class WalletService {
   }
 
   @accessWallet
-  async sendMeritInvite(wallet: MeritWalletClient, invitesNumber: number) {
-    const easySend = await this.easySendService.createEasySendScriptHash(wallet);
+  async sendMeritInvite(wallet: MeritWalletClient, invitesNumber: number = 1, password?: string) {
+    const easySend = await this.easySendService.createEasySendScriptHash(wallet, password);
     easySend.inviteOnly = true;
 
     const referral = easySend.scriptReferralOpts;

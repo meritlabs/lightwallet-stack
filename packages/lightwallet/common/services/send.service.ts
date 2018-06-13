@@ -11,8 +11,8 @@ import { clone } from 'lodash';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { Address } from 'bitcore-lib';
 import { accessWallet } from "./wallet.service";
-import { AlertController } from 'ionic-angular';
 import { getEasySendURL } from '@merit/common/models/easy-send';
+import { AlertService } from "@merit/common/services/alert.service";
 
 export interface ISendTxData {
   amount?: number; // micros
@@ -43,7 +43,7 @@ export class SendService {
               private walletService: WalletService,
               private loggerService: LoggerService,
               private easySendService: EasySendService,
-              private alertCtrl: AlertController,
+              private alertCtrl: AlertService,
               private persistenceService: PersistenceService2) {}
 
   async prepareTxp(wallet: MeritWalletClient, amount: number, toAddress: string) {
