@@ -13,7 +13,7 @@ import { MWCService } from '@merit/common/services/mwc.service';
 @Injectable()
 export class ProfileService {
 
-  public wallets: Array<MeritWalletClient> = [];
+  public wallets: Array<MeritWalletClient>;
 
   public communityInfo: {
     communitySize: number,
@@ -206,6 +206,8 @@ export class ProfileService {
   }
 
   storeProfile() {
+
+    if (this.wallets == undefined) return;
 
     /** do not save profile if we have wallet in temporary mode */
     if (this.wallets.find(w => !w.credentialsSaveAllowed)) return;

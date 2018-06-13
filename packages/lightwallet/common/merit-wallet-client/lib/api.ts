@@ -2720,7 +2720,7 @@ export class API {
    */
   registerGlobalSend(easySend: EasySend) {
     $.checkState(this.credentials);
-    return this._doPostRequest(`/v1/register_globalsend`, {scriptAddress: easySend.scriptAddress, globalsend: this.encryptGlobalSend(easySend)});
+    return this._doPostRequest(`/v1/globalsend/register`, {scriptAddress: easySend.scriptAddress, globalsend: this.encryptGlobalSend(easySend)});
   }
 
   /**
@@ -2728,7 +2728,7 @@ export class API {
    */
   cancelGlobalSend(scriptAddress: string) {
     $.checkState(this.credentials);
-    return this._doPostRequest(`/v1/cancel_globalsend`, { scriptAddress });
+    return this._doPostRequest(`/v1/globalsend/cancel`, { scriptAddress });
   }
 
   /**
@@ -2736,7 +2736,7 @@ export class API {
    */
   async getGlobalSendHistory() {
     $.checkState(this.credentials);
-    const globalSends = await this._doGetRequest(`/v1/globalsend_history`);
+    const globalSends = await this._doGetRequest(`/v1/globalsend/history`);
     return globalSends.map(g => {
       let globalSend = JSON.parse(this.decryptGlobalSend(g.globalsend));
       globalSend.cancelled = g.cancelled;

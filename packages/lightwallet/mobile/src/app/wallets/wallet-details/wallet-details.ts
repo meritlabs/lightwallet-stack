@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { ContactsService } from '@merit/common/services/contacts.service';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
 import { App, Events, IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
-import { PersistenceService2 } from '../../../../../common/services/persistence2.service';
+import { FeeService } from "@merit/common/services/fee.service";
 
 @IonicPage({
   segment: 'wallet/:walletId',
@@ -35,7 +37,9 @@ export class WalletDetailsView {
               private tabsCtrl: Tabs,
               private events: Events,
               private contactsService: ContactsService,
-              private persistenceService: PersistenceService2
+              private persistenceService: PersistenceService2,
+              private easyReceiveService: EasyReceiveService,
+              private feeService: FeeService
   ) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
@@ -55,10 +59,10 @@ export class WalletDetailsView {
       this.getCommunityInfo();
     });
 
-    this.events.subscribe('globalSendCancelled', () => {
-      this.getWalletHistory();
-    });
-
+    this.easyReceiveService.cancelledEasySend$
+      .subscribe(() => {
+        this.getWalletHistory();
+      });
   }
 
   async deposit() {
@@ -112,7 +116,7 @@ export class WalletDetailsView {
 
   private async formatHistory() {
     const easySends = await this.wallet.getGlobalSendHistory();
-    this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, easySends, this.contactsService);
+    this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, easySends, this.feeService, this.contactsService);
   }
 
   async loadMoreHistory(infiniter) {
