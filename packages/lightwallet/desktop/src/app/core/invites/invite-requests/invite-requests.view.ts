@@ -10,6 +10,7 @@ import {
 } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { IUnlockRequest } from '@merit/common/services/unlock-request.service';
+import { WalletService } from '@merit/common/services/wallet.service';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
@@ -31,7 +32,8 @@ export class InviteRequestsView {
   constructor(private store: Store<IRootAppState>,
               private confirmDialogCtrl: ConfirmDialogControllerService,
               private logger: LoggerService,
-              private toastCtrl: ToastControllerService) {}
+              private toastCtrl: ToastControllerService,
+              private walletService: WalletService) {}
 
   async approveRequest(request: IUnlockRequest) {
     const availableInvites = await this.availableInvites$.pipe(take(1)).toPromise();
@@ -71,7 +73,8 @@ export class InviteRequestsView {
             }
           }
 
-          await wallet.sendInvite(request.address);
+          await this.walletService.sendInvite(wallet, request.address);
+
           this.store.dispatch(new RefreshOneWalletTransactions(wallet.id));
           this.toastCtrl.success('The invite request has been confirmed.');
           const remainingRequests = (await this.inviteRequests$.pipe(take(1)).toPromise()).filter((r: IUnlockRequest) => r.address !== request.address);
