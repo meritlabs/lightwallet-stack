@@ -1151,18 +1151,19 @@ Storage.prototype.removePushNotificationSub = function(copayerId, token, cb) {
 };
 
 Storage.prototype.storeSmsNotificationSub = function(walletId, phoneNumber, cb) {
-  this.db.collection(collections.SMS_NOTIFICATION_SUBS).update({
-    walletId,
-    phoneNumber: phoneNumber
-  }, {
-    w: 1,
-    upsert: true
-  }, cb);
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS)
+    .update({
+      walletId,
+      phoneNumber: phoneNumber
+    }, {
+      w: 1,
+      upsert: true
+    }, cb);
 };
 
 Storage.prototype.fetchSmsNotificationSub = function(walletId, cb) {
   this.db.collection(collections.SMS_NOTIFICATION_SUBS)
-    .fetch({ walletId })
+    .find({ walletId })
     .toArray((err, result) => {
       if (err) return cb(err);
       if (!result) return cb();
@@ -1172,7 +1173,8 @@ Storage.prototype.fetchSmsNotificationSub = function(walletId, cb) {
 };
 
 Storage.prototype.removeSmsNotificationSub = function(walletId, cb) {
-  this.db.collection(collections.PUSH_NOTIFICATION_SUBS).remove({ walletId }, { w: 1 }, cb);
+  this.db.collection(collections.PUSH_NOTIFICATION_SUBS)
+    .remove({ walletId }, { w: 1 }, cb);
 };
 
 Storage.prototype.fetchActiveTxConfirmationSubs = function(copayerId, cb) {
