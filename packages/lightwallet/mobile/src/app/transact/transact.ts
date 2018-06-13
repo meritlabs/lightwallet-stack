@@ -281,7 +281,10 @@ export class TransactView {
   private async cancelEasyReceipt(receipt: EasyReceipt): Promise<any> {
     try {
       const wallets = await this.profileService.getWallets();
-      let wallet = wallets[0];
+      let wallet = wallets.find(w => {
+       return (w.getRootAddress().toString() == receipt.parentAddress);
+      });
+      if (!wallet) wallet = wallets[0];
       if (!wallet) throw new Error('Could not retrieve wallet');
 
       const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
