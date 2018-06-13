@@ -12,11 +12,11 @@ import {
 } from '@merit/common/reducers/achivement.reducer';
 import { MeritAchivementClient } from '@merit/common/achievements-client/api';
 import { PersistenceService } from '@merit/common/services/persistence.service';
-import { Achievement } from '@merit/common/models/achievement';
+import { ENV } from '@app/env';
 
 @Injectable()
 export class AchievementsService {
-  static BASE_URL: string = 'https://testnet.mws.merit.me/achivement-engine/api/v1/goals/';
+  static BASE_URL: string = `${ENV.achievementApi}/goals/`;
 
   constructor(
     private http: HttpClient,
