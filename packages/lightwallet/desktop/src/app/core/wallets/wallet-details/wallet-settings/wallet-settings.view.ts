@@ -196,7 +196,7 @@ export class WalletSettingsView implements OnInit, OnDestroy {
         this.wallet.client.decryptPrivateKey(currentPassword);
       }
 
-      await this.walletService.encrypt(this.wallet.client, password);
+      await this.walletService.encryptWallet(this.wallet.client, password);
       this.setWalletAsEncrypted();
 
       this.logger.info('Encrypted wallet!');

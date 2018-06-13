@@ -379,7 +379,7 @@ export class SendView implements OnInit {
 
     txData.sendMethod = { type: this.type.value } as ISendMethod;
 
-    await this.sendService.send(txData, wallet.client);
+    await this.sendService.send(wallet.client, txData);
 
     this.easySendUrl = txData.easySendUrl;
 
