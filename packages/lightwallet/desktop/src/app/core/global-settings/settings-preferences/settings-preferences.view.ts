@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { DeleteWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
@@ -17,8 +16,9 @@ import { ElectronService } from '@merit/desktop/services/electron.service';
 import { State, Store } from '@ngrx/store';
 import { isEmpty } from 'lodash';
 import 'rxjs/add/operator/toPromise';
+import { fromPromise } from 'rxjs/observable/fromPromise';
 import { merge } from 'rxjs/observable/merge';
-import { debounceTime, filter, take, tap } from 'rxjs/operators';
+import { debounceTime, filter, switchMap, take, tap } from 'rxjs/operators';
 
 declare const WEBPACK_CONFIG: any;
 
@@ -54,6 +54,8 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
 
   private subs: any[] = [];
 
+  savingEmail: boolean;
+  savingPhoneNumber: boolean;
 
   constructor(private formBuilder: FormBuilder,
               private state: State<IRootAppState>,
@@ -113,14 +115,34 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     this.subs.push(
       merge(this.formData.get('email').valueChanges, this.formData.get('emailNotifications').valueChanges)
         .pipe(
-          debounceTime(100),
           filter(() => this.formData.valid),
-          tap(() =>
-            this.emailNotificationsService.updateEmail({
-              enabled: this.formData.get('emailNotifications').value,
-              email: this.formData.get('email').value,
-            })
-          )
+          tap(() => this.savingEmail = true),
+          debounceTime(500),
+          switchMap(() =>
+            fromPromise(
+              this.emailNotificationsService.updateEmail({
+                enabled: this.formData.get('emailNotifications').value,
+                email: this.formData.get('email').value
+              })
+            )
+          ),
+          tap(() => this.savingEmail = false)
+        )
+        .subscribe()
+    );
+
+    this.subs.push(
+      merge(this.formData.get('smsNotifications').valueChanges, this.formData.get('phoneNumber').valueChanges)
+        .pipe(
+          filter(() => this.formData.valid),
+          tap(() => this.savingPhoneNumber = true),
+          debounceTime(500),
+          switchMap(() =>
+            fromPromise(
+              this.smsNotificationsService.setSmsSubscription(this.smsNotificationsEnabled, this.formData.get('phoneNumber').value, 'desktop')
+            )
+          ),
+          tap(() => this.savingPhoneNumber = false)
         )
         .subscribe()
     );
@@ -158,6 +180,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
             .select(selectWallets)
             .pipe(take(1))
             .toPromise();
+
           await Promise.all(
             wallets.map(async (wallet: DisplayWallet) => {
               if (isWalletEncrypted(wallet.client)) {
@@ -169,8 +192,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
                 });
               }
 
-              this.persistenceService.setViewSettings(ViewSettingsKey.GetStartedTips, false);
-              this.persistenceService.setViewSettings(ViewSettingsKey.recordPassphrase, false);
+              await this.persistenceService.resetViewSettings();
 
               this.store.dispatch(new DeleteWalletAction(wallet.id));
             })
