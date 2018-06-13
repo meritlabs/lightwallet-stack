@@ -28,11 +28,8 @@ export class HistoryView {
   offset: number = 0;
   limit: number = 10;
 
-  constructor(private walletService: WalletService,
-              private profileService: ProfileService,
-              private addressService: AddressService,
+  constructor(private profileService: ProfileService,
               private contactsService: ContactsService,
-              private persistenceService: PersistenceService2,
               private modalCtrl: ModalController,
               private easyReceiveService: EasyReceiveService) {
   }
@@ -51,6 +48,7 @@ export class HistoryView {
 
   async ionViewWillEnter() {
     this.wallets = await this.profileService.getWallets();
+    this.selectDefaultWallet();
     await this.refreshHistory();
   }
 
