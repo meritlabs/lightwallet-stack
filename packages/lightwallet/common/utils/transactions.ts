@@ -134,12 +134,17 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
     return tx;
   }));
-
   // remove meritmoney invites so we  have only one tx for meritmoney
   return walletHistory
     .filter(t => {
-      if (t.type != 'meritinvite') return true;
-      return meritMoneyAddresses.indexOf(t.addressTo) == -1;
+
+      if (meritMoneyAddresses.indexOf(t.addressFrom) != -1) return false; //filtering out txs from cancelled MeritMoney/MeritInvite
+
+      if (t.type == 'meritinvite') {
+        if (meritMoneyAddresses.indexOf(t.addressTo) != -1) return false; //filtering out invites txs that were part of MeritMoney
+      }
+
+      return true;
     })
     .reverse();
 }
