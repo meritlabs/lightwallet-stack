@@ -85,7 +85,7 @@ export class NotificationsView {
     const phoneNumber = this.smsForm.get('phoneNumber');
 
     if (phoneNumber.valid) {
-      return this.smsNotificationsService.setSmsSubscription(true, phoneNumber.value, this.platformService.isIOS? 'ios' : this.platformService.isAndroid? 'android' : 'desktop')
+      return this.smsNotificationsService.setSmsSubscription(true, phoneNumber.value, this.platformService.isIOS? 'ios' : 'android')
     }
   }
 
