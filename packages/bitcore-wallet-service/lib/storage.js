@@ -1389,25 +1389,6 @@ Storage.prototype.getGlobalSends = function(walletAddress, cb) {
   });
 };
 
-Storage.prototype.storeKnownMessage = function(data, cb) {
-  this.db.collection(collections.KNOWN_MESSAGES).insert(data, {
-    w: "majority",
-  }, function(err, result) {
-    if (err) return cb(err);
-    return cb(null, result);
-  });
-};
-
-Storage.prototype.findKnownMessages = function(data, cb) {
-  this.db.collection(collections.KNOWN_MESSAGES).find(
-    data,
-    {readPreference: mongodb.ReadPreference.PRIMARY }
-  ).toArray(function(err, result) {
-    if (err) return cb(err);
-    return cb(null, !_.isEmpty(result));
-  });
-};
-
 Storage.prototype.checkKnownMessages = function(data, cb) {
   this.db.collection(collections.KNOWN_MESSAGES).findOneAndUpdate(data, data, {
     readPreference: mongodb.ReadPreference.PRIMARY,
@@ -1416,8 +1397,7 @@ Storage.prototype.checkKnownMessages = function(data, cb) {
     new: true,
     returnOriginal: false,
   }, function(err, result) {
-    console.log('\n\n' + JSON.stringify(result) + '\n\n');
-    cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.ok);
+    cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
   });
 };
 
