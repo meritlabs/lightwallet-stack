@@ -87,17 +87,13 @@ export class SendInviteView {
     const walletClient = this.selectedWallet.client;
 
     if (type === SendMethodType.Easy) {
-      const easySend = await this.easySendService.createEasySendScriptHash(walletClient, password);
-      const referral = easySend.scriptReferralOpts;
-
-      await walletClient.sendReferral(referral);
-      await walletClient.sendInvite(referral.address);
-
+      const easySend = await this.walletService.sendMeritInvite(walletClient, 1, password);
       this.easySendUrl = getEasySendURL(easySend);
     } else {
       address = cleanAddress(address);
       address = await this.addressService.getAddressInfo(address);
-      await walletClient.sendInvite(address.address);
+
+      await this.walletService.sendInvite(walletClient, address.address);
     }
 
     try {

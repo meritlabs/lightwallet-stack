@@ -70,4 +70,11 @@ tx-details-view {
       }
     }
   }
+
+  ion-item.item.cancelled-status {
+     ion-icon {
+       font-size: 25px;
+       margin: 0;
+     }
+  }
 }
