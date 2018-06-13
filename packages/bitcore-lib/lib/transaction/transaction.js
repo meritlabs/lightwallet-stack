@@ -699,7 +699,6 @@ Transaction.prototype.hasAllUtxoInfo = function() {
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.fee = function(amount) {
-  console.log('fee', amount);
   $.checkArgument(_.isNumber(amount), 'amount must be a number');
   this._fee = amount;
   this._updateChangeOutput();

@@ -55,6 +55,10 @@ export class WalletDetailsView {
       this.getCommunityInfo();
     });
 
+    this.events.subscribe('globalSendCancelled', () => {
+      this.getWalletHistory();
+    });
+
   }
 
   async deposit() {
@@ -65,7 +69,7 @@ export class WalletDetailsView {
       await nav.popToRoot();
       await this.tabsCtrl.select(1);
     } catch (e) {
-      console.log(e);
+      this.logger.warn(e);
     }
   }
 
@@ -77,7 +81,7 @@ export class WalletDetailsView {
       await nav.popToRoot();
       await this.tabsCtrl.select(3);
     } catch (e) {
-      console.log(e);
+      this.logger.warn(e);
     }
   }
 
@@ -101,26 +105,24 @@ export class WalletDetailsView {
     try {
       this.txs = await this.wallet.getTxHistory({ skip: 0, limit: this.limit, includeExtendedInfo: true });
       await this.formatHistory();
-      console.log(history);
     } catch (e) {
-      console.log(e);
+      this.logger.warn(e);
     }
   }
 
   private async formatHistory() {
-    this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, await this.persistenceService.getEasySends(), this.contactsService);
+    const easySends = await this.wallet.getGlobalSendHistory();
+    this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, easySends, this.contactsService);
   }
 
   async loadMoreHistory(infiniter) {
     this.offset += this.limit;
-    console.log('loading for offset', this.offset);
     try {
       const txs = await this.wallet.getTxHistory({ skip: this.offset, limit: this.limit, includeExtendedInfo: true });
       this.txs = this.txs.concat(txs);
       await this.formatHistory();
-      console.log('loaded for offset', this.offset);
     } catch (e) {
-      console.log(e);
+      this.logger.warn(e);
     }
     infiniter.complete();
   }

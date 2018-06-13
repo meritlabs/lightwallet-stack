@@ -7,10 +7,10 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { getEasySendURL } from '@merit/common/models/easy-send';
-import { SendMethodType } from '../../../../../../common/models/send-method';
-import { LoggerService } from '../../../../../../common/services/logger.service';
-import { getSendMethodDestinationType } from '../../../../../../common/utils/destination';
-
+import { SendMethodType } from '@merit/common/models/send-method';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { getSendMethodDestinationType } from '@merit/common/utils/destination';
+import { WalletService } from '@merit/common/services/wallet.service';
 
 @IonicPage()
 @Component({
@@ -48,7 +48,8 @@ export class SendInviteAmountView {
               private socialSharing: SocialSharing,
               private platform: Platform,
               private easySendService: EasySendService,
-              private logger: LoggerService
+              private logger: LoggerService,
+              private walletService: WalletService
   ) {
     this.address = this.navParams.get('address');
     this.showShareButton = this.platform.is('cordova') && SocialSharing.installed();
@@ -82,13 +83,7 @@ export class SendInviteAmountView {
     try {
       loader.present();
 
-      const easySend = await this.easySendService.createEasySendScriptHash(this.wallet, '');
-      easySend.inviteOnly = true;
-
-      const referral = easySend.scriptReferralOpts;
-
-      await this.wallet.sendReferral(referral);
-      await this.wallet.sendInvite(referral.address, this.formData.amount);
+      const easySend = await this.walletService.sendMeritInvite(this.wallet, this.formData.amount);
 
       const destination = getSendMethodDestinationType(this.formData.destination);
 
