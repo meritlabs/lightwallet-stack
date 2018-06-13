@@ -1,11 +1,9 @@
 import { ENV } from '@app/env';
-import { HttpClient } from '@angular/common/http';
 import * as request from 'superagent';
 import { each, isString } from 'lodash';
 
 import * as Bitcore from 'bitcore-lib';
 import { Credentials } from '@merit/common/merit-wallet-client/lib/credentials';
-import { Common } from '@merit/common/merit-wallet-client/lib/common';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { Logger } from '@merit/common/merit-wallet-client/lib/log';
 
