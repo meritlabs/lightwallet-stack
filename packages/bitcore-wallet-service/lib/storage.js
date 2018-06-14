@@ -1169,7 +1169,7 @@ Storage.prototype.fetchSmsNotificationSub = function(walletId, cb) {
 };
 
 Storage.prototype.removeSmsNotificationSub = function(walletId, cb) {
-  this.db.collection(collections.PUSH_NOTIFICATION_SUBS)
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS)
     .remove({ walletId }, { w: 1 }, cb);
 };
 
