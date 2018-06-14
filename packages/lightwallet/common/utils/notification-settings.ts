@@ -71,9 +71,9 @@ export class NotificationSettingsController {
 
     const status = await this.smsNotificationsService.getSmsSubscriptionStatus();
 
-    if (status && status.enabled == true) {
-      this.formData.get('smsNotifications').setValue(true, { emitValue: false });
-      this.formData.get('phoneNumber').setValue(status.phoneNumber, { emitValue: false });
+    if (status) {
+      this.smsNotifications.setValue(status.enabled, { emitValue: false });
+      this.phoneNumber.setValue(status.phoneNumber || '', { emitValue: false });
     }
 
     this.subs.push(
@@ -121,6 +121,7 @@ export class NotificationSettingsController {
             if (this.emailNotificationsEnabled && this.email.valid) {
               this.toastCtrl.success('You are now subscribed to Email notifications!');
             }
+            this.updateStorage();
           })
         )
         .subscribe()
@@ -143,6 +144,7 @@ export class NotificationSettingsController {
             if (this.smsNotificationsEnabled && this.phoneNumber.valid) {
               this.toastCtrl.success('You are now subscribed to SMS notifications!');
             }
+            this.updateStorage();
           })
         )
         .subscribe()
@@ -155,5 +157,9 @@ export class NotificationSettingsController {
         sub.unsubscribe();
       } catch (e) {}
     });
+  }
+
+  private updateStorage() {
+    return this.persistenceService.setNotificationSettings(this.formData.value);
   }
 }
