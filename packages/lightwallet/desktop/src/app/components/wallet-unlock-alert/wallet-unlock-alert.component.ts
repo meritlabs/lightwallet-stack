@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-wallet-unlock-alert',
   templateUrl: './wallet-unlock-alert.component.html',
-  styleUrls: ['./wallet-unlock-alert.component.sass']
+  styleUrls: ['./wallet-unlock-alert.component.sass'],
 })
-export class WalletUnlockAlertComponent implements OnInit {
+export class WalletUnlockAlertComponent {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  @Input() unActive: number;
 }

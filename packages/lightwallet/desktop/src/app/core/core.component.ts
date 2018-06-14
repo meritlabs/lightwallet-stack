@@ -94,6 +94,7 @@ export class CoreView implements OnInit, AfterViewInit {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   recordPassphrase: boolean = true;
+  notUnlockedWallets;
 
   constructor(
     private pushNotificationsService: PushNotificationsService,
@@ -115,6 +116,9 @@ export class CoreView implements OnInit, AfterViewInit {
     this.pushNotificationsService.init();
     this.easyReceiveService.cancelEasySendObservable$.subscribe(receipt => {
       this.processEasyReceipt(receipt, null, false, null, true);
+    });
+    this.wallets$.subscribe(res => {
+      this.notUnlockedWallets = res.filter((item: any) => item.confirmed === false);
     });
   }
 

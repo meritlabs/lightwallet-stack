@@ -2,11 +2,13 @@
   <merit-icon name="unlock-attention"></merit-icon>
   <div>
     <p>
-      <strong>YOU HAVE NOT UNLOCKED WALLET</strong>
+      <strong>YOU HAVE {{unActive}} NOT UNLOCKED {{unActive > 1 ? 'WALLET' : 'WALLETS'}}</strong>
+
     </p>
     <p>
       You can`t use main features:
       <strong>Send / Receive MRT</strong> for not confirmed wallet!
     </p>
   </div>
+  <merit-icon name="unlock-attention"></merit-icon>
 </div>
