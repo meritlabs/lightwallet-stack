@@ -198,7 +198,7 @@ export class SendView implements OnInit {
         const { feeIncluded, wallet } = this.formData.value;
         const { spendableAmount } = wallet ? wallet.balance : 0;
 
-        if (!txData || !txData.txp || this.success) {
+        if (!txData || this.success) {
           return {
             amount: 0,
             fee: 0,
@@ -213,10 +213,10 @@ export class SendView implements OnInit {
         this.success = void 0;
 
         const receipt: Receipt = {
-          amount: txData.txp.amount,
-          fee: txData.txp.fee + (txData.easyFee || 0),
-          total: feeIncluded ? txData.txp.amount : txData.txp.amount + txData.txp.fee,
-          inWallet: wallet.balance.spendableAmount,
+          amount: txData.amount,
+          fee: txData.fee,
+          total: feeIncluded ? txData.amount : txData.amount + txData.fee,
+          inWallet: spendableAmount,
           remaining: 0
         };
 
