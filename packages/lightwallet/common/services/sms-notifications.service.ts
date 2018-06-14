@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 
 export interface ISmsNotificationStatus {
@@ -10,25 +11,42 @@ export interface ISmsNotificationStatus {
 
 @Injectable()
 export class SmsNotificationsService {
-  constructor(private profileService: ProfileService) {}
+  status: ISmsNotificationStatus;
+
+  constructor(private profileService: ProfileService,
+              private persistenceService: PersistenceService2) {}
 
   async getSmsSubscriptionStatus(): Promise<ISmsNotificationStatus> {
+    if (this.status) {
+      return this.status;
+    }
+
     const wallets = await this.profileService.getWallets();
 
-    if (!wallets || !wallets.length)
-      return { enabled: false };
+    let status: ISmsNotificationStatus;
 
-    let status;
+    if (!wallets || !wallets.length) {
+      status = { enabled: false };
+    } else {
 
-    try {
-      status = await wallets[0].getSmsNotificationSubscription();
-    } catch (err) {}
+      try {
+        status = await wallets[0].getSmsNotificationSubscription();
+      } catch (err) {}
 
-    if (!status || !status.phoneNumber)
-      return { enabled: false };
+      if (!status || !status.phoneNumber) {
+        status = { enabled: false };
+      } else {
+        status.enabled = true;
+      }
+    }
 
-    status.enabled = true;
-    return status;
+
+    await this.persistenceService.setNotificationSettings({
+      smsNotifications: status.enabled,
+      phoneNumber: status.phoneNumber || ''
+    });
+
+    return this.status = status;
   }
 
   async setSmsSubscription(enabled: boolean, phoneNumber?: string, platform?: string) {
