@@ -1,11 +1,12 @@
 const request = require('request');
 const MessageBroker = require('./messagebroker');
 const Storage = require('./storage');
+const _ = require('lodash');
 
 function SmsNotificationService(opts) {
   this.messageBroker = opts.messageBroker || new MessageBroker(opts.messageBrokerOpts);
   this.messageBroker.onMessage(this.sendSMS.bind(this));
-  this.notificationsServiceUrl = opts.notificationsServiceUrl || process.env.notificationsServiceUrl || 'http://localhost:8300';
+  this.notificationsServiceUrl = opts.meritMessagingUrl;
 
   if (opts.storage) {
     this.storage = opts.storage;
@@ -25,6 +26,8 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
 
     console.log('Sending SMS notification', notification, recipient);
 
+    const { amount, isInvite } = notification.data;
+
     request({
       method: 'POST',
       uri: this.notificationsServiceUrl + '/notification',
@@ -32,9 +35,11 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
         type: 'sms',
         destination: recipient.phoneNumber,
         id: notification.id,
-        data: notification.data,
-        template: notification.type,
-        language: 'en'
+        template: _.snakeCase(notification.type),
+        language: 'en',
+        notification: {
+          amount: isInvite? amount : amount / 1e8
+        }
       }
     }, (err, response) => {
       if (!err && parseInt(response.statusCode) === 200) {
