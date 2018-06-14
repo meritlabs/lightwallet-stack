@@ -50,6 +50,8 @@ export class SmsNotificationsService {
   }
 
   async setSmsSubscription(enabled: boolean, phoneNumber?: string, platform?: string) {
+    await this.persistenceService.setNotificationSettings({ smsNotifications: enabled, phoneNumber });
+
     if (enabled && !phoneNumber)
       return;
 
