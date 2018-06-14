@@ -41,7 +41,7 @@
       </div>
     </div>
     <ion-list>
-      <ion-item>
+      <ion-item *ngIf="sendMethod?.type == 'easy'">
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/email.svg" alt="">
         </ion-avatar>
