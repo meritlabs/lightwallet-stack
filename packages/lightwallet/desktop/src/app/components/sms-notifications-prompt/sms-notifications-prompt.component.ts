@@ -13,7 +13,7 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 })
 export class SmsNotificationsPromptComponent implements IDynamicComponent {
   formData: FormGroup = this.formBuilder.group({
-    phoneNumber: ['', Validators.pattern(/\d{10,}/)]
+    phoneNumber: ['', [Validators.required, Validators.pattern(/\d{10,}/)]]
   });
 
   destroy: Function;

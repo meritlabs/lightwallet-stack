@@ -3,25 +3,30 @@ import { Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ENV } from '@app/env';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
-import { RefreshOneWalletAction, selectNumberOfInviteRequests } from '@merit/common/reducers/wallets.reducer';
+import {
+  RefreshOneWalletAction,
+  selectNumberOfInviteRequests,
+  selectWallets,
+  selectWalletsLoading
+} from '@merit/common/reducers/wallets.reducer';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
+import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
+import { SmsNotificationsPromptController } from '@merit/desktop/app/components/sms-notifications-prompt/sms-notifications-prompt.controller';
 import { Store } from '@ngrx/store';
 import { Address, PublicKey } from 'bitcore-lib';
-import { map } from 'rxjs/operators';
-import { selectWallets, selectWalletsLoading, selectWalletTotals } from '@merit/common/reducers/wallets.reducer';
-import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Observable } from 'rxjs/Observable';
-import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
 
 @Component({
   selector: 'view-core',
@@ -103,7 +108,9 @@ export class CoreView implements OnInit, AfterViewInit {
     private profileService: ProfileService,
     private store: Store<IRootAppState>,
     private persistenceService2: PersistenceService2,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private smsNotificationsService: SmsNotificationsService,
+    private smsNotificationsPromptCtrl: SmsNotificationsPromptController
   ) {}
 
   async ngOnInit() {
@@ -114,6 +121,18 @@ export class CoreView implements OnInit, AfterViewInit {
     this.easyReceiveService.cancelEasySendObservable$.subscribe(receipt => {
       this.processEasyReceipt(receipt, null, false, null, true);
     });
+
+    const smsPromptSetting = await this.persistenceService2.getViewSettings(ViewSettingsKey.SmsNotificationsPrompt);
+
+    if (smsPromptSetting == true)
+      return;
+
+    const smsNotificationStatus = await this.smsNotificationsService.getSmsSubscriptionStatus();
+
+    if (smsNotificationStatus.enabled)
+      return;
+
+    this.smsNotificationsPromptCtrl.create();
   }
 
   ngAfterViewInit() {
