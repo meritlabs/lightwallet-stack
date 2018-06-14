@@ -11,7 +11,7 @@ import { ToastControllerService } from '@merit/common/services/toast-controller.
 })
 export class SmsNotificationsModal {
   formData: FormGroup = this.formBuilder.group({
-    phoneNumber: ['', Validators.pattern(/\d{10,}/)]
+    phoneNumber: ['', [Validators.required, Validators.pattern(/\d{10,}/)]]
   });
 
   constructor(private smsNotificationsService: SmsNotificationsService,
