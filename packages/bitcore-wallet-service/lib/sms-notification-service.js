@@ -3,6 +3,14 @@ const MessageBroker = require('./messagebroker');
 const Storage = require('./storage');
 const _ = require('lodash');
 
+const notificationsToSend = [
+  'IncomingTx',
+  'IncomingInvite',
+  'WalletUnlocked',
+  'IncomingInviteRequest',
+  'IncomingCoinbase',
+];
+
 function SmsNotificationService(opts) {
   this.messageBroker = opts.messageBroker || new MessageBroker(opts.messageBrokerOpts);
   this.messageBroker.onMessage(this.sendSMS.bind(this));
@@ -18,7 +26,7 @@ function SmsNotificationService(opts) {
 
 SmsNotificationService.prototype.sendSMS = function(notification, cb) {
   cb = cb || (() => {});
-  if (notification.type === 'NewTxProposal') return cb();
+  if (notificationsToSend.indexOf(notification.type) > -1) return cb();
 
   this.storage.fetchSmsNotificationSub(notification.walletId, (err, recipient) => {
     if (err) return cb(err);
