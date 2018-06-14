@@ -38,7 +38,7 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
         template: _.snakeCase(notification.type),
         language: 'en',
         notification: {
-          amount: isInvite? amount : amount / 1e8
+          amount: isInvite? amount : (amount / 1e8) + 'MRT'
         }
       }
     }, (err, response) => {
