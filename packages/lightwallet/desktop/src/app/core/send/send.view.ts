@@ -59,10 +59,7 @@ interface Receipt {
 })
 export class SendView implements OnInit {
 
-  wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets)
-    .pipe(
-      tap(wallets => console.log(wallets))
-    );
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets);
 
   hasUnlockedWallet: boolean;
   hasAvailableInvites: boolean;
