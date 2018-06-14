@@ -43,24 +43,24 @@
     transform: rotate(360deg)
 
 .box
-  position: fixed
+  position: absolute
   top: 0
-  right: 90px
-  height: 73px
+  right: 150px
+  height: 70px
   display: flex
   align-content: center
   align-items: center
   button
     border: 0
     background: transparent
-    height: 20px
+    height: 15px
     position: relative
     &.refreshing
       img
         animation: spin 1s infinite ease-in-out
     img
-      width: 20px
-      height: 20px
+      width: 15px
+      height: 15px
       transform: translate3d(0,0,0)
 .shareButtton
   +font(500, 14px, 14px, $white)
