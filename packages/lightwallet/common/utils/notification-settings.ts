@@ -118,7 +118,9 @@ export class NotificationSettingsController {
           ),
           tap(() => {
             this.emailStatus.next('saved');
-            this.toastCtrl.success('You are now subscribed to Email notifications!');
+            if (this.emailNotificationsEnabled && this.email.valid) {
+              this.toastCtrl.success('You are now subscribed to Email notifications!');
+            }
           })
         )
         .subscribe()
@@ -138,7 +140,9 @@ export class NotificationSettingsController {
           ),
           tap(() => {
             this.smsStatus.next('saved');
-            this.toastCtrl.success('You are now subscribed to SMS notifications!');
+            if (this.smsNotificationsEnabled && this.phoneNumber.valid) {
+              this.toastCtrl.success('You are now subscribed to SMS notifications!');
+            }
           })
         )
         .subscribe()
