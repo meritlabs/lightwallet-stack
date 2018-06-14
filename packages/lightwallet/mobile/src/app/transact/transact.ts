@@ -89,20 +89,7 @@ export class TransactView {
     }
 
     await this.unlockRequestService.loadRequestsData();
-  }
 
-  async ngOnDestroy() {
-    if (this.subs && this.subs.length) {
-      this.subs.forEach((sub: Subscription) => sub.unsubscribe());
-    }
-  }
-
-  async ionViewCanEnter() {
-    const wallets = await this.profileService.wallets || [];
-    return wallets.length > 0;
-  }
-
-  async ionViewDidEnter() {
     const smsPromptSetting = await this.persistenceService2.getViewSettings(ViewSettingsKey.SmsNotificationsPrompt);
 
     if (smsPromptSetting == true)
@@ -118,6 +105,17 @@ export class TransactView {
     modal.onDidDismiss(() => {
       this.persistenceService2.setViewSettings(ViewSettingsKey.SmsNotificationsPrompt, true);
     });
+  }
+
+  async ngOnDestroy() {
+    if (this.subs && this.subs.length) {
+      this.subs.forEach((sub: Subscription) => sub.unsubscribe());
+    }
+  }
+
+  async ionViewCanEnter() {
+    const wallets = await this.profileService.wallets || [];
+    return wallets.length > 0;
   }
 
   private async processPendingEasyReceipts() {
