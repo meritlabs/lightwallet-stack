@@ -7,7 +7,15 @@ import { PlatformService } from '@merit/common/services/platform.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { EmailValidator } from '@merit/common/validators/email.validator';
 import { IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { isEmpty } from 'lodash';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { merge } from 'rxjs/observable/merge';
+import { debounceTime, filter, switchMap, tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs/Subscription';
+import { PersistenceService2 } from '../../../../../common/services/persistence2.service';
 import { SmsNotificationsService } from '../../../../../common/services/sms-notifications.service';
+import { ToastControllerService } from '../../../../../common/services/toast-controller.service';
+import { NotificationSettingsController } from '../../../../../common/utils/notification-settings';
 
 @IonicPage()
 @Component({
@@ -15,23 +23,18 @@ import { SmsNotificationsService } from '../../../../../common/services/sms-noti
   templateUrl: 'notifications.html'
 })
 export class NotificationsView {
-  emailForm: FormGroup = this.formBuilder.group({
-    email: ['', Validators.compose([Validators.required, <any>(EmailValidator.isValid(this.configService, this.emailService))])]
-  });
-
-  smsForm: FormGroup = this.formBuilder.group({
-    phoneNumber: ['', [Validators.minLength(10), Validators.pattern(/\d+/)]]
-  });
-
   appName: string;
-  usePushNotifications: boolean;
-  isIOSApp: boolean;
+  usePushNotifications: boolean = this.platformService.isCordova;
 
-  pushNotifications: boolean;
-  confirmedTxsNotifications: boolean;
-
-  emailNotifications: boolean;
-  smsNotifications: boolean;
+  nsc = new NotificationSettingsController(
+    this.persistenceService,
+    this.pushNotificationsService,
+    this.emailNotificationsService,
+    this.smsNotificationsService,
+    this.formBuilder,
+    this.toastCtrl,
+    this.platformService.isIOS? 'ios' : 'android'
+  );
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -39,84 +42,19 @@ export class NotificationsView {
               private configService: ConfigService,
               private appService: AppSettingsService,
               private platformService: PlatformService,
-              private pushService: PushNotificationsService,
-              private emailService: EmailNotificationsService,
+              private pushNotificationsService: PushNotificationsService,
+              private emailNotificationsService: EmailNotificationsService,
               private loadingCtrl: LoadingController,
-              private smsNotificationsService: SmsNotificationsService
+              private smsNotificationsService: SmsNotificationsService,
+              private persistenceService: PersistenceService2,
+              private toastCtrl: ToastControllerService
   ) {}
 
-  async ngOnInit() {
-    const status = await this.smsNotificationsService.getSmsSubscriptionStatus();
-    this.smsNotifications = status.enabled;
+  ngOnInit() {
+    return this.nsc.init();
   }
 
-  ionViewDidLoad() {
-    this.updateConfig();
+  ngOnDestroy() {
+    this.nsc.destroy();
   }
-
-  async pushNotificationsChange() {
-    const opts = {
-      pushNotificationsEnabled: this.pushNotifications
-    };
-
-    this.configService.set(opts);
-
-    if (opts.pushNotificationsEnabled) {
-      await this.pushService.init();
-      await this.pushService.enable();
-    }
-    else
-      return this.pushService.disable();
-  }
-
-  emailNotificationsChange() {
-    let opts = {
-      enabled: this.emailNotifications,
-      email: this.emailForm.value.email
-    };
-    this.emailService.updateEmail(opts);
-  }
-
-  smsNotificationsChange() {
-    if (!this.smsNotifications) {
-      return this.smsNotificationsService.setSmsSubscription(false);
-    }
-
-    const phoneNumber = this.smsForm.get('phoneNumber');
-
-    if (phoneNumber.valid) {
-      return this.smsNotificationsService.setSmsSubscription(true, phoneNumber.value, this.platformService.isIOS? 'ios' : 'android')
-    }
-  }
-
-  async saveEmail() {
-    let loader = this.loadingCtrl.create({
-      content: 'Saving changes...',
-      dismissOnPageChange: true
-    });
-    loader.present();
-    await this.emailService.updateEmail({
-      enabled: this.emailNotifications,
-      email: this.emailForm.value.email
-    });
-    loader.dismiss();
-    this.navCtrl.pop();
-  }
-
-  private updateConfig() {
-    let config = this.configService.get();
-    this.appName = this.appService.info.nameCase;
-    this.usePushNotifications = this.platformService.isCordova;
-    this.isIOSApp = this.platformService.isIOS && this.platformService.isCordova;
-
-    this.pushNotifications = config.pushNotificationsEnabled;
-    this.confirmedTxsNotifications = config.confirmedTxsNotifications ? config.confirmedTxsNotifications.enabled : false;
-
-    this.emailForm.setValue({
-      email: this.emailService.getEmailIfEnabled(config) || ''
-    });
-
-    this.emailNotifications = config.emailNotifications ? config.emailNotifications.enabled : false;
-  }
-
 }

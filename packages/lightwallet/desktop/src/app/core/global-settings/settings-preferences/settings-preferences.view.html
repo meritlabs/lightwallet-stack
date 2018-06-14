@@ -1,4 +1,4 @@
-<form [formGroup]="formData">
+<form [formGroup]="nsc.formData">
   <div class="global-settings__group">
     <label class="ui-label global-settings__group__title">Notifications</label>
     <div class="global-settings__group__item" *ngIf="!isElectron">
@@ -18,15 +18,16 @@
         <ui-checkbox formControlName="emailNotifications"></ui-checkbox>
       </div>
     </div>
-    <div class="global-settings__group__item sendMerit__form__group" *ngIf="emailNotificationsEnabled">
+    <div class="global-settings__group__item sendMerit__form__group" *ngIf="nsc.emailNotificationsEnabled">
       <div class="global-settings__group__item__column ui-input-group">
         <label class="ui-label global-settings__group__item__title" for="email">Email address</label>
         <input type="email" name="email" id="email"
                class="ui-input ui-input--form ui-input--text"
                formControlName="email"
                placeholder="Enter your email address to receive notifications">
-        <div *ngIf="formData.get('email').valid && savingEmail === false">
-          Saved!
+        <div *ngIf="nsc.emailStatus$ | async as emailStatus">
+          <div *ngIf="emailStatus == 'saving'">Saving...</div>
+          <div *ngIf="emailStatus == 'saved'">Saved</div>
         </div>
       </div>
     </div>
@@ -39,15 +40,16 @@
         <ui-checkbox formControlName="smsNotifications"></ui-checkbox>
       </div>
     </div>
-    <div class="global-settings__group__item sendMerit__form__group" *ngIf="smsNotificationsEnabled">
+    <div class="global-settings__group__item sendMerit__form__group" *ngIf="nsc.smsNotificationsEnabled">
       <div class="global-settings__group__item__column ui-input-group">
         <label class="ui-label global-settings__group__item__title" for="email">Phone number</label>
         <input type="tel" name="phoneNumber" id="phoneNumber"
                class="ui-input ui-input--form ui-input--text"
                formControlName="phoneNumber"
                placeholder="Enter your phone number to receive SMS notifications">
-        <div *ngIf="formData.get('phoneNumber').valid && savingPhoneNumber === false">
-          Saved!
+        <div *ngIf="nsc.smsStatus$ | async as smsStatus">
+          <div *ngIf="smsStatus == 'saving'">Saving...</div>
+          <div *ngIf="smsStatus == 'saved'">Saved</div>
         </div>
       </div>
     </div>
