@@ -56,9 +56,6 @@
 
     <div class="no-results" *ngIf="!searchResult.contacts?.length && searchQuery" padding-top>
 
-      <div class="no-results-label" *ngIf="!searchResult.error">
-        No results
-      </div>
       <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
         Address is not confirmed yet
       </div>
