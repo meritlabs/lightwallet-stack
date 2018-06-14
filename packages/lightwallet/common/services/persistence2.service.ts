@@ -49,14 +49,17 @@ export class PersistenceService2 {
     return (await this.storage.get(StorageKey.WalletPreferencesPrefix + walletId)) || {};
   }
 
-  setNotificationSettings(settings: any) {
-    return this.storage.set(StorageKey.NotificationSettings, settings);
+  async setNotificationSettings(settings: Partial<INotificationSettings>) {
+    return this.storage.set(StorageKey.NotificationSettings, {
+      ...await this.getNotificationSettings(),
+      ...settings
+    });
   }
 
   async getNotificationSettings(): Promise<INotificationSettings> {
     const settings = (await this.storage.get(StorageKey.NotificationSettings)) || {};
     return {
-      ... DEFAULT_NOTIFICATION_SETTINGS ,
+      ... DEFAULT_NOTIFICATION_SETTINGS,
       ... settings
     };
   }
