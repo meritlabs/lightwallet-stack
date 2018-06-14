@@ -59,7 +59,10 @@ interface Receipt {
 })
 export class SendView implements OnInit {
 
-  wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets);
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets)
+    .pipe(
+      tap(wallets => console.log(wallets))
+    );
 
   hasUnlockedWallet: boolean;
   hasAvailableInvites: boolean;
@@ -196,7 +199,7 @@ export class SendView implements OnInit {
     .pipe(
       map(([txData, submitSuccess]) => {
         const { feeIncluded, wallet } = this.formData.value;
-        const { spendableAmount } = wallet ? wallet.status : 0;
+        const { spendableAmount } = wallet ? wallet.balance : 0;
 
         if (!txData || !txData.txp || this.success) {
           return {
@@ -216,7 +219,7 @@ export class SendView implements OnInit {
           amount: txData.txp.amount,
           fee: txData.txp.fee + (txData.easyFee || 0),
           total: feeIncluded ? txData.txp.amount : txData.txp.amount + txData.txp.fee,
-          inWallet: wallet.status.spendableAmount,
+          inWallet: wallet.balance.spendableAmount,
           remaining: 0
         };
 
@@ -310,9 +313,9 @@ export class SendView implements OnInit {
 
     if (wallets && wallets[0]) {
       this.wallet.setValue(wallets[0], { emitEvent: false });
-      if (wallets[0].status.spendableAmount <= 0) {
+      if (wallets[0].balance.spendableAmount <= 0) {
         wallets.some((wallet) => {
-          if (wallet.status.spendableAmount > 0) {
+          if (wallet.balance.spendableAmount > 0) {
             this.wallet.setValue(wallet, { emitEvent: false });
             return true;
           }
