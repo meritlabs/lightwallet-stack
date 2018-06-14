@@ -144,7 +144,6 @@ export class NotificationSettingsController {
             if (this.smsNotificationsEnabled && this.phoneNumber.valid) {
               this.toastCtrl.success('You are now subscribed to SMS notifications!');
             }
-            this.updateStorage();
           })
         )
         .subscribe()

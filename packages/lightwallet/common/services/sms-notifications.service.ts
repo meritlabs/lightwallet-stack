@@ -59,8 +59,18 @@ export class SmsNotificationsService {
     let promises;
 
     if (enabled) {
+      this.status = {
+        enabled,
+        phoneNumber,
+        platform
+      };
+
       promises = wallets.map(wallet => wallet.smsNotificationsSubscribe(phoneNumber, platform));
     } else {
+      this.status = {
+        enabled
+      };
+
       promises = wallets.map(wallet => wallet.smsNotificationsUnsubscribe());
     }
 
