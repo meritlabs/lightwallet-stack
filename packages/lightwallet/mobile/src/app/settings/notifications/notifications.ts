@@ -23,7 +23,6 @@ import { NotificationSettingsController } from '../../../../../common/utils/noti
   templateUrl: 'notifications.html'
 })
 export class NotificationsView {
-  appName: string;
   usePushNotifications: boolean = this.platformService.isCordova;
 
   nsc = new NotificationSettingsController(
