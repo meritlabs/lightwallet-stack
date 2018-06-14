@@ -18,13 +18,13 @@ export function accessWallet(target, key: string, descriptor: any) {
 
   return {
     value: async function (...args:any[]) {
+      const wallet: MeritWalletClient = args[0];
 
-      let wallet = args[0];
       if (!wallet || !wallet.credentials) {
         throw new Error(`first argument of ${key} method should be type of MeritWalletClient so we can check access`);
       }
 
-      let password = null;
+      let password;
       if (wallet.isPrivKeyEncrypted()) {
         try {
           password = await  this.alertCtrl.promptForWalletPassword(wallet);
