@@ -90,7 +90,7 @@ export class SendService {
   async send(wallet: MeritWalletClient, txData: ISendTxData) {
 
     if (txData.sendMethod.type == SendMethodType.Easy)  {
-      const easySend = await this.easySendService.createEasySendScriptHash(wallet); //todo password removed
+      const easySend = await this.easySendService.createEasySendScriptHash(wallet, txData.password);
       txData.easySend = easySend;
       let amount = txData.feeIncluded ? txData.amount : (txData.amount + await this.feeService.getEasyReceiveFee());
       txData.txp = await this.easySendService.prepareTxp(wallet, amount, easySend);
