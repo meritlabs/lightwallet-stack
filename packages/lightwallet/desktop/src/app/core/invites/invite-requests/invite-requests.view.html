@@ -1,5 +1,5 @@
 <ng-container *ngIf="inviteRequests$ | async as inviteRequests; else loading">
-  {{detectPendingInvite(inviteRequests$ | async)}}
+  {{detectPendingInvite(inviteRequests)}}
   <app-task-confirm [achvName]="'Fast Starter'" [goalName]="'Add a friend to your invite waitlist'" [isDone]="isPendingInvites"></app-task-confirm>
   <ng-container *ngIf="inviteRequests.length; else noRequests">
     <app-task-confirm [achvName]="'Fast Starter'" [goalName]="'Confirm an invite request'" [isDone]="isInviteSent"></app-task-confirm>
