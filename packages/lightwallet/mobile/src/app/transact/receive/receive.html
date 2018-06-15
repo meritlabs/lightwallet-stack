@@ -9,7 +9,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content [class.footerCollapsed]="isFooterCollapsed">
 
   <div *ngIf="loading">
       <ion-spinner></ion-spinner>
