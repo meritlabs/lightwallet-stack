@@ -1,3 +1,15 @@
+.ios view-receive {
+  .scroll-content {
+    margin-bottom: 336px !important;
+  }
+
+  ion-content.footerCollapsed {
+    .scroll-content {
+      margin-bottom: 94px !important;
+    }
+  }
+}
+
 view-receive {
 
   .unlock-screen {
