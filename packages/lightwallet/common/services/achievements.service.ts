@@ -42,16 +42,16 @@ export class achievementsService {
 
   async getAchievements() {
     let profile = await this._getProfile(),
-      getWalletAchivements = await MeritAchivementClient.fromObj(profile).getData(
+      getWalletAchievements = await MeritAchivementClient.fromObj(profile).getData(
         await this.getToken(),
         '/achievements/'
       );
 
-    this.store.dispatch(new SetAchievementsAction(getWalletAchivements));
+    this.store.dispatch(new SetAchievementsAction(getWalletAchievements));
   }
 
   async getLockedAchievements() {
-    let lockedAcievents = [
+    const lockedAchievements = [
       {
         id: 'u0',
         goalId: 'u0',
@@ -68,17 +68,17 @@ export class achievementsService {
       },
     ];
 
-    this.store.dispatch(new SetAchievementsAction(lockedAcievents));
+    this.store.dispatch(new SetAchievementsAction(lockedAchievements));
   }
 
   async getSettings() {
     let profile = await this._getProfile(),
-      getAchivementsSettings = await MeritAchivementClient.fromObj(profile).getData(
+      getAchievementsSettings = await MeritAchivementClient.fromObj(profile).getData(
         await this.getToken(),
         '/settings/'
       );
 
-    this.store.dispatch(new SetAchievementsSettings(getAchivementsSettings));
+    this.store.dispatch(new SetAchievementsSettings(getAchievementsSettings));
   }
 
   async setSettings(settings) {
