@@ -54,7 +54,7 @@ export function getComponents() {
     ConfirmDialogComponent,
     GlobalsendLinkPopupComponent,
   ],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule, GtagDirective],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule],
   declarations: getComponents(),
   exports: getComponents(),
 })
