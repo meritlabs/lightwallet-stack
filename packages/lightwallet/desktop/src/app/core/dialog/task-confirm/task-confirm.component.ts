@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 
 import { Achievements, Achievement } from '@merit/common/models/achievement';
 import { achievementsService } from '@merit/common/services/achievements.service';
+import { AchievementTask } from '@merit/common/utils/achievements.const';
 
 @Component({
   selector: 'app-task-confirm',
@@ -31,29 +32,14 @@ export class TaskConfirmComponent implements OnInit {
     });
   }
   ngOnChanges(changes: SimpleChanges) {
-    switch (this.goalName) {
-      case 'Invite Your Friends to Merit!':
-        if (this.isDone) {
-          this.finishTask();
-        }
-        return;
-      case 'Confirm an invite request':
-        if (this.isDone) {
-          this.finishTask();
-        }
-        return;
-      case 'Add a friend to your invite waitlist':
-        if (this.isDone) {
-          this.finishTask();
-        }
-        return;
-      case 'Mine an invite':
-        if (this.isDone) {
-          this.finishTask();
-        }
-        return;
-      default:
-        return;
+    if (
+      this.isDone &&
+      (this.goalName === AchievementTask.InviteFriends ||
+        this.goalName === AchievementTask.ConfirmInviteRequest ||
+        this.goalName === AchievementTask.GetInviteRequest ||
+        this.goalName === AchievementTask.MineInvite)
+    ) {
+      this.finishTask();
     }
   }
 

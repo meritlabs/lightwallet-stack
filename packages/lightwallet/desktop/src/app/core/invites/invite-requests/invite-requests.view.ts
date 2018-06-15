@@ -29,13 +29,15 @@ export class InviteRequestsView {
 
   sending: { [referralId: string]: boolean } = {};
   isInviteSent: boolean = false;
-  isPendingInvites: boolean = false;
+  isPendingInvites: boolean;
 
-  constructor(private store: Store<IRootAppState>,
-              private confirmDialogCtrl: ConfirmDialogControllerService,
-              private logger: LoggerService,
-              private toastCtrl: ToastControllerService,
-              private walletService: WalletService) {}
+  constructor(
+    private store: Store<IRootAppState>,
+    private confirmDialogCtrl: ConfirmDialogControllerService,
+    private logger: LoggerService,
+    private toastCtrl: ToastControllerService,
+    private walletService: WalletService
+  ) {}
 
   async approveRequest(request: IUnlockRequest) {
     const availableInvites = await this.availableInvites$.pipe(take(1)).toPromise();
