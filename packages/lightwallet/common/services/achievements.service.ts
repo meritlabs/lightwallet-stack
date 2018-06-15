@@ -99,7 +99,7 @@ export class achievementsService {
 
   async reLogin() {
     await this.store.dispatch(new SetAuthorizeToken(null));
-    this.getAchievements();
+    return this.getAchievements();
   }
 
   async _getProfile() {
