@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Achievement } from '@merit/common/models/achievement';
-import { AchievementsService } from '@merit/common/services/achievements.service';
+import { achievementsService } from '@merit/common/services/achievements.service';
 import { Router } from '@angular/router';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { Store } from '@ngrx/store';
@@ -13,7 +13,7 @@ import { IRootAppState } from '@merit/common/reducers';
 })
 export class TaskPreviewComponent implements OnInit {
   constructor(
-    private AchievementsService: AchievementsService,
+    private achievementsService: achievementsService,
     private router: Router,
     private store: Store<IRootAppState>
   ) {}
@@ -38,8 +38,8 @@ export class TaskPreviewComponent implements OnInit {
     let isConfirmed: boolean = this.wallet.confirmed,
       goal: any = this.goal;
     if (isConfirmed && goal.name === 'Creator' && goal.status !== 1 && goal.version !== 0) {
-      await this.AchievementsService.updateGoal(goal.id, 1);
-      await this.AchievementsService.updateGoal(goal.id, 2);
+      await this.achievementsService.updateGoal(goal.id, 1);
+      await this.achievementsService.updateGoal(goal.id, 2);
     }
   }
 

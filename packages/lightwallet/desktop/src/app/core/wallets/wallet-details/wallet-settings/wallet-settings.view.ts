@@ -12,7 +12,7 @@ import { PasswordPromptController } from '@merit/desktop/app/components/password
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { debounceTime, filter, switchMap } from 'rxjs/operators';
-import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
+import { interfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 
 @Component({
   selector: 'view-wallet-settings',
@@ -143,7 +143,7 @@ export class WalletSettingsView implements OnInit, OnDestroy {
     private confirmDialogCtrl: ConfirmDialogControllerService,
     private router: Router,
     private toastCtrl: ToastControllerService,
-    private InterfacePreferencesService: InterfacePreferencesService
+    private interfacePreferencesService: interfacePreferencesService
   ) {}
 
   ngOnInit() {
@@ -249,7 +249,7 @@ export class WalletSettingsView implements OnInit, OnDestroy {
           }
 
           this.store.dispatch(new DeleteWalletAction(this.wallet.id));
-          this.InterfacePreferencesService.setPrimaryWallet(null);
+          this.interfacePreferencesService.setPrimaryWallet(null);
           this.router.navigateByUrl('/wallets');
         } catch (err) {
           this.toastCtrl.error(err);

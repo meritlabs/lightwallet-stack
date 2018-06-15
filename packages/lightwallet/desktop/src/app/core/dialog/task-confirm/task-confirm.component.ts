@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
 import { Achievements, Achievement } from '@merit/common/models/achievement';
-import { AchievementsService } from '@merit/common/services/achievements.service';
+import { achievementsService } from '@merit/common/services/achievements.service';
 
 @Component({
   selector: 'app-task-confirm',
@@ -13,7 +13,7 @@ import { AchievementsService } from '@merit/common/services/achievements.service
   styleUrls: ['./task-confirm.component.sass'],
 })
 export class TaskConfirmComponent implements OnInit {
-  constructor(private store: Store<IRootAppState>, private AchievementsService: AchievementsService) {}
+  constructor(private store: Store<IRootAppState>, private achievementsService: achievementsService) {}
 
   @Input() goalName: string;
   @Input() achvName: string;
@@ -59,7 +59,7 @@ export class TaskConfirmComponent implements OnInit {
 
   finishTask() {
     if (this.achv) {
-      this.AchievementsService.updateGoal(this.achv.id, this.task.slug);
+      this.achievementsService.updateGoal(this.achv.id, this.task.slug);
     }
   }
 }

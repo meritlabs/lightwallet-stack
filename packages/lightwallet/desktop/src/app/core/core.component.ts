@@ -21,9 +21,9 @@ import { selectWallets, selectWalletsLoading } from '@merit/common/reducers/wall
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Observable } from 'rxjs/Observable';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
-import { AchievementsService } from '@merit/common/services/achievements.service';
+import { achievementsService } from '@merit/common/services/achievements.service';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
-import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
+import { interfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 
 @Component({
   selector: 'view-core',
@@ -106,8 +106,8 @@ export class CoreView implements OnInit, AfterViewInit {
     private store: Store<IRootAppState>,
     private persistenceService2: PersistenceService2,
     private domSanitizer: DomSanitizer,
-    private AchievementsService: AchievementsService,
-    private InterfacePreferencesService: InterfacePreferencesService
+    private achievementsService: achievementsService,
+    private interfacePreferencesService: interfacePreferencesService
   ) {}
 
   async ngOnInit() {
@@ -122,14 +122,14 @@ export class CoreView implements OnInit, AfterViewInit {
     let primaryWallet = await this.persistenceService2.getUserSettings(UserSettingsKey.primaryWalletID);
 
     if (primaryWallet) {
-      this.InterfacePreferencesService.setPrimaryWallet(primaryWallet);
-      await this.AchievementsService.getSettings();
-      await this.AchievementsService.getAchievements();
+      this.interfacePreferencesService.setPrimaryWallet(primaryWallet);
+      await this.achievementsService.getSettings();
+      await this.achievementsService.getAchievements();
     } else {
       this.wallets$.subscribe(res => {
         let activeWallet = res.filter((item: any) => item.confirmed === true);
         if (activeWallet.length > 0) {
-          this.InterfacePreferencesService.setPrimaryWallet(activeWallet[0].id);
+          this.interfacePreferencesService.setPrimaryWallet(activeWallet[0].id);
         }
       });
     }
