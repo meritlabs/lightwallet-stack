@@ -1,13 +1,13 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
-import { selectWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
-import { Router } from '@angular/router';
-import 'rxjs/add/operator/toPromise';
-import { filter, take, tap } from 'rxjs/operators';
+import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { getShareLink } from '@merit/common/utils/url';
+import { Store } from '@ngrx/store';
+import 'rxjs/add/operator/toPromise';
+import { Observable } from 'rxjs/Observable';
+import { filter, take } from 'rxjs/operators';
 
 declare global {
   interface Window {
@@ -16,10 +16,11 @@ declare global {
   }
 }
 
+
 @Component({
   selector: 'app-share-box',
   templateUrl: './share-box.component.html',
-  styleUrls: ['./share-box.component.sass'],
+  styleUrls: ['./share-box.component.sass']
 })
 export class ShareBoxComponent implements OnInit {
   constructor(private store: Store<IRootAppState>, private toastCtrl: ToastControllerService) {}
@@ -27,13 +28,12 @@ export class ShareBoxComponent implements OnInit {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   selectedWallet = {
     id: null,
-    name: 'Select wallet',
+    name: 'Select wallet'
   };
   shareAlias: string;
   shareLink: string;
 
   shareTitle: string = 'Merit - digital currency for humans.';
-  shareUrl: string = 'wallet.merit.me';
   shareText: string = `Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth.\n Get wallet now, your activation code: `;
 
   @Output() dismiss: EventEmitter<void> = new EventEmitter<void>();
@@ -45,14 +45,12 @@ export class ShareBoxComponent implements OnInit {
 
     if (wallets.length > 0) {
       this.selectedWallet = wallets[0];
-      console.log(this.selectedWallet);
-
       this.selectWallet(wallets[0]);
       this.initAddThis();
     }
   }
 
-  initAddThis() {
+  private initAddThis() {
     if (window.addthis_config && window.addthis_share) {
       // move created shareThis into right container
       const newParent = document.getElementById('pasteShareThis'),
@@ -72,19 +70,19 @@ export class ShareBoxComponent implements OnInit {
           description: `${this.shareTitle}\n ${this.shareText}${alias}`,
           passthrough: {
             twitter: {
-              text: `${this.shareTitle}\n ${this.shareText}${alias}`,
+              text: `${this.shareTitle}\n ${this.shareText}${alias}`
             },
             linkedin: {
               title: this.shareTitle,
               text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-              description: `${this.shareTitle}\n ${this.shareText}${alias}`,
+              description: `${this.shareTitle}\n ${this.shareText}${alias}`
             },
             facebook: {
               title: this.shareTitle,
               text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-              description: `${this.shareTitle}\n ${this.shareText}${alias}`,
-            },
-          },
+              description: `${this.shareTitle}\n ${this.shareText}${alias}`
+            }
+          }
         };
       }
     }
@@ -92,27 +90,25 @@ export class ShareBoxComponent implements OnInit {
 
   selectWallet(wallet: DisplayWallet) {
     this.selectedWallet = wallet;
-    if (wallet.alias) {
-      this.shareAlias = `@${wallet.alias}`;
-    } else {
-      this.shareAlias = wallet.referrerAddress;
-    }
-    this.shareLink = `${window.location.origin}?invite=${this.shareAlias}`;
+    this.shareAlias = wallet.alias || wallet.referrerAddress;
+    this.shareLink = getShareLink(this.shareAlias);
   }
 
   onCopy() {
     this.toastCtrl.success('Share link copied to clipboard!');
   }
+
   closeWindow() {
-    if (!(window.addthis_config && window.addthis_share)) return;
+    if (window.addthis_config && window.addthis_share) {
+      // move created shareThis into right container
+      const newParent = document.getElementById('shareThis'),
+        oldParent = document.getElementById('pasteShareThis');
 
-    // move created shareThis into right container
-    const newParent = document.getElementById('shareThis'),
-      oldParent = document.getElementById('pasteShareThis');
-
-    while (oldParent.childNodes.length > 0) {
-      newParent.appendChild(oldParent.childNodes[0]);
-      this.dismiss.emit();
+      while (oldParent.childNodes.length > 0) {
+        newParent.appendChild(oldParent.childNodes[0]);
+      }
     }
+
+    this.dismiss.emit();
   }
 }

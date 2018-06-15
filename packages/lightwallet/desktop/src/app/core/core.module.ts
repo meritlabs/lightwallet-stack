@@ -22,7 +22,6 @@ import { InvitesComponent } from './community/invites/invites.component';
 import { CoreRoutingModule } from './core-routing.module';
 import { CoreView } from './core.component';
 import { DashboardView } from './dashboard/dashboard.view';
-import { WelcomeGuideComponent } from './dashboard/welcome-guide/welcome-guide.component';
 import { GlobalSettingsView } from './global-settings/global-settings.view';
 import { SettingsPreferencesView } from './global-settings/settings-preferences/settings-preferences.view';
 import { SettingsSessionLogView } from './global-settings/settings-session-log/settings-session-log.view';
@@ -36,6 +35,7 @@ import { WalletDetailHistoryView } from './wallets/wallet-details/wallet-details
 import { WalletDetailView } from './wallets/wallet-details/wallet-details.view';
 import { WalletSettingsView } from './wallets/wallet-details/wallet-settings/wallet-settings.view';
 import { WalletsView } from './wallets/wallets.view';
+import { RecordPassphraseComponent } from './dialog/record-passphrase/record-passphrase.component';
 
 export function getPages() {
   return [
@@ -67,10 +67,7 @@ export function getPages() {
 }
 
 @NgModule({
-  entryComponents: [
-    CoreView,
-    ...getPages()
-  ],
+  entryComponents: [CoreView, ...getPages()],
   imports: [
     CommonModule,
     CoreRoutingModule,
@@ -82,16 +79,9 @@ export function getPages() {
     MomentModule,
     ClipModule,
     Ng4LoadingSpinnerModule,
-    CoreComponentsModule
+    CoreComponentsModule,
   ],
-  declarations: [
-    CoreView,
-    ...getPages(),
-    SendTourComponent,
-    WelcomeGuideComponent
-  ],
-  providers: [
-    WalletPasswordGuard
-  ]
+  declarations: [CoreView, ...getPages(), SendTourComponent, RecordPassphraseComponent],
+  providers: [WalletPasswordGuard],
 })
 export class CoreModule {}

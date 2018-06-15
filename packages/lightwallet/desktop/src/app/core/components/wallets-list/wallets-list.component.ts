@@ -1,7 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 
 @Component({
   selector: 'wallets-list',
@@ -15,21 +13,5 @@ export class WalletsListComponent {
 
   trackByFn(wallet: DisplayWallet) {
     return wallet.id;
-  }
-
-  constructor(private route: ActivatedRoute,
-              private router: Router,
-              private toastCtrl: ToastControllerService
-  ) {}
-
-  shareLink(wallet: DisplayWallet) {
-    const code = wallet.alias || wallet.referrerAddress;
-
-    return `${window.location.origin}?invite=${code}`;
-  }
-
-  onCopy($event: MouseEvent, walletId: number) {
-    $event.stopPropagation();
-    this.toastCtrl.success('Share link copied to clipboard!');
   }
 }

@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { getEasySendURL } from '@merit/common/models/easy-send';
-import { ISendMethod } from '@merit/common/models/send-method';
+import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletAction, selectConfirmedWallets } from '@merit/common/reducers/wallets.reducer';
 import { AddressService } from '@merit/common/services/address.service';
@@ -196,9 +196,9 @@ export class SendView implements OnInit {
     .pipe(
       map(([txData, submitSuccess]) => {
         const { feeIncluded, wallet } = this.formData.value;
-        const { spendableAmount } = wallet ? wallet.status : 0;
+        const { spendableAmount } = wallet ? wallet.balance : 0;
 
-        if (!txData || !txData.txp || this.success) {
+        if (!txData || this.success) {
           return {
             amount: 0,
             fee: 0,
@@ -213,10 +213,10 @@ export class SendView implements OnInit {
         this.success = void 0;
 
         const receipt: Receipt = {
-          amount: txData.txp.amount,
-          fee: txData.txp.fee + (txData.easyFee || 0),
-          total: feeIncluded ? txData.txp.amount : txData.txp.amount + txData.txp.fee,
-          inWallet: wallet.status.spendableAmount,
+          amount: txData.amount,
+          fee: txData.fee,
+          total: feeIncluded ? txData.amount : txData.amount + txData.fee,
+          inWallet: spendableAmount,
           remaining: 0
         };
 
@@ -310,9 +310,9 @@ export class SendView implements OnInit {
 
     if (wallets && wallets[0]) {
       this.wallet.setValue(wallets[0], { emitEvent: false });
-      if (wallets[0].status.spendableAmount <= 0) {
+      if (wallets[0].balance.spendableAmount <= 0) {
         wallets.some((wallet) => {
-          if (wallet.status.spendableAmount > 0) {
+          if (wallet.balance.spendableAmount > 0) {
             this.wallet.setValue(wallet, { emitEvent: false });
             return true;
           }
@@ -334,52 +334,45 @@ export class SendView implements OnInit {
   }
 
   private async createTx(formValue: any): Promise<ISendTxData> {
-    let txData: Partial<ISendTxData> = {};
     let { amountMrt, wallet, type, feeIncluded, password, address } = formValue;
 
     address = cleanAddress(address);
 
-    const micros = this.rateService.mrtToMicro(amountMrt);
+    let micros = this.rateService.mrtToMicro(amountMrt);
+
+    if (micros > wallet.balance.spendableAmount) {
+      micros = wallet.balance.spendableAmount;
+      amountMrt = this.rateService.microsToMrt(micros);
+      this.amountMrt.setValue(amountMrt, { emitEvent: false });
+    }
 
     if (micros == wallet.balance.spendableAmount) {
       feeIncluded = true;
       this.feeIncluded.setValue(true, { emitEvent: false });
     }
 
-    if (type === 'easy') {
-      const easySend = await this.easySendService.createEasySendScriptHash(wallet.client, password);
-      txData.easySend = easySend;
-      txData.txp = await this.easySendService.prepareTxp(wallet.client, micros, easySend);
-      txData.easySendUrl = getEasySendURL(easySend);
-      txData.referralsToSign = [easySend.scriptReferralOpts];
+    const fee = await this.sendService.estimateFee(wallet.client, micros, type == SendMethodType.Easy, address);
 
-      if (!feeIncluded) { //if fee is included we pay also easyreceive tx, so recipient can have the exact amount that is displayed
-        txData.easyFee = await this.feeService.getEasyReceiveFee();
-      }
-    } else {
-      if (!isAddress(address)) {
-        const info = await this.addressService.getAddressInfo(address);
-        address = info.address;
-      }
-
-      txData.txp = await this.sendService.prepareTxp(wallet.client, micros, address);
-    }
-
-    if (!txData.txp) {
-      throw new Error('Error occurred when calculating transaction details');
-    }
-
-    return txData as ISendTxData;
+    return {
+      amount: micros,
+      password,
+      fee,
+      wallet: wallet.client,
+      feeIncluded,
+      toAddress: this.address.value || 'MeritMoney link'
+    };
   }
 
   async send(txData: ISendTxData) {
-    if (txData.easyFee) txData.txp.amount += txData.easyFee;
+    if (txData.easyFee) {
+      txData.txp.amount += txData.easyFee;
+    }
 
-    const wallet = this.wallet.value;
+    const wallet = txData.wallet;
 
     txData.sendMethod = { type: this.type.value } as ISendMethod;
 
-    await this.sendService.send(txData, wallet.client);
+    await this.sendService.send(wallet, txData);
 
     this.easySendUrl = txData.easySendUrl;
 
