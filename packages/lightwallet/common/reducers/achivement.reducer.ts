@@ -1,4 +1,4 @@
-import { Achievement, Achievements } from '@merit/common/models/achievement';
+import { Achievement, IAchievements } from '@merit/common/models/achievement';
 import { Action } from '@ngrx/store';
 
 const DEFAULT_STATE: IAchievementsState = {

@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 
 import { Observable } from 'rxjs/Observable';
 
-import { Achievements, Achievement } from '@merit/common/models/achievement';
+import { IAchievements, Achievement } from '@merit/common/models/achievement';
 import { achievementsService } from '@merit/common/services/achievements.service';
 import { AchievementTask } from '@merit/common/utils/achievements.const';
 

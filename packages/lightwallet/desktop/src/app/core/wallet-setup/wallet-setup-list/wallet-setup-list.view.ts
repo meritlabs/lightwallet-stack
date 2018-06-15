@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 
 import { Observable } from 'rxjs/Observable';
 
-import { Achievements } from '@merit/common/models/achievement';
+import { IAchievements } from '@merit/common/models/achievement';
 import { achievementsService } from '@merit/common/services/achievements.service';
 
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -28,7 +28,7 @@ export class WalletSetupListView implements OnInit {
     private interfacePreferencesService: interfacePreferencesService
   ) {}
 
-  goalsState$: Observable<Achievements> = this.store.select('achievements');
+  goalsState$: Observable<IAchievements> = this.store.select('achievements');
   trackerSettings: any;
   toDo: any;
   done: any;
