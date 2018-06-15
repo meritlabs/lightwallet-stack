@@ -23,6 +23,7 @@ import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-
 import { UICheckboxComponent } from '@merit/desktop/app/components/ui-checkbox/ui-checkbox.component';
 import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/wallet-icon.component';
 import { ClipModule } from 'ng2-clip';
+import { GtagDirective } from '@merit/common/directives/gtag.directive';
 
 export function getComponents() {
   return [
@@ -41,7 +42,8 @@ export function getComponents() {
     IllustationsThatsItComponent,
     IllustationsYourWayComponent,
     GlobalsendLinkPopupComponent,
-    UICheckboxComponent
+    UICheckboxComponent,
+    GtagDirective,
   ];
 }
 
@@ -50,16 +52,11 @@ export function getComponents() {
     ToastNotificationComponent,
     PasswordPromptComponent,
     ConfirmDialogComponent,
-    GlobalsendLinkPopupComponent
+    GlobalsendLinkPopupComponent,
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ClipModule
-  ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule, GtagDirective],
   declarations: getComponents(),
-  exports: getComponents()
+  exports: getComponents(),
 })
 export class SharedComponentsModule {
   static forRoot(): ModuleWithProviders {
@@ -70,8 +67,8 @@ export class SharedComponentsModule {
         { provide: ToastControllerServiceBase, useClass: ToastControllerService },
         PasswordPromptController,
         ConfirmDialogControllerService,
-        GlobalsendLinkPopupController
-      ]
+        GlobalsendLinkPopupController,
+      ],
     };
   }
 }
