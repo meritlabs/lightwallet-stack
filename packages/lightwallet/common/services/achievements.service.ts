@@ -8,7 +8,7 @@ import {
   SetAchievementsAction,
   SetAuthorizeToken,
   SetAchievementsSettings,
-  CompleteAchivement,
+  CompleteAchievement,
 } from '@merit/common/reducers/achivement.reducer';
 import { MeritAchivementClient } from '@merit/common/achievements-client/api';
 import { PersistenceService } from '@merit/common/services/persistence.service';
@@ -94,7 +94,7 @@ export class achievementsService {
       {},
       await this.getToken()
     );
-    this.store.dispatch(new CompleteAchivement({ id: id, step: step }));
+    this.store.dispatch(new CompleteAchievement({ id: id, step: step }));
   }
 
   async reLogin() {

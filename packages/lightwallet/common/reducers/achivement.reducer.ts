@@ -82,7 +82,7 @@ export class SetAchievementsSettings implements Action {
   constructor(public settings: {}) {}
 }
 
-export class CompleteAchivement implements Action {
+export class CompleteAchievement implements Action {
   type = AchievementsActionType.CompleteAchivement;
 
   constructor(public completeTask: any) {}
@@ -97,4 +97,4 @@ export class SetAchievementsAction implements Action {
 export type AchievementsAction = SetAchievementsAction &
   SetAuthorizeToken &
   SetAchievementsSettings &
-  CompleteAchivement;
+  CompleteAchievement;
