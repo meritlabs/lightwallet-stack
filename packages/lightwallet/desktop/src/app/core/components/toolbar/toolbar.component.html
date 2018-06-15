@@ -16,7 +16,7 @@
     </ng-container>
     <ng-container *ngIf="totals$ | async as totals">
       <div class="title">
-        Avalible amount:
+        Available amount:
       </div>
       <div class="amount-merit">{{ totals.totalWalletsBalance }} MRT</div>
       <div class="amount-fiat" *ngIf="totalWalletsBalanceFiat">$ {{ totals.totalWalletsBalanceFiat }}</div>
