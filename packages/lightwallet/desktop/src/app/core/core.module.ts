@@ -38,7 +38,6 @@ import { WalletsView } from './wallets/wallets.view';
 import { WalletSetupView } from './wallet-setup/wallet-setup.view';
 import { TaskPreviewComponent } from './wallet-setup/task-preview/task-preview.component';
 import { WalletSetupListView } from './wallet-setup/wallet-setup-list/wallet-setup-list.view';
-import { SpreadMasterComponent } from './wallet-setup/tasks/spread-master/spread-master.component';
 import { RecordPassphraseComponent } from './dialog/record-passphrase/record-passphrase.component';
 import { WelcomeToSetupTrackerComponent } from './dialog/welcome-to-setup-tracker/welcome-to-setup-tracker.component';
 
@@ -94,7 +93,6 @@ export function getPages() {
     SendTourComponent,
     RecordPassphraseComponent,
     TaskPreviewComponent,
-    SpreadMasterComponent,
     WelcomeToSetupTrackerComponent,
   ],
   providers: [WalletPasswordGuard],

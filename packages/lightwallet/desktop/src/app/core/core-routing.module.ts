@@ -26,7 +26,6 @@ import { SendView } from './send/send.view';
 import { WalletsView } from './wallets/wallets.view';
 import { WalletSetupView } from './wallet-setup/wallet-setup.view';
 import { WalletSetupListView } from './wallet-setup/wallet-setup-list/wallet-setup-list.view';
-import { SpreadMasterComponent } from './wallet-setup/tasks/spread-master/spread-master.component';
 
 const routes: Routes = [
   {
@@ -82,10 +81,7 @@ const routes: Routes = [
       {
         path: 'wallet-setup',
         component: WalletSetupView,
-        children: [
-          { path: '', component: WalletSetupListView },
-          { path: 'spread-master', component: SpreadMasterComponent },
-        ],
+        children: [{ path: '', component: WalletSetupListView }],
       },
       { path: '**', redirectTo: 'dashboard' },
     ],
