@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Clipboard } from '@ionic-native/clipboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { Events, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
+import { Events, IonicPage, ModalController, NavController, NavParams, TextInput } from 'ionic-angular';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { LoggerService } from '@merit/common/services/logger.service';
@@ -39,6 +39,8 @@ export class ReceiveView {
   hasUnlockedWallets: boolean;
   loading: boolean;
 
+  @ViewChild('amountInput') amountInput: TextInput;
+
   constructor(private navCtrl: NavController,
               private modalCtrl: ModalController,
               private profileService: ProfileService,
@@ -73,6 +75,10 @@ export class ReceiveView {
 
   ionViewWillEnter() {
     return this.loadData();
+  }
+
+  focusInput() {
+    this.amountInput._native.nativeElement.focus();
   }
 
   async loadData() {
