@@ -9,11 +9,12 @@ export enum StorageKey {
   NotificationSettings = 'merit_notification_settings',
   Notifications = 'merit_notifications',
   EasySends = 'merit_easysends',
-  ViewSettingsPrefix = 'app_view_settings_'
+  ViewSettingsPrefix = 'app_view_settings_',
 }
 
 export enum ViewSettingsKey {
-  GetStartedTips = 'get_started_tips'
+  GetStartedTips = 'get_started_tips',
+  recordPassphrase = 'record_passphrase',
 }
 
 export interface INotificationSettings {
@@ -25,7 +26,7 @@ export interface INotificationSettings {
 const DEFAULT_NOTIFICATION_SETTINGS: INotificationSettings = {
   email: '',
   emailNotifications: false,
-  pushNotifications: true
+  pushNotifications: true,
 };
 
 /**
@@ -49,7 +50,7 @@ export class PersistenceService2 {
 
   async getNotificationSettings(): Promise<INotificationSettings> {
     const settings = await this.storage.get(StorageKey.NotificationSettings);
-    return isEmpty(settings)? DEFAULT_NOTIFICATION_SETTINGS : settings;
+    return isEmpty(settings) ? DEFAULT_NOTIFICATION_SETTINGS : settings;
   }
 
   setNotifications(notifications: INotification[]) {
@@ -75,7 +76,7 @@ export class PersistenceService2 {
 
     if (idx != -1) {
       easySends[idx].cancelled = true;
-      console.log("FOUND:", easySends[idx]);
+      console.log('FOUND:', easySends[idx]);
       await this.setEasySends(easySends);
       return true;
     } else {
