@@ -94,7 +94,7 @@ export class achievementsService {
       {},
       await this.getToken()
     );
-    this.store.dispatch(new CompleteAchievement({ id: id, step: step }));
+    this.store.dispatch(new CompleteAchievement({ id, step }));
   }
 
   async reLogin() {
