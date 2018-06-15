@@ -89,7 +89,11 @@
     </div>
 </ion-content>
 
-<ion-footer *ngIf="!loading && hasUnlockedWallets">
+<ion-footer *ngIf="!loading && hasUnlockedWallets" text-center>
+
+  <button #toggleButton ion-button round small outline icon-start class="footer-toggle-button" (click)="toggleFooter()">
+    <ion-icon [name]="isFooterCollapsed? 'arrow-up' : 'arrow-down'"></ion-icon> {{ isFooterCollapsed? 'Show options' : 'Hide options'}}
+  </button>
 
   <ion-toolbar>
 

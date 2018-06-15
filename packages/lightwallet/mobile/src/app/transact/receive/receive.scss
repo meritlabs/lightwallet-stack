@@ -120,6 +120,10 @@ view-receive {
 
   ion-footer {
     padding: 0;
+
+    .footer-toggle-button {
+    }
+
     &:before {
       display: none;
     }
