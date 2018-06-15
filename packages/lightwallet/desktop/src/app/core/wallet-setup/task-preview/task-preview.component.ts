@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
+import { AchievementTask } from '@merit/common/utils/achievements.const';
 
 @Component({
   selector: 'app-task-preview',
@@ -45,16 +46,16 @@ export class TaskPreviewComponent implements OnInit {
 
   action(val) {
     switch (val) {
-      case 'Invite Your Friends to Merit!':
+      case AchievementTask.InviteFriends:
         this.store.dispatch(new SetShareDialogAction(true));
         return this.router.navigate(['/wallets']);
-      case 'Add a friend to your invite waitlist':
+      case AchievementTask.GetInviteRequest:
         return this.router.navigate([`/invites/requests`]);
-      case 'Confirm an invite request':
+      case AchievementTask.ConfirmInviteRequest:
         return this.router.navigate([`/invites/requests`]);
-      case 'Mine an invite':
+      case AchievementTask.MineInvite:
         return this.router.navigate([`/history`]);
-      case 'Unlock wallet':
+      case AchievementTask.UnlockWallet:
         return this.router.navigate([`/history`]);
       default:
         return this.router.navigate(['/wallets']);
