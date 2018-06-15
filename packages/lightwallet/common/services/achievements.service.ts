@@ -15,7 +15,7 @@ import { PersistenceService } from '@merit/common/services/persistence.service';
 import { ENV } from '@app/env';
 
 @Injectable()
-export class AchievementsService {
+export class achievementsService {
   static BASE_URL: string = `${ENV.achievementApi}/goals/`;
 
   constructor(

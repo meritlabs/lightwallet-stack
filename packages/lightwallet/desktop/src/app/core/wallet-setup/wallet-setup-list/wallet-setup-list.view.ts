@@ -5,13 +5,13 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
 import { Achievements } from '@merit/common/models/achievement';
-import { AchievementsService } from '@merit/common/services/achievements.service';
+import { achievementsService } from '@merit/common/services/achievements.service';
 
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
-import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
+import { interfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 
 @Component({
@@ -22,10 +22,10 @@ import { PersistenceService2, UserSettingsKey } from '@merit/common/services/per
 export class WalletSetupListView implements OnInit {
   constructor(
     private store: Store<IRootAppState>,
-    private AchievementsService: AchievementsService,
+    private achievementsService: achievementsService,
     private formBuilder: FormBuilder,
     private persistenceService2: PersistenceService2,
-    private InterfacePreferencesService: InterfacePreferencesService
+    private interfacePreferencesService: interfacePreferencesService
   ) {}
 
   goalsState$: Observable<Achievements> = this.store.select('achievements');
@@ -48,7 +48,7 @@ export class WalletSetupListView implements OnInit {
       this.wallets = res.filter((item: any) => item.confirmed === true);
 
       if (this.wallets.length === 0) {
-        this.AchievementsService.getLockedAchievements();
+        this.achievementsService.getLockedAchievements();
       }
       res.forEach((item: any) => {
         if (item.id === primaryWallet) {
@@ -75,13 +75,13 @@ export class WalletSetupListView implements OnInit {
   }
   trackerStatus() {
     this.trackerSettings.isSetupTrackerEnabled = !this.trackerSettings.isSetupTrackerEnabled;
-    this.AchievementsService.setSettings(this.trackerSettings);
+    this.achievementsService.setSettings(this.trackerSettings);
   }
 
   async selectWallet(wallet: DisplayWallet) {
     this.selectedWallet = wallet;
-    this.InterfacePreferencesService.setPrimaryWallet(wallet.id);
-    await this.AchievementsService.reLogin();
+    this.interfacePreferencesService.setPrimaryWallet(wallet.id);
+    await this.achievementsService.reLogin();
   }
   refresh() {
     location.reload();
