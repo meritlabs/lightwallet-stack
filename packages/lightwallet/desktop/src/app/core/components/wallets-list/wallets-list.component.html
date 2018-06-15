@@ -21,7 +21,12 @@
         </div>
         <div class="wallets__group__wallet__details">
           <div>
-            <p class="large-black-text">{{ wallet.name }}</p>
+            <div class="wallet-name">
+              <p class="large-black-text">{{ wallet.name }}</p>
+              <div class="locked" *ngIf="!wallet.confirmed">
+                <merit-icon name="unlock-lock"></merit-icon>
+              </div>
+            </div>
             <p class="alias" *ngIf="wallet.alias">{{ '@' + wallet.alias }}</p>
             <p class="regular-blue-text" *ngIf="!wallet.balanceHidden; else balanceHidden">{{ wallet.totalBalanceMicros | toMRT }}
               <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})
