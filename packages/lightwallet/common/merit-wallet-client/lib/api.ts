@@ -1,29 +1,28 @@
 import { ENV } from '@app/env';
+import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
+import { generateMnemonic, mnemonicToHDPrivateKey, validateImportMnemonic } from '@merit/common/utils/mnemonic';
 import * as Bip38 from 'bip38';
 import * as Bitcore from 'bitcore-lib';
-import { mnemonicToHDPrivateKey, validateImportMnemonic, generateMnemonic } from '@merit/common/utils/mnemonic';
 import * as EventEmitter from 'eventemitter3';
 import * as _ from 'lodash';
 import * as preconditions from 'preconditions';
 import * as querystring from 'querystring';
+import 'rxjs/add/observable/fromPromise';
+import 'rxjs/add/observable/interval';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { interval } from 'rxjs/observable/interval';
-import { catchError, map, mergeMap, retryWhen, switchMap, tap } from 'rxjs/operators';
+import { map, retryWhen, switchMap } from 'rxjs/operators';
 import * as request from 'superagent';
 import * as util from 'util';
 import { EasyReceiptResult } from '../../models/easy-receipt';
-import { ISendMethod, SendMethodDestination } from '../../models/send-method';
-import { EasyReceiptResult, EasyReceipt } from '../../models/easy-receipt';
-import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
+import { ISendMethod } from '../../models/send-method';
 import { Common } from './common';
 import { Credentials } from './credentials';
 import { MWCErrors } from './errors';
 import { Logger } from './log';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
-import 'rxjs/add/observable/fromPromise';
-import 'rxjs/add/observable/interval';
 
 const $ = preconditions.singleton();
 const { Constants, Utils } = Common;
@@ -2566,6 +2565,22 @@ export class API {
     const url = '/v1/pushnotifications/subscriptions/' + token;
     return this._doDeleteRequest(url);
   };
+
+  smsNotificationsSubscribe(phoneNumber: string, platform?: string) {
+    return this._doPostRequest('/v1/sms-notifications', {
+      phoneNumber,
+      platform,
+      walletId: this.id
+    });
+  }
+
+  smsNotificationsUnsubscribe() {
+    return this._doDeleteRequest('/v1/sms-notifications');
+  }
+
+  getSmsNotificationSubscription() {
+    return this._doGetRequest('/v1/sms-notifications');
+  }
 
   /**
    * Listen to a tx for its first confirmation.
