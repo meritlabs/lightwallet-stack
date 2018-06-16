@@ -1,13 +1,25 @@
 <message-box error *ngIf="(availableInvites$ | async) == 0">
   You do not have any available invites to send.
 </message-box>
-<message-box success *ngIf="easySendUrl">
-  Your global send URL is ready, now you can share it:
-  <div class="easysend-url-container" [clip]="easySendUrl" (click)="onGlobalSendCopy()">
-    <small class="click_to_copy">Click to copy</small>
-    {{ easySendUrl }}
+<message-box success *ngIf="success">
+  Invite(s) successfully sent
+  <div *ngIf="easySendUrl">
+    <ng-container *ngIf="easySendDelivered === undefined">
+      Your MeritMoney Link is now ready to share:
+    </ng-container>
+    <ng-container *ngIf="easySendDelivered === true">
+      Your MeritInvite Link is ready and was successfully delivered to your recipient!
+    </ng-container>
+    <ng-container *ngIf="easySendDelivered === false">
+      Your MeritInvite Link is ready, however, we were not able to deliver it to your recipient. You can copy the link and send it to them directly:
+    </ng-container>
+    <div class="easysend-url-container" [clip]="easySendUrl" (click)="onGlobalSendCopy()">
+      <small class="click_to_copy">Click to copy</small>
+      {{ easySendUrl }}
+    </div>
   </div>
 </message-box>
+
 <div class="container--inner">
   <form [formGroup]="formData" (ngSubmit)="sendInvite()">
     <div class="sendMerit__form__group">
@@ -37,10 +49,25 @@
     </ng-container>
     <ng-template #easySend>
       <div class="sendMerit__form__group">
+        <label for="destination" class="ui-label">Destination &nbsp;<small>(optional)</small></label>
+        <div class="ui-input__wrapper">
+          <input id="destination" type="text" class="ui-input ui-input--form ui-input--text" formControlName="destination" placeholder="Phone number or Email address">
+        </div>
+        <div class="input-errors" [hidden]="!destination.dirty || destination.valid">
+          <div [hidden]="!destination.hasError('InvalidDestination')">
+                <span class="tooltip-error">
+                  <span>
+                    Invalid phone number or email
+                  </span>
+                </span>
+          </div>
+        </div>
+      </div>
+      <div class="sendMerit__form__group">
         <label class="ui-label" *ngIf="selectedWallet?.availableInvites">Password &nbsp;
           <small>(optional)</small>
         </label>
-        <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password"
+        <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password" placeholder="Enter a password to protect your MeritInvite link"
                *ngIf="selectedWallet?.availableInvites">
         <div class="notification-info">
           <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
