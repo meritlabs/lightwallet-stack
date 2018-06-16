@@ -33,6 +33,7 @@ var collections = {
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
   REFERRAL_TX_CONFIRMATION_SUBS: 'referral_confirmation_subs',
   VAULTS: 'vaults',
+  SMS_NOTIFICATION_SUBS: 'sms_notification_subs',
   GLOBALSENDS: 'global_sends'
 };
 
@@ -105,6 +106,10 @@ Storage.prototype._createIndexes = function() {
   });
   this.db.collection(collections.VAULTS).createIndex({
     initialTxId: 1,
+  });
+
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS).createIndex({
+    walletId: 1
   });
 };
 
@@ -291,7 +296,7 @@ Storage.prototype.mustFetchPendingTx = function(walletId, txProposalId, cb, last
 
       if (!results || results.length < 1 || !results[0]) {
         return cb(new Error("TX_NOT_FOUND"));
-      } 
+      }
       const areAnyPending = results.some(result => result.isPending)
       if (!areAnyPending) return cb(new Error("TX_NOT_PENDING"))
       var result = results[0];
@@ -304,7 +309,7 @@ Storage.prototype.mustFetchPendingTx = function(walletId, txProposalId, cb, last
     }, function(err, result) {
       if (err) return cb(err);
       if (!result) return cb(new Error("TX_NOT_FOUND"));
-      if (!result.isPending) return cb(new Error("TX_NOT_PENDING"));      
+      if (!result.isPending) return cb(new Error("TX_NOT_PENDING"));
       return self._completeTxData(walletId, Model.TxProposal.fromObj(result), cb);
     });
   }
@@ -1143,6 +1148,29 @@ Storage.prototype.removePushNotificationSub = function(copayerId, token, cb) {
   }, {
     w: 1
   }, cb);
+};
+
+Storage.prototype.storeSmsNotificationSub = function(sub, cb) {
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS)
+    .update({ walletId: sub.walletId }, sub, {
+      w: 1,
+      upsert: true
+    }, cb);
+};
+
+Storage.prototype.fetchSmsNotificationSub = function(walletId, cb) {
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS)
+    .findOne({ walletId }, (err, result) => {
+      if (err) return cb(err);
+      if (!result) return cb();
+
+      return cb(null, Model.SmsNotificationSub.fromObj(result));
+    });
+};
+
+Storage.prototype.removeSmsNotificationSub = function(walletId, cb) {
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS)
+    .remove({ walletId }, { w: 1 }, cb);
 };
 
 Storage.prototype.fetchActiveTxConfirmationSubs = function(copayerId, cb) {

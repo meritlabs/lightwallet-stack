@@ -1,0 +1,27 @@
+modal-sms-notifications {
+  ion-row {
+    height: 100%;
+  }
+
+  img {
+    max-width: 175px;
+    margin-bottom: 50px;
+  }
+
+  p {
+    padding: 20px;
+  }
+
+  ion-input[formControlName='phoneNumber'] input {
+    border: 2px solid map_get($colors, primary);
+    border-radius: 25px;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 1.4em;
+
+    &::placeholder {
+      font-size: .8em;
+      font-weight: 500;
+    }
+  }
+}
