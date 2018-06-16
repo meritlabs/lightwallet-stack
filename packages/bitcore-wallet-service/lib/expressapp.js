@@ -15,6 +15,8 @@ var Defaults = Common.Defaults;
 var WalletService = require('./server');
 var Stats = require('./stats');
 
+const request = require('request');
+
 log.debug = log.verbose;
 log.level = 'verbose';
 
@@ -705,6 +707,32 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.post('/v1/sms-notifications', (req, res) => {
+    getServerWithAuth(req, res, server => {
+      server.smsNotificationsSubscribe(req.body, (err, response) => {
+        if (err) return returnError(err, res, req);
+        res.json(response);
+      });
+    });
+  });
+
+  router.delete('/v1/sms-notifications', (req, res) => {
+    getServerWithAuth(req, res, server => {
+      server.smsNotificationsUnsubscribe((err, response) => {
+        if (err) return returnError(err, res, req);
+        res.json(response);
+      });
+    });
+  });
+
+  router.get('/v1/sms-notifications', (req, res) => {
+    getServerWithAuth(req, res, server => {
+      server.getSmsNotificationSubscription((err, response) => {
+        if (err) return returnError(err, res, req);
+        res.json(response);
+      });
+    });
+  });
 
   router.post('/v1/txconfirmations/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
@@ -932,6 +960,22 @@ ExpressApp.prototype.start = function(opts, cb) {
       });
   });
 
+
+  router.post('/v1/globalsend', (req, res) => {
+    getServerWithAuth(req, res, () => {
+      request({
+        method: 'POST',
+        uri: opts.meritMessagingUrl + '/globalsend',
+        json: req.body
+      }, (err, response) => {
+        if (!err && parseInt(response.statusCode) === 200) {
+          res.send();
+        } else {
+          res.status(400).send();
+        }
+      });
+    });
+  });
 
   this.app.use(opts.basePath || '/bws/api', router);
 
