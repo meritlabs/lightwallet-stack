@@ -158,10 +158,10 @@
                   Receipt
                 </label>
                 <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
-                  <div class="sendMerit__totals__table__column">
+                  <div class="sendMerit__totals__table__column sending-via">
                     {{ type.value == 'classic' ? 'Send to' : 'Sending via' }}
                   </div>
-                  <div class="sendMerit__totals__table__column" *ngIf="type.value == 'classic'">
+                  <div class="sendMerit__totals__table__column sending-via-value" *ngIf="type.value == 'classic'">
                     {{ (address.value | address) || '...' }}
                   </div>
                   <div class="sendMerit__totals__table__column" *ngIf="type.value == 'easy'">
