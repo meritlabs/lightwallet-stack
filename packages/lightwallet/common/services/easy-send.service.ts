@@ -154,9 +154,9 @@ export class EasySendService {
       parentAddress: '',
       scriptAddress: '',
       scriptReferralOpts: {},
-      cancelled: false
+      cancelled: false,
+      inviteOnly: false
     };
   }
-
 
 }
