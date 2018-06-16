@@ -2,12 +2,12 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { getEasySendURL } from '@merit/common/models/easy-send';
-import { SendMethodType } from '@merit/common/models/send-method';
-import { LoggerService } from '@merit/common/services/logger.service';
-import { getSendMethodDestinationType } from '@merit/common/utils/destination';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { SendMethodType } from '@merit/common/models/send-method';
+import { LoggerService } from '@merit/common/services/logger.service';
+import { getSendMethodDestinationType } from '@merit/common/utils/destination';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import {
@@ -36,7 +36,6 @@ export class SendInviteAmountView {
   address;
   error: string;
   link: string;
-
   copied: boolean;
   showShareButton: boolean;
   amountFocused: boolean;
