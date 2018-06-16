@@ -385,7 +385,7 @@ export class SendView implements OnInit {
       const destinationType = getSendMethodDestinationType(destination);
       if (destination && destinationType) {
         try {
-          await wallet.client.deliverGlobalSend(txData.easySend, {
+          await wallet.deliverGlobalSend(txData.easySend, {
             type: SendMethodType.Easy,
             destination: destinationType,
             value: destination
