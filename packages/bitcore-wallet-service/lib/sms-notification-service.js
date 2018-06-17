@@ -12,6 +12,7 @@ const notificationsToSend = [
 ];
 
 function SmsNotificationService(opts) {
+  console.log('[SMS Service] Starting...');
   this.messageBroker = opts.messageBroker || new MessageBroker(opts.messageBrokerOpts);
   this.messageBroker.onMessage(this.sendSMS.bind(this));
   this.notificationsServiceUrl = opts.meritMessagingUrl;
@@ -22,6 +23,8 @@ function SmsNotificationService(opts) {
     this.storage = new Storage();
     this.storage.connect(opts.storageOpts, () => {});
   }
+
+  console.log('[SMS Service] Started!');
 }
 
 SmsNotificationService.prototype.sendSMS = function(notification, cb) {
@@ -32,7 +35,7 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
     if (err) return cb(err);
     if (!recipient) return cb();
 
-    console.log('Sending SMS notification', notification, recipient);
+    console.log('[SMS Service] Sending SMS notification', notification, recipient);
 
     const { amount, isInvite } = notification.data;
 
@@ -51,8 +54,10 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
       }
     }, (err, response) => {
       if (!err && parseInt(response.statusCode) === 200) {
+        console.log('[SMS Service] Sent notification!');
         cb();
       } else {
+        console.log('[SMS Service] Error sending notification!', err);
         cb(err || 'Unexpected error');
       }
     });
