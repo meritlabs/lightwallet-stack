@@ -232,7 +232,11 @@ BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
 
           let notificationType = '';
           if (data.isCoinbase) {
-              notificationType = 'IncomingCoinbase';
+              if (data.isInvite) {
+                  notificationType = 'IncomingInvite';
+              } else {
+                  notificationType = 'IncomingCoinbase';
+              }
           }  else if (data.isInvite) {
               if (isAddressConfirmed) {
                 notificationType = 'IncomingInvite';

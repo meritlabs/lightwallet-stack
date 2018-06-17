@@ -39,6 +39,9 @@ var PUSHNOTIFICATIONS_TYPES = {
   'IncomingInviteRequest': {
     filename: 'incoming_invite_request'
   },
+  'IncomingMinedInvite': {
+    filename: 'incoming_mined_invite',
+  },
   'IncomingCoinbase': {
     filename: 'incoming_coinbase',
   },
