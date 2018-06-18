@@ -1,4 +1,3 @@
-import { Achievement, Achievements } from '@merit/common/models/achievement';
 import { Action } from '@ngrx/store';
 
 const DEFAULT_STATE: IAchievementsState = {
@@ -13,7 +12,7 @@ const DEFAULT_STATE: IAchievementsState = {
 };
 
 export interface IAchievementsState {
-  achievements: Achievement[];
+  achievements: IAchievement[];
   token: string;
   settings: {
     id: string;
@@ -91,7 +90,7 @@ export class CompleteAchievement implements Action {
 export class SetAchievementsAction implements Action {
   type = AchievementsActionType.LoadAchievements;
 
-  constructor(public achievements: Achievement[]) {}
+  constructor(public achievements: IAchievement[]) {}
 }
 
 export type AchievementsAction = SetAchievementsAction &
