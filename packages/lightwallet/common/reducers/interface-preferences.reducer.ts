@@ -1,4 +1,4 @@
-import { Action } from '@ngrx/store';
+import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 
 const DEFAULT_STATE = {
   isShareDialogDisplayed: false,
@@ -53,3 +53,7 @@ export class setPrimaryWallet implements Action {
 }
 
 export type InterfaceAction = SetShareDialogAction & setPrimaryWallet;
+
+export const selectInterfacePreferences = createFeatureSelector<IInterfaceState>('interface');
+export const selectPrimaryWallet = createSelector(selectInterfacePreferences, state => state.primaryWallet);
+export const selectShareDialogState = createSelector(selectInterfacePreferences, state => state.isShareDialogDisplayed);

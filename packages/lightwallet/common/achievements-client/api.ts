@@ -20,11 +20,15 @@ export class MeritAchivementClient {
 
   public onAuthenticationError: any;
 
-  constructor(opts: MeritAchivementOptions) {
+  constructor(opts: MeritAchivementOptions, private token?: string) {
     this.baseUrl = opts.baseUrl || ENV.achievementApi;
     this.request = opts.request || request;
 
     this.log = Logger.getInstance();
+  }
+
+  setToken(token: string) {
+    this.token = token;
   }
 
   setOnAuthenticationError(cb: any) {
@@ -32,7 +36,7 @@ export class MeritAchivementClient {
   }
 
   static fromObj(obj) {
-    let client = new this({
+    const client = new MeritAchivementClient({
       baseUrl: obj.baseUrl || ENV.achievementApi,
     });
 
@@ -43,12 +47,12 @@ export class MeritAchivementClient {
     return this._doPostRequest('/sessions');
   }
 
-  getData(token, url) {
-    return this._doGetRequest(url, token);
+  getData(url) {
+    return this._doGetRequest(url, this.token);
   }
 
-  setData(url, args, token) {
-    return this._doPostRequest(url, args, token);
+  setData(url, args) {
+    return this._doPostRequest(url, args, this.token);
   }
 
   /**
