@@ -13,6 +13,8 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
+import { filter, take } from 'rxjs/operators';
+import { selectGoalsProgress } from '@merit/common/reducers/goals.reducer';
 
 @Component({
   selector: 'app-wallet-setup-list',
@@ -29,6 +31,9 @@ export class WalletSetupListView implements OnInit {
   ) {}
 
   goalsState$: Observable<Achievements> = this.store.select('achievements');
+
+  progress$ = this.store.select(selectGoalsProgress);
+
   trackerSettings: any;
   toDo: any;
   done: any;
@@ -43,6 +48,15 @@ export class WalletSetupListView implements OnInit {
 
   async ngOnInit() {
     let primaryWallet = await this.persistenceService2.getUserSettings(UserSettingsKey.primaryWalletID);
+
+    const wallets = await this.store.select(selectWallets)
+      .pipe(
+        filter(wallets => wallets.length > 0),
+        take(1)
+      )
+      .toPromise();
+
+    this.wallets = wallets.filter((wallet: DisplayWallet) => wallet.confirmed);
 
     await this.store.select(selectWallets).subscribe(res => {
       this.wallets = res.filter((item: any) => item.confirmed === true);

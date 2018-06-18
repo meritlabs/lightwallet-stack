@@ -2,10 +2,10 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/cor
 import { IFullGoal, IGoal, ITask } from '@merit/common/models/achievement';
 import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
+import { GoalsService } from '@merit/common/services/goals.service';
+import { GoalSlug, TaskSlug, TaskStatus } from '@merit/common/models/goals';
+import { SetTaskStatus } from '@merit/common/reducers/goals.reducer';
 
-import { Observable } from 'rxjs/Observable';
-
-import { achievementsService } from '@merit/common/services/achievements.service';
 
 @Component({
   selector: 'app-task-confirm',
@@ -13,41 +13,32 @@ import { achievementsService } from '@merit/common/services/achievements.service
   styleUrls: ['./task-confirm.component.sass'],
 })
 export class TaskConfirmComponent implements OnInit, OnChanges {
-  constructor(private store: Store<IRootAppState>, private achievementsService: achievementsService) {}
+  constructor(private store: Store<IRootAppState>,
+              private goalsService: GoalsService) {}
 
-  @Input() taskName: string;
-  @Input() goalName: string;
+  @Input() taskSlug: TaskSlug;
+  @Input() goalSlug: GoalSlug;
   @Input() isDone: boolean;
   @Input() arrow: string;
-  trackerSettings: boolean = false;
+  trackerSettings: boolean;
 
   goal: IFullGoal;
   task: ITask;
 
-  async ngOnInit() {
-
-    await this.store.select('achievements').subscribe(res => {
-      this.trackerSettings = res.settings.isSetupTrackerEnabled;
-      this.achv = res.achievements.filter((item: any) => item.name === this.achvName)[0];
-      if (this.achv) this.task = this.achv.conditions.filter((item: any) => item.name === this.goalName)[0];
-    });
+  ngOnInit() {
+    this.goal = this.goalsService.getGoal(this.goalSlug);
+    this.task = this.goalsService.getTask(this.taskSlug);
   }
-  ngOnChanges(changes: SimpleChanges) {
-    if (
-      this.isDone &&
 
-      (this.goalName === AchievementTask.InviteFriends ||
-        this.goalName === AchievementTask.ConfirmInviteRequest ||
-        this.goalName === AchievementTask.GetInviteRequest ||
-        this.goalName === AchievementTask.MineInvite)
-    ) {
+  ngOnChanges(changes: SimpleChanges) {
+    if (this.isDone && this.taskSlug in TaskSlug) {
       this.finishTask();
     }
   }
 
   finishTask() {
-    if (this.achv) {
-      this.achievementsService.updateGoal(this.achv.id, this.task.slug);
+    if (this.taskSlug) {
+      this.store.dispatch(new SetTaskStatus(this.taskSlug, TaskStatus.Complete));
     }
   }
 }
