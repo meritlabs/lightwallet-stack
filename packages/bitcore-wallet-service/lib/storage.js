@@ -33,6 +33,7 @@ var collections = {
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
   REFERRAL_TX_CONFIRMATION_SUBS: 'referral_confirmation_subs',
   VAULTS: 'vaults',
+  SMS_NOTIFICATION_SUBS: 'sms_notification_subs',
   GLOBALSENDS: 'global_sends',
   KNOWN_MESSAGES: 'known_messages',
 };
@@ -106,6 +107,9 @@ Storage.prototype._createIndexes = function () {
   });
   this.db.collection(collections.VAULTS).createIndex({
     initialTxId: 1,
+  });
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS).createIndex({
+    walletId: 1
   });
   this.db.collection(collections.KNOWN_MESSAGES).createIndex({
     type: 1,
@@ -1207,6 +1211,29 @@ Storage.prototype.removePushNotificationSub = function (copayerId, token, cb) {
   }, {
     w: 1
   }, cb);
+};
+
+Storage.prototype.storeSmsNotificationSub = function(sub, cb) {
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS)
+    .update({ walletId: sub.walletId }, sub, {
+      w: 1,
+      upsert: true
+    }, cb);
+};
+
+Storage.prototype.fetchSmsNotificationSub = function(walletId, cb) {
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS)
+    .findOne({ walletId }, (err, result) => {
+      if (err) return cb(err);
+      if (!result) return cb();
+
+      return cb(null, Model.SmsNotificationSub.fromObj(result));
+    });
+};
+
+Storage.prototype.removeSmsNotificationSub = function(walletId, cb) {
+  this.db.collection(collections.SMS_NOTIFICATION_SUBS)
+    .remove({ walletId }, { w: 1 }, cb);
 };
 
 Storage.prototype.fetchActiveTxConfirmationSubs = function (copayerId, cb) {

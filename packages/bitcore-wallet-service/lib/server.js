@@ -3771,6 +3771,25 @@ WalletService.prototype.pushNotificationsUnsubscribe = function(opts, cb) {
   self.storage.removePushNotificationSub(self.copayerId, opts.token, cb);
 };
 
+WalletService.prototype.smsNotificationsSubscribe = function(opts, cb) {
+  if (!opts.phoneNumber)
+    return cb('Phone number was not provided');
+
+  this.storage.storeSmsNotificationSub({
+    walletId: this.walletId,
+    phoneNumber: opts.phoneNumber,
+    platform: opts.platform
+  }, cb);
+};
+
+WalletService.prototype.smsNotificationsUnsubscribe = function(cb) {
+  this.storage.removeSmsNotificationSub(this.walletId, cb);
+};
+
+WalletService.prototype.getSmsNotificationSubscription = function(cb) {
+  this.storage.fetchSmsNotificationSub(this.walletId, cb);
+};
+
 /**
  * Subscribe this copayer to the specified tx to get a notification when the tx confirms.
  * @param {Object} opts

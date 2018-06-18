@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Renderer2, ViewChild } from '@angular/core';
 import { Clipboard } from '@ionic-native/clipboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { Events, IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
+import { Button, Events, Footer, IonicPage, ModalController, NavController, NavParams, TextInput } from 'ionic-angular';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { LoggerService } from '@merit/common/services/logger.service';
@@ -39,6 +39,14 @@ export class ReceiveView {
   hasUnlockedWallets: boolean;
   loading: boolean;
 
+  @ViewChild('amountInput') amountInput: TextInput;
+  @ViewChild(Footer) footer: Footer;
+
+  private footerHeight: number;
+  private toggleButtonHeight: number;
+  private footerBottom: number;
+  isFooterCollapsed: boolean;
+
   constructor(private navCtrl: NavController,
               private modalCtrl: ModalController,
               private profileService: ProfileService,
@@ -52,7 +60,8 @@ export class ReceiveView {
               private events: Events,
               private addressService: AddressService,
               private platformService: PlatformService,
-              private navParams: NavParams) {
+              private navParams: NavParams,
+              private rnd: Renderer2) {
     this.protocolHandler = 'merit';
     this.availableUnits = [
       this.configService.get().wallet.settings.unitCode.toUpperCase(),
@@ -73,6 +82,31 @@ export class ReceiveView {
 
   ionViewWillEnter() {
     return this.loadData();
+  }
+
+  toggleFooter() {
+    const el: HTMLElement = this.footer.getNativeElement();
+
+    if (!this.footerHeight)
+      this.footerHeight = el.offsetHeight;
+
+    if (!this.footerBottom)
+      this.footerBottom = parseInt(el.style.bottom.replace(/\D+/g, ''));
+
+
+    if (this.isFooterCollapsed) {
+      this.isFooterCollapsed = false;
+      this.rnd.setStyle(el, 'bottom', this.footerBottom + 'px');
+    } else {
+      this.isFooterCollapsed = true;
+      const value = -1 * this.footerHeight + this.footerBottom + 40;
+      console.log('Value is ', value);
+      this.rnd.setStyle(el, 'bottom', value + 'px');
+    }
+  }
+
+  focusInput() {
+    this.amountInput.getNativeElement().focus();
   }
 
   async loadData() {

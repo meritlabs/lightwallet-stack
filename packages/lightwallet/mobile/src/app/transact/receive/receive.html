@@ -9,7 +9,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content [class.footerCollapsed]="isFooterCollapsed">
 
   <div *ngIf="loading">
       <ion-spinner></ion-spinner>
@@ -89,7 +89,11 @@
     </div>
 </ion-content>
 
-<ion-footer *ngIf="!loading && hasUnlockedWallets">
+<ion-footer *ngIf="!loading && hasUnlockedWallets" text-center>
+
+  <button #toggleButton ion-button round small outline icon-start class="footer-toggle-button" (click)="toggleFooter()">
+    <ion-icon [name]="isFooterCollapsed? 'arrow-up' : 'arrow-down'"></ion-icon> {{ isFooterCollapsed? 'Show options' : 'Hide options'}}
+  </button>
 
   <ion-toolbar>
 
@@ -107,14 +111,14 @@
       </div>
 
       <ion-list>
-        <ion-item>
+        <ion-item (click)="focusInput()">
           <ion-avatar img-icon item-start>
             <img src="assets/img/icons/request amount.svg" alt="">
           </ion-avatar>
           <ion-label stacked>
             <p>Request Amount (optional)</p>
           </ion-label>
-          <ion-input type="number" pattern="[0-9\.]" min="0" [(ngModel)]="amount" (ionChange)="changeAmount()" [placeholder]="'0.00 ' + amountCurrency"></ion-input>
+          <ion-input #amountInput type="number" pattern="[0-9\.]" min="0" [(ngModel)]="amount" (ionChange)="changeAmount()" [placeholder]="'0.00 ' + amountCurrency"></ion-input>
           <button ion-button item-end clear color="primary" (click)="toggleCurrency()">{{ amountCurrency }}</button>
         </ion-item>
 

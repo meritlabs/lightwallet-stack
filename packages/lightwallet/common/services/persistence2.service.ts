@@ -9,24 +9,29 @@ export enum StorageKey {
   NotificationSettings = 'merit_notification_settings',
   Notifications = 'merit_notifications',
   EasySends = 'merit_easysends',
-  ViewSettingsPrefix = 'app_view_settings_',
+  ViewSettingsPrefix = 'app_view_settings_'
 }
 
 export enum ViewSettingsKey {
   GetStartedTips = 'get_started_tips',
   recordPassphrase = 'record_passphrase',
+  SmsNotificationsPrompt = 'sms_notifications_prompt'
 }
 
 export interface INotificationSettings {
   emailNotifications: boolean;
   pushNotifications: boolean;
   email: string;
+  smsNotifications: boolean;
+  phoneNumber: string;
 }
 
 const DEFAULT_NOTIFICATION_SETTINGS: INotificationSettings = {
   email: '',
   emailNotifications: false,
   pushNotifications: true,
+  smsNotifications: false,
+  phoneNumber: ''
 };
 
 /**
@@ -44,13 +49,19 @@ export class PersistenceService2 {
     return (await this.storage.get(StorageKey.WalletPreferencesPrefix + walletId)) || {};
   }
 
-  setNotificationSettings(settings: any) {
-    return this.storage.set(StorageKey.NotificationSettings, settings);
+  async setNotificationSettings(settings: Partial<INotificationSettings>) {
+    return this.storage.set(StorageKey.NotificationSettings, {
+      ...await this.getNotificationSettings(),
+      ...settings
+    });
   }
 
   async getNotificationSettings(): Promise<INotificationSettings> {
-    const settings = await this.storage.get(StorageKey.NotificationSettings);
-    return isEmpty(settings) ? DEFAULT_NOTIFICATION_SETTINGS : settings;
+    const settings = (await this.storage.get(StorageKey.NotificationSettings)) || {};
+    return {
+      ... DEFAULT_NOTIFICATION_SETTINGS,
+      ... settings
+    };
   }
 
   setNotifications(notifications: INotification[]) {
@@ -99,5 +110,11 @@ export class PersistenceService2 {
 
   getViewSettings(key: ViewSettingsKey) {
     return this.storage.get(StorageKey.ViewSettingsPrefix + key);
+  }
+
+  async resetViewSettings() {
+    for (let key in ViewSettingsKey) {
+      await this.setViewSettings(ViewSettingsKey[key] as ViewSettingsKey, false);
+    }
   }
 }

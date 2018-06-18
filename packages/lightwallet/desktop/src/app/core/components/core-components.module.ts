@@ -14,11 +14,11 @@ import { ToolbarComponent } from '@merit/desktop/app/core/components/toolbar/too
 import { VaultsListComponent } from '@merit/desktop/app/core/components/vaults-list/vaults-list.component';
 import { WalletsListComponent } from '@merit/desktop/app/core/components/wallets-list/wallets-list.component';
 import { VirtualScrollModule } from 'angular2-virtual-scroll';
-import { MomentModule } from 'ngx-moment';
 import { ClipModule } from 'ng2-clip';
+import { MomentModule } from 'ngx-moment';
+import { GetStartedTipsComponent } from './get-started-tips/get-started-tips.component';
 import { HistoryItemComponent } from './history-item/history-item.component';
 import { HistoryListComponent } from './history-list/history-list.component';
-import { GetStartedTipsComponent } from './get-started-tips/get-started-tips.component';
 import { ShareBoxComponent } from './share-box/share-box.component';
 
 export function getComponents() {
@@ -35,7 +35,7 @@ export function getComponents() {
     FeeSelectorComponent,
     SendMethodComponent,
     GetStartedTipsComponent,
-    ShareBoxComponent,
+    ShareBoxComponent
   ];
 }
 
@@ -47,9 +47,9 @@ export function getComponents() {
     MomentModule,
     CommonPipesModule,
     VirtualScrollModule,
-    ClipModule,
+    ClipModule
   ],
   declarations: getComponents(),
-  exports: getComponents(),
+  exports: getComponents()
 })
 export class CoreComponentsModule {}
