@@ -18,6 +18,8 @@ import { MeritIconComponent } from '@merit/desktop/app/components/merit-icon/mer
 import { MessageBoxComponent } from '@merit/desktop/app/components/message-box/message-box.component';
 import { PasswordPromptComponent } from '@merit/desktop/app/components/password-prompt/password-prompt.component';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
+import { SmsNotificationsPromptComponent } from '@merit/desktop/app/components/sms-notifications-prompt/sms-notifications-prompt.component';
+import { SmsNotificationsPromptController } from '@merit/desktop/app/components/sms-notifications-prompt/sms-notifications-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-notification/toast-notification.component';
 import { UICheckboxComponent } from '@merit/desktop/app/components/ui-checkbox/ui-checkbox.component';
@@ -41,7 +43,8 @@ export function getComponents() {
     IllustationsThatsItComponent,
     IllustationsYourWayComponent,
     GlobalsendLinkPopupComponent,
-    UICheckboxComponent
+    UICheckboxComponent,
+    SmsNotificationsPromptComponent
   ];
 }
 
@@ -50,7 +53,8 @@ export function getComponents() {
     ToastNotificationComponent,
     PasswordPromptComponent,
     ConfirmDialogComponent,
-    GlobalsendLinkPopupComponent
+    GlobalsendLinkPopupComponent,
+    SmsNotificationsPromptComponent
   ],
   imports: [
     CommonModule,
@@ -70,7 +74,8 @@ export class SharedComponentsModule {
         { provide: ToastControllerServiceBase, useClass: ToastControllerService },
         PasswordPromptController,
         ConfirmDialogControllerService,
-        GlobalsendLinkPopupController
+        GlobalsendLinkPopupController,
+        SmsNotificationsPromptController
       ]
     };
   }

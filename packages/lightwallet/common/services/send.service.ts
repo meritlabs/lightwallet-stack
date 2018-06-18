@@ -3,10 +3,12 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { EasySend } from '@merit/common/models/easy-send';
 import { MeritContact } from '@merit/common/models/merit-contact';
 import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
+import { AddressService } from '@merit/common/services/address.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { WalletService } from '@merit/common/services/wallet.service';
+import { isAddress } from '@merit/common/utils/addresses';
 import { clone } from 'lodash';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { Address } from 'bitcore-lib';
@@ -43,10 +45,14 @@ export class SendService {
               private walletService: WalletService,
               private loggerService: LoggerService,
               private easySendService: EasySendService,
-              private alertCtrl: AlertService,
-              private persistenceService: PersistenceService2) {}
+              private addressService: AddressService) {}
 
   async prepareTxp(wallet: MeritWalletClient, amount: number, toAddress: string) {
+    if (!isAddress(toAddress)) {
+      const info = await this.addressService.getAddressInfo(toAddress);
+      toAddress = info.address;
+    }
+
     if (amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big');
 
     let txpData: any = {
@@ -90,9 +96,10 @@ export class SendService {
   async send(wallet: MeritWalletClient, txData: ISendTxData) {
 
     if (txData.sendMethod.type == SendMethodType.Easy)  {
-      const easySend = await this.easySendService.createEasySendScriptHash(wallet); //todo password removed
+      const easySend = await this.easySendService.createEasySendScriptHash(wallet, txData.password);
+      const amount = txData.feeIncluded ? txData.amount : (txData.amount + await this.feeService.getEasyReceiveFee());
+
       txData.easySend = easySend;
-      let amount = txData.feeIncluded ? txData.amount : (txData.amount + await this.feeService.getEasyReceiveFee());
       txData.txp = await this.easySendService.prepareTxp(wallet, amount, easySend);
       txData.easySendUrl = getEasySendURL(easySend);
       txData.referralsToSign = [easySend.scriptReferralOpts];
@@ -127,8 +134,7 @@ export class SendService {
   }
 
 
-  async estimateFee(wallet, amount, isEasySend, toAddress?) {
-
+  async estimateFee(wallet: MeritWalletClient, amount: number, isEasySend: boolean, toAddress?: string) {
     if (isEasySend) {
       const easySend = await this.easySendService.bulidScript(wallet);
       const address = Address(easySend.script.getAddressInfo()).toString();
@@ -140,8 +146,6 @@ export class SendService {
       let txp = await this.prepareTxp(wallet, amount, toAddress);
       return txp.fee;
     }
-
   }
-
 
 }
