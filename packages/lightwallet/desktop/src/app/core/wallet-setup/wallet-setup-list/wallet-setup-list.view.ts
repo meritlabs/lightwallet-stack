@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
-import { interfacePreferencesService } from '@merit/common/services/interface-preferences.service';
+import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 
 @Component({
@@ -25,7 +25,7 @@ export class WalletSetupListView implements OnInit {
     private achievementsService: achievementsService,
     private formBuilder: FormBuilder,
     private persistenceService2: PersistenceService2,
-    private interfacePreferencesService: interfacePreferencesService
+    private interfacePreferencesService: InterfacePreferencesService
   ) {}
 
   goalsState$: Observable<Achievements> = this.store.select('achievements');
