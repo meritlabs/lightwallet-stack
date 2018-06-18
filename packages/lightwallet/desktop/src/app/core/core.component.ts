@@ -23,7 +23,7 @@ import { Observable } from 'rxjs/Observable';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { achievementsService } from '@merit/common/services/achievements.service';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
-import { interfacePreferencesService } from '@merit/common/services/interface-preferences.service';
+import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 
 @Component({
   selector: 'view-core',
@@ -107,7 +107,7 @@ export class CoreView implements OnInit, AfterViewInit {
     private persistenceService2: PersistenceService2,
     private domSanitizer: DomSanitizer,
     private achievementsService: achievementsService,
-    private interfacePreferencesService: interfacePreferencesService
+    private interfacePreferencesService: InterfacePreferencesService
   ) {}
 
   async ngOnInit() {

@@ -18,7 +18,7 @@ import { isEmpty } from 'lodash';
 import 'rxjs/add/operator/toPromise';
 import { merge } from 'rxjs/observable/merge';
 import { debounceTime, filter, take, tap } from 'rxjs/operators';
-import { interfacePreferencesService } from '@merit/common/services/interface-preferences.service';
+import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 
 declare const WEBPACK_CONFIG: any;
 
@@ -59,7 +59,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     private profileService: ProfileService,
     private store: Store<IRootAppState>,
     private router: Router,
-    private interfacePreferencesService: interfacePreferencesService
+    private interfacePreferencesService: InterfacePreferencesService
   ) {
     if (typeof WEBPACK_CONFIG !== 'undefined') {
       this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
