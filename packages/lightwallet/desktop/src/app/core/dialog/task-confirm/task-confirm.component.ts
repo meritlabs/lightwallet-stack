@@ -1,30 +1,31 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { IFullGoal, IGoal, ITask } from '@merit/common/models/achievement';
 import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
 
 import { Observable } from 'rxjs/Observable';
 
-import { Achievements, Achievement } from '@merit/common/models/achievement';
 import { achievementsService } from '@merit/common/services/achievements.service';
-import { AchievementTask } from '@merit/common/utils/achievements.const';
 
 @Component({
   selector: 'app-task-confirm',
   templateUrl: './task-confirm.component.html',
   styleUrls: ['./task-confirm.component.sass'],
 })
-export class TaskConfirmComponent implements OnInit {
+export class TaskConfirmComponent implements OnInit, OnChanges {
   constructor(private store: Store<IRootAppState>, private achievementsService: achievementsService) {}
 
+  @Input() taskName: string;
   @Input() goalName: string;
-  @Input() achvName: string;
   @Input() isDone: boolean;
   @Input() arrow: string;
   trackerSettings: boolean = false;
-  achv: any;
-  task: any;
+
+  goal: IFullGoal;
+  task: ITask;
 
   async ngOnInit() {
+
     await this.store.select('achievements').subscribe(res => {
       this.trackerSettings = res.settings.isSetupTrackerEnabled;
       this.achv = res.achievements.filter((item: any) => item.name === this.achvName)[0];
@@ -34,6 +35,7 @@ export class TaskConfirmComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     if (
       this.isDone &&
+
       (this.goalName === AchievementTask.InviteFriends ||
         this.goalName === AchievementTask.ConfirmInviteRequest ||
         this.goalName === AchievementTask.GetInviteRequest ||

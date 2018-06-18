@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Achievement } from '@merit/common/models/achievement';
+import { IAchievement } from '@merit/common/models/achievement';
 import { achievementsService } from '@merit/common/services/achievements.service';
 import { Router } from '@angular/router';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
