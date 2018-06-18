@@ -10,7 +10,7 @@ import {
   GoalSlug,
   IFullGoal,
   IFullProgress, IFullTask,
-  IGoal,
+  IGoal, IGoalSettings,
   IProgress,
   ITask,
   ITaskProgress,
@@ -34,6 +34,11 @@ export class GoalsService {
 
   constructor(private profileService: ProfileService,
               private store: Store<IRootAppState>) {}
+
+  async initService() {
+    await this.getToken();
+    await this.loadGoals();
+  }
 
   async getToken() {
     if (this.token) {
@@ -86,12 +91,27 @@ export class GoalsService {
     };
   }
 
+  async setTaskStatus(taskSlug: TaskSlug, status: TaskStatus) {
+    return this.client.setData('/progress/task', {
+      slug: taskSlug,
+      status
+    });
+  }
+
   getTaskStatus(taskSlug: TaskSlug): TaskStatus {
     return this.statusByTask[taskSlug];
   }
 
   getFullTask(taskProgress: ITaskProgress): IFullTask {
     return { ...this.tasksMap[taskProgress.slug], ...taskProgress };
+  }
+
+  getSettings(): Promise<IGoalSettings> {
+    return this.client.getData('/settings');
+  }
+
+  async setSettings(settings: IGoalSettings) {
+    return this.client.setData('/settings', settings);
   }
 
   async loadGoals() {
