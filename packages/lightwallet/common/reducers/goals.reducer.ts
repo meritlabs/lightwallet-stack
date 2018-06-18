@@ -19,7 +19,8 @@ export enum GoalsActionType {
   UpdateProgress = '[Goals] Update progress',
   RefreshSettings = '[Goals] Refresh settings',
   UpdateSettings = '[Goals] Update settings',
-  SetTaskStatus = '[Goals] Set task status'
+  SetTaskStatus = '[Goals] Set task status',
+  SaveSettings = '[Goals] Save settings',
 }
 
 export class SetGoalsLoadingAction implements Action {
@@ -48,6 +49,12 @@ export class UpdateGoalSettingsAction implements Action {
   constructor(public settings: IGoalSettings) {}
 }
 
+export class SaveGoalSettingsAction implements Action {
+  type = GoalsActionType.SaveSettings;
+
+  constructor(public settings: IGoalSettings) {}
+}
+
 export class SetTaskStatus implements Action {
   type = GoalsActionType.SetTaskStatus;
 
@@ -60,7 +67,8 @@ export type GoalAction =
   & UpdateGoalsProgressAction
   & RefreshGoalSettingsAction
   & UpdateGoalSettingsAction
-  & SetTaskStatus;
+  & SetTaskStatus
+  & SaveGoalSettingsAction;
 
 export function goalsReducer(state: IGoalsState = DEFAULT_STATE, action: GoalAction) {
   switch (action.type) {
@@ -89,6 +97,9 @@ export function goalsReducer(state: IGoalsState = DEFAULT_STATE, action: GoalAct
         ...state,
         settings: action.settings
       };
+
+    default:
+      return state;
   }
 }
 

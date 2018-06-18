@@ -21,9 +21,10 @@ import { selectWallets, selectWalletsLoading } from '@merit/common/reducers/wall
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Observable } from 'rxjs/Observable';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
-import { achievementsService } from '@merit/common/services/achievements.service';
-import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
+import { selectShareDialogState, SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
+import { selectGoalSettings, selectGoalsLoading } from '@merit/common/reducers/goals.reducer';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
   selector: 'view-core',
@@ -106,32 +107,33 @@ export class CoreView implements OnInit, AfterViewInit {
     private store: Store<IRootAppState>,
     private persistenceService2: PersistenceService2,
     private domSanitizer: DomSanitizer,
-    private achievementsService: achievementsService,
     private interfacePreferencesService: InterfacePreferencesService
   ) {}
 
   async ngOnInit() {
-    await this.store.select('achievements').subscribe(res => {
-      this.isWelcomeDialogEnabled = res.settings.isWelcomeDialogEnabled;
-    });
+    await this.store.select(selectGoalsLoading)
+      .pipe(
+        filter(loading => !loading),
+        take(1)
+      )
+      .toPromise();
 
-    await this.store.select('interface').subscribe(res => {
-      this.showShare = res.isShareDialogDisplayed;
-    });
+    const { isWelcomeDialogEnabled } = await this.store.select(selectGoalSettings).pipe(take(1)).toPromise();
+    this.isWelcomeDialogEnabled = isWelcomeDialogEnabled;
+
+    this.showShare = await this.store.select(selectShareDialogState).pipe(take(1)).toPromise();
 
     let primaryWallet = await this.persistenceService2.getUserSettings(UserSettingsKey.primaryWalletID);
 
     if (primaryWallet) {
       this.interfacePreferencesService.setPrimaryWallet(primaryWallet);
-      await this.achievementsService.getSettings();
-      await this.achievementsService.getAchievements();
     } else {
-      this.wallets$.subscribe(res => {
-        let activeWallet = res.filter((item: any) => item.confirmed === true);
-        if (activeWallet.length > 0) {
-          this.interfacePreferencesService.setPrimaryWallet(activeWallet[0].id);
-        }
-      });
+      const wallets = await this.wallets$.pipe(filter(wallets => wallets.length > 0), take(1)).toPromise();
+      primaryWallet = wallets.find(wallet => wallet.confirmed);
+
+      if (primaryWallet) {
+        this.interfacePreferencesService.setPrimaryWallet(primaryWallet.id);
+      }
     }
 
     this.recordPassphrase = Boolean(await this.persistenceService2.getUserSettings(UserSettingsKey.recordPassphrase));

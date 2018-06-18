@@ -1,9 +1,15 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { achievementsService } from '@merit/common/services/achievements.service';
 import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
+import { GoalsService } from '@merit/common/services/goals.service';
+import {
+  SaveGoalSettingsAction,
+  selectGoalSettings,
+  UpdateGoalSettingsAction
+} from '@merit/common/reducers/goals.reducer';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-welcome-to-setup-tracker',
@@ -14,8 +20,8 @@ export class WelcomeToSetupTrackerComponent {
   constructor(
     private formBuilder: FormBuilder,
     private store: Store<IRootAppState>,
-    private achievementsService: achievementsService,
-    private router: Router
+    private router: Router,
+    private goalsService: GoalsService
   ) {}
 
   trackerSettings: any;
@@ -25,12 +31,8 @@ export class WelcomeToSetupTrackerComponent {
   });
 
   async ngOnInit() {
-    await this.store.select('achievements').subscribe(res => {
-      this.trackerSettings = res.settings;
-      this.formData.patchValue({
-        isSetupTrackerEnabled: res.settings.isSetupTrackerEnabled,
-      });
-    });
+    this.trackerSettings = await this.store.select(selectGoalSettings).pipe(take(1)).toPromise();
+    this.formData.get('isSetupTrackerEnabled').setValue(this.trackerSettings.isSetupTrackerEnabled, { emitEvent: false });
   }
 
   changeTrackerState() {
@@ -38,8 +40,8 @@ export class WelcomeToSetupTrackerComponent {
   }
 
   closeAndSave() {
-    this.router.navigate([`/wallet-setup`]);
     this.trackerSettings.isWelcomeDialogEnabled = !this.trackerSettings.isWelcomeDialogEnabled;
-    this.achievementsService.setSettings(this.trackerSettings);
+    this.store.dispatch(new SaveGoalSettingsAction(this.trackerSettings));
+    this.router.navigate(['/wallet-setup']);
   }
 }

@@ -1,11 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { IAchievement } from '@merit/common/models/achievement';
-import { achievementsService } from '@merit/common/services/achievements.service';
 import { Router } from '@angular/router';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
-import { AchievementTask } from '@merit/common/utils/achievements.const';
+import { GoalsService } from '@merit/common/services/goals.service';
+import { TaskSlug, TaskStatus } from '@merit/common/models/goals';
+import { SetTaskStatus } from '@merit/common/reducers/goals.reducer';
 
 @Component({
   selector: 'app-task-preview',
@@ -14,9 +14,9 @@ import { AchievementTask } from '@merit/common/utils/achievements.const';
 })
 export class TaskPreviewComponent implements OnInit {
   constructor(
-    private achievementsService: achievementsService,
     private router: Router,
-    private store: Store<IRootAppState>
+    private store: Store<IRootAppState>,
+    private goalService: GoalsService
   ) {}
 
   @Input() goal;
@@ -39,23 +39,23 @@ export class TaskPreviewComponent implements OnInit {
     let isConfirmed: boolean = this.wallet.confirmed,
       goal: any = this.goal;
     if (isConfirmed && goal.name === 'Creator' && goal.status !== 1 && goal.version !== 0) {
-      await this.achievementsService.updateGoal(goal.id, 1);
-      await this.achievementsService.updateGoal(goal.id, 2);
+      this.store.dispatch(new SetTaskStatus(TaskSlug.CreateWallet, TaskStatus.Complete));
+      this.store.dispatch(new SetTaskStatus(TaskSlug.UnlockWallet, TaskStatus.Complete));
     }
   }
 
-  action(val) {
-    switch (val) {
-      case AchievementTask.InviteFriends:
+  action(slug: TaskSlug) {
+    switch (slug) {
+      case TaskSlug.InviteFriends:
         this.store.dispatch(new SetShareDialogAction(true));
         return this.router.navigate(['/wallets']);
-      case AchievementTask.GetInviteRequest:
+      case TaskSlug.ReceiveInviteRequest:
         return this.router.navigate([`/invites/requests`]);
-      case AchievementTask.ConfirmInviteRequest:
+      case TaskSlug.ConfirmInviteRequest:
         return this.router.navigate([`/invites/requests`]);
-      case AchievementTask.MineInvite:
+      case TaskSlug.MineInvite:
         return this.router.navigate([`/history`]);
-      case AchievementTask.UnlockWallet:
+      case TaskSlug.UnlockWallet:
         return this.router.navigate([`/history`]);
       default:
         return this.router.navigate(['/wallets']);

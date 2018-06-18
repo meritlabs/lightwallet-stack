@@ -106,12 +106,21 @@ export class GoalsService {
     return { ...this.tasksMap[taskProgress.slug], ...taskProgress };
   }
 
+  getGoal(goalSlug: GoalSlug): IGoal {
+    return this.goals.find(goal => goal.slug == goalSlug);
+  }
+
+  getTask(taskSlug: TaskSlug): ITask {
+    return this.tasks[taskSlug];
+  }
+
   getSettings(): Promise<IGoalSettings> {
     return this.client.getData('/settings');
   }
 
   async setSettings(settings: IGoalSettings) {
-    return this.client.setData('/settings', settings);
+    await this.client.setData('/settings', settings);
+    return settings;
   }
 
   async loadGoals() {
