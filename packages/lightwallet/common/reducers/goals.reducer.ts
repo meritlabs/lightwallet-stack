@@ -22,36 +22,36 @@ export enum GoalsActionType {
   UpdateTaskStatus = '[Goals] Update task status'
 }
 
-export class SetGoalsLoadingAction extends Action {
+export class SetGoalsLoadingAction implements Action {
   type = GoalsActionType.SetLoading;
 
   constructor(public loading: boolean) {}
 }
 
-export class RefreshGoalsProgressAction extends Action {
+export class RefreshGoalsProgressAction implements Action {
   type = GoalsActionType.RefreshProgress;
 }
 
-export class UpdateGoalsProgressAction extends Action {
+export class UpdateGoalsProgressAction implements Action {
   type = GoalsActionType.UpdateProgress;
 
   constructor(public progress: IFullProgress) {}
 }
 
-export class RefreshGoalSettingsAction extends Action {
+export class RefreshGoalSettingsAction implements Action {
   type = GoalsActionType.RefreshSettings;
 }
 
-export class UpdateGoalSettingsAction extends Action {
+export class UpdateGoalSettingsAction implements Action {
   type = GoalsActionType.UpdateSettings;
 
   constructor(public settings: IGoalSettings) {}
 }
 
-export class UpdateTaskStatus extends Action {
+export class UpdateTaskStatus implements Action {
   type = GoalsActionType.UpdateTaskStatus;
 
-  constructor(public taskSlug: TaskSlug, public status: TaskStatus)
+  constructor(public taskSlug: TaskSlug, public status: TaskStatus) {}
 }
 
 export type GoalAction =
