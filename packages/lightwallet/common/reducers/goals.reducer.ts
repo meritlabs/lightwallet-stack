@@ -9,8 +9,8 @@ export interface IGoalsState {
 
 const DEFAULT_STATE: IGoalsState = {
   loading: true,
-  progress: {} as IFullProgress,
-  settings: {} as IGoalSettings
+  progress: null,
+  settings: null
 };
 
 export enum GoalsActionType {
