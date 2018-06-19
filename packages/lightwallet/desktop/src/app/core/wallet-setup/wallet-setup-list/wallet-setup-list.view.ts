@@ -8,7 +8,6 @@ import { IRootAppState } from '@merit/common/reducers';
 import { SaveGoalSettingsAction, selectGoalSettings, selectGoalsProgress } from '@merit/common/reducers/goals.reducer';
 import { SetPrimaryWalletAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
-import { GoalsService } from '@merit/common/services/goals.service';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { getLatestValue } from '@merit/common/utils/observables';
 import { Store } from '@ngrx/store';
@@ -61,10 +60,6 @@ export class WalletSetupListView implements OnInit {
     const wallets = await getLatestValue(this.store.select(selectWallets), wallets => wallets.length > 0);
 
     this.wallets = wallets.filter((wallet: DisplayWallet) => wallet.confirmed);
-
-    if (!this.wallets.length) {
-      // get locked achievements
-    }
 
     wallets.forEach((wallet: DisplayWallet) => {
       if (!primaryWallet && !wallet.confirmed) {
