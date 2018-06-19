@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
-import { InterfaceActionType, SetPrimaryWalletAction } from '@merit/common/reducers/interface-preferences.reducer';
+import {
+  InterfaceActionType,
+  selectPrimaryWallet,
+  SetPrimaryWalletAction
+} from '@merit/common/reducers/interface-preferences.reducer';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -9,7 +13,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
-import { filter, map, skip, switchMap, take, tap } from 'rxjs/operators';
+import { filter, map, skip, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class InterfacePreferencesEffects {
@@ -24,7 +28,19 @@ export class InterfacePreferencesEffects {
   @Effect()
   refreshPrimaryWallet: Observable<any> = this.actions$
     .pipe(
+      ofType(InterfaceActionType.RefreshPrimaryWallet),
+      withLatestFrom(this.store.select(selectPrimaryWallet), this.store.select(selectWallets).pipe(filter(wallets => wallets.length > 0))),
+      map(([_, primaryWallet, wallets]) => {
+        if (!primaryWallet) {
+          const confirmedWallet: DisplayWallet = wallets.find(wallet => wallet.confirmed);
 
+          if (confirmedWallet) {
+            primaryWallet = confirmedWallet.id;
+          }
+        }
+
+        return new SetPrimaryWalletAction(primaryWallet);
+      })
     );
 
   @Effect()
