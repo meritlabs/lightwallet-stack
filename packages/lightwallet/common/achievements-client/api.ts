@@ -21,6 +21,7 @@ export class MeritAchivementClient {
   public onAuthenticationError: any;
 
   constructor(opts: MeritAchivementOptions, private token?: string) {
+    opts = opts || {};
     this.baseUrl = opts.baseUrl || ENV.achievementApi;
     this.request = opts.request || request;
 
@@ -35,7 +36,8 @@ export class MeritAchivementClient {
     this.onAuthenticationError = cb;
   }
 
-  static fromObj(obj) {
+  static fromObj(obj: any) {
+    obj = obj || {};
     const client = new MeritAchivementClient({
       baseUrl: obj.baseUrl || ENV.achievementApi,
     });
@@ -60,10 +62,17 @@ export class MeritAchivementClient {
    *
    * @param {Object} str - The serialized JSON created with #export
    */
-  import(str: string): any {
+  import(obj: any): any {
     try {
-      let credentials = Credentials.fromObj(JSON.parse(str));
-      this.credentials = credentials;
+      if (typeof obj === 'string') {
+        obj = JSON.parse(obj);
+      }
+
+      if (Array.isArray(obj)) {
+        obj = obj[0];
+      }
+
+      this.credentials = Credentials.fromObj(obj);
     } catch (ex) {
       throw MWCErrors.INVALID_BACKUP;
     }
