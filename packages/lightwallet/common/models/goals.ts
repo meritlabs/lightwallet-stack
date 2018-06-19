@@ -25,7 +25,7 @@ export interface ITask {
 
 export interface ITaskProgress {
   slug: TaskSlug;
-  status: TaskStatus;
+  status: ProgressStatus;
 }
 
 export type IFullTask = ITask & ITaskProgress;
@@ -43,9 +43,10 @@ export interface IFullGoal extends IGoal {
   title: string;
   linkTitle: string;
   tasks: IFullTask[];
+  status: ProgressStatus;
 }
 
-export enum TaskStatus {
+export enum ProgressStatus {
   Incomplete = 0,
   InProgress,
   Complete
