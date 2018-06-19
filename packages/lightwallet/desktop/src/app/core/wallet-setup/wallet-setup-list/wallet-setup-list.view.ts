@@ -14,7 +14,7 @@ import { getLatestValue } from '@merit/common/utils/observables';
 import { Store } from '@ngrx/store';
 
 import { Observable } from 'rxjs/Observable';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-wallet-setup-list',
@@ -29,9 +29,12 @@ export class WalletSetupListView implements OnInit {
     private goalService: GoalsService
   ) {}
 
-  progress$: Observable<IFullProgress> = this.store.select(selectGoalsProgress);
+  progress$: Observable<IFullProgress> = this.store.select(selectGoalsProgress)
+    .pipe(
+      filter(progress => !!progress && progress.goals && progress.goals.length > 0)
+    );
 
-  trackerSettings: any;
+  private trackerSettings: any;
 
   toDo$: Observable<IFullGoal[]> = this.progress$.pipe(
     map(progress =>
@@ -57,6 +60,7 @@ export class WalletSetupListView implements OnInit {
     let primaryWallet = await this.persistenceService2.getUserSettings(UserSettingsKey.primaryWalletID);
 
     const wallets = await getLatestValue(this.store.select(selectWallets), wallets => wallets.length > 0);
+
     this.wallets = wallets.filter((wallet: DisplayWallet) => wallet.confirmed);
 
     if (!this.wallets.length) {
@@ -72,16 +76,18 @@ export class WalletSetupListView implements OnInit {
       }
     });
 
-    this.trackerSettings = getLatestValue(this.store.select(selectGoalSettings));
+    this.trackerSettings = await getLatestValue(this.store.select(selectGoalSettings), settings => !!settings);
 
-    this.formData.patchValue({
-      isSetupTrackerEnabled: this.trackerSettings.settings.isSetupTrackerEnabled
-    }, { emitEvent: false });
-  }
+    console.log('Tracker settings are ', this.trackerSettings);
 
-  trackerStatus() {
-    this.trackerSettings.isSetupTrackerEnabled = !this.trackerSettings.isSetupTrackerEnabled;
-    this.store.dispatch(new SaveGoalSettingsAction(this.trackerSettings));
+    this.formData.get('isSetupTrackerEnabled').setValue(this.trackerSettings.isSetupTrackerEnabled, { emitEvent: false });
+
+    this.formData.valueChanges
+      .subscribe(({ isSetupTrackerEnabled }) => {
+        console.log('Value changes fiored');
+        this.trackerSettings.isSetupTrackerEnabled = isSetupTrackerEnabled;
+        this.store.dispatch(new SaveGoalSettingsAction(this.trackerSettings));
+      });
   }
 
   async selectWallet(wallet: DisplayWallet) {
