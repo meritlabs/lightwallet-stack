@@ -8,10 +8,10 @@
       <p class="name">
         {{goal.name}}
       </p>
-      <ul *ngIf="goal?.conditions?.length > 0">
-        <li *ngFor="let task of goal.conditions">
+      <ul *ngIf="goal.tasks.length">
+        <li *ngFor="let task of goal.tasks">
           <ng-container *ngIf="task.status === 0; else done">
-            <span class="link" (click)="action(task.name)">
+            <span class="link" (click)="action(task.slug)">
               <merit-icon name="unlock-clock"></merit-icon> {{task.name}}</span>
           </ng-container>
           <ng-template #done>

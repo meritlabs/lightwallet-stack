@@ -1,14 +1,15 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
 import { GoalsService } from '@merit/common/services/goals.service';
-import { TaskSlug, TaskStatus } from '@merit/common/models/goals';
+import { TaskSlug, ProgressStatus, IFullGoal, GoalSlug } from '@merit/common/models/goals';
 import { SetTaskStatus } from '@merit/common/reducers/goals.reducer';
 
 @Component({
-  selector: 'app-task-preview',
+  selector: 'task-preview',
   templateUrl: './task-preview.component.html',
   styleUrls: ['./task-preview.component.sass'],
 })
@@ -19,28 +20,31 @@ export class TaskPreviewComponent implements OnInit {
     private goalService: GoalsService
   ) {}
 
-  @Input() goal;
-  @Input() wallet;
-  @Input() isComplete;
+  @Input() goal: IFullGoal;
+  @Input() wallet: DisplayWallet;
+  @Input() isComplete: boolean;
 
   route: string;
   readinessBackground: string;
 
   async ngOnInit() {
-    this._completeWalletConfirmationGoal();
-    let toDo = this.goal.conditions.filter((item: any) => item.status === 0),
-      complete = this.goal.conditions.length - toDo.length,
-      total = this.goal.conditions.length,
+    this.completeWalletConfirmationGoal();
+
+    const toDo = this.goal.tasks.filter((item: any) => item.status === ProgressStatus.Incomplete),
+      complete = this.goal.tasks.length - toDo.length,
+      total = this.goal.tasks.length,
       readiness = complete / total * 100;
+
     this.readinessBackground = `linear-gradient(to right, #74cd4f ${readiness}%, #555b7033 ${readiness}%)`;
   }
 
-  async _completeWalletConfirmationGoal() {
-    let isConfirmed: boolean = this.wallet.confirmed,
+  private completeWalletConfirmationGoal() {
+    const isConfirmed: boolean = this.wallet.confirmed,
       goal: any = this.goal;
-    if (isConfirmed && goal.name === 'Creator' && goal.status !== 1 && goal.version !== 0) {
-      this.store.dispatch(new SetTaskStatus(TaskSlug.CreateWallet, TaskStatus.Complete));
-      this.store.dispatch(new SetTaskStatus(TaskSlug.UnlockWallet, TaskStatus.Complete));
+
+    if (isConfirmed && goal.slug === GoalSlug.Creator && goal.status !== ProgressStatus.Complete) {
+      this.store.dispatch(new SetTaskStatus(TaskSlug.CreateWallet, ProgressStatus.Complete));
+      this.store.dispatch(new SetTaskStatus(TaskSlug.UnlockWallet, ProgressStatus.Complete));
     }
   }
 
