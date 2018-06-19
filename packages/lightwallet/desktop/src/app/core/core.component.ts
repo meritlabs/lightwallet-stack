@@ -16,11 +16,12 @@ import {
   selectWalletsLoading
 } from '@merit/common/reducers/wallets.reducer';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
+import { GoalsService } from '@merit/common/services/goals.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
-import { getLatestValue } from '@merit/common/utils/observables';
+import { getLatestDefinedValue, getLatestValue } from '@merit/common/utils/observables';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
@@ -110,7 +111,8 @@ export class CoreView implements OnInit, AfterViewInit {
     private profileService: ProfileService,
     private store: Store<IRootAppState>,
     private persistenceService2: PersistenceService2,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private goalsService: GoalsService
   ) {}
 
   async ngOnInit() {
@@ -121,7 +123,7 @@ export class CoreView implements OnInit, AfterViewInit {
       )
       .toPromise();
 
-    const { isWelcomeDialogEnabled } = await this.store.select(selectGoalSettings).pipe(take(1)).toPromise();
+    const { isWelcomeDialogEnabled } = await getLatestDefinedValue(this.store.select(selectGoalSettings));
     this.isWelcomeDialogEnabled = isWelcomeDialogEnabled;
 
     this.showShare = await getLatestValue(this.store.select(selectShareDialogState));
