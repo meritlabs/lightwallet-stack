@@ -1,102 +1,94 @@
 import { Component, OnInit } from '@angular/core';
-import { IRootAppState } from '@merit/common/reducers';
-import { Store } from '@ngrx/store';
-
-import { Observable } from 'rxjs/Observable';
-
-import { Achievements } from '@merit/common/models/achievement';
-import { achievementsService } from '@merit/common/services/achievements.service';
 
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { IFullGoal, IFullProgress, ProgressStatus } from '@merit/common/models/goals';
+import { IRootAppState } from '@merit/common/reducers';
+import { SaveGoalSettingsAction, selectGoalSettings, selectGoalsProgress } from '@merit/common/reducers/goals.reducer';
+import { SetPrimaryWalletAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
-import { InterfacePreferencesService } from '@merit/common/services/interface-preferences.service';
+import { GoalsService } from '@merit/common/services/goals.service';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
-import { filter, take } from 'rxjs/operators';
-import { selectGoalsProgress } from '@merit/common/reducers/goals.reducer';
+import { getLatestValue } from '@merit/common/utils/observables';
+import { Store } from '@ngrx/store';
+
+import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-wallet-setup-list',
   templateUrl: './wallet-setup-list.view.html',
-  styleUrls: ['./wallet-setup-list.view.sass'],
+  styleUrls: ['./wallet-setup-list.view.sass']
 })
 export class WalletSetupListView implements OnInit {
   constructor(
     private store: Store<IRootAppState>,
-    private achievementsService: achievementsService,
     private formBuilder: FormBuilder,
     private persistenceService2: PersistenceService2,
-    private interfacePreferencesService: InterfacePreferencesService
+    private goalService: GoalsService
   ) {}
 
-  goalsState$: Observable<Achievements> = this.store.select('achievements');
-
-  progress$ = this.store.select(selectGoalsProgress);
+  progress$: Observable<IFullProgress> = this.store.select(selectGoalsProgress);
 
   trackerSettings: any;
-  toDo: any;
-  done: any;
+
+  toDo$: Observable<IFullGoal[]> = this.progress$.pipe(
+    map(progress =>
+      progress.goals.filter(goal => goal.status === ProgressStatus.Incomplete)
+    )
+  );
+
+  done$: Observable<IFullGoal[]> = this.progress$.pipe(
+    map(progress =>
+      progress.goals.filter(goal => goal.status === ProgressStatus.Complete)
+    )
+  );
 
   formData: FormGroup = this.formBuilder.group({
-    isSetupTrackerEnabled: false,
+    isSetupTrackerEnabled: false
   });
 
-  wallets: any;
-  selectedWallet: any;
-  isConfirmed: boolean = false;
+  wallets: DisplayWallet[];
+  selectedWallet: DisplayWallet;
+  isConfirmed: boolean;
 
   async ngOnInit() {
     let primaryWallet = await this.persistenceService2.getUserSettings(UserSettingsKey.primaryWalletID);
 
-    const wallets = await this.store.select(selectWallets)
-      .pipe(
-        filter(wallets => wallets.length > 0),
-        take(1)
-      )
-      .toPromise();
-
+    const wallets = await getLatestValue(this.store.select(selectWallets), wallets => wallets.length > 0);
     this.wallets = wallets.filter((wallet: DisplayWallet) => wallet.confirmed);
 
-    await this.store.select(selectWallets).subscribe(res => {
-      this.wallets = res.filter((item: any) => item.confirmed === true);
+    if (!this.wallets.length) {
+      // get locked achievements
+    }
 
-      if (this.wallets.length === 0) {
-        this.achievementsService.getLockedAchievements();
+    wallets.forEach((wallet: DisplayWallet) => {
+      if (!primaryWallet && !wallet.confirmed) {
+        this.selectedWallet = wallet;
+      } else if (wallet.id === primaryWallet) {
+        this.selectedWallet = wallet;
+        this.isConfirmed = wallet.confirmed;
       }
-      res.forEach((item: any) => {
-        if (item.id === primaryWallet) {
-          this.selectedWallet = item;
-          this.isConfirmed = item.confirmed;
-        } else if (!primaryWallet && !item.confirmed) {
-          this.selectedWallet = item;
-        }
-      });
     });
-    await this.goalsState$.subscribe(res => {
-      this.trackerSettings = res.settings;
-      this.formData.patchValue({
-        isSetupTrackerEnabled: res.settings.isSetupTrackerEnabled,
-      });
 
-      let toDo = res.achievements.filter((item: any) => item.status !== 2),
-        done = res.achievements.filter((item: any) => item.status === 2);
-      console.log(toDo);
+    this.trackerSettings = getLatestValue(this.store.select(selectGoalSettings));
 
-      this.toDo = toDo;
-      this.done = done;
-    });
+    this.formData.patchValue({
+      isSetupTrackerEnabled: this.trackerSettings.settings.isSetupTrackerEnabled
+    }, { emitEvent: false });
   }
+
   trackerStatus() {
     this.trackerSettings.isSetupTrackerEnabled = !this.trackerSettings.isSetupTrackerEnabled;
-    this.achievementsService.setSettings(this.trackerSettings);
+    this.store.dispatch(new SaveGoalSettingsAction(this.trackerSettings));
   }
 
   async selectWallet(wallet: DisplayWallet) {
     this.selectedWallet = wallet;
-    this.interfacePreferencesService.setPrimaryWallet(wallet.id);
-    await this.achievementsService.reLogin();
+    this.store.dispatch(new SetPrimaryWalletAction(wallet.id));
   }
+
   refresh() {
     location.reload();
   }
