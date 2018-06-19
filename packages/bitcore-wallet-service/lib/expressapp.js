@@ -977,6 +977,16 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/community/rank/', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+        server.getCommunityRank(function(err, txs) {
+            if (err) return returnError(err, res, req);
+            res.json(txs);
+            res.end();
+        });
+    });
+  });
+
   this.app.use(opts.basePath || '/bws/api', router);
 
   // Pass bitcore node to th walletService to initialize it.
