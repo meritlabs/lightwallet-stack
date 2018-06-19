@@ -2759,6 +2759,11 @@ export class API {
     } );
   }
 
+  async getCommunityRank() {
+    $.checkState(this.credentials);
+    return this._doGetRequest(`/v1/community/rank`);
+  }
+
   private encryptGlobalSend(easySend: EasySend) {
     return this._encryptMessage(JSON.stringify(easySend), this.credentials.personalEncryptingKey);
   }
@@ -2766,6 +2771,7 @@ export class API {
   private decryptGlobalSend(data) {
     return this._decryptMessage(data, this.credentials.personalEncryptingKey);
   }
+
 
 
 }

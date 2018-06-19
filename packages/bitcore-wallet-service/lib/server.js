@@ -4215,6 +4215,24 @@ WalletService.prototype.getGlobalSends = async function(opts, cb) {
     });
 };
 
+WalletService.prototype.getCommunityRank = async function(cb) {
+    let wallet = await promisify(this.getWallet.bind(this))({});
+    let addresses = await promisify(this.storage.fetchAddresses.bind(this.storage))(wallet.id);
+    if (addresses.length == 0) return cb(null, []);
+    const addressStrs = _.map(addresses, 'address');
+
+    try {
+        let result = await  localMeritDaemon.getCommunityRank(addressStrs);
+        return cb(null, result);
+    } catch (e) {
+        return cb(e);
+    }
+};
+
+
+
+
+
 
 module.exports = WalletService;
 module.exports.ClientError = ClientError;
