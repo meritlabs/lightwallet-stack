@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { IFullProgress, IGoalSettings } from '@merit/common/models/goals';
 import {
-  GoalAction, GoalsActionType,
-  RefreshGoalsProgressAction, SaveGoalSettingsAction, SetTaskStatus, UpdateGoalSettingsAction,
+  GoalsActionType,
+  RefreshGoalsProgressAction,
+  SaveGoalSettingsAction,
+  SetTaskStatus,
+  UpdateGoalSettingsAction,
   UpdateGoalsProgressAction
 } from '@merit/common/reducers/goals.reducer';
-import { of } from 'rxjs/observable/of';
-import { fromPromise } from 'rxjs/observable/fromPromise';
 import { GoalsService } from '@merit/common/services/goals.service';
+import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Observable } from 'rxjs/Observable';
+import { fromPromise } from 'rxjs/observable/fromPromise';
 import { debounceTime, map, switchMap } from 'rxjs/operators';
-import { IFullProgress, IGoalSettings } from '@merit/common/models/goals';
 
 @Injectable()
 export class GoalEffects {
@@ -49,15 +51,6 @@ export class GoalEffects {
       ofType(GoalsActionType.SetTaskStatus),
       switchMap((action: SetTaskStatus) => fromPromise(this.goalsService.setTaskStatus(action.taskSlug, action.status))),
       map(() => new RefreshGoalsProgressAction())
-    );
-
-  @Effect()
-  init$: Observable<RefreshGoalsProgressAction> = fromPromise(this.goalsService.initService())
-    .pipe(
-      switchMap(() => fromPromise(this.goalsService.getProgress())),
-      map(() =>
-        new RefreshGoalsProgressAction()
-      )
     );
 
   constructor(private actions$: Actions,
