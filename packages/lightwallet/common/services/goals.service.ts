@@ -61,7 +61,7 @@ export class GoalsService {
 
   progress: IFullProgress;
 
-  statusByTask: { [taskSlug: string]: ProgressStatus };
+  statusByTask: { [taskSlug: string]: ProgressStatus } = {};
 
   constructor(private profileService: ProfileService,
               private store: Store<IRootAppState>) {
