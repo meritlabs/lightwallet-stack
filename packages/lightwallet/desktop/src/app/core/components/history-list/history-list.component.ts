@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Input, ViewEncapsulation } from '@angular/core';
-import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { TaskSlug } from '@merit/common/models/goals';
+import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 
 @Component({
   selector: 'history-list',
@@ -14,11 +15,10 @@ export class HistoryListComponent {
   @Input() widget: boolean;
 
   viewPortItems: IDisplayTransaction[];
-  isInviteMined: boolean = false;
+  isInviteMined: boolean;
+  taskSlug: TaskSlug = TaskSlug.MineInvite;
 
-  completeInviteMinigTask() {
-    let result = this.transactions.filter((item: any) => item.action === 'invite' || item.isInvite === true);
-
-    if (result.length > 1) this.isInviteMined = true;
+  ngOnInit() {
+    this.isInviteMined = this.transactions.some((tx: IDisplayTransaction) => tx.action === TransactionAction.INVITE && tx.isInvite);
   }
 }
