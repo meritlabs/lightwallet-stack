@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { IRootAppState } from '@merit/common/reducers';
+import { getLatestValue } from '@merit/common/utils/observables';
 import { Store } from '@ngrx/store';
 import { selectPrimaryWallet } from '@merit/common/reducers/interface-preferences.reducer';
 import { take } from 'rxjs/operators';
@@ -14,8 +15,21 @@ import {
   IProgress,
   ITask,
   ITaskProgress,
-  TaskSlug, TaskStatus
+  TaskSlug, ProgressStatus
 } from '@merit/common/models/goals';
+
+const GoalData : { [goalSlug: string]: Partial<IFullGoal> } = {
+  [GoalSlug.Creator]: {
+    route: 'unlock',
+    title: 'Wallet unlock',
+    linkTitle: 'Unlock',
+  },
+  [GoalSlug.FastStarter]: {
+    route: '',
+    title: '',
+    linkTitle: ''
+  }
+};
 
 @Injectable()
 export class GoalsService {
@@ -30,22 +44,24 @@ export class GoalsService {
 
   progress: IFullProgress;
 
-  statusByTask: { [taskSlug: string]: TaskStatus };
+  statusByTask: { [taskSlug: string]: ProgressStatus };
 
   constructor(private profileService: ProfileService,
-              private store: Store<IRootAppState>) {}
-
-  async initService() {
-    await this.getToken();
-    await this.loadGoals();
+              private store: Store<IRootAppState>) {
+    this.store.select(selectPrimaryWallet)
+      .subscribe(async (primaryWalletId: string) => {
+        this.token = undefined;
+        await this.getToken(primaryWalletId);
+        await this.loadGoals();
+      });
   }
 
-  async getToken() {
+  async getToken(primaryWalletId: string) {
     if (this.token) {
       return this.token;
     }
 
-    const profile = await this.getProfile();
+    const profile = await this.getProfile(primaryWalletId);
     this.setClient(profile);
     const { token } = await this.client.login();
 
@@ -53,11 +69,6 @@ export class GoalsService {
     this.client.setToken(token);
 
     return token;
-  }
-
-  refreshToken() {
-    this.token = undefined;
-    return this.getToken();
   }
 
   async getProgress(): Promise<IFullProgress> {
@@ -80,9 +91,22 @@ export class GoalsService {
       goalsMap[goalSlug].push(this.getFullTask(task));
     });
 
-    const goals = [];
+    const goals: IFullGoal[] = [];
+
     for (let slug in goalsMap) {
-      goals.push(goalsMap[slug]);
+      const goal: IFullGoal = {
+        ...this.getGoal(slug as GoalSlug),
+        tasks: goalsMap[slug],
+        status: ProgressStatus.Complete
+      };
+
+      const incomplete: boolean = goal.tasks.some(task => task.status !== ProgressStatus.Complete);
+
+      if (incomplete) {
+        goal.status = ProgressStatus.Incomplete;
+      }
+
+      goals.push(goal);
     }
 
     return this.progress =  {
@@ -91,14 +115,14 @@ export class GoalsService {
     };
   }
 
-  async setTaskStatus(taskSlug: TaskSlug, status: TaskStatus) {
+  async setTaskStatus(taskSlug: TaskSlug, status: ProgressStatus) {
     return this.client.setData('/progress/task', {
       slug: taskSlug,
       status
     });
   }
 
-  getTaskStatus(taskSlug: TaskSlug): TaskStatus {
+  getTaskStatus(taskSlug: TaskSlug): ProgressStatus {
     return this.statusByTask[taskSlug];
   }
 
@@ -106,8 +130,17 @@ export class GoalsService {
     return { ...this.tasksMap[taskProgress.slug], ...taskProgress };
   }
 
-  getGoal(goalSlug: GoalSlug): IGoal {
-    return this.goals.find(goal => goal.slug == goalSlug);
+  getGoal(goalSlug: GoalSlug): IFullGoal {
+    const goal: IGoal = this.goals.find(goal => goal.slug == goalSlug);
+
+    if (goal) {
+      return {
+        ...goal,
+        ...GoalData[goalSlug],
+        tasks: [],
+        status: ProgressStatus.Complete
+      } as IFullGoal;
+    }
   }
 
   getTask(taskSlug: TaskSlug): ITask {
@@ -159,7 +192,7 @@ export class GoalsService {
     this.client = MeritAchivementClient.fromObj(profile);
   }
 
-  private async getProfile() {
+  private async getProfile(primaryWallet: string) {
     const profile = await this.profileService.loadProfile();
     const loginProfile = {
       wallets: [],
@@ -169,7 +202,6 @@ export class GoalsService {
     const wallets = await this.profileService.getWallets();
 
     if (wallets && wallets.length) {
-      const primaryWallet = await this.store.select(selectPrimaryWallet).pipe(take(1)).toPromise();
       const wallet = wallets.find(wallet => wallet.id == primaryWallet);
 
       if (wallet) {
