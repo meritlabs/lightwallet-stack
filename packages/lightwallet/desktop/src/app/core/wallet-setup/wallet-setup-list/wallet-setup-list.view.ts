@@ -25,8 +25,7 @@ export class WalletSetupListView implements OnInit {
   constructor(
     private store: Store<IRootAppState>,
     private formBuilder: FormBuilder,
-    private persistenceService2: PersistenceService2,
-    private goalService: GoalsService
+    private persistenceService2: PersistenceService2
   ) {}
 
   progress$: Observable<IFullProgress> = this.store.select(selectGoalsProgress)
@@ -78,13 +77,10 @@ export class WalletSetupListView implements OnInit {
 
     this.trackerSettings = await getLatestValue(this.store.select(selectGoalSettings), settings => !!settings);
 
-    console.log('Tracker settings are ', this.trackerSettings);
-
     this.formData.get('isSetupTrackerEnabled').setValue(this.trackerSettings.isSetupTrackerEnabled, { emitEvent: false });
 
     this.formData.valueChanges
       .subscribe(({ isSetupTrackerEnabled }) => {
-        console.log('Value changes fiored');
         this.trackerSettings.isSetupTrackerEnabled = isSetupTrackerEnabled;
         this.store.dispatch(new SaveGoalSettingsAction(this.trackerSettings));
       });
