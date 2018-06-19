@@ -1,4 +1,4 @@
-import { IFullProgress, IGoalSettings, TaskSlug, TaskStatus } from '@merit/common/models/goals';
+import { IFullProgress, IGoalSettings, TaskSlug, ProgressStatus } from '@merit/common/models/goals';
 import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 
 export interface IGoalsState {
@@ -58,7 +58,7 @@ export class SaveGoalSettingsAction implements Action {
 export class SetTaskStatus implements Action {
   type = GoalsActionType.SetTaskStatus;
 
-  constructor(public taskSlug: TaskSlug, public status: TaskStatus) {}
+  constructor(public taskSlug: TaskSlug, public status: ProgressStatus) {}
 }
 
 export type GoalAction =
