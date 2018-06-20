@@ -20,7 +20,7 @@ import {
 } from 'ionic-angular';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
-import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
+import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 import { SmsNotificationsModal } from '../../modals/sms-notifications/sms-notifications';
 
@@ -90,7 +90,7 @@ export class TransactView {
 
     await this.unlockRequestService.loadRequestsData();
 
-    const smsPromptSetting = await this.persistenceService2.getViewSettings(ViewSettingsKey.SmsNotificationsPrompt);
+    const smsPromptSetting = await this.persistenceService2.getUserSettings(UserSettingsKey.SmsNotificationsPrompt);
 
     if (smsPromptSetting == true)
       return;
@@ -103,7 +103,7 @@ export class TransactView {
     const modal = this.modalCtrl.create('SmsNotificationsModal');
     modal.present();
     modal.onDidDismiss(() => {
-      this.persistenceService2.setViewSettings(ViewSettingsKey.SmsNotificationsPrompt, true);
+      this.persistenceService2.setUserSettings(UserSettingsKey.SmsNotificationsPrompt, true);
     });
   }
 

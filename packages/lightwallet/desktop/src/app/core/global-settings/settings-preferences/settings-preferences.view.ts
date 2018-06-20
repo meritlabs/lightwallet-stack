@@ -2,9 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
+import { SetPrimaryWalletAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { DeleteWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
-import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
+import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
@@ -111,8 +112,8 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
                 });
               }
 
-              await this.persistenceService.resetViewSettings();
-
+              await this.persistenceService.resetUserSettings();
+              this.store.dispatch(new SetPrimaryWalletAction(null));
               this.store.dispatch(new DeleteWalletAction(wallet.id));
             })
           );

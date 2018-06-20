@@ -9,12 +9,13 @@ export enum StorageKey {
   NotificationSettings = 'merit_notification_settings',
   Notifications = 'merit_notifications',
   EasySends = 'merit_easysends',
-  ViewSettingsPrefix = 'app_view_settings_'
+  ViewSettingsPrefix = 'app_view_settings_',
 }
 
-export enum ViewSettingsKey {
+export enum UserSettingsKey {
   GetStartedTips = 'get_started_tips',
   recordPassphrase = 'record_passphrase',
+  primaryWalletID = 'primary_wallet_id',
   SmsNotificationsPrompt = 'sms_notifications_prompt'
 }
 
@@ -104,17 +105,17 @@ export class PersistenceService2 {
     return (await this.storage.get(StorageKey.EasySends)) || [];
   }
 
-  setViewSettings(key: ViewSettingsKey, value: any) {
+  setUserSettings(key: UserSettingsKey, value: any) {
     return this.storage.set(StorageKey.ViewSettingsPrefix + key, value);
   }
 
-  getViewSettings(key: ViewSettingsKey) {
+  getUserSettings(key: UserSettingsKey) {
     return this.storage.get(StorageKey.ViewSettingsPrefix + key);
   }
 
-  async resetViewSettings() {
-    for (let key in ViewSettingsKey) {
-      await this.setViewSettings(ViewSettingsKey[key] as ViewSettingsKey, false);
+  async resetUserSettings() {
+    for (let key in UserSettingsKey) {
+      await this.setUserSettings(UserSettingsKey[key] as UserSettingsKey, false);
     }
   }
 }
