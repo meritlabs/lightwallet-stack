@@ -64,16 +64,17 @@ export class MeritAchivementClient {
    */
   import(obj: any): any {
     try {
-      if (typeof obj === 'string') {
-        obj = JSON.parse(obj);
-      }
-
       if (Array.isArray(obj)) {
         obj = obj[0];
       }
 
+      if (typeof obj === 'string') {
+        obj = JSON.parse(obj);
+      }
+
       this.credentials = Credentials.fromObj(obj);
     } catch (ex) {
+      console.log('Invalid backup: ', ex);
       throw MWCErrors.INVALID_BACKUP;
     }
 
