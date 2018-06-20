@@ -1,9 +1,11 @@
+import { APP_BASE_HREF } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IonicStorageModule } from '@ionic/storage';
+import { CommonDirectivesModule } from '@merit/common/common-directives.module';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { AppEffects } from '@merit/common/effects/app.effects';
@@ -20,7 +22,6 @@ import { PollingNotificationsService } from '@merit/common/services/polling-noti
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { WebPushNotificationsService } from '@merit/common/services/web-push-notifications.service';
-import { getLatestValue } from '@merit/common/utils/observables';
 import { DOMController } from '@merit/desktop/app/components/dom.controller';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { DashboardGuard } from '@merit/desktop/app/guards/dashboard.guard';
@@ -36,7 +37,6 @@ import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MarketLoginView } from './market/market-login/market-login.view';
-import { APP_BASE_HREF } from '@angular/common';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
@@ -49,7 +49,7 @@ export function loadConfigs(profileService: ProfileService, store: Store<IRootAp
     store.dispatch(
       new UpdateAppAction({
         loading: false,
-        authorized,
+        authorized
       })
     );
 
@@ -66,7 +66,7 @@ export function getProviders() {
     Platform,
     DOMController,
     DashboardGuard,
-    OnboardingGuard,
+    OnboardingGuard
   ];
 }
 
@@ -82,8 +82,8 @@ export function getProviders() {
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
-        deps: [HttpClient],
-      },
+        deps: [HttpClient]
+      }
     }),
     CommonProvidersModule.forRoot(),
     CommonPipesModule,
@@ -99,6 +99,7 @@ export function getProviders() {
     ]),
     SharedComponentsModule.forRoot(),
     Ng4LoadingSpinnerModule.forRoot(),
+    CommonDirectivesModule
   ],
   providers: [
     ...getProviders(),
@@ -106,13 +107,13 @@ export function getProviders() {
       provide: APP_INITIALIZER,
       useFactory: loadConfigs,
       deps: [ProfileService, Store, GoalsService],
-      multi: true,
+      multi: true
     },
     {
       provide: APP_BASE_HREF,
-      useValue: '/',
-    },
+      useValue: '/'
+    }
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

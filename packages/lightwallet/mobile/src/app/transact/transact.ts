@@ -90,7 +90,7 @@ export class TransactView {
 
     await this.unlockRequestService.loadRequestsData();
 
-    const smsPromptSetting = await this.persistenceService2.getViewSettings(UserSettingsKey.SmsNotificationsPrompt);
+    const smsPromptSetting = await this.persistenceService2.getUserSettings(UserSettingsKey.SmsNotificationsPrompt);
 
     if (smsPromptSetting == true)
       return;
@@ -103,7 +103,7 @@ export class TransactView {
     const modal = this.modalCtrl.create('SmsNotificationsModal');
     modal.present();
     modal.onDidDismiss(() => {
-      this.persistenceService2.setViewSettings(UserSettingsKey.SmsNotificationsPrompt, true);
+      this.persistenceService2.setUserSettings(UserSettingsKey.SmsNotificationsPrompt, true);
     });
   }
 

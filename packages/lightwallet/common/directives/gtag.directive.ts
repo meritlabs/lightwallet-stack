@@ -1,7 +1,9 @@
-import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+import { Directive, HostListener, Input } from '@angular/core';
+
+declare const gtag: any;
 
 @Directive({
-  selector: '[appGtag]',
+  selector: '[gtag]'
 })
 export class GtagDirective {
   @Input() gtagEvent: string;
@@ -9,10 +11,14 @@ export class GtagDirective {
   @Input() gtagAction: string;
   @Input() gtagLabel: string;
 
-  constructor() {}
-
   @HostListener('click')
   onClick() {
-    console.log(this.gtagEvent);
+    if (typeof gtag === 'function') {
+      gtag('event', this.gtagEvent, {
+        event_category: this.gtagCategory,
+        event_action: this.gtagAction,
+        event_label: this.gtagLabel
+      });
+    }
   }
 }

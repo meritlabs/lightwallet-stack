@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonDirectivesModule } from '@merit/common/common-directives.module';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { FileBackupView } from '@merit/desktop/app/core/backup/file-backup/file-backup.view';
@@ -86,6 +87,7 @@ export function getPages() {
     ClipModule,
     Ng4LoadingSpinnerModule,
     CoreComponentsModule,
+    CommonDirectivesModule,
   ],
   declarations: [
     CoreView,
