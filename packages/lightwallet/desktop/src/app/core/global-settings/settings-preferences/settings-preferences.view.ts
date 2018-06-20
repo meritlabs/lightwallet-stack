@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { SetPrimaryWalletAction } from '@merit/common/reducers/interface-preferences.reducer';
@@ -9,6 +8,8 @@ import { EmailNotificationsService } from '@merit/common/services/email-notifica
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
+import { NotificationSettingsController } from '@merit/common/utils/notification-settings';
 import { isWalletEncrypted } from '@merit/common/utils/wallet';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
@@ -17,8 +18,10 @@ import { ElectronService } from '@merit/desktop/services/electron.service';
 import { State, Store } from '@ngrx/store';
 import { isEmpty } from 'lodash';
 import 'rxjs/add/operator/toPromise';
+import { fromPromise } from 'rxjs/observable/fromPromise';
 import { merge } from 'rxjs/observable/merge';
-import { debounceTime, filter, take, tap } from 'rxjs/operators';
+import { debounceTime, filter, switchMap, take, tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs/Subscription';
 
 declare const WEBPACK_CONFIG: any;
 
@@ -28,38 +31,35 @@ declare const WEBPACK_CONFIG: any;
   styleUrls: ['./settings-preferences.view.sass'],
 })
 export class SettingsPreferencesView implements OnInit, OnDestroy {
+
   get isElectron(): boolean {
     return ElectronService.isElectronAvailable;
-  }
-
-  formData: FormGroup = this.formBuilder.group({
-    pushNotifications: false,
-    emailNotifications: false,
-    email: [''], // TODO(ibby): validate email
-  });
-
-  get emailNotificationsEnabled() {
-    return this.formData.get('emailNotifications').value == true;
   }
 
   commitHash: string;
   version: string;
 
-  private subs: any[] = [];
+  nsc = new NotificationSettingsController(
+    this.persistenceService,
+    this.pushNotificationsService,
+    this.emailNotificationsService,
+    this.smsNotificationsService,
+    this.formBuilder,
+    this.toastCtrl,
+    'desktop'
+  );
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private state: State<IRootAppState>,
-    private persistenceService: PersistenceService2,
-    private emailNotificationsService: EmailNotificationsService,
-    private pushNotificationsService: PushNotificationsService,
-    private toastCtrl: ToastControllerService,
-    private confirmDialogCtrl: ConfirmDialogControllerService,
-    private passwordPromptCtrl: PasswordPromptController,
-    private profileService: ProfileService,
-    private store: Store<IRootAppState>,
-    private router: Router
-  ) {
+  constructor(private formBuilder: FormBuilder,
+              private state: State<IRootAppState>,
+              private persistenceService: PersistenceService2,
+              private emailNotificationsService: EmailNotificationsService,
+              private pushNotificationsService: PushNotificationsService,
+              private toastCtrl: ToastControllerService,
+              private confirmDialogCtrl: ConfirmDialogControllerService,
+              private passwordPromptCtrl: PasswordPromptController,
+              private profileService: ProfileService,
+              private store: Store<IRootAppState>,
+              private smsNotificationsService: SmsNotificationsService) {
     if (typeof WEBPACK_CONFIG !== 'undefined') {
       this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
       this.version = WEBPACK_CONFIG.VERSION;
@@ -67,58 +67,13 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    const settings = await this.persistenceService.getNotificationSettings();
-    if (!isEmpty(settings)) {
-      this.formData.setValue(settings, { emitEvent: false });
-    }
+    await this.nsc.init();
 
-    this.subs.push(
-      this.formData.valueChanges
-        .pipe(
-          filter(() => this.formData.valid),
-          tap((newValue: any) => this.persistenceService.setNotificationSettings(newValue))
-        )
-        .subscribe()
-    );
-
-    this.subs.push(
-      this.formData
-        .get('pushNotifications')
-        .valueChanges.pipe(
-          debounceTime(100),
-          tap((enabled: boolean) => {
-            if (enabled) {
-              this.pushNotificationsService.init();
-            } else {
-              this.pushNotificationsService.disable();
-            }
-          })
-        )
-        .subscribe()
-    );
-
-    this.subs.push(
-      merge(this.formData.get('email').valueChanges, this.formData.get('emailNotifications').valueChanges)
-        .pipe(
-          debounceTime(100),
-          filter(() => this.formData.valid),
-          tap(() =>
-            this.emailNotificationsService.updateEmail({
-              enabled: this.formData.get('emailNotifications').value,
-              email: this.formData.get('email').value,
-            })
-          )
-        )
-        .subscribe()
-    );
-
-    if (this.isElectron) this.formData.get('pushNotifications').setValue(false);
+    if (this.isElectron) this.nsc.formData.get('pushNotifications').setValue(false);
   }
 
   ngOnDestroy() {
-    try {
-      this.subs.forEach(sub => sub.unsubscribe());
-    } catch (e) {}
+    this.nsc.destroy();
   }
 
   logout() {
@@ -145,6 +100,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
             .select(selectWallets)
             .pipe(take(1))
             .toPromise();
+
           await Promise.all(
             wallets.map(async (wallet: DisplayWallet) => {
               if (isWalletEncrypted(wallet.client)) {
@@ -156,8 +112,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
                 });
               }
 
-              this.persistenceService.setUserSettings(UserSettingsKey.GetStartedTips, false);
-              this.persistenceService.setUserSettings(UserSettingsKey.recordPassphrase, false);
+              await this.persistenceService.resetUserSettings();
               this.store.dispatch(new SetPrimaryWalletAction(null));
               this.store.dispatch(new DeleteWalletAction(wallet.id));
             })

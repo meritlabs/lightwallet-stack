@@ -14,14 +14,6 @@
           <textarea type="text" formControlName="words" name="" class="ui-input ui-input--form ui-input--textarea"></textarea>
         </div>
       </div>
-      <div class="sendMerit__form__group">
-        <label for="" class="ui-label">Phrase password (optional)</label>
-        <div class="ui-input__wrapper ui-input__wrapper--password">
-          <input formControlName="password" [type]="showPass == true ? 'text' : 'password'" name="" class="ui-input ui-input--form ui-input--text">
-          <div class="show-hide-password" (click)="showPass=!showPass">{{ showPass == true ? 'Hide' : 'Show' }}
-          </div>
-        </div>
-      </div>
       <button role="button" type="submit" name="button" class="ui-button ui-button--blue" [disabled]="formData.invalid">
         Import wallet
       </button>
