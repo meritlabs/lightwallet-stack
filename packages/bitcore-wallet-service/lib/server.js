@@ -881,7 +881,7 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
     walletId: walletId,
   });
 
-  this.storage.storeNotification(walletId, notification, () => {
+  this.storage.storeNotification(notification, () => {
     this.messageBroker.send(notification);
     return cb();
   });
@@ -902,6 +902,7 @@ WalletService.prototype._notifyTxProposalAction = function(type, txp, extraArgs,
     amount: txp.getTotalAmount(),
     message: txp.message,
   }, extraArgs);
+
   self._notify(type, data, {}, cb);
 };
 
@@ -2883,8 +2884,11 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
     var extraArgs = {
       txid: txp.txid,
     };
-    if (opts.byThirdParty) {
+
+    if (opts.byThirdParty && !txp.isInvite) {
       self._notifyTxProposalAction('OutgoingTxByThirdParty', txp, extraArgs);
+    } else if (txp.isInvite) {
+      self._notifyTxProposalAction('OutgoingInviteTx', txp, extraArgs);
     } else {
       self._notifyTxProposalAction('OutgoingTx', txp, extraArgs);
     }
@@ -3765,6 +3769,25 @@ WalletService.prototype.pushNotificationsUnsubscribe = function(opts, cb) {
   var self = this;
 
   self.storage.removePushNotificationSub(self.copayerId, opts.token, cb);
+};
+
+WalletService.prototype.smsNotificationsSubscribe = function(opts, cb) {
+  if (!opts.phoneNumber)
+    return cb('Phone number was not provided');
+
+  this.storage.storeSmsNotificationSub({
+    walletId: this.walletId,
+    phoneNumber: opts.phoneNumber,
+    platform: opts.platform
+  }, cb);
+};
+
+WalletService.prototype.smsNotificationsUnsubscribe = function(cb) {
+  this.storage.removeSmsNotificationSub(this.walletId, cb);
+};
+
+WalletService.prototype.getSmsNotificationSubscription = function(cb) {
+  this.storage.fetchSmsNotificationSub(this.walletId, cb);
 };
 
 /**

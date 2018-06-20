@@ -16,18 +16,23 @@ export enum UserSettingsKey {
   GetStartedTips = 'get_started_tips',
   recordPassphrase = 'record_passphrase',
   primaryWalletID = 'primary_wallet_id',
+  SmsNotificationsPrompt = 'sms_notifications_prompt'
 }
 
 export interface INotificationSettings {
   emailNotifications: boolean;
   pushNotifications: boolean;
   email: string;
+  smsNotifications: boolean;
+  phoneNumber: string;
 }
 
 const DEFAULT_NOTIFICATION_SETTINGS: INotificationSettings = {
   email: '',
   emailNotifications: false,
   pushNotifications: true,
+  smsNotifications: false,
+  phoneNumber: ''
 };
 
 /**
@@ -45,13 +50,19 @@ export class PersistenceService2 {
     return (await this.storage.get(StorageKey.WalletPreferencesPrefix + walletId)) || {};
   }
 
-  setNotificationSettings(settings: any) {
-    return this.storage.set(StorageKey.NotificationSettings, settings);
+  async setNotificationSettings(settings: Partial<INotificationSettings>) {
+    return this.storage.set(StorageKey.NotificationSettings, {
+      ...await this.getNotificationSettings(),
+      ...settings
+    });
   }
 
   async getNotificationSettings(): Promise<INotificationSettings> {
-    const settings = await this.storage.get(StorageKey.NotificationSettings);
-    return isEmpty(settings) ? DEFAULT_NOTIFICATION_SETTINGS : settings;
+    const settings = (await this.storage.get(StorageKey.NotificationSettings)) || {};
+    return {
+      ... DEFAULT_NOTIFICATION_SETTINGS,
+      ... settings
+    };
   }
 
   setNotifications(notifications: INotification[]) {
@@ -100,5 +111,11 @@ export class PersistenceService2 {
 
   getUserSettings(key: UserSettingsKey) {
     return this.storage.get(StorageKey.ViewSettingsPrefix + key);
+  }
+
+  async resetUserSettings() {
+    for (let key in UserSettingsKey) {
+      await this.setUserSettings(UserSettingsKey[key] as UserSettingsKey, false);
+    }
   }
 }

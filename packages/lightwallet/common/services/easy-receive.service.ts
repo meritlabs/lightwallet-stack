@@ -12,6 +12,7 @@ import { RateService } from '@merit/common/services/rate.service';
 import { accessWallet, WalletService } from '@merit/common/services/wallet.service';
 import { Address, crypto, HDPrivateKey, HDPublicKey, PrivateKey, PublicKey, Script, Transaction } from 'bitcore-lib';
 import { Subject } from 'rxjs/Subject';
+import { AlertService } from "@merit/common/services/alert.service";
 
 @Injectable()
 export class EasyReceiveService {
@@ -23,7 +24,9 @@ export class EasyReceiveService {
     private mwcService: MWCService,
     private ledger: LedgerService,
     private rateService: RateService,
-    private walletService: WalletService) {
+    private walletService: WalletService,
+    private alertCtrl: AlertService
+  ) {
   }
 
   private cancelEasySendSource = new Subject<EasyReceipt>();
