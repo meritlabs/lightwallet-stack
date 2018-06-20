@@ -1,17 +1,19 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Input, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { ProgressStatus, TaskSlug } from '@merit/common/models/goals';
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
-import { SetTaskStatus } from '@merit/common/reducers/goals.reducer';
-import { GoalsService } from '@merit/common/services/goals.service';
+import { selectStatusForTask, SetTaskStatus } from '@merit/common/reducers/goals.reducer';
+import { selectPrimaryWallet } from '@merit/common/reducers/interface-preferences.reducer';
+import { getLatestDefinedValue, getLatestValue } from '@merit/common/utils/observables';
 import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'history-list',
   templateUrl: './history-list.component.html',
   styleUrls: ['./history-list.component.sass'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.None
 })
 export class HistoryListComponent {
   private _transactions: IDisplayTransaction[];
@@ -30,20 +32,26 @@ export class HistoryListComponent {
   @Input() widget: boolean;
 
   viewPortItems: IDisplayTransaction[];
-  isInviteMined: boolean;
   taskSlug: TaskSlug = TaskSlug.MineInvite;
+  isInviteMined$: Observable<boolean> = this.store.select(selectStatusForTask(this.taskSlug))
+    .pipe(
+      map(status => status === ProgressStatus.Complete)
+    );
 
-  constructor(private store: Store<IRootAppState>,
-              private goalsService: GoalsService) {}
+  constructor(private store: Store<IRootAppState>) {}
 
-  private updateIsInviteMined() {
-    if (this.isInviteMined) {
+  private async updateIsInviteMined() {
+    if (await getLatestValue(this.isInviteMined$)) {
       return;
     }
 
-    this.isInviteMined = this.transactions.some((tx: IDisplayTransaction) => tx.action === TransactionAction.INVITE && tx.isCoinbase);
+    const primaryWallet = await getLatestDefinedValue(this.store.select(selectPrimaryWallet));
 
-    if (this.goalsService.getTaskStatus(this.taskSlug) !== ProgressStatus.Complete) {
+    if (this.transactions.some((tx: IDisplayTransaction) =>
+      tx.action === TransactionAction.INVITE &&
+      tx.isCoinbase &&
+      tx.walletId === primaryWallet
+    )) {
       this.store.dispatch(new SetTaskStatus(this.taskSlug, ProgressStatus.Complete));
     }
   }

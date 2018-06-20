@@ -1,19 +1,18 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { IFullGoal, IFullTask, ProgressStatus, TaskSlug } from '@merit/common/models/goals';
 import { IRootAppState } from '@merit/common/reducers';
-import { Store } from '@ngrx/store';
+import { selectGoalSettings, SetTaskStatus } from '@merit/common/reducers/goals.reducer';
 import { GoalsService } from '@merit/common/services/goals.service';
-import { GoalSlug, TaskSlug, ProgressStatus, IFullGoal, ITask } from '@merit/common/models/goals';
-import { SetTaskStatus } from '@merit/common/reducers/goals.reducer';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+import { filter, map } from 'rxjs/operators';
 
 @Component({
   selector: 'task-confirm',
   templateUrl: './task-confirm.component.html',
-  styleUrls: ['./task-confirm.component.sass'],
+  styleUrls: ['./task-confirm.component.sass']
 })
 export class TaskConfirmComponent implements OnInit {
-  constructor(private store: Store<IRootAppState>,
-              private goalsService: GoalsService) {}
-
   @Input()
   taskSlug: TaskSlug;
 
@@ -23,7 +22,7 @@ export class TaskConfirmComponent implements OnInit {
   set isDone(val: boolean) {
     this._isDone = Boolean(val);
 
-    if (this._isDone && this.taskSlug in TaskSlug) {
+    if (this._isDone) {
       this.finishTask();
     }
   }
@@ -35,20 +34,28 @@ export class TaskConfirmComponent implements OnInit {
   @Input()
   arrow: string;
 
-  trackerSettings: boolean;
+  trackerEnabled$: Observable<boolean> = this.store.select(selectGoalSettings)
+    .pipe(
+      filter(settings => !!settings),
+      map(settings => settings.isSetupTrackerEnabled)
+    );
 
   goal: IFullGoal;
-  task: ITask;
+  task: IFullTask;
+
+  constructor(private store: Store<IRootAppState>,
+              private goalsService: GoalsService) {}
 
   ngOnInit() {
     this.goal = this.goalsService.getGoal(
       this.goalsService.getGoalForTask(this.taskSlug)
     );
-    this.task = this.goalsService.getTask(this.taskSlug);
+
+    this.task = this.goalsService.getFullTask(this.taskSlug);
   }
 
   finishTask() {
-    if (this.taskSlug in TaskSlug) {
+    if (this.goalsService.getTaskStatus(this.taskSlug) !== ProgressStatus.Complete) {
       this.store.dispatch(new SetTaskStatus(this.taskSlug, ProgressStatus.Complete));
     }
   }

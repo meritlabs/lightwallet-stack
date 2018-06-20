@@ -1,4 +1,4 @@
-<ng-container *ngIf="trackerSettings && task && task.status !== 2">
+<ng-container *ngIf="(trackerEnabled$ | async) && task && task.status !== 2 && !isDone">
   <div class="taskConfirm" [ngClass]="{'arrow': arrow, 'arrow-left': arrow  === 'left', 'arrow-right': arrow === 'right', 'arrow-topRight': arrow === 'topRight', 'arrow-top': arrow === 'top', 'arrow-bottom': arrow === 'bottom'}">
     <div class="icon">
       <merit-icon name="setup"></merit-icon>

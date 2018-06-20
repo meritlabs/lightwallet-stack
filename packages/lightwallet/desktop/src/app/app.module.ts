@@ -42,7 +42,7 @@ export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
 }
 
-export function loadConfigs(profileService: ProfileService, store: Store<IRootAppState>) {
+export function loadConfigs(profileService: ProfileService, store: Store<IRootAppState>, goalsService: GoalsService) {
   return async () => {
     const authorized = Boolean(await profileService.isAuthorized());
 
@@ -52,6 +52,8 @@ export function loadConfigs(profileService: ProfileService, store: Store<IRootAp
         authorized,
       })
     );
+
+    await goalsService.loadGoals();
   };
 }
 
@@ -103,7 +105,7 @@ export function getProviders() {
     {
       provide: APP_INITIALIZER,
       useFactory: loadConfigs,
-      deps: [ProfileService, Store],
+      deps: [ProfileService, Store, GoalsService],
       multi: true,
     },
     {

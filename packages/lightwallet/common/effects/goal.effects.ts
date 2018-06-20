@@ -24,7 +24,7 @@ export class GoalEffects {
       debounceTime(500),
       switchMap(() => fromPromise(this.goalsService.getProgress())),
       map((progress: IFullProgress) =>
-        new UpdateGoalsProgressAction(progress)
+        new UpdateGoalsProgressAction(progress, this.goalsService.statusByTask)
       )
     );
 
