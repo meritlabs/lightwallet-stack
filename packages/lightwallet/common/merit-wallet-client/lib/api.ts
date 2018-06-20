@@ -2770,6 +2770,11 @@ export class API {
     return this._doGetRequest(`/v1/community/rank`);
   }
 
+  async getCommunityRanks(addresses) {
+    $.checkState(this.credentials);
+    return this._doPostRequest(`/v1/community/ranks`, {addresses: addresses});
+  }
+
   async getCommunityLeaderboard(limit: number) {
     $.checkState(this.credentials);
     return this._doGetRequest(`/v1/community/leaderboard?limit=`+limit);

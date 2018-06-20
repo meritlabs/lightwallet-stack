@@ -4537,7 +4537,16 @@ WalletService.prototype.getCommunityRank = async function(cb) {
     const addressStrs = _.map(addresses, 'address');
 
     try {
-        let result = await  localMeritDaemon.getCommunityRank(addressStrs);
+        let result = await localMeritDaemon.getCommunityRank(addressStrs);
+        return cb(null, result);
+    } catch (e) {
+        return cb(e);
+    }
+};
+
+WalletService.prototype.getCommunityRanks = async function(addresses, cb) {
+    try {
+        let result = await localMeritDaemon.getCommunityRank(addresses);
         return cb(null, result);
     } catch (e) {
         return cb(e);
