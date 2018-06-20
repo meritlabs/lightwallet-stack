@@ -12,7 +12,7 @@ import { GoalsService } from '@merit/common/services/goals.service';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { debounceTime, map, switchMap } from 'rxjs/operators';
+import { debounceTime, map, switchMap, tap } from 'rxjs/operators';
 
 @Injectable()
 export class GoalEffects {

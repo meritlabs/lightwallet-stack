@@ -6,14 +6,14 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IFullGoal, IFullProgress, ProgressStatus } from '@merit/common/models/goals';
 import { IRootAppState } from '@merit/common/reducers';
 import { SaveGoalSettingsAction, selectGoalSettings, selectGoalsProgress } from '@merit/common/reducers/goals.reducer';
-import { SetPrimaryWalletAction } from '@merit/common/reducers/interface-preferences.reducer';
+import { selectPrimaryWallet, SetPrimaryWalletAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
-import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { getLatestValue } from '@merit/common/utils/observables';
 import { Store } from '@ngrx/store';
 
 import { Observable } from 'rxjs/Observable';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-wallet-setup-list',
@@ -50,26 +50,16 @@ export class WalletSetupListView implements OnInit {
     isSetupTrackerEnabled: false
   });
 
-  wallets: DisplayWallet[];
-  selectedWallet: DisplayWallet;
-  isConfirmed: boolean;
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
+  selectedWallet$: Observable<DisplayWallet> = this.store.select(selectPrimaryWallet);
+
+  isConfirmed$: Observable<boolean> = this.selectedWallet$
+    .pipe(
+      filter(wallet => !!wallet),
+      map((wallet: DisplayWallet) => wallet.confirmed)
+    );
 
   async ngOnInit() {
-    let primaryWallet = await this.persistenceService2.getUserSettings(UserSettingsKey.primaryWalletID);
-
-    const wallets = await getLatestValue(this.store.select(selectWallets), wallets => wallets.length > 0);
-
-    this.wallets = wallets.filter((wallet: DisplayWallet) => wallet.confirmed);
-
-    wallets.forEach((wallet: DisplayWallet) => {
-      if (!primaryWallet && !wallet.confirmed) {
-        this.selectedWallet = wallet;
-      } else if (wallet.id === primaryWallet) {
-        this.selectedWallet = wallet;
-        this.isConfirmed = wallet.confirmed;
-      }
-    });
-
     this.trackerSettings = await getLatestValue(this.store.select(selectGoalSettings), settings => !!settings);
 
     this.formData.get('isSetupTrackerEnabled').setValue(this.trackerSettings.isSetupTrackerEnabled, { emitEvent: false });
@@ -82,8 +72,7 @@ export class WalletSetupListView implements OnInit {
   }
 
   async selectWallet(wallet: DisplayWallet) {
-    this.selectedWallet = wallet;
-    this.store.dispatch(new SetPrimaryWalletAction(wallet.id));
+    this.store.dispatch(new SetPrimaryWalletAction(wallet));
   }
 
   refresh() {
