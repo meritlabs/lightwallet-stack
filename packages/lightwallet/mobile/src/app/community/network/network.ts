@@ -41,10 +41,27 @@ export class NetworkView {
     wallets: []
   };
 
+  rankData: {
+    totalAnv: number,
+    totalProbability: number,
+    bestRank: number,
+    bestPercentile: number,
+    percentileStr: string
+  } = {
+    totalAnv: 0,
+    totalProbability: 0,
+    bestRank: 0,
+    bestPercentile: 0,
+    percentileStr: '',
+    estimateStr: ''
+  };
+
   activeUnlockRequests: number;
   availableInvites: number;
   pendingInvites: number;
   shareButtonAvailable: boolean;
+
+  REWARDS_PER_BLOCK: number = 5;
 
   constructor(
     private toastCtrl: ToastControllerService,
@@ -80,12 +97,13 @@ export class NetworkView {
     refresher.complete();
   }
 
+
   private async refreshData() {
     this.refreshing = true;
     const refreshCommunity = async () => {
       this.network = await this.profileService.refreshCommunityInfo();
     };
-    await Promise.all([refreshCommunity(), this.loadRequestsInfo()]);
+    await Promise.all([refreshCommunity(), this.loadRankingInfo(), this.loadRequestsInfo()]);
 
     this.availableInvites = this.wallets.reduce((number, w) => {
       return number + w.availableInvites;
@@ -103,6 +121,42 @@ export class NetworkView {
 
   notifyCopy() {
     this.toastCtrl.success('Copied to clipboard');
+  }
+  private async loadRankingInfo() {
+    this.wallets = await this.profileService.getWallets();
+
+    let rankData = {
+      totalAnv: 0,
+      totalProbability: 0,
+      bestRank: 0,
+      bestPercentile: 0,
+      percentileStr: '',
+      estimateStr: ''
+    };
+
+    let ranks = (await this.wallets[0].getCommunityRanks(this.wallets.map(w => w.getRootAddress().toString()))).ranks;
+    ranks.forEach(walletRank => {
+      rankData.totalAnv += walletRank.anv;
+      rankData.totalProbability += walletRank.anvpercent;
+      if (!rankData.bestRank || rankData.bestRank > walletRank.rank) rankData.bestRank = walletRank.rank;
+      if (!rankData.bestPercentile || rankData.bestPercentile > walletRank.percentile) rankData.bestPercentile = walletRank.percentile;
+    });
+
+    rankData.percentileStr = (rankData.bestPercentile > 20)
+      ? 'top '+Math.max(Math.round(100 - rankData.bestPercentile), 1)+'%'
+      : 'bottom '+Math.max(Math.round(rankData.bestPercentile),1)+'%';
+
+    const estimateMinutesPerReward =1/(rankData.totalProbability*this.REWARDS_PER_BLOCK);
+
+    if (estimateMinutesPerReward < 120) {
+      rankData.estimateStr = `Every ${Math.round(estimateMinutesPerReward)}min`
+    } else if (estimateMinutesPerReward < 2880) {
+      rankData.estimateStr = `Every ${ Math.round(estimateMinutesPerReward/60)}hrs`
+    } else {
+      rankData.estimateStr = `Every ${ Math.round(estimateMinutesPerReward/1440)}days`
+    }
+
+    this.rankData = rankData;
   }
 
   private async loadCommunityInfo() {
