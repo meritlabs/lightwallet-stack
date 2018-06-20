@@ -8,6 +8,7 @@ import { FeeService } from '@merit/common/services/fee.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { accessWallet } from '@merit/common/services/wallet.service';
 import { Address, HDPrivateKey, PrivateKey, Script } from 'bitcore-lib';
+import { AlertService } from '@merit/common/services/alert.service';
 
 @Injectable()
 export class EasySendService {
@@ -18,7 +19,8 @@ export class EasySendService {
     private feeService: FeeService,
     private persistenceService: PersistenceService,
     @Optional() private socialSharing: SocialSharing,
-    private addressService: AddressService) {}
+    private addressService: AddressService,
+    private alertCtrl: AlertService) {}
 
   @accessWallet
   async createEasySendScriptHash(wallet: MeritWalletClient, password?: string): Promise<EasySend> {
