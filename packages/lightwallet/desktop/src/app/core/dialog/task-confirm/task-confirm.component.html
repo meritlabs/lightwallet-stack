@@ -1,16 +1,16 @@
-<ng-container *ngIf="trackerSettings && task && task?.status !== 2">
+<ng-container *ngIf="(trackerEnabled$ | async) && task && task.status !== 2 && !isDone">
   <div class="taskConfirm" [ngClass]="{'arrow': arrow, 'arrow-left': arrow  === 'left', 'arrow-right': arrow === 'right', 'arrow-topRight': arrow === 'topRight', 'arrow-top': arrow === 'top', 'arrow-bottom': arrow === 'bottom'}">
     <div class="icon">
       <merit-icon name="setup"></merit-icon>
     </div>
     <div class="details">
       <div class="details_title">
-        <p (click)="action(goal.name)">
-          {{task?.name}}
+        <p>
+          {{task.name}}
         </p>
       </div>
       <div class="details_description">
-        {{task?.description}}
+        {{task.description}}
       </div>
     </div>
     <div class="done" (click)="finishTask()" *ngIf="isDone === null">

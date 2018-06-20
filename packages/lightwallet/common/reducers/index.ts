@@ -1,17 +1,17 @@
 import { appReducer, IAppState } from '@merit/common/reducers/app.reducer';
-import { walletsReducer, IWalletsState } from '@merit/common/reducers/wallets.reducer';
-import { ITransactionsState, transactionsReducer } from '@merit/common/reducers/transactions.reducer';
+import { goalsReducer, IGoalsState } from '@merit/common/reducers/goals.reducer';
+import { IInterfaceState, interfaceReducer } from '@merit/common/reducers/interface-preferences.reducer';
 import { INotificationsState, notificationsReducer } from '@merit/common/reducers/notifications.reducer';
-import { IAchievementsState, AchievementsReducer } from '@merit/common/reducers/achivement.reducer';
-import { IInterfaceState, InterfaceReducer } from '@merit/common/reducers/interface-preferences.reducer';
+import { ITransactionsState, transactionsReducer } from '@merit/common/reducers/transactions.reducer';
+import { IWalletsState, walletsReducer } from '@merit/common/reducers/wallets.reducer';
 
 export interface IRootAppState {
   app: IAppState;
   wallets: IWalletsState;
   transactions: ITransactionsState;
   notifications: INotificationsState;
-  achievements: IAchievementsState;
   interface: IInterfaceState;
+  goals: IGoalsState;
 }
 
 export const reducer = {
@@ -19,6 +19,6 @@ export const reducer = {
   app: appReducer,
   transactions: transactionsReducer,
   notifications: notificationsReducer,
-  achievements: AchievementsReducer,
-  interface: InterfaceReducer,
+  interface: interfaceReducer,
+  goals: goalsReducer,
 };

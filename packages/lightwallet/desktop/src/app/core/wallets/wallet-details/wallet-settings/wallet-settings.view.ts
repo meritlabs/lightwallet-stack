@@ -3,16 +3,17 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
+import { selectPrimaryWallet, SetPrimaryWalletAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { DeleteWalletAction, selectWalletById, UpdateOneWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { WalletService } from '@merit/common/services/wallet.service';
+import { getLatestValue } from '@merit/common/utils/observables';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { debounceTime, filter, switchMap } from 'rxjs/operators';
-import { interfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 
 @Component({
   selector: 'view-wallet-settings',
@@ -142,8 +143,7 @@ export class WalletSettingsView implements OnInit, OnDestroy {
     private passwordPromptCtrl: PasswordPromptController,
     private confirmDialogCtrl: ConfirmDialogControllerService,
     private router: Router,
-    private toastCtrl: ToastControllerService,
-    private interfacePreferencesService: interfacePreferencesService
+    private toastCtrl: ToastControllerService
   ) {}
 
   ngOnInit() {
@@ -249,7 +249,10 @@ export class WalletSettingsView implements OnInit, OnDestroy {
           }
 
           this.store.dispatch(new DeleteWalletAction(this.wallet.id));
-          this.interfacePreferencesService.setPrimaryWallet(null);
+          const primaryWallet = await getLatestValue(this.store.select(selectPrimaryWallet));
+          if (this.wallet.id == primaryWallet) {
+            this.store.dispatch(new SetPrimaryWalletAction(null));
+          }
           this.router.navigateByUrl('/wallets');
         } catch (err) {
           this.toastCtrl.error(err);

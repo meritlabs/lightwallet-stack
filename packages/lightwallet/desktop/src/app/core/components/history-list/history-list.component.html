@@ -3,8 +3,7 @@
 </ng-container>
 <ng-template #loaded>
   <div class="container--inner">
-    <app-task-confirm [achvName]="'Fast Starter'" [goalName]="'Mine an invite'" [isDone]="isInviteMined"></app-task-confirm>
-    {{completeInviteMinigTask()}}
+    <task-confirm [taskSlug]="taskSlug" [isDone]="isInviteMined$ | async"></task-confirm>
   </div>
   <ng-container *ngIf="transactions?.length; else noItems">
     <virtual-scroll [items]="transactions" (update)="viewPortItems = $event">

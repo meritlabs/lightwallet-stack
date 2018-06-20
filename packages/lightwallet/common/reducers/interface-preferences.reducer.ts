@@ -1,4 +1,4 @@
-import { Action } from '@ngrx/store';
+import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 
 const DEFAULT_STATE = {
   isShareDialogDisplayed: false,
@@ -10,14 +10,14 @@ export interface IInterfaceState {
   primaryWallet: string;
 }
 
-export function InterfaceReducer(state: IInterfaceState = DEFAULT_STATE, action: InterfaceAction) {
+export function interfaceReducer(state: IInterfaceState = DEFAULT_STATE, action: InterfaceAction) {
   switch (action.type) {
-    case InterfaceAction.InterfaceState:
+    case InterfaceActionType.SetShareDialog:
       return {
         ...state,
         isShareDialogDisplayed: action.isShareDialogDisplayed,
       };
-    case InterfaceAction.primaryWallet:
+    case InterfaceActionType.SetPrimaryWallet:
       return {
         ...state,
         primaryWallet: action.primaryWallet,
@@ -27,29 +27,26 @@ export function InterfaceReducer(state: IInterfaceState = DEFAULT_STATE, action:
   }
 }
 
-export namespace InterfaceAction {
-  export const InterfaceState = 'InterfaceState';
-  export const primaryWallet = 'primaryWallet';
-}
-
-export interface SetShareDialogAction extends Action {
-  isShareDialogDisplayed: boolean;
+export enum InterfaceActionType {
+  SetShareDialog = '[Interface] Set share dialog',
+  SetPrimaryWallet = '[Interface] Set primary wallet',
+  RefreshPrimaryWallet = '[Interface] Refresh primary wallet',
 }
 
 export class SetShareDialogAction implements Action {
-  readonly type = InterfaceAction.InterfaceState;
+  readonly type = InterfaceActionType.SetShareDialog;
 
   constructor(public isShareDialogDisplayed: boolean) {}
 }
 
-export interface setPrimaryWallet extends Action {
-  primaryWallet: string;
-}
-
-export class setPrimaryWallet implements Action {
-  readonly type = InterfaceAction.primaryWallet;
+export class SetPrimaryWalletAction implements Action {
+  readonly type = InterfaceActionType.SetPrimaryWallet;
 
   constructor(public primaryWallet: string) {}
 }
 
-export type InterfaceAction = SetShareDialogAction & setPrimaryWallet;
+export type InterfaceAction = SetShareDialogAction & SetPrimaryWalletAction;
+
+export const selectInterfacePreferences = createFeatureSelector<IInterfaceState>('interface');
+export const selectPrimaryWallet = createSelector(selectInterfacePreferences, state => state.primaryWallet);
+export const selectShareDialogState = createSelector(selectInterfacePreferences, state => state.isShareDialogDisplayed);
