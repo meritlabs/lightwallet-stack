@@ -1,51 +1,62 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { IFullGoal, IFullTask, ProgressStatus, TaskSlug } from '@merit/common/models/goals';
 import { IRootAppState } from '@merit/common/reducers';
+import { selectGoalSettings, SetTaskStatus } from '@merit/common/reducers/goals.reducer';
+import { GoalsService } from '@merit/common/services/goals.service';
 import { Store } from '@ngrx/store';
-
 import { Observable } from 'rxjs/Observable';
-
-import { Achievements, Achievement } from '@merit/common/models/achievement';
-import { achievementsService } from '@merit/common/services/achievements.service';
-import { AchievementTask } from '@merit/common/utils/achievements.const';
+import { filter, map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-task-confirm',
+  selector: 'task-confirm',
   templateUrl: './task-confirm.component.html',
-  styleUrls: ['./task-confirm.component.sass'],
+  styleUrls: ['./task-confirm.component.sass']
 })
 export class TaskConfirmComponent implements OnInit {
-  constructor(private store: Store<IRootAppState>, private achievementsService: achievementsService) {}
+  @Input()
+  taskSlug: TaskSlug;
 
-  @Input() goalName: string;
-  @Input() achvName: string;
-  @Input() isDone: boolean;
-  @Input() arrow: string;
-  trackerSettings: boolean = false;
-  achv: any;
-  task: any;
+  private _isDone: boolean;
 
-  async ngOnInit() {
-    await this.store.select('achievements').subscribe(res => {
-      this.trackerSettings = res.settings.isSetupTrackerEnabled;
-      this.achv = res.achievements.filter((item: any) => item.name === this.achvName)[0];
-      if (this.achv) this.task = this.achv.conditions.filter((item: any) => item.name === this.goalName)[0];
-    });
-  }
-  ngOnChanges(changes: SimpleChanges) {
-    if (
-      this.isDone &&
-      (this.goalName === AchievementTask.InviteFriends ||
-        this.goalName === AchievementTask.ConfirmInviteRequest ||
-        this.goalName === AchievementTask.GetInviteRequest ||
-        this.goalName === AchievementTask.MineInvite)
-    ) {
+  @Input()
+  set isDone(val: boolean) {
+    this._isDone = Boolean(val);
+
+    if (this._isDone) {
       this.finishTask();
     }
   }
 
+  get isDone() {
+    return this._isDone;
+  }
+
+  @Input()
+  arrow: string;
+
+  trackerEnabled$: Observable<boolean> = this.store.select(selectGoalSettings)
+    .pipe(
+      filter(settings => !!settings),
+      map(settings => settings.isSetupTrackerEnabled)
+    );
+
+  goal: IFullGoal;
+  task: IFullTask;
+
+  constructor(private store: Store<IRootAppState>,
+              private goalsService: GoalsService) {}
+
+  ngOnInit() {
+    this.goal = this.goalsService.getGoal(
+      this.goalsService.getGoalForTask(this.taskSlug)
+    );
+
+    this.task = this.goalsService.getFullTask(this.taskSlug);
+  }
+
   finishTask() {
-    if (this.achv) {
-      this.achievementsService.updateGoal(this.achv.id, this.task.slug);
+    if (this.goalsService.getTaskStatus(this.taskSlug) !== ProgressStatus.Complete) {
+      this.store.dispatch(new SetTaskStatus(this.taskSlug, ProgressStatus.Complete));
     }
   }
 }

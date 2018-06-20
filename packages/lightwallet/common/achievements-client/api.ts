@@ -20,19 +20,25 @@ export class MeritAchivementClient {
 
   public onAuthenticationError: any;
 
-  constructor(opts: MeritAchivementOptions) {
+  constructor(opts: MeritAchivementOptions, private token?: string) {
+    opts = opts || {};
     this.baseUrl = opts.baseUrl || ENV.achievementApi;
     this.request = opts.request || request;
 
     this.log = Logger.getInstance();
   }
 
+  setToken(token: string) {
+    this.token = token;
+  }
+
   setOnAuthenticationError(cb: any) {
     this.onAuthenticationError = cb;
   }
 
-  static fromObj(obj) {
-    let client = new this({
+  static fromObj(obj: any) {
+    obj = obj || {};
+    const client = new MeritAchivementClient({
       baseUrl: obj.baseUrl || ENV.achievementApi,
     });
 
@@ -43,12 +49,12 @@ export class MeritAchivementClient {
     return this._doPostRequest('/sessions');
   }
 
-  getData(token, url) {
-    return this._doGetRequest(url, token);
+  getData(url) {
+    return this._doGetRequest(url, this.token);
   }
 
-  setData(url, args, token) {
-    return this._doPostRequest(url, args, token);
+  setData(url, args) {
+    return this._doPostRequest(url, args, this.token);
   }
 
   /**
@@ -56,10 +62,17 @@ export class MeritAchivementClient {
    *
    * @param {Object} str - The serialized JSON created with #export
    */
-  import(str: string): any {
+  import(obj: any): any {
     try {
-      let credentials = Credentials.fromObj(JSON.parse(str));
-      this.credentials = credentials;
+      if (typeof obj === 'string') {
+        obj = JSON.parse(obj);
+      }
+
+      if (Array.isArray(obj)) {
+        obj = obj[0];
+      }
+
+      this.credentials = Credentials.fromObj(obj);
     } catch (ex) {
       throw MWCErrors.INVALID_BACKUP;
     }

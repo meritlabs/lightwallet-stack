@@ -7,16 +7,20 @@ import { IonicStorageModule } from '@ionic/storage';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { CommonProvidersModule } from '@merit/common/common-providers.module';
 import { AppEffects } from '@merit/common/effects/app.effects';
+import { GoalEffects } from '@merit/common/effects/goal.effects';
+import { InterfacePreferencesEffects } from '@merit/common/effects/interface-preferences.effects';
 import { NotificationEffects } from '@merit/common/effects/notification.effects';
 import { TransactionEffects } from '@merit/common/effects/transaction.effects';
 import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { IRootAppState, reducer } from '@merit/common/reducers';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
 import { AlertService } from '@merit/common/services/alert.service';
+import { GoalsService } from '@merit/common/services/goals.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { WebPushNotificationsService } from '@merit/common/services/web-push-notifications.service';
+import { getLatestValue } from '@merit/common/utils/observables';
 import { DOMController } from '@merit/desktop/app/components/dom.controller';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { DashboardGuard } from '@merit/desktop/app/guards/dashboard.guard';
@@ -38,9 +42,9 @@ export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
 }
 
-export function loadConfigs(profileService: ProfileService, store: Store<IRootAppState>) {
+export function loadConfigs(profileService: ProfileService, store: Store<IRootAppState>, goalsService: GoalsService) {
   return async () => {
-    const authorized = await profileService.isAuthorized();
+    const authorized = Boolean(await profileService.isAuthorized());
 
     store.dispatch(
       new UpdateAppAction({
@@ -48,6 +52,8 @@ export function loadConfigs(profileService: ProfileService, store: Store<IRootAp
         authorized,
       })
     );
+
+    await goalsService.loadGoals();
   };
 }
 
@@ -83,7 +89,14 @@ export function getProviders() {
     CommonPipesModule,
     StoreModule.forRoot(reducer),
     ReactiveFormsModule,
-    EffectsModule.forRoot([AppEffects, WalletEffects, TransactionEffects, NotificationEffects]),
+    EffectsModule.forRoot([
+      AppEffects,
+      WalletEffects,
+      TransactionEffects,
+      NotificationEffects,
+      GoalEffects,
+      InterfacePreferencesEffects
+    ]),
     SharedComponentsModule.forRoot(),
     Ng4LoadingSpinnerModule.forRoot(),
   ],
@@ -92,7 +105,7 @@ export function getProviders() {
     {
       provide: APP_INITIALIZER,
       useFactory: loadConfigs,
-      deps: [ProfileService, Store],
+      deps: [ProfileService, Store, GoalsService],
       multi: true,
     },
     {

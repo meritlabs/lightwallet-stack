@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { TaskSlug } from '@merit/common/models/goals';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
 import {
@@ -15,7 +16,7 @@ import { ConfirmDialogControllerService } from '@merit/desktop/app/components/co
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 @Component({
   selector: 'view-invite-requests',
@@ -29,7 +30,14 @@ export class InviteRequestsView {
 
   sending: { [referralId: string]: boolean } = {};
   isInviteSent: boolean = false;
-  isPendingInvites: boolean;
+
+  receiveRequestTaskSlug: TaskSlug = TaskSlug.ReceiveInviteRequest;
+  confirmRequestTaskSlug: TaskSlug = TaskSlug.ConfirmInviteRequest;
+
+  isPendingInvites$: Observable<boolean> = this.inviteRequests$
+    .pipe(
+      map((inviteRequests) => inviteRequests.length > 0)
+    );
 
   constructor(
     private store: Store<IRootAppState>,
@@ -98,10 +106,5 @@ export class InviteRequestsView {
         this.sending[request.referralId] = false;
       }
     });
-  }
-  detectPendingInvite(invites) {
-    if (invites.length > 0) {
-      this.isPendingInvites = true;
-    }
   }
 }

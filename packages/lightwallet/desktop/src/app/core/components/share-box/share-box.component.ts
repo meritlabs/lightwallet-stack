@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { TaskSlug } from '@merit/common/models/goals';
 import { IRootAppState } from '@merit/common/reducers';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
@@ -33,6 +34,7 @@ export class ShareBoxComponent implements OnInit {
   shareAlias: string;
   shareLink: string;
   goalIsDone: boolean;
+  taskSlug: TaskSlug = TaskSlug.InviteFriends;
 
   shareTitle: string = 'Merit - digital currency for humans.';
   shareText: string = `Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth.\n Get wallet now, your activation code: `;

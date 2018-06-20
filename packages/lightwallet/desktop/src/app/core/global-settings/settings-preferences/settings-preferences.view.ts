@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
+import { SetPrimaryWalletAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { DeleteWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
@@ -18,7 +19,6 @@ import { isEmpty } from 'lodash';
 import 'rxjs/add/operator/toPromise';
 import { merge } from 'rxjs/observable/merge';
 import { debounceTime, filter, take, tap } from 'rxjs/operators';
-import { interfacePreferencesService } from '@merit/common/services/interface-preferences.service';
 
 declare const WEBPACK_CONFIG: any;
 
@@ -58,8 +58,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     private passwordPromptCtrl: PasswordPromptController,
     private profileService: ProfileService,
     private store: Store<IRootAppState>,
-    private router: Router,
-    private interfacePreferencesService: interfacePreferencesService
+    private router: Router
   ) {
     if (typeof WEBPACK_CONFIG !== 'undefined') {
       this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
@@ -159,8 +158,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
 
               this.persistenceService.setUserSettings(UserSettingsKey.GetStartedTips, false);
               this.persistenceService.setUserSettings(UserSettingsKey.recordPassphrase, false);
-              this.interfacePreferencesService.setPrimaryWallet(null);
-
+              this.store.dispatch(new SetPrimaryWalletAction(null));
               this.store.dispatch(new DeleteWalletAction(wallet.id));
             })
           );

@@ -1,61 +1,53 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Achievement } from '@merit/common/models/achievement';
-import { achievementsService } from '@merit/common/services/achievements.service';
 import { Router } from '@angular/router';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
-import { AchievementTask } from '@merit/common/utils/achievements.const';
+import { GoalsService } from '@merit/common/services/goals.service';
+import { TaskSlug, ProgressStatus, IFullGoal, GoalSlug } from '@merit/common/models/goals';
+import { SetTaskStatus } from '@merit/common/reducers/goals.reducer';
 
 @Component({
-  selector: 'app-task-preview',
+  selector: 'task-preview',
   templateUrl: './task-preview.component.html',
   styleUrls: ['./task-preview.component.sass'],
 })
 export class TaskPreviewComponent implements OnInit {
   constructor(
-    private achievementsService: achievementsService,
     private router: Router,
-    private store: Store<IRootAppState>
+    private store: Store<IRootAppState>,
+    private goalService: GoalsService
   ) {}
 
-  @Input() goal;
-  @Input() wallet;
-  @Input() isComplete;
+  @Input() goal: IFullGoal;
+  @Input() wallet: DisplayWallet;
+  @Input() isComplete: boolean;
 
   route: string;
   readinessBackground: string;
 
   async ngOnInit() {
-    this._completeWalletConfirmationGoal();
-    let toDo = this.goal.conditions.filter((item: any) => item.status === 0),
-      complete = this.goal.conditions.length - toDo.length,
-      total = this.goal.conditions.length,
+    const toDo = this.goal.tasks.filter((item: any) => item.status === ProgressStatus.Incomplete),
+      complete = this.goal.tasks.length - toDo.length,
+      total = this.goal.tasks.length,
       readiness = complete / total * 100;
+
     this.readinessBackground = `linear-gradient(to right, #74cd4f ${readiness}%, #555b7033 ${readiness}%)`;
   }
 
-  async _completeWalletConfirmationGoal() {
-    let isConfirmed: boolean = this.wallet.confirmed,
-      goal: any = this.goal;
-    if (isConfirmed && goal.name === 'Creator' && goal.status !== 1 && goal.version !== 0) {
-      await this.achievementsService.updateGoal(goal.id, 1);
-      await this.achievementsService.updateGoal(goal.id, 2);
-    }
-  }
-
-  action(val) {
-    switch (val) {
-      case AchievementTask.InviteFriends:
+  action(slug: TaskSlug) {
+    switch (slug) {
+      case TaskSlug.InviteFriends:
         this.store.dispatch(new SetShareDialogAction(true));
         return this.router.navigate(['/wallets']);
-      case AchievementTask.GetInviteRequest:
+      case TaskSlug.ReceiveInviteRequest:
         return this.router.navigate([`/invites/requests`]);
-      case AchievementTask.ConfirmInviteRequest:
+      case TaskSlug.ConfirmInviteRequest:
         return this.router.navigate([`/invites/requests`]);
-      case AchievementTask.MineInvite:
+      case TaskSlug.MineInvite:
         return this.router.navigate([`/history`]);
-      case AchievementTask.UnlockWallet:
+      case TaskSlug.UnlockWallet:
         return this.router.navigate([`/history`]);
       default:
         return this.router.navigate(['/wallets']);
