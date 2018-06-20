@@ -1,13 +1,14 @@
 import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 const DEFAULT_STATE = {
   isShareDialogDisplayed: false,
-  primaryWallet: '',
+  primaryWallet: null,
 };
 
 export interface IInterfaceState {
   isShareDialogDisplayed: boolean;
-  primaryWallet: string;
+  primaryWallet: DisplayWallet;
 }
 
 export function interfaceReducer(state: IInterfaceState = DEFAULT_STATE, action: InterfaceAction) {
@@ -42,7 +43,7 @@ export class SetShareDialogAction implements Action {
 export class SetPrimaryWalletAction implements Action {
   readonly type = InterfaceActionType.SetPrimaryWallet;
 
-  constructor(public primaryWallet: string) {}
+  constructor(public primaryWallet: DisplayWallet) {}
 }
 
 export type InterfaceAction = SetShareDialogAction & SetPrimaryWalletAction;

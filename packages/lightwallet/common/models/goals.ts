@@ -62,8 +62,8 @@ export interface IFullProgress extends IProgress {
 }
 
 export interface IGoalSettings {
-  id: string;
-  userId: string;
+  id?: string;
+  userId?: string;
   isSetupTrackerEnabled: boolean;
   isWelcomeDialogEnabled: boolean;
 }

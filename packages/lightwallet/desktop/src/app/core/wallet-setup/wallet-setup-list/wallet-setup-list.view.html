@@ -3,7 +3,7 @@
 </div>
 <div class="wallet-setup_wrap">
   <div class="wallet-setup_column">
-    <ng-container *ngIf="isConfirmed">
+    <ng-container *ngIf="isConfirmed$ | async">
       <div class="wallet-setup_preview wallet-setup_preview--settings">
         <div class="icon">
           <merit-icon name="setup"></merit-icon>
@@ -18,17 +18,19 @@
         </form>
       </div>
     </ng-container>
-    <ng-container *ngIf="wallets && wallets?.length > 1">
-      <div class="wallet-setup_preview wallet-setup_preview--settings">
-        <div class="selectBox">
-          <label class="ui-label global-settings__group__item__title">Set Wallet for achievements saving</label>
-          <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+    <ng-container *ngIf="wallets$ | async as wallets">
+      <ng-container *ngIf="wallets && wallets?.length > 1">
+        <div class="wallet-setup_preview wallet-setup_preview--settings">
+          <div class="selectBox">
+            <label class="ui-label global-settings__group__item__title">Set Wallet for achievements saving</label>
+            <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet$ | async" [input]="wallets" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+          </div>
         </div>
-      </div>
+      </ng-container>
     </ng-container>
   </div>
 </div>
-<ng-container *ngIf="selectedWallet; else noData">
+<ng-container *ngIf="selectedWallet$ as selectedWallet; else noData">
   <div class="wallet-setup_wrap">
 
     <div class="wallet-setup_column">
