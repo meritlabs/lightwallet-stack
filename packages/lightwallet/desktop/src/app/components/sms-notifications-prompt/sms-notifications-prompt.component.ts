@@ -43,7 +43,7 @@ export class SmsNotificationsPromptComponent implements IDynamicComponent {
   }
 
   async dismiss() {
-    await this.persistenceService.setViewSettings(UserSettingsKey.SmsNotificationsPrompt, true);
+    await this.persistenceService.setUserSettings(UserSettingsKey.SmsNotificationsPrompt, true);
 
     if (typeof this.destroy === 'function') {
       this.destroy();

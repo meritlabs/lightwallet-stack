@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { CommonDirectivesModule } from '@merit/common/common-directives.module';
 
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
@@ -50,6 +51,7 @@ export function getComponents() {
     CommonPipesModule,
     VirtualScrollModule,
     ClipModule,
+    CommonDirectivesModule
   ],
   declarations: getComponents(),
   exports: getComponents(),

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonDirectivesModule } from '@merit/common/common-directives.module';
 import { ToastControllerService as ToastControllerServiceBase } from '@merit/common/services/toast-controller.service';
 import { BackdropComponent } from '@merit/desktop/app/components/backdrop/backdrop.component';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
@@ -25,7 +26,6 @@ import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-
 import { UICheckboxComponent } from '@merit/desktop/app/components/ui-checkbox/ui-checkbox.component';
 import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/wallet-icon.component';
 import { ClipModule } from 'ng2-clip';
-import { GtagDirective } from '@merit/common/directives/gtag.directive';
 
 export function getComponents() {
   return [
@@ -45,7 +45,6 @@ export function getComponents() {
     IllustationsYourWayComponent,
     GlobalsendLinkPopupComponent,
     UICheckboxComponent,
-    GtagDirective,
     SmsNotificationsPromptComponent
   ];
 }
@@ -58,7 +57,13 @@ export function getComponents() {
     GlobalsendLinkPopupComponent,
     SmsNotificationsPromptComponent
   ],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ClipModule,
+    CommonDirectivesModule
+  ],
   declarations: getComponents(),
   exports: getComponents(),
 })
