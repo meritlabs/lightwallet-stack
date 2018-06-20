@@ -46,7 +46,8 @@ export class NetworkView {
     totalProbability: number,
     bestRank: number,
     bestPercentile: number,
-    percentileStr: string
+    percentileStr: string,
+    estimateStr: string
   } = {
     totalAnv: 0,
     totalProbability: 0,

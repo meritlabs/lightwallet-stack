@@ -56,7 +56,7 @@
         <div item-end class="details">{{ (network?.growthRewards || 0) | toMRT:8 }}</div>
     </ion-item>
 
-    <ion-item class="pending-unlock-requests">
+    <ion-item class="pending-unlock-requests" navPush="LeaderboardView">
         <ion-avatar item-start img-icon>
             <img src="assets/img/icons/star.svg" alt="">
             <ion-spinner color="primary" name="crescent" [hidden]="!refreshing"></ion-spinner>
@@ -64,7 +64,7 @@
         <ion-label>
           <h2>Community rank</h2>
         </ion-label>
-        <div item-end class="details" *ngIf="rankData.bestRank">
+        <div item-end class="details" *ngIf="rankData?.bestRank">
             {{rankData.bestRank}} ({{rankData.percentileStr}})
             <ion-icon name="ios-arrow-forward" class="arrow"></ion-icon>
         </div>
