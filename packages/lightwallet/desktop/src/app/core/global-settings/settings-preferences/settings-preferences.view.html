@@ -21,10 +21,7 @@
     <div class="global-settings__group__item sendMerit__form__group" *ngIf="nsc.emailNotificationsEnabled">
       <div class="global-settings__group__item__column ui-input-group">
         <label class="ui-label global-settings__group__item__title" for="email">Email address</label>
-        <input type="email" name="email" id="email"
-               class="ui-input ui-input--form ui-input--text"
-               formControlName="email"
-               placeholder="Enter your email address to receive notifications">
+        <input type="email" name="email" id="email" class="ui-input ui-input--form ui-input--text" formControlName="email" placeholder="Enter your email address to receive notifications">
         <div *ngIf="nsc.emailStatus$ | async as emailStatus">
           <div *ngIf="emailStatus == 'saving'">Saving...</div>
           <div *ngIf="emailStatus == 'saved'">Saved</div>
@@ -81,8 +78,7 @@
     </div>
     <div class="global-settings__group__item__column global-settings__group__item__column--30">
       <label class="ui-label global-settings__group__item__title
-        global-settings__group__item__title--link"
-             [routerLink]="['terms-of-use']">details</label>
+        global-settings__group__item__title--link" [routerLink]="['terms-of-use']">details</label>
     </div>
   </div>
   <div class="global-settings__group__item">
@@ -91,8 +87,7 @@
     </div>
     <div class="global-settings__group__item__column global-settings__group__item__column--30">
       <label class="ui-label global-settings__group__item__title
-        global-settings__group__item__title--link"
-             [routerLink]="['session-log']">details</label>
+        global-settings__group__item__title--link" [routerLink]="['session-log']">details</label>
     </div>
   </div>
 </div>

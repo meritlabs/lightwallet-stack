@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonDirectivesModule } from '@merit/common/common-directives.module';
 import { ToastControllerService as ToastControllerServiceBase } from '@merit/common/services/toast-controller.service';
 import { BackdropComponent } from '@merit/desktop/app/components/backdrop/backdrop.component';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
@@ -60,10 +61,11 @@ export function getComponents() {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ClipModule
+    ClipModule,
+    CommonDirectivesModule
   ],
   declarations: getComponents(),
-  exports: getComponents()
+  exports: getComponents(),
 })
 export class SharedComponentsModule {
   static forRoot(): ModuleWithProviders {
@@ -76,7 +78,7 @@ export class SharedComponentsModule {
         ConfirmDialogControllerService,
         GlobalsendLinkPopupController,
         SmsNotificationsPromptController
-      ]
+      ],
     };
   }
 }

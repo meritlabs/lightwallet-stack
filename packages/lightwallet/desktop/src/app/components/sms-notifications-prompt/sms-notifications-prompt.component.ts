@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
+import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { IDynamicComponent } from '@merit/desktop/app/components/dom.controller';
@@ -43,7 +43,7 @@ export class SmsNotificationsPromptComponent implements IDynamicComponent {
   }
 
   async dismiss() {
-    await this.persistenceService.setViewSettings(ViewSettingsKey.SmsNotificationsPrompt, true);
+    await this.persistenceService.setUserSettings(UserSettingsKey.SmsNotificationsPrompt, true);
 
     if (typeof this.destroy === 'function') {
       this.destroy();

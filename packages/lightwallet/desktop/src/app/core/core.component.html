@@ -4,7 +4,7 @@
 </ng-container>
 <ng-template #displayApp>
   <app-toolbar (shareActivate)="shareActivate(true)"></app-toolbar>
-  <app-share-box *ngIf="showShare" (dismiss)="shareActivate(false)"></app-share-box>
+  <app-share-box *ngIf="showShare$ | async"></app-share-box>
   <div class="container--fluid dashboard">
     <div class="dashboard__aside">
       <ul class="dashboard__aside__wrap">
@@ -15,7 +15,10 @@
             <span class="badge" *ngIf="badge > 0">{{ badge }}</span>
           </ng-container>
         </li>
-        <li class="dashboard__aside__item dashboard__aside__item--blue" (click)="shareActivate(true)">
+        <li class="dashboard__aside__item dashboard__aside__item--setup" [routerLink]="'/wallet-setup'">
+          <merit-icon name="setup"></merit-icon>Wallet Setup Progress
+        </li>
+        <li class="dashboard__aside__item dashboard__aside__item--blue" (click)="shareActivate()">
           <merit-icon name="share"></merit-icon> Share my invite
         </li>
       </ul>
@@ -40,4 +43,5 @@
       <router-outlet></router-outlet>
     </div>
   </div>
+  <app-welcome-to-setup-tracker *ngIf="isWelcomeDialogEnabled"></app-welcome-to-setup-tracker>
 </ng-template>

@@ -1,0 +1,74 @@
+<div class="wallet-setup_title title--primary">
+  <p>Wallet setup tracker</p>
+</div>
+<div class="wallet-setup_wrap">
+  <div class="wallet-setup_column">
+    <ng-container *ngIf="isConfirmed">
+      <div class="wallet-setup_preview wallet-setup_preview--settings">
+        <div class="icon">
+          <merit-icon name="setup"></merit-icon>
+        </div>
+        <form [formGroup]="formData" class="details_settings">
+          <div class="details_title">
+            <p>{{ formData.get('isSetupTrackerEnabled').value ? 'Disable' : 'Enable' }} Setup Tracker</p>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <ui-checkbox formControlName="isSetupTrackerEnabled"></ui-checkbox>
+          </div>
+        </form>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="wallets && wallets?.length > 1">
+      <div class="wallet-setup_preview wallet-setup_preview--settings">
+        <div class="selectBox">
+          <label class="ui-label global-settings__group__item__title">Set Wallet for achievements saving</label>
+          <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+<ng-container *ngIf="selectedWallet; else noData">
+  <div class="wallet-setup_wrap">
+
+    <div class="wallet-setup_column">
+      <div class="title title--toDo">
+        <merit-icon name="setup"></merit-icon>
+        <p>To do</p>
+      </div>
+
+      <ng-container *ngIf="toDo$ | async as toDo">
+        <ng-container *ngIf="toDo?.length; else toDoIsEmpty">
+          <task-preview *ngFor="let goal of toDo" [wallet]="selectedWallet" [goal]="goal"></task-preview>
+        </ng-container>
+        <ng-template #toDoIsEmpty>
+          <div class="completeNotification">
+            Congratulations! All current task are complete!
+            <br> New achievements will available soon!
+          </div>
+        </ng-template>
+      </ng-container>
+
+    </div>
+
+    <ng-container *ngIf="done$ | async as done">
+      <ng-container *ngIf="done?.length">
+        <div class="wallet-setup_column">
+          <div class="title title--complete">
+            <merit-icon name="setup"></merit-icon>
+            <p>Complete</p>
+          </div>
+          <task-preview *ngFor="let goal of done" [isComplete]="true" [wallet]="selectedWallet" [goal]="goal"></task-preview>
+        </div>
+      </ng-container>
+    </ng-container>
+
+  </div>
+</ng-container>
+<ng-template #noData>
+  <div class="refresh">
+    Nothing displayed?
+    <br>
+    <button class="ui-button ui-button--sm ui-button--blue" (click)="refresh()">REFRESH NOW</button>
+  </div>
+</ng-template>
