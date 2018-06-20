@@ -78,7 +78,7 @@ export class NetworkView {
   async ionViewDidLoad() {
     this.loading = true;
     this.activeUnlockRequests = this.unlockRequestService.activeRequestsNumber;
-    await this.loadCommunityInfo();
+    await Promise.all([this.loadRankingInfo(), this.loadCommunityInfo()]);
     this.loading = false;
 
     this.events.subscribe('Remote:IncomingTx', () => {
