@@ -1,0 +1,12 @@
+view-leaderboard {
+  .your-wallet, .your-wallet ion-label {
+    color: color($colors, primary) !important;
+  }
+
+  .loading {
+    margin-top: 100px;
+    text-align: center;
+    font-size: 17px;
+    color: #9da6b7;
+  }
+}
