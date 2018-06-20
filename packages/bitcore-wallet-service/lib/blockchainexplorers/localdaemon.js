@@ -101,5 +101,10 @@ LocalDaemon.prototype.getCommunityRank = function(addresses) {
 };
 
 
+LocalDaemon.prototype.getCommunityLeaderboard = function(limit) {
+    return this.node.getCommunityLeaderboard(limit);
+};
+
+
 
 module.exports = LocalDaemon;

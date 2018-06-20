@@ -2770,6 +2770,11 @@ export class API {
     return this._doGetRequest(`/v1/community/rank`);
   }
 
+  async getCommunityLeaderboard(limit: number) {
+    $.checkState(this.credentials);
+    return this._doGetRequest(`/v1/community/leaderboard?limit=`+limit);
+  }
+
   private encryptGlobalSend(easySend: EasySend) {
     return this._encryptMessage(JSON.stringify(easySend), this.credentials.personalEncryptingKey);
   }
