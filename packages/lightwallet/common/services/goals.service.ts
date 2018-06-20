@@ -54,6 +54,11 @@ const DEFAULT_PROGRESS: IProgress = {
   ]
 };
 
+const DEFAULT_SETTINGS: IGoalSettings = {
+  isSetupTrackerEnabled: true,
+  isWelcomeDialogEnabled: true
+};
+
 @Injectable()
 export class GoalsService {
   private token: string;
@@ -73,32 +78,28 @@ export class GoalsService {
   constructor(private profileService: ProfileService,
               private store: Store<IRootAppState>,
               private http: HttpClient) {
+    this.loadGoals();
+
     this.store.select(selectPrimaryWallet)
-      .subscribe(async (primaryWalletId: string) => {
+      .subscribe(async (primaryWallet: DisplayWallet) => {
         this.token = undefined;
+        this.selectedWallet = primaryWallet;
 
-        if (primaryWalletId) {
-          await this.getToken(primaryWalletId);
-
-          const wallets = await getLatestValue(this.store.select(selectWallets), wallets => wallets.length > 0);
-          this.selectedWallet = wallets.find(wallet => wallet.id == primaryWalletId);
-
-          this.store.dispatch(new RefreshGoalsProgressAction());
-          this.store.dispatch(new RefreshGoalSettingsAction());
-
-          if (!this.goals) {
-            this.loadGoals();
-          }
+        if (primaryWallet && primaryWallet.confirmed) {
+          await this.getToken(primaryWallet);
         }
+
+        this.store.dispatch(new RefreshGoalsProgressAction());
+        this.store.dispatch(new RefreshGoalSettingsAction());
       });
   }
 
-  async getToken(primaryWalletId: string) {
+  async getToken(primaryWallet: DisplayWallet) {
     if (this.token) {
       return this.token;
     }
 
-    const profile = await this.getProfile(primaryWalletId);
+    const profile = await this.getProfile(primaryWallet);
     this.setClient(profile);
     const { token } = await this.client.login();
 
@@ -125,6 +126,7 @@ export class GoalsService {
         await this.setTaskStatus(TaskSlug.UnlockWallet, ProgressStatus.Complete);
         return this.getProgress();
       }
+
     }
 
     return this.getFullProgress(progress);
@@ -214,8 +216,15 @@ export class GoalsService {
     return this.tasksMap[taskSlug];
   }
 
-  getSettings(): Promise<IGoalSettings> {
-    return this.client.getData('/settings/');
+  async getSettings(): Promise<IGoalSettings> {
+    try {
+      const settings: IGoalSettings = await this.client.getData('/settings/');
+      return settings;
+    } catch (err) {
+      console.log('Unable to get settings', err);
+    }
+
+    return DEFAULT_SETTINGS;
   }
 
   async setSettings(settings: IGoalSettings) {
@@ -258,22 +267,16 @@ export class GoalsService {
     this.client = MeritAchivementClient.fromObj(profile);
   }
 
-  private async getProfile(primaryWallet: string) {
+  private async getProfile(wallet: DisplayWallet) {
     const profile = await this.profileService.loadProfile();
     const loginProfile = {
       wallets: [],
       credentials: []
     };
 
-    const wallets = await this.profileService.getWallets();
-
-    if (wallets && wallets.length) {
-      const wallet = wallets.find(wallet => wallet.id == primaryWallet);
-
-      if (wallet) {
-        loginProfile.credentials.push(wallet.credentials);
-        return loginProfile;
-      }
+    if (wallet) {
+      loginProfile.credentials.push(wallet.credentials);
+      return loginProfile;
     }
 
     return profile;
