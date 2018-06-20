@@ -21,7 +21,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
-import { getLatestDefinedValue, getLatestValue } from '@merit/common/utils/observables';
+import { getLatestDefinedValue } from '@merit/common/utils/observables';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
@@ -99,7 +99,7 @@ export class CoreView implements OnInit, AfterViewInit {
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   recordPassphrase: boolean = true;
   isWelcomeDialogEnabled: boolean = false;
-  showShare: boolean;
+  showShare$: Observable<boolean> = this.store.select(selectShareDialogState);
 
   constructor(
     private pushNotificationsService: PushNotificationsService,
@@ -125,8 +125,6 @@ export class CoreView implements OnInit, AfterViewInit {
 
     const { isWelcomeDialogEnabled } = await getLatestDefinedValue(this.store.select(selectGoalSettings));
     this.isWelcomeDialogEnabled = isWelcomeDialogEnabled;
-
-    this.showShare = await getLatestValue(this.store.select(selectShareDialogState));
 
     this.recordPassphrase = Boolean(await this.persistenceService2.getUserSettings(UserSettingsKey.recordPassphrase));
 

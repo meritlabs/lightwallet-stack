@@ -33,10 +33,6 @@ export enum InterfaceActionType {
   RefreshPrimaryWallet = '[Interface] Refresh primary wallet',
 }
 
-export interface SetShareDialogAction extends Action {
-  isShareDialogDisplayed: boolean;
-}
-
 export class SetShareDialogAction implements Action {
   readonly type = InterfaceActionType.SetShareDialog;
 

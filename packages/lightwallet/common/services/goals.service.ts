@@ -1,31 +1,38 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { RefreshGoalSettingsAction, RefreshGoalsProgressAction } from '@merit/common/reducers/goals.reducer';
-import { selectWalletById, selectWallets } from '@merit/common/reducers/wallets.reducer';
-import { PersistenceService } from '@merit/common/services/persistence.service';
-import { IRootAppState } from '@merit/common/reducers';
-import { getLatestValue } from '@merit/common/utils/observables';
-import { Store } from '@ngrx/store';
-import { selectPrimaryWallet } from '@merit/common/reducers/interface-preferences.reducer';
-import { take } from 'rxjs/operators';
-import { ProfileService } from '@merit/common/services/profile.service';
+import { ENV } from '@app/env';
 import { MeritAchivementClient } from '@merit/common/achievements-client/api';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 import {
   GoalSlug,
   IFullGoal,
-  IFullProgress, IFullTask,
-  IGoal, IGoalSettings,
+  IFullProgress,
+  IFullTask,
+  IGoal,
+  IGoalSettings,
   IProgress,
   ITask,
   ITaskProgress,
-  TaskSlug, ProgressStatus
+  ProgressStatus,
+  TaskSlug
 } from '@merit/common/models/goals';
+import { IRootAppState } from '@merit/common/reducers';
+import {
+  RefreshGoalSettingsAction,
+  RefreshGoalsProgressAction,
+  StatusByTask
+} from '@merit/common/reducers/goals.reducer';
+import { selectPrimaryWallet } from '@merit/common/reducers/interface-preferences.reducer';
+import { selectWallets } from '@merit/common/reducers/wallets.reducer';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { getLatestValue } from '@merit/common/utils/observables';
+import { Store } from '@ngrx/store';
 
-const GoalData : { [goalSlug: string]: Partial<IFullGoal> } = {
+const GoalData: { [goalSlug: string]: Partial<IFullGoal> } = {
   [GoalSlug.Creator]: {
     route: 'unlock',
     title: 'Wallet unlock',
-    linkTitle: 'Unlock',
+    linkTitle: 'Unlock'
   },
   [GoalSlug.FastStarter]: {
     route: '',
@@ -64,7 +71,8 @@ export class GoalsService {
   statusByTask: { [taskSlug: string]: ProgressStatus } = {};
 
   constructor(private profileService: ProfileService,
-              private store: Store<IRootAppState>) {
+              private store: Store<IRootAppState>,
+              private http: HttpClient) {
     this.store.select(selectPrimaryWallet)
       .subscribe(async (primaryWalletId: string) => {
         this.token = undefined;
@@ -125,7 +133,7 @@ export class GoalsService {
   getFullProgress(progress: IProgress): IFullProgress {
     const goalsMap: { [goalSlug: string]: IFullTask[]; } = {};
 
-    this.statusByTask = {};
+    const statusByTask: StatusByTask = {};
 
     for (let task in TaskSlug) {
       if (!progress.tasks.find(t => t.slug === TaskSlug[task])) {
@@ -139,13 +147,13 @@ export class GoalsService {
     progress.tasks.forEach((task: ITaskProgress) => {
       const goalSlug: GoalSlug = this.getGoalForTask(task.slug);
 
-      this.statusByTask[task.slug] = task.status;
+      statusByTask[task.slug] = task.status;
 
       if (!goalsMap[goalSlug]) {
         goalsMap[goalSlug] = [];
       }
 
-      goalsMap[goalSlug].push(this.getFullTask(task));
+      goalsMap[goalSlug].push({ ...this.tasksMap[task.slug], ...task });
     });
 
     const goals: IFullGoal[] = [];
@@ -166,7 +174,9 @@ export class GoalsService {
       goals.push(goal);
     }
 
-    return this.progress =  {
+    this.statusByTask = statusByTask;
+
+    return this.progress = {
       ...progress,
       goals
     };
@@ -183,8 +193,8 @@ export class GoalsService {
     return this.statusByTask[taskSlug];
   }
 
-  getFullTask(taskProgress: ITaskProgress): IFullTask {
-    return { ...this.tasksMap[taskProgress.slug], ...taskProgress };
+  getFullTask(taskSlug: TaskSlug): IFullTask {
+    return { ...this.tasksMap[taskSlug], status: this.getTaskStatus(taskSlug) };
   }
 
   getGoal(goalSlug: GoalSlug): IFullGoal {
@@ -214,7 +224,7 @@ export class GoalsService {
   }
 
   async loadGoals() {
-    this.goals = await this.client.getData('/goals/');
+    this.goals = await this.http.get(ENV.achievementApi + '/goals/').toPromise() as IGoal[];
 
     // Update GoalsByTask
     this.goalsByTask = {};

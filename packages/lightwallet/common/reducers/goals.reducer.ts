@@ -1,16 +1,20 @@
-import { IFullProgress, IGoalSettings, TaskSlug, ProgressStatus } from '@merit/common/models/goals';
+import { IFullProgress, IGoalSettings, ProgressStatus, TaskSlug } from '@merit/common/models/goals';
 import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 
 export interface IGoalsState {
   loading: boolean;
   progress: IFullProgress;
   settings: IGoalSettings;
+  statusByTask: StatusByTask;
 }
+
+export type StatusByTask = { [taskSlug: string]: ProgressStatus };
 
 const DEFAULT_STATE: IGoalsState = {
   loading: true,
   progress: null,
-  settings: null
+  settings: null,
+  statusByTask: {}
 };
 
 export enum GoalsActionType {
@@ -36,7 +40,7 @@ export class RefreshGoalsProgressAction implements Action {
 export class UpdateGoalsProgressAction implements Action {
   type = GoalsActionType.UpdateProgress;
 
-  constructor(public progress: IFullProgress) {}
+  constructor(public progress: IFullProgress, public statusByTask: StatusByTask) {}
 }
 
 export class RefreshGoalSettingsAction implements Action {
@@ -89,7 +93,8 @@ export function goalsReducer(state: IGoalsState = DEFAULT_STATE, action: GoalAct
       return {
         ...state,
         loading: false,
-        progress: action.progress
+        progress: action.progress,
+        statusByTask: action.statusByTask
       };
 
     case GoalsActionType.UpdateSettings:
@@ -107,3 +112,5 @@ export const selectGoalsState = createFeatureSelector<IGoalsState>('goals');
 export const selectGoalsLoading = createSelector(selectGoalsState, state => state.loading);
 export const selectGoalsProgress = createSelector(selectGoalsState, state => state.progress);
 export const selectGoalSettings = createSelector(selectGoalsState, state => state.settings);
+export const selectStatusByTask = createSelector(selectGoalsState, state => state.statusByTask);
+export const selectStatusForTask = (taskSlug: TaskSlug) => createSelector(selectStatusByTask, status => status[taskSlug]);

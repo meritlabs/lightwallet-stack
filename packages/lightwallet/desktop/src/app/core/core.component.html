@@ -4,7 +4,7 @@
 </ng-container>
 <ng-template #displayApp>
   <app-toolbar (shareActivate)="shareActivate(true)"></app-toolbar>
-  <app-share-box *ngIf="showShare"></app-share-box>
+  <app-share-box *ngIf="showShare$ | async"></app-share-box>
   <div class="container--fluid dashboard">
     <div class="dashboard__aside">
       <ul class="dashboard__aside__wrap">
