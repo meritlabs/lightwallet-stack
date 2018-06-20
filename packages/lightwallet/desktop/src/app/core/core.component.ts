@@ -103,7 +103,7 @@ export class CoreView implements OnInit, AfterViewInit {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   recordPassphrase: boolean = true;
-  isWelcomeDialogEnabled: boolean = false;
+  isWelcomeDialogEnabled: boolean;
   showShare$: Observable<boolean> = this.store.select(selectShareDialogState);
 
   constructor(
@@ -123,13 +123,6 @@ export class CoreView implements OnInit, AfterViewInit {
   ) {}
 
   async ngOnInit() {
-    await this.store.select(selectGoalsLoading)
-      .pipe(
-        filter(loading => !loading),
-        take(1)
-      )
-      .toPromise();
-
     const { isWelcomeDialogEnabled } = await getLatestDefinedValue(this.store.select(selectGoalSettings));
     this.isWelcomeDialogEnabled = isWelcomeDialogEnabled;
 
@@ -166,6 +159,10 @@ export class CoreView implements OnInit, AfterViewInit {
 
   onGuideDismiss() {
     return this.persistenceService2.setUserSettings(UserSettingsKey.recordPassphrase, (this.recordPassphrase = true));
+  }
+
+  onWelcomeSetupTrackerClose() {
+    this.isWelcomeDialogEnabled = false;
   }
 
   shareActivate() {

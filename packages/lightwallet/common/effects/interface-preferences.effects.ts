@@ -12,7 +12,6 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { of } from 'rxjs/observable/of';
 import { filter, map, skip, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
@@ -22,7 +21,7 @@ export class InterfacePreferencesEffects {
     .pipe(
       ofType(InterfaceActionType.SetPrimaryWallet),
       skip(1), // the init function emits this action, we can skip the first one
-      tap((action: SetPrimaryWalletAction) => this.persistenceService.setUserSettings(UserSettingsKey.primaryWalletID, action.primaryWallet))
+      tap((action: SetPrimaryWalletAction) => this.persistenceService.setUserSettings(UserSettingsKey.primaryWalletID, action.primaryWallet.id))
     );
 
   @Effect()
@@ -35,7 +34,9 @@ export class InterfacePreferencesEffects {
           const confirmedWallet: DisplayWallet = wallets.find(wallet => wallet.confirmed);
 
           if (confirmedWallet) {
-            primaryWallet = confirmedWallet.id;
+            primaryWallet = confirmedWallet;
+          } else {
+            primaryWallet = wallets[0];
           }
         }
 
@@ -47,24 +48,29 @@ export class InterfacePreferencesEffects {
   init$: Observable<any> = fromPromise(this.persistenceService.getUserSettings(UserSettingsKey.primaryWalletID))
     .pipe(
       switchMap((walletId: string) => {
-        if (walletId) {
-          return of(walletId);
-        }
-
         return this.store.select(selectWallets)
           .pipe(
             filter(wallets => wallets.length > 0),
             take(1),
             map((wallets: DisplayWallet[]) => {
-              const confirmedWallet: DisplayWallet = wallets.find(wallet => wallet.confirmed);
+              let wallet: DisplayWallet;
 
-              if (confirmedWallet) {
-                return confirmedWallet.id;
+              if (walletId) {
+                wallet = wallets.find(wallet => wallet.id === walletId);
+              } else {
+                wallet = wallets.find(wallet => wallet.confirmed);
               }
+
+              if (!wallet) {
+                wallet = wallets[0];
+              }
+
+              // return any wallet if we don't have a confirmed one
+              return wallet;
             })
           );
       }),
-      map((walletId: string) => new SetPrimaryWalletAction(walletId))
+      map((wallet: DisplayWallet) => new SetPrimaryWalletAction(wallet))
     );
 
   constructor(private actions$: Actions,
