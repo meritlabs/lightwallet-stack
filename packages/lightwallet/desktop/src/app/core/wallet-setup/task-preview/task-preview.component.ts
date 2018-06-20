@@ -28,24 +28,12 @@ export class TaskPreviewComponent implements OnInit {
   readinessBackground: string;
 
   async ngOnInit() {
-    this.completeWalletConfirmationGoal();
-
     const toDo = this.goal.tasks.filter((item: any) => item.status === ProgressStatus.Incomplete),
       complete = this.goal.tasks.length - toDo.length,
       total = this.goal.tasks.length,
       readiness = complete / total * 100;
 
     this.readinessBackground = `linear-gradient(to right, #74cd4f ${readiness}%, #555b7033 ${readiness}%)`;
-  }
-
-  private completeWalletConfirmationGoal() {
-    const isConfirmed: boolean = this.wallet.confirmed,
-      goal: any = this.goal;
-
-    if (isConfirmed && goal.slug === GoalSlug.Creator && goal.status !== ProgressStatus.Complete) {
-      this.store.dispatch(new SetTaskStatus(TaskSlug.CreateWallet, ProgressStatus.Complete));
-      this.store.dispatch(new SetTaskStatus(TaskSlug.UnlockWallet, ProgressStatus.Complete));
-    }
   }
 
   action(slug: TaskSlug) {

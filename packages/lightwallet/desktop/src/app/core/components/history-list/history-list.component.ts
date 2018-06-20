@@ -35,7 +35,7 @@ export class HistoryListComponent {
   taskSlug: TaskSlug = TaskSlug.MineInvite;
   isInviteMined$: Observable<boolean> = this.store.select(selectStatusForTask(this.taskSlug))
     .pipe(
-      map(status => status === ProgressStatus.Complete)
+      map(status => status !== ProgressStatus.Incomplete)
     );
 
   constructor(private store: Store<IRootAppState>) {}
