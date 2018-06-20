@@ -1,0 +1,39 @@
+<ion-header no-border>
+    <ion-navbar color="primary">
+        <ion-title smaller-title>Leaderboard</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content no-bounce>
+
+    <div  *ngIf="loading" class="loading">
+        Loading leaderboard...
+    </div>
+
+    <div *ngIf="!loading">
+        <ion-list >
+            <ion-item *ngFor="let address of displayLeaderboard">
+                <b>{{address.rank}}.</b>
+                Anonymous
+                <div item-end>
+                    {{address.anv}}
+                </div>
+            </ion-item>
+        </ion-list>
+
+        <ion-item class="your-wallet" *ngFor="let row of ranks" >
+            <b>{{row.rank}}.</b>
+            {{row.walletName}}
+            <div item-end>
+                {{row.anv}}
+            </div>
+        </ion-item>
+    </div>
+
+
+    <ion-infinite-scroll (ionInfinite)="showMore($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
+</ion-content>
