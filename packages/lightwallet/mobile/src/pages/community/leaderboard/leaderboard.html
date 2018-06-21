@@ -3,6 +3,12 @@
         <ion-title smaller-title>Leaderboard</ion-title>
     </ion-navbar>
 
+    <div class="title">
+        <ion-item>
+            <b>Rank</b>
+            <div item-end>ANV</div>
+        </ion-item>
+    </div>
 </ion-header>
 
 <ion-content no-bounce>
@@ -12,12 +18,7 @@
     </div>
 
     <div *ngIf="!loading">
-        <div class="title">
-            <ion-item>
-              <b>Rank</b>
-              <div item-end>ANV</div>
-            </ion-item>
-        </div>
+
 
         <ion-list class="main-list">
             <ion-item *ngFor="let address of displayLeaderboard" class="row" [class.own-wallet]="isOwnWallet(address)">
