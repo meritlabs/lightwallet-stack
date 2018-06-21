@@ -123,8 +123,10 @@ export class CoreView implements OnInit, AfterViewInit {
   ) {}
 
   async ngOnInit() {
-    const { isWelcomeDialogEnabled } = await getLatestDefinedValue(this.store.select(selectGoalSettings));
-    this.isWelcomeDialogEnabled = isWelcomeDialogEnabled;
+    getLatestDefinedValue(this.store.select(selectGoalSettings))
+      .then(({ isWelcomeDialogEnabled }) => {
+        this.isWelcomeDialogEnabled = isWelcomeDialogEnabled;
+      });
 
     this.recordPassphrase = Boolean(await this.persistenceService2.getUserSettings(UserSettingsKey.recordPassphrase));
 
