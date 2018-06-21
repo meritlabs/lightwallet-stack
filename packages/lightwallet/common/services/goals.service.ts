@@ -65,11 +65,11 @@ export class GoalsService {
   private client: MeritAchivementClient;
   private selectedWallet: DisplayWallet;
 
-  goalsByTask: { [taskSlug: string]: GoalSlug; };
-  goals: IGoal[];
+  goalsByTask: { [taskSlug: string]: GoalSlug; } = {};
+  goals: IGoal[] = [];
 
-  tasks: ITask[];
-  tasksMap: { [taskSlug: string]: ITask; };
+  tasks: ITask[] = [];
+  tasksMap: { [taskSlug: string]: ITask; } = {};
 
   progress: IFullProgress;
 
@@ -233,22 +233,26 @@ export class GoalsService {
   }
 
   async loadGoals() {
-    this.goals = await this.http.get(ENV.achievementApi + '/goals/').toPromise() as IGoal[];
+    try {
+      this.goals = await this.http.get(ENV.achievementApi + '/goals/').toPromise() as IGoal[];
 
-    // Update GoalsByTask
-    this.goalsByTask = {};
-    this.tasksMap = {};
+      // Update GoalsByTask
+      this.goalsByTask = {};
+      this.tasksMap = {};
 
-    if (!this.goals || !this.goals.length) {
-      return;
-    }
+      if (!this.goals || !this.goals.length) {
+        return;
+      }
 
-    this.goals.forEach((goal: IGoal) => {
-      goal.tasks.forEach((task: ITask) => {
-        this.goalsByTask[task.slug] = goal.slug;
-        this.tasksMap[task.slug] = task;
+      this.goals.forEach((goal: IGoal) => {
+        goal.tasks.forEach((task: ITask) => {
+          this.goalsByTask[task.slug] = goal.slug;
+          this.tasksMap[task.slug] = task;
+        });
       });
-    });
+    } catch (err) {
+      console.log('Error fetching goals', err);
+    }
   }
 
   getGoalForTask(taskSlug: TaskSlug): GoalSlug {
