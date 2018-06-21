@@ -40,4 +40,8 @@ view-leaderboard {
   .row:not(.own-wallet) .value {
       color: rgba(0,0,0,0.7);
   }
+
+  main-list {
+    margin-bottom: 0;
+  }
 }
