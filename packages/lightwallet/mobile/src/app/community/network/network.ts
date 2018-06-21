@@ -147,14 +147,14 @@ export class NetworkView {
       ? 'top '+Math.max(Math.round(100 - rankData.bestPercentile), 1)+'%'
       : 'bottom '+Math.max(Math.round(rankData.bestPercentile),1)+'%';
 
-    const estimateMinutesPerReward =1/(rankData.totalProbability*this.REWARDS_PER_BLOCK);
+    const estimateMinutesPerReward = 1/(rankData.totalProbability*this.REWARDS_PER_BLOCK);
 
     if (estimateMinutesPerReward < 120) {
-      rankData.estimateStr = `Every ${Math.round(estimateMinutesPerReward)}min`
+      rankData.estimateStr = `Every ${Math.ceil(estimateMinutesPerReward)}min`
     } else if (estimateMinutesPerReward < 2880) {
-      rankData.estimateStr = `Every ${ Math.round(estimateMinutesPerReward/60)}hrs`
+      rankData.estimateStr = `Every ${ Math.ceil(estimateMinutesPerReward/60)}hrs`
     } else {
-      rankData.estimateStr = `Every ${ Math.round(estimateMinutesPerReward/1440)}days`
+      rankData.estimateStr = `Every ${ Math.ceil(estimateMinutesPerReward/1440)}days`
     }
 
     this.rankData = rankData;
