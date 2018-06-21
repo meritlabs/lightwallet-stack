@@ -8,7 +8,7 @@ import { ENV } from '@app/env';
 @Component({
   selector: 'view-market-login',
   templateUrl: './market-login.view.html',
-  styleUrls: ['./market-login.view.sass']
+  styleUrls: ['./market-login.view.sass'],
 })
 export class MarketLoginView implements OnInit {
   error: boolean;
@@ -26,7 +26,6 @@ export class MarketLoginView implements OnInit {
 
     try {
       const authData = await MeritMarketClient.fromObj(profile).login();
-
 
       if (authData.token) {
         window.location.replace(`${ENV.marketUrl}?token=${encodeURIComponent(authData.token)}`);

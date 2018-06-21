@@ -40,7 +40,7 @@
           </div>
           <div class="inline-right">
             <div class="controls">
-              <p class="invites regular-blue-text">{{ wallet?.availableInvites || 0 }} Invites</p>
+              <p class="invites regular-blue-text">{{ wallet?.availableInvites || 0 }} Invites <span *ngIf="wallet.pendingInvites">(+{{wallet.pendingInvites}} pending)</span></p>
             </div>
             <merit-icon name="right-arrow"></merit-icon>
           </div>

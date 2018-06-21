@@ -39,6 +39,7 @@ export class DisplayWallet {
   @ClientProperty balanceHidden: boolean;
   @ClientProperty balance: any;
   @ClientProperty availableInvites: number;
+  @ClientProperty pendingInvites: number;
   @ClientProperty confirmed: boolean;
 
   referrerAddress: string;

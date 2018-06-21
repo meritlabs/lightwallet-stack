@@ -24,6 +24,8 @@ import { HistoryView } from './history/history.view';
 import { ReceiveView } from './receive/receive.view';
 import { SendView } from './send/send.view';
 import { WalletsView } from './wallets/wallets.view';
+import { WalletSetupView } from './wallet-setup/wallet-setup.view';
+import { WalletSetupListView } from './wallet-setup/wallet-setup-list/wallet-setup-list.view';
 
 const routes: Routes = [
   {
@@ -75,6 +77,11 @@ const routes: Routes = [
           { path: 'terms-of-use', component: SettingsTermsOfUseView },
           { path: 'session-log', component: SettingsSessionLogView },
         ],
+      },
+      {
+        path: 'wallet-setup',
+        component: WalletSetupView,
+        children: [{ path: '', component: WalletSetupListView }],
       },
       { path: '**', redirectTo: 'dashboard' },
     ],

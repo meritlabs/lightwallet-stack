@@ -80,7 +80,7 @@ export class TransactionEffects {
   }
 
   private async getWalletHistory(wallet: DisplayWallet): Promise<IDisplayTransaction[]> {
-    const walletHistory = await wallet.client.getTxHistory({ skip: 0, limit: 50, includeExtendedInfo: true });
+    const walletHistory = await wallet.client.getTxHistory({ includeExtendedInfo: true }); // TODO (ibby: add this and do infinite loading --> { skip: 0, limit: 50, includeExtendedInfo: true } )
     const easySends = await this.persistenceService.getEasySends();
     return formatWalletHistory(walletHistory, wallet.client, easySends, this.feeService);
   }
