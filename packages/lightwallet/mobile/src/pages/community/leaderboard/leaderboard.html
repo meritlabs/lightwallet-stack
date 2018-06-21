@@ -19,33 +19,31 @@
             </ion-item>
         </div>
 
-        <ion-list >
+        <ion-list class="main-list">
             <ion-item *ngFor="let address of displayLeaderboard" class="row" [class.own-wallet]="isOwnWallet(address)">
-                <b>{{address.rank}}. </b>
+                <b>{{address.rank}} </b>
                 {{address.alias ?  '@'+address.alias : 'Anonymous'}}
                 <div item-end class="value">
                     {{address.anv | toMRT:8:true}}
                 </div>
             </ion-item>
-        </ion-list>
-
-        <ion-list *ngIf="ownOutranked.length">
-            <ion-item class="own-wallet">
-                ...
-            </ion-item>
-            <ion-item class="row own-wallet" *ngFor="let row of ownOutranked" >
-                <b>{{row.rank}}. </b>
-                {{row.walletName}}
-                <div item-end  class="value">
-                    {{row.anv | toMRT:8:true}}
-                </div>
-            </ion-item>
+            <div  *ngIf="(offset >= LIST_LENGTH) && ownOutranked.length">
+                <ion-item>
+                    ...
+                </ion-item>
+                <ion-item *ngFor="let address of ownOutranked" class="row" [class.own-wallet]="isOwnWallet(address)">
+                    <b>{{address.rank}} </b>
+                    {{address.alias ?  '@'+address.alias : 'Anonymous'}}
+                    <div item-end class="value">
+                        {{address.anv | toMRT:8:true}}
+                    </div>
+                </ion-item>
+            </div>
         </ion-list>
 
     </div>
 
-
-    <ion-infinite-scroll (ionInfinite)="showMore($event)">
+    <ion-infinite-scroll (ionInfinite)="showMore($event)" *ngIf="offset < LIST_LENGTH">
         <ion-infinite-scroll-content></ion-infinite-scroll-content>
     </ion-infinite-scroll>
 
