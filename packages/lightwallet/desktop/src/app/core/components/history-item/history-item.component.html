@@ -23,8 +23,8 @@
     </ng-container>
   </div>
   <div class="details">
-      <div class="merit-amount" [class.credit]="isCredit" *ngIf="!tx.isInvite">
-          {{ tx.amountStr }} MRT
+      <div class="merit-amount" [class.credit]="isCredit">
+          {{ tx.isInvite? tx.amount + ' INV' : (tx.amount | toMRT) }}
           <small *ngIf="tx.alternativeAmountStr">({{ tx.alternativeAmountStr }})</small>
         </div>
       <span class="ui-tooltip ui-tooltip--awaiting" *ngIf="confirmationsExplanation">

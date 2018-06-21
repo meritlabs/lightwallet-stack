@@ -43,10 +43,10 @@
             Now you’re ready to send money with the world’s friendliest digital currency.
           </div>
         </div>
-        <div class="next_slide" (click)="stepGoTo()" onclick="gtag('event', 'UX Testing', { 'event_category': 'Testing', 'event_action': 'Click', 'event_label': '_Learn sending tour'})">
+        <div class="next_slide" (click)="stepGoTo()" gtag gtagEvent="UX Testing" gtagCategory="Testing" gtagAction="Click" gtagLabel="_Learn sending tour">
           {{ step === 3 ? 'Get Started!' : 'Next' }}
         </div>
-        <div class="skip_intro" (click)="skipIntro()" [hidden]="step === 3" onclick="gtag('event', 'UX Testing', { 'event_category': 'Testing', 'event_action': 'Click', 'event_label': '_Skip sending tour'})">Skip Intro</div>
+        <div class="skip_intro" (click)="skipIntro()" [hidden]="step === 3" gtag gtagEvent="UX Testing" gtagCategory="Testing" gtagAction="Click" gtagLabel="_Skip sending tour">Skip Intro</div>
       </div>
       <ul class="tour_steps">
         <li [ngClass]="{'active': step === 0}" (click)="stepGoTo(0)"></li>

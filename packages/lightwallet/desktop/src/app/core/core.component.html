@@ -18,7 +18,10 @@
                 <span class="badge" *ngIf="badge > 0">{{ badge }}</span>
               </ng-container>
             </li>
-            <li class="dashboard__aside__item dashboard__aside__item--blue" (click)="shareActivate(true)">
+            <li class="dashboard__aside__item dashboard__aside__item--setup" [routerLink]="'/wallet-setup'">
+              <merit-icon name="setup"></merit-icon>Wallet Setup Progress
+            </li>
+            <li class="dashboard__aside__item dashboard__aside__item--blue" (click)="shareActivate()">
               <merit-icon name="share"></merit-icon> Share my invite
             </li>
           </ul>
@@ -45,4 +48,5 @@
       </div>
     </div>
   </div>
+  <app-welcome-to-setup-tracker *ngIf="isWelcomeDialogEnabled" (close)="onWelcomeSetupTrackerClose()"></app-welcome-to-setup-tracker>
 </ng-template>
