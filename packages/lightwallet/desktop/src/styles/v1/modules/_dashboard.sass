@@ -2,7 +2,7 @@
   background: $dashboard-bg
   display: flex
   flex-flow: row wrap
-  height: 100vh
+  height: 100%
   overflow: hidden
   position: relative
   &__aside
@@ -59,7 +59,7 @@
 .dashboard
   &__main
     width: calc(100% - #{$dashboard-aside-width})
-    height: calc(100vh - #{$toolbar-height})
+    height: calc(100% - #{$toolbar-height})
     bottom: 0
     right: 0
     position: absolute
