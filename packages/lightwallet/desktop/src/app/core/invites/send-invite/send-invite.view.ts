@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { getEasySendURL } from '@merit/common/models/easy-send';
 import { SendMethodType } from '@merit/common/models/send-method';
@@ -11,10 +12,11 @@ import {
   selectWalletsWithInvites
 } from '@merit/common/reducers/wallets.reducer';
 import { AddressService } from '@merit/common/services/address.service';
+import { AlertService } from '@merit/common/services/alert.service';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MWCService } from '@merit/common/services/mwc.service';
-import { WalletService } from '@merit/common/services/wallet.service';
+import { accessWallet, WalletService } from '@merit/common/services/wallet.service';
 import { cleanAddress } from '@merit/common/utils/addresses';
 import { getSendMethodDestinationType } from '@merit/common/utils/destination';
 import { getShareLink } from '@merit/common/utils/url';
@@ -64,7 +66,8 @@ export class SendInviteView {
               private addressService: AddressService,
               private loader: Ng4LoadingSpinnerService,
               private easySendService: EasySendService,
-              private logger: LoggerService) {}
+              private logger: LoggerService,
+              private alertCtrl: AlertService) {}
 
   async ngOnInit() {
     const wallets: DisplayWallet[] = await this.wallets$.pipe(filter((wallets: DisplayWallet[]) => wallets.length > 0), take(1)).toPromise();
@@ -84,7 +87,8 @@ export class SendInviteView {
     ).subscribe();
   }
 
-  async sendInvite() {
+  @accessWallet
+  async sendInvite(wallet: MeritWalletClient) {
     this.easySendUrl = this.easySendDelivered = this.success = void 0;
     this.loader.show();
 
