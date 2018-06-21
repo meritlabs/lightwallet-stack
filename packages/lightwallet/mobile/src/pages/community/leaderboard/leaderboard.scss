@@ -1,6 +1,33 @@
 view-leaderboard {
-  .your-wallet, .your-wallet ion-label {
+  .own-wallet, .own-wallet ion-label {
     color: color($colors, primary) !important;
+    .value {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+  }
+
+  .row {
+    b {
+      margin-right: 5px;
+    }
+    .value {
+      font-size: 12px;
+    }
+  }
+
+  .title {
+    ion-item, .item-inner, ion-label {
+      background: color($colors, primary);
+      color: white;
+      margin: 0;
+      padding-top: 0px;
+      padding-bottom: 0;
+      div[item-end] {
+        font-size: 13px;
+        font-weight: 600;
+      }
+    }
   }
 
   .loading {
@@ -8,5 +35,9 @@ view-leaderboard {
     text-align: center;
     font-size: 17px;
     color: #9da6b7;
+  }
+
+  .row:not(.own-wallet) .value {
+      color: rgba(0,0,0,0.7);
   }
 }

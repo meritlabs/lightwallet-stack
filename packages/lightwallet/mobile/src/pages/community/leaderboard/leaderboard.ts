@@ -24,6 +24,7 @@ export class LeaderboardView {
   }>;
 
   ranks: Array<any>;
+  ownOutranked: Array<any>;
 
   offset: number = 0;
   readonly LIMIT: number = 10;
@@ -51,7 +52,8 @@ export class LeaderboardView {
 
   async getLeaderboard() {
     this.leaderboard = (await this.wallets[0].getCommunityLeaderboard(100)).ranks;
-    this.displayLeaderboard = this.leaderboard.slice(this.offset, this.LIMIT);
+    this.displayLeaderboard = this.leaderboard.slice(0, this.offset + this.LIMIT);
+    this.ownOutranked = this.ranks.filter(r => r.rank > this.LIMIT);
   }
 
   async getRankInfo() {
@@ -64,9 +66,18 @@ export class LeaderboardView {
     this.ranks = ranks;
   }
 
-  showMore() {
+  showMore(infiniter) {
     this.offset += this.LIMIT;
-    this.displayLeaderboard = this.leaderboard.slice(this.offset, this.LIMIT);
+    this.displayLeaderboard = this.leaderboard.slice(0, this.offset + this.LIMIT);
+    this.ownOutranked = this.ranks.filter(r => r.rank > this.LIMIT);
+    infiniter.complete();
+  }
+
+  isOwnWallet(r) {
+    return !!this.wallets.some(w => {
+      if (w.rootAlias) return w.rootAlias == r.alias;
+      return w.rootAddress == r.address;
+    });
   }
 
 }
