@@ -21,7 +21,7 @@
 </message-box>
 
 <div class="container--inner">
-  <form [formGroup]="formData" (ngSubmit)="sendInvite()">
+  <form [formGroup]="formData" (ngSubmit)="sendInvite(selectedWallet.client)">
     <div class="sendMerit__form__group">
       <label for="" class="ui-label">Send from</label>
       <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async"
