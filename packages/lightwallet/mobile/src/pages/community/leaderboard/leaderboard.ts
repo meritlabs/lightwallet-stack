@@ -59,9 +59,8 @@ export class LeaderboardView {
 
   async getLeaderboard() {
     this.leaderboard = (await this.wallets[0].getCommunityLeaderboard(this.LIST_LENGTH)).ranks;
-
     this.displayLeaderboard = this.leaderboard.slice(0, this.offset + this.LIMIT);
-    this.ownOutranked = this.ranks.filter(r => r.rank > this.LIMIT);
+    this.ownOutranked = this.ranks.filter(r => r.rank > this.offset);
   }
 
   async getRankInfo() {
@@ -71,8 +70,6 @@ export class LeaderboardView {
       rankInfo.alias = w.rootAlias;
       rankInfo.address = w.rootAddress;
       ranks.push(rankInfo);
-    });
-
     this.ranks = ranks;
   }
 
