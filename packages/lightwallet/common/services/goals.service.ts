@@ -82,6 +82,7 @@ export class GoalsService {
 
     this.store.select(selectPrimaryWallet)
       .subscribe(async (primaryWallet: DisplayWallet) => {
+        console.log('Got a new primary wallet', primaryWallet);
         this.token = undefined;
         this.selectedWallet = primaryWallet;
 

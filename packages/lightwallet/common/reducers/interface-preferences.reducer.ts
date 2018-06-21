@@ -46,7 +46,11 @@ export class SetPrimaryWalletAction implements Action {
   constructor(public primaryWallet: DisplayWallet) {}
 }
 
-export type InterfaceAction = SetShareDialogAction & SetPrimaryWalletAction;
+export class RefreshPrimaryWalletAction implements Action {
+  readonly type = InterfaceActionType.RefreshPrimaryWallet;
+}
+
+export type InterfaceAction = SetShareDialogAction & SetPrimaryWalletAction & RefreshPrimaryWalletAction;
 
 export const selectInterfacePreferences = createFeatureSelector<IInterfaceState>('interface');
 export const selectPrimaryWallet = createSelector(selectInterfacePreferences, state => state.primaryWallet);

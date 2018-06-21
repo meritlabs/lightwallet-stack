@@ -3,10 +3,11 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import {
   InterfaceActionType,
+  RefreshPrimaryWalletAction,
   selectPrimaryWallet,
   SetPrimaryWalletAction
 } from '@merit/common/reducers/interface-preferences.reducer';
-import { selectWallets } from '@merit/common/reducers/wallets.reducer';
+import { selectWallets, UpdateOneWalletAction, WalletsActionType } from '@merit/common/reducers/wallets.reducer';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -22,6 +23,19 @@ export class InterfacePreferencesEffects {
       ofType(InterfaceActionType.SetPrimaryWallet),
       skip(1), // the init function emits this action, we can skip the first one
       tap((action: SetPrimaryWalletAction) => this.persistenceService.setUserSettings(UserSettingsKey.primaryWalletID, action.primaryWallet.id))
+    );
+
+  @Effect()
+  watchUnconfirmedWallet: Observable<any> = this.store.select(selectPrimaryWallet)
+    .pipe(
+      filter((wallet: DisplayWallet) => !!wallet && !wallet.confirmed),
+      switchMap((primaryWallet: DisplayWallet) =>
+        this.actions$.pipe(
+          ofType(WalletsActionType.UpdateOne),
+          filter((action: UpdateOneWalletAction) => action.wallet.id === primaryWallet.id && action.wallet.confirmed),
+          map(() => new RefreshPrimaryWalletAction())
+        )
+      )
     );
 
   @Effect()
