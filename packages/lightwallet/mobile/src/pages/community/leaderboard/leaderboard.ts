@@ -82,10 +82,7 @@ export class LeaderboardView {
   }
 
   isOwnWallet(r) {
-    let res = !!this.ranks.some(w => {
-      if (w.alias) return w.alias == r.alias;
-      if (w.address) return w.address == r.address;
-    });
+    let res = !!this.ranks.some(w => w.address == r.address);
     return res;
   }
 
