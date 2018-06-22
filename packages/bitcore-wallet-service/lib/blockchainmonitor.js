@@ -278,13 +278,15 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
   // Let's roll up any vouts that go to the same address.
   // TODO: Probably a more efficient way to do the below.
   //
-  var filteredOutputs = [];
+  const filteredOutputs = [];
+
   _.forEach(outs, out => {
-    var oIndex = _.findIndex(filteredOutputs, {
+    const oIndex = _.findIndex(filteredOutputs, {
       address: out.address
     });
+
     if (filteredOutputs[oIndex]) {
-      var accumulatedOutput = filteredOutputs[oIndex];
+      const accumulatedOutput = filteredOutputs[oIndex];
       accumulatedOutput.amount += out.amount;
       filteredOutputs.splice(oIndex, 1, accumulatedOutput);
     } else {
@@ -314,9 +316,10 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
             return next(null);
           }
 
-          var walletId = address.walletId;
+          const walletId = address.walletId;
 
           let notificationType = '';
+
           if (data.isCoinbase) {
             notificationType = 'IncomingCoinbase';
           } else if (data.isInvite) {
@@ -335,16 +338,19 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
             } ]`,
           );
 
-          var fromTs = Date.now() - 24 * 3600 * 1000;
+          const fromTs = Date.now() - 24 * 3600 * 1000;
           self.storage.fetchNotifications(walletId, null, fromTs, function (err, notifications) {
             if (err) return next(err);
-            var alreadyNotified = _.some(notifications, function (n) {
-              return n.type == notificationType && n.data && n.data.txid == data.txid;
-            });
+
+            const alreadyNotified = _.some(notifications, n =>
+              n.type == notificationType && n.data && n.data.txid == data.txid
+            );
+
             if (alreadyNotified) {
               log.info(`The incoming tx ${data.txid} was already notified`);
               return next(null);
             }
+
             const notification = Notification.create({
               type: notificationType,
               data: {
@@ -355,6 +361,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
               },
               walletId: walletId,
             });
+
             self.storage.softResetTxHistoryCache(walletId, function () {
               self._updateActiveAddress(address, function () {
                 self._storeAndBroadcastNotification(notification, next);
