@@ -27,6 +27,9 @@
           <button class="item item--full" (click)="showPhrase = true">
             Show my passphrase
           </button>
+          <button class="item item--full" *ngIf="showNextBtn" (click)="dismiss.emit()">
+            I copied it. Next!
+          </button>
         </ng-container>
         <button class="item item--full" *ngIf="showPhrase" (click)="dismiss.emit()">
           Okay, Got it!

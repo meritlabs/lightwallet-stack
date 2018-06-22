@@ -77,4 +77,15 @@ export interface IDisplayTransaction extends ITransaction {
   easySendUrl?: string;
   isSpent: boolean;
   cancelled: boolean;
+  isNew: boolean;
+}
+
+export class Visited {
+  time:number;
+  isNew: boolean;
+
+  constructor(time,isNew) {
+      this.time = time;
+      this.isNew = isNew;
+  }
 }
