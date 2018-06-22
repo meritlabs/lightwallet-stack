@@ -64,8 +64,13 @@
         <ion-label>
           <h2>Community rank</h2>
         </ion-label>
-        <div item-end class="details" *ngIf="rankData?.bestRank">
-            {{rankData.bestRank}} ({{rankData.percentileStr}})
+        <div item-end class="details">
+            <span  *ngIf="rankData?.bestRank">
+                {{rankData.bestRank}} ({{rankData.percentileStr}})
+            </span>
+            <span  *ngIf="!rankData?.bestRank">
+                ---
+            </span>
             <ion-icon name="ios-arrow-forward" class="arrow"></ion-icon>
         </div>
     </ion-item>
@@ -78,8 +83,11 @@
         <ion-label>
           <h2>Growth reward estimate </h2>
         </ion-label>
-        <div item-end class="details">
+        <div item-end class="details" *ngIf="rankData.estimateStr">
             {{rankData.estimateStr}}
+        </div>
+        <div item-end class="details" *ngIf="!rankData.estimateStr">
+            ---
         </div>
     </ion-item>
 
