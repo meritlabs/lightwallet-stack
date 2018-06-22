@@ -25,7 +25,6 @@ export class ImportView {
   segment = 'phrase';
   formData = {
     words: '',
-    phrasePassword: '',
     derivationPath: '',
     fromHardwareWallet: false,
     testnetEnabled: false,
@@ -115,7 +114,6 @@ export class ImportView {
         opts.extendedPublicKey = this.formData.words;
         wallet = await this.walletService.importExtendedPublicKey(opts);
       } else {
-        opts.passphrase = this.formData.phrasePassword;
         let words = this.formData.words.replace(/\s\s+/g, ' ').trim();
         wallet = await this.mnemonicService.importMnemonic(words, opts);
       }

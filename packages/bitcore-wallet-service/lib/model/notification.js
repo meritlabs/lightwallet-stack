@@ -39,6 +39,8 @@ Notification.create = function(opts) {
   x.data = opts.data;
   x.walletId = opts.walletId;
   x.creatorId = opts.creatorId;
+  x.lockedForPushNotifications = false;
+  x.lockedForEmailNotifications = false;
 
   return x;
 };
@@ -53,8 +55,18 @@ Notification.fromObj = function(obj) {
   x.data = obj.data;
   x.walletId = obj.walletId;
   x.creatorId = obj.creatorId;
+  x.lockedForPushNotifications = obj.lockedForPushNotifications ? obj.lockedForPushNotifications : false;
+  x.lockedForEmailNotifications = obj.lockedForEmailNotifications ? x.lockedForEmailNotifications : false;
 
   return x;
+};
+
+Notification.prototype.lockForPushNotifications = function() {
+  this.lockedForPushNotifications = true;
+};
+
+Notification.prototype.lockForEmailNotifications = function() {
+  this.lockedForEmailNotifications = true;
 };
 
 module.exports = Notification;

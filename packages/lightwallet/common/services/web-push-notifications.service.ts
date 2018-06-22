@@ -82,7 +82,7 @@ export class WebPushNotificationsService extends PushNotificationsService {
 
     if (this.pushNotificationsEnabled) {
       if (!this.token) {
-        this.firebaseApp = firebase.initializeApp(FirebaseAppConfig);
+        this.firebaseApp = firebase.apps.length? firebase.app() : firebase.initializeApp(FirebaseAppConfig);
         this.firebaseMessaging = firebase.messaging(this.firebaseApp);
         await this.registerSW();
         try {

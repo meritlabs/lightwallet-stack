@@ -13,7 +13,7 @@ import {
 } from '@merit/common/reducers/wallets.reducer';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { tap } from 'rxjs/operators';
+import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 
 @Component({
   selector: 'app-toolbar',
@@ -21,6 +21,7 @@ import { tap } from 'rxjs/operators';
   styleUrls: ['./toolbar.component.sass'],
 })
 export class ToolbarComponent {
+  showMenu: boolean;
   availableCurrencies: any = [
     {
       name: 'USD',
@@ -60,6 +61,8 @@ export class ToolbarComponent {
 
   @Output() shareActivate: EventEmitter<void> = new EventEmitter<void>();
 
+  showAdvTb: boolean;
+
   constructor(private store: Store<IRootAppState>) {}
 
   receiveSelection($event) {
@@ -68,5 +71,9 @@ export class ToolbarComponent {
 
   refresh() {
     this.store.dispatch(new RefreshWalletsAction());
+  }
+
+  shareNow() {
+    this.store.dispatch(new SetShareDialogAction(true));
   }
 }

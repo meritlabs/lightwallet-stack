@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonDirectivesModule } from '@merit/common/common-directives.module';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { FileBackupView } from '@merit/desktop/app/core/backup/file-backup/file-backup.view';
@@ -35,7 +36,11 @@ import { WalletDetailHistoryView } from './wallets/wallet-details/wallet-details
 import { WalletDetailView } from './wallets/wallet-details/wallet-details.view';
 import { WalletSettingsView } from './wallets/wallet-details/wallet-settings/wallet-settings.view';
 import { WalletsView } from './wallets/wallets.view';
+import { WalletSetupView } from './wallet-setup/wallet-setup.view';
+import { TaskPreviewComponent } from './wallet-setup/task-preview/task-preview.component';
+import { WalletSetupListView } from './wallet-setup/wallet-setup-list/wallet-setup-list.view';
 import { RecordPassphraseComponent } from './dialog/record-passphrase/record-passphrase.component';
+import { WelcomeToSetupTrackerComponent } from './dialog/welcome-to-setup-tracker/welcome-to-setup-tracker.component';
 
 export function getPages() {
   return [
@@ -63,6 +68,8 @@ export function getPages() {
     SendInviteView,
     InviteRequestsView,
     SendInviteView,
+    WalletSetupView,
+    WalletSetupListView,
   ];
 }
 
@@ -80,8 +87,16 @@ export function getPages() {
     ClipModule,
     Ng4LoadingSpinnerModule,
     CoreComponentsModule,
+    CommonDirectivesModule,
   ],
-  declarations: [CoreView, ...getPages(), SendTourComponent, RecordPassphraseComponent],
+  declarations: [
+    CoreView,
+    ...getPages(),
+    SendTourComponent,
+    RecordPassphraseComponent,
+    TaskPreviewComponent,
+    WelcomeToSetupTrackerComponent,
+  ],
   providers: [WalletPasswordGuard],
 })
 export class CoreModule {}

@@ -1,0 +1,50 @@
+@import '~styles/v1/common/import-sass'
+
+\:host
+  width: 100%
+  .wallet-setup_column
+    width: calc(50% - 40px)
+    .title
+      +font(600, 22px, 30px, $blue)
+      margin-bottom: 30px
+      display: flex
+      align-content: center
+      merit-icon
+        margin: 0px 20px
+      &--toDo
+        merit-icon
+          background: $slate-grey
+  .readiness
+    display: flex
+    margin-right: 30px
+    align-items: flex-end
+    merit-icon
+      width: 120px
+      height: 95px
+      margin-right: 20px
+    .title
+      +font(600, 50px, 50px, $blue)
+      margin-bottom: 10px
+    .caption
+      +font(400, 18px, 24px)
+      p
+        margin-bottom: 0
+  .completeNotification
+    +font(600, 22px, 30px, $blue)
+    font-style: italic
+    opacity: .6
+    padding: 0 20px
+  .selectBox
+    width: 100%
+    app-select
+      display: block
+      margin-bottom: -30px
+    .global-settings__group__item__title
+      +font(400, 18px, 26px, $slate-grey)
+      margin-bottom: 18px
+.refresh
+  +font(600, 22px, 30px, $blue)
+  padding: 0 20px
+  display: flex
+  align-items: center
+
