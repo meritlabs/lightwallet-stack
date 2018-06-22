@@ -94,39 +94,39 @@ export class SendInviteView {
     this.easySendUrl = this.easySendDelivered = this.success = void 0;
     this.loader.show();
 
-    let { address, type, password, destination, amount } = this.formData.getRawValue();
+    try {
+      let { address, type, password, destination, amount } = this.formData.getRawValue();
 
-    if (type === SendMethodType.Easy) {
-      const easySend = await this.walletService.sendMeritInvite(wallet, amount, password);
-      this.easySendUrl = getEasySendURL(easySend);
+      if (type === SendMethodType.Easy) {
+        const easySend = await this.walletService.sendMeritInvite(wallet, amount, password);
+        this.easySendUrl = getEasySendURL(easySend);
 
-      const destinationType = getSendMethodDestinationType(destination);
+        const destinationType = getSendMethodDestinationType(destination);
 
-      if (destination && destinationType) {
-        try {
-          await wallet.deliverGlobalSend(easySend, {
-            type: SendMethodType.Easy,
-            destination: destinationType,
-            value: destination
-          });
+        if (destination && destinationType) {
+          try {
+            await wallet.deliverGlobalSend(easySend, {
+              type: SendMethodType.Easy,
+              destination: destinationType,
+              value: destination
+            });
 
-          this.easySendDelivered = true;
-        } catch (err) {
-          this.logger.error('Unable to deliver GlobalSend', err);
-          this.easySendDelivered = false;
+            this.easySendDelivered = true;
+          } catch (err) {
+            this.logger.error('Unable to deliver GlobalSend', err);
+            this.easySendDelivered = false;
+          }
         }
+
+      } else {
+        address = cleanAddress(address);
+        address = await this.addressService.getAddressInfo(address);
+
+        await this.walletService.sendInvite(wallet, address.address, amount);
       }
 
-    } else {
-      address = cleanAddress(address);
-      address = await this.addressService.getAddressInfo(address);
+      this.success = true;
 
-      await this.walletService.sendInvite(wallet, address.address, amount);
-    }
-
-    this.success = true;
-
-    try {
       this.store.dispatch(new RefreshOneWalletAction(this.selectedWallet.id, {
         skipRewards: true,
         skipAnv: true,
@@ -140,7 +140,7 @@ export class SendInviteView {
       this.toastCtrl.success('Invite has been sent!');
     } catch (e) {
       console.log(e);
-      this.toastCtrl.error('Failed to send invite');
+      this.toastCtrl.error(e.message || 'Failed to send invite');
     } finally {
       this.loader.hide();
     }
