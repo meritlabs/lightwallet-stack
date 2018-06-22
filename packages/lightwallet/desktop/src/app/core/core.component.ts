@@ -88,7 +88,7 @@ export class CoreView implements OnInit, AfterViewInit {
     // {
     //   name: 'Market Beta',
     //   icon: '/assets/v1/icons/ui/aside-navigation/market.svg',
-    //   link: '/market-gate'
+    //   link: '/market/gate'
     // },
     {
       name: 'Help & Support',
