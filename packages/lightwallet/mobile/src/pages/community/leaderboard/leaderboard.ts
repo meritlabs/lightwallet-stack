@@ -30,13 +30,11 @@ export class LeaderboardView {
   ranks: Array<any>;
   ownOutranked: Array<any>;
 
-  offset: number = 0;
+  offset: number = 10;
   readonly LIMIT: number = 10;
   readonly LIST_LENGTH: number = 100;
 
   loading: boolean = true;
-
-
 
   constructor(
     private navCtrl: NavController,
@@ -47,44 +45,48 @@ export class LeaderboardView {
 
   async ionViewWillEnter() {
     this.wallets = await this.profileService.getWallets();
-    await Promise.all([this.getLeaderboard(), this.getRankInfo()]);
+    await this.loadData();
     this.loading = false;
   }
 
   async doRefresh(refresher) {
     this.offset = 0;
-    await Promise.all([this.getLeaderboard(), this.getRankInfo()]);
+    await this.loadData();
+
     refresher.complete();
+  }
+
+  async loadData() {
+    await Promise.all([this.getLeaderboard(), this.getRankInfo()]);
+    this.ownOutranked = this.ranks.filter(r => r.rank > this.LIST_LENGTH);
   }
 
   async getLeaderboard() {
     this.leaderboard = (await this.wallets[0].getCommunityLeaderboard(this.LIST_LENGTH)).ranks;
     this.displayLeaderboard = this.leaderboard.slice(0, this.offset + this.LIMIT);
-    this.ownOutranked = this.ranks.filter(r => r.rank > this.offset);
   }
 
   async getRankInfo() {
     let ranks = [];
-    this.wallets.map(async (w) => {
+    await Promise.all(this.wallets.map(async (w) => {
       let rankInfo = (await w.getCommunityRank()).ranks[0];
-      rankInfo.alias = w.rootAlias;
-      rankInfo.address = w.rootAddress;
       ranks.push(rankInfo);
+    }));
     this.ranks = ranks;
   }
 
   showMore(infiniter) {
     this.offset += this.LIMIT;
     this.displayLeaderboard = this.leaderboard.slice(0, this.offset + this.LIMIT);
-    this.ownOutranked = this.ranks.filter(r => r.rank > this.offset);
     infiniter.complete();
   }
 
   isOwnWallet(r) {
-    return !!this.ranks.some(w => {
+    let res = !!this.ranks.some(w => {
       if (w.alias) return w.alias == r.alias;
       if (w.address) return w.address == r.address;
     });
+    return res;
   }
 
 }

@@ -13,6 +13,10 @@
 
 <ion-content no-bounce>
 
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
     <div  *ngIf="loading" class="loading">
         Loading leaderboard...
     </div>
@@ -29,7 +33,7 @@
                 </div>
             </ion-item>
             <div  *ngIf="(offset >= LIST_LENGTH) && ownOutranked.length">
-                <ion-item>
+                <ion-item class="own-wallet">
                     ...
                 </ion-item>
                 <ion-item *ngFor="let address of ownOutranked" class="row" [class.own-wallet]="isOwnWallet(address)">
