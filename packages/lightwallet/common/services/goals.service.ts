@@ -99,14 +99,18 @@ export class GoalsService {
       return this.token;
     }
 
-    const profile = await this.getProfile(primaryWallet);
-    this.setClient(profile);
-    const { token } = await this.client.login();
+    try {
+      const profile = await this.getProfile(primaryWallet);
+      this.setClient(profile);
+      const { token } = await this.client.login();
 
-    this.token = token;
-    this.client.setToken(token);
+      this.token = token;
+      this.client.setToken(token);
 
-    return token;
+      return token;
+    } catch (err) {
+      console.log('Error getting token for Goals API', err);
+    }
   }
 
   async getProgress(): Promise<IFullProgress> {
