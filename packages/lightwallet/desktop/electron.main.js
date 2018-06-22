@@ -1,8 +1,11 @@
 'use strict';
 
 const { BrowserWindow, app, protocol, ipcMain, shell, Menu } = require('electron');
+const { autoUpdater } = require("electron-updater");
 const path = require('path');
 const url = require('url');
+
+autoUpdater.checkForUpdatesAndNotify()
 
 const appName = 'Merit Lightwallet';
 
