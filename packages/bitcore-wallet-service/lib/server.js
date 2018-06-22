@@ -4,7 +4,7 @@ var _ = require('lodash');
 var $ = require('preconditions').singleton();
 var async = require('async');
 var config = require('../config');
-
+const { promisify } = require('util');
 
 var EmailValidator = require('email-validator');
 var Stringify = require('json-stable-stringify');
@@ -881,7 +881,7 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
     walletId: walletId,
   });
 
-  this.storage.storeNotification(walletId, notification, () => {
+  this.storage.storeNotification(notification, () => {
     this.messageBroker.send(notification);
     return cb();
   });
@@ -902,6 +902,7 @@ WalletService.prototype._notifyTxProposalAction = function(type, txp, extraArgs,
     amount: txp.getTotalAmount(),
     message: txp.message,
   }, extraArgs);
+
   self._notify(type, data, {}, cb);
 };
 
@@ -2883,8 +2884,11 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
     var extraArgs = {
       txid: txp.txid,
     };
-    if (opts.byThirdParty) {
+
+    if (opts.byThirdParty && !txp.isInvite) {
       self._notifyTxProposalAction('OutgoingTxByThirdParty', txp, extraArgs);
+    } else if (txp.isInvite) {
+      self._notifyTxProposalAction('OutgoingInviteTx', txp, extraArgs);
     } else {
       self._notifyTxProposalAction('OutgoingTx', txp, extraArgs);
     }
@@ -3191,7 +3195,6 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
  * @param opts
  * @param cb
  */
-const { promisify } = require('util');
 WalletService.prototype.getUnlockRequests = async function(opts, cb) {
 
     try {
@@ -3768,6 +3771,25 @@ WalletService.prototype.pushNotificationsUnsubscribe = function(opts, cb) {
   self.storage.removePushNotificationSub(self.copayerId, opts.token, cb);
 };
 
+WalletService.prototype.smsNotificationsSubscribe = function(opts, cb) {
+  if (!opts.phoneNumber)
+    return cb('Phone number was not provided');
+
+  this.storage.storeSmsNotificationSub({
+    walletId: this.walletId,
+    phoneNumber: opts.phoneNumber,
+    platform: opts.platform
+  }, cb);
+};
+
+WalletService.prototype.smsNotificationsUnsubscribe = function(cb) {
+  this.storage.removeSmsNotificationSub(this.walletId, cb);
+};
+
+WalletService.prototype.getSmsNotificationSubscription = function(cb) {
+  this.storage.fetchSmsNotificationSub(this.walletId, cb);
+};
+
 /**
  * Subscribe this copayer to the specified tx to get a notification when the tx confirms.
  * @param {Object} opts
@@ -4165,6 +4187,31 @@ WalletService.prototype.updateVaultInfo = function(opts, cb) {
                 return cb(null, vault);
             })
         });
+    });
+};
+
+WalletService.prototype.registerGlobalSend = async function(opts, cb) {
+    const address = await promisify(this.getRootAddress.bind(this))();
+    this.storage.registerGlobalSend(address.toString(), opts.scriptAddress, opts.globalsend, (err) => {
+        if (err) return cb(err);
+        cb(null);
+    });
+};
+
+WalletService.prototype.cancelGlobalSend = async function(opts, cb) {
+    const address = await promisify(this.getRootAddress.bind(this))();
+    this.storage.cancelGlobalSend(address.toString(), opts.scriptAddress, (err) => {
+        if (err) return cb(err);
+        cb(null);
+    });
+};
+
+
+WalletService.prototype.getGlobalSends = async function(opts, cb) {
+    const address = await promisify(this.getRootAddress.bind(this))();
+    this.storage.getGlobalSends(address.toString(), (err, links) => {
+        if (err) return cb(err);
+        return cb(null, links);
     });
 };
 

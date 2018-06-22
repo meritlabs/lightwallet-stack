@@ -12,6 +12,7 @@ export interface EasySend {
   scriptReferralOpts: any;
   txid?: string;
   cancelled: boolean;
+  inviteOnly: boolean;
 }
 
 export const getEasySendURL = (es: EasySend): string => {

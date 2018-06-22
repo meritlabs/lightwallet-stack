@@ -8,9 +8,21 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { Address, PublicKey } from 'bitcore-lib';
-import { AlertController, Events, IonicPage, NavController, NavParams, Platform, Tabs } from 'ionic-angular';
+import {
+  AlertController,
+  Events,
+  IonicPage,
+  ModalController,
+  NavController,
+  NavParams,
+  Platform,
+  Tabs
+} from 'ionic-angular';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
+import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
+import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
+import { SmsNotificationsModal } from '../../modals/sms-notifications/sms-notifications';
 
 
 @IonicPage({
@@ -39,10 +51,11 @@ export class TransactView {
               private easyReceiveService: EasyReceiveService,
               private alertCtrl: AlertController,
               private toastCtrl: ToastControllerService,
-              private events: Events) {
+              private events: Events,
+              private modalCtrl: ModalController,
+              private persistenceService2: PersistenceService2,
+              private smsNotificationsService: SmsNotificationsService) {
   }
-
-  rand = Math.random();
 
   async ngOnInit() {
     this.subs.push(
@@ -76,6 +89,22 @@ export class TransactView {
     }
 
     await this.unlockRequestService.loadRequestsData();
+
+    const smsPromptSetting = await this.persistenceService2.getUserSettings(UserSettingsKey.SmsNotificationsPrompt);
+
+    if (smsPromptSetting == true)
+      return;
+
+    const smsNotificationStatus = await this.smsNotificationsService.getSmsSubscriptionStatus();
+
+    if (smsNotificationStatus.enabled)
+      return;
+
+    const modal = this.modalCtrl.create('SmsNotificationsModal');
+    modal.present();
+    modal.onDidDismiss(() => {
+      this.persistenceService2.setUserSettings(UserSettingsKey.SmsNotificationsPrompt, true);
+    });
   }
 
   async ngOnDestroy() {
@@ -119,7 +148,10 @@ export class TransactView {
     if (!txs.length) return this.showPasswordEasyReceivePrompt(receipt, isRetry, processAll);
 
     const wallets = await this.profileService.getWallets();
-    const wallet = wallets[0];
+    let wallet = wallets.find(w => {
+      return (w.getRootAddress().toString() == receipt.parentAddress);
+    });
+    if (!wallet) wallet = wallets[0];
 
     //Decide if the wallet is the sender of the Global Send.
     //We will prompt here to cancel the global send instead.
@@ -198,7 +230,10 @@ export class TransactView {
       message: `You clicked on a ${name} link that you created. Would you like to cancel ${name} link with ${ amountStr }?`,
       buttons: [
         {
-          text: `Don't Cancel`
+          text: `Don't Cancel`,
+          handler: () => {
+            this.easyReceiveService.deletePendingReceipt(receipt);
+          }
         },
         {
           text: `Cancel ${name}`,
@@ -245,9 +280,9 @@ export class TransactView {
     let amountStr = '';
     if (await this.easyReceiveService.isInviteOnly(txs)) {
       const invitesAmount = await this.easyReceiveService.getInvitesAmount(txs);
-      amountStr = (invitesAmount == 1) ? 'Invite Token' : invitesAmount+' Invite tokens';
+      amountStr = (invitesAmount == 1) ? 'Invite Token' : invitesAmount + ' Invite tokens';
     } else {
-      amountStr = await this.easyReceiveService.getReceiverAmount(txs)+' Merit';
+      amountStr = await this.easyReceiveService.getReceiverAmount(txs) + ' Merit';
     }
     return amountStr;
   }
@@ -278,12 +313,15 @@ export class TransactView {
   private async cancelEasyReceipt(receipt: EasyReceipt): Promise<any> {
     try {
       const wallets = await this.profileService.getWallets();
-      let wallet = wallets[0];
+      let wallet = wallets.find(w => {
+       return (w.getRootAddress().toString() == receipt.parentAddress);
+      });
+      if (!wallet) wallet = wallets[0];
       if (!wallet) throw new Error('Could not retrieve wallet');
 
       const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
       this.events.publish('Remote:IncomingTx');
-      this.logger.info('accepted easy send', acceptanceTx);
+      this.logger.info('Canceled easy send', acceptanceTx);
     } catch (err) {
       console.log(err);
       this.toastCtrl.error('There was an error cancelling your MeritMoney link.');
@@ -297,8 +335,7 @@ export class TransactView {
       let wallet = wallets[0];
       if (!wallet) throw new Error('Could not retrieve wallet');
 
-      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, wallet.rootAddress.toString());
-
+      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(wallet, receipt, data, wallet.rootAddress.toString());
       this.logger.info('accepted easy send', acceptanceTx);
 
       this.events.publish('Remote:IncomingTx'); // update wallet info

@@ -9,7 +9,7 @@ import { MeritMarketClient } from '@merit/common/merit-market-client/api';
 @Component({
   selector: 'view-market-login',
   templateUrl: './market-login.view.html',
-  styleUrls: ['./market-login.view.sass']
+  styleUrls: ['./market-login.view.sass'],
 })
 export class MarketLoginView implements OnInit {
   error: boolean;
