@@ -11,7 +11,8 @@ import { PlatformService } from '@merit/common/services/platform.service';
 })
 export class EasySendShareView {
 
-  private txData: any;
+  txData: any;
+  easySendDelivered: boolean;
 
   showShareButton: boolean;
   copied: boolean;
@@ -29,6 +30,7 @@ export class EasySendShareView {
     private alertController: AlertController
   ) {
     this.txData = this.navParams.get('txData');
+    this.easySendDelivered = this.navParams.get('easySendDelivered');
     this.showShareButton = this.platform.is('cordova') && SocialSharing.installed();
   }
 

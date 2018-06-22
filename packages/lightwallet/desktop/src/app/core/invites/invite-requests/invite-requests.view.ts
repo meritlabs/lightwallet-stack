@@ -1,25 +1,27 @@
 import { Component } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { TaskSlug } from '@merit/common/models/goals';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
 import {
   selectInviteRequests,
   selectInvites,
   selectWalletsWithInvites,
-  UpdateInviteRequestsAction
+  UpdateInviteRequestsAction,
 } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { IUnlockRequest } from '@merit/common/services/unlock-request.service';
+import { WalletService } from '@merit/common/services/wallet.service';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 @Component({
   selector: 'view-invite-requests',
   templateUrl: './invite-requests.view.html',
-  styleUrls: ['./invite-requests.view.sass']
+  styleUrls: ['./invite-requests.view.sass'],
 })
 export class InviteRequestsView {
   inviteRequests$: Observable<IUnlockRequest[]> = this.store.select(selectInviteRequests);
@@ -27,11 +29,23 @@ export class InviteRequestsView {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWalletsWithInvites);
 
   sending: { [referralId: string]: boolean } = {};
+  isInviteSent: boolean = false;
 
-  constructor(private store: Store<IRootAppState>,
-              private confirmDialogCtrl: ConfirmDialogControllerService,
-              private logger: LoggerService,
-              private toastCtrl: ToastControllerService) {}
+  receiveRequestTaskSlug: TaskSlug = TaskSlug.ReceiveInviteRequest;
+  confirmRequestTaskSlug: TaskSlug = TaskSlug.ConfirmInviteRequest;
+
+  isPendingInvites$: Observable<boolean> = this.inviteRequests$
+    .pipe(
+      map((inviteRequests) => inviteRequests.length > 0)
+    );
+
+  constructor(
+    private store: Store<IRootAppState>,
+    private confirmDialogCtrl: ConfirmDialogControllerService,
+    private logger: LoggerService,
+    private toastCtrl: ToastControllerService,
+    private walletService: WalletService
+  ) {}
 
   async approveRequest(request: IUnlockRequest) {
     const availableInvites = await this.availableInvites$.pipe(take(1)).toPromise();
@@ -41,19 +55,24 @@ export class InviteRequestsView {
       return;
     }
 
-    const dialog = this.confirmDialogCtrl.create('Confirm action', 'Are you sure you would like to send an invite to this address?', [
-      {
-        text: 'Yes',
-        value: 'yes',
-        class: 'primary'
-      },
-      {
-        text: 'No'
-      }
-    ]);
+    const dialog = this.confirmDialogCtrl.create(
+      'Confirm action',
+      'Are you sure you would like to send an invite to this address?',
+      [
+        {
+          text: 'Yes',
+          value: 'yes',
+          class: 'primary',
+        },
+        {
+          text: 'No',
+        },
+      ]
+    );
 
     dialog.onDidDismiss(async (value: string) => {
       if (value === 'yes') {
+        this.isInviteSent = true;
         this.sending[request.referralId] = true;
         try {
           let wallet = request.walletClient;
@@ -71,10 +90,13 @@ export class InviteRequestsView {
             }
           }
 
-          await wallet.sendInvite(request.address);
+          await this.walletService.sendInvite(wallet, request.address);
+
           this.store.dispatch(new RefreshOneWalletTransactions(wallet.id));
           this.toastCtrl.success('The invite request has been confirmed.');
-          const remainingRequests = (await this.inviteRequests$.pipe(take(1)).toPromise()).filter((r: IUnlockRequest) => r.address !== request.address);
+          const remainingRequests = (await this.inviteRequests$.pipe(take(1)).toPromise()).filter(
+            (r: IUnlockRequest) => r.address !== request.address
+          );
           this.store.dispatch(new UpdateInviteRequestsAction(remainingRequests));
         } catch (err) {
           this.logger.error('Error sending invite', err);

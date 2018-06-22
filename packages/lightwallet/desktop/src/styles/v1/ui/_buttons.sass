@@ -8,6 +8,7 @@
   cursor: pointer
   user-select: none
   +transition(.2s, ease-in-out)
+  user-select: none
   &[disabled]
     opacity: .5
     cursor: default
@@ -123,6 +124,34 @@
       font-size: 15px
       top: -1px
       font-weight: 700
+  &--buy
+    display: flex !important
+    align-items: center
+    border: 2px solid $gun-metal
+    border-radius: 5px
+    padding: 4px 10px
+    small
+      position: relative
+      top: 1px
+    &:before
+      content: ""
+      display: inline-block
+      width: 20px
+      height: 15px
+      background: $gun-metal
+      mask-image: url('/assets/v1/icons/buttons/cart.svg')
+      mask-size: contain
+      mask-repeat: no-repeat 
+      margin-right: 5px
+  &--getStarted
+    display: flex !important
+    align-items: center
+    border: 2px solid $gun-metal
+    border-radius: 5px
+    padding: 4px 10px
+    small
+      position: relative
+      top: 1px
 
 .ui-button
   &--lg
