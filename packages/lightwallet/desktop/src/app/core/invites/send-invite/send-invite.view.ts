@@ -96,17 +96,15 @@ export class SendInviteView {
 
     let { address, type, password, destination, amount } = this.formData.getRawValue();
 
-    const walletClient = this.selectedWallet.client;
-
     if (type === SendMethodType.Easy) {
-      const easySend = await this.walletService.sendMeritInvite(walletClient, amount, password);
+      const easySend = await this.walletService.sendMeritInvite(wallet, amount, password);
       this.easySendUrl = getEasySendURL(easySend);
 
       const destinationType = getSendMethodDestinationType(destination);
 
       if (destination && destinationType) {
         try {
-          await walletClient.deliverGlobalSend(easySend, {
+          await wallet.deliverGlobalSend(easySend, {
             type: SendMethodType.Easy,
             destination: destinationType,
             value: destination
@@ -123,7 +121,7 @@ export class SendInviteView {
       address = cleanAddress(address);
       address = await this.addressService.getAddressInfo(address);
 
-      await this.walletService.sendInvite(walletClient, address.address);
+      await this.walletService.sendInvite(wallet, address.address, amount);
     }
 
     this.success = true;

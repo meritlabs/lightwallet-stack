@@ -26,7 +26,7 @@
       <label for="" class="ui-label">Send from</label>
       <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async"
                   cssClass="ui-input ui-input--select ui-input--form"></app-select>
-      {{ selectedWallet.availableInvites || 0 }} invites available. {{ selectedWallet.pendingInvites? '(' + selectedWallet.pendingInvites + ' pending)' : '' }}
+      {{ selectedWallet?.availableInvites || 0 }} invites available. {{ selectedWallet?.pendingInvites? '(' + selectedWallet.pendingInvites + ' pending)' : '' }}
     </div>
 
     <send-method formControlName="type" [invite]="true"></send-method>
