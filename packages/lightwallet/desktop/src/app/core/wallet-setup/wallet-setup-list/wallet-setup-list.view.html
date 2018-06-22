@@ -41,7 +41,7 @@
 
       <ng-container *ngIf="toDo$ | async as toDo">
         <ng-container *ngIf="toDo?.length; else toDoIsEmpty">
-          <task-preview *ngFor="let goal of toDo" [wallet]="selectedWallet" [goal]="goal"></task-preview>
+          <task-preview *ngFor="let goal of toDo" [goal]="goal" [isConfirmed]="isConfirmed$ | async"></task-preview>
         </ng-container>
         <ng-template #toDoIsEmpty>
           <div class="completeNotification">
@@ -60,7 +60,7 @@
             <merit-icon name="setup"></merit-icon>
             <p>Complete</p>
           </div>
-          <task-preview *ngFor="let goal of done" [isComplete]="true" [wallet]="selectedWallet" [goal]="goal"></task-preview>
+          <task-preview *ngFor="let goal of done" [isComplete]="true" [goal]="goal"></task-preview>
         </div>
       </ng-container>
     </ng-container>
