@@ -17,7 +17,7 @@ import { ConfirmDialogControllerService } from '@merit/desktop/app/components/co
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { map, take, take, tap } from 'rxjs/operators';
+import { map, take, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'view-invite-requests',
@@ -35,10 +35,7 @@ export class InviteRequestsView {
   receiveRequestTaskSlug: TaskSlug = TaskSlug.ReceiveInviteRequest;
   confirmRequestTaskSlug: TaskSlug = TaskSlug.ConfirmInviteRequest;
 
-  isPendingInvites$: Observable<boolean> = this.inviteRequests$
-    .pipe(
-      map((inviteRequests) => inviteRequests.length > 0)
-    );
+  isPendingInvites$: Observable<boolean> = this.inviteRequests$.pipe(map(inviteRequests => inviteRequests.length > 0));
 
   constructor(
     private store: Store<IRootAppState>,
@@ -110,16 +107,20 @@ export class InviteRequestsView {
   }
 
   ignoreRequest(request: IUnlockRequest) {
-    const dialog = this.confirmDialogCtrl.create('Ignore Invite Request', 'Are you sure you would like to ignore this invite request?', [
-      {
-        text: 'Yes',
-        value: 'yes',
-        class: 'primary'
-      },
-      {
-        text: 'No'
-      }
-    ]);
+    const dialog = this.confirmDialogCtrl.create(
+      'Ignore Invite Request',
+      'Are you sure you would like to ignore this invite request?',
+      [
+        {
+          text: 'Yes',
+          value: 'yes',
+          class: 'primary',
+        },
+        {
+          text: 'No',
+        },
+      ]
+    );
 
     dialog.onDidDismiss(async (value: string) => {
       if (value === 'yes') {
