@@ -26,6 +26,7 @@
       <label for="" class="ui-label">Send from</label>
       <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async"
                   cssClass="ui-input ui-input--select ui-input--form"></app-select>
+      {{ selectedWallet.availableInvites || 0 }} invites available. {{ selectedWallet.pendingInvites? '(' + selectedWallet.pendingInvites + ' pending)' : '' }}
     </div>
 
     <send-method formControlName="type" [invite]="true"></send-method>
@@ -87,6 +88,41 @@
     <!--<br>-->
     <!--<a href="mailto:{{ formData.value.address.trim() }}?subject={{ emailSubject }}&body={{ emailBody }}">Send an email</a> with invite link.</p>-->
     <!--</div>-->
+
+    <div class="sendMerit__form__group">
+      <label class="ui-label">Number of invites</label>
+      <div class="ui-input__wrapper ui-input__wrapper--mrt">
+        <input type="number" formControlName="amount" placeholder="Enter the number of invites you would like to send"
+               class="ui-input ui-input--form ui-input--text">
+        <div class="ui-input__addon">INV</div>
+      </div>
+      <div class="input-errors" [hidden]="!amount.dirty || amount.valid">
+        <div [hidden]="!amount.hasError('required')">
+              <span class="tooltip-error">
+                <span>
+                  Number of invites is required
+                </span>
+              </span>
+        </div>
+        <div [hidden]="amount.hasError('required') || !amount.hasError('InvalidAmount')">
+              <span class="tooltip-error">
+                <span>
+                  Invalid number of invites
+                </span>
+              </span>
+        </div>
+      </div>
+      <div class="ui-input__wrapper ui-input__wrapper--currency" *ngIf="availableCurrencies?.length">
+        <input type="text" name="" [value]="amountFiat$ | async" disabled
+               class="ui-input ui-input--form ui-input--text">
+        <div class="ui-input__addon">
+          <app-select (selectionEvent)="selectCurrency($event)" [selected]="selectedCurrency.value"
+                      [input]="availableCurrencies"
+                      cssClass="ui-button ui-button--transparent ui-button--select-currency ui-button--md ui-button--with-caret"></app-select>
+        </div>
+      </div>
+    </div>
+
 
     <button class="ui-button ui-button--blue" type="submit" role="button"
             [disabled]="formData.invalid || formData.pending || ((availableInvites$ | async) == 0)">SEND

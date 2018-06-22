@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { getEasySendURL } from '@merit/common/models/easy-send';
@@ -44,7 +44,8 @@ export class SendInviteView {
     address: ['', [], [SendValidator.validateAddress(this.mwcService, true)]],
     type: ['easy'],
     password: [''],
-    destination: ['', SendValidator.validateGlobalSendDestination]
+    destination: ['', SendValidator.validateGlobalSendDestination],
+    amount: [1, [Validators.required, SendValidator.validateAmount]]
   });
 
   emailSubject;
@@ -57,6 +58,7 @@ export class SendInviteView {
   get address() { return this.formData.get('address'); }
   get type() { return this.formData.get('type'); }
   get destination() { return this.formData.get('destination'); }
+  get amount() { return this.formData.get('amount'); }
 
   constructor(private store: Store<IRootAppState>,
               private formBuilder: FormBuilder,
@@ -92,12 +94,12 @@ export class SendInviteView {
     this.easySendUrl = this.easySendDelivered = this.success = void 0;
     this.loader.show();
 
-    let { address, type, password, destination } = this.formData.getRawValue();
+    let { address, type, password, destination, amount } = this.formData.getRawValue();
 
     const walletClient = this.selectedWallet.client;
 
     if (type === SendMethodType.Easy) {
-      const easySend = await this.walletService.sendMeritInvite(walletClient, 1, password);
+      const easySend = await this.walletService.sendMeritInvite(walletClient, amount, password);
       this.easySendUrl = getEasySendURL(easySend);
 
       const destinationType = getSendMethodDestinationType(destination);
