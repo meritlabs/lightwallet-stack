@@ -1,11 +1,22 @@
 'use strict';
 
-const { BrowserWindow, app, protocol, ipcMain, shell, Menu } = require('electron');
-const { autoUpdater } = require("electron-updater");
+const { BrowserWindow, app, protocol, ipcMain, shell, Menu, dialog } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const url = require('url');
+autoUpdater.logger = require('electron-log');
+autoUpdater.logger.transports.console.level = 'silly';
+autoUpdater.logger.transports.file.level = 'silly';
 
 autoUpdater.checkForUpdatesAndNotify()
+  .then(res => {
+    console.log('RES IS ', res);
+  })
+  .catch(err => console.log('ERR', err));
+
+autoUpdater.once('update-downloaded', () => {
+  // autoUpdater.quitAndInstall(false, true);
+});
 
 const appName = 'Merit Lightwallet';
 
