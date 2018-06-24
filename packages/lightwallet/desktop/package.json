@@ -20,7 +20,9 @@
     "url": "https://github.com/meritlabs/lightwallet-stack"
   },
   "dependencies": {
-    "node-notifier": "^5.2.1"
+    "node-notifier": "^5.2.1",
+    "electron-updater": "^2.21.10",
+    "electron-log": "^2.2.15"
   },
   "devDependencies": {
     "@angular-devkit/core": "0.3.2",
@@ -34,7 +36,7 @@
     "copy-webpack-plugin": "~4.4.1",
     "electron": "^1.8.4",
     "electron-builder": "^20.8.1",
-    "electron-updater": "^2.21.10",
+    "electron-publisher-s3": "^20.15.0",
     "file-loader": "^1.1.5",
     "hammerjs": "^2.0.8",
     "html-webpack-plugin": "^2.29.0",
