@@ -304,7 +304,10 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
     function (out, next) {
       //checking if address is confirmed
       explorer.getUtxos([out.address], true, function (err, utxos) {
-        const isAddressConfirmed = _.some(utxos, u => u.isInvite);
+
+        // Check if the recipient address is unlocked; by checking if it has
+        // received any invites in the past.
+        const isAddressConfirmed = _.some(utxos, u => u.isInvite && u.txid !== out.txid);
 
         self.storage.fetchAddress(out.address, function (err, address) {
           if (err) {
@@ -313,7 +316,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
           }
 
           if (!address || address.isChange) {
-            log.info('Address is not registered for nottifications, skipping');
+            log.info('Address is not registered for notifications, skipping');
             return next(null);
           }
 
