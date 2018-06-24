@@ -9,6 +9,7 @@ SmsSub.create = function(opts) {
   sub.createdOn = Math.floor(Date.now() / 1000);
   sub.walletId = opts.walletId;
   sub.phoneNumber = opts.phoneNumber;
+  sub.settings = opts.settings;
   return sub;
 };
 
@@ -19,6 +20,7 @@ SmsSub.fromObj = function(opts) {
   sub.createdOn = opts.createdOn;
   sub.walletId = opts.walletId;
   sub.phoneNumber = opts.phoneNumber;
+  sub.settings = opts.settings;
   return sub;
 };
 
