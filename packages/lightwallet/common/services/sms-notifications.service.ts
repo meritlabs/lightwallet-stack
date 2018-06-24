@@ -1,13 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
-
-export interface ISmsNotificationStatus {
-  enabled: boolean;
-  phoneNumber?: string;
-  platform?: string;
-  walletId?: string;
-}
+import { ISmsNotificationSettings, ISmsNotificationStatus } from '@merit/common/models/sms-subscription';
 
 @Injectable()
 export class SmsNotificationsService {
@@ -49,7 +43,7 @@ export class SmsNotificationsService {
     return this.status = status;
   }
 
-  async setSmsSubscription(enabled: boolean, phoneNumber?: string, platform?: string) {
+  async setSmsSubscription(enabled: boolean, phoneNumber?: string, platform?: string, settings?: ISmsNotificationSettings) {
     await this.persistenceService.setNotificationSettings({ smsNotifications: enabled, phoneNumber });
 
     if (enabled && !phoneNumber)
@@ -62,10 +56,11 @@ export class SmsNotificationsService {
       this.status = {
         enabled,
         phoneNumber,
-        platform
+        platform,
+        settings
       };
 
-      promises = wallets.map(wallet => wallet.smsNotificationsSubscribe(phoneNumber, platform));
+      promises = wallets.map(wallet => wallet.smsNotificationsSubscribe(phoneNumber, platform, settings));
     } else {
       this.status = {
         enabled
