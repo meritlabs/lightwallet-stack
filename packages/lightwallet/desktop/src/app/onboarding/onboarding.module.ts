@@ -20,6 +20,7 @@ import { InvitedUserComponent } from './app-start-up/invited-user/invited-user.c
 import { GuideBeginnersHelpComponent } from './app-start-up/guide-beginners-help/guide-beginners-help.component';
 import { SliderGuideComponent } from './slider-guide/slider-guide.component';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
+import { InviteApplicationComponent } from './invite-application/invite-application.component';
 
 @NgModule({
   imports: [
@@ -46,6 +47,7 @@ import { SharedComponentsModule } from '@merit/desktop/app/components/shared-com
     InvitedUserComponent,
     GuideBeginnersHelpComponent,
     SliderGuideComponent,
+    InviteApplicationComponent,
   ],
 })
 export class OnboardingModule {}

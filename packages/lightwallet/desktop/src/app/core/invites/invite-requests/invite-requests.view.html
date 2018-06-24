@@ -18,6 +18,7 @@
               (click)="approveRequest(request)">
               {{ sending[request.referralId]? 'Sending...' : 'Send Invite Token' }}
             </button>
+            <button type="button" class="ui-button ui-button--sm ui-button--red" (click)="ignoreRequest(request)">Ignore</button>
           </div>
         </div>
       </div>
