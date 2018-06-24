@@ -91,7 +91,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       return req.copayerId
     });
 
-    var logFormat = ':remote-addr :date[iso] ":method :url" :status :res[content-length] :response-time ":user-agent" :walletId :copayerId';
+    var logFormat = ':remote-addr :date[iso] ":method :url" :status :res[content-length] :req[content-length] :response-time ":user-agent" :walletId :copayerId';
     var logOpts = {
       skip: function(req, res) {
         if (res.statusCode != 200) return false;
