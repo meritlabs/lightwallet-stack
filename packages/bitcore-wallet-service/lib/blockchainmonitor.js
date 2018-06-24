@@ -303,30 +303,58 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
   async.eachSeries(
     filteredOutputs,
     function (out, next) {
-      //checking if address is confirmed
-      explorer.getUtxos([out.address], true, function (err, utxos) {
 
-        // Check if the recipient address is unlocked; by checking if it has
-        // received any invites in the past.
-        const isAddressConfirmed = _.some(utxos, u => u.isInvite && u.txid !== out.txid);
+      async.series([
 
-        self.storage.fetchAddress(out.address, function (err, address) {
-          if (err) {
-            log.error('Could not fetch addresses from the db');
-            return next(err);
+        // 1. Fetch the address from storage
+        (cb) => {
+          self.storage.fetchAddress(out.address, (err, address) => {
+            if (err || !address) {
+              log.error('Could not fetch addresses from the db');
+              return cb(err);
+            }
+
+            if (!address || address.isChange) {
+              log.info('Address is not registered for notifications, skipping');
+              return cb('Address not registered for notifications');
+            }
+
+            cb(null, address);
+          });
+        },
+
+
+        // 2. Check if the address is confirmed IF NEEDED
+        (address, cb) => {
+
+          // we only need to know if the address is confirmed if we're handling invites
+          if (!data.isInvite) {
+            return cb(null, address, null);
           }
 
-          if (!address || address.isChange) {
-            log.info('Address is not registered for notifications, skipping');
-            return next(null);
-          }
+          explorer.getUtxos([out.address], true, (err, utxos) => {
+            utxos = utxos || [];
 
+            // Check if the recipient address is unlocked; by checking if it has
+            // received any invites in the past.
+            const isAddressConfirmed = utxos.some(u => u.isInvite && u.txid !== out.txid);
+
+            cb(null, address, isAddressConfirmed);
+          });
+        },
+
+        // 3. Set the appropriate notification type
+        (address, isAddressConfirmed, cb) => {
           const walletId = address.walletId;
 
           let notificationType = '';
 
           if (data.isCoinbase) {
-            notificationType = 'IncomingCoinbase';
+            if (out.index === 0) {
+              notificationType = 'MiningReward'
+            } else {
+              notificationType = 'GrowthReward'
+            }
           } else if (data.isInvite) {
             if (isAddressConfirmed) {
               notificationType = 'IncomingInvite';
@@ -340,20 +368,20 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
           log.info(
             `${notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${
               out.address
-            } ]`,
+              } ]`,
           );
 
           const fromTs = Date.now() - 24 * 3600 * 1000;
           self.storage.fetchNotifications(walletId, null, fromTs, function (err, notifications) {
-            if (err) return next(err);
+            if (err) return cb(err);
 
             const alreadyNotified = _.some(notifications, n =>
-              n.type == notificationType && n.data && n.data.txid == data.txid
+              n.type === notificationType && n.data && n.data.txid === data.txid
             );
 
             if (alreadyNotified) {
               log.info(`The incoming tx ${data.txid} was already notified`);
-              return next(null);
+              return cb(null);
             }
 
             const notification = Notification.create({
@@ -369,16 +397,23 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
 
             self.storage.softResetTxHistoryCache(walletId, function () {
               self._updateActiveAddress(address, function () {
-                self._storeAndBroadcastNotification(notification, next);
+                self._storeAndBroadcastNotification(notification, cb);
               });
             });
           });
-        });
+        },
+
+      ], (err) => {
+        if (err) {
+          // If an error occurs in our async.series,
+          // let's send it up the chain to async.seriesEach
+          next(err);
+        } else {
+          next(null);
+        }
       });
     },
-    function (err) {
-      return;
-    },
+    err => {}
   );
 };
 
