@@ -93,6 +93,9 @@ var config = {
       testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
     }
   },
-  meritMessagingUrl: process.env.MERIT_MESSAGING_URL || 'http://localhost:8300'
+  meritMessagingUrl: process.env.MERIT_MESSAGING_URL || 'http://localhost:8300',
+  smsOpts: {
+    enabled: process.env.SMS_ENABLED
+  }
 };
 module.exports = config;

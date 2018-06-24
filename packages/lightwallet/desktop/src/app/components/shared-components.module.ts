@@ -26,6 +26,7 @@ import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-
 import { UICheckboxComponent } from '@merit/desktop/app/components/ui-checkbox/ui-checkbox.component';
 import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/wallet-icon.component';
 import { ClipModule } from 'ng2-clip';
+import { WalletUnlockAlertComponent } from '@merit/desktop/app/components/wallet-unlock-alert/wallet-unlock-alert.component';
 
 export function getComponents() {
   return [
@@ -45,7 +46,8 @@ export function getComponents() {
     IllustationsYourWayComponent,
     GlobalsendLinkPopupComponent,
     UICheckboxComponent,
-    SmsNotificationsPromptComponent
+    WalletUnlockAlertComponent,
+    SmsNotificationsPromptComponent,
   ];
 }
 
@@ -55,15 +57,9 @@ export function getComponents() {
     PasswordPromptComponent,
     ConfirmDialogComponent,
     GlobalsendLinkPopupComponent,
-    SmsNotificationsPromptComponent
+    SmsNotificationsPromptComponent,
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ClipModule,
-    CommonDirectivesModule
-  ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule, CommonDirectivesModule],
   declarations: getComponents(),
   exports: getComponents(),
 })
@@ -77,7 +73,7 @@ export class SharedComponentsModule {
         PasswordPromptController,
         ConfirmDialogControllerService,
         GlobalsendLinkPopupController,
-        SmsNotificationsPromptController
+        SmsNotificationsPromptController,
       ],
     };
   }

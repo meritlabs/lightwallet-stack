@@ -5,7 +5,6 @@ import { filter, tap } from 'rxjs/operators';
 
 import { DashboardGuard } from '@merit/desktop/app/guards/dashboard.guard';
 import { OnboardingGuard } from '@merit/desktop/app/guards/onboarding.guard';
-import { MarketLoginView } from '@merit/desktop/app/market/market-login/market-login.view';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { IRootAppState } from '@merit/common/reducers';
@@ -32,7 +31,7 @@ export class CoreModuleResolver implements Resolve<void> {
 
 const routes: Routes = [
   { path: 'onboarding', loadChildren: './onboarding/onboarding.module#OnboardingModule', canActivate: [OnboardingGuard] },
-  { path: 'market-gate', component: MarketLoginView },
+  { path: 'market', loadChildren: './market/market.module#MarketModule', canActivate: [DashboardGuard] },
   { path: '', loadChildren: './core/core.module#CoreModule', canActivate: [DashboardGuard], resolve: { init: CoreModuleResolver } }
 ];
 
