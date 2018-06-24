@@ -260,20 +260,21 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
   // Let's format the object to be easier to process below.
   const outs = _.reduce(
     data.vout,
-    function (acc, v) {
-      if (v.isChangeOutput) {
+    function (acc, out, index) {
+      if (out.isChangeOutput) {
         return acc;
       }
 
-      const addr = _.keys(v)[0];
-      const amount = v[addr];
-      const result = {
-        address: addr,
-        amount: amount,
-      };
+      const address = _.keys(out)[0];
+      const amount = out[address];
 
-      return acc.concat(result);
-    }, [],
+      return acc.concat({
+        address,
+        amount,
+        index
+      });
+    },
+    []
   );
 
   // Let's roll up any vouts that go to the same address.
