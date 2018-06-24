@@ -1,0 +1,22 @@
+<div class="wrap">
+  <merit-icon name="unlock-attention"></merit-icon>
+  <div>
+    <ng-container *ngIf="unActive > 1; else oneUnActive">
+      <p>
+        Looks like you have
+        <strong>{{unActive}}</strong> pending wallets!
+      </p>
+    </ng-container>
+    <ng-template #oneUnActive>
+      <p>
+        Looks like you have a locked wallet!
+      </p>
+    </ng-template>
+
+    <p>
+      Remind the person who invited you to Merit to confirm your invite request.
+      <br>Once confirmed, your wallet will be unlocked and you'll be able to send, receive, and mine Merit.
+    </p>
+  </div>
+  <merit-icon name="unlock-attention"></merit-icon>
+</div>
