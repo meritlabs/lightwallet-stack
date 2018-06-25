@@ -3,8 +3,9 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
 import {
+  MarkTransactionsAsVisitedAction,
   RefreshOneWalletTransactions,
-  RefreshTransactionsAction,
+  RefreshTransactionsAction, selectTransactions,
   TransactionActionType,
   UpdateOneWalletTransactions,
   UpdateTransactionsAction
@@ -21,7 +22,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { flatten } from 'lodash';
+import { flatten, uniq } from 'lodash';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { distinctUntilKeyChanged, filter, map, switchMap, take, withLatestFrom } from 'rxjs/operators';
@@ -71,6 +72,18 @@ export class TransactionEffects {
     map((wallet: DisplayWallet) => new RefreshOneWalletTransactions(wallet.id))
   );
 
+  @Effect({ dispatch: false })
+  markAsVisited$ = this.actions$.pipe(
+    ofType(TransactionActionType.MarkAsVisited),
+    switchMap((action: MarkTransactionsAsVisitedAction) =>
+      this.store.select(selectTransactions)
+        .pipe(
+          take(1)
+        )
+    ),
+    map((transactions: IDisplayTransaction[]) => this.updateVisitedTransactions(transactions))
+  );
+
   constructor(private actions$: Actions,
               private walletService: WalletService,
               private store: Store<IRootAppState>,
@@ -82,6 +95,15 @@ export class TransactionEffects {
   private async getWalletHistory(wallet: DisplayWallet): Promise<IDisplayTransaction[]> {
     const walletHistory = await wallet.client.getTxHistory({ includeExtendedInfo: true }); // TODO (ibby: add this and do infinite loading --> { skip: 0, limit: 50, includeExtendedInfo: true } )
     const easySends = await this.persistenceService.getEasySends();
-    return formatWalletHistory(walletHistory, wallet.client, easySends, this.feeService);
+    const visitedTransactions = await this.persistenceService.getVisitedTransactions();
+    const formattedHistory: IDisplayTransaction[] = await formatWalletHistory(walletHistory, wallet.client, easySends, this.feeService, null, visitedTransactions);
+    await this.updateVisitedTransactions(formattedHistory);
+    return formattedHistory;
+  }
+
+  private async updateVisitedTransactions(transactions: IDisplayTransaction[]) {
+    const txs = await this.persistenceService.getVisitedTransactions() || [];
+    const newTxIds = transactions.map(tx => tx.txid);
+    return this.persistenceService.setVisitedTransactions(uniq(txs.concat(newTxIds)));
   }
 }

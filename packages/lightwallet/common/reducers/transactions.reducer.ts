@@ -1,4 +1,4 @@
-import { IDisplayTransaction, TransactionAction, ITransactionVisit } from '@merit/common/models/transaction';
+import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 import { sortBy, uniqBy } from 'lodash';
 
@@ -11,7 +11,8 @@ export enum TransactionActionType {
   Update = '[Transactions] Update',
   UpdateOne = '[Transactions] Update one',
   Refresh = '[Transactions] Refresh',
-  RefreshOne = '[Transactions] Refresh one'
+  RefreshOne = '[Transactions] Refresh one',
+  MarkAsVisited = '[Transactions] Mark as visited'
 }
 
 export class RefreshTransactionsAction implements Action {
@@ -24,14 +25,6 @@ export class UpdateTransactionsAction implements Action {
 
   constructor(public transactions: IDisplayTransaction[]) {
     let walletId: string;
-    let lstVisited: ITransactionVisit[] = JSON.parse(localStorage.getItem('lstVisited'));
-    let firstTime: boolean;
-    if (!lstVisited) {
-      lstVisited = [];
-      firstTime = true;
-    } else {
-      firstTime = false;
-    }
 
     this.transactions = sortBy(this.transactions, 'time').reverse();
 
@@ -42,34 +35,7 @@ export class UpdateTransactionsAction implements Action {
         this.transactionsByWallet[walletId] = [];
 
       this.transactionsByWallet[walletId].push(transaction);
-
-      if (firstTime) {
-        let transactionVisit: ITransactionVisit = { txid: transaction.txid, isNew: true };
-        lstVisited.push(transactionVisit);
-        transaction.isNew = true;
-      } else {
-        transaction.isNew = true;
-        let itemFound = false;
-        for (let i = 0; i < lstVisited.length; i++) {
-          if (lstVisited[i].txid == transaction.txid) {
-            console.log('Item found!');
-            itemFound = true;
-            transaction.isNew = false;
-            break;
-          }
-        }
-
-        // item not found so lets add it. 
-        if (!itemFound) {
-          let transactionVisit: ITransactionVisit = { txid: transaction.txid, isNew: true };
-          lstVisited.push(transactionVisit);
-        }
-      }
     });
-
-    //storage save
-    localStorage.setItem('lstVisited', JSON.stringify(lstVisited));
-
   }
 }
 
@@ -86,11 +52,17 @@ export class RefreshOneWalletTransactions implements Action {
   }
 }
 
+export class MarkTransactionsAsVisitedAction implements Action {
+  readonly type = TransactionActionType.MarkAsVisited;
+  constructor(public inviteOnly: boolean = false, public walletId?: string) {}
+}
+
 export type TransactionsReducerAction =
   RefreshTransactionsAction
   & UpdateTransactionsAction
   & UpdateOneWalletTransactions
-  & RefreshOneWalletTransactions;
+  & RefreshOneWalletTransactions
+  & MarkTransactionsAsVisitedAction;
 
 const DEFAULT_STATE: ITransactionsState = {
   transactions: [],
@@ -117,9 +89,20 @@ export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, a
         loading: false
       };
 
+    case TransactionActionType.MarkAsVisited:
+      return {
+        ...state,
+        transactions: state.transactions.map(tx => {
+          tx.isNew = false;
+          return tx
+        })
+      };
+
     default:
       return state;
   }
+
+
 }
 
 export const selectTransactionsState = createFeatureSelector<ITransactionsState>('transactions');
