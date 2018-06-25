@@ -2,7 +2,11 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { selectTransactions, selectTransactionsLoading } from '@merit/common/reducers/transactions.reducer';
+import {
+  MarkTransactionsAsVisitedAction,
+  selectTransactions,
+  selectTransactionsLoading
+} from '@merit/common/reducers/transactions.reducer';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
 
 @Component({
@@ -15,5 +19,7 @@ export class HistoryView {
   loading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
   transactions$: Observable<IDisplayTransaction[]> = this.store.select(selectTransactions);
 
-  constructor(private store: Store<IRootAppState>){}
+  constructor(private store: Store<IRootAppState>){
+    this.store.dispatch(new MarkTransactionsAsVisitedAction());
+  }
 }
