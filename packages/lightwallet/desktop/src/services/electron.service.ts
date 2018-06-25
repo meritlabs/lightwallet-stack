@@ -59,12 +59,13 @@ export class ElectronService {
     return m.IsStratumStopping() || m.IsMinerStopping();
   }
 
-  static startMining(url:string, address: string, workers: number, threadsPerWorker: number) {
+  static startMining(url:string, address: string, workers: number, threadsPerWorker: number, gpus: number) {
     let m = ElectronService.getMinerInstance();
     if(!m) { return false; } 
-    
+
     m.ConnectToStratum(url, address);
-    m.StartMiner(workers, threadsPerWorker);
+    m.StartMiner(workers, threadsPerWorker, gpus);
+
     return true;
   }
 
@@ -81,6 +82,12 @@ export class ElectronService {
     let m = ElectronService.getMinerInstance();
     if(!m) { return false; } 
     return m.NumberOfCores();
+  }
+
+  static numberOfGPUDevices() {
+    let m = ElectronService.getMinerInstance();
+    if(!m) { return false; }
+    return m.NumberOfGPUs();
   }
 
   static getMiningStats() {

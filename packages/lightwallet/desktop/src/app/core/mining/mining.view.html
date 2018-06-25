@@ -15,6 +15,13 @@
     <div class="ui-label range-slider">
         <input class="range-slider-range"  type="range" min="{{minCores}}" max="{{maxCores}}" value="{{cores}}" (input)="setCores($event)" (change)="setCores($event)" step="1"/>
         <output class="range-slider-value" (input)="cores">{{cores}}</output>
+    </div><br>
+
+    <div class="ui-label">GPU devices</div>
+
+    <div class="ui-label range-slider">
+      <input class="range-slider-range"  type="range" min="{{minGPUs}}" max="{{maxGPUs}}" value="{{gpus}}" (input)="setGPUs($event)" (change)="setGPUs($event)" step="1"/>
+      <output class="range-slider-value" (input)="gpus">{{gpus}}</output>
     </div>
   </div>
   <div [hidden]="!mining">
@@ -63,6 +70,15 @@
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
                   global-settings__group__item__title--dark">{{cores}}</label>
+              </div>
+          </div>
+          <div class="global-settings__group__item">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                  <label class="ui-label global-settings__group__item__title">GPU devices</label>
+              </div>
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+                  <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{gpus}}</label>
               </div>
           </div>
       </div>

@@ -34,9 +34,12 @@ export class MiningView {
   miningLabel: string;
   updateTimer: any; 
   statTimer: any; 
-  minCores: number = 1;
+  minCores: number = 0;
   maxCores: number;
+  minGPUs: number = 0;
+  maxGPUs: number;
   cores: number;
+  gpus: number;
   miningSettings: any;
   pools: any[];
   selectedPool: any;
@@ -51,6 +54,7 @@ export class MiningView {
     private addressService: AddressService) {
 
     this.maxCores = ElectronService.numberOfCores();
+    this.maxGPUs = ElectronService.numberOfGPUDevices();
     this.updateLabel();
     this.pools = [];
   }
@@ -73,6 +77,12 @@ export class MiningView {
         this.cores = this.miningSettings.cores; 
       } else {
         this.cores = Math.max(this.minCores, this.maxCores / 2); 
+      }
+
+      if(this.miningSettings.gpus) {
+        this.gpus = this.miningSettings.gpus;
+      } else {
+          this.gpus = Math.max(this.minGPUs, this.maxGPUs / 2) | 0;
       }
 
       if(this.miningSettings.selectedPool) {
@@ -173,8 +183,14 @@ export class MiningView {
     this.saveSettings();
   }
 
+  setGPUs(e: any) {
+    this.gpus = parseInt(e.target.value);
+    this.saveSettings();
+  }
+
   saveSettings() {
     this.miningSettings.cores = this.cores;
+    this.miningSettings.gpus = this.gpus;
     this.miningSettings.pools = this.pools;
     this.miningSettings.selectedPool = this.selectedPool;
     this.persistenceService.setMiningSettings(this.miningSettings);
@@ -200,10 +216,11 @@ export class MiningView {
 
     try
     {
-      ElectronService.startMining(this.selectedPool.url, this.address, this.workers, this.threadsPerWorker);
+      ElectronService.startMining(this.selectedPool.url, this.address, this.workers, this.threadsPerWorker, this.gpus);
       this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
       this.statTimer = setTimeout(this.updateStats.bind(this), 1000);
     } catch (e) {
+      console.log(e);
       this.error = "Error Connecting to the Selected Pool";
     }
   }
