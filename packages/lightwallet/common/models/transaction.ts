@@ -80,12 +80,7 @@ export interface IDisplayTransaction extends ITransaction {
   isNew: boolean;
 }
 
-export class Visited {
-  time:number;
+export interface ITransactionVisit {
+  txid: string;
   isNew: boolean;
-
-  constructor(time,isNew) {
-      this.time = time;
-      this.isNew = isNew;
-  }
 }
