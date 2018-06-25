@@ -139,6 +139,7 @@ export class ProfileService {
 
     this.wallets.push(wallet);
 
+    await this.refreshData();
     await this.storeProfile();
     return wallet;
   }
