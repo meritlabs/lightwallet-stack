@@ -1,4 +1,4 @@
-import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
+import { IDisplayTransaction, TransactionAction, ITransactionVisit } from '@merit/common/models/transaction';
 import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 import { sortBy, uniqBy } from 'lodash';
 
@@ -24,6 +24,14 @@ export class UpdateTransactionsAction implements Action {
 
   constructor(public transactions: IDisplayTransaction[]) {
     let walletId: string;
+    let lstVisited: ITransactionVisit[] = JSON.parse(localStorage.getItem('lstVisited'));
+    let firstTime: boolean;
+    if (!lstVisited) {
+      lstVisited = [];
+      firstTime = true;
+    } else {
+      firstTime = false;
+    }
 
     this.transactions = sortBy(this.transactions, 'time').reverse();
 
@@ -34,14 +42,41 @@ export class UpdateTransactionsAction implements Action {
         this.transactionsByWallet[walletId] = [];
 
       this.transactionsByWallet[walletId].push(transaction);
+
+      if (firstTime) {
+        let transactionVisit: ITransactionVisit = { txid: transaction.txid, isNew: true };
+        lstVisited.push(transactionVisit);
+        transaction.isNew = true;
+      } else {
+        transaction.isNew = true;
+        let itemFound = false;
+        for (let i = 0; i < lstVisited.length; i++) {
+          if (lstVisited[i].txid == transaction.txid) {
+            console.log('Item found!');
+            itemFound = true;
+            transaction.isNew = false;
+            break;
+          }
+        }
+
+        // item not found so lets add it. 
+        if (!itemFound) {
+          let transactionVisit: ITransactionVisit = { txid: transaction.txid, isNew: true };
+          lstVisited.push(transactionVisit);
+        }
+      }
     });
+
+    //storage save
+    localStorage.setItem('lstVisited', JSON.stringify(lstVisited));
+
   }
 }
 
 export class UpdateOneWalletTransactions implements Action {
   type = TransactionActionType.UpdateOne;
 
-  constructor(public walletId: string, public transactions: IDisplayTransaction[]) {}
+  constructor(public walletId: string, public transactions: IDisplayTransaction[]) { }
 }
 
 export class RefreshOneWalletTransactions implements Action {

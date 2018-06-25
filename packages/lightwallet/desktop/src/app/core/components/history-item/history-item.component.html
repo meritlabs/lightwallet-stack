@@ -2,9 +2,9 @@
   <img [src]="'/assets/v1/icons/' + image + '.svg'" alt="">
   <img *ngIf="tx.type === 'meritmoney'" [src]="'/assets/v1/icons/invite.svg'" alt="">
 </div>
-<div class="info">
+<div class="info" [ngClass]="{'info-new': tx.isNew}">
   <div>
-    <div class="title">
+    <div class="title" >
       <strong>{{ tx.name }} {{tx.isNew}}</strong>
     </div>
     <div class="title">
