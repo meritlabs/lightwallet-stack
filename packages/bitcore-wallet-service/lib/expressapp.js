@@ -988,7 +988,6 @@ ExpressApp.prototype.start = function(opts, cb) {
   });
 
   router.post('/v1/community/ranks/', function(req, res) {
-    console.log(req.body.addresses, 'ADDRESSES');
     getServerWithAuth(req, res, function(server) {
         server.getCommunityRanks(req.body.addresses, function(err, txs) {
             if (err) return returnError(err, res, req);
