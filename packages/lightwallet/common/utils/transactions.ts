@@ -5,7 +5,7 @@ import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritWalletClient } from "@merit/common/merit-wallet-client";
 import { FeeService } from "@merit/common/services/fee.service";
 
-export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [],  feeService: FeeService, contactsProvider?: ContactsService): Promise<IDisplayTransaction[]> {
+export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [],  feeService: FeeService, contactsProvider?: ContactsService, visitedTransactions?: string[]): Promise<IDisplayTransaction[]> {
   if (_.isEmpty(walletHistory)) return [];
 
   const easyReceiveFee = await feeService.getEasyReceiveFee();
@@ -134,6 +134,16 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
         meritMoneyAddresses.push(tx.addressTo);
         tx.fees += easyReceiveFee;
         tx.amount -= easyReceiveFee;
+      }
+    }
+
+    // Mark the transaction as new if needed
+    tx.isNew = true;
+
+    if (visitedTransactions) {
+      const found = visitedTransactions.find(txid => txid === tx.txid);
+      if (found) {
+        tx.isNew = false;
       }
     }
 

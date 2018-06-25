@@ -9,6 +9,7 @@ export enum StorageKey {
   NotificationSettings = 'merit_notification_settings',
   Notifications = 'merit_notifications',
   EasySends = 'merit_easysends',
+  VisitedTransactions = 'merit_visited_transactions',
   ViewSettingsPrefix = 'app_view_settings_',
 }
 
@@ -117,5 +118,13 @@ export class PersistenceService2 {
     for (let key in UserSettingsKey) {
       await this.setUserSettings(UserSettingsKey[key] as UserSettingsKey, false);
     }
+  }
+
+  getVisitedTransactions() {
+    return this.storage.get(StorageKey.VisitedTransactions);
+  }
+
+  setVisitedTransactions(transactions: string[]) {
+    return this.storage.set(StorageKey.VisitedTransactions, transactions);
   }
 }
