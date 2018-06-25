@@ -5,9 +5,13 @@ const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const url = require('url');
 const log = require('electron-log');
+
+// Configure logger
+log.transports.console.level = 'silly';
+log.transports.file.level = 'silly';
+
+// Configure auto updater
 autoUpdater.logger = log;
-autoUpdater.logger.transports.console.level = 'silly';
-autoUpdater.logger.transports.file.level = 'silly';
 autoUpdater.autoDownload = false;
 
 const appName = 'Merit Lightwallet';
