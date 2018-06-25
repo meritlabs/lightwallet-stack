@@ -8,5 +8,5 @@ export const ENV = {
   achievementApi: 'https://testnet.mws.merit.me/achievement-engine/api/v1',
   feeLevel: 'superEconomy',
   easyUrl: 'https://merit.test-app.link/',
-  discordBotApplication: 'https://discord-bot.merit.me/get-invite/?source=dlw',
+  discordBotApplication: 'https://test-merit-invite-discord-bot.herokuapp.com/get-invite/?source=dlw',
 };
