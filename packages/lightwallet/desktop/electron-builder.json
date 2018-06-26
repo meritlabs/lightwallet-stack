@@ -6,7 +6,14 @@
   },
   "mac": {
     "category": "public.app-category.utilities",
-    "target": "dmg"
+    "target": [
+      {
+        "target": "zip"
+      },
+      {
+        "target": "dmg"
+      }
+    ]
   },
   "linux": {
     "target": "deb"
