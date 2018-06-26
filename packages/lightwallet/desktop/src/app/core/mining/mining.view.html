@@ -11,7 +11,7 @@
     <app-select (selectionEvent)="selectPool($event)" [selected]="selectedPool" [input]="pools" cssClass="ui-input ui-input--select ui-input--form"></app-select>
 
     <div class="ui-label">CPU Threads</div>
-    
+
     <div class="ui-label range-slider">
         <input class="range-slider-range"  type="range" min="{{minCores}}" max="{{maxCores}}" value="{{cores}}" (input)="setCores($event)" (change)="setCores($event)" step="1"/>
         <output class="range-slider-value" (input)="cores">{{cores}}</output>
@@ -19,10 +19,25 @@
 
     <div class="ui-label">GPU devices</div>
 
-    <div class="ui-label range-slider">
-      <input class="range-slider-range"  type="range" min="{{minGPUs}}" max="{{maxGPUs}}" value="{{gpus}}" (input)="setGPUs($event)" (change)="setGPUs($event)" step="1"/>
-      <output class="range-slider-value" (input)="gpus">{{gpus}}</output>
+    <div class="global-settings__group gpu-devices__group">
+      <form class="details_settings" *ngIf="maxGPUs != 0">
+        <div class="global-settings__group__item" *ngFor="let item of gpus_info">
+              <div class="global-settings__group__item__column global-settings__group__item__column--70">
+                <label class="ui-label global-settings__group__item__title">{{ item.title }}</label>
+              </div>
+
+              <div class="global-settings__group__item__column global-settings__group__item__column--30">
+
+                <span class="switcher-container" [ngClass]="{'checked': item.value}" (click)="chooseGPU(item, $event)">
+                    <span class="switcher"></span>
+                </span>
+              </div>
+        </div>
+      </form>
+
+      <p *ngIf="maxGPUs == 0"> You do not have any GPU device yet</p>
     </div>
+
   </div>
   <div [hidden]="!mining">
       <div class="global-settings__group">
@@ -42,7 +57,7 @@
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{selectedPool? selectedPool.name : ''}}</label>
+                  global-settings__group__item__title--dark">{{selectedPool ? selectedPool.name : ''}}</label>
               </div>
           </div>
           <div class="global-settings__group__item">
@@ -78,7 +93,7 @@
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{gpus}}</label>
+                  global-settings__group__item__title--dark">{{ active_gpu_devices.length }}</label>
               </div>
           </div>
       </div>

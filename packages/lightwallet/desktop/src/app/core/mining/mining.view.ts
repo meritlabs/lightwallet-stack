@@ -1,19 +1,16 @@
-import { AddressService } from '@merit/common/services/address.service';
-import { Component, ViewEncapsulation} from '@angular/core';
-import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { ElectronService } from '@merit/desktop/services/electron.service';
-import { Observable } from 'rxjs/Observable';
-import { PersistenceService2 } from '@merit/common/services/persistence2.service';
-import { Store } from '@ngrx/store';
-import { Subscription } from 'rxjs/Subscription';
-import { WalletService } from '@merit/common/services/wallet.service';
+import {AddressService} from '@merit/common/services/address.service';
+import {Component, ViewEncapsulation} from '@angular/core';
+import {DisplayWallet} from '@merit/common/models/display-wallet';
+import {ElectronService} from '@merit/desktop/services/electron.service';
+import {Observable} from 'rxjs/Observable';
+import {PersistenceService2} from '@merit/common/services/persistence2.service';
+import {Store} from '@ngrx/store';
+import {WalletService} from '@merit/common/services/wallet.service';
 
-import {
-  selectWallets, selectWalletsLoading,
-} from '@merit/common/reducers/wallets.reducer';
+import {selectWallets, selectWalletsLoading,} from '@merit/common/reducers/wallets.reducer';
 
-import { IRootAppState } from '@merit/common/reducers';
-import { filter, take } from 'rxjs/operators';
+import {IRootAppState} from '@merit/common/reducers';
+import {filter, take} from 'rxjs/operators';
 
 @Component({
   selector: 'view-mining',
@@ -40,11 +37,13 @@ export class MiningView {
   maxGPUs: number;
   cores: number;
   gpus: number;
+  gpus_info: any[];
+  active_gpu_devices: number[] = [];
   miningSettings: any;
   pools: any[];
   selectedPool: any;
   mining: boolean = false;
-  stats: any;
+  stats: any = {};
   error: string;
 
   constructor(
@@ -55,6 +54,7 @@ export class MiningView {
 
     this.maxCores = ElectronService.numberOfCores();
     this.maxGPUs = ElectronService.numberOfGPUDevices();
+    this.gpus_info = ElectronService.GPUDevicesInfo();
     this.updateLabel();
     this.pools = [];
   }
@@ -96,6 +96,16 @@ export class MiningView {
             url: 'stratum+tcp://pool.merit.me:3333'
           },
           {
+              name: 'Merit Pool2',
+              website: 'https://pool2.merit.me',
+              url: 'stratum+tcp://pool2.merit.me:3333'
+          },
+          {
+              name: 'Merit Testnet Pool',
+              website: 'https://testnet.merit.me',
+              url: 'stratum+tcp://testnet.merit.me:3333'
+          },
+          {
             name: 'Parachute Pool',
             website: 'https://parachute.merit.me',
             url: 'stratum+tcp://parachute.merit.me:3333'
@@ -115,9 +125,29 @@ export class MiningView {
       ElectronService.setAgent();
       this.updateStats();
 
+      for (let info of this.gpus_info)
+          info['value'] = false;
+
     } catch (err) {
       if (err.text)
         console.log('Could not initialize: ', err.text);
+    }
+  }
+
+  chooseGPU(item, event): void {
+    this.gpus_info[this.gpus_info.indexOf(item)].value = !this.gpus_info[this.gpus_info.indexOf(item)].value;
+
+    for (let i = 0; i < this.gpus_info.length; i++) {
+      // push
+      let dev_index = this.active_gpu_devices.indexOf(this.gpus_info[i].id);
+      if(this.gpus_info[i].value && dev_index == -1){
+        this.active_gpu_devices.push(this.gpus_info[i].id);
+      }
+
+      // remove
+      if(!this.gpus_info[i].value && dev_index != -1){
+        this.active_gpu_devices.splice(dev_index, 1);
+      }
     }
   }
 
@@ -160,8 +190,7 @@ export class MiningView {
     return 'Start';
   }
 
-  updateLabel()
-  {
+  updateLabel() {
     this.miningLabel = this.mineButtonLabel();
     if(this.isStopping()) {
         this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
@@ -216,12 +245,13 @@ export class MiningView {
 
     try
     {
-      ElectronService.startMining(this.selectedPool.url, this.address, this.workers, this.threadsPerWorker, this.gpus);
+      ElectronService.startMining(this.selectedPool.url, this.address, this.workers, this.threadsPerWorker, this.active_gpu_devices);
       this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
       this.statTimer = setTimeout(this.updateStats.bind(this), 1000);
     } catch (e) {
       console.log(e);
-      this.error = "Error Connecting to the Selected Pool";
+      this.error = e.message;
+      // this.error = "Error Connecting to the Selected Pool";
     }
   }
 

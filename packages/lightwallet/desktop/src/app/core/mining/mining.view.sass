@@ -98,5 +98,48 @@ $range-label-width: 60px !default
     border: 0
 
 input::-moz-focus-inner, input::-moz-focus-outer  
-  border: 0 
+  border: 0
 
+.gpu-devices__group
+  padding: 15px 20px 15px
+
+.gpu-devices__group .global-settings__group__item__title
+  color: #484d5e
+
+
+.switcher
+  position: relative
+  z-index: 1
+  display: inline-block
+  height: 14px
+  width: 34px
+  border-radius: 500rem
+  background: #e9edf2
+  border: 1px solid #b7bcc8
+  +transition(.15s, ease-out)
+
+  &:hover
+    cursor: pointer
+
+  &::after
+    content: ""
+    display: block
+    position: absolute
+    width: 18px
+    height: 18px
+    border-radius: 25px
+    background: white
+    border: 1px solid #b7bcc8
+    left: -1px
+    top: -4px
+    +transition(.15s, ease-out)
+
+.switcher-container
+  position: relative
+  cursor: pointer
+  display: inline-block
+  &.checked
+    .switcher
+      background: $blue
+      &:after
+        left: 14px
