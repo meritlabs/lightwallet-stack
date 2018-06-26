@@ -53,6 +53,13 @@ export class ElectronService {
 
   static downloadUpdate(): Observable<IUpdateProgress> {
     return new Observable<IUpdateProgress>((observer: Observer<IUpdateProgress>) => {
+      observer.next({
+        total: 0,
+        transferred: 0,
+        percent: 0,
+        bytesPerSecond: 0
+      });
+
       this.electron.downloadUpdate((progress: IUpdateProgress) => {
         if (progress.percent === 100) {
           observer.complete();
