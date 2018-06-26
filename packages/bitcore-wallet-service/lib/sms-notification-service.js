@@ -8,7 +8,8 @@ const notificationsToSend = [
   'IncomingInvite',
   'WalletUnlocked',
   'IncomingInviteRequest',
-  'IncomingCoinbase',
+  'MiningReward',
+  'GrowthReward'
 ];
 
 function SmsNotificationService(opts) {
