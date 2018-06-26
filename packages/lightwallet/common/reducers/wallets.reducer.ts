@@ -50,7 +50,8 @@ export enum WalletsActionType {
   UpdateTotals = '[Wallets] Update totals',
   UpdateInviteRequests = '[Wallets] Update Invite Wait List',
   DeleteWallet = '[Wallets] Delete wallet',
-  DeleteWalletCompleted = '[Wallets] Delete wallet completed'
+  DeleteWalletCompleted = '[Wallets] Delete wallet completed',
+  IgnoreInviteRequest = '[Wallets] Ignore invite request'
 }
 
 export class AddWalletAction implements Action {
@@ -92,12 +93,6 @@ export class UpdateWalletTotalsAction implements Action {
   constructor(public totals: IWalletTotals) {}
 }
 
-export class UpdateInviteRequestsAction implements Action {
-  type = WalletsActionType.UpdateInviteRequests;
-
-  constructor(public inviteRequests: IUnlockRequest[]) {}
-}
-
 export class DeleteWalletAction implements Action {
   type = WalletsActionType.DeleteWallet;
   constructor(public walletId: string) {}
@@ -106,6 +101,17 @@ export class DeleteWalletAction implements Action {
 export class DeleteWalletCompletedAction implements Action {
   type = WalletsActionType.DeleteWalletCompleted;
   constructor(public walletId: string) {}
+}
+
+export class UpdateInviteRequestsAction implements Action {
+  type = WalletsActionType.UpdateInviteRequests;
+
+  constructor(public inviteRequests: IUnlockRequest[]) {}
+}
+
+export class IgnoreInviteRequestAction implements Action {
+  type = WalletsActionType.IgnoreInviteRequest;
+  constructor(public address: string) {}
 }
 
 export type WalletsAction =
@@ -117,7 +123,8 @@ export type WalletsAction =
   & UpdateWalletTotalsAction
   & UpdateInviteRequestsAction
   & DeleteWalletAction
-  & DeleteWalletCompletedAction;
+  & DeleteWalletCompletedAction
+  & IgnoreInviteRequestAction;
 
 export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
