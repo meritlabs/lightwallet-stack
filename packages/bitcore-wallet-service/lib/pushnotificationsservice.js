@@ -44,8 +44,11 @@ var PUSHNOTIFICATIONS_TYPES = {
   'IncomingInviteRequest': {
     filename: 'incoming_invite_request'
   },
-  'IncomingCoinbase': {
-    filename: 'incoming_coinbase',
+  MiningReward: {
+    filename: 'mining_reward'
+  },
+  GrowthReward: {
+    filename: 'growth_reward'
   },
   'TxProposalFinallyRejected': {
     filename: 'txp_finally_rejected',

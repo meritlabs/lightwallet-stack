@@ -1,0 +1,60 @@
+<div class="ui-prompt">
+  <h2 class="title">
+    A new update is available
+  </h2>
+  <div class="message">
+
+    <ng-container [ngSwitch]="step">
+
+      <ng-container *ngSwitchCase="'prompt'">
+
+        <strong>Version:</strong> {{ updateInfo.version }}<br>
+        <strong>Update size:</strong> {{ updateInfo.size }}<br>
+        <strong>Release date:</strong> {{ updateInfo.releaseDate | amTimeAgo }}<br>
+        <ng-container *ngIf="updateInfo.releaseNotes">
+          <strong>Release notes:</strong>
+          <ul>
+            <li *ngFor="let note of updateInfo.releaseNotes">- {{ note }}</li>
+          </ul>
+        </ng-container>
+
+        <br>
+        <br>
+
+        <p>
+          <strong>Would you like to download this update?</strong>
+        </p>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'downloading'">
+        Downloading update...
+        <br>
+        Downloaded {{ downloadProgress.transferred }}MB of {{ downloadProgress.total }}MB
+        ({{ downloadProgress.percent }}%).
+        <br>
+        Estimated time remaining: {{ downloadProgress.timeRemaining }} seconds.
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'downloaded'">
+        The update was successfully downloaded! <br>
+        Would you like to install the update now? This step should take a few seconds.
+      </ng-container>
+
+    </ng-container>
+
+  </div>
+  <div class="controls" *ngIf="step !== 'downloading'">
+    <ng-container *ngIf="step === 'prompt'; else downloaded">
+      <div class="vertical-controls">
+        <button class="ui-button ui-button--md primary" (click)="downloadUpdate()">Download update</button>
+        <button class="ui-button ui-button--md" (click)="dismiss()">Remind me later</button>
+        <button class="ui-button ui-button--md" (click)="skipUpdate()">Skip this update</button>
+      </div>
+    </ng-container>
+    <ng-template #downloaded>
+      <button class="ui-button ui-button--md primary" (click)="installUpdate()">Install now</button>
+      <button class="ui-button ui-button--md" (click)="dismiss()">Install when I quit</button>
+    </ng-template>
+  </div>
+</div>
+<app-backdrop></app-backdrop>
