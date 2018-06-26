@@ -1,12 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
 import { GoalsService } from '@merit/common/services/goals.service';
 import { TaskSlug, ProgressStatus, IFullGoal, GoalSlug } from '@merit/common/models/goals';
-import { SetTaskStatus } from '@merit/common/reducers/goals.reducer';
 
 @Component({
   selector: 'task-preview',
@@ -14,18 +12,18 @@ import { SetTaskStatus } from '@merit/common/reducers/goals.reducer';
   styleUrls: ['./task-preview.component.sass'],
 })
 export class TaskPreviewComponent implements OnInit {
-  constructor(
-    private router: Router,
-    private store: Store<IRootAppState>,
-    private goalService: GoalsService
-  ) {}
+  constructor(private router: Router, private store: Store<IRootAppState>, private goalService: GoalsService) {}
 
   @Input() goal: IFullGoal;
-  @Input() wallet: DisplayWallet;
   @Input() isComplete: boolean;
+  @Input() isConfirmed: boolean;
 
   route: string;
   readinessBackground: string;
+
+  get showLockOverlay() {
+    return !this.isConfirmed && this.goal.slug !== 'creator';
+  }
 
   async ngOnInit() {
     const toDo = this.goal.tasks.filter((item: any) => item.status === ProgressStatus.Incomplete),
