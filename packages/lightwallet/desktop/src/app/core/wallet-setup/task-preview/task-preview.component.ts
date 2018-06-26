@@ -21,7 +21,7 @@ export class TaskPreviewComponent implements OnInit {
   route: string;
   readinessBackground: string;
 
-  get setLockOverlay() {
+  get showLockOverlay() {
     return !this.isConfirmed && this.goal.slug !== 'creator';
   }
 
