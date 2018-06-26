@@ -30,7 +30,7 @@ export class TaskPreviewComponent implements OnInit {
     this.readinessBackground = `linear-gradient(to right, #74cd4f ${readiness}%, #555b7033 ${readiness}%)`;
   }
 
-  private setLockOverlay() {
+  setLockOverlay() {
     if (!this.isConfirmed && this.goal.slug !== 'creator') {
       return true;
     }
