@@ -41,7 +41,7 @@ export class HistoryListComponent {
     );
   isWalletUnlocked$: Observable<boolean> = this.store.select(selectPrimaryWallet)
     .pipe(
-      map((wallet: DisplayWallet) => wallet.confirmed)
+      map((wallet: DisplayWallet) => wallet && wallet.confirmed)
     );
 
   constructor(private store: Store<IRootAppState>) {}
