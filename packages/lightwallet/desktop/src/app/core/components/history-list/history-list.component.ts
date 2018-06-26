@@ -55,7 +55,7 @@ export class HistoryListComponent {
 
     if (this.transactions.some((tx: IDisplayTransaction) =>
       tx.action === TransactionAction.INVITE &&
-      tx.isCoinbase &&
+      !tx.isWalletUnlock &&
       tx.walletId === primaryWallet.id
     )) {
       console.log('~~~ Got a mined invite');
