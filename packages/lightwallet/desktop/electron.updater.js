@@ -1,5 +1,9 @@
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
+const { app } = require('electron');
+const appVersion = app.getVersion();
+
+log.info('Current app version is ', appVersion);
 
 const checkForUpdates = async () => {
   if (process.platform === 'linux') {
