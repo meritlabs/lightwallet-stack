@@ -14,6 +14,11 @@ const checkForUpdates = async () => {
   try {
     const res = await autoUpdater.checkForUpdates();
     if (res && res.updateInfo && res.updateInfo.files && res.updateInfo.files.length) {
+      if (res.updateInfo.version === appVersion) {
+        // No update is required
+        return;
+      }
+
       log.info('Got an update: ', res.updateInfo);
 
       const file = res.updateInfo.files[0];
