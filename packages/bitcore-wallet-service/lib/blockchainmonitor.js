@@ -313,10 +313,10 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
           self.storage.fetchAddress(out.address, (err, addr) => {
             if (err || !addr) {
               log.error('Could not fetch addresses from the db');
-              return cb(err);
+              return cb(err || 'Address not found');
             }
 
-            if (!addr || addr.isChange) {
+            if (addr.isChange) {
               log.info('Address is not registered for notifications, skipping');
               return cb('Address not registered for notifications');
             }
@@ -331,7 +331,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
 
           // we only need to know if the address is confirmed if we're handling invites
           if (!data.isInvite) {
-            return cb(null);
+            return cb();
           }
 
           explorer.getUtxos([out.address], true, (err, utxos) => {
@@ -383,7 +383,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
 
             if (alreadyNotified) {
               log.info(`The incoming tx ${data.txid} was already notified`);
-              return cb(null);
+              return cb();
             }
 
             const notification = Notification.create({
