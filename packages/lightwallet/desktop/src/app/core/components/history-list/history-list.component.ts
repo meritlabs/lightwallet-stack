@@ -8,6 +8,7 @@ import { getLatestDefinedValue, getLatestValue } from '@merit/common/utils/obser
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @Component({
   selector: 'history-list',
@@ -32,10 +33,15 @@ export class HistoryListComponent {
   @Input() widget: boolean;
 
   viewPortItems: IDisplayTransaction[];
-  taskSlug: TaskSlug = TaskSlug.MineInvite;
-  isInviteMined$: Observable<boolean> = this.store.select(selectStatusForTask(this.taskSlug))
+  mineInviteTaskSlug: TaskSlug = TaskSlug.MineInvite;
+  unlockTaskSlug: TaskSlug = TaskSlug.UnlockWallet;
+  isInviteMined$: Observable<boolean> = this.store.select(selectStatusForTask(this.mineInviteTaskSlug))
     .pipe(
-      map(status => status !== ProgressStatus.Incomplete)
+      map((status: ProgressStatus) => status !== ProgressStatus.Incomplete)
+    );
+  isWalletUnlocked$: Observable<boolean> = this.store.select(selectPrimaryWallet)
+    .pipe(
+      map((wallet: DisplayWallet) => wallet.confirmed)
     );
 
   constructor(private store: Store<IRootAppState>) {}
@@ -53,7 +59,7 @@ export class HistoryListComponent {
       tx.walletId === primaryWallet.id
     )) {
       console.log('~~~ Got a mined invite');
-      this.store.dispatch(new SetTaskStatus(this.taskSlug, ProgressStatus.Complete));
+      this.store.dispatch(new SetTaskStatus(this.mineInviteTaskSlug, ProgressStatus.Complete));
     }
   }
 }

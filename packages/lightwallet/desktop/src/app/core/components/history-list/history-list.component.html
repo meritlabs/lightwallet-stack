@@ -3,7 +3,10 @@
 </ng-container>
 <ng-template #loaded>
   <div class="container--inner">
-    <task-confirm [taskSlug]="taskSlug" [isDone]="isInviteMined$ | async"></task-confirm>
+    <task-confirm *ngIf="isWalletUnlocked$ | async; else unlockTask" [taskSlug]="mineInviteTaskSlug" [isDone]="isInviteMined$ | async"></task-confirm>
+    <ng-template #unlockTask>
+      <task-confirm [taskSlug]="unlockTaskSlug" [isDone]="isInviteMined$ | async"></task-confirm>
+    </ng-template>
   </div>
   <ng-container *ngIf="transactions?.length; else noItems">
     <virtual-scroll [items]="transactions" (update)="viewPortItems = $event">

@@ -23,9 +23,7 @@ import {
   StatusByTask,
 } from '@merit/common/reducers/goals.reducer';
 import { selectPrimaryWallet } from '@merit/common/reducers/interface-preferences.reducer';
-import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { ProfileService } from '@merit/common/services/profile.service';
-import { getLatestValue } from '@merit/common/utils/observables';
 import { Store } from '@ngrx/store';
 
 const GoalData: { [goalSlug: string]: Partial<IFullGoal> } = {
