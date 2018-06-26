@@ -53,7 +53,7 @@ export class RefreshOneWalletTransactions implements Action {
 }
 
 export class MarkTransactionsAsVisitedAction implements Action {
-  readonly type = TransactionActionType.MarkAsVisited;
+  type = TransactionActionType.MarkAsVisited;
   constructor(public inviteOnly: boolean = false, public walletId?: string) {}
 }
 
