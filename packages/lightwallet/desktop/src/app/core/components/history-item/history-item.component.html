@@ -4,8 +4,9 @@
 </div>
 <div class="info" [ngClass]="{'info-new': tx.isNew}">
   <div>
-    <div class="title" >
-      <strong>{{ tx.name }} {{tx.isNew}}</strong>
+    <div class="title" [ngClass]="{'title-new': tx.isNew}" >
+      <strong>{{ tx.name }}</strong>
+      <img *ngIf="tx.isNew" [src]="'/assets/v1/icons/award.svg'" alt="">
     </div>
     <div class="title">
       {{ isCredit? 'Received to:' : 'Sent from:' }}
