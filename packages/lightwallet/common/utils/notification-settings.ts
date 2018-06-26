@@ -74,32 +74,35 @@ export class NotificationSettingsController {
               private smsNotificationsService: SmsNotificationsService,
               private formBuilder: FormBuilder,
               private toastCtrl: ToastControllerService,
-              private platform: 'ios' | 'android' | 'desktop') {
+              private platform: 'ios' | 'android' | 'desktop') {}
+
+  async init() {
+    const settings = await this.persistenceService.getNotificationSettings();
+
+    const status = await this.smsNotificationsService.getSmsSubscriptionStatus();
+
     const smsNotificationSettings = [];
 
     Object.keys(SmsNotificationSetting)
       .forEach((key: keyof SmsNotificationSetting) => {
-        this.formData.addControl(SmsNotificationSetting[key], new FormControl());
+        this.formData.addControl(SmsNotificationSetting[key], new FormControl(status && status.settings && status.settings[key]));
+
         smsNotificationSettings.push({
           name: SmsNotificationSetting[key],
           label: smsNotificationSettingsText[key]
         });
       });
-  }
-
-  async init() {
-    const settings = await this.persistenceService.getNotificationSettings();
 
     if (!isEmpty(settings)) {
-      this.formData.setValue(settings, { emitEvent: false });
+      this.formData.patchValue(settings, { emitEvent: false });
     }
-
-    const status = await this.smsNotificationsService.getSmsSubscriptionStatus();
 
     if (status) {
       this.smsNotifications.setValue(status.enabled, { emitValue: false });
       this.phoneNumber.setValue(status.phoneNumber || '', { emitValue: false });
     }
+
+    this.smsNotificationSettings = smsNotificationSettings;
 
     this.subs.push(
       this.formData.valueChanges
@@ -152,8 +155,17 @@ export class NotificationSettingsController {
         .subscribe()
     );
 
+    const smsObservables = [
+      this.formData.get('smsNotifications').valueChanges,
+      this.formData.get('phoneNumber').valueChanges
+    ];
+
+    this.smsNotificationSettings.forEach(({ name }) =>
+      smsObservables.push(this.formData.get(name).valueChanges)
+    );
+
     this.subs.push(
-      merge(this.formData.get('smsNotifications').valueChanges, this.formData.get('phoneNumber').valueChanges)
+      merge.apply(merge, smsObservables)
         .pipe(
           tap(() => this.smsStatus.next('none')),
           filter(() => this.smsNotifications.value == false || this.phoneNumber.valid),
@@ -190,10 +202,9 @@ export class NotificationSettingsController {
 
   private getSmsNotificationSettings() {
     const formValue = this.formData.getRawValue();
-    const settings = {};
-    this.smsNotificationSettings.forEach(setting => {
-      settings[setting.name] = formValue[setting.name];
-    });
-    return settings;
+    return this.smsNotificationSettings.reduce((settings, { name }) => {
+      settings[name] = formValue[name];
+      return settings;
+    }, {});
   }
 }

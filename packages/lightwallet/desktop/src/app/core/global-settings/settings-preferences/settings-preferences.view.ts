@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { SetPrimaryWalletAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { DeleteWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
-import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
@@ -16,19 +16,15 @@ import { PasswordPromptController } from '@merit/desktop/app/components/password
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { ElectronService } from '@merit/desktop/services/electron.service';
 import { State, Store } from '@ngrx/store';
-import { isEmpty } from 'lodash';
 import 'rxjs/add/operator/toPromise';
-import { fromPromise } from 'rxjs/observable/fromPromise';
-import { merge } from 'rxjs/observable/merge';
-import { debounceTime, filter, switchMap, take, tap } from 'rxjs/operators';
-import { Subscription } from 'rxjs/Subscription';
+import { take } from 'rxjs/operators';
 
 declare const WEBPACK_CONFIG: any;
 
 @Component({
   selector: 'view-settings-preferences',
   templateUrl: './settings-preferences.view.html',
-  styleUrls: ['./settings-preferences.view.sass'],
+  styleUrls: ['./settings-preferences.view.sass']
 })
 export class SettingsPreferencesView implements OnInit, OnDestroy {
 
@@ -84,11 +80,11 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
         {
           text: 'Delete',
           value: 'delete',
-          class: 'primary danger',
+          class: 'primary danger'
         },
         {
-          text: 'Cancel',
-        },
+          text: 'Cancel'
+        }
       ]
     );
 
