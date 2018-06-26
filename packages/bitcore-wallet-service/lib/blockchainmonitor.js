@@ -304,25 +304,24 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
     filteredOutputs,
     function (out, next) {
 
-      let address,
-        isAddressConfirmed
-      ;
+      let address, isAddressConfirmed;
 
       async.series([
 
         // 1. Fetch the address from storage
         (cb) => {
-          self.storage.fetchAddress(out.address, (err, address) => {
-            if (err || !address) {
+          self.storage.fetchAddress(out.address, (err, addr) => {
+            if (err || !addr) {
               log.error('Could not fetch addresses from the db');
               return cb(err);
             }
 
-            if (!address || address.isChange) {
+            if (!addr || addr.isChange) {
               log.info('Address is not registered for notifications, skipping');
               return cb('Address not registered for notifications');
             }
 
+            address = addr;
             cb();
           });
         },
