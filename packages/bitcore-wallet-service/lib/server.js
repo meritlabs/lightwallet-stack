@@ -3812,6 +3812,10 @@ WalletService.prototype.getSmsNotificationSubscription = function(cb) {
       return cb(err, null);
     }
 
+    if (!result) {
+      return cb(null, null);
+    }
+
     // Older subscriptions will not have a settings property,
     // We should attach the default settings to the document &
     // send the updated doc to the client side
