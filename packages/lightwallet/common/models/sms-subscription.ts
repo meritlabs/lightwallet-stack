@@ -12,7 +12,7 @@ export type ISmsNotificationSettings = {
 
 export enum SmsNotificationSetting {
   IncomingTx = 'IncomingTx',
-  IncomingInvite = 'IncominOgInvite',
+  IncomingInvite = 'IncomingInvite',
   IncomingInviteRequest = 'IncomingInviteRequest',
   WalletUnlocked = 'WalletUnlocked',
   MiningReward = 'MiningReward',
