@@ -27,9 +27,7 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 export class PhraseImportView {
 
   formData: FormGroup = this.formBuilder.group({
-    words: ['', [Validators.required, MnemonicValidator.validateMnemonicImport]],
-    password: '',
-    mwsUrl: ENV.mwsUrl
+    words: ['', [Validators.required, MnemonicValidator.validateMnemonicImport]]
   });
 
   showPass: boolean;
@@ -54,7 +52,7 @@ export class PhraseImportView {
   async importMnemonic() {
     this.loadingCtrl.show();
 
-    let { words, password, mwsUrl } = this.formData.getRawValue();
+    let { words } = this.formData.getRawValue();
     words = words.replace(/\s\s+/g, ' ').trim();
 
     try {
@@ -77,7 +75,6 @@ export class PhraseImportView {
         opts.extendedPublicKey = words;
         wallet = await this.walletService.importExtendedPublicKey(opts);
       } else {
-        opts.passphrase = password;
         wallet = await this.mnemonicService.importMnemonic(words, opts);
       }
 

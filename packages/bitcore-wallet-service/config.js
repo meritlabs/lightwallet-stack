@@ -92,6 +92,10 @@ var config = {
       livenet: 'https://insight.bitpay.com/tx/{{txid}}',
       testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
     }
+  },
+  meritMessagingUrl: process.env.MERIT_MESSAGING_URL || 'http://localhost:8300',
+  smsOpts: {
+    enabled: process.env.SMS_ENABLED
   }
 };
 module.exports = config;

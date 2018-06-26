@@ -18,16 +18,16 @@ export function accessWallet(target, key: string, descriptor: any) {
 
   return {
     value: async function (...args:any[]) {
+      const wallet: MeritWalletClient = args[0];
 
-      let wallet = args[0];
       if (!wallet || !wallet.credentials) {
         throw new Error(`first argument of ${key} method should be type of MeritWalletClient so we can check access`);
       }
 
-      let password = null;
+      let password;
       if (wallet.isPrivKeyEncrypted()) {
         try {
-          password = await  this.alertCtrl.promptForWalletPassword(wallet);
+          password = await this.alertCtrl.promptForWalletPassword(wallet);
         } catch (e) {
           console.warn(e);
           throw new Error('No access to wallet');
@@ -195,6 +195,7 @@ export class WalletService {
   @accessWallet
   async sendMeritInvite(wallet: MeritWalletClient, invitesNumber: number = 1, password?: string) {
     const easySend = await this.easySendService.createEasySendScriptHash(wallet, password);
+    easySend.inviteOnly = true;
 
     const referral = easySend.scriptReferralOpts;
     await wallet.sendReferral(referral);

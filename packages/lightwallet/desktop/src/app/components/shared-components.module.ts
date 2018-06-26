@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonDirectivesModule } from '@merit/common/common-directives.module';
 import { ToastControllerService as ToastControllerServiceBase } from '@merit/common/services/toast-controller.service';
 import { BackdropComponent } from '@merit/desktop/app/components/backdrop/backdrop.component';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
@@ -18,11 +19,17 @@ import { MeritIconComponent } from '@merit/desktop/app/components/merit-icon/mer
 import { MessageBoxComponent } from '@merit/desktop/app/components/message-box/message-box.component';
 import { PasswordPromptComponent } from '@merit/desktop/app/components/password-prompt/password-prompt.component';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
+import { SmsNotificationsPromptComponent } from '@merit/desktop/app/components/sms-notifications-prompt/sms-notifications-prompt.component';
+import { SmsNotificationsPromptController } from '@merit/desktop/app/components/sms-notifications-prompt/sms-notifications-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-notification/toast-notification.component';
 import { UICheckboxComponent } from '@merit/desktop/app/components/ui-checkbox/ui-checkbox.component';
+import { UpdateDialogComponent } from '@merit/desktop/app/components/update-dialog/update-dialog.component';
+import { UpdateDialogController } from '@merit/desktop/app/components/update-dialog/update-dialog.controller';
 import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/wallet-icon.component';
 import { ClipModule } from 'ng2-clip';
+import { WalletUnlockAlertComponent } from '@merit/desktop/app/components/wallet-unlock-alert/wallet-unlock-alert.component';
+import { MomentModule } from 'ngx-moment';
 
 export function getComponents() {
   return [
@@ -41,7 +48,10 @@ export function getComponents() {
     IllustationsThatsItComponent,
     IllustationsYourWayComponent,
     GlobalsendLinkPopupComponent,
-    UICheckboxComponent
+    UICheckboxComponent,
+    WalletUnlockAlertComponent,
+    SmsNotificationsPromptComponent,
+    UpdateDialogComponent
   ];
 }
 
@@ -50,16 +60,13 @@ export function getComponents() {
     ToastNotificationComponent,
     PasswordPromptComponent,
     ConfirmDialogComponent,
-    GlobalsendLinkPopupComponent
+    GlobalsendLinkPopupComponent,
+    SmsNotificationsPromptComponent,
+    UpdateDialogComponent
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ClipModule
-  ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule, CommonDirectivesModule, MomentModule],
   declarations: getComponents(),
-  exports: getComponents()
+  exports: getComponents(),
 })
 export class SharedComponentsModule {
   static forRoot(): ModuleWithProviders {
@@ -70,8 +77,10 @@ export class SharedComponentsModule {
         { provide: ToastControllerServiceBase, useClass: ToastControllerService },
         PasswordPromptController,
         ConfirmDialogControllerService,
-        GlobalsendLinkPopupController
-      ]
+        GlobalsendLinkPopupController,
+        SmsNotificationsPromptController,
+        UpdateDialogController
+      ],
     };
   }
 }

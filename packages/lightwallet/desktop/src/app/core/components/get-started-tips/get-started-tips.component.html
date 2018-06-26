@@ -12,7 +12,7 @@
         <ul>
           <li>
             Tell your friends your share code:
-            <button class="ui-button ui-button--xs ui-button--blue" (click)="showShare = true">share now</button>
+            <button class="ui-button ui-button--xs ui-button--blue" (click)="showShare()">share now</button>
           </li>
           <li>
             Share a summary of Merit with friends!
@@ -149,4 +149,3 @@
     </blockquote>
   </div>
 </div>
-<app-share-box *ngIf="showShare" (dismiss)="shareActivate(false)"></app-share-box>

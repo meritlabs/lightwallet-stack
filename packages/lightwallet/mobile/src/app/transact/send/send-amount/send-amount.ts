@@ -20,7 +20,7 @@ import {
   NavController,
   NavParams
 } from 'ionic-angular';
-
+import { getSendMethodDestinationType } from '@merit/common/utils/destination';
 
 @IonicPage()
 @Component({
@@ -38,7 +38,14 @@ export class SendAmountView {
   public feeCalcError: string;
 
   public amount = { micros: 0, mrt: 0, fiat: 0 };
-  public formData = { amount: '', password: '', confirmPassword: '', nbBlocks: 10080, validTill: '' };
+  public formData = {
+    amount: '',
+    password: '',
+    confirmPassword: '',
+    nbBlocks: 10080,
+    validTill: '',
+    destination: ''
+  };
 
   public readonly CURRENCY_TYPE_MRT = 'mrt';
   public readonly CURRENCY_TYPE_FIAT = 'fiat';
@@ -267,25 +274,31 @@ export class SendAmountView {
       content: 'Calculating fee...',
       dismissOnPageChange: true
     });
+
     loader.present();
 
-    try {
-      const fee = await this.sendService.estimateFee(this.selectedWallet, this.amount.micros,  (this.sendMethod.type == SendMethodType.Easy), this.sendMethod.value);
+    if (this.sendMethod.type === SendMethodType.Easy) {
+      const destinationType = getSendMethodDestinationType(this.formData.destination);
 
-      if (this.formData.password && (this.formData.password != this.formData.confirmPassword)) {
-        this.feeCalcError = 'Passwords do not match';
+      if (destinationType) {
+        this.sendMethod.destination = destinationType;
+        this.sendMethod.value = this.formData.destination;
       }
+    }
 
-      this.navCtrl.push('SendConfirmationView', {txData: {
-        amount: this.amount.micros,
+    try {
+      const fee = await this.sendService.estimateFee(this.selectedWallet, this.amount .micros,  ( this.sendMethod.type == SendMethodType.Easy), this.sendMethod.value);
+      if (this.formData.password && (this.formData.password !=this.formData.confirmPassword)) { this.feeCalcError = 'Passwords do not match';
+      }
+      this.navCtrl.push('SendConfirmationView', { txData: {
+        amount:this.amount.micros,
         password: this.formData.password,
         fee: fee,
         wallet: this.selectedWallet,
         feeIncluded: this.feeIncluded,
         sendMethod: this.sendMethod,
         toAddress: this.sendMethod.value || 'MeritMoney link',
-        recipient: this.recipient
-      }});
+        recipient: this.recipient }});
     } catch (e) {
       this.logger.warn(e);
       return this.feeCalcError = e.message;
