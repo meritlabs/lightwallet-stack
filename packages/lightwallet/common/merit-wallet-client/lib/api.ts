@@ -2567,7 +2567,7 @@ export class API {
     return this._doDeleteRequest(url);
   };
 
-  smsNotificationsSubscribe(phoneNumber: string, platform?: string, settings: ISmsNotificationSettings) {
+  smsNotificationsSubscribe(phoneNumber: string, platform: string, settings: ISmsNotificationSettings) {
     return this._doPostRequest('/v1/sms-notifications', {
       phoneNumber,
       platform,
