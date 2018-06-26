@@ -1,3 +1,15 @@
+.ios view-receive {
+  .scroll-content {
+    margin-bottom: 336px !important;
+  }
+
+  ion-content.footerCollapsed {
+    .scroll-content {
+      margin-bottom: 94px !important;
+    }
+  }
+}
+
 view-receive {
 
   .unlock-screen {
@@ -83,6 +95,10 @@ view-receive {
   .scroll-content {
     background: #d5dbe3;
     height: auto;
+
+    margin-bottom: 344px !important;
+
+    transition: margin-bottom .2s ease-in-out;
   }
 
   .address {
@@ -120,6 +136,11 @@ view-receive {
 
   ion-footer {
     padding: 0;
+    transition: all .2s ease-in-out;
+
+    .footer-toggle-button {
+    }
+
     &:before {
       display: none;
     }
@@ -142,6 +163,13 @@ view-receive {
       .item:last-child:after {
         display: none;
       }
+    }
+  }
+
+
+  ion-content.footerCollapsed {
+    .scroll-content {
+      margin-bottom: 102px !important;
     }
   }
 

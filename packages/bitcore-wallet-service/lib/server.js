@@ -881,7 +881,7 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
     walletId: walletId,
   });
 
-  this.storage.storeNotification(walletId, notification, () => {
+  this.storage.storeNotification(notification, () => {
     this.messageBroker.send(notification);
     return cb();
   });
@@ -902,6 +902,7 @@ WalletService.prototype._notifyTxProposalAction = function(type, txp, extraArgs,
     amount: txp.getTotalAmount(),
     message: txp.message,
   }, extraArgs);
+
   self._notify(type, data, {}, cb);
 };
 
@@ -2883,8 +2884,11 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
     var extraArgs = {
       txid: txp.txid,
     };
-    if (opts.byThirdParty) {
+
+    if (opts.byThirdParty && !txp.isInvite) {
       self._notifyTxProposalAction('OutgoingTxByThirdParty', txp, extraArgs);
+    } else if (txp.isInvite) {
+      self._notifyTxProposalAction('OutgoingInviteTx', txp, extraArgs);
     } else {
       self._notifyTxProposalAction('OutgoingTx', txp, extraArgs);
     }
@@ -3765,6 +3769,73 @@ WalletService.prototype.pushNotificationsUnsubscribe = function(opts, cb) {
   var self = this;
 
   self.storage.removePushNotificationSub(self.copayerId, opts.token, cb);
+};
+
+// *** Backwards compatibility start *** //
+// These are the default settings for SMS subscriptions
+const DEFAULT_SMS_SUB_SETTINGS = {
+  IncomingTx: true,
+  IncomingInvite: true,
+  IncomingInviteRequest: true,
+  WalletUnlocked: true,
+  MiningReward: true,
+  GrowthReward: true
+};
+// *** Backwards compatibility end *** //
+
+WalletService.prototype.smsNotificationsSubscribe = function(opts, cb) {
+  if (!opts.phoneNumber)
+    return cb('Phone number was not provided');
+
+  // *** Backwards compatibility start *** //
+  // This will ensure that we have notification settings to store in the DB
+  // Old clients will not send any settings & we should subscribe them to all events by default
+  opts.settings = opts.settings || DEFAULT_SMS_SUB_SETTINGS;
+  // *** Backwards compatibility end *** //
+
+  this.storage.storeSmsNotificationSub({
+    walletId: this.walletId,
+    phoneNumber: opts.phoneNumber,
+    platform: opts.platform,
+    settings: opts.settings
+  }, cb);
+};
+
+WalletService.prototype.smsNotificationsUnsubscribe = function(cb) {
+  this.storage.removeSmsNotificationSub(this.walletId, cb);
+};
+
+WalletService.prototype.getSmsNotificationSubscription = function(cb) {
+  this.storage.fetchSmsNotificationSub(this.walletId, (err, result) => {
+    // *** Backwards compatibility start *** //
+    if (err) {
+      return cb(err, null);
+    }
+
+    if (!result) {
+      return cb(null, null);
+    }
+
+    // Older subscriptions will not have a settings property,
+    // We should attach the default settings to the document &
+    // send the updated doc to the client side
+    if (!result.settings) {
+      result.settings = DEFAULT_SMS_SUB_SETTINGS;
+    }
+
+    // Send obj back to client
+    cb(null, result);
+
+    // Update the doc behind the scenes
+    this.smsNotificationsSubscribe(result, (err) => {
+      if (err) {
+        console.log('Error upgrading SMS subscription');
+      } else {
+        console.log('Upgraded SMS subscription!');
+      }
+    });
+    // *** Backwards compatibility end *** //
+  });
 };
 
 /**

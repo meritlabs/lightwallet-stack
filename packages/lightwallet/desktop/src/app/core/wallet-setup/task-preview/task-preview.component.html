@@ -1,0 +1,30 @@
+<div class="wallet-setup_preview" [class.complete]="isComplete">
+  <div class="icon">
+    <img src="/assets/v1/icons/{{goal.image}}.svg" alt="">
+    <div class="progress" [style.background]="readinessBackground"></div>
+  </div>
+  <div class="details">
+    <div class="details">
+      <p class="name">
+        {{goal.name}}
+      </p>
+      <ul *ngIf="goal.tasks.length">
+        <li *ngFor="let task of goal.tasks">
+          <ng-container *ngIf="task.status === 0; else done">
+            <span class="link" (click)="action(task.slug)">
+              <merit-icon name="unlock-clock"></merit-icon> {{task.name}}</span>
+          </ng-container>
+          <ng-template #done>
+            <span class="done">
+              <merit-icon name="check"></merit-icon> {{task.name}}</span>
+          </ng-template>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div *ngIf="showLockOverlay" class="preview_overlay">
+    <div>
+      <p>You must unlock your wallet to view these tasks.</p>
+    </div>
+  </div>
+</div>
