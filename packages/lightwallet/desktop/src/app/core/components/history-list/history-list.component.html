@@ -5,7 +5,7 @@
   <div class="container--inner">
     <task-confirm *ngIf="isWalletUnlocked$ | async; else unlockTask" [taskSlug]="mineInviteTaskSlug" [isDone]="isInviteMined$ | async"></task-confirm>
     <ng-template #unlockTask>
-      <task-confirm [taskSlug]="unlockTaskSlug" [isDone]="isInviteMined$ | async"></task-confirm>
+      <task-confirm [taskSlug]="unlockTaskSlug" [isDone]="isWalletUnlocked$ | async"></task-confirm>
     </ng-template>
   </div>
   <ng-container *ngIf="transactions?.length; else noItems">
