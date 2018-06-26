@@ -3475,7 +3475,7 @@ WalletService.prototype.getUnlockRequests = async function(opts, cb) {
     });
 
     let requests = mempoolRequests.concat(bcRequests);
-    requests = _.sortBy(requests, 'timestamp');
+    requests = _.sortBy(requests, 'timestamp').reverse();
     cb(null, requests);
   } catch (err) {
     cb(err);
