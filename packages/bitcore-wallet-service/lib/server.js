@@ -3447,10 +3447,6 @@ WalletService.prototype.getUnlockRequests = async function(opts, cb) {
 
     const mempoolReferrals = mapAndFilterReferrals(await localMeritDaemon.getMempoolReferrals(addressStrs));
     const mempoolRequests = _.map(mempoolReferrals, r => {
-      console.log('!!!!!!!!!----------!!!!!!!!');
-      console.log(r);
-      console.log('!!!!!!!!!----------!!!!!!!!');
-
       const address = r.address.toString();
       const parentAddress = r.parentAddress.toString();
       const isConfirmed = acceptedAddresses.indexOf(address) != -1;
@@ -3474,7 +3470,7 @@ WalletService.prototype.getUnlockRequests = async function(opts, cb) {
         isConfirmed: true,
         address,
         parentAddress,
-        timestamp: r.blocktime * 1000,
+        timestamp: null, //  is not contain in the getBlockchainReferrals
       };
     });
 
