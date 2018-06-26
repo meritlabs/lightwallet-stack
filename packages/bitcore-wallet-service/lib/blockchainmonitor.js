@@ -304,6 +304,10 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
     filteredOutputs,
     function (out, next) {
 
+      let address,
+        isAddressConfirmed
+      ;
+
       async.series([
 
         // 1. Fetch the address from storage
@@ -319,17 +323,16 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
               return cb('Address not registered for notifications');
             }
 
-            cb(null, address);
+            cb();
           });
         },
 
-
         // 2. Check if the address is confirmed IF NEEDED
-        (address, cb) => {
+        (cb) => {
 
           // we only need to know if the address is confirmed if we're handling invites
           if (!data.isInvite) {
-            return cb(null, address, null);
+            return cb(null);
           }
 
           explorer.getUtxos([out.address], true, (err, utxos) => {
@@ -337,14 +340,14 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
 
             // Check if the recipient address is unlocked; by checking if it has
             // received any invites in the past.
-            const isAddressConfirmed = utxos.some(u => u.isInvite && u.txid !== out.txid);
+            isAddressConfirmed = utxos.some(u => u.isInvite && u.txid !== out.txid);
 
-            cb(null, address, isAddressConfirmed);
+            cb();
           });
         },
 
         // 3. Set the appropriate notification type
-        (address, isAddressConfirmed, cb) => {
+        (cb) => {
           const walletId = address.walletId;
 
           let notificationType = '';
