@@ -34,7 +34,6 @@ export class SmsNotificationsService {
       }
     }
 
-
     await this.persistenceService.setNotificationSettings({
       smsNotifications: status.enabled,
       phoneNumber: status.phoneNumber || ''
