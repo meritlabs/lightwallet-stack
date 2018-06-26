@@ -24,7 +24,7 @@ const checkForUpdates = async () => {
       const file = res.updateInfo.files[0];
 
       return {
-        size: (Math.round(file.size / 1024 / 1024 * 100) / 100) + 'MB',
+        size: file.size? (Math.round(file.size / 1024 / 1024 * 100) / 100) + 'MB' : 'Unknown',
         releaseDate: res.updateInfo.releaseDate,
         releaseNotes: res.updateInfo.releaseNotes,
         version: res.updateInfo.version
