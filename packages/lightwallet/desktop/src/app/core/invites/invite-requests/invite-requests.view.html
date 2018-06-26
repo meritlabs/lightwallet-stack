@@ -12,6 +12,7 @@
             <div class="history__item__info__title">
               <strong>{{ request.alias || request.address }}</strong>
             </div>
+            <small class="date" *ngIf="request.timestamp">{{ request.timestamp | date:'medium' }}</small>
           </div>
           <div>
             <button type="button" name="button" class="ui-button ui-button--blue ui-button--sm" [disabled]="sending[request.referralId]"
