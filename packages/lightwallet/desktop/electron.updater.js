@@ -2,6 +2,11 @@ const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 
 const checkForUpdates = async () => {
+  if (process.platform === 'linux') {
+    // Auto update is not available
+    return;
+  }
+
   try {
     const res = await autoUpdater.checkForUpdates();
     if (res && res.updateInfo && res.updateInfo.files && res.updateInfo.files.length) {
