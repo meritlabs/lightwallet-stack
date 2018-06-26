@@ -21,6 +21,10 @@ export class TaskPreviewComponent implements OnInit {
   route: string;
   readinessBackground: string;
 
+  get setLockOverlay() {
+    return !this.isConfirmed && this.goal.slug !== 'creator';
+  }
+
   async ngOnInit() {
     const toDo = this.goal.tasks.filter((item: any) => item.status === ProgressStatus.Incomplete),
       complete = this.goal.tasks.length - toDo.length,
@@ -28,12 +32,6 @@ export class TaskPreviewComponent implements OnInit {
       readiness = complete / total * 100;
 
     this.readinessBackground = `linear-gradient(to right, #74cd4f ${readiness}%, #555b7033 ${readiness}%)`;
-  }
-
-  setLockOverlay() {
-    if (!this.isConfirmed && this.goal.slug !== 'creator') {
-      return true;
-    }
   }
 
   action(slug: TaskSlug) {
