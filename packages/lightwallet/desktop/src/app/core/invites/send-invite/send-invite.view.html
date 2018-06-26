@@ -112,15 +112,6 @@
               </span>
         </div>
       </div>
-      <div class="ui-input__wrapper ui-input__wrapper--currency" *ngIf="availableCurrencies?.length">
-        <input type="text" name="" [value]="amountFiat$ | async" disabled
-               class="ui-input ui-input--form ui-input--text">
-        <div class="ui-input__addon">
-          <app-select (selectionEvent)="selectCurrency($event)" [selected]="selectedCurrency.value"
-                      [input]="availableCurrencies"
-                      cssClass="ui-button ui-button--transparent ui-button--select-currency ui-button--md ui-button--with-caret"></app-select>
-        </div>
-      </div>
     </div>
 
 
