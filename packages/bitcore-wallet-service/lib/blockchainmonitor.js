@@ -304,32 +304,34 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
     filteredOutputs,
     function (out, next) {
 
+      let address, isAddressConfirmed;
+
       async.series([
 
         // 1. Fetch the address from storage
         (cb) => {
-          self.storage.fetchAddress(out.address, (err, address) => {
-            if (err || !address) {
+          self.storage.fetchAddress(out.address, (err, addr) => {
+            if (err || !addr) {
               log.error('Could not fetch addresses from the db');
-              return cb(err);
+              return cb(err || 'Address not found');
             }
 
-            if (!address || address.isChange) {
+            if (addr.isChange) {
               log.info('Address is not registered for notifications, skipping');
               return cb('Address not registered for notifications');
             }
 
-            cb(null, address);
+            address = addr;
+            cb();
           });
         },
 
-
         // 2. Check if the address is confirmed IF NEEDED
-        (address, cb) => {
+        (cb) => {
 
           // we only need to know if the address is confirmed if we're handling invites
           if (!data.isInvite) {
-            return cb(null, address, null);
+            return cb();
           }
 
           explorer.getUtxos([out.address], true, (err, utxos) => {
@@ -337,14 +339,14 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
 
             // Check if the recipient address is unlocked; by checking if it has
             // received any invites in the past.
-            const isAddressConfirmed = utxos.some(u => u.isInvite && u.txid !== out.txid);
+            isAddressConfirmed = utxos.some(u => u.isInvite && u.txid !== out.txid);
 
-            cb(null, address, isAddressConfirmed);
+            cb();
           });
         },
 
         // 3. Set the appropriate notification type
-        (address, isAddressConfirmed, cb) => {
+        (cb) => {
           const walletId = address.walletId;
 
           let notificationType = '';
@@ -381,7 +383,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
 
             if (alreadyNotified) {
               log.info(`The incoming tx ${data.txid} was already notified`);
-              return cb(null);
+              return cb();
             }
 
             const notification = Notification.create({
