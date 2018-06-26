@@ -37,7 +37,8 @@ const Keys = {
   SEND_HISTORY: 'sendHistory',
   HIDDEN_REQUESTS_ADDRESSES: 'hiddenRequestsAddresses',
   ACTIVE_UNLOCK_REQUESTS_NUMBER: 'activeUnlockRequests',
-  PAGES_VISITED: 'pagesVisited'
+  PAGES_VISITED: 'pagesVisited',
+  PIN: 'pin'
 };
 
 @Injectable()
@@ -413,6 +414,15 @@ export class PersistenceService {
   async getActiveRequestsNumber() {
     let requests = await this.storage.get(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER);
     return requests || 0;
+  }
+
+  async checkPin(pin) {
+    const currentPin = await this.storage.get(Keys.PIN);
+    return pin == currentPin;
+  }
+
+  setPin(pin) {
+    return this.storage.set(Keys.PIN, pin);
   }
 
   setActiveRequestsNumber(requests: number) {
