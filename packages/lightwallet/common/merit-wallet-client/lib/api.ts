@@ -23,6 +23,7 @@ import { MWCErrors } from './errors';
 import { Logger } from './log';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
+import { ISmsNotificationSettings } from '../../models/sms-subscription';
 
 const $ = preconditions.singleton();
 const { Constants, Utils } = Common;
@@ -2566,11 +2567,12 @@ export class API {
     return this._doDeleteRequest(url);
   };
 
-  smsNotificationsSubscribe(phoneNumber: string, platform?: string) {
+  smsNotificationsSubscribe(phoneNumber: string, platform: string, settings: ISmsNotificationSettings) {
     return this._doPostRequest('/v1/sms-notifications', {
       phoneNumber,
       platform,
-      walletId: this.id
+      walletId: this.id,
+      settings
     });
   }
 

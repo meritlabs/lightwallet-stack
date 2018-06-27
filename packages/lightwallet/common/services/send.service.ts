@@ -45,7 +45,8 @@ export class SendService {
               private walletService: WalletService,
               private loggerService: LoggerService,
               private easySendService: EasySendService,
-              private addressService: AddressService) {}
+              private addressService: AddressService,
+              private alertCtrl: AlertService) {}
 
   async prepareTxp(wallet: MeritWalletClient, amount: number, toAddress: string) {
     if (!isAddress(toAddress)) {

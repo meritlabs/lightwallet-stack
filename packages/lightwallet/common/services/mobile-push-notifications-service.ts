@@ -68,13 +68,19 @@ export class MobilePushNotificationsService extends PushNotificationsService {
   }
 
   async init() {
-    if (!this.usePushNotifications || this.token) return;
-    await this.configService.load();
-    if (!this.configService.get().pushNotificationsEnabled) return;
+    if (!this.usePushNotifications) return;
 
-    this.logger.info('Starting push notification registration...');
-    await this.getToken();
-    await this.subscribeToEvents();
+    if (!this.token) {
+      await this.configService.load();
+      if (!this.configService.get().pushNotificationsEnabled) return;
+
+      this.logger.info('Starting push notification registration...');
+
+      await this.getToken();
+      await this.subscribeToEvents();
+    }
+
+    this.enable();
   }
 
   // TODO: Chain getting the token as part of a standalone single-wallet subscription.

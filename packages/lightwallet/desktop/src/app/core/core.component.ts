@@ -6,90 +6,96 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
+import { selectGoalSettings, selectGoalsLoading } from '@merit/common/reducers/goals.reducer';
+import { selectShareDialogState, SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
 import {
   RefreshOneWalletAction,
   selectNumberOfInviteRequests,
   selectWallets,
-  selectWalletsLoading
+  selectWalletsLoading,
 } from '@merit/common/reducers/wallets.reducer';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
+import { GoalsService } from '@merit/common/services/goals.service';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { PersistenceService2, ViewSettingsKey } from '@merit/common/services/persistence2.service';
+import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
+import { getLatestDefinedValue } from '@merit/common/utils/observables';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
-import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { SmsNotificationsPromptController } from '@merit/desktop/app/components/sms-notifications-prompt/sms-notifications-prompt.controller';
+import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { Address, PublicKey } from 'bitcore-lib';
 import { Observable } from 'rxjs/Observable';
+
+import { filter, take } from 'rxjs/operators';
 
 @Component({
   selector: 'view-core',
   templateUrl: './core.component.html',
   styleUrls: ['./core.component.sass'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class CoreView implements OnInit, AfterViewInit {
   topMenuItems: any[] = [
     {
       name: 'Dashboard',
       icon: '/assets/v1/icons/ui/aside-navigation/home.svg',
-      link: '/dashboard'
+      link: '/dashboard',
     },
     {
       name: 'Invites',
       icon: '/assets/v1/icons/invites/invite.svg',
       link: '/invites',
-      badge: this.store.select(selectNumberOfInviteRequests)
+      badge: this.store.select(selectNumberOfInviteRequests),
     },
     {
       name: 'Wallets',
       icon: '/assets/v1/icons/ui/aside-navigation/wallet.svg',
-      link: '/wallets'
+      link: '/wallets',
     },
     {
       name: 'Receive Merit',
       icon: '/assets/v1/icons/ui/aside-navigation/receive.svg',
-      link: '/receive'
+      link: '/receive',
     },
     {
       name: 'Send Merit',
       icon: '/assets/v1/icons/ui/aside-navigation/send.svg',
-      link: '/send'
+      link: '/send',
     },
     {
       name: 'History',
       icon: '/assets/v1/icons/ui/aside-navigation/history.svg',
-      link: '/history'
+      link: '/history',
     },
     {
       name: 'Community',
       icon: '/assets/v1/icons/ui/aside-navigation/network.svg',
-      link: '/community'
+      link: '/community',
     },
     {
       name: 'Settings',
       icon: '/assets/v1/icons/ui/aside-navigation/settings.svg',
-      link: '/settings'
-    }
+      link: '/settings',
+    },
   ];
   bottomMenuItems: any[] = [
     // {
     //   name: 'Market Beta',
     //   icon: '/assets/v1/icons/ui/aside-navigation/market.svg',
-    //   link: '/market-gate'
+    //   link: '/market/gate'
     // },
     {
       name: 'Help & Support',
       icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
       link: 'https://www.merit.me/get-involved/#join-the-conversation',
-      external: true
-    }
+      external: true,
+    },
   ];
 
   showShare: boolean;
@@ -97,6 +103,9 @@ export class CoreView implements OnInit, AfterViewInit {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   recordPassphrase: boolean = true;
+  notUnlockedWallets;
+  isWelcomeDialogEnabled: boolean;
+  showShare$: Observable<boolean> = this.store.select(selectShareDialogState);
 
   constructor(
     private pushNotificationsService: PushNotificationsService,
@@ -110,27 +119,33 @@ export class CoreView implements OnInit, AfterViewInit {
     private persistenceService2: PersistenceService2,
     private domSanitizer: DomSanitizer,
     private smsNotificationsService: SmsNotificationsService,
-    private smsNotificationsPromptCtrl: SmsNotificationsPromptController
+    private smsNotificationsPromptCtrl: SmsNotificationsPromptController,
+    private goalsService: GoalsService
   ) {}
 
   async ngOnInit() {
-    this.recordPassphrase = Boolean(await this.persistenceService2.getViewSettings(ViewSettingsKey.recordPassphrase));
+    getLatestDefinedValue(this.store.select(selectGoalSettings)).then(({ isWelcomeDialogEnabled }) => {
+      this.isWelcomeDialogEnabled = isWelcomeDialogEnabled;
+    });
+
+    this.recordPassphrase = Boolean(await this.persistenceService2.getUserSettings(UserSettingsKey.recordPassphrase));
 
     this.processPendingEasyReceipts();
     this.pushNotificationsService.init();
     this.easyReceiveService.cancelEasySendObservable$.subscribe(receipt => {
       this.processEasyReceipt(receipt, null, false, null, true);
     });
+    this.wallets$.subscribe(res => {
+      this.notUnlockedWallets = res.filter((item: any) => item.confirmed === false);
+    });
 
-    const smsPromptSetting = await this.persistenceService2.getViewSettings(ViewSettingsKey.SmsNotificationsPrompt);
+    const smsPromptSetting = await this.persistenceService2.getUserSettings(UserSettingsKey.SmsNotificationsPrompt);
 
-    if (smsPromptSetting == true)
-      return;
+    if (smsPromptSetting == true) return;
 
     const smsNotificationStatus = await this.smsNotificationsService.getSmsSubscriptionStatus();
 
-    if (smsNotificationStatus.enabled)
-      return;
+    if (smsNotificationStatus.enabled) return;
 
     this.smsNotificationsPromptCtrl.create();
   }
@@ -145,12 +160,16 @@ export class CoreView implements OnInit, AfterViewInit {
     );
   }
 
-  shareActivate(val) {
-    this.showShare = Boolean(val);
+  onGuideDismiss() {
+    return this.persistenceService2.setUserSettings(UserSettingsKey.recordPassphrase, (this.recordPassphrase = true));
   }
 
-  onGuideDismiss() {
-    return this.persistenceService2.setViewSettings(ViewSettingsKey.recordPassphrase, (this.recordPassphrase = true));
+  onWelcomeSetupTrackerClose() {
+    this.isWelcomeDialogEnabled = false;
+  }
+
+  shareActivate() {
+    this.store.dispatch(new SetShareDialogAction(true));
   }
 
   private showPasswordEasyReceivePrompt(receipt: EasyReceipt, processAll: boolean, wallet?: MeritWalletClient) {
@@ -194,12 +213,12 @@ export class CoreView implements OnInit, AfterViewInit {
       {
         text: 'Yes',
         value: 'yes',
-        class: 'primary'
+        class: 'primary',
       },
       {
         text: 'No',
-        value: 'no'
-      }
+        value: 'no',
+      },
     ]);
 
     confirmDialog.onDidDismiss((val: string) => {
@@ -234,17 +253,17 @@ export class CoreView implements OnInit, AfterViewInit {
       title,
       `You clicked on a ${
         inviteOnly ? 'MeritInvite' : 'MeritMoney'
-        } link that you created.  Would you like to cancel it?`,
+      } link that you created.  Would you like to cancel it?`,
       [
         {
           text: 'Cancel ' + (inviteOnly ? 'MeritInvite' : 'MeritMoney'),
           value: 'yes',
-          class: 'primary'
+          class: 'primary',
         },
         {
-          text: 'Don\'t Cancel',
-          value: 'no'
-        }
+          text: "Don't Cancel",
+          value: 'no',
+        },
       ]
     );
 
@@ -273,7 +292,7 @@ export class CoreView implements OnInit, AfterViewInit {
         new RefreshOneWalletAction(wallet.id, {
           skipShareCode: true,
           skipRewards: true,
-          skipAlias: true
+          skipAlias: true,
         })
       );
     } catch (err) {
@@ -295,7 +314,7 @@ export class CoreView implements OnInit, AfterViewInit {
         new RefreshOneWalletAction(wallet.id, {
           skipShareCode: true,
           skipRewards: true,
-          skipAlias: true
+          skipAlias: true,
         })
       );
     } catch (err) {
@@ -306,7 +325,7 @@ export class CoreView implements OnInit, AfterViewInit {
 
   private showSpentEasyReceiptAlert() {
     this.confirmDialogCtrl.create('Uh oh', 'It seems that the Merit from this link has already been redeemed!', [
-      { text: 'Ok' }
+      { text: 'Ok' },
     ]);
   }
 

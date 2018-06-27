@@ -1,0 +1,160 @@
+.task_wrap
+  display: flex
+  width: 100%
+.task_navigation
+  width: 100%
+  margin-bottom: 20px
+.navigation_back
+  position: relative
+  width: 30px
+  height: 30px
+  border-radius: 100%
+  background: $white
+  box-shadow: 0 0 2px rgba(0,0,0, .2)
+  display: block
+  margin-right: 20px
+  cursor: pointer
+  &:after
+    content: ""
+    display: block
+    mask-size: contain
+    mask-position: 50% 50%
+    mask-repeat: no-repeat
+    background: $blue
+    mask-image: url('/assets/v1/icons/back-chevron.svg')
+    height: 16px
+    width: 16px
+    top: 7px
+    position: relative
+    left: 5px
+.wallet-setup
+  padding: 50px 40px
+.wallet-setup_title
+  margin-bottom: 40px
+  display: flex
+  align-items: center
+.wallet-setup_description
+  padding-bottom: 20px
+  +font(300, 18px, 26px)
+  p
+    margin-bottom: 10px
+  ol
+    list-style-type: decimal
+    padding-left: 20px
+    margin: 0px 0px 10px 5px
+    li
+      margin-bottom: 5px
+.wallet-setup_wrap
+  display: flex
+  flex-flow: row wrap
+  justify-content: space-between
+.wallet-setup_task
+  display: flex
+  justify-content: space-between
+  .icon
+    width: 200px
+    img
+      width: 100%
+  .caption
+    width: calc(100% - 230px)
+  ul
+    li
+      margin-bottom: 5px
+    li:before
+      content: "✓"
+      color: $blue
+      opacity: .7
+      margin-right: 10px
+.wallet-setup_preview
+  display: flex
+  margin-bottom: 30px
+  align-items: flex-start
+  justify-content: space-between
+  position: relative
+  background: $white
+  border-radius: 5px
+  box-shadow: 2px 2px 10px rgba(0,0,0, .1)
+  padding: 20px
+  z-index: 1
+  .icon
+    width: 60px
+    padding-top: 5px
+    margin-right: 20px
+    align-items: center
+    justify-content: center
+    display: flex
+    flex-direction: column
+    merit-icon
+      opacity: .4
+    img
+      width: 100%
+      margin-bottom: 15px
+    strong
+      +font(900, 12px, 12px, $blue)
+    .progress
+      width: 60px
+      height: 12px
+      border: 2px solid $blue
+      border-radius: 5px
+      box-shadow: inset 0 0 5px rgba(0,0,0, .25)
+  .details
+    width: 100%
+    box-sizing: border-box
+    +font(300, 18px, 26px)
+    position: relative
+    display: inline-block
+    .name
+      +font(600, 20px, 26px)
+      margin-bottom: 5px
+    .link, .done
+      merit-icon
+        height: 15px
+      display: flex
+      align-items: center
+    .link
+      text-decoration: underline
+      color: $blue
+      cursor: pointer
+      merit-icon
+        background: $blue
+    .done
+      color: $dark-green
+      merit-icon
+        background: $dark-green
+    &_description
+      +font(300, 15px, 26px, $grey-2)
+    &_settings
+      display: flex
+      align-items: center
+  &.complete
+    .icon merit-icon
+      opacity: 1
+      background: $blue
+  ul li
+    margin-bottom: 10px
+  .preview_overlay
+    width: 100%
+    height: 100%
+    left: 0
+    top: 0
+    position: absolute
+    z-index: 2
+    background: rgba(255,255,255, .9)
+    padding: 20px
+    display: flex
+    align-items: center
+    justify-content: center
+    flex-flow: row wrap
+    text-align: center
+    +font(500, 20px, 30px, $dark)
+.wallet-setup_preview--settings
+  justify-content: flex-start
+  align-items: center
+  .icon
+    merit-icon
+      background: $blue
+      opacity: 1
+  ui-checkbox
+    position: relative
+    margin-left: 10px
+    top: 2px

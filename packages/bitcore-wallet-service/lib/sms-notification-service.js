@@ -8,7 +8,8 @@ const notificationsToSend = [
   'IncomingInvite',
   'WalletUnlocked',
   'IncomingInviteRequest',
-  'IncomingCoinbase',
+  'MiningReward',
+  'GrowthReward'
 ];
 
 function SmsNotificationService(opts) {
@@ -37,7 +38,7 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
 
     console.log('[SMS Service] Sending SMS notification', notification, recipient);
 
-    const { amount, isInvite } = notification.data;
+    let { amount, isInvite } = notification.data;
 
     request({
       method: 'POST',
@@ -49,7 +50,7 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
         template: _.snakeCase(notification.type),
         language: 'en',
         notification: {
-          amount: isInvite? amount : (amount / 1e8) + 'MRT'
+          amount: isInvite? String(amount) : (amount / 1e8) + 'MRT'
         }
       }
     }, (err, response) => {
