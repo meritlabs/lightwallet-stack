@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform, ViewController } from 'ionic-angular';
 import { PersistenceService } from '@merit/common/services/persistence.service';
+import { TouchIdService } from '@merit/mobile/services/touch-id.service';
+
 @IonicPage()
 @Component({
   selector: 'view-pin-lock',
@@ -27,9 +29,15 @@ export class PinLockView {
   constructor(
     private persistenceService: PersistenceService,
     private platform: Platform,
-    private viewCtrl: ViewController
+    private viewCtrl: ViewController,
+    private touchIdService: TouchIdService
   ) {
     this.isTouchIdAvailable =  this.platform.is('cordova');
+    if (this.isTouchIdAvailable) {
+      touchIdService.check().then(() => {
+        this.viewCtrl.dismiss();
+      });
+    }
 
   }
 
