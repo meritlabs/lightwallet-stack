@@ -13,6 +13,16 @@
         <h2>Notifications</h2>
       </ion-label>
     </button>
+
+    <button ion-item detail-none navPush="PinSettingsView">
+          <ion-avatar item-start img-icon>
+              <img src="assets/img/icons/unlock.svg" alt="">
+          </ion-avatar>
+          <ion-label>
+              <h2>Pin Lock</h2>
+          </ion-label>
+    </button>
+
     <button ion-item detail-none (click)="toLanguageSelect()" *ngIf="availableLanguages.length">
       <ion-icon name="globe" item-start></ion-icon>
       <ion-label>
