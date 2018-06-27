@@ -17,21 +17,5 @@
 
 </div>
 
-<div *ngFor="let request of (inviteRequests$ | async)" class="invite-request-list">
-  <div class="history__item">
-    <div class="history__item__icon">
-      <img src="/assets/v1/icons/invite.svg" alt="">
-    </div>
-    <div class="history__item__info">
-      <div>
-        <div class="history__item__info__title">
-          <strong>{{ request.alias || request.address }}</strong>
-        </div>
-        <small class="date" *ngIf="request.timestamp">{{ request.timestamp | date:'medium' }}</small>
-      </div>
-      <div>
-
-      </div>
-    </div>
-  </div>
-</div>
+<app-pending-invite-item *ngFor="let request of (inviteRequests$ | async)" [request]="request" [availableInvites]="availableInvites$ | async"
+  [inviteRequests]="inviteRequests$ | async" [wallets]="wallets$ | async"></app-pending-invite-item>
