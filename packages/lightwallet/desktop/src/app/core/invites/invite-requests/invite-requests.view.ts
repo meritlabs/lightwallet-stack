@@ -2,12 +2,7 @@ import { Component } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { TaskSlug } from '@merit/common/models/goals';
 import { IRootAppState } from '@merit/common/reducers';
-import {
-  IgnoreInviteRequestAction,
-  selectInviteRequests,
-  selectInvites,
-  selectWalletsWithInvites,
-} from '@merit/common/reducers/wallets.reducer';
+import { selectInviteRequests, selectInvites, selectWalletsWithInvites } from '@merit/common/reducers/wallets.reducer';
 import { IUnlockRequest } from '@merit/common/services/unlock-request.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
@@ -23,7 +18,6 @@ export class InviteRequestsView {
   availableInvites$: Observable<number> = this.store.select(selectInvites);
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWalletsWithInvites);
 
-  sending: { [referralId: string]: boolean } = {};
   isInviteSent: boolean = false;
 
   receiveRequestTaskSlug: TaskSlug = TaskSlug.ReceiveInviteRequest;
