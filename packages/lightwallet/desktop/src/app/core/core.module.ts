@@ -41,6 +41,7 @@ import { TaskPreviewComponent } from './wallet-setup/task-preview/task-preview.c
 import { WalletSetupListView } from './wallet-setup/wallet-setup-list/wallet-setup-list.view';
 import { RecordPassphraseComponent } from './dialog/record-passphrase/record-passphrase.component';
 import { WelcomeToSetupTrackerComponent } from './dialog/welcome-to-setup-tracker/welcome-to-setup-tracker.component';
+import { PendingInviteItemComponent } from './invites/pending-invite-item/pending-invite-item.component';
 
 export function getPages() {
   return [
@@ -96,6 +97,7 @@ export function getPages() {
     RecordPassphraseComponent,
     TaskPreviewComponent,
     WelcomeToSetupTrackerComponent,
+    PendingInviteItemComponent,
   ],
   providers: [WalletPasswordGuard],
 })

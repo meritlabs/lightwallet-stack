@@ -3,39 +3,21 @@
   <ng-container *ngIf="inviteRequests.length; else noRequests">
     <task-confirm [taskSlug]="confirmRequestTaskSlug" [isDone]="isInviteSent"></task-confirm>
     <div *ngFor="let request of inviteRequests" class="invite-request-list">
-      <div class="history__item">
-        <div class="history__item__icon">
-          <img src="/assets/v1/icons/invite.svg" alt="">
-        </div>
-        <div class="history__item__info">
-          <div>
-            <div class="history__item__info__title">
-              <strong>{{ request.alias || request.address }}</strong>
-            </div>
-            <small class="date" *ngIf="request.timestamp">{{ request.timestamp | date:'medium' }}</small>
-          </div>
-          <div>
-            <button type="button" name="button" class="ui-button ui-button--blue ui-button--sm" [disabled]="sending[request.referralId]"
-              (click)="approveRequest(request)">
-              {{ sending[request.referralId]? 'Sending...' : 'Send Invite Token' }}
-            </button>
-            <button type="button" class="ui-button ui-button--sm ui-button--red" (click)="ignoreRequest(request)">Ignore</button>
-          </div>
-        </div>
-      </div>
+      <app-pending-invite-item [request]="request" [availableInvites]="availableInvites$ | async" [inviteRequests]="inviteRequests$ | async"
+        [wallets]="wallets$ | async"></app-pending-invite-item>
     </div>
   </ng-container>
   <ng-template #noRequests>
-    <div class="backup__title title--primary">
+    <div class=" backup__title title--primary ">
       No New Requests Yet
     </div>
-    <div class="backup__caption">
+    <div class="backup__caption ">
       <p>
-        <img src="/assets/v1/icons/invites/invite-spread.svg" alt="">
+        <img src="/assets/v1/icons/invites/invite-spread.svg " alt=" ">
       </p>
       <p>You can spread the word by telling friends, colleagues, and loved ones about Merit.</p>
       <p>Once they use your alias as their
-        <i>unlock code</i> when signing up, you will receive an "invite request" here. With a simple click, you can send them
+        <i>unlock code</i> when signing up, you will receive an "invite request " here. With a simple click, you can send them
         an invite, and they're in!</p>
       <p>The more people you invite, the higher your chances of winning
         <strong>growth rewards!</strong>
