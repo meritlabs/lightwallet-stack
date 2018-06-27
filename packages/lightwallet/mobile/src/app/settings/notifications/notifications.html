@@ -63,7 +63,7 @@
         </ion-item>
 
 
-        <ion-item *ngFor="">
+        <ion-item *ngFor="let s of nsc.smsNotificationSettings">
           <ion-label>{{ s.label }}</ion-label>
           <ion-toggle [formControlName]="s.name"></ion-toggle>
         </ion-item>
