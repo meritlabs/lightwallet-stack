@@ -15,7 +15,6 @@ import { cleanAddress } from '@merit/common/utils/addresses';
 import { DeepLinkService } from '@merit/mobile/app/core/deep-link.service';
 import { OnboardingView } from '@merit/mobile/app/onboard/onboarding.view';
 import { TransactView } from '@merit/mobile/app/transact/transact';
-import { FingerprintLockView } from '@merit/mobile/app/utilities/fingerprint-lock/fingerprint-lock';
 import { Events, ModalController, Nav, Platform } from 'ionic-angular';
 
 @Component({
@@ -49,7 +48,7 @@ export class MeritLightWallet {
     }
 
     this.platform.resume.subscribe(() => {
-      this.persistenceService.isPinEnabled().then(isEnabled, () => {
+      this.persistenceService.isPinEnabled().then((isEnabled) => {
         this.modalCtrl.create('PinLockView').present();
       });
       this.logger.info('Returning Native App from Background!');
