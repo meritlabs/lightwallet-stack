@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { IDisplayTransaction, VisitedTransaction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
 import {
   MarkTransactionsAsVisitedAction,
@@ -85,10 +85,10 @@ export class TransactionEffects {
   );
 
   constructor(private actions$: Actions,
-              private walletService: WalletService,
-              private store: Store<IRootAppState>,
-              private persistenceService: PersistenceService2,
-              private feeService: FeeService
+    private walletService: WalletService,
+    private store: Store<IRootAppState>,
+    private persistenceService: PersistenceService2,
+    private feeService: FeeService
   ) {
   }
 
@@ -102,8 +102,31 @@ export class TransactionEffects {
   }
 
   private async updateVisitedTransactions(transactions: IDisplayTransaction[]) {
-    const txs = await this.persistenceService.getVisitedTransactions() || [];
-    const newTxIds = transactions.map(tx => tx.txid);
-    return this.persistenceService.setVisitedTransactions(uniq(txs.concat(newTxIds)));
+    let visitedTxs = await this.persistenceService.getVisitedTransactions() || [];
+
+    for (let i = 0; i < transactions.length; i++) {
+      let tx = transactions[i];
+      let oneVisited = visitedTxs.find(visTx => visTx.txid === tx.txid);
+
+      if (oneVisited) {
+        // already there increase counter
+        if (tx.isInvite && oneVisited.counter < 4) { // invite refreshes the wallet 2 times before user can see it.
+          oneVisited.counter++;
+          tx.isNew = true;
+        } else if (oneVisited.counter < 2) {
+          oneVisited.counter++;
+          tx.isNew = true;
+        } else {
+          tx.isNew = false;
+        }
+      } else {
+        tx.isNew = true;
+        // add new one in visited
+        visitedTxs.push(new VisitedTransaction(tx.txid, 1));
+      }
+    }
+
+    console.log(visitedTxs);
+    return this.persistenceService.setVisitedTransactions(visitedTxs);
   }
 }
