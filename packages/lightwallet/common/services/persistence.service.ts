@@ -38,7 +38,8 @@ const Keys = {
   HIDDEN_REQUESTS_ADDRESSES: 'hiddenRequestsAddresses',
   ACTIVE_UNLOCK_REQUESTS_NUMBER: 'activeUnlockRequests',
   PAGES_VISITED: 'pagesVisited',
-  PIN: 'pin'
+  PIN: 'pin',
+  PIN_LOCKED_TILL: 'pinLockedTill'
 };
 
 @Injectable()
@@ -423,6 +424,14 @@ export class PersistenceService {
 
   setPin(pin) {
     return this.storage.set(Keys.PIN, pin);
+  }
+
+  blockPin(timestamp) {
+    return this.storage.set(Keys.PIN_LOCKED_TILL, timestamp);
+  }
+
+  getPinBlockedTimestamp() {
+    return this.storage.get(Keys.PIN_LOCKED_TILL);
   }
 
   setActiveRequestsNumber(requests: number) {

@@ -1,5 +1,7 @@
 <ion-content>
 
+    <img src="/assets/img/icons/merit.svg" class="merit-icon">
+
     <div class="touchid-panel" *ngIf="isTouchIdAvailable">
         <ion-icon name="finger-print"></ion-icon>
         You can use touchId to log in
@@ -9,12 +11,17 @@
         <div>Enter pin</div>
         <i class="indicator" *ngFor="let i of [1,2,3,4]"
            [class.filled]="pin.length >= i" [class.error]="pin.length >= i && error"></i>
+
+        <div class="blocked-message" *ngIf="blocked">
+            <div>Attempts limit exceeded</div>
+            <div>{{blockedText}}</div>
+        </div>
     </div>
 
     <div class="keyboard-panel">
         <ion-grid>
             <ion-row>
-                <ion-col><button ion-button clear (click)="enter(1)">1</button></ion-col>
+                <ion-col><button ion-button clear (click)="enter(1)" >1</button></ion-col>
                 <ion-col><button ion-button clear (click)="enter(2)">2</button></ion-col>
                 <ion-col><button ion-button clear (click)="enter(3)">3</button></ion-col>
             </ion-row>
