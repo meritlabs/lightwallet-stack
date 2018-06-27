@@ -33,12 +33,17 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
   if (notificationsToSend.indexOf(notification.type) === -1) return cb();
 
   this.storage.fetchSmsNotificationSub(notification.walletId, (err, recipient) => {
-    if (err) return cb(err);
-    if (!recipient) return cb();
+    if (err || !recipient) {
+      return cb(err);
+    }
+
+    if (recipient.settings && !recipient.settings[notification.type]) {
+      return cb();
+    }
 
     console.log('[SMS Service] Sending SMS notification', notification, recipient);
 
-    let { amount, isInvite } = notification.data;
+    const { amount, isInvite } = notification.data;
 
     request({
       method: 'POST',
