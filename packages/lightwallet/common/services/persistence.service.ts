@@ -40,7 +40,6 @@ const Keys = {
   PAGES_VISITED: 'pagesVisited',
   PIN: 'pin',
   PIN_LOCKED_TILL: 'pinLockedTill',
-  PIN_SET: 'pinSet'
 };
 
 @Injectable()
@@ -418,16 +417,8 @@ export class PersistenceService {
     return requests || 0;
   }
 
-  enablePin() {
-    return this.storage.set(Keys.PIN_SET, true);
-  }
-
-  disablePin() {
-    return this.storage.set(Keys.PIN_SET, false);
-  }
-
-  isPinEnabled() {
-    return this.storage.get(Keys.PIN_SET);
+  async isPinEnabled() {
+    return !!(await this.storage.get(Keys.PIN));
   }
 
   setPin(pin) {
