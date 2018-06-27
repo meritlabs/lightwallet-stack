@@ -1,0 +1,8 @@
+<h2 class="main-header">
+  Invites
+</h2>
+<p>You have: {{ (invites$ | async) || 0 }} available invites</p>
+<p>{{ ((inviteRequests$ | async)?.length) || 0 }} incoming requests are waiting for acceptance</p>
+<app-pending-invite-item *ngFor="let request of ((inviteRequests$ | async) | slice:0:2)" [request]="request" [availableInvites]="availableInvites$ | async"
+  [inviteRequests]="inviteRequests$ | async" [wallets]="wallets$ | async"></app-pending-invite-item>
+<button class="ui-button ui-button--blue" routerLink="/invites/requests" *ngIf="(inviteRequests$ | async).length > 2">Show all pending requests</button>
