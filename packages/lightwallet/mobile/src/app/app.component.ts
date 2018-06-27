@@ -49,7 +49,7 @@ export class MeritLightWallet {
 
     this.platform.resume.subscribe(() => {
       this.persistenceService.isPinEnabled().then((isEnabled) => {
-        this.modalCtrl.create('PinLockView').present();
+        if (isEnabled) this.modalCtrl.create('PinLockView').present();
       });
       this.logger.info('Returning Native App from Background!');
       this.loadEasySend();
