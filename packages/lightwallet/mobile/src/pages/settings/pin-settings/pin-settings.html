@@ -9,11 +9,11 @@
 
 <ion-content>
 
-    <ion-item >
+    <ion-item>
         <ion-label>
             <h2>Enable pin lock</h2>
         </ion-label>
-        <ion-toggle (ionChange)="togglePin($event.value)" [(ngModel)]="enabled"></ion-toggle>
+        <ion-toggle (ngModelChange)="togglePin($event)" [(ngModel)]="enabled"></ion-toggle>
     </ion-item>
 
     <div class="global-illustration">

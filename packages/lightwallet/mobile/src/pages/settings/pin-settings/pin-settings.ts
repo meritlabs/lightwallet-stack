@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, AlertController } from 'ionic-angular';
+import { IonicPage, ModalController } from 'ionic-angular';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 
 
@@ -13,7 +13,7 @@ export class PinSettingsView {
   enabled: boolean;
 
   constructor(
-    private alertCtrl: AlertController,
+    private modalCtrl: ModalController,
     private persistenceService: PersistenceService
   ) {
   }
@@ -22,11 +22,27 @@ export class PinSettingsView {
     this.enabled = await this.persistenceService.isPinEnabled();
   }
 
-  async togglePin(isEnabled) {
-    if (isEnabled) {
-      await this.persistenceService.setPin(1234); //temp
+  async togglePin(enable) {
+    if (enable) {
+
+      const modal = this.modalCtrl.create('PinLockView', {newPinMode: true});
+      modal.onDidDismiss(async (success) => {
+        if (!success) this.enabled = false;
+      });
+      modal.present();
+
     } else {
-      await this.persistenceService.setPin(null);
+
+      const modal = this.modalCtrl.create('PinLockView');
+      modal.onDidDismiss(async (success) => {
+        if (success) {
+          await this.persistenceService.setPin(null);
+        } else {
+          this.enabled = true;
+        }
+      });
+      modal.present();
+
     }
   }
 

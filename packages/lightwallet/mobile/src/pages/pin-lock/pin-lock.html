@@ -8,11 +8,11 @@
     </div>
 
     <div class="indicator-panel">
-        <div>Enter pin</div>
+        <div>{{mode == 'repeat' ? 'Repeat pin' : 'Enter pin'}}</div>
         <i class="indicator" *ngFor="let i of [1,2,3,4]"
            [class.filled]="pin.length >= i" [class.error]="pin.length >= i && error"></i>
 
-        <div class="blocked-message" *ngIf="blocked">
+        <div class="error-message" *ngIf="blocked">
             <div>Attempts limit exceeded</div>
             <div>{{blockedText}}</div>
         </div>
@@ -36,7 +36,7 @@
                 <ion-col><button ion-button clear (click)="enter(9)">9</button></ion-col>
             </ion-row>
             <ion-row>
-                <ion-col></ion-col>
+                <ion-col><button ion-button clear (click)="close()" *ngIf="showCancelButton"><ion-icon name="close"></ion-icon></button></ion-col>
                 <ion-col><button ion-button clear (click)="enter(0)">0</button></ion-col>
                 <ion-col (click)="backspace()">
                     <ion-col><button ion-button clear (click)="backspace"><ion-icon name="backspace"></ion-icon></button></ion-col>
