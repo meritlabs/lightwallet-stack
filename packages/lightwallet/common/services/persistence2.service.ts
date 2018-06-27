@@ -9,12 +9,14 @@ export enum StorageKey {
   NotificationSettings = 'merit_notification_settings',
   Notifications = 'merit_notifications',
   EasySends = 'merit_easysends',
-  ViewSettingsPrefix = 'app_view_settings_'
+  ViewSettingsPrefix = 'app_view_settings_',
+  LastIgnoredUpdate = 'last_ignored_update',
 }
 
-export enum ViewSettingsKey {
+export enum UserSettingsKey {
   GetStartedTips = 'get_started_tips',
   recordPassphrase = 'record_passphrase',
+  primaryWalletID = 'primary_wallet_id',
   SmsNotificationsPrompt = 'sms_notifications_prompt'
 }
 
@@ -40,6 +42,25 @@ const DEFAULT_NOTIFICATION_SETTINGS: INotificationSettings = {
 @Injectable()
 export class PersistenceService2 {
   constructor(private storage: Storage) {}
+
+  /**
+   * Use this method to set a generic value that doesn't require it's own function
+   * @param {StorageKey} key
+   * @param value
+   * @returns {Promise<any>}
+   */
+  setValue(key: StorageKey, value: any): Promise<any> {
+    return this.storage.set(key, value);
+  }
+
+  /**
+   * Use this method to set a generic value that doesn't require it's own function
+   * @param {StorageKey} key
+   * @returns {Promise<any>}
+   */
+  getValue(key: StorageKey): Promise<any> {
+    return this.storage.get(key);
+  }
 
   saveWalletPreferences(preferences: any) {
     return this.storage.set(StorageKey.WalletPreferencesPrefix + preferences.id, preferences);
@@ -81,17 +102,14 @@ export class PersistenceService2 {
   async cancelEasySend(scriptAddress: string) {
     const easySends = await this.getEasySends();
 
-    const idx = easySends.findIndex(tx => {
-      return tx.scriptAddress == scriptAddress;
-    });
+    const idx = easySends.findIndex(tx => tx.scriptAddress == scriptAddress);
 
-    if (idx != -1) {
+    if (idx !== -1) {
       easySends[idx].cancelled = true;
-      console.log('FOUND:', easySends[idx]);
       await this.setEasySends(easySends);
       return true;
     } else {
-      console.log('Couldnt find EasySend to cancel', scriptAddress);
+      console.log('Couldn\'t find EasySend to cancel', scriptAddress);
       return false;
     }
   }
@@ -104,17 +122,17 @@ export class PersistenceService2 {
     return (await this.storage.get(StorageKey.EasySends)) || [];
   }
 
-  setViewSettings(key: ViewSettingsKey, value: any) {
+  setUserSettings(key: UserSettingsKey, value: any) {
     return this.storage.set(StorageKey.ViewSettingsPrefix + key, value);
   }
 
-  getViewSettings(key: ViewSettingsKey) {
+  getUserSettings(key: UserSettingsKey) {
     return this.storage.get(StorageKey.ViewSettingsPrefix + key);
   }
 
-  async resetViewSettings() {
-    for (let key in ViewSettingsKey) {
-      await this.setViewSettings(ViewSettingsKey[key] as ViewSettingsKey, false);
+  async resetUserSettings() {
+    for (let key in UserSettingsKey) {
+      await this.setUserSettings(UserSettingsKey[key] as UserSettingsKey, false);
     }
   }
 }

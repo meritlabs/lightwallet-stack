@@ -260,32 +260,35 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
   // Let's format the object to be easier to process below.
   const outs = _.reduce(
     data.vout,
-    function (acc, v) {
-      if (v.isChangeOutput) {
+    function (acc, out, index) {
+      if (out.isChangeOutput) {
         return acc;
       }
 
-      const addr = _.keys(v)[0];
-      const amount = v[addr];
-      const result = {
-        address: addr,
-        amount: amount,
-      };
+      const address = _.keys(out)[0];
+      const amount = out[address];
 
-      return acc.concat(result);
-    }, [],
+      return acc.concat({
+        address,
+        amount,
+        index
+      });
+    },
+    []
   );
 
   // Let's roll up any vouts that go to the same address.
   // TODO: Probably a more efficient way to do the below.
   //
-  var filteredOutputs = [];
+  const filteredOutputs = [];
+
   _.forEach(outs, out => {
-    var oIndex = _.findIndex(filteredOutputs, {
+    const oIndex = _.findIndex(filteredOutputs, {
       address: out.address
     });
+
     if (filteredOutputs[oIndex]) {
-      var accumulatedOutput = filteredOutputs[oIndex];
+      const accumulatedOutput = filteredOutputs[oIndex];
       accumulatedOutput.amount += out.amount;
       filteredOutputs.splice(oIndex, 1, accumulatedOutput);
     } else {
@@ -300,26 +303,60 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
   async.eachSeries(
     filteredOutputs,
     function (out, next) {
-      //checking if address is confirmed
-      explorer.getUtxos([out.address], true, function (err, utxos) {
-        const isAddressConfirmed = _.some(utxos, u => u.isInvite);
 
-        self.storage.fetchAddress(out.address, function (err, address) {
-          if (err) {
-            log.error('Could not fetch addresses from the db');
-            return next(err);
+      let address, isAddressConfirmed;
+
+      async.series([
+
+        // 1. Fetch the address from storage
+        (cb) => {
+          self.storage.fetchAddress(out.address, (err, addr) => {
+            if (err || !addr) {
+              log.error('Could not fetch addresses from the db');
+              return cb(err || 'Address not found');
+            }
+
+            if (addr.isChange) {
+              log.info('Address is not registered for notifications, skipping');
+              return cb('Address not registered for notifications');
+            }
+
+            address = addr;
+            cb();
+          });
+        },
+
+        // 2. Check if the address is confirmed IF NEEDED
+        (cb) => {
+
+          // we only need to know if the address is confirmed if we're handling invites
+          if (!data.isInvite) {
+            return cb();
           }
 
-          if (!address || address.isChange) {
-            log.info('Address is not registered for nottifications, skipping');
-            return next(null);
-          }
+          explorer.getUtxos([out.address], true, (err, utxos) => {
+            utxos = utxos || [];
 
-          var walletId = address.walletId;
+            // Check if the recipient address is unlocked; by checking if it has
+            // received any invites in the past.
+            isAddressConfirmed = utxos.some(u => u.isInvite && u.txid !== out.txid);
+
+            cb();
+          });
+        },
+
+        // 3. Set the appropriate notification type
+        (cb) => {
+          const walletId = address.walletId;
 
           let notificationType = '';
+
           if (data.isCoinbase) {
-            notificationType = 'IncomingCoinbase';
+            if (out.index === 0) {
+              notificationType = 'MiningReward'
+            } else {
+              notificationType = 'GrowthReward'
+            }
           } else if (data.isInvite) {
             if (isAddressConfirmed) {
               notificationType = 'IncomingInvite';
@@ -333,19 +370,22 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
           log.info(
             `${notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${
               out.address
-            } ]`,
+              } ]`,
           );
 
-          var fromTs = Date.now() - 24 * 3600 * 1000;
+          const fromTs = Date.now() - 24 * 3600 * 1000;
           self.storage.fetchNotifications(walletId, null, fromTs, function (err, notifications) {
-            if (err) return next(err);
-            var alreadyNotified = _.some(notifications, function (n) {
-              return n.type == notificationType && n.data && n.data.txid == data.txid;
-            });
+            if (err) return cb(err);
+
+            const alreadyNotified = _.some(notifications, n =>
+              n.type === notificationType && n.data && n.data.txid === data.txid
+            );
+
             if (alreadyNotified) {
               log.info(`The incoming tx ${data.txid} was already notified`);
-              return next(null);
+              return cb();
             }
+
             const notification = Notification.create({
               type: notificationType,
               data: {
@@ -356,18 +396,26 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
               },
               walletId: walletId,
             });
+
             self.storage.softResetTxHistoryCache(walletId, function () {
               self._updateActiveAddress(address, function () {
-                self._storeAndBroadcastNotification(notification, next);
+                self._storeAndBroadcastNotification(notification, cb);
               });
             });
           });
-        });
+        },
+
+      ], (err) => {
+        if (err) {
+          // If an error occurs in our async.series,
+          // let's send it up the chain to async.seriesEach
+          next(err);
+        } else {
+          next(null);
+        }
       });
     },
-    function (err) {
-      return;
-    },
+    err => {}
   );
 };
 

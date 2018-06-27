@@ -3,9 +3,11 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
+import { selectPrimaryWallet, SetPrimaryWalletAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { DeleteWalletAction, selectWalletById, UpdateOneWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { WalletService } from '@merit/common/services/wallet.service';
+import { getLatestValue } from '@merit/common/utils/observables';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
@@ -16,90 +18,90 @@ import { debounceTime, filter, switchMap } from 'rxjs/operators';
 @Component({
   selector: 'view-wallet-settings',
   templateUrl: './wallet-settings.view.html',
-  styleUrls: ['./wallet-settings.view.sass']
+  styleUrls: ['./wallet-settings.view.sass'],
 })
 export class WalletSettingsView implements OnInit, OnDestroy {
   availableColors: any = [
     {
       name: 'Sunglo',
-      color: '#E57373'
+      color: '#E57373',
     },
     {
       name: 'Carissma',
-      color: '#E985A7'
+      color: '#E985A7',
     },
     {
       name: 'Light Wisteria',
-      color: '#ca85d6'
+      color: '#ca85d6',
     },
     {
       name: 'Lilac Bush',
-      color: '#A185D4'
+      color: '#A185D4',
     },
     {
       name: 'Moody Blue',
-      color: '#7987d1'
+      color: '#7987d1',
     },
     {
       name: 'Havelock Blue',
-      color: '#64aae3'
+      color: '#64aae3',
     },
     {
       name: 'Picton Blue',
-      color: '#53b9e8'
+      color: '#53b9e8',
     },
     {
       name: 'Merit blue',
-      color: '#00B0DD'
+      color: '#00B0DD',
     },
     {
       name: 'Viking',
-      color: '#4ccdde'
+      color: '#4ccdde',
     },
     {
       name: 'Ocean Green',
-      color: '#48ae6c'
+      color: '#48ae6c',
     },
     {
       name: 'Puerto Rico',
-      color: '#44baad'
+      color: '#44baad',
     },
     {
       name: 'Wild Willow',
-      color: '#99c666'
+      color: '#99c666',
     },
     {
       name: 'Turmeric',
-      color: '#bcc84c'
+      color: '#bcc84c',
     },
     {
       name: 'Buttercup',
-      color: '#f5a623'
+      color: '#f5a623',
     },
     {
       name: 'Supernova',
-      color: '#ffc30e'
+      color: '#ffc30e',
     },
     {
       name: 'Yellow Orange',
-      color: '#ffaf37'
+      color: '#ffaf37',
     },
     {
       name: 'Portage',
-      color: '#8997eb'
+      color: '#8997eb',
     },
     {
       name: 'Gray',
-      color: '#808080'
+      color: '#808080',
     },
     {
       name: 'Shuttle Gray',
-      color: '#5f6c82'
+      color: '#5f6c82',
     },
     {
       name: 'Tuna',
-      color: '#383d43'
-    }
+      color: '#383d43',
+    },
   ];
 
   selectedColor: any;
@@ -108,71 +110,81 @@ export class WalletSettingsView implements OnInit, OnDestroy {
 
   settingsForm = this.formBuilder.group({
     name: ['', Validators.required],
-    balanceHidden: false
+    balanceHidden: false,
   });
 
   passwordChangeForm = this.formBuilder.group({
     password: ['', Validators.required],
-    repeatPassword: ['', [Validators.required, PasswordValidator.MatchPassword]]
+    repeatPassword: ['', [Validators.required, PasswordValidator.MatchPassword]],
   });
 
-  get password() { return this.passwordChangeForm.get('password'); }
+  get password() {
+    return this.passwordChangeForm.get('password');
+  }
 
-  get repeatPassword() { return this.passwordChangeForm.get('repeatPassword'); }
+  get repeatPassword() {
+    return this.passwordChangeForm.get('repeatPassword');
+  }
 
-  get currentPassword() { return this.passwordChangeForm.get('currentPassword'); }
+  get currentPassword() {
+    return this.passwordChangeForm.get('currentPassword');
+  }
 
   isWalletEncrypted: boolean;
 
   private subs: any[] = [];
 
-  constructor(private store: Store<IRootAppState>,
-              private route: ActivatedRoute,
-              private formBuilder: FormBuilder,
-              private logger: LoggerService,
-              private walletService: WalletService,
-              private passwordPromptCtrl: PasswordPromptController,
-              private confirmDialogCtrl: ConfirmDialogControllerService,
-              private router: Router,
-              private toastCtrl: ToastControllerService) {}
+  constructor(
+    private store: Store<IRootAppState>,
+    private route: ActivatedRoute,
+    private formBuilder: FormBuilder,
+    private logger: LoggerService,
+    private walletService: WalletService,
+    private passwordPromptCtrl: PasswordPromptController,
+    private confirmDialogCtrl: ConfirmDialogControllerService,
+    private router: Router,
+    private toastCtrl: ToastControllerService
+  ) {}
 
   ngOnInit() {
-    this.subs.push(this.route.parent.params.pipe(
-      switchMap(({ id }) => this.store.select(selectWalletById(id)))
-    ).subscribe((wallet: DisplayWallet) => {
-      if (!wallet) return this.router.navigateByUrl('/wallets');
+    this.subs.push(
+      this.route.parent.params
+        .pipe(switchMap(({ id }) => this.store.select(selectWalletById(id))))
+        .subscribe((wallet: DisplayWallet) => {
+          if (!wallet) return this.router.navigateByUrl('/wallets');
 
-      this.wallet = wallet;
+          this.wallet = wallet;
 
-      const isEncrypted: boolean = wallet.client.isPrivKeyEncrypted();
+          const isEncrypted: boolean = wallet.client.isPrivKeyEncrypted();
 
-      if (isEncrypted) {
-        this.setWalletAsEncrypted();
-      }
+          if (isEncrypted) {
+            this.setWalletAsEncrypted();
+          }
 
-      this.settingsForm.get('name').setValue(wallet.name);
-      this.settingsForm.get('balanceHidden').setValue(wallet.balanceHidden);
+          this.settingsForm.get('name').setValue(wallet.name);
+          this.settingsForm.get('balanceHidden').setValue(wallet.balanceHidden);
 
-      this.selectedColor = this.availableColors.find(c => wallet.color == c.color);
+          this.selectedColor = this.availableColors.find(c => wallet.color == c.color);
 
-      this.subs.push(
-        this.settingsForm.valueChanges
-          .pipe(
-            debounceTime(100),
-            filter(() => this.settingsForm.valid)
-          )
-          .subscribe(({ name, balanceHidden }) => {
-            this.wallet.name = name;
-            this.wallet.balanceHidden = balanceHidden;
-            this.store.dispatch(new UpdateOneWalletAction(this.wallet));
-          })
-      );
-    }));
+          this.subs.push(
+            this.settingsForm.valueChanges
+              .pipe(debounceTime(100), filter(() => this.settingsForm.valid))
+              .subscribe(({ name, balanceHidden }) => {
+                this.wallet.name = name;
+                this.wallet.balanceHidden = balanceHidden;
+                this.store.dispatch(new UpdateOneWalletAction(this.wallet));
+              })
+          );
+        })
+    );
   }
 
   private setWalletAsEncrypted() {
     // wallet is encrypted and we need a password to decrypt before setting a new password
-    this.passwordChangeForm.addControl('currentPassword', this.formBuilder.control('', [Validators.required, PasswordValidator.VerifyWalletPassword(this.wallet.client)]));
+    this.passwordChangeForm.addControl(
+      'currentPassword',
+      this.formBuilder.control('', [Validators.required, PasswordValidator.VerifyWalletPassword(this.wallet.client)])
+    );
     this.isWalletEncrypted = true;
   }
 
@@ -214,12 +226,12 @@ export class WalletSettingsView implements OnInit, OnDestroy {
         {
           text: 'Yes',
           value: 'yes',
-          class: 'primary danger'
+          class: 'primary danger',
         },
         {
           text: 'No',
-          value: 'no'
-        }
+          value: 'no',
+        },
       ]
     );
 
@@ -229,15 +241,18 @@ export class WalletSettingsView implements OnInit, OnDestroy {
           // check if encrypted & prompt for password first
           if (this.isWalletEncrypted) {
             await new Promise<void>((resolve, reject) => {
-              this.passwordPromptCtrl.createForWallet(this.wallet)
-                .onDidDismiss((password: string) => {
-                  if (password) resolve();
-                  else reject('You must decrypt you wallet before deleting it.');
-                });
+              this.passwordPromptCtrl.createForWallet(this.wallet).onDidDismiss((password: string) => {
+                if (password) resolve();
+                else reject('You must decrypt you wallet before deleting it.');
+              });
             });
           }
 
           this.store.dispatch(new DeleteWalletAction(this.wallet.id));
+          const primaryWallet = await getLatestValue(this.store.select(selectPrimaryWallet));
+          if (this.wallet.id == primaryWallet.id) {
+            this.store.dispatch(new SetPrimaryWalletAction(null));
+          }
           this.router.navigateByUrl('/wallets');
         } catch (err) {
           this.toastCtrl.error(err);

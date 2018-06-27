@@ -27,7 +27,7 @@ export function accessWallet(target, key: string, descriptor: any) {
       let password;
       if (wallet.isPrivKeyEncrypted()) {
         try {
-          password = await  this.alertCtrl.promptForWalletPassword(wallet);
+          password = await this.alertCtrl.promptForWalletPassword(wallet);
         } catch (e) {
           console.warn(e);
           throw new Error('No access to wallet');
