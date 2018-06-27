@@ -178,11 +178,8 @@ Service.prototype.start = function(done) {
       }
     },
     function(next) {
-      if (config.smsNotificationsEnabled) {
-        // Start SMS Notifications service
-        new SmsService(config);
-      }
-
+      // Start SMS Notifications service
+      new SmsService(config);
       next();
     },
     function(next) {
