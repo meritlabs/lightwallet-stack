@@ -4,10 +4,12 @@
 <div class="description">
   <p>You have:
     <strong>{{ (invites$ | async) || 0 }}</strong> available invites</p>
-  <p>
-    <strong>{{ ((inviteRequests$ | async)?.length) || 0 }}</strong> incoming requests are waiting for acceptance</p>
+  <ng-container *ngIf="(inviteRequests$ | async)?.length > 0">
+    <p>
+      <strong>{{ ((inviteRequests$ | async)?.length) || 0 }}</strong> incoming requests are waiting for acceptance</p>
+  </ng-container>
 </div>
-<ng-container *ngIf="(inviteRequests$ | async).length > 0; else noPendingInvites">
+<ng-container *ngIf="(inviteRequests$ | async)?.length > 0; else noPendingInvites">
   <div class="listWrap">
     <app-pending-invite-item *ngFor="let request of ((inviteRequests$ | async) | slice:0:2)" [request]="request" [availableInvites]="availableInvites$ | async"
       [inviteRequests]="inviteRequests$ | async" [wallets]="wallets$ | async"></app-pending-invite-item>
@@ -15,5 +17,7 @@
   <button class="ui-button ui-button--sm ui-button--blue" routerLink="/invites/requests" *ngIf="(inviteRequests$ | async).length > 2">Show all pending requests</button>
 </ng-container>
 <ng-template #noPendingInvites>
-  <p class="alert">Your wait list is empty</p>
+  <p class="alert">Your wait list is empty...</p>
+  <button class="shareButtton" (click)="shareNow()">
+    <merit-icon name="share"></merit-icon> Extend my community</button>
 </ng-template>

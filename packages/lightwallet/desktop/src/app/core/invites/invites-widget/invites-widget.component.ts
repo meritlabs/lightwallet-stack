@@ -4,6 +4,7 @@ import { selectInviteRequests, selectInvites, selectWalletsWithInvites } from '@
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 
 @Component({
   selector: 'app-invites-widget',
@@ -18,4 +19,7 @@ export class InvitesWidgetComponent {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWalletsWithInvites);
 
   constructor(private store: Store<IRootAppState>) {}
+  shareNow() {
+    this.store.dispatch(new SetShareDialogAction(true));
+  }
 }
