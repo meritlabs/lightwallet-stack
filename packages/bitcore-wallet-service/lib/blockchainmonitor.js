@@ -587,7 +587,9 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function (network, txids
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function (notification, cb) {
-  if (!(this.pushNotificationServiceEnabled || this.emailNotificationServiceEnabled)) return cb();
+  if (!(this.pushNotificationServiceEnabled || this.emailNotificationServiceEnabled || this.smsNotificationsEnabled)) {
+    return cb();
+  }
 
   this.storage.storeNotification(notification, (err, created) => {
     if (created) {
