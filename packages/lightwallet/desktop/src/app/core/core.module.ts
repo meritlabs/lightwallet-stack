@@ -19,7 +19,7 @@ import { BackupView } from './backup/backup.view';
 import { MnemonicPhraseView } from './backup/mnemonic-phrase/mnemonic-phrase.view';
 import { QrCodeBackupView } from './backup/qr-code-backup/qr-code-backup.view';
 import { CommunityView } from './community/community.view';
-import { InvitesComponent } from './community/invites/invites.component';
+import { InvitesWidgetComponent } from './invites/invites-widget/invites.component';
 import { CoreRoutingModule } from './core-routing.module';
 import { CoreView } from './core.component';
 import { DashboardView } from './dashboard/dashboard.view';
@@ -62,7 +62,7 @@ export function getPages() {
     SettingsSessionLogView,
     QrCodeBackupView,
     FileBackupView,
-    InvitesComponent,
+    InvitesWidgetComponent,
     InvitesView,
     InvitesHistoryView,
     SendInviteView,
