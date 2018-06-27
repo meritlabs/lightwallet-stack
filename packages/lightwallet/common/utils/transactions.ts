@@ -1,11 +1,11 @@
 import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
 import * as _ from 'lodash';
-import { IDisplayTransaction, ITransactionIO, TransactionAction } from '@merit/common/models/transaction';
+import { IDisplayTransaction, ITransactionIO, TransactionAction, VisitedTransaction } from '@merit/common/models/transaction';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritWalletClient } from "@merit/common/merit-wallet-client";
 import { FeeService } from "@merit/common/services/fee.service";
 
-export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [],  feeService: FeeService, contactsProvider?: ContactsService, visitedTransactions?: string[]): Promise<IDisplayTransaction[]> {
+export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [], feeService: FeeService, contactsProvider?: ContactsService,visitedTransactions?: VisitedTransaction[]): Promise<IDisplayTransaction[]> {
   if (_.isEmpty(walletHistory)) return [];
 
   const easyReceiveFee = await feeService.getEasyReceiveFee();
@@ -57,8 +57,8 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           break;
       }
 
-      const {alias: inputAlias, address: inputAddress} = tx.inputs.find((input: ITransactionIO) => input.isMine === !received) || <any>{};
-      const {alias: outputAlias, address: outputAddress} = tx.outputs.find((output: ITransactionIO) => output.isMine === received) || <any>{};
+      const { alias: inputAlias, address: inputAddress } = tx.inputs.find((input: ITransactionIO) => input.isMine === !received) || <any>{};
+      const { alias: outputAlias, address: outputAddress } = tx.outputs.find((output: ITransactionIO) => output.isMine === received) || <any>{};
 
       tx.input = inputAlias ? '@' + inputAlias : 'Anonymous';
       tx.output = outputAlias ? '@' + outputAlias : 'Anonymous';
@@ -126,7 +126,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
     if (easySendsByAddress[tx.addressTo]) {
       const easySend = easySendsByAddress[tx.addressTo];
       tx.name = tx.isInvite ? 'MeritInvite' : 'MeritMoney';
-      tx.type =  tx.isInvite ? 'meritinvite' : 'meritmoney';
+      tx.type = tx.isInvite ? 'meritinvite' : 'meritmoney';
       tx.easySend = easySend;
       tx.easySendUrl = getEasySendURL(easySend);
       tx.cancelled = easySend.cancelled;
@@ -137,15 +137,27 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
       }
     }
 
-    // Mark the transaction as new if needed
-    tx.isNew = true;
+    tx.isNew = false;
 
-    if (visitedTransactions) {
-      const found = visitedTransactions.find(txid => txid === tx.txid);
-      if (found) {
-        tx.isNew = false;
-      }
-    }
+    // if (visitedTransactions) {
+    //   const found = visitedTransactions.find(visTx => visTx.txid === tx.txid);
+    //   if (found && found.counter > 2) {
+    //     tx.isNew = false;
+    //   }
+    // }
+
+    // let visitedTxs = await this.persistenceService.getVisitedTransactions() || [];
+    // let oneVisited = visitedTxs.find(visTx => visTx.txid === tx.txid);
+    // if (oneVisited) {
+    //   // already there increase counter
+    //   if (oneVisited.counter < 5) {
+    //     oneVisited.counter++;
+    //   }
+    // } else {
+    //   // add new one in visited list
+    //   visitedTxs.push(new VisitedTransaction(tx.txid, 1));
+    // }
+    // this.persistenceService.setVisitedTransactions(visitedTxs);
 
     return tx;
   }));

@@ -4,9 +4,9 @@
 </div>
 <div class="info" [ngClass]="{'info-new': tx.isNew}">
   <div>
-    <div class="title" [ngClass]="{'title-new': tx.isNew}" >
-      <strong>{{ tx.name }}</strong>
-      <img *ngIf="tx.isNew" [src]="'/assets/v1/icons/award.svg'" alt="">
+    <div class="title" [ngClass]="{'title-new': tx.isNew}">
+      <strong>{{ tx.name }} </strong>
+      <span *ngIf="tx.isNew" class="badge-new">new</span>
     </div>
     <div class="title">
       {{ isCredit? 'Received to:' : 'Sent from:' }}
@@ -15,20 +15,18 @@
     <p class="date">{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
 
     <ng-container *ngIf="tx.easySendUrl && tx.type === 'meritmoney'">
-      <button (click)="showMeritMoneyLink()"
-              class="ui-button ui-button--blue ui-button--sm">Show MeritMoney Link
+      <button (click)="showMeritMoneyLink()" class="ui-button ui-button--blue ui-button--sm">Show MeritMoney Link
       </button>
-      <button *ngIf="!tx.easySend.cancelled" (click)="askCancelMeritMoney()"
-              class="ui-button ui-button--red ui-button--sm">Cancel
+      <button *ngIf="!tx.easySend.cancelled" (click)="askCancelMeritMoney()" class="ui-button ui-button--red ui-button--sm">Cancel
       </button>
     </ng-container>
   </div>
   <div class="details">
-      <div class="merit-amount" [class.credit]="isCredit">
-          {{ tx.isInvite? tx.amount + ' INV' : (tx.amount | toMRT) }}
-          <small *ngIf="tx.alternativeAmountStr">({{ tx.alternativeAmountStr }})</small>
-        </div>
-      <span class="ui-tooltip ui-tooltip--awaiting" *ngIf="confirmationsExplanation">
-      </span>
+    <div class="merit-amount" [class.credit]="isCredit">
+      {{ tx.isInvite? tx.amount + ' INV' : (tx.amount | toMRT) }}
+      <small *ngIf="tx.alternativeAmountStr">({{ tx.alternativeAmountStr }})</small>
+    </div>
+    <span class="ui-tooltip ui-tooltip--awaiting" *ngIf="confirmationsExplanation">
+    </span>
   </div>
 </div>
