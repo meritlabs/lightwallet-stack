@@ -26,7 +26,6 @@ BlockchainMonitor.prototype.start = function (opts, cb) {
 
   self.pushNotificationServiceEnabled = !!opts.pushNotificationsOpts;
   self.emailNotificationServiceEnabled = !!opts.emailOpts;
-  self.smsNotificationsEnabled = !!opts.smsNotificationsEnabled;
 
   async.parallel(
     [
