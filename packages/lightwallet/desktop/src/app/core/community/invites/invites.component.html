@@ -13,35 +13,25 @@
   <div class="network__personal-wallet__panel__col counter">
     <p>{{ ((inviteRequests$ | async)?.length) || 0 }}</p>
   </div>
-  <div *ngFor="let request of (inviteRequests$ | async)" class="invite-request-list">
-    <div class="history__item">
-      <div class="history__item__icon">
-        <img src="/assets/v1/icons/invite.svg" alt="">
-      </div>
-      <div class="history__item__info">
-        <div>
-          <div class="history__item__info__title">
-            <strong>{{ request.alias || request.address }}</strong>
-          </div>
-          <small class="date" *ngIf="request.timestamp">{{ request.timestamp | date:'medium' }}</small>
-        </div>
-        <div>
+  <p>{{ (invites$ | async) || 0 }}</p>
 
+</div>
+
+<div *ngFor="let request of (inviteRequests$ | async)" class="invite-request-list">
+  <div class="history__item">
+    <div class="history__item__icon">
+      <img src="/assets/v1/icons/invite.svg" alt="">
+    </div>
+    <div class="history__item__info">
+      <div>
+        <div class="history__item__info__title">
+          <strong>{{ request.alias || request.address }}</strong>
         </div>
+        <small class="date" *ngIf="request.timestamp">{{ request.timestamp | date:'medium' }}</small>
+      </div>
+      <div>
+
       </div>
     </div>
-  </div>
-</div>
-<div class="wallets__group__wallet item" [routerLink]='"/invites/send"'>
-  <div class="network__personal-wallet__panel__col">
-    <div class="network__personal-wallet__panel__icon">
-      <img src="/assets/v1/icons/invites/incoming_request.svg" alt="">
-    </div>
-    <div class="network__personal-wallet__panel__info">
-      <p class="network__personal-wallet__panel__info__small">Invites</p>
-    </div>
-  </div>
-  <div class="network__personal-wallet__panel__col counter">
-    <p>{{ (invites$ | async) || 0 }}</p>
   </div>
 </div>
