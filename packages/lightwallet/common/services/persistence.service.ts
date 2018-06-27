@@ -39,7 +39,8 @@ const Keys = {
   ACTIVE_UNLOCK_REQUESTS_NUMBER: 'activeUnlockRequests',
   PAGES_VISITED: 'pagesVisited',
   PIN: 'pin',
-  PIN_LOCKED_TILL: 'pinLockedTill'
+  PIN_LOCKED_TILL: 'pinLockedTill',
+  PIN_SET: 'pinSet'
 };
 
 @Injectable()
@@ -417,13 +418,25 @@ export class PersistenceService {
     return requests || 0;
   }
 
-  async checkPin(pin) {
-    const currentPin = await this.storage.get(Keys.PIN);
-    return pin == currentPin;
+  enablePin() {
+    return this.storage.set(Keys.PIN_SET, true);
+  }
+
+  disablePin() {
+    return this.storage.set(Keys.PIN_SET, false);
+  }
+
+  isPinEnabled() {
+    return this.storage.get(Keys.PIN_SET);
   }
 
   setPin(pin) {
     return this.storage.set(Keys.PIN, pin);
+  }
+
+  async checkPin(pin) {
+    const currentPin = await this.storage.get(Keys.PIN);
+    return pin == currentPin;
   }
 
   blockPin(timestamp) {
