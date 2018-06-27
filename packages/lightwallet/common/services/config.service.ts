@@ -45,11 +45,6 @@ export interface IAppConfig {
     };
   };
 
-  lock: {
-    method: any;
-    value: any;
-    bannedUntil: any;
-  };
 
   recentTransactions: {
     enabled: boolean;
@@ -133,12 +128,6 @@ const configDefault: IAppConfig = {
       android: 'http://coming.soon',
       wp: ''
     }
-  },
-
-  lock: {
-    method: null,
-    value: null,
-    bannedUntil: null
   },
 
   // External services
