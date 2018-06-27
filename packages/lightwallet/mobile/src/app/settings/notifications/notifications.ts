@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { ConfigService } from '@merit/common/services/config.service';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
@@ -7,15 +7,10 @@ import { PlatformService } from '@merit/common/services/platform.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { EmailValidator } from '@merit/common/validators/email.validator';
 import { IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
-import { isEmpty } from 'lodash';
-import { fromPromise } from 'rxjs/observable/fromPromise';
-import { merge } from 'rxjs/observable/merge';
-import { debounceTime, filter, switchMap, tap } from 'rxjs/operators';
-import { Subscription } from 'rxjs/Subscription';
-import { PersistenceService2 } from '../../../../../common/services/persistence2.service';
-import { SmsNotificationsService } from '../../../../../common/services/sms-notifications.service';
-import { ToastControllerService } from '../../../../../common/services/toast-controller.service';
-import { NotificationSettingsController } from '../../../../../common/utils/notification-settings';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { NotificationSettingsController } from '@merit/common/utils/notification-settings';
 
 @IonicPage()
 @Component({
@@ -32,7 +27,7 @@ export class NotificationsView {
     this.smsNotificationsService,
     this.formBuilder,
     this.toastCtrl,
-    this.platformService.isIOS? 'ios' : 'android'
+    this.platformService.isIOS ? 'ios' : 'android'
   );
 
   constructor(public navCtrl: NavController,
