@@ -25,24 +25,38 @@ export class PinLockView {
 
   timerId: number;
 
+  showCancelButton: boolean;
+  mode: string;
+
+  storedPin: string;
 
   constructor(
     private persistenceService: PersistenceService,
     private platform: Platform,
     private viewCtrl: ViewController,
-    private touchIdService: TouchIdService
+    private touchIdService: TouchIdService,
+    private navParams: NavParams
   ) {
-    this.isTouchIdAvailable =  this.platform.is('cordova');
-    if (this.isTouchIdAvailable) {
-      touchIdService.check().then(() => {
-        this.viewCtrl.dismiss();
-      });
+    this.showCancelButton = this.navParams.get('showCancelButton');
+    if (this.navParams.get('newPinMode')) {
+      this.mode = 'new';
+      this.showCancelButton = true;
+    } else {
+      this.mode = 'check';
+      this.isTouchIdAvailable = this.platform.is('cordova')
+      this.showCancelButton = false;
     }
 
+
+    if (this.isTouchIdAvailable) {
+      touchIdService.check().then(() => {
+        this.viewCtrl.dismiss(true);
+      });
+    }
   }
 
   ionViewWillEnter() {
-    this.timerId = setInterval(this.checkIsBlocked.bind(this), 1000);
+    this.timerId = setInterval(this.checkIsBlocked.bind(this), 5000);
   }
 
   ionViewWillLeave() {
@@ -62,13 +76,22 @@ export class PinLockView {
     }
   }
 
-
   async enter(number) {
     if (this.error || this.blocked) return;
     if (this.pin.length < 4) {
       this.pin += number;
       if (this.pin.length == 4) {
-        setTimeout(this.checkPin.bind(this), 200);
+        if (this.mode == 'check') {
+          setTimeout(this.checkPin.bind(this), 200);
+        } else if (this.mode == 'repeat') {
+          setTimeout(this.comparePin.bind(this), 200);
+        } else if (this.mode == 'new') {
+          setTimeout(() => {
+            this.storedPin = this.pin;
+            this.pin = '';
+            this.mode = 'repeat';
+          }, 200);
+        }
       }
     }
   }
@@ -76,7 +99,7 @@ export class PinLockView {
   private async checkPin() {
     this.attempts++;
     if (await this.persistenceService.checkPin(this.pin)) {
-      this.viewCtrl.dismiss();
+      this.viewCtrl.dismiss(true);
     } else {
       this.error = true;
       if (this.attempts >= this.MAX_ATTEMPTS) {
@@ -93,9 +116,26 @@ export class PinLockView {
     }
   }
 
+  private async comparePin(pin) {
+    if (this.pin == this.storedPin) {
+      await this.persistenceService.setPin(this.pin);
+      this.viewCtrl.dismiss(true);
+    } else {
+      this.error = true;
+      setTimeout(() => {
+        this.pin = '';
+        this.error = false;
+      }, 100);
+    }
+  }
+
   backspace() {
     if (this.error || this.blockedText || this.pin.length == 4) return;
     this.pin = this.pin.slice(0, -1);
+  }
+
+  close() {
+    this.viewCtrl.dismiss(false);
   }
 
 }
