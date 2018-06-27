@@ -6,7 +6,7 @@ import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { AddressService } from '@merit/common/services/address.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
-import { ConfigService } from '@merit/common/services/config.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
@@ -16,7 +16,6 @@ import { DeepLinkService } from '@merit/mobile/app/core/deep-link.service';
 import { OnboardingView } from '@merit/mobile/app/onboard/onboarding.view';
 import { TransactView } from '@merit/mobile/app/transact/transact';
 import { FingerprintLockView } from '@merit/mobile/app/utilities/fingerprint-lock/fingerprint-lock';
-import { PinLockView } from '@merit/mobile/app/utilities/pin-lock/pin-lock';
 import { Events, ModalController, Nav, Platform } from 'ionic-angular';
 
 @Component({
@@ -34,7 +33,7 @@ export class MeritLightWallet {
               private logger: LoggerService,
               private modalCtrl: ModalController,
               private appService: AppSettingsService,
-              private configService: ConfigService,
+              private persistenceService: PersistenceService,
               private deepLinkService: DeepLinkService,
               private easyReceiveService: EasyReceiveService,
               private events: Events,
@@ -44,7 +43,15 @@ export class MeritLightWallet {
   }
 
   async ngOnInit() {
+
+    if (await this.persistenceService.isPinEnabled()) {
+      this.modalCtrl.create('PinLockView').present();
+    }
+
     this.platform.resume.subscribe(() => {
+      this.persistenceService.isPinEnabled().then(isEnabled, () => {
+        this.modalCtrl.create('PinLockView').present();
+      });
       this.logger.info('Returning Native App from Background!');
       this.loadEasySend();
     });
