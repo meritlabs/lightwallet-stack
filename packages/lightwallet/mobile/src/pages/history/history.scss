@@ -7,4 +7,16 @@ view-history {
     color: #9da6b7;
   }
 
+  .select-wallet {
+    background: #f6f8fa;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    .item-inner {
+      border-bottom: none !important;
+    }
+    ion-avatar {
+      box-shadow: 0 0 0 2px map_get($colors, primary);
+      border: 2px solid white;
+    }
+  }
+
 }

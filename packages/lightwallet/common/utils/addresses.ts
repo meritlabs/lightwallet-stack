@@ -6,11 +6,6 @@ export function cleanAddress(address: string) {
   return address.replace(/[@|\s]/g, '');
 }
 
-export function invalidPattern(address: string) {
-  let na_regEx = /@/g;
-  return na_regEx.test(address);
-}
-
 export function isAlias(address: string) {
   address = address || '';
   return address.replace(/\s/g, '').charAt(0) === '@';

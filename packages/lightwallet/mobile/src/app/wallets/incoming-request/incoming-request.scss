@@ -51,6 +51,8 @@ view-incoming-request {
     ion-list.list {
       margin: 0;
 
+
+
       button[ion-item].item {
 
         text-align: center;
@@ -75,7 +77,14 @@ view-incoming-request {
             font-weight: 600;
             text-transform: uppercase;
           }
+          &.ignore {
+            ion-label.label {
+              color: color($colors, danger);  
+            } 
+          } 
         }
+
+        
 
         .item-inner {
           border-bottom: none;
@@ -134,4 +143,6 @@ view-incoming-request {
       }
     }
   }
+
+
 }

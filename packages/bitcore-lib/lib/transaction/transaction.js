@@ -699,7 +699,6 @@ Transaction.prototype.hasAllUtxoInfo = function() {
  * @return {Transaction} this, for chaining
  */
 Transaction.prototype.fee = function(amount) {
-  console.log('fee', amount);
   $.checkArgument(_.isNumber(amount), 'amount must be a number');
   this._fee = amount;
   this._updateChangeOutput();
@@ -917,7 +916,7 @@ Transaction.prototype._updateChangeOutput = function() {
  * @return {Number} fee of this transaction in micros
  */
 Transaction.prototype.getFee = function() {
-  if (this.isCoinbase()) {
+  if (this.isCoinbase() || this.isInvite()) {
     return 0;
   }
   if (!_.isUndefined(this._fee)) {

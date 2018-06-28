@@ -1,0 +1,33 @@
+<div class="toolbar">
+    <div class="logo">
+        <merit-icon name="merit"></merit-icon>
+    </div>
+</div>
+
+<div class="content">
+    <p class="error" [ngClass]="{ 'visible': !!error }">{{ error }}</p>
+    <p class="success" [ngClass]="{ 'visible': success }">Payment successfully sent.</p>
+    <p class="txid" [ngClass]="{ 'visible': success }">Transaction ID:
+        <strong>{{ txp?.txid }}</strong>
+    </p>
+
+    <h4>
+        Are you sure you want to send
+        <strong>{{ amountInMrt }} MRT</strong> to Merit escrow?
+    </h4>
+
+    <p class="fee" [ngClass]="{ 'visible': !!fee }">
+        Fee: {{ fee }} MRT
+        <br>
+        <strong>Total: {{ fee + amountInMrt }} MRT</strong>
+    </p>
+
+    <div class="buttons">
+        <button type="button" class="ui-button ui-button--white ui-button--md" (click)="cancel()">
+            Cancel
+        </button>
+        <button type="button" class="ui-button ui-button--blue ui-button--md" (click)="send()" [disabled]="!feeCalculated || !!error || success">
+            Send Merit
+        </button>
+    </div>
+</div>

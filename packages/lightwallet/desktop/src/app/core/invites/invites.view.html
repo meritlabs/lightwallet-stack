@@ -1,0 +1,21 @@
+<div class="wallet-details__content">
+  <div class="container--inner title--primary">Invites <small>({{ availableInvites$ | async }} available)</small></div>
+  <div class="wallet-details__content__navigation">
+    <ul>
+      <li>
+        <a [routerLink]="['requests']" routerLinkActive="active">
+          My Waitlist <span class="badge">{{ inviteRequests$ | async}}</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="['history']" routerLinkActive="active">History</a>
+      </li>
+      <li>
+        <a [routerLink]="['send']" routerLinkActive="active">Send</a>
+      </li>
+    </ul>
+  </div>
+  <div class="wallet-details__content__wrap container--inner">
+    <router-outlet></router-outlet>
+  </div>
+</div>

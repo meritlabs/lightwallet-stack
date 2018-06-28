@@ -21,6 +21,7 @@ export class SlideToActionComponent implements AfterViewInit, OnDestroy {
   @ViewChild('container') _containerElement: ElementRef;
 
   @Input() text: string = 'Slide to confirm';
+  @Input() disabled: boolean;
 
   @Output() confirm: EventEmitter<void> = new EventEmitter<void>();
 
@@ -37,6 +38,7 @@ export class SlideToActionComponent implements AfterViewInit, OnDestroy {
 
     this._gesture = new PanGesture(this._plt, this._sliderElement.nativeElement, this._rnd);
     this._gesture.onMove = (delta: number) => {
+      if (this.disabled) return;
       const newPos = Math.min(Math.max(0, -1 * delta + this._sliderPosition), maxPosition);
       if (newPos !== this._sliderPosition) {
         // if (newPos === maxPosition) {
@@ -48,15 +50,16 @@ export class SlideToActionComponent implements AfterViewInit, OnDestroy {
     };
 
     this._gesture.onEnd = () => {
+      if (this.disabled) return;
       switch (this._sliderPosition) {
         case 0: return;
         case maxPosition:
           this.confirm.emit();
           break;
-        default:
-          this._sliderPosition = 0;
-          this.moveSlider();
       }
+
+      this._sliderPosition = 0;
+      this.moveSlider();
     };
   }
 
@@ -65,6 +68,7 @@ export class SlideToActionComponent implements AfterViewInit, OnDestroy {
   }
 
   moveSlider(duration: number = 300) {
+    if (this.disabled) return;
     this._plt.raf(() => {
       if (duration) {
         this._rnd.setStyle(this._sliderNativeElement, this._plt.Css.transition, `all ${ duration }ms ease-out`);

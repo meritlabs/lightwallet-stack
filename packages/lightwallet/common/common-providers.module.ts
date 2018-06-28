@@ -1,5 +1,6 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { AddressService } from '@merit/common/services/address.service';
+import { AlertService } from '@merit/common/services/alert.service';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { ConfigService } from '@merit/common/services/config.service';
 import { ContactsService } from '@merit/common/services/contacts.service';
@@ -19,10 +20,12 @@ import { PopupService } from '@merit/common/services/popup.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { SendService } from '@merit/common/services/send.service';
+import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { VaultsService } from '@merit/common/services/vaults.service';
 import { WalletService } from '@merit/common/services/wallet.service';
+import { GoalsService } from '@merit/common/services/goals.service';
 
 @NgModule()
 export class CommonProvidersModule {
@@ -53,7 +56,10 @@ export class CommonProvidersModule {
         TxFormatService,
         AddressService,
         UnlockRequestService,
-        WalletService
+        WalletService,
+        AlertService,
+        GoalsService,
+        SmsNotificationsService
       ]
     };
   }

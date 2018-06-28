@@ -15,7 +15,7 @@
         </ion-avatar>
         <ion-label>
           <p>Sending to</p>
-          <h2>{{ viewData.destination ? viewData.destination : 'Global Send'}}</h2>
+          <h2>{{ viewData.destination ? viewData.destination : 'MeritMoney Link'}}</h2>
         </ion-label>
       </ion-item>
 
@@ -62,6 +62,6 @@
 </ion-content>
 
 <ion-footer>
-  <slide-to-action text="Slide to Send" (confirm)="approve()"></slide-to-action>
+  <slide-to-action text="Slide to Send" (confirm)="send()"></slide-to-action>
 </ion-footer>
  

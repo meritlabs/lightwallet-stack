@@ -1,33 +1,31 @@
 <ion-header>
-  <ion-navbar>
-  </ion-navbar>
+    <ion-navbar>
+    </ion-navbar>
 </ion-header>
 
 <ion-content fullscreen>
-  <div class="container">
-    <div class="title">Wallet Recovery Phrase</div>
-    <ion-grid>
-      <ion-row>
-        <ion-card class="mnemonic-card" [clip]="mnemonic" (click)="markCopied()">
-          <div class="click-to-copy">Click to copy</div>
-          <div class="mnemonic">{{ mnemonic }}</div>
-        </ion-card>
-      </ion-row>
+    <div class="container">
+        <div class="title">Wallet created!</div>
+        <ion-grid>
+            <ion-row>
+                <ion-card class="mnemonic-card" [clip]="mnemonic" (click)="markCopied()">
+                    <div class="click-to-copy">Click to copy</div>
+                    <div class="mnemonic">{{ mnemonic }}</div>
+                </ion-card>
+            </ion-row>
 
-        <ion-row>
-            <div class="text">
-                You can use this phrase to recover your wallet. Write it down and keep it in a secure place. When you have
-                written it down,
-                click "OK".
-            </div>
-        </ion-row>
+            <ion-row>
+                <div class="text">
+                    This is your backup phrase. Using it, you can recover/sync your wallet on any device. Write it down and keep it in a secure place.
+                </div>
+            </ion-row>
 
-      <ion-row>
-        <div class="bottom-buttons" margin-top>
-          <button ion-button class="action-button" (click)="skipBackupPrompt()">OK
-          </button>
-        </div>
-      </ion-row>
-    </ion-grid>
-  </div>
+            <ion-row>
+                <div class="bottom-buttons" margin-top>
+                    <button ion-button class="action-button" (click)="skipBackupPrompt()">OK
+                    </button>
+                </div>
+            </ion-row>
+        </ion-grid>
+    </div>
 </ion-content>

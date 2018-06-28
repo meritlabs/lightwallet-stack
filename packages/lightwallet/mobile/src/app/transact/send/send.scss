@@ -148,8 +148,10 @@ view-send {
     }
 
     img {
-      margin-top: 20px;
+      margin: 20px auto;
       width: 75%;
+      max-width: 300px;
+      
     }
   }
 }
