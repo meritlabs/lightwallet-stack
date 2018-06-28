@@ -51,7 +51,7 @@ export class ExportWalletView {
       });
     };
 
-    if (this.walletsService.isEncrypted(this.wallet)) {
+    if (this.walletsService.isWalletEncrypted(this.wallet)) {
 
       let showPrompt = (highlightInvalid = false) => {
         this.alertController.create({
@@ -75,10 +75,10 @@ export class ExportWalletView {
                 showPrompt(true);
               } else {
                 try {
-                  this.walletsService.decrypt(this.wallet, data.password);
+                  this.walletsService.decryptWallet(this.wallet, data.password);
                   this.mnemonic = this.wallet.getMnemonic();
                   setQrInfo(data.password);
-                  this.walletsService.encrypt(this.wallet, data.password);
+                  this.walletsService.encryptWallet(this.wallet, data.password);
                   this.accessGranted = true;
                 } catch (err) {
                   showPrompt();

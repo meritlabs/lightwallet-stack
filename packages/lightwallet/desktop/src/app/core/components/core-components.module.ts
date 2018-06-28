@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { CommonDirectivesModule } from '@merit/common/common-directives.module';
 
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
@@ -9,14 +10,18 @@ import { NotificationsHistoryComponent } from '@merit/desktop/app/core/component
 import { NotificationsComponent } from '@merit/desktop/app/core/components/notifications/notifications.component';
 import { ProfileStatsComponent } from '@merit/desktop/app/core/components/profile-stats/profile-stats.component';
 import { SelectComponent } from '@merit/desktop/app/core/components/select/select.component';
+import { SendMethodComponent } from '@merit/desktop/app/core/components/send-method/send-method.component';
 import { ToolbarComponent } from '@merit/desktop/app/core/components/toolbar/toolbar.component';
 import { VaultsListComponent } from '@merit/desktop/app/core/components/vaults-list/vaults-list.component';
 import { WalletsListComponent } from '@merit/desktop/app/core/components/wallets-list/wallets-list.component';
 import { VirtualScrollModule } from 'angular2-virtual-scroll';
-import { MomentModule } from 'ngx-moment';
 import { ClipModule } from 'ng2-clip';
+import { MomentModule } from 'ngx-moment';
+import { GetStartedTipsComponent } from './get-started-tips/get-started-tips.component';
 import { HistoryItemComponent } from './history-item/history-item.component';
 import { HistoryListComponent } from './history-list/history-list.component';
+import { ShareBoxComponent } from './share-box/share-box.component';
+import { TaskConfirmComponent } from '@merit/desktop/app/core/dialog/task-confirm/task-confirm.component';
 
 export function getComponents() {
   return [
@@ -29,7 +34,11 @@ export function getComponents() {
     WalletsListComponent,
     VaultsListComponent,
     ProfileStatsComponent,
-    FeeSelectorComponent
+    FeeSelectorComponent,
+    SendMethodComponent,
+    GetStartedTipsComponent,
+    ShareBoxComponent,
+    TaskConfirmComponent,
   ];
 }
 
@@ -42,8 +51,9 @@ export function getComponents() {
     CommonPipesModule,
     VirtualScrollModule,
     ClipModule,
+    CommonDirectivesModule
   ],
   declarations: getComponents(),
-  exports: getComponents()
+  exports: getComponents(),
 })
 export class CoreComponentsModule {}

@@ -13,5 +13,6 @@ Model.PushNotificationSub = require('./pushnotificationsub');
 Model.TxConfirmationSub = require('./txconfirmationsub');
 Model.ReferralTxConfirmationSub = require('./referraltxconfirmationsub');
 Model.VaultTxConfirmationSub = require('./vaulttxconfirmationsub');
+Model.SmsNotificationSub = require('./sms-sub');
 
 module.exports = Model;

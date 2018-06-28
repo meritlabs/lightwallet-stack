@@ -3,19 +3,24 @@ import * as _ from 'lodash';
 import { IDisplayTransaction, ITransactionIO, TransactionAction } from '@merit/common/models/transaction';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritWalletClient } from "@merit/common/merit-wallet-client";
+import { FeeService } from "@merit/common/services/fee.service";
 
-export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [], contactsProvider?: ContactsService): Promise<IDisplayTransaction[]> {
+export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [],  feeService: FeeService, contactsProvider?: ContactsService): Promise<IDisplayTransaction[]> {
   if (_.isEmpty(walletHistory)) return [];
+
+  const easyReceiveFee = await feeService.getEasyReceiveFee();
 
   walletHistory = _.sortBy(walletHistory, 'time');
 
   const easySendsByAddress = {};
 
   easySends.forEach((easySend: EasySend) => {
-    if (easySend.scriptAddress) {
+    if (easySend && easySend.scriptAddress) {
       easySendsByAddress[easySend.scriptAddress] = easySend;
     }
   });
+
+  let meritMoneyAddresses = []; // registering merit money transactions so we can hide bound invite transactions
 
   let pendingString;
 
@@ -95,31 +100,56 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           tx.name = 'Mined Invite';
           tx.action = TransactionAction.INVITE;
           tx.type = 'credit';
-        } else if (tx.outputs[0].index === 0) {
-          tx.name = 'Mining Reward';
-          tx.action = TransactionAction.MINING_REWARD;
-          tx.isMiningReward = true;
         } else {
-          tx.name = 'Ambassador Reward';
-          tx.action = TransactionAction.AMBASSADOR_REWARD;
-          tx.isAmbassadorReward = true;
+          const output = tx.outputs.find(o => o.isMine);
+
+          if (output && output.index !== 0) {
+            // Ambassador reward
+            tx.name = 'Growth Reward';
+            tx.action = TransactionAction.AMBASSADOR_REWARD;
+            tx.isGrowthReward = true;
+          } else {
+            tx.name = 'Mining Reward';
+            tx.action = TransactionAction.MINING_REWARD;
+            tx.isMiningReward = true;
+          }
+        }
+      } else {
+        if (tx.outputs.some(o => o.amount == 0 && _.get(o, 'data', '').toLowerCase().indexOf('pool') > -1)) {
+          tx.name = 'Pool Reward';
+          tx.action = TransactionAction.POOL_REWARD;
+          tx.isPoolReward = true;
         }
       }
     }
 
     if (easySendsByAddress[tx.addressTo]) {
       const easySend = easySendsByAddress[tx.addressTo];
-      tx.name = 'Global Send';
-      tx.type = 'globalsend';
+      tx.name = tx.isInvite ? 'MeritInvite' : 'MeritMoney';
+      tx.type =  tx.isInvite ? 'meritinvite' : 'meritmoney';
       tx.easySend = easySend;
       tx.easySendUrl = getEasySendURL(easySend);
+      tx.cancelled = easySend.cancelled;
+      if (tx.type == 'meritmoney') {
+        meritMoneyAddresses.push(tx.addressTo);
+        tx.fees += easyReceiveFee;
+        tx.amount -= easyReceiveFee;
+      }
     }
 
     return tx;
   }));
-
-  // remove globalsend invites so we  have only one tx for globalsend
+  // remove meritmoney invites so we  have only one tx for meritmoney
   return walletHistory
-    .filter(t => !(t.type == 'globalsend' && t.isInvite))
+    .filter(t => {
+
+      if (meritMoneyAddresses.indexOf(t.addressFrom) != -1) return false; //filtering out txs from cancelled MeritMoney/MeritInvite
+
+      if (t.type == 'meritinvite') {
+        if (meritMoneyAddresses.indexOf(t.addressTo) != -1) return false; //filtering out invites txs that were part of MeritMoney
+      }
+
+      return true;
+    })
     .reverse();
 }

@@ -4,7 +4,7 @@ var _ = require('lodash');
 var $ = require('preconditions').singleton();
 var async = require('async');
 var config = require('../config');
-
+const { promisify } = require('util');
 
 var EmailValidator = require('email-validator');
 var Stringify = require('json-stable-stringify');
@@ -881,7 +881,7 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
     walletId: walletId,
   });
 
-  this.storage.storeNotification(walletId, notification, () => {
+  this.storage.storeNotification(notification, () => {
     this.messageBroker.send(notification);
     return cb();
   });
@@ -902,6 +902,7 @@ WalletService.prototype._notifyTxProposalAction = function(type, txp, extraArgs,
     amount: txp.getTotalAmount(),
     message: txp.message,
   }, extraArgs);
+
   self._notify(type, data, {}, cb);
 };
 
@@ -2150,7 +2151,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       if (selectionError || _.isEmpty(inputs)) return cb(selectionError || new Error('Could not select tx inputs'));
 
       txp.setInputs(_.shuffle(inputs));
-      txp.fee = fee;
+      txp.fee = txp.isInvite? 0 : fee;
 
       var err = self._checkTx(txp);
 
@@ -2223,6 +2224,7 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
       return Errors.INCORRECT_ADDRESS_NETWORK;
     }
 
+    if (!_.isNumber(output.amount)) output.amount = parseInt(output.amount);
     if (!_.isNumber(output.amount) || _.isNaN(output.amount) || output.amount <= 0) {
       return new ClientError('Invalid amount');
     }
@@ -2398,7 +2400,7 @@ WalletService.prototype.createTx = function(opts, cb) {
           },
           function(next) {
             self._canCreateTx(function(err, canCreate) {
-    if (err) return next(err);
+          if (err) return next(err);
               if (!canCreate) return next(Errors.TX_CANNOT_CREATE);
               next();
             });
@@ -2882,8 +2884,11 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
     var extraArgs = {
       txid: txp.txid,
     };
-    if (opts.byThirdParty) {
+
+    if (opts.byThirdParty && !txp.isInvite) {
       self._notifyTxProposalAction('OutgoingTxByThirdParty', txp, extraArgs);
+    } else if (txp.isInvite) {
+      self._notifyTxProposalAction('OutgoingInviteTx', txp, extraArgs);
     } else {
       self._notifyTxProposalAction('OutgoingTx', txp, extraArgs);
     }
@@ -3105,11 +3110,14 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
         itemAlias = item.scriptPubKey.aliases[0];
       }
 
+      const script = Bitcore.Script.fromHex(item.scriptPubKey.hex);
+
       return {
         address: itemAddr,
         alias: itemAlias,
         amount: parseInt((item.value * 1e8).toFixed(0)),
-        index: item.n
+        index: item.n,
+        data: script.isDataOut() ? script.getData().toString() : null,
       }
     });
 
@@ -3179,47 +3187,56 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
   return cb(null, cache.current);
 };
 
+/**
+ * Receiving list of pending and accepted invite requests to current wallet address
+ * Pending requests are receiving from mempool, accepted requests are stored in blockchain
+ * (we don't care if address was unconfirmled after acceptance so we don't check current address status)
+ *
+ * @param opts
+ * @param cb
+ */
+WalletService.prototype.getUnlockRequests = async function(opts, cb) {
 
-WalletService.prototype.getUnlockRequests = function(opts, cb) {
-    var self = this;
+    try {
 
-    self.getWallet({}, function(err, wallet) {
-        if (err) return cb(err);
+        let wallet = await promisify(this.getWallet.bind(this))({});
+        let addresses = await promisify(this.storage.fetchAddresses.bind(this.storage))(wallet.id);
+        if (addresses.length == 0) return cb(null, []);
+        const addressStrs = _.map(addresses, 'address');
 
-        self.storage.fetchAddresses(wallet.id, function(err, addresses) {
-            if (err) return cb(err);
+        //Receive addresses for requests that were accepted, but not in blockchain yet
+        const acceptedAddresses = await localMeritDaemon.getMempoolAcceptedAddresses(addressStrs);
 
-            if (addresses.length == 0) return cb(null, []);
-            var network = wallet.network;
-            var addressStrs = _.map(addresses, 'address');
-
-            var bc = self._getBlockchainExplorer(network);
-            if (!bc) return next(new Error('Could not get blockchain explorer instance'));
-            bc.getAddressReferrals(addressStrs, function(err, referrals) {
-                if (err) return cb(err);
-                self.storage.fetchInvitedAddresses(wallet.id, function (err, invitedAddresses) {
-                  if (err) return cb(err);
-                  var unlockRequests = referrals.map(function(referralObj) {
-                     return Bitcore.Referral(referralObj.raw, network);
-                    }).filter(function(referral) {
-                      if (referral.address.type == 'scripthash') return false; //do not count script hash addresses
-                      return (addressStrs.indexOf(referral.address.toString()) == -1); //filter our own unlock request
-                    }).map(function(referral) {
-
-                      return {
-                        referralId: referral.hash,
-                        address: referral.address.toString(),
-                        parentAddress: referral.parentAddress.toString(),
-                        alias: referral.alias,
-                        isConfirmed: (invitedAddresses.indexOf(referral.address.toString()) != -1)
-                      };
-                    });
-
-                  return cb(null, unlockRequests);
-                });
+        const mapAndFilterReferrals = (referralObjs) => {
+            const referrals = _.map(referralObjs.reverse(), r => Bitcore.Referral(r.raw, wallet.network));
+            return _.filter(referrals, r => {
+                if (r.address.type == 'scripthash') return false; //do not count script hash addresses
+                return (addressStrs.indexOf(r.address.toString()) == -1); //filter our own unlock request
             });
+        };
+
+        const mempoolReferrals = mapAndFilterReferrals(await localMeritDaemon.getMempoolReferrals(addressStrs));
+        const mempoolRequests = _.map(mempoolReferrals, r => {
+            const address = r.address.toString();
+            const parentAddress = r.parentAddress.toString();
+            const isConfirmed = acceptedAddresses.indexOf(address) != -1;
+            return { rId: r.hash, alias: r.alias, isConfirmed, address, parentAddress};
         });
-    });
+
+        const bcReferrals = mapAndFilterReferrals(await localMeritDaemon.getBlockchainReferrals(addressStrs));
+        const bcRequests = _.map(bcReferrals, r => {
+            const address = r.address.toString();
+            const parentAddress = r.parentAddress.toString();
+            return { rId: r.hash, alias: r.alias, isConfirmed: true, address, parentAddress};
+        });
+
+        let requests = mempoolRequests.concat(bcRequests);
+        cb(null, requests);
+
+    } catch (err) {
+        cb(err);
+    }
+
 };
 
 /**
@@ -3235,7 +3252,7 @@ WalletService.prototype.getUnlockRequests = function(opts, cb) {
 WalletService.prototype.getTxHistory = function(opts, cb) {
 
   var self = this;
-  if (opts.skip < 0 || opts.skip == opts.limit) {
+  if (opts.skip < 0) {
     log.warn("Invalid parameters sent to getTxHistory.");
     return cb(Errors.INVALID_PARAMETERS);
   }
@@ -3269,6 +3286,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           // TODO: handle singleAddress and change addresses
           // isChange: address ? (address.isChange || wallet.singleAddress) : false,
           isChange: address ? ((address.isChange || wallet.singleAddress) && !isInvite) : false,
+          data: item.data,
         }
       });
     };
@@ -3337,7 +3355,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           return _.pick(input, 'address', 'alias', 'amount', 'isMine', 'index');
         });
         newTx.outputs = _.map(outputs, function(output) {
-          return _.pick(output, 'address', 'alias', 'amount', 'isMine', 'index');
+          return _.pick(output, 'address', 'alias', 'amount', 'isMine', 'index', 'data');
         });
       } else {
         // TODO: handle singleAddress and change addresses
@@ -3753,6 +3771,73 @@ WalletService.prototype.pushNotificationsUnsubscribe = function(opts, cb) {
   self.storage.removePushNotificationSub(self.copayerId, opts.token, cb);
 };
 
+// *** Backwards compatibility start *** //
+// These are the default settings for SMS subscriptions
+const DEFAULT_SMS_SUB_SETTINGS = {
+  IncomingTx: true,
+  IncomingInvite: true,
+  IncomingInviteRequest: true,
+  WalletUnlocked: true,
+  MiningReward: true,
+  GrowthReward: true
+};
+// *** Backwards compatibility end *** //
+
+WalletService.prototype.smsNotificationsSubscribe = function(opts, cb) {
+  if (!opts.phoneNumber)
+    return cb('Phone number was not provided');
+
+  // *** Backwards compatibility start *** //
+  // This will ensure that we have notification settings to store in the DB
+  // Old clients will not send any settings & we should subscribe them to all events by default
+  opts.settings = opts.settings || DEFAULT_SMS_SUB_SETTINGS;
+  // *** Backwards compatibility end *** //
+
+  this.storage.storeSmsNotificationSub({
+    walletId: this.walletId,
+    phoneNumber: opts.phoneNumber,
+    platform: opts.platform,
+    settings: opts.settings
+  }, cb);
+};
+
+WalletService.prototype.smsNotificationsUnsubscribe = function(cb) {
+  this.storage.removeSmsNotificationSub(this.walletId, cb);
+};
+
+WalletService.prototype.getSmsNotificationSubscription = function(cb) {
+  this.storage.fetchSmsNotificationSub(this.walletId, (err, result) => {
+    // *** Backwards compatibility start *** //
+    if (err) {
+      return cb(err, null);
+    }
+
+    if (!result) {
+      return cb(null, null);
+    }
+
+    // Older subscriptions will not have a settings property,
+    // We should attach the default settings to the document &
+    // send the updated doc to the client side
+    if (!result.settings) {
+      result.settings = DEFAULT_SMS_SUB_SETTINGS;
+    }
+
+    // Send obj back to client
+    cb(null, result);
+
+    // Update the doc behind the scenes
+    this.smsNotificationsSubscribe(result, (err) => {
+      if (err) {
+        console.log('Error upgrading SMS subscription');
+      } else {
+        console.log('Upgraded SMS subscription!');
+      }
+    });
+    // *** Backwards compatibility end *** //
+  });
+};
+
 /**
  * Subscribe this copayer to the specified tx to get a notification when the tx confirms.
  * @param {Object} opts
@@ -4150,6 +4235,31 @@ WalletService.prototype.updateVaultInfo = function(opts, cb) {
                 return cb(null, vault);
             })
         });
+    });
+};
+
+WalletService.prototype.registerGlobalSend = async function(opts, cb) {
+    const address = await promisify(this.getRootAddress.bind(this))();
+    this.storage.registerGlobalSend(address.toString(), opts.scriptAddress, opts.globalsend, (err) => {
+        if (err) return cb(err);
+        cb(null);
+    });
+};
+
+WalletService.prototype.cancelGlobalSend = async function(opts, cb) {
+    const address = await promisify(this.getRootAddress.bind(this))();
+    this.storage.cancelGlobalSend(address.toString(), opts.scriptAddress, (err) => {
+        if (err) return cb(err);
+        cb(null);
+    });
+};
+
+
+WalletService.prototype.getGlobalSends = async function(opts, cb) {
+    const address = await promisify(this.getRootAddress.bind(this))();
+    this.storage.getGlobalSends(address.toString(), (err, links) => {
+        if (err) return cb(err);
+        return cb(null, links);
     });
 };
 

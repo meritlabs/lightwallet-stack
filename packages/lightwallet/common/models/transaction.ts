@@ -10,7 +10,8 @@ export enum TransactionAction {
   INVITE = 'invite',
   MOVED = 'moved',
   MINING_REWARD = 'mining_reward',
-  AMBASSADOR_REWARD = 'ambassador_reward'
+  AMBASSADOR_REWARD = 'growth_reward',
+  POOL_REWARD = 'pool_reward'
 }
 
 export enum UnlockRequestStatus {
@@ -25,6 +26,7 @@ export interface ITransactionIO {
   index: number;
   alias: string;
   isMine: boolean;
+  data?: string;
 }
 
 export interface ITransaction {
@@ -56,7 +58,7 @@ export interface IDisplayTransaction extends ITransaction {
   isPendingEasySend: boolean;
   addressFrom: string;
   addressTo: string;
-  type: 'credit' | 'debit' | 'none' | 'globalsend';
+  type: 'credit' | 'debit' | 'none' | 'meritmoney' | 'meritinvite';
   input: string;
   output: string;
   safeConfirmed?: string;
@@ -67,10 +69,12 @@ export interface IDisplayTransaction extends ITransaction {
   displayWallet?: DisplayWallet;
   wallet: MeritWalletClient;
   isMiningReward: boolean;
-  isAmbassadorReward: boolean;
+  isGrowthReward: boolean;
+  isPoolReward: boolean;
   isWalletUnlock: boolean;
   isConfirmed?: boolean;
   easySend?: EasySend;
   easySendUrl?: string;
   isSpent: boolean;
+  cancelled: boolean;
 }

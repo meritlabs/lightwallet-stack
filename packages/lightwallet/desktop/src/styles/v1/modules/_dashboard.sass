@@ -2,7 +2,7 @@
   background: $dashboard-bg
   display: flex
   flex-flow: row wrap
-  height: 100vh
+  height: 100%
   overflow: hidden
   position: relative
   &__aside
@@ -19,7 +19,7 @@
       display: block
       width: 100%
     &__item
-      +font(400, 15px, 15px, $white)
+      +font(400, 15px, 15px, transparentize($white, .4))
       cursor: pointer
       border-left: 5px solid transparent
       padding-left: 25px
@@ -27,7 +27,6 @@
       display: flex
       align-items: center
       background: transparent
-      opacity: .6
       +transition(.2s, ease-in-out)
       a
         +font(400, 15px, 15px, $white)
@@ -45,10 +44,22 @@
       &__icon
         width: 18px
         margin-right: 16px
+      &--blue
+        +font(400, 15px, 15px, $blue)
+        merit-icon
+          width: 20px
+          height: 20px
+          margin-right: 13px
+      &--setup
+        merit-icon
+          width: 20px
+          height: 20px
+          margin-right: 13px
+          background: linear-gradient(to right, $blue 0%,$white 50%);
 .dashboard
   &__main
     width: calc(100% - #{$dashboard-aside-width})
-    height: calc(100vh - #{$toolbar-height})
+    height: calc(100% - #{$toolbar-height})
     bottom: 0
     right: 0
     position: absolute

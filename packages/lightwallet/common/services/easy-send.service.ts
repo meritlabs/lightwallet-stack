@@ -6,7 +6,9 @@ import { EasySend } from '@merit/common/models/easy-send';
 import { AddressService } from '@merit/common/services/address.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
-import { Address, HDPrivateKey, PrivateKey, Script} from 'bitcore-lib';
+import { accessWallet } from '@merit/common/services/wallet.service';
+import { Address, HDPrivateKey, PrivateKey, Script } from 'bitcore-lib';
+import { AlertService } from '@merit/common/services/alert.service';
 
 @Injectable()
 export class EasySendService {
@@ -17,9 +19,10 @@ export class EasySendService {
     private feeService: FeeService,
     private persistenceService: PersistenceService,
     @Optional() private socialSharing: SocialSharing,
-    private addressService: AddressService
-  ) {}
+    private addressService: AddressService,
+    private alertCtrl: AlertService) {}
 
+  @accessWallet
   async createEasySendScriptHash(wallet: MeritWalletClient, password?: string): Promise<EasySend> {
     const rootKey = HDPrivateKey.fromString(wallet.credentials.xPrivKey);
     const signPrivKey = rootKey.privateKey;
@@ -128,7 +131,7 @@ export class EasySendService {
   /**
    * Create an easySend script
    */
-  private async bulidScript(wallet, passphrase?: string, timeout = this.DEFAULT_TIMEOUT): Promise<EasySend> {
+  async bulidScript(wallet, passphrase?: string, timeout = this.DEFAULT_TIMEOUT): Promise<EasySend> {
     passphrase = passphrase || '';
     const pubKey = wallet.getRootAddressPubkey();
     const rcvPair = PrivateKey.forNewEasySend(passphrase, ENV.network);
@@ -150,9 +153,9 @@ export class EasySendService {
       parentAddress: '',
       scriptAddress: '',
       scriptReferralOpts: {},
-      cancelled: false
+      cancelled: false,
+      inviteOnly: false
     };
   }
-
 
 }

@@ -20,6 +20,10 @@ export class MobilePushNotificationsService extends PushNotificationsService {
   private usePushNotifications: boolean;
   private retriesRemaining: number = 3; // Try to get a token 3 times, and then give up.
 
+  protected get pushNotificationsEnabled(): boolean {
+    return this.configService.get().pushNotificationsEnabled;
+  }
+
   constructor(http: HttpClient,
               public profileService: ProfileService,
               public platformService: PlatformService,
@@ -38,7 +42,7 @@ export class MobilePushNotificationsService extends PushNotificationsService {
     this.isAndroid = this.platformService.isAndroid;
     this.usePushNotifications = this.platformService.isCordova && !this.platformService.isWP;
     this.platform = this.isIOS ? 'iOS' : 'Android';
-    this.packageName = 'mws.merit.me';
+    this.packageName = 'me.merit.wallet';
 
     if (this.usePushNotifications) {
       platform.ready().then(() => {
@@ -64,13 +68,19 @@ export class MobilePushNotificationsService extends PushNotificationsService {
   }
 
   async init() {
-    if (!this.usePushNotifications || this.token) return;
-    await this.configService.load();
-    if (!this.configService.get().pushNotificationsEnabled) return;
+    if (!this.usePushNotifications) return;
 
-    this.logger.info('Starting push notification registration...');
-    await this.getToken();
-    this.subscribeToEvents();
+    if (!this.token) {
+      await this.configService.load();
+      if (!this.configService.get().pushNotificationsEnabled) return;
+
+      this.logger.info('Starting push notification registration...');
+
+      await this.getToken();
+      await this.subscribeToEvents();
+    }
+
+    this.enable();
   }
 
   // TODO: Chain getting the token as part of a standalone single-wallet subscription.

@@ -6,7 +6,9 @@
   border-radius: $base-border-radius
   box-sizing: border-box
   cursor: pointer
+  user-select: none
   +transition(.2s, ease-in-out)
+  user-select: none
   &[disabled]
     opacity: .5
     cursor: default
@@ -36,6 +38,8 @@
     background: $white
     color: $blue
     border: 1px solid $blue
+    &:hover:not([disabled])
+      background: $grey
   &--totalWhite
     background: $white
     color: $blue
@@ -120,28 +124,56 @@
       font-size: 15px
       top: -1px
       font-weight: 700
+  &--buy
+    display: flex !important
+    align-items: center
+    border: 2px solid $gun-metal
+    border-radius: 5px
+    padding: 4px 10px
+    small
+      position: relative
+      top: 1px
+    &:before
+      content: ""
+      display: inline-block
+      width: 20px
+      height: 15px
+      background: $gun-metal
+      mask-image: url('/assets/v1/icons/buttons/cart.svg')
+      mask-size: contain
+      mask-repeat: no-repeat 
+      margin-right: 5px
+  &--getStarted
+    display: flex !important
+    align-items: center
+    border: 2px solid $gun-metal
+    border-radius: 5px
+    padding: 4px 10px
+    small
+      position: relative
+      top: 1px
 
 .ui-button
   &--lg
     font-weight: 400
-    +chageFontSize(22px, 22px)
-    padding: 20px 0
+    +chageFontSize(20px)
+    padding: 15px 0
     letter-spacing: .3px
     min-width: 220px
   &--md
-    font-weight: 700
+    font-weight: 400
     +chageFontSize(14px, 14px)
     padding: 8px 18px
     letter-spacing: .3px
   &--sm
-    font-weight: 500
+    font-weight: 400
     +chageFontSize(14px, 14px)
     padding: 6px 15px
     letter-spacing: .3px
     &.ui-button--add
       padding: 6px 15px 6px 11px
   &--xs
-    font-weight: 500
+    font-weight: 400
     +chageFontSize(12px, 12px)
     padding: 4px 10px
     letter-spacing: .3px

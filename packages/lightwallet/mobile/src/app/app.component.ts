@@ -168,12 +168,8 @@ export class MeritLightWallet {
       this.splashScreen.hide();
 
       const receipt = await this.loadEasySend();
-      if (receipt) {
-        if (!this.authorized) {
-          await this.nav.setRoot('UnlockView');
-        } else {
-          await this.nav.setRoot('TransactView');
-        }
+      if (receipt && !this.authorized) {
+        await this.nav.setRoot('UnlockView');
       }
     }
   }

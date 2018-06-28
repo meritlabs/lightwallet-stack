@@ -15,6 +15,23 @@ export class ProfileService {
 
   public wallets: Array<MeritWalletClient>;
 
+  public communityInfo: {
+    communitySize: number,
+    networkValue: number,
+    miningRewards: number,
+    growthRewards: number,
+    wallets: Array<{
+      name: string,
+      alias: string,
+      referralAddress: string,
+      confirmed: boolean,
+      communitySize: number,
+      miningRewards: number,
+      growthRewards: number,
+      color: string
+    }>;
+  };
+
   constructor(
     private persistenceService: PersistenceService,
     private logger: LoggerService,
@@ -59,21 +76,22 @@ export class ProfileService {
 
 
   async loadProfile() {
-    let profile = await this.persistenceService.getProfile();
+    const profile = await this.persistenceService.getProfile();
 
     let wallets = [];
     if (profile) {
       if (profile.wallets) {
         wallets = profile.wallets.map(w => MeritWalletClient.fromObj(w));
       } else if (profile.credentials) {
-        wallets = profile.credentials.map(c => {
-          let wallet = this.mwcService.getClient(JSON.stringify(c));
-          return wallet;
-        })
+        wallets = profile.credentials.map(c =>
+          this.mwcService.getClient(JSON.stringify(c))
+        )
       }
     }
     this.wallets = wallets;
     this.storeProfile();
+
+    return profile;
   }
 
   async isAuthorized() {
@@ -105,6 +123,9 @@ export class ProfileService {
 
     let updateVaults = () => this.wallets.map(async (w) => {
       w.vaults = await w.getVaults();
+      w.vaults.forEach(v => {
+        v.walletClient = w;
+      })
     });
 
     await Promise.all(updateWallets().concat(updateVaults()));
@@ -117,29 +138,11 @@ export class ProfileService {
 
     wallet.initialize(true);
 
-    wallet.eventEmitter.on('report', (n: any) => { this.logger.info('NWC Report:' + n); });
-
-    wallet.eventEmitter.on('notification', (n: any) => {
-      this.logger.info('MWC Notification:', n);
-
-      //if (n.type == 'NewBlock' && n.data.network == ENV.network) {
-      //  this.throttledBwsEvent(n, wallet);
-      //} else this.propogateBwsEvent(n, wallet);
-    });
-
-    wallet.eventEmitter.on('walletCompleted', () => {
-      //todo do we need this?
-      //return this.updateCredentials(JSON.parse(wallet.export())).then(() => {
-      //  this.logger.info('Updated the credentials and now publishing this: ', walletId);
-      //  this.events.publish('Local:WalletCompleted', walletId);
-      //  return Promise.resolve(); // not sure this is needed
-      //});
-    });
-
     await wallet.openWallet();
 
     this.wallets.push(wallet);
 
+    await this.refreshData();
     await this.storeProfile();
     return wallet;
   }
@@ -189,6 +192,12 @@ export class ProfileService {
   }
 
   storeProfile() {
+
+    if (this.wallets == undefined) return;
+
+    /** do not save profile if we have wallet in temporary mode */
+    if (this.wallets.find(w => !w.credentialsSaveAllowed)) return;
+
     let profile = {
       version: '2.0.0',
       wallets: this.wallets.map(w => w.toObj()),
@@ -197,4 +206,72 @@ export class ProfileService {
 
     this.persistenceService.storeProfile(profile);
   }
+
+  isCommunityPopupClosed() {
+    return this.persistenceService.isCommunityPopupClosed();
+  }
+
+  closeCommunityPopup() {
+    return this.persistenceService.closeCommunityPopup();
+  }
+
+  async refreshCommunityInfo() {
+    await this.refreshData();
+    const wallets = await this.getWallets();
+
+    let network = {
+      communitySize: 0,
+      networkValue: 0,
+      miningRewards: 0,
+      growthRewards: 0,
+      wallets: wallets.map(w => { return {
+        name: w.name,
+        alias: w.rootAlias,
+        referralAddress: w.rootAddress.toString(),
+        confirmed: w.confirmed,
+        communitySize: 0,
+        miningRewards: 0,
+        growthRewards: 0,
+        color: w.color
+      }})
+    };
+
+    const addresses = network.wallets.map(w => w.referralAddress);
+
+    if (addresses.length) {
+
+      const getCommunitySizes = () => addresses.map(async (a) => {
+        const { referralcount } = await wallets[0].getCommunityInfo(a);
+        let w = network.wallets.find(w => w.referralAddress == a);
+        w.communitySize = referralcount;
+        network.communitySize += referralcount;
+      });
+
+      const getRewards = async () => {
+        const rewards = await this.wallets[0].getRewards(addresses);
+        rewards.forEach(r => {
+          let w = network.wallets.find(w => w.referralAddress == r.address);
+          w.miningRewards = r.rewards.mining;
+          w.growthRewards = r.rewards.ambassador;
+          network.miningRewards += w.miningRewards;
+          network.growthRewards += w.growthRewards;
+        });
+      };
+
+      await Promise.all([getRewards()].concat(getCommunitySizes()));
+    }
+
+    this.communityInfo = network;
+    this.persistenceService.storeCommunityInfo(this.communityInfo);
+    return network;
+  }
+
+  async getCommunityInfo() {
+    if (this.communityInfo == undefined) {
+      this.communityInfo = await this.persistenceService.getCommunityInfo();
+      if (!this.communityInfo) await this.refreshCommunityInfo();
+    }
+    return this.communityInfo;
+  }
+
 }

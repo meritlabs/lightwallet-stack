@@ -225,6 +225,8 @@ ion-item textarea {
   button[ion-button].button.header-action-button {
     position: absolute;
     top: 16px;
+    top: calc(16px + const(safe-area-inset-top));
+    top: calc(16px + env(safe-area-inset-top));
     right: 0;
     color: white;
   }
@@ -802,7 +804,7 @@ $v-tab-send-selected-icon: url("../img/tab-icons/ico-send-selected.svg") !defaul
   }
 }
 
-.password-input {
+.password-input, .password-prompt input[type="text"] {
   text-security:disc;
   -webkit-text-security:disc;
   -mox-text-security:disc;
@@ -810,5 +812,14 @@ $v-tab-send-selected-icon: url("../img/tab-icons/ico-send-selected.svg") !defaul
     text-security:none;
     -webkit-text-security:none;
     -mox-text-security:none;
+  }
+}
+
+
+
+.wallet-selector {
+  ion-icon[item-end] {
+    font-size: 22px;
+    margin-right: 16px;
   }
 }

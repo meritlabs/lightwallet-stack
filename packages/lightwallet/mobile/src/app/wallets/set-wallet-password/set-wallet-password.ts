@@ -25,13 +25,13 @@ export class SetWalletPasswordView {
               private toastCtrl: ToastControllerService,
               private walletService: WalletService) {
     this.wallet = navParams.get('wallet');
-    this.isWalletEncrypted = this.walletService.isEncrypted(this.wallet);
+    this.isWalletEncrypted = this.walletService.isWalletEncrypted(this.wallet);
   }
 
   async removePassword() {
 
     try {
-      await this.walletService.decrypt(this.wallet, this.formData.currentPassword);
+      await this.walletService.decryptWallet(this.wallet, this.formData.currentPassword);
       this.navCtrl.pop();
     } catch (err) {
       return this.toastCtrl.error('Incorrect current password');
@@ -48,7 +48,7 @@ export class SetWalletPasswordView {
 
     const encrypt = async () => {
       try {
-        await this.walletService.encrypt(this.wallet, this.formData.password);
+        await this.walletService.encryptWallet(this.wallet, this.formData.password);
         this.navCtrl.pop();
       } catch (err) {
         return this.toastCtrl.error(err);
@@ -58,7 +58,7 @@ export class SetWalletPasswordView {
 
     if (this.isWalletEncrypted) {
       try {
-        await this.walletService.decrypt(this.wallet, this.formData.currentPassword);
+        await this.walletService.decryptWallet(this.wallet, this.formData.currentPassword);
         return encrypt();
       } catch (err) {
         return this.toastCtrl.error('Incorrect current password');

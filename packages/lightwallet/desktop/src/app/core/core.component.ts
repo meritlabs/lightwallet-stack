@@ -1,108 +1,184 @@
 import { AfterViewInit, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Validators } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ENV } from '@app/env';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
-import { RefreshOneWalletTransactions, UpdateOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
-import { RefreshOneWalletAction } from '@merit/common/reducers/wallets.reducer';
+import { selectGoalSettings, selectGoalsLoading } from '@merit/common/reducers/goals.reducer';
+import { selectShareDialogState, SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
+import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
+import {
+  RefreshOneWalletAction,
+  selectNumberOfInviteRequests,
+  selectWallets,
+  selectWalletsLoading,
+} from '@merit/common/reducers/wallets.reducer';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
+import { GoalsService } from '@merit/common/services/goals.service';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
+import { getLatestDefinedValue } from '@merit/common/utils/observables';
 import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
+import { SmsNotificationsPromptController } from '@merit/desktop/app/components/sms-notifications-prompt/sms-notifications-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { Address, PublicKey } from 'bitcore-lib';
+import { Observable } from 'rxjs/Observable';
+
+import { filter, take } from 'rxjs/operators';
 
 @Component({
   selector: 'view-core',
   templateUrl: './core.component.html',
   styleUrls: ['./core.component.sass'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class CoreView implements OnInit, AfterViewInit {
-
   topMenuItems: any[] = [
     {
       name: 'Dashboard',
       icon: '/assets/v1/icons/ui/aside-navigation/home.svg',
-      link: '/dashboard'
+      link: '/dashboard',
+    },
+    {
+      name: 'Invites',
+      icon: '/assets/v1/icons/invites/invite.svg',
+      link: '/invites',
+      badge: this.store.select(selectNumberOfInviteRequests),
     },
     {
       name: 'Wallets',
       icon: '/assets/v1/icons/ui/aside-navigation/wallet.svg',
-      link: '/wallets'
+      link: '/wallets',
     },
     {
       name: 'Receive Merit',
       icon: '/assets/v1/icons/ui/aside-navigation/receive.svg',
-      link: '/receive'
+      link: '/receive',
     },
     {
       name: 'Send Merit',
       icon: '/assets/v1/icons/ui/aside-navigation/send.svg',
-      link: '/send'
+      link: '/send',
     },
     {
       name: 'History',
       icon: '/assets/v1/icons/ui/aside-navigation/history.svg',
-      link: '/history'
+      link: '/history',
     },
     {
       name: 'Community',
       icon: '/assets/v1/icons/ui/aside-navigation/network.svg',
-      link: '/community'
+      link: '/community',
     },
     {
       name: 'Settings',
       icon: '/assets/v1/icons/ui/aside-navigation/settings.svg',
-      link: '/settings'
-    }
+      link: '/settings',
+    },
   ];
   bottomMenuItems: any[] = [
     // {
     //   name: 'Market Beta',
     //   icon: '/assets/v1/icons/ui/aside-navigation/market.svg',
-    //   link: '/market-gate'
+    //   link: '/market/gate'
     // },
     {
       name: 'Help & Support',
       icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
       link: 'https://www.merit.me/get-involved/#join-the-conversation',
-      external: true
-    }
+      external: true,
+    },
   ];
 
-  constructor(private pushNotificationsService: PushNotificationsService,
-              private easyReceiveService: EasyReceiveService,
-              private logger: LoggerService,
-              private confirmDialogCtrl: ConfirmDialogControllerService,
-              private passwordPromptCtrl: PasswordPromptController,
-              private toastCtrl: ToastControllerService,
-              private profileService: ProfileService,
-              private store: Store<IRootAppState>,
-              private persistenceService2: PersistenceService2) {}
+  showShare: boolean;
 
-  ngOnInit() {
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
+  walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
+  recordPassphrase: boolean = true;
+  notUnlockedWallets;
+  isWelcomeDialogEnabled: boolean;
+  showShare$: Observable<boolean> = this.store.select(selectShareDialogState);
+
+  constructor(
+    private pushNotificationsService: PushNotificationsService,
+    private easyReceiveService: EasyReceiveService,
+    private logger: LoggerService,
+    private confirmDialogCtrl: ConfirmDialogControllerService,
+    private passwordPromptCtrl: PasswordPromptController,
+    private toastCtrl: ToastControllerService,
+    private profileService: ProfileService,
+    private store: Store<IRootAppState>,
+    private persistenceService2: PersistenceService2,
+    private domSanitizer: DomSanitizer,
+    private smsNotificationsService: SmsNotificationsService,
+    private smsNotificationsPromptCtrl: SmsNotificationsPromptController,
+    private goalsService: GoalsService
+  ) {}
+
+  async ngOnInit() {
+    getLatestDefinedValue(this.store.select(selectGoalSettings)).then(({ isWelcomeDialogEnabled }) => {
+      this.isWelcomeDialogEnabled = isWelcomeDialogEnabled;
+    });
+
+    this.recordPassphrase = Boolean(await this.persistenceService2.getUserSettings(UserSettingsKey.recordPassphrase));
+
     this.processPendingEasyReceipts();
     this.pushNotificationsService.init();
-    this.easyReceiveService.cancelEasySendObservable$.subscribe(
-      receipt => {
-        this.processEasyReceipt(receipt, null, false, null, true);
-      });
+    this.easyReceiveService.cancelEasySendObservable$.subscribe(receipt => {
+      this.processEasyReceipt(receipt, null, false, null, true);
+    });
+    this.wallets$.subscribe(res => {
+      this.notUnlockedWallets = res.filter((item: any) => item.confirmed === false);
+    });
+
+    const smsPromptSetting = await this.persistenceService2.getUserSettings(UserSettingsKey.SmsNotificationsPrompt);
+
+    if (smsPromptSetting == true) return;
+
+    const smsNotificationStatus = await this.smsNotificationsService.getSmsSubscriptionStatus();
+
+    if (smsNotificationStatus.enabled) return;
+
+    this.smsNotificationsPromptCtrl.create();
   }
 
   ngAfterViewInit() {
     window.history.replaceState({}, document.title, document.location.pathname);
   }
 
+  getIconStyle(icon: string) {
+    return this.domSanitizer.bypassSecurityTrustStyle(
+      `mask-image: url('${icon}'); -webkit-mask-image: url('${icon}');`
+    );
+  }
+
+  onGuideDismiss() {
+    return this.persistenceService2.setUserSettings(UserSettingsKey.recordPassphrase, (this.recordPassphrase = true));
+  }
+
+  onWelcomeSetupTrackerClose() {
+    this.isWelcomeDialogEnabled = false;
+  }
+
+  shareActivate() {
+    this.store.dispatch(new SetShareDialogAction(true));
+  }
+
   private showPasswordEasyReceivePrompt(receipt: EasyReceipt, processAll: boolean, wallet?: MeritWalletClient) {
-    const message = `You've got merit from ${receipt.senderName}! Please enter transaction password`;
-    const passwordPrompt = this.passwordPromptCtrl.create(message, [Validators.required], [PasswordValidator.ValidateEasyReceivePassword(receipt, this.easyReceiveService)]);
+    const message = `You've received a transaction from ${receipt.senderName}! Please enter password to claim it.`;
+    const passwordPrompt = this.passwordPromptCtrl.create(
+      message,
+      [Validators.required],
+      [PasswordValidator.ValidateEasyReceivePassword(receipt, this.easyReceiveService)]
+    );
     passwordPrompt.onDidDismiss((password: any) => {
       if (password) {
         // Got a password, let's go ahead and process the easy receipt again
@@ -111,19 +187,38 @@ export class CoreView implements OnInit, AfterViewInit {
     });
   }
 
-  private async showConfirmEasyReceivePrompt(receipt: EasyReceipt, data: any, wallet?: MeritWalletClient) {
+  private async showConfirmEasyReceivePrompt(
+    receipt: EasyReceipt,
+    data: any,
+    wallet?: MeritWalletClient,
+    inviteOnly?: boolean
+  ) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
-    const message = receipt.senderName.length > 0 ? `@${ receipt.senderName } sent you ${ amount } Merit!` : `You've got ${ amount } Merit!`;
+
+    let message;
+
+    if (inviteOnly) {
+      message =
+        receipt.senderName.length > 0
+          ? `@${receipt.senderName} invited you to join Merit!`
+          : `You've been invited to join Merit!`;
+    } else {
+      message =
+        receipt.senderName.length > 0
+          ? `@${receipt.senderName} sent you ${amount} Merit!`
+          : `You've got ${amount} Merit!`;
+    }
+
     const confirmDialog = this.confirmDialogCtrl.create(message, 'Would you like to accept this transaction?', [
       {
         text: 'Yes',
         value: 'yes',
-        class: 'primary'
+        class: 'primary',
       },
       {
         text: 'No',
-        value: 'no'
-      }
+        value: 'no',
+      },
     ]);
 
     confirmDialog.onDidDismiss((val: string) => {
@@ -137,27 +232,47 @@ export class CoreView implements OnInit, AfterViewInit {
     });
   }
 
-  private async showCancelEasyReceivePrompt(receipt: EasyReceipt, data: any, wallet?: MeritWalletClient, cancelling?: boolean) {
+  private async showCancelEasyReceivePrompt(
+    receipt: EasyReceipt,
+    data: any,
+    wallet?: MeritWalletClient,
+    cancelling?: boolean,
+    inviteOnly?: boolean
+  ) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
 
-    const confirmDialog = this.confirmDialogCtrl.create(`Cancel GlobalSend with ${ amount } Merit?`, `You clicked on a GlobalSend link that you created.  Would you like to cancel it?`, [
-      {
-        text: 'Cancel GlobalSend',
-        value: 'yes',
-        class: 'primary'
-      },
-      {
-        text: 'Don\'t Cancel',
-        value: 'no'
-      }
-    ]);
+    let title: string;
+
+    if (inviteOnly) {
+      title = 'Cancel MeritInvite link with 1 invite?';
+    } else {
+      title = `Cancel MeritMoney link with ${amount} Merit?`;
+    }
+
+    const confirmDialog = this.confirmDialogCtrl.create(
+      title,
+      `You clicked on a ${
+        inviteOnly ? 'MeritInvite' : 'MeritMoney'
+      } link that you created.  Would you like to cancel it?`,
+      [
+        {
+          text: 'Cancel ' + (inviteOnly ? 'MeritInvite' : 'MeritMoney'),
+          value: 'yes',
+          class: 'primary',
+        },
+        {
+          text: "Don't Cancel",
+          value: 'no',
+        },
+      ]
+    );
 
     confirmDialog.onDidDismiss((val: string) => {
       if (val === 'yes') {
         // accepted
         this.cancelEasyReceipt(receipt, wallet);
       } else if (val === 'no' && !cancelling) {
-        // If value == 'no' && cancelling is false, that means that the user tried claiming his own GlobalSend
+        // If value == 'no' && cancelling is false, that means that the user tried claiming his own MeritMoney
         // We shouldn't reject it on "no" since that will be the same thing as accepting it
         this.rejectEasyReceipt(receipt, data);
       }
@@ -172,15 +287,17 @@ export class CoreView implements OnInit, AfterViewInit {
 
       const acceptanceTx = await this.easyReceiveService.cancelEasySendReceipt(wallet, receipt, '', '');
 
-      this.logger.info('Accepted easy send', acceptanceTx);
-      this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
-        skipShareCode: true,
-        skipRewards: true,
-        skipAlias: true
-      }));
+      this.logger.info('Cancelled easy send', acceptanceTx);
+      this.store.dispatch(
+        new RefreshOneWalletAction(wallet.id, {
+          skipShareCode: true,
+          skipRewards: true,
+          skipAlias: true,
+        })
+      );
     } catch (err) {
       console.log(err);
-      this.toastCtrl.error('There was an error cancelling your GlobalSend.');
+      this.toastCtrl.error('There was an error cancelling your transaction.');
     }
   }
 
@@ -190,15 +307,16 @@ export class CoreView implements OnInit, AfterViewInit {
       if (!wallet) throw 'no wallet';
 
       const address = wallet.getRootAddress();
-      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(receipt, wallet, data, address.toString());
+      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(wallet, receipt, data, address.toString());
 
       this.logger.info('accepted easy send', acceptanceTx);
-      this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
-        skipShareCode: true,
-        skipRewards: true,
-        skipAlias: true
-      }));
-
+      this.store.dispatch(
+        new RefreshOneWalletAction(wallet.id, {
+          skipShareCode: true,
+          skipRewards: true,
+          skipAlias: true,
+        })
+      );
     } catch (err) {
       console.log(err);
       this.toastCtrl.error('There was an error retrieving your incoming payment.');
@@ -206,11 +324,17 @@ export class CoreView implements OnInit, AfterViewInit {
   }
 
   private showSpentEasyReceiptAlert() {
-    this.confirmDialogCtrl.create('Uh oh', 'It seems that the Merit from this link has already been redeemed!', [{ text: 'Ok' }]);
+    this.confirmDialogCtrl.create('Uh oh', 'It seems that the Merit from this link has already been redeemed!', [
+      { text: 'Ok' },
+    ]);
   }
 
   private showExpiredEasyReceiptAlert() {
-    this.confirmDialogCtrl.create('Transaction expired', 'The Merit from this link has not been lost! You can ask the sender to make a new transaction.', [{ text: 'Ok' }]);
+    this.confirmDialogCtrl.create(
+      'Transaction expired',
+      'The Merit from this link has not been lost! You can ask the sender to make a new transaction.',
+      [{ text: 'Ok' }]
+    );
   }
 
   /**
@@ -222,7 +346,13 @@ export class CoreView implements OnInit, AfterViewInit {
    * @param {boolean} cancelling Set to true if the intention is to cancel the outgoing transaction
    * @returns {Promise<void>}
    */
-  async processEasyReceipt(receipt: EasyReceipt, password?: string, processAll: boolean = true, wallet?: MeritWalletClient, cancelling?: boolean): Promise<void> {
+  async processEasyReceipt(
+    receipt: EasyReceipt,
+    password?: string,
+    processAll: boolean = true,
+    wallet?: MeritWalletClient,
+    cancelling?: boolean
+  ): Promise<void> {
     password = password || '';
     const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, password);
     let txs = data.txs;
@@ -235,26 +365,27 @@ export class CoreView implements OnInit, AfterViewInit {
 
     if (!txs.length) return this.showPasswordEasyReceivePrompt(receipt, processAll);
 
-    //Decide if the wallet is the sender of the Global Send.
-    //We will prompt here to cancel the global send instead.
+    const inviteOnly = !txs.some(tx => !tx.invite);
+
+    //Decide if the wallet is the sender of the MeritMoney Link.
+    //We will prompt here to cancel the MM Link instead.
     const senderPublicKey = new PublicKey(receipt.senderPublicKey);
     const senderAddress = senderPublicKey.toAddress(ENV.network).toString();
     const wallets = await this.profileService.getWallets();
 
     if (!wallet) {
-      wallet = wallets.find((wallet: MeritWalletClient) =>
-        wallet.getRootAddress().toString() == senderAddress
-      ) || wallets[0];
+      wallet =
+        wallets.find((wallet: MeritWalletClient) => wallet.getRootAddress().toString() == senderAddress) || wallets[0];
     }
 
     const address = wallet.getRootAddress().toString();
     const isSender = senderAddress == address;
 
     if (txs.some(tx => tx.spent)) {
-      this.logger.debug('Got a spent GlobalSend. Removing from pending receipts.');
+      this.logger.debug('Got a spent MeritMoney. Removing from pending receipts.');
       await this.easyReceiveService.deletePendingReceipt(receipt);
 
-      if (receipt.scriptAddress && await this.persistenceService2.cancelEasySend(receipt.scriptAddress)) {
+      if (receipt.scriptAddress && (await this.persistenceService2.cancelEasySend(receipt.scriptAddress))) {
         this.store.dispatch(new RefreshOneWalletTransactions(wallet.id));
       }
 
@@ -263,9 +394,10 @@ export class CoreView implements OnInit, AfterViewInit {
       if (cancelling) {
         const data = this.easyReceiveService.generateEasyScipt(receipt, password);
         const scriptAddress = this.easyReceiveService.getScriptAddress(data);
-        this.persistenceService2.cancelEasySend(scriptAddress)
+        this.persistenceService2
+          .cancelEasySend(scriptAddress)
           .then(() => {
-            this.store.dispatch(new RefreshOneWalletTransactions(wallet.id))
+            this.store.dispatch(new RefreshOneWalletTransactions(wallet.id));
           })
           .catch(() => {});
       }
@@ -273,23 +405,23 @@ export class CoreView implements OnInit, AfterViewInit {
       return processAll ? await this.processPendingEasyReceipts() : null;
     }
 
-    if (txs.some(tx => (tx.confirmations === undefined))) {
-      this.logger.warn('Got GlobalSend with unknown depth. It might be expired!');
-      return isSender ?
-        this.showCancelEasyReceivePrompt(receipt, data, wallet, cancelling) :
-        this.showConfirmEasyReceivePrompt(receipt, data, wallet);
+    if (txs.some(tx => tx.confirmations === undefined)) {
+      this.logger.warn('Got MeritMoney with unknown depth. It might be expired!');
+      return isSender
+        ? this.showCancelEasyReceivePrompt(receipt, data, wallet, cancelling, inviteOnly)
+        : this.showConfirmEasyReceivePrompt(receipt, data, wallet, inviteOnly);
     }
 
     if (txs.some(tx => receipt.blockTimeout < tx.confirmations)) {
-      this.logger.debug('Got an expired GlobalSend. Removing from pending receipts.');
+      this.logger.debug('Got an expired MeritMoney. Removing from pending receipts.');
       await this.easyReceiveService.deletePendingReceipt(receipt);
       await this.showExpiredEasyReceiptAlert();
       return processAll ? await this.processPendingEasyReceipts() : null;
     }
 
-    return isSender ?
-      this.showCancelEasyReceivePrompt(receipt, data, wallet, cancelling) :
-      this.showConfirmEasyReceivePrompt(receipt, data, wallet);
+    return isSender
+      ? this.showCancelEasyReceivePrompt(receipt, data, wallet, cancelling, inviteOnly)
+      : this.showConfirmEasyReceivePrompt(receipt, data, wallet, inviteOnly);
   }
 
   /**
@@ -305,13 +437,12 @@ export class CoreView implements OnInit, AfterViewInit {
     try {
       wallet = wallet || (await this.profileService.getWallets())[0];
 
-      if (!wallet)
-        throw 'Could not retrieve wallet';
+      if (!wallet) throw 'Could not retrieve wallet';
 
       await this.easyReceiveService.rejectEasyReceipt(wallet, receipt, data);
-      this.logger.info('GlobalSend rejected');
+      this.logger.info('MeritMoney rejected');
     } catch (err) {
-      this.logger.error('Error rejecting GlobalSend', err);
+      this.logger.error('Error rejecting MeritMoney', err);
       this.toastCtrl.error('There was an error rejecting the Merit');
     }
   }

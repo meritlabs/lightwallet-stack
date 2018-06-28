@@ -185,8 +185,7 @@ export class ConfigService {
   async load(): Promise<IAppConfig> {
     try {
       const config: any = await this.persistence.getConfig();
-      if (!_.isEmpty(config)) this.configCache = _.clone(config);
-      else this.configCache = _.clone(configDefault);
+      this.configCache = _.clone(_.isEmpty(config)? configDefault : config);
     } catch (err) {
       this.logger.error(err);
       throw err;

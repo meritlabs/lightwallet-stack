@@ -2,7 +2,7 @@
 
   <div class="flexbox">
     <div class="inner-container">
-      <h2> Global send is ready </h2>
+      <h2>MeritMoney Link is {{ easySendDelivered === true? 'delivered' : 'ready' }}</h2>
 
       <div class="send-ready">
         <div class="send-ready-inner">
@@ -11,8 +11,17 @@
       </div>
 
       <ion-card>
-        <ion-card-header>
-          Your link
+        <ion-card-header text-wrap>
+          <p *ngIf="easySendDelivered === undefined">
+            Your MeritMoney Link is now ready to share:
+          </p>
+          <p *ngIf="easySendDelivered === true">
+            Your MeritMoney Link is ready and was successfully delivered to your recipient!
+          </p>
+          <p *ngIf="easySendDelivered === false">
+            Your MeritMoney Link is ready, however, we were not able to deliver it to your recipient. You can copy the
+            link and send it to them directly:
+          </p>
         </ion-card-header>
         <ion-card-content>
           <a (click)="copyToClipboard(txData.easySendUrl)" [clip]="txData.easySendUrl">{{ txData.easySendUrl }}</a>

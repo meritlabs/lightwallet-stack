@@ -36,5 +36,9 @@ slide-to-action {
       text-align: center;
       font-size: 17px;
     }
+
+    &.disabled {
+      opacity: 0.5;
+    }
   }
 }

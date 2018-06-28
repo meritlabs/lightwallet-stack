@@ -1,6 +1,42 @@
+.applicationWrapper
+  position: relative
+  display: flex
+  flex-direction: column
+  height: 100vh
+  overflow: hidden
+  justify-content: space-between
+  .main
+    flex: 1
+    position: relative
+    z-index: 2
 .dashboard__main
   > :not(router-outlet)
     display: block
     height: 100%
     overflow-y: auto
     transform: translate3d(0,0,0)
+
+.dashboard__aside__item
+  position: relative
+
+  span.badge
+    position: absolute
+    right: 16px
+
+  span.icon
+    display: inline-block
+    width: 18px
+    height: 18px
+    margin-right: 16px
+    background: currentColor
+    mask-clip: border-box
+    mask-repeat: no-repeat
+    mask-size: 100% 100%
+
+span.badge
+  background: #01b0dd
+  border-radius: 4px
+  padding: 4px 4px
+  min-width: 23px
+  text-align: center
+  color: white

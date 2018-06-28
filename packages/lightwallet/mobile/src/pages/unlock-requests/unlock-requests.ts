@@ -23,13 +23,11 @@ export class UnlockRequestsView {
 
   showHiddenRequests: boolean;
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private toastCtrl: ToastControllerService,
-    private unlockRequestService: UnlockRequestService,
-    private profileService: ProfileService
-  ) {
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
+              private toastCtrl: ToastControllerService,
+              private unlockRequestService: UnlockRequestService,
+              private profileService: ProfileService) {
   }
 
   async ionViewWillEnter() {
@@ -56,6 +54,12 @@ export class UnlockRequestsView {
     }, 0);
   }
 
+  async doRefresh(refresher) {
+    Promise.all([this.profileService.refreshData(), this.unlockRequestService.loadRequestsData()]);
+    await this.ionViewWillEnter();
+    refresher.complete();
+  }
+
   processRequest(request: IUnlockRequest) {
     if (!this.totalInvites) {
       return this.toastCtrl.error('You don\'t have any invites you can spend now');
@@ -68,6 +72,6 @@ export class UnlockRequestsView {
   }
 
   toSendInvite() {
-    this.navCtrl.push('SendInviteView', { wallets: this.wallets });
+    this.navCtrl.push('SendInviteAmountView');
   }
 }
