@@ -107,4 +107,10 @@ export class ElectronService {
     if(!m) { return {}; } 
     return m.MinerStats();
   }
+
+  static getFreeMemoryOnDevice(device: number) {
+    let m = ElectronService.getMinerInstance();
+    if(!m) { return {}; }
+    return m.FreeMemoryOnDevice(device);
+  }
 }

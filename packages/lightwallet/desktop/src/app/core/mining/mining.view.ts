@@ -239,6 +239,10 @@ export class MiningView {
     return ElectronService.isConnectedToPool();
   }
 
+  freeMemoryOnDevice(device: number) {
+    return ElectronService.getFreeMemoryOnDevice(device);
+  }
+
   startMining() {
     this.error = null;
     this.computeUtilization();

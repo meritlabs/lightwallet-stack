@@ -19,10 +19,6 @@
 
     <div class="ui-label">GPU devices</div>
 
-    <div class="notification-info danger">
-        <p> Currently, we do not support GPU devices with VRAM smaller than 8Gb. </p>
-    </div><br>
-
     <div class="global-settings__group gpu-devices__group">
       <form class="details_settings" *ngIf="maxGPUs != 0">
         <div class="global-settings__group__item" *ngFor="let item of gpus_info">
@@ -30,12 +26,15 @@
                 <label class="ui-label global-settings__group__item__title">{{ item.title }}</label>
               </div>
 
-              <div class="global-settings__group__item__column global-settings__group__item__column--30">
-
+              <div class="global-settings__group__item__column global-settings__group__item__column--30"  *ngIf="freeMemoryOnDevice(item.id) >= 7200000000">
                 <span class="switcher-container" [ngClass]="{'checked': item.value}" (click)="chooseGPU(item, $event)">
                     <span class="switcher"></span>
                 </span>
               </div>
+
+
+            <p class="global-settings__group__item__column" *ngIf="freeMemoryOnDevice(item.id) < 7200000000 "> Currently, we do not support GPU devices with VRAM smaller than 8Gb. </p>
+
         </div>
       </form>
 
