@@ -4,8 +4,9 @@ import { IDisplayTransaction, ITransactionIO, TransactionAction, VisitedTransact
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritWalletClient } from "@merit/common/merit-wallet-client";
 import { FeeService } from "@merit/common/services/fee.service";
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
-export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [], feeService: FeeService, contactsProvider?: ContactsService,visitedTransactions?: VisitedTransaction[]): Promise<IDisplayTransaction[]> {
+export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [], feeService: FeeService, contactsProvider?: ContactsService, persistenceService?: PersistenceService2): Promise<IDisplayTransaction[]> {
   if (_.isEmpty(walletHistory)) return [];
 
   const easyReceiveFee = await feeService.getEasyReceiveFee();
@@ -23,6 +24,8 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
   let meritMoneyAddresses = []; // registering merit money transactions so we can hide bound invite transactions
 
   let pendingString;
+
+  let visitedTxs = await persistenceService.getVisitedTransactions() || [];
 
   walletHistory = await Promise.all(walletHistory.map(async (tx: IDisplayTransaction, i: number) => {
     if (!_.isNil(tx) && !_.isNil(tx.action)) {
@@ -139,28 +142,18 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
     tx.isNew = false;
 
-    // if (visitedTransactions) {
-    //   const found = visitedTransactions.find(visTx => visTx.txid === tx.txid);
-    //   if (found && found.counter > 2) {
-    //     tx.isNew = false;
-    //   }
-    // }
-
-    // let visitedTxs = await this.persistenceService.getVisitedTransactions() || [];
-    // let oneVisited = visitedTxs.find(visTx => visTx.txid === tx.txid);
-    // if (oneVisited) {
-    //   // already there increase counter
-    //   if (oneVisited.counter < 5) {
-    //     oneVisited.counter++;
-    //   }
-    // } else {
-    //   // add new one in visited list
-    //   visitedTxs.push(new VisitedTransaction(tx.txid, 1));
-    // }
-    // this.persistenceService.setVisitedTransactions(visitedTxs);
-
+    let oneVisited = visitedTxs.find(visTx => visTx.txid === tx.txid);
+    if (!oneVisited) {
+      tx.isNew = true;
+      // add new one in visited
+      visitedTxs.push(new VisitedTransaction(tx.txid, 1));
+    }
     return tx;
   }));
+
+  //save to storage 
+  persistenceService.setVisitedTransactions(visitedTxs);
+
   // remove meritmoney invites so we  have only one tx for meritmoney
   return walletHistory
     .filter(t => {

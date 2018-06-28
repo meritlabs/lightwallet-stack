@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
 import {
-  MarkTransactionsAsVisitedAction,
   selectTransactionsByWalletId,
   selectTransactionsLoading
 } from '@merit/common/reducers/transactions.reducer';
@@ -34,6 +33,6 @@ export class WalletDetailHistoryView {
               private route: ActivatedRoute) {}
 
   async ngOnInit() {
-    this.store.dispatch(new MarkTransactionsAsVisitedAction(false, await getLatestValue(this.walletId$)));
+    
   }
 }

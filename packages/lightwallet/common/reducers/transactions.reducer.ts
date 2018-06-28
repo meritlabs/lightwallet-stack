@@ -11,8 +11,7 @@ export enum TransactionActionType {
   Update = '[Transactions] Update',
   UpdateOne = '[Transactions] Update one',
   Refresh = '[Transactions] Refresh',
-  RefreshOne = '[Transactions] Refresh one',
-  MarkAsVisited = '[Transactions] Mark as visited'
+  RefreshOne = '[Transactions] Refresh one'
 }
 
 export class RefreshTransactionsAction implements Action {
@@ -52,17 +51,11 @@ export class RefreshOneWalletTransactions implements Action {
   }
 }
 
-export class MarkTransactionsAsVisitedAction implements Action {
-  type = TransactionActionType.MarkAsVisited;
-  constructor(public inviteOnly: boolean = false, public walletId?: string) {}
-}
-
 export type TransactionsReducerAction =
   RefreshTransactionsAction
   & UpdateTransactionsAction
   & UpdateOneWalletTransactions
-  & RefreshOneWalletTransactions
-  & MarkTransactionsAsVisitedAction;
+  & RefreshOneWalletTransactions;
 
 const DEFAULT_STATE: ITransactionsState = {
   transactions: [],
@@ -87,15 +80,6 @@ export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, a
       return {
         transactions: sortBy(uniqBy(action.transactions.concat(state.transactions), 'txid'), 'time').reverse(),
         loading: false
-      };
-
-    case TransactionActionType.MarkAsVisited:
-      return {
-        ...state,
-        transactions: state.transactions.map(tx => {
-          tx.isNew = false;
-          return tx
-        })
       };
 
     default:
