@@ -21,6 +21,7 @@ import { cleanAddress } from '@merit/common/utils/addresses';
 import { getSendMethodDestinationType } from '@merit/common/utils/destination';
 import { getShareLink } from '@merit/common/utils/url';
 import { SendValidator } from '@merit/common/validators/send.validator';
+import { InviteValidator } from '@merit/common/validators/invite.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
@@ -45,7 +46,7 @@ export class SendInviteView {
     type: ['easy'],
     password: [''],
     destination: ['', SendValidator.validateGlobalSendDestination],
-    amount: [1, [Validators.required, SendValidator.validateAmount]]
+    amount: [1, [Validators.required, SendValidator.validateAmount],[InviteValidator.validateInviteQuantity]]
   });
 
   emailSubject;
