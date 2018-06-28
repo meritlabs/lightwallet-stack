@@ -47,13 +47,22 @@ export class MeritLightWallet {
       this.modalCtrl.create('PinLockView').present();
     }
 
+    let pausedAt; //register time when app is sent to background. show pin lock if incactivity time is > 5 min
+    this.platform.pause.subscribe(() => {
+      pausedAt = Date.now();
+    });
+
     this.platform.resume.subscribe(() => {
-      this.persistenceService.isPinEnabled().then((isEnabled) => {
-        if (isEnabled) this.modalCtrl.create('PinLockView').present();
-      });
+      if (Date.now() - pausedAt > 5*60*1000) {
+        this.persistenceService.isPinEnabled().then((isEnabled) => {
+          if (isEnabled) this.modalCtrl.create('PinLockView').present();
+        });
+      }
       this.logger.info('Returning Native App from Background!');
       this.loadEasySend();
     });
+
+
 
     const readySource = await this.platform.ready();
 
