@@ -14,49 +14,47 @@ import {
   ITask,
   ITaskProgress,
   ProgressStatus,
-  TaskSlug
+  TaskSlug,
 } from '@merit/common/models/goals';
 import { IRootAppState } from '@merit/common/reducers';
 import {
   RefreshGoalSettingsAction,
   RefreshGoalsProgressAction,
-  StatusByTask
+  StatusByTask,
 } from '@merit/common/reducers/goals.reducer';
 import { selectPrimaryWallet } from '@merit/common/reducers/interface-preferences.reducer';
-import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { ProfileService } from '@merit/common/services/profile.service';
-import { getLatestValue } from '@merit/common/utils/observables';
 import { Store } from '@ngrx/store';
 
 const GoalData: { [goalSlug: string]: Partial<IFullGoal> } = {
   [GoalSlug.Creator]: {
     route: 'unlock',
     title: 'Wallet unlock',
-    linkTitle: 'Unlock'
+    linkTitle: 'Unlock',
   },
   [GoalSlug.FastStarter]: {
     route: '',
     title: '',
-    linkTitle: ''
-  }
+    linkTitle: '',
+  },
 };
 
 const DEFAULT_PROGRESS: IProgress = {
   tasks: [
     {
       slug: TaskSlug.CreateWallet,
-      status: ProgressStatus.Complete
+      status: ProgressStatus.Complete,
     },
     {
       slug: TaskSlug.UnlockWallet,
-      status: ProgressStatus.Incomplete
-    }
-  ]
+      status: ProgressStatus.Incomplete,
+    },
+  ],
 };
 
 const DEFAULT_SETTINGS: IGoalSettings = {
   isSetupTrackerEnabled: true,
-  isWelcomeDialogEnabled: true
+  isWelcomeDialogEnabled: false,
 };
 
 @Injectable()
@@ -65,33 +63,30 @@ export class GoalsService {
   private client: MeritAchivementClient;
   private selectedWallet: DisplayWallet;
 
-  goalsByTask: { [taskSlug: string]: GoalSlug; };
-  goals: IGoal[];
+  goalsByTask: { [taskSlug: string]: GoalSlug } = {};
+  goals: IGoal[] = [];
 
-  tasks: ITask[];
-  tasksMap: { [taskSlug: string]: ITask; };
+  tasks: ITask[] = [];
+  tasksMap: { [taskSlug: string]: ITask } = {};
 
   progress: IFullProgress;
 
   statusByTask: { [taskSlug: string]: ProgressStatus } = {};
 
-  constructor(private profileService: ProfileService,
-              private store: Store<IRootAppState>,
-              private http: HttpClient) {
+  constructor(private profileService: ProfileService, private store: Store<IRootAppState>, private http: HttpClient) {
     this.loadGoals();
 
-    this.store.select(selectPrimaryWallet)
-      .subscribe(async (primaryWallet: DisplayWallet) => {
-        this.token = undefined;
-        this.selectedWallet = primaryWallet;
+    this.store.select(selectPrimaryWallet).subscribe(async (primaryWallet: DisplayWallet) => {
+      this.token = undefined;
+      this.selectedWallet = primaryWallet;
 
-        if (primaryWallet && primaryWallet.confirmed) {
-          await this.getToken(primaryWallet);
-        }
+      if (primaryWallet && primaryWallet.confirmed) {
+        await this.getToken(primaryWallet);
+      }
 
-        this.store.dispatch(new RefreshGoalsProgressAction());
-        this.store.dispatch(new RefreshGoalSettingsAction());
-      });
+      this.store.dispatch(new RefreshGoalsProgressAction());
+      this.store.dispatch(new RefreshGoalSettingsAction());
+    });
   }
 
   async getToken(primaryWallet: DisplayWallet) {
@@ -99,14 +94,18 @@ export class GoalsService {
       return this.token;
     }
 
-    const profile = await this.getProfile(primaryWallet);
-    this.setClient(profile);
-    const { token } = await this.client.login();
+    try {
+      const profile = await this.getProfile(primaryWallet);
+      this.setClient(profile);
+      const { token } = await this.client.login();
 
-    this.token = token;
-    this.client.setToken(token);
+      this.token = token;
+      this.client.setToken(token);
 
-    return token;
+      return token;
+    } catch (err) {
+      console.log('Error getting token for Goals API', err);
+    }
   }
 
   async getProgress(): Promise<IFullProgress> {
@@ -126,14 +125,13 @@ export class GoalsService {
         await this.setTaskStatus(TaskSlug.UnlockWallet, ProgressStatus.Complete);
         return this.getProgress();
       }
-
     }
 
     return this.getFullProgress(progress);
   }
 
   getFullProgress(progress: IProgress): IFullProgress {
-    const goalsMap: { [goalSlug: string]: IFullTask[]; } = {};
+    const goalsMap: { [goalSlug: string]: IFullTask[] } = {};
 
     const statusByTask: StatusByTask = {};
 
@@ -141,7 +139,7 @@ export class GoalsService {
       if (!progress.tasks.find(t => t.slug === TaskSlug[task])) {
         progress.tasks.push({
           slug: TaskSlug[task] as TaskSlug,
-          status: ProgressStatus.Incomplete
+          status: ProgressStatus.Incomplete,
         });
       }
     }
@@ -164,7 +162,7 @@ export class GoalsService {
       const goal: IFullGoal = {
         ...this.getGoal(slug as GoalSlug),
         tasks: goalsMap[slug],
-        status: ProgressStatus.Complete
+        status: ProgressStatus.Complete,
       };
 
       const incomplete: boolean = goal.tasks.some(task => task.status !== ProgressStatus.Complete);
@@ -178,16 +176,16 @@ export class GoalsService {
 
     this.statusByTask = statusByTask;
 
-    return this.progress = {
+    return (this.progress = {
       ...progress,
-      goals
-    };
+      goals,
+    });
   }
 
   async setTaskStatus(taskSlug: TaskSlug, status: ProgressStatus) {
     return this.client.setData('/progress/task/', {
       slug: taskSlug,
-      status
+      status,
     });
   }
 
@@ -207,7 +205,7 @@ export class GoalsService {
         ...goal,
         ...GoalData[goalSlug],
         tasks: [],
-        status: ProgressStatus.Complete
+        status: ProgressStatus.Complete,
       } as IFullGoal;
     }
   }
@@ -233,22 +231,26 @@ export class GoalsService {
   }
 
   async loadGoals() {
-    this.goals = await this.http.get(ENV.achievementApi + '/goals/').toPromise() as IGoal[];
+    try {
+      this.goals = (await this.http.get(ENV.achievementApi + '/goals/').toPromise()) as IGoal[];
 
-    // Update GoalsByTask
-    this.goalsByTask = {};
-    this.tasksMap = {};
+      // Update GoalsByTask
+      this.goalsByTask = {};
+      this.tasksMap = {};
 
-    if (!this.goals || !this.goals.length) {
-      return;
-    }
+      if (!this.goals || !this.goals.length) {
+        return;
+      }
 
-    this.goals.forEach((goal: IGoal) => {
-      goal.tasks.forEach((task: ITask) => {
-        this.goalsByTask[task.slug] = goal.slug;
-        this.tasksMap[task.slug] = task;
+      this.goals.forEach((goal: IGoal) => {
+        goal.tasks.forEach((task: ITask) => {
+          this.goalsByTask[task.slug] = goal.slug;
+          this.tasksMap[task.slug] = task;
+        });
       });
-    });
+    } catch (err) {
+      console.log('Error fetching goals', err);
+    }
   }
 
   getGoalForTask(taskSlug: TaskSlug): GoalSlug {
@@ -271,7 +273,7 @@ export class GoalsService {
     const profile = await this.profileService.loadProfile();
     const loginProfile = {
       wallets: [],
-      credentials: []
+      credentials: [],
     };
 
     if (wallet) {
@@ -281,5 +283,4 @@ export class GoalsService {
 
     return profile;
   }
-
 }

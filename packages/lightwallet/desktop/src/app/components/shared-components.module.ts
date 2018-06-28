@@ -24,8 +24,12 @@ import { SmsNotificationsPromptController } from '@merit/desktop/app/components/
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-notification/toast-notification.component';
 import { UICheckboxComponent } from '@merit/desktop/app/components/ui-checkbox/ui-checkbox.component';
+import { UpdateDialogComponent } from '@merit/desktop/app/components/update-dialog/update-dialog.component';
+import { UpdateDialogController } from '@merit/desktop/app/components/update-dialog/update-dialog.controller';
 import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/wallet-icon.component';
 import { ClipModule } from 'ng2-clip';
+import { WalletUnlockAlertComponent } from '@merit/desktop/app/components/wallet-unlock-alert/wallet-unlock-alert.component';
+import { MomentModule } from 'ngx-moment';
 
 export function getComponents() {
   return [
@@ -45,7 +49,9 @@ export function getComponents() {
     IllustationsYourWayComponent,
     GlobalsendLinkPopupComponent,
     UICheckboxComponent,
-    SmsNotificationsPromptComponent
+    WalletUnlockAlertComponent,
+    SmsNotificationsPromptComponent,
+    UpdateDialogComponent
   ];
 }
 
@@ -55,15 +61,10 @@ export function getComponents() {
     PasswordPromptComponent,
     ConfirmDialogComponent,
     GlobalsendLinkPopupComponent,
-    SmsNotificationsPromptComponent
+    SmsNotificationsPromptComponent,
+    UpdateDialogComponent
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ClipModule,
-    CommonDirectivesModule
-  ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule, CommonDirectivesModule, MomentModule],
   declarations: getComponents(),
   exports: getComponents(),
 })
@@ -77,7 +78,8 @@ export class SharedComponentsModule {
         PasswordPromptController,
         ConfirmDialogControllerService,
         GlobalsendLinkPopupController,
-        SmsNotificationsPromptController
+        SmsNotificationsPromptController,
+        UpdateDialogController
       ],
     };
   }
