@@ -1,6 +1,7 @@
 import { OnInit, ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { log } from 'util';
 
 @Component({
   selector: 'profile-stats',
@@ -28,14 +29,21 @@ export class ProfileStatsComponent {
     this.loading = false;
   }
   async getLeaderboard() {
-    this.leaderboard = (await this.wallets[0].getCommunityLeaderboard(100)).ranks;
+    this.leaderboard = (await this._wallets[0].getCommunityLeaderboard(100)).ranks;
     this.displayLeaderboard = this.leaderboard.slice(this.offset, this.LIMIT);
+    console.log(this.leaderboard);
   }
 
   async getRankInfo() {
     let ranks = [];
-    this.wallets.map(async w => {
+    this._wallets.map(async w => {
+      console.log(w);
+
       let rankInfo = (await w.getCommunityRank()).ranks[0];
+      console.log('!!!');
+
+      console.log(rankInfo);
+
       rankInfo.walletName = w.rootAlias ? '@' + w.rootAlias : w.name;
       ranks.push(rankInfo);
     });

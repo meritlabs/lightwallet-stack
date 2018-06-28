@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -9,14 +9,14 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
     trigger('showTips', [
       state('true', style({ maxHeight: '1000px', padding: '30px 20px' })),
       state('false', style({})),
-      transition('* => *', animate('300ms ease-in-out')),
+      transition('* => *', animate('100ms ease-in-out')),
     ]),
   ],
 })
 export class CommunityRankComponent implements OnInit {
   constructor() {}
 
-  active: boolean = true;
+  @Input() active: boolean;
 
   ngOnInit() {}
 }

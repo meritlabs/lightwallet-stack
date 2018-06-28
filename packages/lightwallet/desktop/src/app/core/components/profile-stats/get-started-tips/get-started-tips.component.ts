@@ -21,7 +21,7 @@ declare global {
     trigger('showTips', [
       state('true', style({ maxHeight: '1000px', padding: '30px 20px' })),
       state('false', style({})),
-      transition('* => *', animate('300ms ease-in-out')),
+      transition('* => *', animate('100ms ease-in-out')),
     ]),
   ],
 })
@@ -34,6 +34,8 @@ export class GetStartedTipsComponent implements OnInit {
   copy: string = 'COPY';
 
   private _wallets: DisplayWallet[];
+
+  @Input() isCommunityExpanded;
 
   @Input()
   set wallets(val: DisplayWallet[]) {
