@@ -138,6 +138,6 @@
     <plugin name="cordova-plugin-compat" spec="^1.2.0" />
     <plugin name="cordova.plugins.diagnostic" spec="^3.9.2" />
     <plugin name="cordova-plugin-app-version" spec="^0.1.9" />
-    <engine name="android" spec="^6.4.0" />
+    <engine name="android" spec="6.4.0" />
     <engine name="ios" spec="4.5.4" />
 </widget>
