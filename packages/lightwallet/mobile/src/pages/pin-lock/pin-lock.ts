@@ -42,19 +42,20 @@ export class PinLockView {
       this.showCancelButton = true;
     } else {
       this.mode = 'check';
-      this.isTouchIdAvailable = this.touchIdService.isAvailable();
       this.showCancelButton = this.navParams.get('showCancelButton');
-    }
-
-
-    if (this.isTouchIdAvailable) {
-      touchIdService.check().then(() => {
-        this.viewCtrl.dismiss(true);
-      });
     }
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
+    if (this.mode == 'check' && !this.navParams.get('touchIdDisabled')) {
+      this.isTouchIdAvailable = await this.touchIdService.isAvailable();
+      if (this.isTouchIdAvailable) {
+        this.touchIdService.check().then(() => {
+          this.viewCtrl.dismiss(true);
+        });
+      }
+    }
+
     this.timerId = setInterval(this.checkIsBlocked.bind(this), 5000);
   }
 
