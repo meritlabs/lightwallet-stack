@@ -269,7 +269,7 @@ TxProposal.prototype.getEstimatedFee = function() {
 };
 
 TxProposal.prototype.estimateFee = function() {
-  this.fee = this.getEstimatedFee();
+  this.fee = this.isInvite? 0 : this.getEstimatedFee();
 };
 
 /**
