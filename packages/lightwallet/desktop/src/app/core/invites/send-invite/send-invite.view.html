@@ -70,9 +70,9 @@
         </label>
         <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password" placeholder="Enter a password to protect your MeritInvite link"
                *ngIf="selectedWallet?.availableInvites">
-        <div class="notification-info">
+        <div class="notification-info" *ngIf="selectedWallet?.availableInvites">
           <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
-          <p *ngIf="selectedWallet?.availableInvites">
+          <p>
             You will see a link after confirming the transaction that you can share with your recipient.
           </p>
         </div>

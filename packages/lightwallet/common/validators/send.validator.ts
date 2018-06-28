@@ -2,6 +2,7 @@ import { AbstractControl } from '@angular/forms';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { validateEmail, validatePhoneNumber } from '@merit/common/utils/destination';
+import { sendableInvites } from '@merit/common/utils/wallet';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 
 export class SendValidator {
@@ -30,6 +31,17 @@ export class SendValidator {
 
     return null;
   }
+
+  static validateInvites(mwcService: MWCService, control: AbstractControl) {
+    console.log("Running INvite Validator");
+    console.log("Sendable invites: ", sendableInvites(mwcService.getClient()));
+    const { value } = control;
+
+    if (value >= sendableInvites(mwcService.getClient())) return { InvalidAmount: true };
+
+    return null;
+  }
+
 
   static validateGlobalSendDestination(control: AbstractControl) {
     const { value } = control;
