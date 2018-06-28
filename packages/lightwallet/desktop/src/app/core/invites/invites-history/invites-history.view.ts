@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
 import {
-  MarkTransactionsAsVisitedAction,
   selectSentInvites,
   selectTransactionsLoading
 } from '@merit/common/reducers/transactions.reducer';
@@ -19,6 +18,5 @@ export class InvitesHistoryView {
   history$: Observable<IDisplayTransaction[]> = this.store.select(selectSentInvites);
 
   constructor(private store: Store<IRootAppState>) {
-    this.store.dispatch(new MarkTransactionsAsVisitedAction(true));
   }
 }

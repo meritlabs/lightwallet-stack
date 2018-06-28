@@ -3,7 +3,6 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IDisplayTransaction, VisitedTransaction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
 import {
-  MarkTransactionsAsVisitedAction,
   RefreshOneWalletTransactions,
   RefreshTransactionsAction, selectTransactions,
   TransactionActionType,
@@ -72,18 +71,6 @@ export class TransactionEffects {
     map((wallet: DisplayWallet) => new RefreshOneWalletTransactions(wallet.id))
   );
 
-  @Effect({ dispatch: false })
-  markAsVisited$ = this.actions$.pipe(
-    ofType(TransactionActionType.MarkAsVisited),
-    switchMap((action: MarkTransactionsAsVisitedAction) =>
-      this.store.select(selectTransactions)
-        .pipe(
-          take(1)
-        )
-    ),
-    map((transactions: IDisplayTransaction[]) => this.updateVisitedTransactions(transactions))
-  );
-
   constructor(private actions$: Actions,
     private walletService: WalletService,
     private store: Store<IRootAppState>,
@@ -95,38 +82,8 @@ export class TransactionEffects {
   private async getWalletHistory(wallet: DisplayWallet): Promise<IDisplayTransaction[]> {
     const walletHistory = await wallet.client.getTxHistory({ includeExtendedInfo: true }); // TODO (ibby: add this and do infinite loading --> { skip: 0, limit: 50, includeExtendedInfo: true } )
     const easySends = await this.persistenceService.getEasySends();
-    const visitedTransactions = await this.persistenceService.getVisitedTransactions();
-    const formattedHistory: IDisplayTransaction[] = await formatWalletHistory(walletHistory, wallet.client, easySends, this.feeService, null, visitedTransactions);
-    await this.updateVisitedTransactions(formattedHistory);
+    const formattedHistory: IDisplayTransaction[] = await formatWalletHistory(walletHistory, wallet.client, easySends, this.feeService, null, this.persistenceService);
     return formattedHistory;
   }
 
-  private async updateVisitedTransactions(transactions: IDisplayTransaction[]) {
-    let visitedTxs = await this.persistenceService.getVisitedTransactions() || [];
-
-    for (let i = 0; i < transactions.length; i++) {
-      let tx = transactions[i];
-      let oneVisited = visitedTxs.find(visTx => visTx.txid === tx.txid);
-
-      if (oneVisited) {
-        // already there increase counter
-        if (tx.isInvite && oneVisited.counter < 4) { // invite refreshes the wallet 2 times before user can see it.
-          oneVisited.counter++;
-          tx.isNew = true;
-        } else if (oneVisited.counter < 2) {
-          oneVisited.counter++;
-          tx.isNew = true;
-        } else {
-          tx.isNew = false;
-        }
-      } else {
-        tx.isNew = true;
-        // add new one in visited
-        visitedTxs.push(new VisitedTransaction(tx.txid, 1));
-      }
-    }
-
-    console.log(visitedTxs);
-    return this.persistenceService.setVisitedTransactions(visitedTxs);
-  }
 }
