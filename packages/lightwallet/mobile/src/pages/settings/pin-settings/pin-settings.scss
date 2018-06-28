@@ -1,0 +1,17 @@
+view-pin-settings {
+  .global-illustration {
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    color: rgba(45, 60, 80, 0.7);
+    width: 100%;
+    height: calc(100% - 72px);
+    display: flex;
+    align-items: center;
+    img {
+      display: block;
+      margin: 30px auto;
+      width: 100px;
+    }
+  }
+}
