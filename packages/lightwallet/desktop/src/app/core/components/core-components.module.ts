@@ -22,6 +22,7 @@ import { HistoryItemComponent } from './history-item/history-item.component';
 import { HistoryListComponent } from './history-list/history-list.component';
 import { ShareBoxComponent } from './share-box/share-box.component';
 import { TaskConfirmComponent } from '@merit/desktop/app/core/dialog/task-confirm/task-confirm.component';
+import { CommunityRankComponent } from './profile-stats/community-rank/community-rank.component';
 
 export function getComponents() {
   return [
@@ -39,6 +40,7 @@ export function getComponents() {
     GetStartedTipsComponent,
     ShareBoxComponent,
     TaskConfirmComponent,
+    CommunityRankComponent,
   ];
 }
 

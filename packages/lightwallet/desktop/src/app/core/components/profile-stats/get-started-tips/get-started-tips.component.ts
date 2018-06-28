@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { Store } from '@ngrx/store';

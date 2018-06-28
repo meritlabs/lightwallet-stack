@@ -1,7 +1,7 @@
 <div class="stats">
   <div class="container--fluid stats__wrap">
     <div class="stats__item" [class.collapsed]="getStarted?.active">
-      <p class="stats__item__title">Rank {{log(getStarted)}}
+      <p class="stats__item__title">Rank
         <br>&nbsp;</p>
       <div class="stats__item__picture">
         <img src="/assets/v1/images/stats/rankIcon.png" alt="">
@@ -77,4 +77,5 @@
     </div>
   </div>
   <app-get-started-tips [wallets]="wallets" #getStarted></app-get-started-tips>
+  <app-community-rank></app-community-rank>
 </div>
