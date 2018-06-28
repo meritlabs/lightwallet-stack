@@ -1,8 +1,8 @@
 <div class="stats">
   <div class="container--fluid stats__wrap">
-    <!-- NOTE: Uncoment code for displaying rank widget -->
-    <!-- <div class="stats__item">
-      <p class="stats__item__title">Rank<br>&nbsp;</p>
+    <div class="stats__item" [class.collapsed]="getStarted?.active">
+      <p class="stats__item__title">Rank {{log(getStarted)}}
+        <br>&nbsp;</p>
       <div class="stats__item__picture">
         <img src="/assets/v1/images/stats/rankIcon.png" alt="">
       </div>
@@ -12,7 +12,9 @@
           <i>Incoming feature</i>
         </div>
         <div class="stats__item__grows">
-          <p><span>▲</span></p>
+          <p>
+            <span>▲</span>
+          </p>
           <p>+1</p>
           <p>(* for...)</p>
         </div>
@@ -20,7 +22,8 @@
       <ng-template #percentileLoading>
         Spinner
       </ng-template>
-    </div> -->
+      <button class="ui-button ui-button--xs">More details</button>
+    </div>
     <div class="stats__item">
       <p class="stats__item__title">My
         <br>Community</p>
@@ -32,9 +35,6 @@
           {{ totals?.totalCommunitySize }}
           <span>People</span>
         </div>
-        <!--<div class="stats__item__grows">-->
-        <!--<p>+5</p>-->
-        <!--</div>-->
       </ng-container>
       <ng-template #peopleLoading>
         <loading-spinner-small></loading-spinner-small>
