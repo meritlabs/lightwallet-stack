@@ -64,8 +64,13 @@ var EMAIL_TYPES = {
     notifyDoer: true,
     notifyOthers: true
   },
-  'IncomingCoinbase': {
-    filename: 'incoming_coinbase',
+  MiningReward: {
+    filename: 'mining_reward',
+    notifyDoer: true,
+    notifyOthers: true,
+  },
+  GrowthReward: {
+    filename: 'growth_reward',
     notifyDoer: true,
     notifyOthers: true,
   },

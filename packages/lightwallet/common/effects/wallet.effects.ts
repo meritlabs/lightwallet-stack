@@ -3,9 +3,9 @@ import { createDisplayWallet, DisplayWallet, updateDisplayWallet } from '@merit/
 import { IRootAppState } from '@merit/common/reducers';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
 import {
-  DeleteWalletAction, DeleteWalletCompletedAction,
+  DeleteWalletAction, DeleteWalletCompletedAction, IgnoreInviteRequestAction,
   IWalletTotals,
-  RefreshOneWalletAction,
+  RefreshOneWalletAction, selectInviteRequests,
   selectWalletById,
   selectWallets,
   UpdateInviteRequestsAction,
@@ -15,6 +15,7 @@ import {
   WalletsActionType
 } from '@merit/common/reducers/wallets.reducer';
 import { AddressService } from '@merit/common/services/address.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
@@ -62,6 +63,12 @@ export class WalletEffects {
     ofType(WalletsActionType.UpdateOne, WalletsActionType.Update, WalletsActionType.Add, WalletsActionType.DeleteWallet),
     withLatestFrom(this.store.select(selectWallets)),
     map(([action, wallets]) => wallets.reduce((requests, wallet) => requests.concat(wallet.inviteRequests), [])),
+    withLatestFrom(fromPromise(this.persistenceService.getHiddenUnlockRequestsAddresses())),
+    map(([inviteRequests, hiddenAddresses]) => {
+      const hiddenAddressesMap = {};
+      hiddenAddresses.forEach(address => hiddenAddressesMap[address] = true);
+      return inviteRequests.filter(request => !hiddenAddressesMap[request.address]);
+    }),
     map((inviteRequests: any[]) => new UpdateInviteRequestsAction(inviteRequests))
   );
 
@@ -74,7 +81,7 @@ export class WalletEffects {
     distinctUntilChanged(),
     skip(1),
     switchMap((preferences: any[]) => fromPromise(
-      Promise.all(preferences.map(this.persistenceService.saveWalletPreferences.bind(this.persistenceService)))
+      Promise.all(preferences.map(this.persistenceService2.saveWalletPreferences.bind(this.persistenceService2)))
     ))
   );
 
@@ -96,13 +103,29 @@ export class WalletEffects {
     )
   );
 
+  @Effect()
+  ignoreInviteRequest$: Observable<any> = this.actions$.pipe(
+    ofType(WalletsActionType.IgnoreInviteRequest),
+    switchMap((action: IgnoreInviteRequestAction) =>
+      fromPromise(
+        this.persistenceService.hideUnlockRequestAddress(action.address)
+          .then(() => action.address)
+      )
+    ),
+    withLatestFrom(this.store.select(selectInviteRequests)),
+    map(([address, inviteRequests]) =>
+      new UpdateInviteRequestsAction(inviteRequests.filter(req => req.address !== address))
+    )
+  );
+
   constructor(private actions$: Actions,
               private walletService: WalletService,
               private addressService: AddressService,
               private profileService: ProfileService,
               private txFormatService: TxFormatService,
               private store: Store<IRootAppState>,
-              private persistenceService: PersistenceService2) {
+              private persistenceService: PersistenceService,
+              private persistenceService2: PersistenceService2) {
   }
 
   private async updateAllWallets(): Promise<DisplayWallet[]> {
@@ -110,7 +133,7 @@ export class WalletEffects {
     return Promise.all<DisplayWallet>(
       wallets.map(async w => {
         const displayWallet = await createDisplayWallet(w, this.walletService, this.addressService, this.txFormatService);
-        displayWallet.importPreferences(await this.persistenceService.getWalletPreferences(displayWallet.id));
+        displayWallet.importPreferences(await this.persistenceService2.getWalletPreferences(displayWallet.id));
         return displayWallet;
       })
     );

@@ -8,7 +8,8 @@ const notificationsToSend = [
   'IncomingInvite',
   'WalletUnlocked',
   'IncomingInviteRequest',
-  'IncomingCoinbase',
+  'MiningReward',
+  'GrowthReward'
 ];
 
 function SmsNotificationService(opts) {
@@ -32,8 +33,13 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
   if (notificationsToSend.indexOf(notification.type) === -1) return cb();
 
   this.storage.fetchSmsNotificationSub(notification.walletId, (err, recipient) => {
-    if (err) return cb(err);
-    if (!recipient) return cb();
+    if (err || !recipient) {
+      return cb(err);
+    }
+
+    if (recipient.settings && !recipient.settings[notification.type]) {
+      return cb();
+    }
 
     console.log('[SMS Service] Sending SMS notification', notification, recipient);
 
@@ -49,7 +55,7 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
         template: _.snakeCase(notification.type),
         language: 'en',
         notification: {
-          amount: isInvite? amount : (amount / 1e8) + 'MRT'
+          amount: isInvite? String(amount) : (amount / 1e8) + 'MRT'
         }
       }
     }, (err, response) => {

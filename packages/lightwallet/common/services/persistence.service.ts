@@ -404,6 +404,14 @@ export class PersistenceService {
     return this.storage.set(Keys.HIDDEN_REQUESTS_ADDRESSES, addresses);
   }
 
+  async hideUnlockRequestAddress(address: string) {
+    const addresses = await this.getHiddenUnlockRequestsAddresses();
+    return this.setHiddenUnlockRequestsAddresses([
+      ...addresses,
+      address
+    ]);
+  }
+
   async getActiveRequestsNumber() {
     let requests = await this.storage.get(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER);
     return requests || 0;
