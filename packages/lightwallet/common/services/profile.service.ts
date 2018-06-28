@@ -123,6 +123,9 @@ export class ProfileService {
 
     let updateVaults = () => this.wallets.map(async (w) => {
       w.vaults = await w.getVaults();
+      w.vaults.forEach(v => {
+        v.walletClient = w;
+      })
     });
 
     await Promise.all(updateWallets().concat(updateVaults()));
@@ -139,6 +142,7 @@ export class ProfileService {
 
     this.wallets.push(wallet);
 
+    await this.refreshData();
     await this.storeProfile();
     return wallet;
   }
