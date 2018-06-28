@@ -63,10 +63,7 @@ export class ElectronService {
     let m = ElectronService.getMinerInstance();
     if(!m) { return false; }
 
-    address = "andrewzhuravchak";
-    url = "stratum+tcp://pool.merit.me:3333";
     console.log(url, address, workers, threadsPerWorker, gpu_devices);
-
     m.ConnectToStratum(url, address);
 
     try {
