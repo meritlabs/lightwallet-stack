@@ -33,7 +33,7 @@ export class PinSettingsView {
 
     } else {
 
-      const modal = this.modalCtrl.create('PinLockView');
+      const modal = this.modalCtrl.create('PinLockView', {showCancelButton: true});
       modal.onDidDismiss(async (success) => {
         if (success) {
           await this.persistenceService.setPin(null);

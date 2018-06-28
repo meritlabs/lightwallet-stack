@@ -37,14 +37,13 @@ export class PinLockView {
     private touchIdService: TouchIdService,
     private navParams: NavParams
   ) {
-    this.showCancelButton = this.navParams.get('showCancelButton');
     if (this.navParams.get('newPinMode')) {
       this.mode = 'new';
       this.showCancelButton = true;
     } else {
       this.mode = 'check';
-      this.isTouchIdAvailable = this.platform.is('cordova')
-      this.showCancelButton = false;
+      this.isTouchIdAvailable = this.touchIdService.isAvailable();
+      this.showCancelButton = this.navParams.get('showCancelButton');
     }
 
 

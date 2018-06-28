@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "branch-cordova-sdk": "^2.6.24",
-    "cordova-android": "^6.4.0",
+    "cordova-android": "6.4.0",
     "cordova-clipboard": "^1.1.1",
     "cordova-ios": "4.5.4",
     "cordova-plugin-android-fingerprint-auth": "^1.4.3",
