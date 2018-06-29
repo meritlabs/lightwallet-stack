@@ -38,6 +38,8 @@ const Keys = {
   HIDDEN_REQUESTS_ADDRESSES: 'hiddenRequestsAddresses',
   ACTIVE_UNLOCK_REQUESTS_NUMBER: 'activeUnlockRequests',
   PAGES_VISITED: 'pagesVisited',
+  PIN: 'pin',
+  PIN_LOCKED_TILL: 'pinLockedTill',
   COMMUNITY_POPUP_CLOSED: 'communityPopupClosed',
   COMMUNITY_INFO: 'communityInfo',
 };
@@ -415,6 +417,27 @@ export class PersistenceService {
   async getActiveRequestsNumber() {
     let requests = await this.storage.get(Keys.ACTIVE_UNLOCK_REQUESTS_NUMBER);
     return requests || 0;
+  }
+
+  async isPinEnabled() {
+    return !!(await this.storage.get(Keys.PIN));
+  }
+
+  setPin(pin) {
+    return this.storage.set(Keys.PIN, pin);
+  }
+
+  async checkPin(pin) {
+    const currentPin = await this.storage.get(Keys.PIN);
+    return pin == currentPin;
+  }
+
+  blockPin(timestamp) {
+    return this.storage.set(Keys.PIN_LOCKED_TILL, timestamp);
+  }
+
+  getPinBlockedTimestamp() {
+    return this.storage.get(Keys.PIN_LOCKED_TILL);
   }
 
   setActiveRequestsNumber(requests: number) {
