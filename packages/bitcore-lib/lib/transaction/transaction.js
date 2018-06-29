@@ -916,7 +916,7 @@ Transaction.prototype._updateChangeOutput = function() {
  * @return {Number} fee of this transaction in micros
  */
 Transaction.prototype.getFee = function() {
-  if (this.isCoinbase()) {
+  if (this.isCoinbase() || this.isInvite()) {
     return 0;
   }
   if (!_.isUndefined(this._fee)) {

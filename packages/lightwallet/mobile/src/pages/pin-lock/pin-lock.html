@@ -1,0 +1,49 @@
+<ion-content>
+
+    <img src="assets/img/icons/merit.svg" class="merit-icon">
+
+    <div class="touchid-panel" *ngIf="isTouchIdAvailable">
+        <ion-icon name="finger-print"></ion-icon>
+        You can use touchId to log in
+    </div>
+
+    <div class="indicator-panel">
+        <div>{{mode == 'repeat' ? 'Repeat pin' : 'Enter pin'}}</div>
+        <i class="indicator" *ngFor="let i of [1,2,3,4]"
+           [class.filled]="pin.length >= i" [class.error]="pin.length >= i && error"></i>
+
+        <div class="error-message" *ngIf="blocked">
+            <div>Attempts limit exceeded</div>
+            <div>{{blockedText}}</div>
+        </div>
+    </div>
+
+    <div class="keyboard-panel">
+        <ion-grid>
+            <ion-row>
+                <ion-col><button ion-button clear (click)="enter(1)" >1</button></ion-col>
+                <ion-col><button ion-button clear (click)="enter(2)">2</button></ion-col>
+                <ion-col><button ion-button clear (click)="enter(3)">3</button></ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col><button ion-button clear (click)="enter(4)">4</button></ion-col>
+                <ion-col><button ion-button clear (click)="enter(5)">5</button></ion-col>
+                <ion-col><button ion-button clear (click)="enter(6)">6</button></ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col><button ion-button clear (click)="enter(7)">7</button></ion-col>
+                <ion-col><button ion-button clear (click)="enter(8)">8</button></ion-col>
+                <ion-col><button ion-button clear (click)="enter(9)">9</button></ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col><button ion-button clear (click)="close()" *ngIf="showCancelButton"><ion-icon name="close"></ion-icon></button></ion-col>
+                <ion-col><button ion-button clear (click)="enter(0)">0</button></ion-col>
+                <ion-col (click)="backspace()">
+                    <ion-col><button ion-button clear (click)="backspace"><ion-icon name="backspace"></ion-icon></button></ion-col>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+    </div>
+
+</ion-content>

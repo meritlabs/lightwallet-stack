@@ -1,13 +1,13 @@
 <div class="toolbar">
   <!--<div class="menuSwitcher" [ngClass]="{'active': showAdvTb}" (click)="showAdvTb = !showAdvTb">-->
-    <!--<div class="burger">-->
-      <!--<span></span>-->
-      <!--<span></span>-->
-      <!--<span></span>-->
-    <!--</div>-->
-    <!--<div class="title">-->
-      <!--Advanced toolbar-->
-    <!--</div>-->
+  <!--<div class="burger">-->
+  <!--<span></span>-->
+  <!--<span></span>-->
+  <!--<span></span>-->
+  <!--</div>-->
+  <!--<div class="title">-->
+  <!--Advanced toolbar-->
+  <!--</div>-->
   <!--</div>-->
   <!--<div class="divider"></div>-->
   <div class="balance">
@@ -29,8 +29,8 @@
     </a>
   </div>
   <div class="divider"></div>
-  <div class="shareButtton" (click)="shareNow()">
-    <merit-icon name="share"></merit-icon> INVITE OTHERS</div>
+  <button class="shareButtton" (click)="shareNow()">
+    <merit-icon name="share"></merit-icon> INVITE OTHERS</button>
   <div class="right">
     <div class="box">
       <button role="button" (click)="refresh()" class="refresh-button" [class.refreshing]="walletsLoading$ | async" [disabled]="walletsLoading$ | async">
@@ -41,66 +41,66 @@
   </div>
 </div>
 <!--<div class="advancedToolbar" [ngClass]="{'active': showAdvTb}">-->
-  <!--<div class="column">-->
-    <!--<p class="title">-->
-      <!--MERIT PLATFORMS-->
-    <!--</p>-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a href="https://pool.merit.me" target="_blank">-->
-          <!--<merit-icon name="pool"></merit-icon>-->
-          <!--Merit Mining Pool</a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a href="https://www.merit.me/get-started/#get-merit-desktop" target="_blank">-->
-          <!--<merit-icon name="desktop"></merit-icon>-->
-          <!--Merit Desktop client</a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a href="https://www.merit.me/get-started/#get-merit-mobile" target="_blank">-->
-          <!--<merit-icon name="mobile"></merit-icon>-->
-          <!--Merit Mobile app</a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a href="https://www.merit.me/get-started/#get-merit-mobile" target="_blank">-->
-          <!--<merit-icon name="web"></merit-icon>-->
-          <!--Merit Web Site</a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-  <!--<div class="column">-->
-    <!--<p class="title">-->
-      <!--MERIT COMMUNITY-->
-    <!--</p>-->
-    <!--<ul>-->
-      <!--<li>-->
-        <!--<a href="https://discordapp.com/invite/X3v3n3b" target="_blank">-->
-          <!--<merit-icon name="discord"></merit-icon>-->
-          <!--Discord</a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a href="https://t.me/meritocracy" target="_blank">-->
-          <!--<merit-icon name="telegram"></merit-icon>-->
-          <!--Telegram</a>-->
-      <!--</li>-->
-      <!--<li>-->
-        <!--<a href="https://forum.merit.me/" target="_blank">-->
-          <!--<merit-icon name="forum"></merit-icon>-->
-          <!--Forum</a>-->
-      <!--</li>-->
-    <!--</ul>-->
-  <!--</div>-->
-  <!--<div class="column">-->
-    <!--<p class="title">-->
-      <!--Get Growth Rewards-->
-    <!--</p>-->
-    <!--<div class="description">-->
-      <!--<p>Every time to bring an active new member into the Merit community, your-->
-        <!--<strong>growth score</strong> will increase. There is a growth lottery every minute, and a higher score earns you a higher-->
-        <!--chance to win. To grow your community, you can:-->
-        <!--<span class="link" (click)="shareNow()">share your invite</span>-->
-      <!--</p>-->
-    <!--</div>-->
-  <!--</div>-->
+<!--<div class="column">-->
+<!--<p class="title">-->
+<!--MERIT PLATFORMS-->
+<!--</p>-->
+<!--<ul>-->
+<!--<li>-->
+<!--<a href="https://pool.merit.me" target="_blank">-->
+<!--<merit-icon name="pool"></merit-icon>-->
+<!--Merit Mining Pool</a>-->
+<!--</li>-->
+<!--<li>-->
+<!--<a href="https://www.merit.me/get-started/#get-merit-desktop" target="_blank">-->
+<!--<merit-icon name="desktop"></merit-icon>-->
+<!--Merit Desktop client</a>-->
+<!--</li>-->
+<!--<li>-->
+<!--<a href="https://www.merit.me/get-started/#get-merit-mobile" target="_blank">-->
+<!--<merit-icon name="mobile"></merit-icon>-->
+<!--Merit Mobile app</a>-->
+<!--</li>-->
+<!--<li>-->
+<!--<a href="https://www.merit.me/get-started/#get-merit-mobile" target="_blank">-->
+<!--<merit-icon name="web"></merit-icon>-->
+<!--Merit Web Site</a>-->
+<!--</li>-->
+<!--</ul>-->
+<!--</div>-->
+<!--<div class="column">-->
+<!--<p class="title">-->
+<!--MERIT COMMUNITY-->
+<!--</p>-->
+<!--<ul>-->
+<!--<li>-->
+<!--<a href="https://discordapp.com/invite/X3v3n3b" target="_blank">-->
+<!--<merit-icon name="discord"></merit-icon>-->
+<!--Discord</a>-->
+<!--</li>-->
+<!--<li>-->
+<!--<a href="https://t.me/meritocracy" target="_blank">-->
+<!--<merit-icon name="telegram"></merit-icon>-->
+<!--Telegram</a>-->
+<!--</li>-->
+<!--<li>-->
+<!--<a href="https://forum.merit.me/" target="_blank">-->
+<!--<merit-icon name="forum"></merit-icon>-->
+<!--Forum</a>-->
+<!--</li>-->
+<!--</ul>-->
+<!--</div>-->
+<!--<div class="column">-->
+<!--<p class="title">-->
+<!--Get Growth Rewards-->
+<!--</p>-->
+<!--<div class="description">-->
+<!--<p>Every time to bring an active new member into the Merit community, your-->
+<!--<strong>growth score</strong> will increase. There is a growth lottery every minute, and a higher score earns you a higher-->
+<!--chance to win. To grow your community, you can:-->
+<!--<span class="link" (click)="shareNow()">share your invite</span>-->
+<!--</p>-->
+<!--</div>-->
+<!--</div>-->
 <!--</div>-->
 <!--<div class="hideAdvancedToolbar" *ngIf="showAdvTb" (click)="showAdvTb = !showAdvTb"></div>-->

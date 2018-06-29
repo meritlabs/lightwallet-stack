@@ -1,0 +1,28 @@
+<h2 class="main-header">
+  Invites
+</h2>
+<div class="description">
+  <p>You have:
+    <strong>{{ (invites$ | async) || 0 }}</strong> available invites</p>
+  <ng-container *ngIf="(inviteRequests$ | async)?.length > 0">
+    <p>
+      <strong>{{ ((inviteRequests$ | async)?.length) || 0 }}</strong> incoming requests are waiting for acceptance</p>
+  </ng-container>
+</div>
+<ng-container *ngIf="(inviteRequests$ | async)?.length > 0; else noPendingInvites">
+  <div class="listWrap">
+    <app-pending-invite-item *ngFor="let request of ((inviteRequests$ | async) | slice:0:2)" [request]="request" [availableInvites]="availableInvites$ | async"
+      [inviteRequests]="inviteRequests$ | async" [wallets]="wallets$ | async"></app-pending-invite-item>
+  </div>
+  <button class="ui-button ui-button--sm ui-button--blue" routerLink="/invites/requests" *ngIf="(inviteRequests$ | async).length > 2">Show all pending requests</button>
+</ng-container>
+<ng-template #noPendingInvites>
+  <div class="notification-info">
+    <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
+    <p>
+      Your waitlist is currently empty. Spread the word and extend your community to earn more Growth Rewards.
+    </p>
+  </div>
+  <button class="shareButtton" (click)="shareNow()">
+    <merit-icon name="share"></merit-icon> Extend my community</button>
+</ng-template>
