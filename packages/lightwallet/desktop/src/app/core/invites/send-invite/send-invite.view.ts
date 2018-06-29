@@ -45,8 +45,9 @@ export class SendInviteView {
     address: ['', [], [SendValidator.validateAddress(this.mwcService, true)]],
     type: ['easy'],
     password: [''],
+    wallet: [null],
     destination: ['', SendValidator.validateGlobalSendDestination],
-    amount: [1, [Validators.required, SendValidator.validateAmount],[InviteValidator.validateInviteQuantity]]
+    amount: [1, [Validators.required, SendValidator.validateAmount, InviteValidator.InviteQuantityValidator]],
   });
 
   emailSubject;
@@ -77,6 +78,7 @@ export class SendInviteView {
 
     if (this.hasAWalletWithInvites = wallets.length > 0) {
       this.selectedWallet = wallets[0];
+      this.formData.get("wallet").setValue(this.selectedWallet);
       const code = this.selectedWallet.alias || this.selectedWallet.referrerAddress;
       this.emailSubject = `Merit invite from ${code}`;
       this.emailBody = `${ code } invites you to Merit Community. Create your wallet now - ${ getShareLink(code) }`;

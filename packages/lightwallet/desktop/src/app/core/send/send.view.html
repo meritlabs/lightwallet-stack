@@ -130,6 +130,12 @@
               </span>
             </div>
           </div>
+          <div *ngIf="overMaximumAmount" class="notification-info" [class.danger]="true">
+            <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
+            <p>
+              You entered more than your available balance. We adjusted the amount to your maximum available balance.
+            </p>
+          </div>
           <div class="ui-input__wrapper ui-input__wrapper--currency" *ngIf="availableCurrencies?.length">
             <input type="text" name="" [value]="amountFiat$ | async" disabled
                    class="ui-input ui-input--form ui-input--text">
