@@ -1,0 +1,21 @@
+<div class="history__item">
+  <div class="history__item__icon">
+    <img src="/assets/v1/icons/invite.svg" alt="">
+  </div>
+  <div class="history__item__info">
+    <div>
+      <div class="history__item__info__title">
+        <strong>{{ request.alias || request.address }}</strong>
+        <span *ngIf="request.isNew" class="badge-new">new</span>
+      </div>
+      <small class="date" *ngIf="request.timestamp">{{ request.timestamp | date:'medium' }}</small>
+    </div>
+    <div>
+      <button type="button" name="button" class="ui-button ui-button--blue ui-button--sm" [disabled]="sending[request.referralId]"
+        (click)="approveRequest(request)">
+        {{ sending[request.referralId]? 'Sending...' : 'Send Invite Token' }}
+      </button>
+      <button type="button" class="ui-button ui-button--sm ui-button--red" (click)="ignoreRequest(request)">Ignore</button>
+    </div>
+  </div>
+</div>

@@ -19,7 +19,7 @@ import { BackupView } from './backup/backup.view';
 import { MnemonicPhraseView } from './backup/mnemonic-phrase/mnemonic-phrase.view';
 import { QrCodeBackupView } from './backup/qr-code-backup/qr-code-backup.view';
 import { CommunityView } from './community/community.view';
-import { InvitesComponent } from './community/invites/invites.component';
+import { InvitesWidgetComponent } from './invites/invites-widget/invites-widget.component';
 import { CoreRoutingModule } from './core-routing.module';
 import { CoreView } from './core.component';
 import { DashboardView } from './dashboard/dashboard.view';
@@ -41,6 +41,7 @@ import { TaskPreviewComponent } from './wallet-setup/task-preview/task-preview.c
 import { WalletSetupListView } from './wallet-setup/wallet-setup-list/wallet-setup-list.view';
 import { RecordPassphraseComponent } from './dialog/record-passphrase/record-passphrase.component';
 import { WelcomeToSetupTrackerComponent } from './dialog/welcome-to-setup-tracker/welcome-to-setup-tracker.component';
+import { PendingInviteItemComponent } from './invites/pending-invite-item/pending-invite-item.component';
 
 export function getPages() {
   return [
@@ -62,7 +63,7 @@ export function getPages() {
     SettingsSessionLogView,
     QrCodeBackupView,
     FileBackupView,
-    InvitesComponent,
+    InvitesWidgetComponent,
     InvitesView,
     InvitesHistoryView,
     SendInviteView,
@@ -96,6 +97,7 @@ export function getPages() {
     RecordPassphraseComponent,
     TaskPreviewComponent,
     WelcomeToSetupTrackerComponent,
+    PendingInviteItemComponent,
   ],
   providers: [WalletPasswordGuard],
 })

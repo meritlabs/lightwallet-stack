@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, ModalController, LoadingController } from 'ionic-angular';
-
 import { IWhitelistWallet } from "@merit/mobile/pages/vault/select-whitelist/select-whitelist";
 import { VaultsService } from "@merit/common/services/vaults.service";
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
+import { mnemonicToHDPrivateKey } from '@merit/common/utils/mnemonic';
+
 
 @IonicPage()
 @Component({
@@ -85,9 +86,10 @@ export class VaultEditView {
 
     let xMasterKey;
     try {
-      const masterKeyMnemonic = this.vault.walletClient.getNewMnemonic(phrase.replace(/\s\s+/g, ' ').trim().toLowerCase());
-      xMasterKey = masterKeyMnemonic.toHDPrivateKey('', ENV.network);
+      const words = phrase.replace(/\s\s+/g, ' ').trim().toLowerCase();
+      xMasterKey  = mnemonicToHDPrivateKey(words, '', ENV.network);
     } catch (ex) {
+      console.warn(ex);
       return this.edit(true, phrase);
     }
 
@@ -95,13 +97,16 @@ export class VaultEditView {
     loader.present();
     try {
       await this.vaultsService.renewVaultWhitelist(this.vault, this.whitelist, xMasterKey);
+
       if (this.vaultName != this.previous.name) await this.editName();
       this.navCtrl.pop();
     } catch (e) {
-      this.toastCtrl.error(e.message || 'Failed to create vault');
+      console.warn(e);
+      this.toastCtrl.error(e.message || 'Failed to renew vault');
     } finally  {
       loader.dismiss();
     }
+
   }
 
   private async editName() {

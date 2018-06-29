@@ -6,6 +6,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { ContactsService } from '@merit/common/services/contacts.service';
+import { PersistenceService } from '@merit/common/services/persistence.service';
 
 @IonicPage()
 @Component({
@@ -33,7 +34,8 @@ export class SettingsView {
               private configService: ConfigService,
               private logger: LoggerService,
               private profileService: ProfileService,
-              private contactsService: ContactsService
+              private contactsService: ContactsService,
+              private persistenceService: PersistenceService
   ) {
     let config = this.configService.get();
     this.currentUnitName = config.wallet.settings.unitName;
@@ -51,10 +53,27 @@ export class SettingsView {
         { text: 'Cancel', role: 'cancel' },
         { text: 'Logout', handler: () => {
 
-          const deleteAllData = () => this.wallets.map( w => this.profileService.deleteWallet(w)).concat(this.contactsService.deleteAddressBook());
-          Promise.all(deleteAllData()).then(() => {
-            this.app.getRootNavs()[0].setRoot('OnboardingView');
-          });
+            const logout = () => {
+              const deleteAllData = () => this.wallets.map( w => this.profileService.deleteWallet(w)).concat(this.contactsService.deleteAddressBook());
+              Promise.all(deleteAllData()).then(() => {
+                this.app.getRootNavs()[0].setRoot('OnboardingView');
+              });
+            };
+
+            this.persistenceService.isPinEnabled().then(pinEnabled => {
+              if (pinEnabled) {
+                const modal = this.modalCtrl.create('PinLockView', {showCancelButton: true});
+                modal.onDidDismiss(async (success) => {
+                  if (success) {
+                    await this.persistenceService.setPin(null);
+                    logout();
+                  }
+                });
+                modal.present();
+              } else {
+                logout();
+              }
+            });
           }
         }
       ]

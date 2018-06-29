@@ -43,9 +43,9 @@ describe('[Desktop] Community', () => {
   });
 
   describe('> Invites & Requests', () => {
-    const el = element(by.css('app-invites'));
+    const el = element(by.css('app-invites-widget'));
 
-    it('should have app-invites component', () => {
+    it('should have app-invites-widget component', () => {
       expect(el.isPresent()).toBeTruthy();
     });
 

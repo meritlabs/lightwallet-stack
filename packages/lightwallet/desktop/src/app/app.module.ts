@@ -48,7 +48,7 @@ export function loadConfigs(profileService: ProfileService, store: Store<IRootAp
     store.dispatch(
       new UpdateAppAction({
         loading: false,
-        authorized
+        authorized,
       })
     );
 
@@ -65,7 +65,7 @@ export function getProviders() {
     Platform,
     DOMController,
     DashboardGuard,
-    OnboardingGuard
+    OnboardingGuard,
   ];
 }
 
@@ -81,8 +81,8 @@ export function getProviders() {
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
-        deps: [HttpClient]
-      }
+        deps: [HttpClient],
+      },
     }),
     CommonProvidersModule.forRoot(),
     CommonPipesModule,
@@ -94,11 +94,11 @@ export function getProviders() {
       TransactionEffects,
       NotificationEffects,
       GoalEffects,
-      InterfacePreferencesEffects
+      InterfacePreferencesEffects,
     ]),
     SharedComponentsModule.forRoot(),
     Ng4LoadingSpinnerModule.forRoot(),
-    CommonDirectivesModule
+    CommonDirectivesModule,
   ],
   providers: [
     ...getProviders(),
@@ -106,13 +106,13 @@ export function getProviders() {
       provide: APP_INITIALIZER,
       useFactory: loadConfigs,
       deps: [ProfileService, Store, GoalsService],
-      multi: true
+      multi: true,
     },
     {
       provide: APP_BASE_HREF,
-      useValue: '/'
-    }
+      useValue: '/',
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
