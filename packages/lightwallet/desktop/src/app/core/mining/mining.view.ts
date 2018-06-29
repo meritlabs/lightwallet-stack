@@ -210,11 +210,6 @@ export class MiningView {
     this.saveSettings();
   }
 
-  setGPUs(e: any) {
-    this.gpus = parseInt(e.target.value);
-    this.saveSettings();
-  }
-
   saveSettings() {
     this.miningSettings.cores = this.cores;
     this.miningSettings.gpus = this.gpus;
