@@ -116,6 +116,7 @@ export class SendView implements OnInit {
 
   canSend: boolean;
   sending: boolean;
+  overMaximumAmount: boolean;
   success: boolean;
   showTour: boolean = !('showTour' in localStorage && localStorage.getItem('showTour') === 'false');
 
@@ -132,6 +133,7 @@ export class SendView implements OnInit {
     tap(() => {
       this.error = null;
       this.canSend = false;
+      this.overMaximumAmount = false;
     }),
     filter(() => this.formData.dirty),
     switchMap((formData) => {
@@ -346,6 +348,7 @@ export class SendView implements OnInit {
     let micros = this.rateService.mrtToMicro(amountMrt);
 
     if (micros > wallet.balance.spendableAmount) {
+      this.overMaximumAmount = true;
       micros = wallet.balance.spendableAmount;
       amountMrt = this.rateService.microsToMrt(micros);
       this.amountMrt.setValue(amountMrt, { emitEvent: false });
