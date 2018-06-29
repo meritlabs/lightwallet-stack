@@ -19,7 +19,7 @@ declare global {
   styleUrls: ['./get-started-tips.component.sass'],
   animations: [
     trigger('showTips', [
-      state('true', style({ maxHeight: '1000px', padding: '30px 20px' })),
+      state('true', style({ maxHeight: '1000px', padding: '60px 20px 30px' })),
       state('false', style({})),
       transition('* => *', animate('100ms ease-in-out')),
     ]),
