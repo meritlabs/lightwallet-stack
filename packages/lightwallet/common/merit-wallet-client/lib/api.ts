@@ -1526,6 +1526,7 @@ export class API {
           if (res) {
             let walletId = res.walletId;
             c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.parentAddress);
+            this.name = walletName;
 
             let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
