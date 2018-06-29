@@ -1,4 +1,5 @@
 <div class="StarterTips">
+  <div class="closeCross" (click)="closePanel()" *ngIf="active">Close</div>
   <div class="StarterTips_wrap" [@showTips]="active">
     <div class="StarterTips_items">
       <div class="StarterTips_item">
