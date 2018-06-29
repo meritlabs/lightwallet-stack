@@ -1,0 +1,136 @@
+view-globalsend-receive {
+
+  text-align: center;
+
+
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100% - 200px);
+    h2 {
+      font-size: 24px;
+      color: rgba(0,0,0,0.7);
+    }
+    .illustration {
+      border-radius: 50%;
+      height: 105px;
+      width: 105px;
+      line-height: 105px;
+      margin: 20px auto;
+      box-shadow: 0 0 3px 3px transparentize(color($colors, primary), .4);
+      img {
+        height: 100px;
+        width: 100px;
+        margin: 0;
+      }
+    }
+    ion-input {
+      border: 2px solid transparentize(color($colors, primary), .4);
+      background: #f3f7fb;
+      margin: 0 auto;
+      $width: 250px;
+      max-width: $width;
+      width: $width;
+      min-width: $width;
+      border-radius: 4px;
+
+      &.incorrect {
+        background: rgba(255, 0, 0, 0.65);
+      }
+      input {
+        margin: 0;
+        padding: 10px;
+        text-align: center;
+        font-size: 16px;
+        &::placeholder {
+          font-size: 14px;
+          color: rgba(0,0,0,0.3);
+        }
+      }
+    }
+  }
+
+
+
+  button.item.send-to {
+    background: #f6f8fa;
+    text-align: left;
+    padding-top: 0;
+    padding-bottom: 0;
+    min-height: 90px;
+    height: 90px;
+    .item-start, .item {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    ion-avatar {
+      box-shadow: 0 0 0 2px map_get($colors, primary);
+      border: 2px solid white;
+      text-align: center;
+      img {
+        height: 20px;
+        width: 20px;
+        margin: 0;
+      }
+    }
+    ion-icon {
+      color: rgba(0,0,0,0.2);
+    }
+  }
+
+  .container {
+    margin-top: 40px;
+    text-align: center;
+    p {
+      color: #73819b;
+      font-size: 12px;
+    }
+  }
+
+  .wallet-name.address {
+    font-size: 12px;
+  }
+
+  ion-footer.footer {
+
+    text-align: center;
+    &:before {
+      display: none;
+      border: 0;
+    }
+
+    ion-toolbar.toolbar {
+      padding: 0;
+    }
+
+    ion-list.list {
+      margin: 0;
+
+      button[ion-item].item {
+
+        text-align: center;
+        padding: 0;
+        border-top: 1px solid rgb(232, 234, 237);
+        height: 54px;
+        max-height: 54px;
+
+        ion-label.label {
+          color: rgb(0, 176, 221);
+          font-size: 13px;
+          font-weight: 600;
+          text-transform: uppercase;
+        }
+        &.ignore {
+          ion-label.label {
+            color: color($colors, danger);
+          }
+        }
+
+        .item-inner {
+          border-bottom: none;
+        }
+      }
+    }
+  }
+}
