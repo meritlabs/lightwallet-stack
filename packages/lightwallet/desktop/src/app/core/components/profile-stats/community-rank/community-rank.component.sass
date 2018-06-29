@@ -1,0 +1,40 @@
+@import '~styles/v1/common/import-sass'
+.rankList 
+  max-height: 400px
+  overflow-y: auto
+  padding: 15px 25px 15px 15px
+  li
+    padding-left: 0
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 15px
+    padding-bottom: 15px
+    &:before
+      display: none
+.rankList_item,
+.header
+  border-bottom: 1px solid $blue-grey
+  font-size: 15px
+  p
+    margin-bottom: 0px
+  .alias
+    color: $blue
+  .rank
+    display: flex
+    justify-content: space-between
+    align-items: center
+    font-size: 13px
+    color: $ebony-clay
+    strong
+      color: $dark-green
+    .divider
+      margin: 0px 5px
+      color: $ebony-clay
+      font-size: 15px
+.header
+  display: flex
+  justify-content: space-between
+  margin-bottom: 10px
+  padding-bottom: 10px
+  opacity: .4
