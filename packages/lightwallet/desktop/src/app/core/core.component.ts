@@ -98,8 +98,6 @@ export class CoreView implements OnInit, AfterViewInit {
     },
   ];
 
-  showShare: boolean;
-
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   recordPassphrase: boolean = true;
