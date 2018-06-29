@@ -30,8 +30,6 @@ export class SelectWalletModal {
   }
 
   select(wallet) {
-    if (wallet.confirmed) {
-      this.viewCtrl.dismiss(wallet);
-    }
+     this.viewCtrl.dismiss(wallet);
   }
 }
