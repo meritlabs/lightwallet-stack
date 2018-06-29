@@ -2170,12 +2170,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
         }
       }
 
-      log.debug(
-        'Cumuled total so far: ' +
-          Utils.formatAmountInMrt(total) +
-          ', Net total so far: ' +
-          Utils.formatAmountInMrt(netTotal)
-      );
+      log.debug('Cumulative total so far: ' + Utils.formatAmountInMrt(total) + ', Net total so far: ' + Utils.formatAmountInMrt(netTotal));
 
       if (netTotal >= txpAmount) {
         var changeAmount = Math.round(total - txpAmount - fee);
@@ -2244,6 +2239,10 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       availableAmount = balance.availableAmount;
     }
 
+    if(txp.isInvite) {
+      // User needs to maintain one invite to keep an activated account.
+      if(totalAmount < (txp.getTotalAmount() + 1 )) return cb(Errors.INSUFFICIENT_INVITES);
+    }
     if (totalAmount < txp.getTotalAmount()) return cb(Errors.INSUFFICIENT_FUNDS);
     if (availableAmount < txp.getTotalAmount()) return cb(Errors.LOCKED_FUNDS);
 

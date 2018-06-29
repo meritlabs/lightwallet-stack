@@ -31,6 +31,19 @@ export class SendValidator {
     return null;
   }
 
+  static validateMaximumAvailable(control: AbstractControl) {
+    const wallet:DisplayWallet = control.parent.get("wallet").value;
+
+    try {
+      if (control.value > wallet.balance.spendableAmount) {
+        return { NotEnoughMRT: true } 
+      } 
+    } catch (e) {
+      return null;
+    }
+  }
+
+
   static validateGlobalSendDestination(control: AbstractControl) {
     const { value } = control;
 
