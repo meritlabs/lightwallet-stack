@@ -235,6 +235,7 @@ TxProposal.prototype.getRawTx = function() {
 };
 
 TxProposal.prototype.getEstimatedSizeForSingleInput = function() {
+  if (this.isInvite) return 0;
   switch (this.addressType) {
     case Constants.SCRIPT_TYPES.P2PKH:
       return 147;
