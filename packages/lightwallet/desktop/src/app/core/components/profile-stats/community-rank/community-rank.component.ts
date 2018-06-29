@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -16,7 +16,13 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 export class CommunityRankComponent implements OnInit {
   constructor() {}
 
+  @Output() close: EventEmitter<any> = new EventEmitter();
+
   @Input() active: boolean;
 
   ngOnInit() {}
+
+  closePanel() {
+    this.close.emit((this.active = false));
+  }
 }

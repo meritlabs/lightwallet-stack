@@ -35,8 +35,6 @@ export class GetStartedTipsComponent implements OnInit {
 
   private _wallets: DisplayWallet[];
 
-  @Input() isCommunityExpanded;
-
   @Input()
   set wallets(val: DisplayWallet[]) {
     this._wallets = val;

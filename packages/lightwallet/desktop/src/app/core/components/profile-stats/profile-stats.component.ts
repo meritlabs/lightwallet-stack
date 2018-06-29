@@ -16,6 +16,7 @@ export class ProfileStatsComponent {
 
   _wallets: Array<MeritWalletClient>;
 
+  rankActive: boolean;
   ranks: any;
   leaderboard: any;
   displayLeaderboard: any;
@@ -48,5 +49,9 @@ export class ProfileStatsComponent {
       ranks.push(rankInfo);
     });
     this.ranks = ranks;
+  }
+
+  onRankClose($event) {
+    this.rankActive = $event;
   }
 }
