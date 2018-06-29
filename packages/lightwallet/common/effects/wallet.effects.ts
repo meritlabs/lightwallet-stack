@@ -119,24 +119,45 @@ export class WalletEffects {
   );
 
   constructor(private actions$: Actions,
-              private walletService: WalletService,
-              private addressService: AddressService,
-              private profileService: ProfileService,
-              private txFormatService: TxFormatService,
-              private store: Store<IRootAppState>,
-              private persistenceService: PersistenceService,
-              private persistenceService2: PersistenceService2) {
+    private walletService: WalletService,
+    private addressService: AddressService,
+    private profileService: ProfileService,
+    private txFormatService: TxFormatService,
+    private store: Store<IRootAppState>,
+    private persistenceService: PersistenceService,
+    private persistenceService2: PersistenceService2) {
   }
 
   private async updateAllWallets(): Promise<DisplayWallet[]> {
     const wallets = await this.profileService.getWallets();
     return Promise.all<DisplayWallet>(
       wallets.map(async w => {
-        const displayWallet = await createDisplayWallet(w, this.walletService, this.addressService, this.txFormatService);
+        const displayWallet = await createDisplayWallet(w, this.walletService, this.addressService, this.txFormatService, this.persistenceService2);
         displayWallet.importPreferences(await this.persistenceService2.getWalletPreferences(displayWallet.id));
+        await this.updateVisitedInviteReq(displayWallet.inviteRequests);
         return displayWallet;
       })
     );
+  }
+
+  private async updateVisitedInviteReq(inviteRequests: any[]) {
+    let visitedInvites = await this.persistenceService2.getVisitedInvites() || [];
+    let updateVisitedInvites = false;
+    for (let i = 0, n = inviteRequests.length; i < n; i++) {
+      let request = inviteRequests[i];
+      request.isNew = false;
+
+      let oneVisited = visitedInvites.find(address => address === request.rId);
+      if (!oneVisited) {
+        // add new one in visited
+        visitedInvites.push(request.rId);
+        updateVisitedInvites = true;
+      }
+    }
+
+    if (updateVisitedInvites) {
+      this.persistenceService2.setVisitedInvites(visitedInvites);
+    }
   }
 
   private calculateTotals(wallets: DisplayWallet[]): IWalletTotals {
