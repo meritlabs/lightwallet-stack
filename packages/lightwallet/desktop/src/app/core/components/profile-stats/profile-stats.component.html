@@ -1,6 +1,6 @@
 <div class="stats">
   <div class="container--fluid stats__wrap">
-    <div class="stats__item" [class.collapsed]="getStarted?.active">
+    <div class="stats__item">
       <p class="stats__item__title">Community
         <br>rank</p>
       <div class="stats__item__picture">
@@ -15,7 +15,7 @@
       <ng-template #percentileLoading>
         Spinner
       </ng-template>
-      <button class="ui-button ui-button--green ui-button--xs" (click)="active = !active">{{active? 'Hide': 'Show'}} details</button>
+      <button class="ui-button ui-button--green ui-button--xs" (click)="active = !active; getStarted.active = false">{{active? 'Hide': 'Show'}} details</button>
     </div>
     <div class="stats__item">
       <p class="stats__item__title">My
