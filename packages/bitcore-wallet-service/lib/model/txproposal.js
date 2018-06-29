@@ -248,6 +248,7 @@ TxProposal.prototype.getEstimatedSizeForSingleInput = function() {
 };
 
 TxProposal.prototype.getEstimatedSize = function() {
+  if (this.isInvite) return 0;
   // Note: found empirically based on all multisig P2SH inputs and within m & n allowed limits.
   var safetyMargin = 0.02;
 
