@@ -17,7 +17,12 @@
   <button class="ui-button ui-button--sm ui-button--blue" routerLink="/invites/requests" *ngIf="(inviteRequests$ | async).length > 2">Show all pending requests</button>
 </ng-container>
 <ng-template #noPendingInvites>
-  <p class="alert">Your wait list is empty...</p>
+  <div class="notification-info">
+    <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
+    <p>
+      Your waitlist is currently empty. Spread the word and extend your community to earn more Growth Rewards.
+    </p>
+  </div>
   <button class="shareButtton" (click)="shareNow()">
     <merit-icon name="share"></merit-icon> Extend my community</button>
 </ng-template>
