@@ -16,7 +16,7 @@ export class ElectronService {
     }
   }
 
-  static getMinerInstance() { 
+  static getMinerInstance()  {
     if (!ElectronService.isElectronAvailable) {
       return miner;
     }
@@ -29,7 +29,7 @@ export class ElectronService {
   }
 
   static setAgent() {
-    let m = ElectronService.getMinerInstance();
+    const m = ElectronService.getMinerInstance();
     if(!m) { return false; } 
 
     let version = "0.0.0";
@@ -40,36 +40,43 @@ export class ElectronService {
   }
 
   static isMining() {
-    let m = ElectronService.getMinerInstance();
+    const m = ElectronService.getMinerInstance();
     if(!m) { return false; } 
 
     return m.IsStratumRunning() || m.IsMinerRunning();
   }
 
   static isConnectedToPool() {
-    let m = ElectronService.getMinerInstance();
+    const m = ElectronService.getMinerInstance();
     if(!m) { return false; } 
 
     return m.IsStratumConnected();
   }
 
   static isStopping() {
-    let m = ElectronService.getMinerInstance();
+    const m = ElectronService.getMinerInstance();
     if(!m) { return false; } 
     return m.IsStratumStopping() || m.IsMinerStopping();
   }
 
-  static startMining(url:string, address: string, workers: number, threadsPerWorker: number) {
-    let m = ElectronService.getMinerInstance();
-    if(!m) { return false; } 
-    
+  static startMining(url:string, address: string, workers: number, threadsPerWorker: number, gpu_devices: number[]) {
+    const m = ElectronService.getMinerInstance();
+    if(!m) { return false; }
+
+    console.log(url, address, workers, threadsPerWorker, gpu_devices);
     m.ConnectToStratum(url, address);
-    m.StartMiner(workers, threadsPerWorker);
+
+    try {
+        m.StartMiner(workers, threadsPerWorker, gpu_devices);
+    } catch (e) {
+        console.log(e);
+    }
+
     return true;
   }
 
   static stopMining() {
-    let m = ElectronService.getMinerInstance();
+    const m = ElectronService.getMinerInstance();
     if(!m) { return false; } 
 
     m.DisconnectStratum();
@@ -78,14 +85,32 @@ export class ElectronService {
   }
 
   static numberOfCores() {
-    let m = ElectronService.getMinerInstance();
+    const m = ElectronService.getMinerInstance();
     if(!m) { return false; } 
     return m.NumberOfCores();
   }
 
+  static numberOfGPUDevices() {
+    const m = ElectronService.getMinerInstance();
+    if(!m) { return false; }
+    return m.NumberOfGPUs();
+  }
+
+  static GPUDevicesInfo() {
+    const m = ElectronService.getMinerInstance();
+    if(!m) { return false; }
+    return m.GPUsInfo();
+  }
+
   static getMiningStats() {
-    let m = ElectronService.getMinerInstance();
+    const m = ElectronService.getMinerInstance();
     if(!m) { return {}; } 
     return m.MinerStats();
+  }
+
+  static getFreeMemoryOnDevice(device: number) {
+    const m = ElectronService.getMinerInstance();
+    if(!m) { return {}; }
+    return m.FreeMemoryOnDevice(device);
   }
 }
