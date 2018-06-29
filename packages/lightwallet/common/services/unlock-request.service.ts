@@ -12,11 +12,13 @@ export interface IUnlockRequest {
   alias: string;
   isConfirmed: boolean;
   referralId: string;
+  rId: string;
   wallet: DisplayWallet;
   walletClient: MeritWalletClient;
   contact: MeritContact;
   label: string;
   isVault: boolean;
+  isNew: boolean;
 }
 
 @Injectable()
@@ -29,9 +31,9 @@ export class UnlockRequestService {
   activeRequests: Array<IUnlockRequest> = [];
 
   constructor(private profileService: ProfileService,
-              private persistenseService: PersistenceService,
-              private walletService: WalletService,
-              private contactsService: ContactsService) {
+    private persistenseService: PersistenceService,
+    private walletService: WalletService,
+    private contactsService: ContactsService) {
   }
 
   //todo subscribe to new block event, then update info
@@ -43,26 +45,26 @@ export class UnlockRequestService {
     //updating it from server
     let requests = { hidden: [], active: [], confirmed: [] };
 
-    const wallets =  await this.profileService.getWallets();
-    const updateWallets = (requests) => wallets.map(async (w) =>  {
-     const rqs = await w.getUnlockRequests();
-     rqs.forEach(request => {
-       request.walletClient = w;
-       if (request.isConfirmed) {
-         request.status = 'accepted';
-         const foundContacts = this.contactsService.searchContacts(knownContacts, request.address);
-         if (foundContacts.length) {
-           request.contact = foundContacts[0];
-         }
-         requests.confirmed.push(request);
-       } else if (this.hiddenAddresses.indexOf(request.address) != -1) {
-         request.status = 'hidden';
-         requests.hidden.push(request);
-       } else {
-         request.status = 'pending';
-         requests.active.push(request);
-       }
-     })
+    const wallets = await this.profileService.getWallets();
+    const updateWallets = (requests) => wallets.map(async (w) => {
+      const rqs = await w.getUnlockRequests();
+      rqs.forEach(request => {
+        request.walletClient = w;
+        if (request.isConfirmed) {
+          request.status = 'accepted';
+          const foundContacts = this.contactsService.searchContacts(knownContacts, request.address);
+          if (foundContacts.length) {
+            request.contact = foundContacts[0];
+          }
+          requests.confirmed.push(request);
+        } else if (this.hiddenAddresses.indexOf(request.address) != -1) {
+          request.status = 'hidden';
+          requests.hidden.push(request);
+        } else {
+          request.status = 'pending';
+          requests.active.push(request);
+        }
+      })
     });
 
     await Promise.all(updateWallets(requests));

@@ -11,6 +11,7 @@
           <div>
             <div class="history__item__info__title">
               <strong>{{ request.alias || request.address }}</strong>
+              <span *ngIf="request.isNew" class="badge-new">new</span>
             </div>
           </div>
           <div>

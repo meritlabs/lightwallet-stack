@@ -10,6 +10,7 @@ export enum StorageKey {
   Notifications = 'merit_notifications',
   EasySends = 'merit_easysends',
   VisitedTransactions = 'merit_visited_transactions',
+  VisitedInvites = 'merit_visited_invites',
   ViewSettingsPrefix = 'app_view_settings_',
   LastIgnoredUpdate = 'last_ignored_update',
 }
@@ -42,7 +43,7 @@ const DEFAULT_NOTIFICATION_SETTINGS: INotificationSettings = {
  */
 @Injectable()
 export class PersistenceService2 {
-  constructor(private storage: Storage) {}
+  constructor(private storage: Storage) { }
 
   /**
    * Use this method to set a generic value that doesn't require it's own function
@@ -81,8 +82,8 @@ export class PersistenceService2 {
   async getNotificationSettings(): Promise<INotificationSettings> {
     const settings = (await this.storage.get(StorageKey.NotificationSettings)) || {};
     return {
-      ... DEFAULT_NOTIFICATION_SETTINGS,
-      ... settings
+      ...DEFAULT_NOTIFICATION_SETTINGS,
+      ...settings
     };
   }
 
@@ -143,5 +144,13 @@ export class PersistenceService2 {
 
   setVisitedTransactions(transactions: string[]) {
     return this.storage.set(StorageKey.VisitedTransactions, transactions);
+  }
+
+  getVisitedInvites() {
+    return this.storage.get(StorageKey.VisitedInvites);
+  }
+
+  setVisitedInvites(invites: string[]) {
+    return this.storage.set(StorageKey.VisitedInvites, invites);
   }
 }

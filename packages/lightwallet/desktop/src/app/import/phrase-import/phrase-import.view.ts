@@ -11,6 +11,7 @@ import { MnemonicService } from '@merit/common/services/mnemonic.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { DerivationPath } from '@merit/common/utils/derivation-path';
 import { MnemonicValidator } from '@merit/common/validators/mnemonic.validator';
@@ -46,7 +47,8 @@ export class PhraseImportView {
               private router: Router,
               private pushNotificationsService: PushNotificationsService,
               private toastCtrl: ToastControllerService,
-              private loadingCtrl: Ng4LoadingSpinnerService) {}
+              private loadingCtrl: Ng4LoadingSpinnerService,
+              private persistenceService2:PersistenceService2 ) {}
 
 
   async importMnemonic() {
@@ -83,7 +85,7 @@ export class PhraseImportView {
 
         this.store.dispatch(
           new AddWalletAction(
-            await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)
+            await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, this.persistenceService2)
           )
         );
 
