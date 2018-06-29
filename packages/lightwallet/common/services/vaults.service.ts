@@ -202,16 +202,16 @@ export class VaultsService {
     params.push(new Buffer(vault.tag));
     params.push(Opcode.smallInt(vault.type));
 
-    const redeemScript = Script(vault.redeemScript);
+    const redeemScript = new Script(vault.redeemScript);
     const scriptPubKey = Script.buildMixedParameterizedP2SH(redeemScript, params, masterKey.publicKey);
 
-    const output = Transaction.Output({ script: scriptPubKey, micros: amount });
+    const output = new Transaction.Output({ script: scriptPubKey, micros: amount });
     tx.addOutput(output);
     tx.fee(fee);
 
     vault.coins.forEach(coin => {
       const input = { prevTxId: coin.txid, outputIndex: coin.vout, script: redeemScript };
-      const PP2SHInput = Transaction.Input.PayToScriptHashInput(input, redeemScript, coin.scriptPubKey);
+      const PP2SHInput = new Transaction.Input.PayToScriptHashInput(input, redeemScript, coin.scriptPubKey);
       tx.addInput(PP2SHInput, coin.scriptPubKey, coin.micros);
     });
 

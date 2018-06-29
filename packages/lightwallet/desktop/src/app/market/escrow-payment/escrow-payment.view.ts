@@ -18,12 +18,14 @@ export class EscrowPaymentView implements OnInit {
   wallet: MeritWalletClient;
   txp: any;
 
-  amountInMrt = +getQueryParam('a');
+  amount = +getQueryParam('a');
+  amountInMrt = this.rateService.microsToMrt(this.amount);
   sendFrom = getQueryParam('pa');
   sendTo = getQueryParam('ea');
   paymentId = +getQueryParam('pid');
   fee = 0;
   feeCalculated = false;
+  success = false;
 
   constructor(private profileService: ProfileService, private rateService: RateService) {}
 
@@ -43,17 +45,15 @@ export class EscrowPaymentView implements OnInit {
   async buildTxp() {
     this.feeCalculated = false;
 
-    const amount = this.rateService.mrtToMicro(this.amountInMrt);
-
     const opts = {
       outputs: [{
-        amount,
+        amount: this.amount,
         toAddress: this.sendTo,
         message: '' + this.paymentId,
       }]
     };
 
-    if (this.wallet.balance.spendableAmount < amount) {
+    if (this.wallet.balance.spendableAmount < this.amount) {
       this.error = 'Insufficient funds';
       return;
     }
@@ -74,24 +74,22 @@ export class EscrowPaymentView implements OnInit {
 
     try {
 
-      let txp = await this.wallet.publishTxProposal({ txp: this.txp });
+      this.txp = await this.wallet.publishTxProposal({ txp: this.txp });
       // TODO: add wallet password support
-      txp = await this.wallet.signTxProposal(txp, '');
-      txp = await this.wallet.broadcastTxProposal(txp);
+      this.txp = await this.wallet.signTxProposal(this.txp, '');
+      this.txp = await this.wallet.broadcastTxProposal(this.txp);
+
+      this.success = true;
 
       const message = JSON.stringify({
         message: "Lightwallet.Market.SendToEscrow",
-        data: { ok: true, txid: txp.txid }
+        data: { ok: true, txid: this.txp.txid }
       });
       window.opener.postMessage(message, ENV.marketUrl);
-
     } catch (e) {
       this.error = e.message;
       return;
     }
-
-    // TODO: REMOVE THIS LINE!!!
-    await this.buildTxp();
   }
 
   cancel() {

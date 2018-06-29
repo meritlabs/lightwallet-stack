@@ -8,7 +8,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 @Injectable()
 export class TouchIdService {
 
-  private _isAvailable: boolean = false;
+  private _isAvailable: boolean;
 
   constructor(private touchId: TouchID,
               private androidFingerprintAuth: AndroidFingerprintAuth,
@@ -17,29 +17,17 @@ export class TouchIdService {
               private log: LoggerService) {
   }
 
-  init() {
-    if (this.platform.isAndroid) this.checkAndroid();
-    if (this.platform.isIOS) this.checkIOS();
-  }
-
   async checkIOS() {
-    await this.platform.ready();
-    this.touchId.isAvailable()
-      .then(
-        res => this._isAvailable = true,
-        err => this.log.info('Fingerprint is not available')
-      );
+    try {
+      await this.touchId.isAvailable();
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   async checkAndroid() {
-    await this.platform.ready();
-    const { isAvailable } = await this.androidFingerprintAuth.isAvailable();
-
-    if (isAvailable) {
-      this._isAvailable = isAvailable;
-    } else {
-      this.log.info('Fingerprint is not available');
-    }
+    return (await this.androidFingerprintAuth.isAvailable()).isAvailable;
   }
 
   async verifyIOSFingerprint(): Promise<any> {
@@ -76,7 +64,18 @@ export class TouchIdService {
     }
   }
 
-  isAvailable() {
+  async isAvailable() {
+    if (this._isAvailable == undefined) {
+
+      await this.platform.ready();
+      if (this.platform.isAndroid) {
+        this._isAvailable = await this.checkAndroid();
+      } else  if (this.platform.isIOS) {
+        this._isAvailable =  await this.checkIOS();
+      } else {
+        this._isAvailable = false;
+      }
+    }
     return this._isAvailable;
   }
 
