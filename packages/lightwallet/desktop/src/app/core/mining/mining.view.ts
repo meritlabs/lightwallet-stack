@@ -12,6 +12,8 @@ import { selectWallets, selectWalletsLoading } from '@merit/common/reducers/wall
 import { IRootAppState } from '@merit/common/reducers';
 import { filter, take } from 'rxjs/operators';
 
+import { GPUInfo } from './gpu-info.model';
+
 @Component({
   selector: 'view-mining',
   templateUrl: './mining.view.html',
@@ -36,7 +38,7 @@ export class MiningView {
   maxGPUs: number;
   cores: number;
   gpus: number;
-  gpus_info: any[];
+  gpus_info: GPUInfo[];
   active_gpu_devices: number[] = [];
   miningSettings: any;
   pools: any[];
@@ -53,7 +55,7 @@ export class MiningView {
   ) {
     this.maxCores = ElectronService.numberOfCores();
     this.maxGPUs = ElectronService.numberOfGPUDevices();
-    this.gpus_info = ElectronService.GPUDevicesInfo();
+    this.gpus_info = this.getGPUInfo();
     this.updateLabel();
     this.pools = [];
   }
@@ -127,13 +129,16 @@ export class MiningView {
       ElectronService.setAgent();
       this.updateStats();
 
-      for (let info of this.gpus_info) info['value'] = false;
+      this.gpus_info.forEach((info: GPUInfo) => {
+        info.value = false;
+      });
+
     } catch (err) {
       if (err.text) console.log('Could not initialize: ', err.text);
     }
   }
 
-  chooseGPU(item, event): void {
+  chooseGPU(item : GPUInfo, event): void {
     this.gpus_info[this.gpus_info.indexOf(item)].value = !this.gpus_info[this.gpus_info.indexOf(item)].value;
 
     for (let i = 0; i < this.gpus_info.length; i++) {
@@ -282,5 +287,14 @@ export class MiningView {
     } else {
       this.startMining();
     }
+  }
+  
+  getGPUInfo() : GPUInfo[] {
+    let raw_info = ElectronService.GPUDevicesInfo();
+    let res = [];
+    for (let info of raw_info)
+      res.push(new GPUInfo(info['id'], info['title'], info['total_memory']));
+
+    return res;
   }
 }
