@@ -31,7 +31,6 @@ export class GetStartedTipsComponent implements OnInit {
   getArticle: boolean;
   syncWallet: boolean;
   copy: string = 'COPY';
-  showShare: boolean = false;
   isElectron: boolean = ElectronService.isElectronAvailable;
 
   private _wallets: DisplayWallet[];
