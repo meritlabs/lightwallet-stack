@@ -1,39 +1,52 @@
 <ng4-loading-spinner></ng4-loading-spinner>
-<app-toolbar (shareActivate)="shareActivate(true)"></app-toolbar>
-<app-share-box *ngIf="showShare" (dismiss)="shareActivate(false)"></app-share-box>
-<div class="container--fluid dashboard">
-  <div class="dashboard__aside">
-    <ul class="dashboard__aside__wrap">
-      <li *ngFor="let item of topMenuItems" [routerLink]="item.link" routerLinkActive="active" class="dashboard__aside__item">
-        <span class="icon" [style]="getIconStyle(item.icon)"></span>
-        <span>{{ item.name }}</span>
-        <ng-container *ngIf="item.badge | async as badge">
-          <span class="badge" *ngIf="badge > 0">{{ badge }}</span>
-        </ng-container>
-      </li>
-      <li class="dashboard__aside__item dashboard__aside__item--blue" (click)="shareActivate(true)">
-        <merit-icon name="share"></merit-icon>Invite Others
-      </li>
-    </ul>
-    <ul class="dashboard__aside__wrap">
-      <li *ngFor="let item of bottomMenuItems" class="dashboard__aside__item">
-        <ng-container *ngIf="!item.external">
-          <a [routerLink]="item.link">
-            <img src="{{item.icon}}" alt="" class="dashboard__aside__item__icon">
-            <span>{{ item.name }}</span>
-          </a>
-        </ng-container>
-        <ng-container *ngIf="item.external">
-          <a [href]="item.link" target="_blank">
-            <img src="{{item.icon}}" alt="" class="dashboard__aside__item__icon">
-            <span>{{ item.name }}</span>
-          </a>
-        </ng-container>
-      </li>
-    </ul>
+<ng-container *ngIf="!recordPassphrase; else displayApp">
+  <app-record-passphrase [wallets]="wallets$ | async" (dismiss)="onGuideDismiss()"></app-record-passphrase>
+</ng-container>
+<ng-template #displayApp>
+  <div class="applicationWrapper">
+    <app-wallet-unlock-alert *ngIf="notUnlockedWallets?.length > 0" [unActive]="notUnlockedWallets?.length"></app-wallet-unlock-alert>
+    <div class="main">
+      <app-toolbar (shareActivate)="shareActivate(true)"></app-toolbar>
+      <app-share-box *ngIf="showShare$ | async" (dismiss)="shareActivate(false)"></app-share-box>
+      <div class="container--fluid dashboard">
+        <div class="dashboard__aside">
+          <ul class="dashboard__aside__wrap">
+            <li *ngFor="let item of topMenuItems" [routerLink]="item.link" routerLinkActive="active" class="dashboard__aside__item">
+              <span class="icon" [style]="getIconStyle(item.icon)"></span>
+              <span>{{ item.name }}</span>
+              <ng-container *ngIf="item.badge | async as badge">
+                <span class="badge" *ngIf="badge > 0">{{ badge }}</span>
+              </ng-container>
+            </li>
+            <li class="dashboard__aside__item dashboard__aside__item--setup" [routerLink]="'/wallet-setup'">
+              <merit-icon name="setup"></merit-icon>Wallet Setup Progress
+            </li>
+            <li class="dashboard__aside__item dashboard__aside__item--blue" (click)="shareActivate()">
+              <merit-icon name="share"></merit-icon> Share my invite
+            </li>
+          </ul>
+          <ul class="dashboard__aside__wrap">
+            <li *ngFor="let item of bottomMenuItems" class="dashboard__aside__item">
+              <ng-container *ngIf="!item.external">
+                <a [routerLink]="item.link">
+                  <img src="{{item.icon}}" alt="" class="dashboard__aside__item__icon">
+                  <span>{{ item.name }}</span>
+                </a>
+              </ng-container>
+              <ng-container *ngIf="item.external">
+                <a [href]="item.link" target="_blank">
+                  <img src="{{item.icon}}" alt="" class="dashboard__aside__item__icon">
+                  <span>{{ item.name }}</span>
+                </a>
+              </ng-container>
+            </li>
+          </ul>
+        </div>
+        <div class="dashboard__main">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <div class="dashboard__main">
-    <router-outlet></router-outlet>
-  </div>
-</div>
+  <app-welcome-to-setup-tracker *ngIf="isWelcomeDialogEnabled" (close)="onWelcomeSetupTrackerClose()"></app-welcome-to-setup-tracker>
+</ng-template>

@@ -39,6 +39,8 @@ export class DisplayWallet {
   @ClientProperty balanceHidden: boolean;
   @ClientProperty balance: any;
   @ClientProperty availableInvites: number;
+  @ClientProperty pendingInvites: number;
+  @ClientProperty sendableInvites: number;
   @ClientProperty confirmed: boolean;
 
   referrerAddress: string;
@@ -116,7 +118,7 @@ export class DisplayWallet {
   }
 
   async updateStatus() {
-    this.client.status = await this.walletService.getStatus(this.client, { force: true });
+    this.client.status = await this.client.getStatus();
     this.inviteRequests = (await this.client.getUnlockRequests())
       .filter((request: IUnlockRequest) => !request.isConfirmed)
       .map((request: IUnlockRequest) => {
@@ -126,9 +128,9 @@ export class DisplayWallet {
   }
 
   async updateRewards() {
-    this.totalNetworkValueMicro = await this.walletService.getANV(this.client);
+    this.totalNetworkValueMicro = await this.client.getANV(this.client.getRootAddress());
 
-    const rewardsData = await this.walletService.getRewards(this.client);
+    const rewardsData = await this.client.getRewards([this.client.getRootAddress()]);
     // If we cannot properly fetch data, let's return wallets as-is.
     if (rewardsData && rewardsData.length > 0) {
       this.miningRewardsMicro = sumBy(rewardsData, 'rewards.mining');

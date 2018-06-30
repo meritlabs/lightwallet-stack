@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonDirectivesModule } from '@merit/common/common-directives.module';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
 import { FileBackupView } from '@merit/desktop/app/core/backup/file-backup/file-backup.view';
@@ -19,11 +20,10 @@ import { MnemonicPhraseView } from './backup/mnemonic-phrase/mnemonic-phrase.vie
 import { QrCodeBackupView } from './backup/qr-code-backup/qr-code-backup.view';
 import { CommunityView } from './community/community.view';
 import { MiningView } from './mining/mining.view';
-import { InvitesComponent } from './community/invites/invites.component';
+import { InvitesWidgetComponent } from './invites/invites-widget/invites-widget.component';
 import { CoreRoutingModule } from './core-routing.module';
 import { CoreView } from './core.component';
 import { DashboardView } from './dashboard/dashboard.view';
-import { WelcomeGuideComponent } from './dashboard/welcome-guide/welcome-guide.component';
 import { GlobalSettingsView } from './global-settings/global-settings.view';
 import { SettingsPreferencesView } from './global-settings/settings-preferences/settings-preferences.view';
 import { SettingsSessionLogView } from './global-settings/settings-session-log/settings-session-log.view';
@@ -37,6 +37,12 @@ import { WalletDetailHistoryView } from './wallets/wallet-details/wallet-details
 import { WalletDetailView } from './wallets/wallet-details/wallet-details.view';
 import { WalletSettingsView } from './wallets/wallet-details/wallet-settings/wallet-settings.view';
 import { WalletsView } from './wallets/wallets.view';
+import { WalletSetupView } from './wallet-setup/wallet-setup.view';
+import { TaskPreviewComponent } from './wallet-setup/task-preview/task-preview.component';
+import { WalletSetupListView } from './wallet-setup/wallet-setup-list/wallet-setup-list.view';
+import { RecordPassphraseComponent } from './dialog/record-passphrase/record-passphrase.component';
+import { WelcomeToSetupTrackerComponent } from './dialog/welcome-to-setup-tracker/welcome-to-setup-tracker.component';
+import { PendingInviteItemComponent } from './invites/pending-invite-item/pending-invite-item.component';
 
 export function getPages() {
   return [
@@ -59,20 +65,19 @@ export function getPages() {
     SettingsSessionLogView,
     QrCodeBackupView,
     FileBackupView,
-    InvitesComponent,
+    InvitesWidgetComponent,
     InvitesView,
     InvitesHistoryView,
     SendInviteView,
     InviteRequestsView,
     SendInviteView,
+    WalletSetupView,
+    WalletSetupListView,
   ];
 }
 
 @NgModule({
-  entryComponents: [
-    CoreView,
-    ...getPages()
-  ],
+  entryComponents: [CoreView, ...getPages()],
   imports: [
     CommonModule,
     CoreRoutingModule,
@@ -84,16 +89,18 @@ export function getPages() {
     MomentModule,
     ClipModule,
     Ng4LoadingSpinnerModule,
-    CoreComponentsModule
+    CoreComponentsModule,
+    CommonDirectivesModule,
   ],
   declarations: [
     CoreView,
     ...getPages(),
     SendTourComponent,
-    WelcomeGuideComponent
+    RecordPassphraseComponent,
+    TaskPreviewComponent,
+    WelcomeToSetupTrackerComponent,
+    PendingInviteItemComponent,
   ],
-  providers: [
-    WalletPasswordGuard
-  ]
+  providers: [WalletPasswordGuard],
 })
 export class CoreModule {}

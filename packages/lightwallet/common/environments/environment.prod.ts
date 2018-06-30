@@ -5,6 +5,7 @@ export const ENV = {
   marketApi: 'https://market-api.merit.me',
   marketUrl: 'https://market.merit.me',
   rateUrl: 'https://mws.merit.me/bws/api/v1/rates',
+  achievementApi: 'https://mws.merit.me/achievement-engine/api/v1',
   feeLevel: 'superEconomy',
-  easyUrl: 'https://merit.app.link/'
+  easyUrl: 'https://merit.app.link/',
 };

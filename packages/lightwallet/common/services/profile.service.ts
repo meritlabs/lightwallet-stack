@@ -76,21 +76,22 @@ export class ProfileService {
 
 
   async loadProfile() {
-    let profile = await this.persistenceService.getProfile();
+    const profile = await this.persistenceService.getProfile();
 
     let wallets = [];
     if (profile) {
       if (profile.wallets) {
         wallets = profile.wallets.map(w => MeritWalletClient.fromObj(w));
       } else if (profile.credentials) {
-        wallets = profile.credentials.map(c => {
-          let wallet = this.mwcService.getClient(JSON.stringify(c));
-          return wallet;
-        })
+        wallets = profile.credentials.map(c =>
+          this.mwcService.getClient(JSON.stringify(c))
+        )
       }
     }
     this.wallets = wallets;
     this.storeProfile();
+
+    return profile;
   }
 
   async isAuthorized() {
@@ -122,6 +123,9 @@ export class ProfileService {
 
     let updateVaults = () => this.wallets.map(async (w) => {
       w.vaults = await w.getVaults();
+      w.vaults.forEach(v => {
+        v.walletClient = w;
+      })
     });
 
     await Promise.all(updateWallets().concat(updateVaults()));
@@ -134,29 +138,11 @@ export class ProfileService {
 
     wallet.initialize(true);
 
-    wallet.eventEmitter.on('report', (n: any) => { this.logger.info('NWC Report:' + n); });
-
-    wallet.eventEmitter.on('notification', (n: any) => {
-      this.logger.info('MWC Notification:', n);
-
-      //if (n.type == 'NewBlock' && n.data.network == ENV.network) {
-      //  this.throttledBwsEvent(n, wallet);
-      //} else this.propogateBwsEvent(n, wallet);
-    });
-
-    wallet.eventEmitter.on('walletCompleted', () => {
-      //todo do we need this?
-      //return this.updateCredentials(JSON.parse(wallet.export())).then(() => {
-      //  this.logger.info('Updated the credentials and now publishing this: ', walletId);
-      //  this.events.publish('Local:WalletCompleted', walletId);
-      //  return Promise.resolve(); // not sure this is needed
-      //});
-    });
-
     await wallet.openWallet();
 
     this.wallets.push(wallet);
 
+    await this.refreshData();
     await this.storeProfile();
     return wallet;
   }
@@ -206,6 +192,12 @@ export class ProfileService {
   }
 
   storeProfile() {
+
+    if (this.wallets == undefined) return;
+
+    /** do not save profile if we have wallet in temporary mode */
+    if (this.wallets.find(w => !w.credentialsSaveAllowed)) return;
+
     let profile = {
       version: '2.0.0',
       wallets: this.wallets.map(w => w.toObj()),

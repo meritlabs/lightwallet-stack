@@ -41,6 +41,15 @@
       </div>
     </div>
     <ion-list>
+      <ion-item *ngIf="sendMethod?.type == 'easy'">
+        <ion-avatar item-start img-icon>
+          <img src="assets/img/icons/email.svg" alt="">
+        </ion-avatar>
+        <ion-label stacked>
+          <p>Recipient (optional)</p>
+        </ion-label>
+        <ion-input placeholder="Phone number or Email address" [(ngModel)]="formData.destination"></ion-input>
+      </ion-item>
       <button ion-item (click)="selectWallet()" detail-none class="wallet-selector" text-wrap>
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/wallet.svg">

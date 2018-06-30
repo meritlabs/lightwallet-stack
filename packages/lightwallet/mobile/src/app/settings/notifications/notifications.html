@@ -1,61 +1,75 @@
 <ion-header no-border>
   <ion-navbar color="light">
-    <ion-title>{{'Notifications' | translate}}</ion-title>
+    <ion-title translate>Notifications</ion-title>
   </ion-navbar>
 </ion-header>
 
 
 <ion-content>
+  <form [formGroup]="nsc.formData">
+    <ion-list>
+      <ion-item-group *ngIf="usePushNotifications">
+        <ion-item text-wrap>
+          <ion-label>
+            <h2 translate>
+              Enable push notifications
+            </h2>
+          </ion-label>
+          <ion-toggle formControlName="pushNotifications"></ion-toggle>
+        </ion-item>
+      </ion-item-group>
 
-  <ion-list>
-
-    <ion-item-group *ngIf="usePushNotifications">
       <ion-item text-wrap>
         <ion-label>
           <h2 translate>
-            Enable push notifications
+            Enable email notifications
           </h2>
         </ion-label>
-        <ion-toggle [(ngModel)]="pushNotifications" (ngModelChange)="pushNotificationsChange()"></ion-toggle>
+        <ion-toggle formControlName="emailNotifications"></ion-toggle>
       </ion-item>
 
-      <ion-item *ngIf="isIOSApp" translate text-wrap>
-        Push notifications for {{ appName }} are currently disabled. Enable them in the Settings app.
-      </ion-item>
-    </ion-item-group>
-
-    <ion-item text-wrap>
-      <ion-label>
-        <h2 translate>
-          Enable email notifications
-        </h2>
-      </ion-label>
-      <ion-toggle [(ngModel)]="emailNotifications" (ngModelChange)="emailNotificationsChange()"></ion-toggle>
-    </ion-item>
-
-    <ion-item-group *ngIf="emailNotifications">
-
-      <ion-item translate text-wrap>
-        <ion-icon item-start color="success" name="ios-information-circle-outline"></ion-icon>
-        You'll receive email notifications about payments sent and received from your wallets.
-      </ion-item>
-
-      <form [formGroup]="emailForm" enter-to-next>
+      <ion-item-group *ngIf="nsc.emailNotificationsEnabled" enter-to-next>
         <ion-item>
           <ion-label stacked>
             Email Address
           </ion-label>
           <ion-input formControlName="email" type="email" placeholder="Enter your email address"></ion-input>
+          <div item-end *ngIf="nsc.emailStatus$ | async as emailStatus">
+            <ion-spinner item-end *ngIf="emailStatus == 'saving'"></ion-spinner>
+            <ion-icon item-end name="checkmark-circle" *ngIf="emailStatus == 'saved'" class="saved-status-icon"></ion-icon>
+          </div>
         </ion-item>
-      </form>
-    </ion-item-group>
+      </ion-item-group>
 
-  </ion-list>
+      <ion-item text-wrap>
+        <ion-label>
+          <h2 translate>
+            Enable SMS notifications
+          </h2>
+        </ion-label>
+        <ion-toggle formControlName="smsNotifications"></ion-toggle>
+      </ion-item>
 
-  <div padding-left padding-right *ngIf="emailNotifications">
-    <button ion-button block class="action-button" (click)="saveEmail()" [disabled]="emailForm.invalid">
-      {{ 'Save' | translate }}
-    </button>
-  </div>
+      <ion-item-group *ngIf="nsc.smsNotificationsEnabled" enter-to-next>
+        <ion-item>
+          <ion-label stacked>
+            Phone number
+          </ion-label>
+          <ion-input formControlName="phoneNumber" type="tel" placeholder="Enter your phone number"></ion-input>
+          <div item-end *ngIf="nsc.smsStatus$ | async as smsStatus">
+            <ion-spinner item-end *ngIf="smsStatus == 'saving'"></ion-spinner>
+            <ion-icon item-end name="checkmark-circle" *ngIf="smsStatus == 'saved'" class="saved-status-icon"></ion-icon>
+          </div>
+        </ion-item>
+
+
+        <ion-item *ngFor="let s of nsc.smsNotificationSettings">
+          <ion-label>{{ s.label }}</ion-label>
+          <ion-toggle [formControlName]="s.name"></ion-toggle>
+        </ion-item>
+      </ion-item-group>
+
+    </ion-list>
+  </form>
 
 </ion-content>

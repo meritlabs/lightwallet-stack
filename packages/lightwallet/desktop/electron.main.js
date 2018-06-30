@@ -1,8 +1,18 @@
 'use strict';
 
 const { BrowserWindow, app, protocol, ipcMain, shell, Menu } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const url = require('url');
+const log = require('electron-log');
+
+// Configure logger
+log.transports.console.level = 'silly';
+log.transports.file.level = 'silly';
+
+// Configure auto updater
+autoUpdater.logger = log;
+autoUpdater.autoDownload = false;
 
 const appName = 'Merit Lightwallet';
 
@@ -76,6 +86,8 @@ function buildMenuTemplate() {
 }
 
 function createWindow() {
+  log.verbose('Creating BrowserWindow object');
+
   protocol.interceptFileProtocol('file', (request, cb) => {
     const { dir, base } = path.parse(request.url);
 
@@ -141,6 +153,7 @@ app.on('window-all-closed', function () {
 });
 
 app.on('activate', function () {
+  log.verbose('App activated');
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {

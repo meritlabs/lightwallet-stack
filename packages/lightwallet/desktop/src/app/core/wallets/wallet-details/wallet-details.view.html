@@ -16,7 +16,7 @@
             </div>
           </div>
           <div class="wallet__balance">
-            <span class="ico ico--coins"></span>
+            <merit-icon name="coins"></merit-icon>
             <ng-container *ngIf="!wallet.balanceHidden; else balanceHidden">
               <span>{{ wallet.totalBalanceMicros | toMRT:null:true }}
                 <small>MRT</small>
@@ -28,7 +28,7 @@
             </ng-template>
           </div>
           <div class="wallet__invites">
-            <span class="ico ico--ivites"></span> Available invites: {{ wallet.availableInvites }}
+            <merit-icon name="invite"></merit-icon> Available invites: {{ wallet.availableInvites }}&nbsp;<span *ngIf="wallet.pendingInvites">&nbsp;(+{{wallet.pendingInvites}} pending)</span>
           </div>
           <div class="wallet__navigation">
             <div class="wallet__button wallet__button--send" [routerLink]="'/send'">

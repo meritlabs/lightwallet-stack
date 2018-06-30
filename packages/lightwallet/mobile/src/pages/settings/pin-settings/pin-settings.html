@@ -1,0 +1,28 @@
+<ion-header>
+
+    <ion-navbar color="light">
+        <ion-title>Pin Lock Settings</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+    <ion-item>
+        <ion-label>
+            <h2>Enable pin lock</h2>
+        </ion-label>
+        <ion-toggle (ngModelChange)="togglePin($event)" [(ngModel)]="enabled"></ion-toggle>
+    </ion-item>
+
+    <div class="global-illustration">
+        <div>
+        Pin lock screen will be displayed every time when you start the app or open it from background.
+        <img src="assets/img/icons/unlock.svg" color="primary" item-end>
+        Please note that this pin locks <strong>only the app</strong> and has nothing to do with wallet security. <br>
+        To encrypt wallet and set spending password go to wallet settings.
+        </div>
+    </div>
+
+</ion-content>

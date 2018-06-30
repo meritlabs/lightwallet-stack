@@ -1,8 +1,5 @@
 @import '~styles/v1/common/import-sass'
 
-.sendMerit__form__group
-  position: relative
-
 input[type="number"]
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button
@@ -34,3 +31,18 @@ input[type="number"]
       height: 100%
       right: -80px
       background: $pale-grey-four
+  .sending-via
+    min-width: 80px
+  .sending-via-value
+    max-width: calc(100% - 80px)
+    word-wrap: break-word
+  &__centerTop 
+    text-align: center
+.sendMerit__totals__receiptHeader
+  text-align: center
+  margin-top: 2em
+  font-size: 1.5em
+  font-weight: bold
+  margin-bottom: 1em
+  &--smaller
+    font-size: 1.15em  

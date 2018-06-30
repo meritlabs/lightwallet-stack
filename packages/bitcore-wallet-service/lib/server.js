@@ -4,7 +4,7 @@ var _ = require('lodash');
 var $ = require('preconditions').singleton();
 var async = require('async');
 var config = require('../config');
-
+const { promisify } = require('util');
 
 var EmailValidator = require('email-validator');
 var Stringify = require('json-stable-stringify');
@@ -50,8 +50,7 @@ var log;
  * @constructor
  */
 function WalletService() {
-  if (!initialized)
-    throw new Error('Server not initialized');
+  if (!initialized) throw new Error('Server not initialized');
 
   this.lock = lock;
   this.storage = storage;
@@ -61,22 +60,20 @@ function WalletService() {
   this.fiatRateService = fiatRateService;
   this.notifyTicker = 0;
   this.localMeritDaemon = localMeritDaemon;
-};
+}
 
 function checkRequired(obj, args, cb) {
   var missing = Utils.getMissingFields(obj, args);
   if (_.isEmpty(missing)) return true;
-  if (_.isFunction(cb))
-    cb(new ClientError('Required argument ' + _.head(missing) + ' missing.'));
+  if (_.isFunction(cb)) cb(new ClientError('Required argument ' + _.head(missing) + ' missing.'));
   return false;
-};
+}
 
 /**
  * Gets the current version of BWS
  */
 WalletService.getServiceVersion = function() {
-  if (!serviceVersion)
-    serviceVersion = 'bws-' + require('../package').version;
+  if (!serviceVersion) serviceVersion = 'bws-' + require('../package').version;
   return serviceVersion;
 };
 
@@ -97,8 +94,7 @@ WalletService.initialize = function(opts, cb) {
   localMeritDaemon = new LocalDaemon(opts.node);
   log = opts.node.log;
 
-  if (opts.request)
-    request = opts.request;
+  if (opts.request) request = opts.request;
 
   function initStorage(cb) {
     if (opts.storage) {
@@ -112,7 +108,7 @@ WalletService.initialize = function(opts, cb) {
         return cb();
       });
     }
-  };
+  }
 
   function initMessageBroker(cb) {
     messageBroker = opts.messageBroker || new MessageBroker(opts.messageBrokerOpts);
@@ -121,7 +117,7 @@ WalletService.initialize = function(opts, cb) {
     }
 
     return cb();
-  };
+  }
 
   function initFiatRateService(cb) {
     if (opts.fiatRateService) {
@@ -137,27 +133,29 @@ WalletService.initialize = function(opts, cb) {
         return cb();
       });
     }
-  };
+  }
 
-  async.series([
-
-    function(next) {
-      initStorage(next);
-    },
-    function(next) {
-      initMessageBroker(next);
-    },
-    function(next) {
-      initFiatRateService(next);
-    },
-  ], function(err) {
-    if (err) {
-      log.error('Could not initialize', err);
-      throw err;
+  async.series(
+    [
+      function(next) {
+        initStorage(next);
+      },
+      function(next) {
+        initMessageBroker(next);
+      },
+      function(next) {
+        initFiatRateService(next);
+      },
+    ],
+    function(err) {
+      if (err) {
+        log.error('Could not initialize', err);
+        throw err;
+      }
+      initialized = true;
+      return cb();
     }
-    initialized = true;
-    return cb();
-  });
+  );
 };
 
 WalletService.handleIncomingNotification = function(notification, cb) {
@@ -168,7 +166,6 @@ WalletService.handleIncomingNotification = function(notification, cb) {
   WalletService._clearBlockchainHeightCache(notification.data.network);
   return cb();
 };
-
 
 WalletService.shutDown = function(cb) {
   if (!initialized) return cb();
@@ -226,14 +223,13 @@ WalletService.getInstanceWithAuth = function(opts, cb) {
       if (!copayer) return cb(new ClientError(Errors.codes.NOT_AUTHORIZED, 'Copayer not found'));
 
       var isValid = !!server._getSigningKey(opts.message, opts.signature, copayer.requestPubKeys);
-      if (!isValid)
-        return cb(new ClientError(Errors.codes.NOT_AUTHORIZED, 'Invalid signature'));
+      if (!isValid) return cb(new ClientError(Errors.codes.NOT_AUTHORIZED, 'Invalid signature'));
       server.walletId = copayer.walletId;
 
       server.copayerId = opts.copayerId;
       return cb(null, server);
     });
-  };
+  }
 
   function withSession(cb) {
     if (!checkRequired(opts, ['copayerId', 'session'], cb)) return;
@@ -260,7 +256,7 @@ WalletService.getInstanceWithAuth = function(opts, cb) {
         return cb(null, server);
       });
     });
-  };
+  }
 
   var authFn = opts.session ? withSession : withSignature;
   return authFn(cb);
@@ -275,35 +271,37 @@ WalletService.prototype.login = function(opts, cb) {
   var self = this;
 
   var session;
-  async.series([
-
-    function(next) {
-      self.storage.getSession(self.copayerId, function(err, s) {
-        if (err) return next(err);
-        session = s;
-        next();
-      });
-    },
-    function(next) {
-      if (!session || !session.isValid()) {
-        session = Model.Session.create({
-          copayerId: self.copayerId,
-          walletId: self.walletId,
+  async.series(
+    [
+      function(next) {
+        self.storage.getSession(self.copayerId, function(err, s) {
+          if (err) return next(err);
+          session = s;
+          next();
         });
-      } else {
-        session.touch();
-      }
-      next();
-    },
-    function(next) {
-      self.storage.storeSession(session, next);
-    },
-  ], function(err) {
-    if (err) return cb(err);
-    if (!session) return cb(new Error('Could not get current session for this copayer'));
+      },
+      function(next) {
+        if (!session || !session.isValid()) {
+          session = Model.Session.create({
+            copayerId: self.copayerId,
+            walletId: self.walletId,
+          });
+        } else {
+          session.touch();
+        }
+        next();
+      },
+      function(next) {
+        self.storage.storeSession(session, next);
+      },
+    ],
+    function(err) {
+      if (err) return cb(err);
+      if (!session) return cb(new Error('Could not get current session for this copayer'));
 
-    return cb(null, session.id);
-  });
+      return cb(null, session.id);
+    }
+  );
 };
 
 WalletService.prototype.logout = function(opts, cb) {
@@ -326,71 +324,74 @@ WalletService.prototype.logout = function(opts, cb) {
  * @param {string} opts.supportBIP44AndP2PKH[=true] - Client supports BIP44 & P2PKH for new wallets.
  */
 WalletService.prototype.recreateWallet = function(opts, cb) {
+  if (!checkRequired(opts, ['walletName', 'm', 'n', 'network', 'pubKey', 'rootAddress'], cb)) return;
 
-    if (!checkRequired(opts, ['walletName', 'm', 'n', 'network', 'pubKey', 'rootAddress'], cb)) return;
+  if (!Wallet.verifyCopayerLimits(opts.m, opts.n))
+    return cb(new ClientError('Invalid combination of required copayers / total copayers'));
 
-    if (!Wallet.verifyCopayerLimits(opts.m, opts.n))
-        return cb(new ClientError('Invalid combination of required copayers / total copayers'));
+  if (!_.includes(['livenet', 'testnet'], opts.network)) return cb(new ClientError('Invalid network'));
 
-    if (!_.includes(['livenet', 'testnet'], opts.network))
-        return cb(new ClientError('Invalid network'));
+  opts.name = 'Personal Wallet';
+  opts.m = opts.m || 1;
+  opts.n = opts.n || 1;
 
-    opts.name = 'Personal Wallet';
-    opts.m = opts.m || 1;
-    opts.n = opts.n || 1;
+  opts.supportBIP44AndP2PKH = _.isBoolean(opts.supportBIP44AndP2PKH) ? opts.supportBIP44AndP2PKH : true;
 
-    opts.supportBIP44AndP2PKH = _.isBoolean(opts.supportBIP44AndP2PKH) ? opts.supportBIP44AndP2PKH : true;
+  const derivationStrategy = opts.supportBIP44AndP2PKH
+    ? Constants.DERIVATION_STRATEGIES.BIP44
+    : Constants.DERIVATION_STRATEGIES.BIP45;
+  const addressType =
+    opts.n == 1 && opts.supportBIP44AndP2PKH ? Constants.SCRIPT_TYPES.P2PKH : Constants.SCRIPT_TYPES.P2SH;
 
-    const derivationStrategy = opts.supportBIP44AndP2PKH ? Constants.DERIVATION_STRATEGIES.BIP44 : Constants.DERIVATION_STRATEGIES.BIP45;
-    const addressType = (opts.n == 1 && opts.supportBIP44AndP2PKH) ? Constants.SCRIPT_TYPES.P2PKH : Constants.SCRIPT_TYPES.P2SH;
+  let pubKey;
+  let newWallet;
+  let parentAddress = '';
+  try {
+    pubKey = new Bitcore.PublicKey.fromString(opts.pubKey, opts.network);
+  } catch (ex) {
+    return cb(new ClientError('Invalid public key'));
+  }
 
-    let pubKey;
-    let newWallet;
-    let parentAddress = '';
-    try {
-        pubKey = new Bitcore.PublicKey.fromString(opts.pubKey, opts.network);
-    } catch (ex) {
-        return cb(new ClientError('Invalid public key'));
-    };
+  async.series(
+    [
+      acb => {
+        this.blockchainExplorer.getAddressReferrals([opts.rootAddress], function(err, referrals) {
+          if (err || !referrals || !referrals.length) {
+            return acb(new ClientError('Cannot recreate wallet : address is not a part of blockchain'));
+          }
+          parentAddress = referrals.reduce((res, referralObj) => {
+            if (res) return res;
+            const referral = Bitcore.Referral(referralObj.raw, opts.network);
+            return (res = referral.address.toString() == opts.rootAddress ? referral.parentAddress.toString() : null);
+          }, null);
 
-
-    async.series([
-        (acb) => {
-            this.blockchainExplorer.getAddressReferrals([opts.rootAddress], function(err, referrals) {
-                if (err || !referrals || !referrals.length) {
-                    return acb(new ClientError('Cannot recreate wallet : address is not a part of blockchain'));
-                }
-                parentAddress = referrals.reduce((res, referralObj) => {
-                    if (res) return res;
-                    const referral = Bitcore.Referral(referralObj.raw, opts.network);
-                    return res = referral.address.toString() == opts.rootAddress ? referral.parentAddress.toString() : null;
-                }, null);
-
-                return acb();
-            });
-
-        }, (acb) => {
-            const wallet = Wallet.create({
-                name: opts.walletName,
-                m: opts.m,
-                n: opts.n,
-                network: opts.network,
-                pubKey: pubKey.toString(),
-                singleAddress: !!opts.singleAddress,
-                unlocked: true,
-                derivationStrategy,
-                addressType
-            });
-            this.storage.storeWallet(wallet, function(err) {
-                log.debug('Wallet created', wallet.id, opts.network);
-                newWallet = wallet;
-                return acb(err);
-            });
-        }
-    ], (err) => {
-        const newWalletId = newWallet ? newWallet.id : null;
-        return cb(err, newWalletId, parentAddress);
-    });
+          return acb();
+        });
+      },
+      acb => {
+        const wallet = Wallet.create({
+          name: opts.walletName,
+          m: opts.m,
+          n: opts.n,
+          network: opts.network,
+          pubKey: pubKey.toString(),
+          singleAddress: !!opts.singleAddress,
+          unlocked: true,
+          derivationStrategy,
+          addressType,
+        });
+        this.storage.storeWallet(wallet, function(err) {
+          log.debug('Wallet created', wallet.id, opts.network);
+          newWallet = wallet;
+          return acb(err);
+        });
+      },
+    ],
+    err => {
+      const newWalletId = newWallet ? newWallet.id : null;
+      return cb(err, newWalletId, parentAddress);
+    }
+  );
 };
 
 /**
@@ -406,7 +407,8 @@ WalletService.prototype.recreateWallet = function(opts, cb) {
  * @param {string} opts.supportBIP44AndP2PKH[=true] - Client supports BIP44 & P2PKH for new wallets.
  */
 WalletService.prototype.createWallet = function(opts, cb) {
-  var self = this, pubKey;
+  var self = this,
+    pubKey;
 
   if (!checkRequired(opts, ['name', 'm', 'n', 'pubKey', 'parentAddress'], cb)) return;
 
@@ -414,83 +416,90 @@ WalletService.prototype.createWallet = function(opts, cb) {
     return cb(new ClientError('Invalid combination of required copayers / total copayers'));
 
   opts.network = opts.network || 'livenet';
-  if (!_.includes(['livenet', 'testnet'], opts.network))
-    return cb(new ClientError('Invalid network'));
+  if (!_.includes(['livenet', 'testnet'], opts.network)) return cb(new ClientError('Invalid network'));
 
   opts.supportBIP44AndP2PKH = _.isBoolean(opts.supportBIP44AndP2PKH) ? opts.supportBIP44AndP2PKH : true;
 
-  var derivationStrategy = opts.supportBIP44AndP2PKH ? Constants.DERIVATION_STRATEGIES.BIP44 : Constants.DERIVATION_STRATEGIES.BIP45;
-  var addressType = (opts.n == 1 && opts.supportBIP44AndP2PKH) ? Constants.SCRIPT_TYPES.P2PKH : Constants.SCRIPT_TYPES.P2SH;
+  var derivationStrategy = opts.supportBIP44AndP2PKH
+    ? Constants.DERIVATION_STRATEGIES.BIP44
+    : Constants.DERIVATION_STRATEGIES.BIP45;
+  var addressType =
+    opts.n == 1 && opts.supportBIP44AndP2PKH ? Constants.SCRIPT_TYPES.P2PKH : Constants.SCRIPT_TYPES.P2SH;
 
   try {
     pubKey = new Bitcore.PublicKey.fromString(opts.pubKey);
   } catch (ex) {
     return cb(new ClientError('Invalid public key'));
-  };
+  }
 
   var newWallet;
   var unlocked = true;
 
-  async.series([
-    function(acb) {
+  async.series(
+    [
+      function(acb) {
+        if (!opts.id) return acb();
 
-      if (!opts.id)
-        return acb();
-
-      self.storage.fetchWallet(opts.id, function(err, wallet) {
-        if (wallet) return acb(Errors.WALLET_ALREADY_EXISTS);
-        return acb(err);
-      });
-    },
-    function(acb) {
-
-      var wallet = Wallet.create({
-        id: opts.id,
-        name: opts.name,
-        m: opts.m,
-        n: opts.n,
-        network: opts.network,
-        pubKey: pubKey.toString(),
-        singleAddress: !!opts.singleAddress,
-        derivationStrategy,
-        addressType,
-        unlocked,
-        parentAddress: opts.parentAddress,
-      });
-      self.storage.storeWallet(wallet, function(err) {
-        log.debug('Wallet created', wallet.id, opts.network);
-        newWallet = wallet;
-        return acb(err);
-      });
-    },
-    function (acb) {
-      // parent address might be an alias, so let's fetch it from blockchain explorer first then get its wallet ID
-      self.blockchainExplorer.getReferral(opts.parentAddress, function(err, referral) {
-        if (err || !referral) {
-          log.debug('Unable to get referral for parent address: ' + opts.parentAddress);
-          log.debug(err);
-          return acb();
-        }
-
-        const { address } = referral;
-        self.storage.fetchAddress(address, (err, parentAddress) => {
-          if (err || !parentAddress) {
-            log.debug('Unable to fetch address: ' + address);
+        self.storage.fetchWallet(opts.id, function(err, wallet) {
+          if (wallet) return acb(Errors.WALLET_ALREADY_EXISTS);
+          return acb(err);
+        });
+      },
+      function(acb) {
+        var wallet = Wallet.create({
+          id: opts.id,
+          name: opts.name,
+          m: opts.m,
+          n: opts.n,
+          network: opts.network,
+          pubKey: pubKey.toString(),
+          singleAddress: !!opts.singleAddress,
+          derivationStrategy,
+          addressType,
+          unlocked,
+          parentAddress: opts.parentAddress,
+        });
+        self.storage.storeWallet(wallet, function(err) {
+          log.debug('Wallet created', wallet.id, opts.network);
+          newWallet = wallet;
+          return acb(err);
+        });
+      },
+      function(acb) {
+        // parent address might be an alias, so let's fetch it from blockchain explorer first then get its wallet ID
+        self.blockchainExplorer.getReferral(opts.parentAddress, function(err, referral) {
+          if (err || !referral) {
+            log.debug('Unable to get referral for parent address: ' + opts.parentAddress);
             log.debug(err);
             return acb();
           }
 
-          self._notify('IncomingInviteRequest', {
-            walletId: parentAddress.walletId,
-            creatorId: parentAddress.walletId,
-          }, null, acb);
+          const { address } = referral;
+          self.storage.fetchAddress(address, (err, parentAddress) => {
+            if (err || !parentAddress) {
+              log.debug('Unable to fetch address: ' + address);
+              log.debug(err);
+              return acb();
+            }
+
+            self._notify(
+              'IncomingInviteRequest',
+              {
+                walletId: parentAddress.walletId,
+                creatorId: parentAddress.walletId,
+              },
+              null,
+              acb
+            );
+          });
         });
-      });
+      },
+    ],
+    function(err) {
+      var newWalletId = newWallet ? newWallet.id : null;
+      return cb(err, newWalletId);
     }
-  ], function(err) {
-    var newWalletId = newWallet ? newWallet.id : null;
-    return cb(err, newWalletId);
-  });
+  );
 };
 
 /**
@@ -574,57 +583,67 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
   if (!opts.identifier) return cb();
 
   var walletId;
-  async.parallel([
-
-    function(done) {
-      self.storage.fetchWallet(opts.identifier, function(err, wallet) {
-        if (wallet) walletId = wallet.id;
-        return done(err);
-      });
-    },
-    function(done) {
-      self.storage.fetchAddress(opts.identifier, function(err, address) {
-        if (address) walletId = address.walletId;
-        return done(err);
-      });
-    },
-    function(done) {
-      self.storage.fetchTxByHash(opts.identifier, function(err, tx) {
-        if (tx) walletId = tx.walletId;
-        return done(err);
-      });
-    },
-  ], function(err) {
-    if (err) return cb(err);
-    if (walletId) {
-      return self.storage.fetchWallet(walletId, cb);
-    }
-
-    // Is identifier a txid form an incomming tx?
-    async.detectSeries(_.values(Constants.NETWORKS), function(network, nextNetwork) {
-      var bc = self._getBlockchainExplorer(network);
-      bc.getTransaction(opts.identifier, function(err, tx) {
-        if (err || !tx) return nextNetwork(err, false);
-        var outputs = _.head(self._normalizeTxHistory(tx)).outputs;
-        var toAddresses = _.map(outputs, 'address');
-        async.detect(toAddresses, function(addressStr, nextAddress) {
-          self.storage.fetchAddress(addressStr, function(err, address) {
-            if (err || !address) return nextAddress(err, false);
-            walletId = address.walletId;
-            nextAddress(null, true);
-          });
-        }, function(err) {
-          nextNetwork(err, !!walletId);
+  async.parallel(
+    [
+      function(done) {
+        self.storage.fetchWallet(opts.identifier, function(err, wallet) {
+          if (wallet) walletId = wallet.id;
+          return done(err);
         });
-      });
-    }, function(err) {
+      },
+      function(done) {
+        self.storage.fetchAddress(opts.identifier, function(err, address) {
+          if (address) walletId = address.walletId;
+          return done(err);
+        });
+      },
+      function(done) {
+        self.storage.fetchTxByHash(opts.identifier, function(err, tx) {
+          if (tx) walletId = tx.walletId;
+          return done(err);
+        });
+      },
+    ],
+    function(err) {
       if (err) return cb(err);
       if (walletId) {
         return self.storage.fetchWallet(walletId, cb);
       }
-      cb();
-    });
-  });
+
+      // Is identifier a txid form an incomming tx?
+      async.detectSeries(
+        _.values(Constants.NETWORKS),
+        function(network, nextNetwork) {
+          var bc = self._getBlockchainExplorer(network);
+          bc.getTransaction(opts.identifier, function(err, tx) {
+            if (err || !tx) return nextNetwork(err, false);
+            var outputs = _.head(self._normalizeTxHistory(tx)).outputs;
+            var toAddresses = _.map(outputs, 'address');
+            async.detect(
+              toAddresses,
+              function(addressStr, nextAddress) {
+                self.storage.fetchAddress(addressStr, function(err, address) {
+                  if (err || !address) return nextAddress(err, false);
+                  walletId = address.walletId;
+                  nextAddress(null, true);
+                });
+              },
+              function(err) {
+                nextNetwork(err, !!walletId);
+              }
+            );
+          });
+        },
+        function(err) {
+          if (err) return cb(err);
+          if (walletId) {
+            return self.storage.fetchWallet(walletId, cb);
+          }
+          cb();
+        }
+      );
+    }
+  );
 };
 
 /**
@@ -636,7 +655,7 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
  *
  * @returns {Address} address
  */
-WalletService.prototype.unlockAddress = function (opts, cb) {
+WalletService.prototype.unlockAddress = function(opts, cb) {
   var self = this;
 
   if (!Utils.isHash(opts.refid) || !opts.parentAddress) {
@@ -669,7 +688,7 @@ WalletService.prototype.sendReferral = function(rawReferral, cb) {
   function checkReferralAlreadyExists(referralAddress, cb) {
     if (!referralAddress) return cb();
     self.storage.fetchReferral(self.walletId, referralAddress, cb);
-  };
+  }
 
   // TODO: investigate, if it's better to create wallet first
   if (this.walletId) {
@@ -687,24 +706,27 @@ WalletService.prototype.sendReferral = function(rawReferral, cb) {
             return cb(null, referral);
           }
 
-          async.series([
-            function(next) {
-              // store address if it's not there yet
-              // self.storage.storeAddressAndWallet(wallet, referral.address, next);
-              return next();
-            },
-            function(next) {
-              // store referral in db
-               self.storage.storeReferral(wallet.id, referral, next);
-               return next();
-            },
-          ], function(err) {
-            if (err) {
-              return cb(err);
-            }
+          async.series(
+            [
+              function(next) {
+                // store address if it's not there yet
+                // self.storage.storeAddressAndWallet(wallet, referral.address, next);
+                return next();
+              },
+              function(next) {
+                // store referral in db
+                self.storage.storeReferral(wallet.id, referral, next);
+                return next();
+              },
+            ],
+            function(err) {
+              if (err) {
+                return cb(err);
+              }
 
-            return localMeritDaemon.sendReferral(rawReferral, cb);
-          });
+              return localMeritDaemon.sendReferral(rawReferral, cb);
+            }
+          );
         });
       });
     });
@@ -714,13 +736,13 @@ WalletService.prototype.sendReferral = function(rawReferral, cb) {
 };
 
 WalletService.prototype.getRootAddress = function(cb) {
-    this.getWallet({}, (err, wallet) => {
-        if (err) return cb(err);
-        if (!wallet.copayers || !wallet.copayers[0]) return cb("Wallet is not completed");
-        const xpub = new Bitcore.HDPublicKey(wallet.copayers[0].xPubKey);
-        let address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, wallet.network);
-        return cb(null, address);
-    });
+  this.getWallet({}, (err, wallet) => {
+    if (err) return cb(err);
+    if (!wallet.copayers || !wallet.copayers[0]) return cb('Wallet is not completed');
+    const xpub = new Bitcore.HDPublicKey(wallet.copayers[0].xPubKey);
+    let address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, wallet.network);
+    return cb(null, address);
+  });
 };
 
 /**
@@ -736,83 +758,83 @@ WalletService.prototype.getStatus = function(opts, cb) {
   opts = opts || {};
   let status = {};
 
+  self.getRootAddress(function(err, address) {
+    if (err) return cb(err);
+    let addresses = [{ address: address.toString() }];
 
-  self.getRootAddress(function (err, address) {
-      if (err) return cb(err);
-      let addresses = [{address: address.toString()}];
+    async.parallel(
+      [
+        function(next) {
+          self.getWallet({}, function(err, wallet) {
+            if (err) return next(err);
 
-      async.parallel([
+            const walletExtendedKeys = ['publicKeyRing', 'pubKey', 'addressManager'];
+            const copayerExtendedKeys = ['xPubKey', 'requestPubKey', 'signature', 'addressManager', 'customData'];
 
-          function (next) {
-              self.getWallet({}, function (err, wallet) {
-                  if (err) return next(err);
-
-                  const walletExtendedKeys = ['publicKeyRing', 'pubKey', 'addressManager'];
-                  const copayerExtendedKeys = ['xPubKey', 'requestPubKey', 'signature', 'addressManager', 'customData'];
-
-                  wallet.copayers = _.map(wallet.copayers, function (copayer) {
-                      if (copayer.id == self.copayerId) return copayer;
-                      return _.omit(copayer, 'customData');
-                  });
-                  if (!opts.includeExtendedInfo) {
-                      wallet = _.omit(wallet, walletExtendedKeys);
-                      wallet.copayers = _.map(wallet.copayers, function (copayer) {
-                          return _.omit(copayer, copayerExtendedKeys);
-                      });
-                  }
-                  status.wallet = wallet;
-
-                  next();
+            wallet.copayers = _.map(wallet.copayers, function(copayer) {
+              if (copayer.id == self.copayerId) return copayer;
+              return _.omit(copayer, 'customData');
+            });
+            if (!opts.includeExtendedInfo) {
+              wallet = _.omit(wallet, walletExtendedKeys);
+              wallet.copayers = _.map(wallet.copayers, function(copayer) {
+                return _.omit(copayer, copayerExtendedKeys);
               });
-          },
-          function (next) {
-              self.getBalance(addresses, opts, function (err, balance) {
-                  if (err) return next(err);
-                  status.balance = balance;
+            }
+            status.wallet = wallet;
 
-                  next();
-              });
-          },
-          function (next) {
-              self.getInvitesBalance(addresses, opts, function (err, balance) {
-                  if (err) return next(err);
-                  status.invitesBalance = balance;
-                  next();
-              });
-          },
-          function (next) {
-              self.getPendingTxs({}, function (err, pendingTxps) {
-                  if (err) return next(err);
-                  status.pendingTxps = pendingTxps;
+            next();
+          });
+        },
+        function(next) {
+          self.getBalance(addresses, opts, function(err, balance) {
+            if (err) return next(err);
+            status.balance = balance;
 
-                  next();
-              });
-          },
-          function (next) {
-              self.getPreferences({}, function (err, preferences) {
-                  if (err) return next(err);
-                  status.preferences = preferences;
+            next();
+          });
+        },
+        function(next) {
+          self.getInvitesBalance(addresses, opts, function(err, balance) {
+            if (err) return next(err);
+            status.invitesBalance = balance;
+            next();
+          });
+        },
+        function(next) {
+          self.getPendingTxs({}, function(err, pendingTxps) {
+            if (err) return next(err);
+            status.pendingTxps = pendingTxps;
 
-                  next();
-              });
-          },
-      ], function (err) {
-          if (err) return cb(err);
+            next();
+          });
+        },
+        function(next) {
+          self.getPreferences({}, function(err, preferences) {
+            if (err) return next(err);
+            status.preferences = preferences;
 
-          setTimeout(() => {
-              self.storage.cleanActiveAddresses(self.walletId, () => {
-                  const activeCoinAddresses = _.map(status.balance.byAddress, 'address');
-                  const activeInviteAddresses = _.map(status.invitesBalance.byAddress, 'address');
-                  const active = _.union(activeCoinAddresses, activeInviteAddresses);
-                  self.storage.storeActiveAddresses(self.walletId, active);
-              });
-          }, 0);
+            next();
+          });
+        },
+      ],
+      function(err) {
+        if (err) return cb(err);
 
-          return cb(null, status);
-      });
+        setTimeout(() => {
+          self.storage.cleanActiveAddresses(self.walletId, () => {
+            const activeCoinAddresses = _.map(status.balance.byAddress, 'address');
+            const activeInviteAddresses = _.map(status.invitesBalance.byAddress, 'address');
+            const active = _.union(activeCoinAddresses, activeInviteAddresses);
+            self.storage.storeActiveAddresses(self.walletId, active);
+          });
+        }, 0);
+
+        return cb(null, status);
+      }
+    );
   });
 };
-
 
 /*
  * Verifies a signature
@@ -824,7 +846,6 @@ WalletService.prototype._verifySignature = function(text, signature, pubkey) {
   return Utils.verifyMessage(text, signature, pubkey);
 };
 
-
 /*
  * Verifies a request public key
  * @param requestPubKey
@@ -832,7 +853,7 @@ WalletService.prototype._verifySignature = function(text, signature, pubkey) {
  * @param xPubKey
  */
 WalletService.prototype._verifyRequestPubKey = function(requestPubKey, signature, xPubKey) {
-  var pub = (new Bitcore.HDPublicKey(xPubKey)).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
+  var pub = new Bitcore.HDPublicKey(xPubKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
   return Utils.verifyMessage(requestPubKey, signature, pub.toString());
 };
 
@@ -881,12 +902,11 @@ WalletService.prototype._notify = function(type, data, opts, cb) {
     walletId: walletId,
   });
 
-  this.storage.storeNotification(walletId, notification, () => {
+  this.storage.storeNotification(notification, () => {
     this.messageBroker.send(notification);
     return cb();
   });
 };
-
 
 WalletService.prototype._notifyTxProposalAction = function(type, txp, extraArgs, cb) {
   var self = this;
@@ -896,12 +916,16 @@ WalletService.prototype._notifyTxProposalAction = function(type, txp, extraArgs,
     extraArgs = {};
   }
 
-  var data = _.assign({
-    txProposalId: txp.id,
-    creatorId: txp.creatorId,
-    amount: txp.getTotalAmount(),
-    message: txp.message,
-  }, extraArgs);
+  var data = _.assign(
+    {
+      txProposalId: txp.id,
+      creatorId: txp.creatorId,
+      amount: txp.getTotalAmount(),
+      message: txp.message,
+    },
+    extraArgs
+  );
+
   self._notify(type, data, {}, cb);
 };
 
@@ -921,54 +945,65 @@ WalletService.prototype._addCopayerToWallet = function(wallet, opts, cb) {
     if (err) return cb(err);
     if (res) return cb(Errors.COPAYER_REGISTERED);
 
-    if (opts.dryRun) return cb(null, {
-      copayerId: null,
-      wallet: wallet
-    });
+    if (opts.dryRun)
+      return cb(null, {
+        copayerId: null,
+        wallet: wallet,
+      });
 
     wallet.addCopayer(copayer);
     self.storage.storeWalletAndUpdateCopayersLookup(wallet, function(err) {
       if (err) return cb(err);
 
-      async.series([
-
-        function(next) {
-          self._notify('NewCopayer', {
-            walletId: opts.walletId,
-            copayerId: copayer.id,
-            copayerName: copayer.name,
-          }, next);
-        },
-        function(next) {
-          if (wallet.isComplete() && wallet.isShared()) {
-            self._notify('WalletComplete', {
-              walletId: opts.walletId,
-            }, {
-              isGlobal: true
-            }, next);
-          } else {
-            next();
-          }
-        },
-        function (next) {
-            if (wallet.isComplete()) {
-                var address = wallet.createAddress(false);
-                address.signed = true;
-                self.storage.storeAddressAndWallet(wallet, [address], function() {
-                    next(err);
-                });
+      async.series(
+        [
+          function(next) {
+            self._notify(
+              'NewCopayer',
+              {
+                walletId: opts.walletId,
+                copayerId: copayer.id,
+                copayerName: copayer.name,
+              },
+              next
+            );
+          },
+          function(next) {
+            if (wallet.isComplete() && wallet.isShared()) {
+              self._notify(
+                'WalletComplete',
+                {
+                  walletId: opts.walletId,
+                },
+                {
+                  isGlobal: true,
+                },
+                next
+              );
+            } else {
+              next();
             }
+          },
+          function(next) {
+            if (wallet.isComplete()) {
+              var address = wallet.createAddress(false);
+              address.signed = true;
+              self.storage.storeAddressAndWallet(wallet, [address], function() {
+                next(err);
+              });
+            }
+          },
+        ],
+        function() {
+          return cb(null, {
+            copayerId: copayer.id,
+            wallet: wallet,
+          });
         }
-      ], function() {
-        return cb(null, {
-          copayerId: copayer.id,
-          wallet: wallet
-        });
-      });
+      );
     });
   });
 };
-
 
 WalletService.prototype._addKeyToCopayer = function(wallet, copayer, opts, cb) {
   var self = this;
@@ -978,7 +1013,7 @@ WalletService.prototype._addKeyToCopayer = function(wallet, copayer, opts, cb) {
 
     return cb(null, {
       copayerId: copayer.id,
-      wallet: wallet
+      wallet: wallet,
     });
   });
 };
@@ -1008,15 +1043,14 @@ WalletService.prototype.addAccess = function(opts, cb) {
       if (!wallet) return cb(Errors.NOT_AUTHORIZED);
 
       var xPubKey = _.find(wallet.copayers, {
-        id: opts.copayerId
+        id: opts.copayerId,
       }).xPubKey;
 
       if (!self._verifyRequestPubKey(opts.requestPubKey, opts.signature, xPubKey)) {
         return cb(Errors.NOT_AUTHORIZED);
       }
 
-      if (copayer.requestPubKeys.length > Defaults.MAX_KEYS)
-        return cb(Errors.TOO_MANY_KEYS);
+      if (copayer.requestPubKeys.length > Defaults.MAX_KEYS) return cb(Errors.TOO_MANY_KEYS);
 
       self._addKeyToCopayer(wallet, copayer, opts, cb);
     });
@@ -1064,8 +1098,7 @@ WalletService.prototype.joinWallet = function(opts, cb) {
 
   if (!checkRequired(opts, ['walletId', 'name', 'xPubKey', 'requestPubKey', 'copayerSignature'], cb)) return;
 
-  if (_.isEmpty(opts.name))
-    return cb(new ClientError('Invalid copayer name'));
+  if (_.isEmpty(opts.name)) return cb(new ClientError('Invalid copayer name'));
 
   try {
     Bitcore.HDPublicKey(opts.xPubKey);
@@ -1084,12 +1117,16 @@ WalletService.prototype.joinWallet = function(opts, cb) {
       if (opts.supportBIP44AndP2PKH) {
         // New client trying to join legacy wallet
         if (wallet.derivationStrategy == Constants.DERIVATION_STRATEGIES.BIP45) {
-          return cb(new ClientError('The wallet you are trying to join was created with an older version of the client app.'));
+          return cb(
+            new ClientError('The wallet you are trying to join was created with an older version of the client app.')
+          );
         }
       } else {
         // Legacy client trying to join new wallet
         if (wallet.derivationStrategy == Constants.DERIVATION_STRATEGIES.BIP44) {
-          return cb(new ClientError(Errors.codes.UPGRADE_NEEDED, 'To join this wallet you need to upgrade your client app.'));
+          return cb(
+            new ClientError(Errors.codes.UPGRADE_NEEDED, 'To join this wallet you need to upgrade your client app.')
+          );
         }
       }
 
@@ -1098,9 +1135,12 @@ WalletService.prototype.joinWallet = function(opts, cb) {
         return cb(new ClientError());
       }
 
-      if (_.find(wallet.copayers, {
-        xPubKey: opts.xPubKey
-      })) return cb(Errors.COPAYER_IN_WALLET);
+      if (
+        _.find(wallet.copayers, {
+          xPubKey: opts.xPubKey,
+        })
+      )
+        return cb(Errors.COPAYER_IN_WALLET);
 
       if (wallet.copayers.length == wallet.n) return cb(Errors.WALLET_FULL);
 
@@ -1121,22 +1161,26 @@ WalletService.prototype.savePreferences = function(opts, cb) {
 
   opts = opts || {};
 
-  var preferences = [{
-    name: 'email',
-    isValid: function(value) {
-      return EmailValidator.validate(value);
+  var preferences = [
+    {
+      name: 'email',
+      isValid: function(value) {
+        return EmailValidator.validate(value);
+      },
     },
-  }, {
-    name: 'language',
-    isValid: function(value) {
-      return _.isString(value) && value.length == 2;
+    {
+      name: 'language',
+      isValid: function(value) {
+        return _.isString(value) && value.length == 2;
+      },
     },
-  }, {
-    name: 'unit',
-    isValid: function(value) {
-      return _.isString(value) && _.includes(['mrt'], value.toLowerCase());
+    {
+      name: 'unit',
+      isValid: function(value) {
+        return _.isString(value) && _.includes(['mrt'], value.toLowerCase());
+      },
     },
-  }];
+  ];
 
   opts = _.pick(opts, _.map(preferences, 'name'));
   try {
@@ -1189,35 +1233,46 @@ WalletService.prototype._canCreateAddress = function(ignoreMaxGap, cb) {
 
   self.storage.fetchAddresses(self.walletId, function(err, addresses) {
     if (err) return cb(err);
-    var latestAddresses = _.takeRight(_.reject(addresses, {
-      isChange: true
-    }), Defaults.MAX_MAIN_ADDRESS_GAP);
-    if (latestAddresses.length < Defaults.MAX_MAIN_ADDRESS_GAP || _.some(latestAddresses, {
-      hasActivity: true
-    })) return cb(null, true);
+    var latestAddresses = _.takeRight(
+      _.reject(addresses, {
+        isChange: true,
+      }),
+      Defaults.MAX_MAIN_ADDRESS_GAP
+    );
+    if (
+      latestAddresses.length < Defaults.MAX_MAIN_ADDRESS_GAP ||
+      _.some(latestAddresses, {
+        hasActivity: true,
+      })
+    )
+      return cb(null, true);
 
     var bc = self._getBlockchainExplorer(latestAddresses[0].network);
     if (!bc) return cb(new Error('Could not get blockchain explorer instance'));
     var activityFound = false;
     var i = latestAddresses.length;
-    async.whilst(function() {
-      return i > 0 && !activityFound;
-    }, function(next) {
-      bc.getAddressActivity(latestAddresses[--i].address, function(err, res) {
-        if (err) return next(err);
-        activityFound = !!res;
-        return next();
-      });
-    }, function(err) {
-      if (err) return cb(err);
-      if (!activityFound) return cb(null, false);
+    async.whilst(
+      function() {
+        return i > 0 && !activityFound;
+      },
+      function(next) {
+        bc.getAddressActivity(latestAddresses[--i].address, function(err, res) {
+          if (err) return next(err);
+          activityFound = !!res;
+          return next();
+        });
+      },
+      function(err) {
+        if (err) return cb(err);
+        if (!activityFound) return cb(null, false);
 
-      var address = latestAddresses[i];
-      address.hasActivity = true;
-      self.storage.storeAddress(address, function(err) {
-        return cb(err, true);
-      });
-    });
+        var address = latestAddresses[i];
+        address.hasActivity = true;
+        self.storage.storeAddress(address, function(err) {
+          return cb(err, true);
+        });
+      }
+    );
   });
 };
 
@@ -1239,13 +1294,17 @@ WalletService.prototype.createAddress = function(opts, cb) {
     self.storage.storeAddressAndWallet(wallet, address, function(err) {
       if (err) return cb(err);
 
-      self._notify('NewAddress', {
-        address: address.address,
-      }, function() {
-        return cb(null, address);
-      });
+      self._notify(
+        'NewAddress',
+        {
+          address: address.address,
+        },
+        function() {
+          return cb(null, address);
+        }
+      );
     });
-  };
+  }
 
   function getFirstAddress(wallet, cb) {
     self.storage.fetchAddresses(self.walletId, function(err, addresses) {
@@ -1253,7 +1312,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
       if (!_.isEmpty(addresses)) return cb(null, _.head(addresses));
       return createNewAddress(wallet, cb);
     });
-  };
+  }
 
   self._canCreateAddress(opts.ignoreMaxGap, function(err, canCreate) {
     if (err) return cb(err);
@@ -1286,7 +1345,7 @@ WalletService.prototype.getMainAddresses = function(opts, cb) {
     if (err) return cb(err);
 
     var onlyMain = _.reject(addresses, {
-      isChange: true
+      isChange: true,
     });
     if (opts.reverse) onlyMain.reverse();
     if (opts.limit > 0) onlyMain = _.take(onlyMain, opts.limit);
@@ -1316,7 +1375,6 @@ WalletService.prototype.verifyMessageSignature = function(opts, cb) {
     return cb(null, isValid);
   });
 };
-
 
 WalletService.prototype._getBlockchainExplorer = function(network) {
   var opts = {};
@@ -1349,10 +1407,23 @@ WalletService.prototype._getUtxos = function(addresses, invites, cb) {
     if (err) return cb(err);
 
     var utxos = _.map(utxos, function(utxo) {
-      var u = _.pick(utxo, ['txid', 'vout', 'address', 'scriptPubKey', 'amount', 'micros', 'confirmations', 'isCoinbase', 'isInvite', 'isMature', 'isMine', 'isChange']);
+      var u = _.pick(utxo, [
+        'txid',
+        'vout',
+        'address',
+        'scriptPubKey',
+        'amount',
+        'micros',
+        'confirmations',
+        'isCoinbase',
+        'isInvite',
+        'isMature',
+        'isMine',
+        'isChange',
+      ]);
       u.confirmations = u.confirmations || 0;
       u.locked = false;
-      u.micros = u.isInvite ? u.micros : (_.isNumber(u.micros) ? +u.micros : Utils.strip(u.amount * 1e8));
+      u.micros = u.isInvite ? u.micros : _.isNumber(u.micros) ? +u.micros : Utils.strip(u.amount * 1e8);
       delete u.amount;
       return u;
     });
@@ -1362,8 +1433,8 @@ WalletService.prototype._getUtxos = function(addresses, invites, cb) {
 };
 
 function utxoKey(utxo) {
-  return utxo.txid + '|' + utxo.vout
-};
+  return utxo.txid + '|' + utxo.vout;
+}
 
 WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites, cb) {
   var self = this;
@@ -1375,87 +1446,93 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
 
   var allAddresses, allUtxos, utxoIndex;
 
-  async.series([
+  async.series(
+    [
+      function(next) {
+        if (_.isArray(addresses)) {
+          allAddresses = addresses;
+          return next();
+        }
+        self.storage.fetchAddresses(self.walletId, function(err, addresses) {
+          allAddresses = addresses;
+          return next();
+        });
+      },
+      function(next) {
+        if (allAddresses.length == 0) return cb(null, []);
 
-    function(next) {
-      if (_.isArray(addresses)) {
-        allAddresses = addresses;
-        return next();
-      }
-      self.storage.fetchAddresses(self.walletId, function(err, addresses) {
-        allAddresses = addresses;
-        return next();
-      });
-    },
-    function(next) {
-      if (allAddresses.length == 0) return cb(null, []);
+        var addressStrs = _.map(allAddresses, 'address');
+        self._getUtxos(addressStrs, invites, function(err, utxos) {
+          if (err) return next(err);
 
-      var addressStrs = _.map(allAddresses, 'address');
-      self._getUtxos(addressStrs, invites, function(err, utxos) {
-        if (err) return next(err);
-
-        if (utxos.length == 0) return cb(null, []);
-        allUtxos = utxos;
-        utxoIndex = _.keyBy(allUtxos, utxoKey);
-        return next();
-      });
-    },
-    function(next) {
+          if (utxos.length == 0) return cb(null, []);
+          allUtxos = utxos;
+          utxoIndex = _.keyBy(allUtxos, utxoKey);
+          return next();
+        });
+      },
+      function(next) {
         return next(); //ignoring locks due to https://github.com/meritlabs/lightwallet-stack/issues/812
-      //self.getPendingTxs({}, function(err, txps) {
-      //  if (err) return next(err);
-      //
-      //  const lockedInputs = _.map(_.flatten(_.map(txps, 'inputs')), utxoKey);
-      //
-      //  _.each(lockedInputs, function(input) {
-      //    if (utxoIndex[input]) {
-      //      utxoIndex[input].locked = true;
-      //    }
-      //  });
-      //  return next();
-      //});
-    },
-    function(next) {
-      const now = Math.floor(Date.now() / 1000);
-      // Fetch latest broadcasted txs and remove any spent inputs from the
-      // list of UTXOs returned by the block explorer. This counteracts any out-of-sync
-      // effects between broadcasting a tx and getting the list of UTXOs.
-      // This is especially true in the case of having multiple instances of the block explorer.
-      self.storage.fetchBroadcastedTxs(self.walletId, {
-        minTs: now - 24 * 3600,
-        limit: 100
-      }, function(err, txs) {
-        if (err) return next(err);
+        //self.getPendingTxs({}, function(err, txps) {
+        //  if (err) return next(err);
+        //
+        //  const lockedInputs = _.map(_.flatten(_.map(txps, 'inputs')), utxoKey);
+        //
+        //  _.each(lockedInputs, function(input) {
+        //    if (utxoIndex[input]) {
+        //      utxoIndex[input].locked = true;
+        //    }
+        //  });
+        //  return next();
+        //});
+      },
+      function(next) {
+        const now = Math.floor(Date.now() / 1000);
+        // Fetch latest broadcasted txs and remove any spent inputs from the
+        // list of UTXOs returned by the block explorer. This counteracts any out-of-sync
+        // effects between broadcasting a tx and getting the list of UTXOs.
+        // This is especially true in the case of having multiple instances of the block explorer.
+        self.storage.fetchBroadcastedTxs(
+          self.walletId,
+          {
+            minTs: now - 24 * 3600,
+            limit: 100,
+          },
+          function(err, txs) {
+            if (err) return next(err);
 
-        let spentInputs = _.map(_.flatten(_.map(txs, 'inputs')), utxoKey);
-        _.each(spentInputs, function(input) {
-          if (utxoIndex[input]) {
-            utxoIndex[input].spent = true;
+            let spentInputs = _.map(_.flatten(_.map(txs, 'inputs')), utxoKey);
+            _.each(spentInputs, function(input) {
+              if (utxoIndex[input]) {
+                utxoIndex[input].spent = true;
+              }
+            });
+            allUtxos = _.reject(allUtxos, {
+              spent: true,
+            });
+
+            return next();
           }
+        );
+      },
+      function(next) {
+        // Let's filter through and classify all outputs.
+        // We specifically want to know if they are change or belong to us.
+        const indexedAddresses = _.keyBy(allAddresses, 'address');
+        _.each(allUtxos, function(utxo) {
+          const address = indexedAddresses[utxo.address];
+          utxo.isMine = !!address;
+          utxo.isChange = address ? address.isChange : false;
+          utxo.path = indexedAddresses[utxo.address].path;
+          utxo.publicKeys = indexedAddresses[utxo.address].publicKeys;
         });
-        allUtxos = _.reject(allUtxos, {
-          spent: true
-        });
-
         return next();
-      });
-    },
-    function(next) {
-      // Let's filter through and classify all outputs.
-      // We specifically want to know if they are change or belong to us.
-      const indexedAddresses = _.keyBy(allAddresses, 'address');
-      _.each(allUtxos, function(utxo){
-        const address = indexedAddresses[utxo.address];
-        utxo.isMine = !!address;
-        utxo.isChange = address ? address.isChange : false;
-        utxo.path = indexedAddresses[utxo.address].path;
-        utxo.publicKeys = indexedAddresses[utxo.address].publicKeys;
-      });
-      return next();
-    },
-  ], function(err) {
-    return cb(err, allUtxos);
-  });
+      },
+    ],
+    function(err) {
+      return cb(err, allUtxos);
+    }
+  );
 };
 
 /**
@@ -1476,16 +1553,22 @@ WalletService.prototype.getUtxos = function(opts, cb) {
   }
 };
 
-WalletService.prototype._isPendingCoinbaseUtxo = function(utxo) { return utxo.isCoinbase && !utxo.isMature };
+WalletService.prototype._isPendingCoinbaseUtxo = function(utxo) {
+  return utxo.isCoinbase && !utxo.isMature;
+};
 
 WalletService.prototype._isConfirmedAmountUtxo = function(utxo) {
-  return ((utxo.isCoinbase && utxo.isMature) ||
+  return (
+    (utxo.isCoinbase && utxo.isMature) ||
     (!utxo.isCoinbase && utxo.confirmations && utxo.confirmations > 0) ||
-    (utxo.isMine && utxo.isChange && utxo.micros >= 0));
+    (utxo.isMine && utxo.isChange && utxo.micros >= 0)
+  );
 };
 
 WalletService.prototype._totalizeUtxos = function(utxos) {
-    const balance = _.reduce(utxos, (acc, utxo) => {
+  const balance = _.reduce(
+    utxos,
+    (acc, utxo) => {
       acc.totalAmount += utxo.micros;
 
       //ignoring locks due to https://github.com/meritlabs/lightwallet-stack/issues/812
@@ -1495,31 +1578,38 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
       //    acc.lockedConfirmedAmount + utxo.micros :
       //    acc.lockedConfirmedAmount;
       //}
-      acc.totalPendingCoinbaseAmount = this._isPendingCoinbaseUtxo(utxo) ?
-      acc.totalPendingCoinbaseAmount + utxo.micros :
-      acc.totalPendingCoinbaseAmount;
-      acc.totalConfirmedAmount = this._isConfirmedAmountUtxo(utxo) ?
-      acc.totalConfirmedAmount + utxo.micros :
-      acc.totalConfirmedAmount;
+      acc.totalPendingCoinbaseAmount = this._isPendingCoinbaseUtxo(utxo)
+        ? acc.totalPendingCoinbaseAmount + utxo.micros
+        : acc.totalPendingCoinbaseAmount;
+      acc.totalConfirmedAmount = this._isConfirmedAmountUtxo(utxo)
+        ? acc.totalConfirmedAmount + utxo.micros
+        : acc.totalConfirmedAmount;
       return acc;
-    }, {
+    },
+    {
       totalAmount: 0,
       lockedAmount: 0,
       totalPendingCoinbaseAmount: 0,
       totalConfirmedAmount: 0,
-      lockedConfirmedAmount: 0
-    });
-    balance.availableAmount = balance.totalAmount - balance.lockedAmount;
-    balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
+      lockedConfirmedAmount: 0,
+    }
+  );
+  balance.availableAmount = balance.totalAmount - balance.lockedAmount;
+  balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
 
-    $.checkArgument(balance.availableAmount <= balance.totalAmount, 'Total amount must be greater than available');
-    $.checkArgument(balance.lockedConfirmedAmount <= balance.lockedAmount, 'Total lockedAmount must be greater than lockedConfirmedAmount');
-    $.checkArgument(balance.totalConfirmedAmount <= balance.totalAmount, 'Total totalAmount must be greater than totalConfirmedAmount');
-    $.checkArgument(balance.lockedAmount <= balance.totalAmount, 'Total amount must be greater than lockedAmount');
+  $.checkArgument(balance.availableAmount <= balance.totalAmount, 'Total amount must be greater than available');
+  $.checkArgument(
+    balance.lockedConfirmedAmount <= balance.lockedAmount,
+    'Total lockedAmount must be greater than lockedConfirmedAmount'
+  );
+  $.checkArgument(
+    balance.totalConfirmedAmount <= balance.totalAmount,
+    'Total totalAmount must be greater than totalConfirmedAmount'
+  );
+  $.checkArgument(balance.lockedAmount <= balance.totalAmount, 'Total amount must be greater than lockedAmount');
 
-    return balance;
+  return balance;
 };
-
 
 WalletService.prototype._getBalanceFromAddresses = function(addresses, invites, cb) {
   var self = this;
@@ -1563,7 +1653,6 @@ WalletService.prototype._getBalanceOneStep = function(addresses, opts, cb) {
   });
 };
 
-
 WalletService.prototype._getActiveAddresses = function(cb) {
   var self = this;
 
@@ -1579,16 +1668,21 @@ WalletService.prototype._getActiveAddresses = function(cb) {
       if (err) return cb(err);
 
       var now = Math.floor(Date.now() / 1000);
-      var recent = _.map(_.filter(allAddresses, function(address) {
-        return address.createdOn > (now - 24 * 3600);
-      }), 'address');
+      var recent = _.map(
+        _.filter(allAddresses, function(address) {
+          return address.createdOn > now - 24 * 3600;
+        }),
+        'address'
+      );
 
       var result = _.union(active, recent);
 
       var index = _.keyBy(allAddresses, 'address');
-      result = _.compact(_.map(result, function(r) {
-        return index[r];
-      }));
+      result = _.compact(
+        _.map(result, function(r) {
+          return index[r];
+        })
+      );
       return cb(null, result);
     });
   });
@@ -1605,8 +1699,7 @@ WalletService.prototype.getBalance = function(addresses, opts, cb) {
 
   opts = opts || {};
 
-  if (!opts.twoStep)
-    return self._getBalanceOneStep(addresses, opts, cb);
+  if (!opts.twoStep) return self._getBalanceOneStep(addresses, opts, cb);
 
   self.storage.countAddresses(self.walletId, function(err, nbAddresses) {
     if (err) return cb(err);
@@ -1628,7 +1721,7 @@ WalletService.prototype.getBalance = function(addresses, opts, cb) {
               if (!_.isEqual(partialBalance, fullBalance)) {
                 log.info('Balance in active addresses differs from final balance');
                 self._notify('BalanceUpdated', fullBalance, {
-                  isGlobal: true
+                  isGlobal: true,
                 });
               }
             });
@@ -1645,7 +1738,7 @@ WalletService.prototype.getInvitesBalance = function(addresses, opts, cb) {
     if (err) return cb(err);
     return cb(null, balance);
   });
-}
+};
 
 /**
  * Return info needed to send all funds in the wallet
@@ -1659,12 +1752,10 @@ WalletService.prototype.getInvitesBalance = function(addresses, opts, cb) {
 WalletService.prototype.getSendMaxInfo = function(opts, cb) {
   var self = this;
 
-
   opts = opts || {};
 
   var feeArgs = !!opts.feeLevel + _.isNumber(opts.feePerKb);
-  if (feeArgs > 1)
-    return cb(new ClientError('Only one of feeLevel/feePerKb can be specified'));
+  if (feeArgs > 1) return cb(new ClientError('Only one of feeLevel/feePerKb can be specified'));
 
   if (feeArgs == 0) {
     log.debug('No fee provided, using "normal" fee level');
@@ -1672,10 +1763,14 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
   }
 
   if (opts.feeLevel) {
-    if (!_.some(Defaults.FEE_LEVELS, {
-      name: opts.feeLevel
-    }))
-      return cb(new ClientError('Invalid fee level. Valid values are ' + _.map(Defaults.FEE_LEVELS, 'name').join(', ')));
+    if (
+      !_.some(Defaults.FEE_LEVELS, {
+        name: opts.feeLevel,
+      })
+    )
+      return cb(
+        new ClientError('Invalid fee level. Valid values are ' + _.map(Defaults.FEE_LEVELS, 'name').join(', '))
+      );
   }
 
   if (_.isNumber(opts.feePerKb)) {
@@ -1728,9 +1823,9 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         });
 
         var baseTxpSize = txp.getEstimatedSize();
-        var baseTxpFee = baseTxpSize * txp.feePerKb / 1000.;
+        var baseTxpFee = baseTxpSize * txp.feePerKb / 1000;
         var sizePerInput = txp.getEstimatedSizeForSingleInput();
-        var feePerInput = sizePerInput * txp.feePerKb / 1000.;
+        var feePerInput = sizePerInput * txp.feePerKb / 1000;
 
         var partitionedByAmount = _.partition(inputs, function(input) {
           return input.micros > feePerInput;
@@ -1741,7 +1836,7 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         inputs = partitionedByAmount[0];
 
         _.each(inputs, function(input, i) {
-          var sizeInKb = (baseTxpSize + (i + 1) * sizePerInput) / 1000.;
+          var sizeInKb = (baseTxpSize + (i + 1) * sizePerInput) / 1000;
           if (sizeInKb > Defaults.MAX_TX_SIZE_IN_KB) {
             info.utxosAboveMaxSize = inputs.length - i;
             info.amountAboveMaxSize = _.sumBy(_.slice(inputs, i), 'micros');
@@ -1784,10 +1879,9 @@ WalletService.prototype._sampleFeeLevels = function(network, points, cb) {
     var failed = [];
     var levels = {};
     _.each(result, function(row, nbBlocks) {
-        if (!_.isEmpty(row.errors) || _.isNil(row.feerate) ) return failed.push(nbBlocks);
-        levels[nbBlocks] =  Utils.strip(row.feerate* 1e8) || -1;
+      if (!_.isEmpty(row.errors) || _.isNil(row.feerate)) return failed.push(nbBlocks);
+      levels[nbBlocks] = Utils.strip(row.feerate * 1e8) || -1;
     });
-
 
     if (failed.length) {
       var failErr = 'Could not compute fee estimation in ' + network + ': ' + failed.join(', ') + ' blocks.';
@@ -1816,10 +1910,14 @@ WalletService.prototype.getFeeLevels = function(opts, cb) {
 
   function samplePoints() {
     var definedPoints = _.uniq(_.map(Defaults.FEE_LEVELS, 'nbBlocks'));
-    return _.uniq(_.flatten(_.map(definedPoints, function(p) {
-      return _.range(p, p + Defaults.FEE_LEVELS_FALLBACK + 1);
-    })));
-  };
+    return _.uniq(
+      _.flatten(
+        _.map(definedPoints, function(p) {
+          return _.range(p, p + Defaults.FEE_LEVELS_FALLBACK + 1);
+        })
+      )
+    );
+  }
 
   function getFeeLevel(feeSamples, level, n, fallback) {
     var result;
@@ -1840,11 +1938,10 @@ WalletService.prototype.getFeeLevels = function(opts, cb) {
       }
     }
     return result;
-  };
+  }
 
   var network = opts.network || 'livenet';
-  if (network != 'livenet' && network != 'testnet')
-    return cb(new ClientError('Invalid network'));
+  if (network != 'livenet' && network != 'testnet') return cb(new ClientError('Invalid network'));
 
   self._sampleFeeLevels(network, samplePoints(), function(err, feeSamples) {
     var values = _.map(Defaults.FEE_LEVELS, function(level) {
@@ -1884,8 +1981,7 @@ WalletService.prototype._checkTx = function(txp) {
     disableLargeFees: true,
   };
 
-  if (txp.getEstimatedSize() / 1000 > Defaults.MAX_TX_SIZE_IN_KB)
-    return Errors.TX_MAX_SIZE_EXCEEDED;
+  if (txp.getEstimatedSize() / 1000 > Defaults.MAX_TX_SIZE_IN_KB) return Errors.TX_MAX_SIZE_EXCEEDED;
 
   try {
     var bitcoreTx = txp.getBitcoreTx();
@@ -1898,11 +1994,9 @@ WalletService.prototype._checkTx = function(txp) {
     return ex;
   }
 
-  if (bitcoreError instanceof Bitcore.errors.Transaction.FeeError)
-    return Errors.INSUFFICIENT_FUNDS_FOR_FEE;
+  if (bitcoreError instanceof Bitcore.errors.Transaction.FeeError) return Errors.INSUFFICIENT_FUNDS_FOR_FEE;
 
-  if (bitcoreError instanceof Bitcore.errors.Transaction.DustOutputs)
-    return Errors.DUST_AMOUNT;
+  if (bitcoreError instanceof Bitcore.errors.Transaction.DustOutputs) return Errors.DUST_AMOUNT;
   return bitcoreError;
 };
 
@@ -1911,22 +2005,25 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
   //todo: check inputs are ours and have enough value
   if (txp.inputs && !_.isEmpty(txp.inputs)) {
-    if (!_.isNumber(txp.fee))
-      self._estimateFee(txp);
+    if (!_.isNumber(txp.fee)) self._estimateFee(txp);
     return cb(self._checkTx(txp));
   }
 
   var txpAmount = txp.getTotalAmount();
   var baseTxpSize = txp.getEstimatedSize();
-  var baseTxpFee = baseTxpSize * txp.feePerKb / 1000.;
+  var baseTxpFee = baseTxpSize * txp.feePerKb / 1000;
   var sizePerInput = txp.getEstimatedSizeForSingleInput();
-  var feePerInput = sizePerInput * txp.feePerKb / 1000.;
+  var feePerInput = sizePerInput * txp.feePerKb / 1000;
 
   function sanitizeUtxos(utxos) {
-    var excludeIndex = _.reduce(utxosToExclude, function(res, val) {
-      res[val] = val;
-      return res;
-    }, {});
+    var excludeIndex = _.reduce(
+      utxosToExclude,
+      function(res, val) {
+        res[val] = val;
+        return res;
+      },
+      {}
+    );
 
     // We should ensure that utxos are not locked and are mature enough.
     return _.filter(utxos, function(utxo) {
@@ -1936,34 +2033,46 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       //if (utxo.locked) return false;
       if (utxo.micros <= feePerInput) return false;
       if (txp.excludeUnconfirmedUtxos && !utxo.confirmations) return false;
-      if (excludeIndex[utxo.txid + ":" + utxo.vout]) return false;
+      if (excludeIndex[utxo.txid + ':' + utxo.vout]) return false;
       if (utxo.isCoinbase && !utxo.isMature) return false;
       return true;
     });
-  };
+  }
 
   function partitionUtxos(utxos) {
     return _.groupBy(utxos, function(utxo) {
-      if (utxo.confirmations == 0) return '0'
+      if (utxo.confirmations == 0) return '0';
       if (utxo.confirmations < 6) return '<6';
       return '6+';
     });
-  };
+  }
 
   function select(utxos, cb) {
     if (_.isEmpty(utxos)) {
-      return cb(new Error("No Utxos"), null, null);
+      return cb(new Error('No Utxos'), null, null);
     }
     var totalValueInUtxos = _.sumBy(utxos, 'micros');
 
-    var netValueInUtxos = totalValueInUtxos - baseTxpFee - (utxos.length * feePerInput);
+    var netValueInUtxos = totalValueInUtxos - baseTxpFee - utxos.length * feePerInput;
 
     if (totalValueInUtxos < txpAmount) {
-      log.debug('Total value in all utxos (' + Utils.formatAmountInMrt(totalValueInUtxos) + ') is insufficient to cover for txp amount (' + Utils.formatAmountInMrt(txpAmount) + ')');
+      log.debug(
+        'Total value in all utxos (' +
+          Utils.formatAmountInMrt(totalValueInUtxos) +
+          ') is insufficient to cover for txp amount (' +
+          Utils.formatAmountInMrt(txpAmount) +
+          ')'
+      );
       return cb(Errors.INSUFFICIENT_FUNDS);
     }
     if (netValueInUtxos < txpAmount) {
-      log.debug('Value after fees in all utxos (' + Utils.formatAmountInMrt(netValueInUtxos) + ') is insufficient to cover for txp amount (' + Utils.formatAmountInMrt(txpAmount) + ')');
+      log.debug(
+        'Value after fees in all utxos (' +
+          Utils.formatAmountInMrt(netValueInUtxos) +
+          ') is insufficient to cover for txp amount (' +
+          Utils.formatAmountInMrt(txpAmount) +
+          ')'
+      );
       return cb(Errors.INSUFFICIENT_FUNDS_FOR_FEE);
     }
 
@@ -2008,11 +2117,29 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       var feeVsAmountRatio = fee / txpAmount;
       var amountVsUtxoRatio = netInputAmount / txpAmount;
 
-      log.debug('Fee/Tx amount: ' + Utils.formatRatio(feeVsAmountRatio) + ' (max: ' + Utils.formatRatio(Defaults.UTXO_SELECTION_MAX_FEE_VS_TX_AMOUNT_FACTOR) + ')');
-      log.debug('Tx amount/Input amount:' + Utils.formatRatio(amountVsUtxoRatio) + ' (min: ' + Utils.formatRatio(Defaults.UTXO_SELECTION_MIN_TX_AMOUNT_VS_UTXO_FACTOR) + ')');
+      log.debug(
+        'Fee/Tx amount: ' +
+          Utils.formatRatio(feeVsAmountRatio) +
+          ' (max: ' +
+          Utils.formatRatio(Defaults.UTXO_SELECTION_MAX_FEE_VS_TX_AMOUNT_FACTOR) +
+          ')'
+      );
+      log.debug(
+        'Tx amount/Input amount:' +
+          Utils.formatRatio(amountVsUtxoRatio) +
+          ' (min: ' +
+          Utils.formatRatio(Defaults.UTXO_SELECTION_MIN_TX_AMOUNT_VS_UTXO_FACTOR) +
+          ')'
+      );
 
-      if (txpSize / 1000. > Defaults.MAX_TX_SIZE_IN_KB) {
-        log.debug('Breaking because tx size (' + Utils.formatSize(txpSize) + ') is too big (max: ' + Utils.formatSize(Defaults.MAX_TX_SIZE_IN_KB * 1000.) + ')');
+      if (txpSize / 1000 > Defaults.MAX_TX_SIZE_IN_KB) {
+        log.debug(
+          'Breaking because tx size (' +
+            Utils.formatSize(txpSize) +
+            ') is too big (max: ' +
+            Utils.formatSize(Defaults.MAX_TX_SIZE_IN_KB * 1000) +
+            ')'
+        );
         error = Errors.TX_MAX_SIZE_EXCEEDED;
         return false;
       }
@@ -2025,15 +2152,25 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
         if (feeVsAmountRatio > Defaults.UTXO_SELECTION_MAX_FEE_VS_TX_AMOUNT_FACTOR) {
           var feeVsSingleInputFeeRatio = fee / (baseTxpFee + feePerInput);
-          log.debug('Fee/Single-input fee: ' + Utils.formatRatio(feeVsSingleInputFeeRatio) + ' (max: ' + Utils.formatRatio(Defaults.UTXO_SELECTION_MAX_FEE_VS_SINGLE_UTXO_FEE_FACTOR) + ')' + ' loses wrt single-input tx: ' + Utils.formatAmountInMrt((selected.length - 1) * feePerInput));
+          log.debug(
+            'Fee/Single-input fee: ' +
+              Utils.formatRatio(feeVsSingleInputFeeRatio) +
+              ' (max: ' +
+              Utils.formatRatio(Defaults.UTXO_SELECTION_MAX_FEE_VS_SINGLE_UTXO_FEE_FACTOR) +
+              ')' +
+              ' loses wrt single-input tx: ' +
+              Utils.formatAmountInMrt((selected.length - 1) * feePerInput)
+          );
           if (feeVsSingleInputFeeRatio > Defaults.UTXO_SELECTION_MAX_FEE_VS_SINGLE_UTXO_FEE_FACTOR) {
-            log.debug('Breaking because fee is too significant compared to tx amount and it is too expensive compared to using single input');
+            log.debug(
+              'Breaking because fee is too significant compared to tx amount and it is too expensive compared to using single input'
+            );
             return false;
           }
         }
       }
 
-      log.debug('Cumuled total so far: ' + Utils.formatAmountInMrt(total) + ', Net total so far: ' + Utils.formatAmountInMrt(netTotal));
+      log.debug('Cumulative total so far: ' + Utils.formatAmountInMrt(total) + ', Net total so far: ' + Utils.formatAmountInMrt(netTotal));
 
       if (netTotal >= txpAmount) {
         var changeAmount = Math.round(total - txpAmount - fee);
@@ -2041,10 +2178,14 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
         var dustThreshold = Math.max(Defaults.MIN_OUTPUT_AMOUNT, Bitcore.Transaction.DUST_AMOUNT);
         if (changeAmount > 0 && changeAmount <= dustThreshold) {
-          log.debug('Change below dust threshold (' + Utils.formatAmountInMrt(dustThreshold) + '). Incrementing fee to remove change.');
+          log.debug(
+            'Change below dust threshold (' +
+              Utils.formatAmountInMrt(dustThreshold) +
+              '). Incrementing fee to remove change.'
+          );
           // Remove dust change by incrementing fee
 
-          if(!changeAmount) {
+          if (!changeAmount) {
             changeAmount = 0;
           }
           fee += changeAmount;
@@ -2055,7 +2196,12 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     });
 
     if (netTotal < txpAmount) {
-      log.debug('Could not reach Txp total (' + Utils.formatAmountInMrt(txpAmount) + '), still missing: ' + Utils.formatAmountInMrt(txpAmount - netTotal));
+      log.debug(
+        'Could not reach Txp total (' +
+          Utils.formatAmountInMrt(txpAmount) +
+          '), still missing: ' +
+          Utils.formatAmountInMrt(txpAmount - netTotal)
+      );
 
       selected = [];
       if (!_.isEmpty(bigInputs)) {
@@ -2074,7 +2220,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     }
 
     return cb(null, selected, fee);
-  };
+  }
 
   log.debug('Selecting inputs for a ' + Utils.formatAmountInMrt(txp.getTotalAmount()) + ' txp');
 
@@ -2093,6 +2239,10 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       availableAmount = balance.availableAmount;
     }
 
+    if(txp.isInvite) {
+      // User needs to maintain one invite to keep an activated account.
+      if(totalAmount < (txp.getTotalAmount() + 1 )) return cb(Errors.INSUFFICIENT_INVITES);
+    }
     if (totalAmount < txp.getTotalAmount()) return cb(Errors.INSUFFICIENT_FUNDS);
     if (availableAmount < txp.getTotalAmount()) return cb(Errors.LOCKED_FUNDS);
 
@@ -2108,61 +2258,70 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     var selectionError;
     var i = 0;
     var lastGroupLength;
-    async.whilst(function() {
-      return i < groups.length && _.isEmpty(inputs);
-    }, function(next) {
-      var group = groups[i++];
+    async.whilst(
+      function() {
+        return i < groups.length && _.isEmpty(inputs);
+      },
+      function(next) {
+        var group = groups[i++];
 
-      var candidateUtxos = _.filter(utxos, function(utxo) {
-        return utxo.confirmations >= group;
-      });
+        var candidateUtxos = _.filter(utxos, function(utxo) {
+          return utxo.confirmations >= group;
+        });
 
-      log.debug('Group >= ' + group);
+        log.debug('Group >= ' + group);
 
-      // If this group does not have any new elements, skip it
-      if (lastGroupLength === candidateUtxos.length) {
-        log.debug('This group is identical to the one already explored');
-        return next();
-      }
-
-      log.debug('Candidate utxos: ' + Utils.formatUtxos(candidateUtxos));
-
-      lastGroupLength = candidateUtxos.length;
-
-      select(candidateUtxos, function(err, selectedInputs, selectedFee) {
-        if (err) {
-          log.debug('No inputs selected on this group: ', err);
-          selectionError = err;
+        // If this group does not have any new elements, skip it
+        if (lastGroupLength === candidateUtxos.length) {
+          log.debug('This group is identical to the one already explored');
           return next();
         }
 
-        selectionError = null;
-        inputs = selectedInputs;
-        fee = selectedFee;
+        log.debug('Candidate utxos: ' + Utils.formatUtxos(candidateUtxos));
 
-        log.debug('Selected inputs from this group: ' + Utils.formatUtxos(inputs));
-        log.debug('Fee for this selection: ' + Utils.formatAmountInMrt(fee));
+        lastGroupLength = candidateUtxos.length;
 
-        return next();
-      });
-    }, function(err) {
-      if (err) return cb(err);
-      if (selectionError || _.isEmpty(inputs)) return cb(selectionError || new Error('Could not select tx inputs'));
+        select(candidateUtxos, function(err, selectedInputs, selectedFee) {
+          if (err) {
+            log.debug('No inputs selected on this group: ', err);
+            selectionError = err;
+            return next();
+          }
 
-      txp.setInputs(_.shuffle(inputs));
-      txp.fee = fee;
+          selectionError = null;
+          inputs = selectedInputs;
+          fee = selectedFee;
 
-      var err = self._checkTx(txp);
+          log.debug('Selected inputs from this group: ' + Utils.formatUtxos(inputs));
+          log.debug('Fee for this selection: ' + Utils.formatAmountInMrt(fee));
 
-      if (!err) {
-        var change = _.sumBy(txp.inputs, 'micros') - _.sumBy(txp.outputs, 'amount') - txp.fee;
-        log.debug('Successfully built transaction. Total fees: ' + Utils.formatAmountInMrt(txp.fee) + ', total change: ' + Utils.formatAmountInMrt(change));
-      } else {
-        log.warn('Error building transaction', err);
+          return next();
+        });
+      },
+      function(err) {
+        if (err) return cb(err);
+        if (selectionError || _.isEmpty(inputs)) return cb(selectionError || new Error('Could not select tx inputs'));
+
+        txp.setInputs(_.shuffle(inputs));
+        txp.fee = txp.isInvite? 0 : fee;
+
+        var err = self._checkTx(txp);
+
+        if (!err) {
+          var change = _.sumBy(txp.inputs, 'micros') - _.sumBy(txp.outputs, 'amount') - txp.fee;
+          log.debug(
+            'Successfully built transaction. Total fees: ' +
+              Utils.formatAmountInMrt(txp.fee) +
+              ', total change: ' +
+              Utils.formatAmountInMrt(change)
+          );
+        } else {
+          log.warn('Error building transaction', err);
+        }
+
+        return cb(err);
       }
-
-      return cb(err);
-    });
+    );
   });
 };
 
@@ -2171,17 +2330,14 @@ WalletService.prototype._canCreateTx = function(cb) {
   self.storage.fetchLastTxs(self.walletId, self.copayerId, 5 + Defaults.BACKOFF_OFFSET, function(err, txs) {
     if (err) return cb(err);
 
-    if (!txs.length)
-      return cb(null, true);
+    if (!txs.length) return cb(null, true);
 
     var lastRejections = _.takeWhile(txs, {
-      status: 'rejected'
+      status: 'rejected',
     });
 
     var exceededRejections = lastRejections.length - Defaults.BACKOFF_OFFSET;
-    if (exceededRejections <= 0)
-      return cb(null, true);
-
+    if (exceededRejections <= 0) return cb(null, true);
 
     var lastTxTs = txs[0].createdOn;
     var now = Math.floor(Date.now() / 1000);
@@ -2240,95 +2396,106 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
 WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) {
   var self = this;
 
-  async.series([
+  async.series(
+    [
+      function(next) {
+        if (opts.invite) {
+          return next();
+        }
+        var feeArgs = !!opts.feeLevel + _.isNumber(opts.feePerKb) + _.isNumber(opts.fee);
+        if (feeArgs > 1) return next(new ClientError('Only one of feeLevel/feePerKb/fee can be specified'));
 
-    function(next) {
-      if (opts.invite) {
-        return next();
-      }
-      var feeArgs = !!opts.feeLevel + _.isNumber(opts.feePerKb) + _.isNumber(opts.fee);
-      if (feeArgs > 1)
-        return next(new ClientError('Only one of feeLevel/feePerKb/fee can be specified'));
+        if (feeArgs == 0) {
+          log.debug('No fee provided, using "normal" fee level');
+          opts.feeLevel = 'normal';
+        }
 
-      if (feeArgs == 0) {
-        log.debug('No fee provided, using "normal" fee level');
-        opts.feeLevel = 'normal';
-      }
+        if (opts.feeLevel) {
+          if (
+            !_.some(Defaults.FEE_LEVELS, {
+              name: opts.feeLevel,
+            })
+          )
+            return next(
+              new ClientError('Invalid fee level. Valid values are ' + _.map(Defaults.FEE_LEVELS, 'name').join(', '))
+            );
+        }
 
-      if (opts.feeLevel) {
-        if (!_.some(Defaults.FEE_LEVELS, {
-          name: opts.feeLevel
-        }))
-          return next(new ClientError('Invalid fee level. Valid values are ' + _.map(Defaults.FEE_LEVELS, 'name').join(', ')));
-      }
+        if (_.isNumber(opts.feePerKb)) {
+          if (opts.feePerKb < Defaults.MIN_FEE_PER_KB || opts.feePerKb > Defaults.MAX_FEE_PER_KB)
+            return next(new ClientError('Invalid fee per KB'));
+        }
 
-      if (_.isNumber(opts.feePerKb)) {
-        if (opts.feePerKb < Defaults.MIN_FEE_PER_KB || opts.feePerKb > Defaults.MAX_FEE_PER_KB)
-          return next(new ClientError('Invalid fee per KB'));
-      }
+        if (_.isNumber(opts.fee) && _.isEmpty(opts.inputs))
+          return next(new ClientError('fee can only be set when inputs are specified'));
 
-      if (_.isNumber(opts.fee) && _.isEmpty(opts.inputs))
-        return next(new ClientError('fee can only be set when inputs are specified'));
+        next();
+      },
+      function(next) {
+        if (wallet.singleAddress && opts.changeAddress)
+          return next(new ClientError('Cannot specify change address on single-address wallet'));
+        next();
+      },
+      function(next) {
+        if (!opts.sendMax) return next();
+        if (!_.isArray(opts.outputs) || opts.outputs.length > 1) {
+          return next(new ClientError('Only one output allowed when sendMax is specified'));
+        }
+        if (_.isNumber(opts.outputs[0].amount))
+          return next(new ClientError('Amount is not allowed when sendMax is specified'));
+        if (_.isNumber(opts.fee))
+          return next(new ClientError('Fee is not allowed when sendMax is specified (use feeLevel/feePerKb instead)'));
 
-      next();
-    },
-    function(next) {
-      if (wallet.singleAddress && opts.changeAddress) return next(new ClientError('Cannot specify change address on single-address wallet'));
-      next();
-    },
-    function(next) {
-      if (!opts.sendMax) return next();
-      if (!_.isArray(opts.outputs) || opts.outputs.length > 1) {
-        return next(new ClientError('Only one output allowed when sendMax is specified'));
-      }
-      if (_.isNumber(opts.outputs[0].amount))
-        return next(new ClientError('Amount is not allowed when sendMax is specified'));
-      if (_.isNumber(opts.fee))
-        return next(new ClientError('Fee is not allowed when sendMax is specified (use feeLevel/feePerKb instead)'));
-
-      self.getSendMaxInfo({
-        feePerKb: opts.feePerKb || Defaults.DEFAULT_FEE_PER_KB,
-        excludeUnconfirmedUtxos: !!opts.excludeUnconfirmedUtxos,
-        returnInputs: true,
-      }, function(err, info) {
-        if (err) return next(err);
-        opts.outputs[0].amount = info.amount;
-        opts.inputs = info.inputs;
-        opts.fee = info.fee;
-        return next();
-      });
-    },
-    function(next) {
-      if (opts.validateOutputs === false) return next();
-      var validationError = self._validateOutputs(opts, wallet, next);
-      if (validationError) {
-        return next(validationError);
-      }
-      next();
-    },
-  ], cb);
+        self.getSendMaxInfo(
+          {
+            feePerKb: opts.feePerKb || Defaults.DEFAULT_FEE_PER_KB,
+            excludeUnconfirmedUtxos: !!opts.excludeUnconfirmedUtxos,
+            returnInputs: true,
+          },
+          function(err, info) {
+            if (err) return next(err);
+            opts.outputs[0].amount = info.amount;
+            opts.inputs = info.inputs;
+            opts.fee = info.fee;
+            return next();
+          }
+        );
+      },
+      function(next) {
+        if (opts.validateOutputs === false) return next();
+        var validationError = self._validateOutputs(opts, wallet, next);
+        if (validationError) {
+          return next(validationError);
+        }
+        next();
+      },
+    ],
+    cb
+  );
 };
 
 WalletService.prototype._getFeePerKb = function(wallet, opts, cb) {
   var self = this;
 
   if (_.isNumber(opts.feePerKb)) return cb(null, opts.feePerKb);
-  self.getFeeLevels({
-    network: wallet.network
-  }, function(err, levels) {
-    if (err) return cb(err);
-    var level = _.find(levels, {
-      level: opts.feeLevel
-    });
-    if (!level) {
-      var msg = 'Could not compute fee for "' + opts.feeLevel + '" level';
-      log.error(msg);
-      return cb(new ClientError(msg));
+  self.getFeeLevels(
+    {
+      network: wallet.network,
+    },
+    function(err, levels) {
+      if (err) return cb(err);
+      var level = _.find(levels, {
+        level: opts.feeLevel,
+      });
+      if (!level) {
+        var msg = 'Could not compute fee for "' + opts.feeLevel + '" level';
+        log.error(msg);
+        return cb(new ClientError(msg));
+      }
+      return cb(null, level.feePerKb);
     }
-    return cb(null, level.feePerKb);
-  });
+  );
 };
-
 
 /**
  * Creates a new transaction proposal.
@@ -2375,15 +2542,17 @@ WalletService.prototype.createTx = function(opts, cb) {
         return cb(null, wallet.createAddress(true));
       }
     }
-  };
+  }
 
   function checkTxpAlreadyExists(txProposalId, cb) {
     if (!txProposalId) return cb();
     self.storage.fetchTx(self.walletId, txProposalId, cb);
-  };
+  }
 
   self._runLocked(cb, function(cb) {
-    var txp, changeAddress, feePerKb = 0;
+    var txp,
+      changeAddress,
+      feePerKb = 0;
     self.getWallet({}, function(err, wallet) {
       if (err) return cb(err);
       if (!wallet.isComplete()) return cb(Errors.WALLET_NOT_COMPLETE);
@@ -2392,97 +2561,98 @@ WalletService.prototype.createTx = function(opts, cb) {
         if (err) return cb(err);
         if (txp) return cb(null, txp);
 
-        async.series([
+        async.series(
+          [
+            function(next) {
+              self._validateAndSanitizeTxOpts(wallet, opts, next);
+            },
+            function(next) {
+              self._canCreateTx(function(err, canCreate) {
+                if (err) return next(err);
+                if (!canCreate) return next(Errors.TX_CANNOT_CREATE);
+                next();
+              });
+            },
+            function(next) {
+              if (opts.sendMax) return next();
+              getChangeAddress(wallet, function(err, address) {
+                if (err) return next(err);
+                changeAddress = address;
+                // TODO: get get signed referral id
+                // Unlock the address used for receiving change.
+                // const refid = '';
+                // self.unlockAddress(refid, function(err, result){
+                //   // If the change address is unlocked already, we can continue with
+                //   // the creation of the TXN.
+                //   if (err && (err != Errors.UNLOCKED_ALREADY)) return next(err);
+                // });
+                next();
+              });
+            },
+            function(next) {
+              if (opts.invite || (_.isNumber(opts.fee) && !_.isEmpty(opts.inputs))) return next();
 
-          function(next) {
-            self._validateAndSanitizeTxOpts(wallet, opts, next);
-          },
-          function(next) {
-            self._canCreateTx(function(err, canCreate) {
-    if (err) return next(err);
-              if (!canCreate) return next(Errors.TX_CANNOT_CREATE);
+              self._getFeePerKb(wallet, opts, function(err, fee) {
+                feePerKb = fee;
+                next();
+              });
+            },
+            function(next) {
+              var txOpts = {
+                id: opts.txProposalId,
+                walletId: self.walletId,
+                creatorId: self.copayerId,
+                isInvite: opts.invite,
+                outputs: opts.outputs,
+                message: opts.message,
+                changeAddress: changeAddress,
+                feeLevel: opts.feeLevel,
+                feePerKb: feePerKb,
+                payProUrl: opts.payProUrl,
+                network: wallet.getNetworkName(),
+                walletM: wallet.m,
+                walletN: wallet.n,
+                excludeUnconfirmedUtxos: !!opts.excludeUnconfirmedUtxos,
+                validateOutputs: !opts.validateOutputs,
+                addressType: wallet.addressType,
+                customData: opts.customData,
+                inputs: opts.inputs,
+                fee: opts.invite ? 0 : opts.inputs && !_.isNumber(opts.feePerKb) ? opts.fee : null,
+                noShuffleOutputs: opts.noShuffleOutputs,
+              };
+
+              txp = Model.TxProposal.create(txOpts);
               next();
-            });
-          },
-          function(next) {
-            if (opts.sendMax) return next();
-            getChangeAddress(wallet, function(err, address) {
-              if (err) return next(err);
-              changeAddress = address;
-              // TODO: get get signed referral id
-              // Unlock the address used for receiving change.
-              // const refid = '';
-              // self.unlockAddress(refid, function(err, result){
-              //   // If the change address is unlocked already, we can continue with
-              //   // the creation of the TXN.
-              //   if (err && (err != Errors.UNLOCKED_ALREADY)) return next(err);
-              // });
-              next();
-            });
-          },
-          function(next) {
-            if (opts.invite || (_.isNumber(opts.fee) && !_.isEmpty(opts.inputs))) return next();
-
-            self._getFeePerKb(wallet, opts, function(err, fee) {
-              feePerKb = fee;
-              next();
-            });
-          },
-          function(next) {
-            var txOpts = {
-              id: opts.txProposalId,
-              walletId: self.walletId,
-              creatorId: self.copayerId,
-              isInvite: opts.invite,
-              outputs: opts.outputs,
-              message: opts.message,
-              changeAddress: changeAddress,
-              feeLevel: opts.feeLevel,
-              feePerKb: feePerKb,
-              payProUrl: opts.payProUrl,
-              network: wallet.getNetworkName(),
-              walletM: wallet.m,
-              walletN: wallet.n,
-              excludeUnconfirmedUtxos: !!opts.excludeUnconfirmedUtxos,
-              validateOutputs: !opts.validateOutputs,
-              addressType: wallet.addressType,
-              customData: opts.customData,
-              inputs: opts.inputs,
-              fee: opts.invite ? 0 : (opts.inputs && !_.isNumber(opts.feePerKb) ? opts.fee : null),
-              noShuffleOutputs: opts.noShuffleOutputs
-            };
-
-            txp = Model.TxProposal.create(txOpts);
-            next();
-          },
-          function(next) {
-            self._selectTxInputs(txp, opts.utxosToExclude, next);
-          },
-          function(next) {
-            // setting tx size after inputs are defined, so we can APPROXIMATELY calculate fee on the client side
-            txp.estimatedSize = txp.getEstimatedSize();
-            return next();
-          },
-          function(next) {
-            if (!changeAddress || opts.dryRun) return next();
-            self.storage.storeAddressAndWallet(wallet, txp.changeAddress, next);
-          },
-          function(next) {
-            if (opts.dryRun) return next();
-            self.storage.storeTx(wallet.id, txp, next);
-          },
-        ], function(err) {
-          if (err) return cb(err);
-          return cb(null, txp);
-        });
-
+            },
+            function(next) {
+              self._selectTxInputs(txp, opts.utxosToExclude, next);
+            },
+            function(next) {
+              // setting tx size after inputs are defined, so we can APPROXIMATELY calculate fee on the client side
+              txp.estimatedSize = txp.getEstimatedSize();
+              return next();
+            },
+            function(next) {
+              if (!changeAddress || opts.dryRun) return next();
+              self.storage.storeAddressAndWallet(wallet, txp.changeAddress, next);
+            },
+            function(next) {
+              if (opts.dryRun) return next();
+              self.storage.storeTx(wallet.id, txp, next);
+            },
+          ],
+          function(err) {
+            if (err) return cb(err);
+            return cb(null, txp);
+          }
+        );
       });
     });
   });
 };
 
 WalletService.prototype._verifyRequestPubKey = function(requestPubKey, signature, xPubKey) {
-  var pub = (new Bitcore.HDPublicKey(xPubKey)).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
+  var pub = new Bitcore.HDPublicKey(xPubKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
   return Utils.verifyMessage(requestPubKey, signature, pub.toString());
 };
 
@@ -2496,8 +2666,8 @@ WalletService.prototype.publishTx = function(opts, cb) {
   var self = this;
 
   function utxoKey(utxo) {
-    return utxo.txid + '|' + utxo.vout
-  };
+    return utxo.txid + '|' + utxo.vout;
+  }
 
   if (!checkRequired(opts, ['txProposalId', 'proposalSignature'], cb)) return;
 
@@ -2505,61 +2675,64 @@ WalletService.prototype.publishTx = function(opts, cb) {
     self.getWallet({}, function(err, wallet) {
       if (err) return cb(err);
 
-      self.getTx({
-        txProposalId: opts.txProposalId,
-        retries: 10,
-        interval: 75,
-      }, function(err, txp) {
-        if (err) return cb(err);
-        if (!txp) return cb(Errors.TX_NOT_FOUND);
-        if (!txp.isTemporary()) return cb(null, txp);
-
-        var copayer = wallet.getCopayer(self.copayerId);
-
-        var raw;
-        try {
-          raw = txp.getRawTx();
-        } catch (ex) {
-          return cb(ex);
-        }
-        var signingKey = self._getSigningKey(raw, opts.proposalSignature, copayer.requestPubKeys);
-        if (!signingKey) {
-          return cb(new ClientError('Invalid proposal signature'));
-        }
-
-        // Save signature info for other copayers to check
-        txp.proposalSignature = opts.proposalSignature;
-        if (signingKey.selfSigned) {
-          txp.proposalSignaturePubKey = signingKey.key;
-          txp.proposalSignaturePubKeySig = signingKey.signature;
-        }
-
-        const addresses = txp.inputs;
-        // Verify UTXOs are still available
-        self._getUtxosForCurrentWallet({ addresses: txp.inputs }, txp.isInvite, function(err, utxos) {
+      self.getTx(
+        {
+          txProposalId: opts.txProposalId,
+          retries: 10,
+          interval: 75,
+        },
+        function(err, txp) {
           if (err) return cb(err);
+          if (!txp) return cb(Errors.TX_NOT_FOUND);
+          if (!txp.isTemporary()) return cb(null, txp);
 
-          var txpInputs = _.map(txp.inputs, utxoKey);
-          var utxosIndex = _.keyBy(utxos, utxoKey);
-          var unavailable = _.some(txpInputs, function(i) {
-            var utxo = utxosIndex[i];
-            //ignoring locks due to https://github.com/meritlabs/lightwallet-stack/issues/812
-            //return !utxo || utxo.locked;
-            return !utxo;
-          });
+          var copayer = wallet.getCopayer(self.copayerId);
 
-          if (unavailable) return cb(Errors.UNAVAILABLE_UTXOS);
+          var raw;
+          try {
+            raw = txp.getRawTx();
+          } catch (ex) {
+            return cb(ex);
+          }
+          var signingKey = self._getSigningKey(raw, opts.proposalSignature, copayer.requestPubKeys);
+          if (!signingKey) {
+            return cb(new ClientError('Invalid proposal signature'));
+          }
 
-          txp.status = 'pending';
-          self.storage.storeTx(self.walletId, txp, function(err) {
+          // Save signature info for other copayers to check
+          txp.proposalSignature = opts.proposalSignature;
+          if (signingKey.selfSigned) {
+            txp.proposalSignaturePubKey = signingKey.key;
+            txp.proposalSignaturePubKeySig = signingKey.signature;
+          }
+
+          const addresses = txp.inputs;
+          // Verify UTXOs are still available
+          self._getUtxosForCurrentWallet({ addresses: txp.inputs }, txp.isInvite, function(err, utxos) {
             if (err) return cb(err);
 
-            self._notifyTxProposalAction('NewTxProposal', txp, function() {
-              return cb(null, txp);
+            var txpInputs = _.map(txp.inputs, utxoKey);
+            var utxosIndex = _.keyBy(utxos, utxoKey);
+            var unavailable = _.some(txpInputs, function(i) {
+              var utxo = utxosIndex[i];
+              //ignoring locks due to https://github.com/meritlabs/lightwallet-stack/issues/812
+              //return !utxo || utxo.locked;
+              return !utxo;
+            });
+
+            if (unavailable) return cb(Errors.UNAVAILABLE_UTXOS);
+
+            txp.status = 'pending';
+            self.storage.storeTx(self.walletId, txp, function(err) {
+              if (err) return cb(err);
+
+              self._notifyTxProposalAction('NewTxProposal', txp, function() {
+                return cb(null, txp);
+              });
             });
           });
-        });
-      });
+        }
+      );
     });
   });
 };
@@ -2575,11 +2748,12 @@ WalletService.prototype.publishTx = function(opts, cb) {
 WalletService.prototype.getTx = function(opts, cb) {
   var self = this;
   opts.retries = opts.retries || 1;
-  opts.interval =  opts.interval || 50;
+  opts.interval = opts.interval || 50;
   var current = 1;
 
-  async.retry({times: opts.retries, interval: opts.interval},
-    (callback) => {
+  async.retry(
+    { times: opts.retries, interval: opts.interval },
+    callback => {
       var isLast = current === opts.retries;
       current++;
 
@@ -2597,7 +2771,8 @@ WalletService.prototype.getTx = function(opts, cb) {
         txp.note = note;
         return cb(null, txp);
       });
-  });
+    }
+  );
 };
 
 /**
@@ -2611,11 +2786,12 @@ WalletService.prototype.getTx = function(opts, cb) {
 WalletService.prototype.getPendingTx = function(opts, cb) {
   var self = this;
   opts.retries = opts.retries || 1;
-  opts.interval =  opts.interval || 50;
+  opts.interval = opts.interval || 50;
   var current = 1;
 
-  async.retry({times: opts.retries, interval: opts.interval},
-    (callback) => {
+  async.retry(
+    { times: opts.retries, interval: opts.interval },
+    callback => {
       var isLast = current === opts.retries;
       current++;
 
@@ -2633,9 +2809,9 @@ WalletService.prototype.getPendingTx = function(opts, cb) {
         txp.note = note;
         return cb(null, txp);
       });
-  });
+    }
+  );
 };
-
 
 /**
  * Edit note associated to a txid.
@@ -2713,21 +2889,17 @@ WalletService.prototype.getRemainingDeleteLockTime = function(txp) {
   var now = Math.floor(Date.now() / 1000);
 
   var lockTimeRemaining = txp.createdOn + Defaults.DELETE_LOCKTIME - now;
-  if (lockTimeRemaining < 0)
-    return 0;
+  if (lockTimeRemaining < 0) return 0;
 
   // not the creator? need to wait
-  if (txp.creatorId !== this.copayerId)
-    return lockTimeRemaining;
+  if (txp.creatorId !== this.copayerId) return lockTimeRemaining;
 
   // has other approvers? need to wait
   var approvers = txp.getApprovers();
-  if (approvers.length > 1 || (approvers.length == 1 && approvers[0] !== this.copayerId))
-    return lockTimeRemaining;
+  if (approvers.length > 1 || (approvers.length == 1 && approvers[0] !== this.copayerId)) return lockTimeRemaining;
 
   return 0;
 };
-
 
 /**
  * removePendingTx
@@ -2742,23 +2914,25 @@ WalletService.prototype.removePendingTx = function(opts, cb) {
   if (!checkRequired(opts, ['txProposalId'], cb)) return;
 
   self._runLocked(cb, function(cb) {
+    self.getTx(
+      {
+        txProposalId: opts.txProposalId,
+        retries: 10,
+        interval: 75,
+      },
+      function(err, txp) {
+        if (err) return cb(err);
 
-    self.getTx({
-      txProposalId: opts.txProposalId,
-      retries: 10,
-      interval: 75
-    }, function(err, txp) {
-      if (err) return cb(err);
+        if (!txp.isPending()) return cb(Errors.TX_NOT_PENDING);
 
-      if (!txp.isPending()) return cb(Errors.TX_NOT_PENDING);
+        var deleteLockTime = self.getRemainingDeleteLockTime(txp);
+        if (deleteLockTime > 0) return cb(Errors.TX_CANNOT_REMOVE);
 
-      var deleteLockTime = self.getRemainingDeleteLockTime(txp);
-      if (deleteLockTime > 0) return cb(Errors.TX_CANNOT_REMOVE);
-
-      self.storage.removeTx(self.walletId, txp.id, function() {
-        self._notifyTxProposalAction('TxProposalRemoved', txp, cb);
-      });
-    });
+        self.storage.removeTx(self.walletId, txp.id, function() {
+          self._notifyTxProposalAction('TxProposalRemoved', txp, cb);
+        });
+      }
+    );
   });
 };
 
@@ -2783,12 +2957,10 @@ WalletService.prototype.broadcastRawTx = function(opts, cb) {
   if (!checkRequired(opts, ['network', 'rawTx'], cb)) return;
 
   var network = opts.network || 'livenet';
-  if (network != 'livenet' && network != 'testnet')
-    return cb(new ClientError('Invalid network'));
+  if (network != 'livenet' && network != 'testnet') return cb(new ClientError('Invalid network'));
 
   self._broadcastRawTx(network, opts.rawTx, cb);
 };
-
 
 WalletService.prototype._checkTxInBlockchain = function(txp, cb) {
   if (!txp.txid) return cb();
@@ -2797,7 +2969,7 @@ WalletService.prototype._checkTxInBlockchain = function(txp, cb) {
   bc.getTransaction(txp.txid, function(err, tx) {
     if (err) return cb(err);
     return cb(null, !!tx);
-  })
+  });
 };
 
 /**
@@ -2820,54 +2992,64 @@ WalletService.prototype.signTx = function(opts, cb) {
      * So we've added some retry logic below.  This isn't a long-term solution, and should be reconsidered
      * either when we have time or get a mongo clustering expert on the team.
      * TODO: Reconsider approach to handling Mongo race conditions.
-    */
-    self.getPendingTx({
-      txProposalId: opts.txProposalId,
-      retries: 10,
-      interval: 75
-    }, function(err, txp) {
-      if (err) return cb(err);
-
-      var action = _.find(txp.actions, {
-        copayerId: self.copayerId
-      });
-      if (action) return cb(Errors.COPAYER_VOTED);
-      if (!txp.isPending()) return cb(Errors.TX_NOT_PENDING);
-
-      var copayer = wallet.getCopayer(self.copayerId);
-
-      try {
-        if (!txp.sign(self.copayerId, opts.signatures, copayer.xPubKey)) {
-          var raw = txp.getBitcoreTx().uncheckedSerialize();
-          return cb(Errors.BAD_SIGNATURES);
-        }
-      } catch (ex) {
-        log.error('Error signing transaction proposal', ex);
-        return cb(ex);
-      }
-
-      self.storage.storeTx(self.walletId, txp, function(err) {
+     */
+    self.getPendingTx(
+      {
+        txProposalId: opts.txProposalId,
+        retries: 10,
+        interval: 75,
+      },
+      function(err, txp) {
         if (err) return cb(err);
 
-        async.series([
-
-          function(next) {
-            self._notifyTxProposalAction('TxProposalAcceptedBy', txp, {
-              copayerId: self.copayerId,
-            }, next);
-          },
-          function(next) {
-            if (txp.isAccepted()) {
-              self._notifyTxProposalAction('TxProposalFinallyAccepted', txp, next);
-            } else {
-              next();
-            }
-          },
-        ], function() {
-          return cb(null, txp);
+        var action = _.find(txp.actions, {
+          copayerId: self.copayerId,
         });
-      });
-    });
+        if (action) return cb(Errors.COPAYER_VOTED);
+        if (!txp.isPending()) return cb(Errors.TX_NOT_PENDING);
+
+        var copayer = wallet.getCopayer(self.copayerId);
+
+        try {
+          if (!txp.sign(self.copayerId, opts.signatures, copayer.xPubKey)) {
+            var raw = txp.getBitcoreTx().uncheckedSerialize();
+            return cb(Errors.BAD_SIGNATURES);
+          }
+        } catch (ex) {
+          log.error('Error signing transaction proposal', ex);
+          return cb(ex);
+        }
+
+        self.storage.storeTx(self.walletId, txp, function(err) {
+          if (err) return cb(err);
+
+          async.series(
+            [
+              function(next) {
+                self._notifyTxProposalAction(
+                  'TxProposalAcceptedBy',
+                  txp,
+                  {
+                    copayerId: self.copayerId,
+                  },
+                  next
+                );
+              },
+              function(next) {
+                if (txp.isAccepted()) {
+                  self._notifyTxProposalAction('TxProposalFinallyAccepted', txp, next);
+                } else {
+                  next();
+                }
+              },
+            ],
+            function() {
+              return cb(null, txp);
+            }
+          );
+        });
+      }
+    );
   });
 };
 
@@ -2883,8 +3065,11 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
     var extraArgs = {
       txid: txp.txid,
     };
-    if (opts.byThirdParty) {
+
+    if (opts.byThirdParty && !txp.isInvite) {
       self._notifyTxProposalAction('OutgoingTxByThirdParty', txp, extraArgs);
+    } else if (txp.isInvite) {
+      self._notifyTxProposalAction('OutgoingInviteTx', txp, extraArgs);
     } else {
       self._notifyTxProposalAction('OutgoingTx', txp, extraArgs);
     }
@@ -2894,7 +3079,6 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
     });
   });
 };
-
 
 /**
  * Broadcast a transaction proposal.
@@ -2909,42 +3093,53 @@ WalletService.prototype.broadcastTx = function(opts, cb) {
   self.getWallet({}, function(err, wallet) {
     if (err) return cb(err);
 
-    self.getTx({
-      txProposalId: opts.txProposalId
-    }, function(err, txp) {
-      if (err) return cb(err);
+    self.getTx(
+      {
+        txProposalId: opts.txProposalId,
+      },
+      function(err, txp) {
+        if (err) return cb(err);
 
-      if (txp.status == 'broadcasted') return cb(Errors.TX_ALREADY_BROADCASTED);
-      if (txp.status != 'accepted') return cb(Errors.TX_NOT_ACCEPTED);
+        if (txp.status == 'broadcasted') return cb(Errors.TX_ALREADY_BROADCASTED);
+        if (txp.status != 'accepted') return cb(Errors.TX_NOT_ACCEPTED);
 
-      var raw;
-      try {
-        raw = txp.getRawTx();
-      } catch (ex) {
-        return cb(ex);
-      }
-      self._broadcastRawTx(txp.getNetworkName(), raw, function(err, txid) {
-        if (err) {
-          var broadcastErr = err;
-          // Check if tx already in blockchain
-          self._checkTxInBlockchain(txp, function(err, isInBlockchain) {
-            if (err) return cb(err);
-            if (!isInBlockchain) return cb(broadcastErr);
-
-            self._processBroadcast(txp, {
-              byThirdParty: true
-            }, cb);
-          });
-        } else {
-          self._processBroadcast(txp, {
-            byThirdParty: false
-          }, function(err) {
-            if (err) return cb(err);
-            return cb(null, txp);
-          });
+        var raw;
+        try {
+          raw = txp.getRawTx();
+        } catch (ex) {
+          return cb(ex);
         }
-      });
-    });
+        self._broadcastRawTx(txp.getNetworkName(), raw, function(err, txid) {
+          if (err) {
+            var broadcastErr = err;
+            // Check if tx already in blockchain
+            self._checkTxInBlockchain(txp, function(err, isInBlockchain) {
+              if (err) return cb(err);
+              if (!isInBlockchain) return cb(broadcastErr);
+
+              self._processBroadcast(
+                txp,
+                {
+                  byThirdParty: true,
+                },
+                cb
+              );
+            });
+          } else {
+            self._processBroadcast(
+              txp,
+              {
+                byThirdParty: false,
+              },
+              function(err) {
+                if (err) return cb(err);
+                return cb(null, txp);
+              }
+            );
+          }
+        });
+      }
+    );
   });
 };
 
@@ -2959,50 +3154,68 @@ WalletService.prototype.rejectTx = function(opts, cb) {
 
   if (!checkRequired(opts, ['txProposalId'], cb)) return;
 
-  self.getTx({
-    txProposalId: opts.txProposalId,
-    retries: 10,
-    interval: 75
-  }, function(err, txp) {
-    if (err) return cb(err);
-
-    var action = _.find(txp.actions, {
-      copayerId: self.copayerId
-    });
-
-    if (action) return cb(Errors.COPAYER_VOTED);
-    if (txp.status != 'pending') return cb(Errors.TX_NOT_PENDING);
-
-    txp.reject(self.copayerId, opts.reason);
-
-    self.storage.storeTx(self.walletId, txp, function(err) {
+  self.getTx(
+    {
+      txProposalId: opts.txProposalId,
+      retries: 10,
+      interval: 75,
+    },
+    function(err, txp) {
       if (err) return cb(err);
 
-      async.series([
-
-        function(next) {
-          self._notifyTxProposalAction('TxProposalRejectedBy', txp, {
-            copayerId: self.copayerId,
-          }, next);
-        },
-        function(next) {
-          if (txp.status == 'rejected') {
-            var rejectedBy = _.map(_.filter(txp.actions, {
-              type: 'reject'
-            }), 'copayerId');
-
-            self._notifyTxProposalAction('TxProposalFinallyRejected', txp, {
-              rejectedBy: rejectedBy,
-            }, next);
-          } else {
-            next();
-          }
-        },
-      ], function() {
-        return cb(null, txp);
+      var action = _.find(txp.actions, {
+        copayerId: self.copayerId,
       });
-    });
-  });
+
+      if (action) return cb(Errors.COPAYER_VOTED);
+      if (txp.status != 'pending') return cb(Errors.TX_NOT_PENDING);
+
+      txp.reject(self.copayerId, opts.reason);
+
+      self.storage.storeTx(self.walletId, txp, function(err) {
+        if (err) return cb(err);
+
+        async.series(
+          [
+            function(next) {
+              self._notifyTxProposalAction(
+                'TxProposalRejectedBy',
+                txp,
+                {
+                  copayerId: self.copayerId,
+                },
+                next
+              );
+            },
+            function(next) {
+              if (txp.status == 'rejected') {
+                var rejectedBy = _.map(
+                  _.filter(txp.actions, {
+                    type: 'reject',
+                  }),
+                  'copayerId'
+                );
+
+                self._notifyTxProposalAction(
+                  'TxProposalFinallyRejected',
+                  txp,
+                  {
+                    rejectedBy: rejectedBy,
+                  },
+                  next
+                );
+              } else {
+                next();
+              }
+            },
+          ],
+          function() {
+            return cb(null, txp);
+          }
+        );
+      });
+    }
+  );
 };
 
 /**
@@ -3020,20 +3233,31 @@ WalletService.prototype.getPendingTxs = function(opts, cb) {
       txp.deleteLockTime = self.getRemainingDeleteLockTime(txp);
     });
 
-    async.each(txps, function(txp, next) {
-      if (txp.status != 'accepted') return next();
+    async.each(
+      txps,
+      function(txp, next) {
+        if (txp.status != 'accepted') return next();
 
-      self._checkTxInBlockchain(txp, function(err, isInBlockchain) {
-        if (err || !isInBlockchain) return next(err);
-        self._processBroadcast(txp, {
-          byThirdParty: true
-        }, next);
-      });
-    }, function(err) {
-      return cb(err, _.reject(txps, function(txp) {
-        return txp.status == 'broadcasted';
-      }));
-    });
+        self._checkTxInBlockchain(txp, function(err, isInBlockchain) {
+          if (err || !isInBlockchain) return next(err);
+          self._processBroadcast(
+            txp,
+            {
+              byThirdParty: true,
+            },
+            next
+          );
+        });
+      },
+      function(err) {
+        return cb(
+          err,
+          _.reject(txps, function(txp) {
+            return txp.status == 'broadcasted';
+          })
+        );
+      }
+    );
   });
 };
 
@@ -3054,7 +3278,6 @@ WalletService.prototype.getTxs = function(opts, cb) {
   });
 };
 
-
 /**
  * Retrieves notifications after a specific id or from a given ts (whichever is more recent).
  *
@@ -3070,18 +3293,25 @@ WalletService.prototype.getNotifications = function(opts, cb) {
   self.getWallet({}, function(err, wallet) {
     if (err) return cb(err);
 
-    async.map([wallet.network, self.walletId], function(walletId, next) {
-      self.storage.fetchNotifications(walletId, opts.notificationId, opts.minTs || 0, next);
-    }, function(err, res) {
-      if (err) return cb(err);
+    async.map(
+      [wallet.network, self.walletId],
+      function(walletId, next) {
+        self.storage.fetchNotifications(walletId, opts.notificationId, opts.minTs || 0, next);
+      },
+      function(err, res) {
+        if (err) return cb(err);
 
-      var notifications = _.sortBy(_.map(_.flatten(res), function(n) {
-        n.walletId = self.walletId;
-        return n;
-      }), 'id');
+        var notifications = _.sortBy(
+          _.map(_.flatten(res), function(n) {
+            n.walletId = self.walletId;
+            return n;
+          }),
+          'id'
+        );
 
-      return cb(null, notifications);
-    });
+        return cb(null, notifications);
+      }
+    );
   });
 };
 
@@ -3094,8 +3324,8 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
         address: item.addr,
         alias: item.alias,
         amount: item.valueMicros,
-        index: item.index
-      }
+        index: item.index,
+      };
     });
 
     var outputs = _.map(tx.vout, function(item) {
@@ -3114,7 +3344,7 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
         amount: parseInt((item.value * 1e8).toFixed(0)),
         index: item.n,
         data: script.isDataOut() ? script.getData().toString() : null,
-      }
+      };
     });
 
     var t = tx.blocktime; // blocktime
@@ -3143,7 +3373,7 @@ WalletService._initBlockchainHeightCache = function() {
   if (WalletService._cachedBlockheight) return;
   WalletService._cachedBlockheight = {
     livenet: {},
-    testnet: {}
+    testnet: {},
   };
 };
 
@@ -3174,9 +3404,9 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
       }
       return cb(null, cache.last);
     });
-  };
+  }
 
-  if (!cache.current || (now - cache.updatedOn) > Defaults.BLOCKHEIGHT_CACHE_TIME * 1000) {
+  if (!cache.current || now - cache.updatedOn > Defaults.BLOCKHEIGHT_CACHE_TIME * 1000) {
     return fetchFromBlockchain(cb);
   }
 
@@ -3191,49 +3421,64 @@ WalletService.prototype._getBlockchainHeight = function(network, cb) {
  * @param opts
  * @param cb
  */
-const { promisify } = require('util');
 WalletService.prototype.getUnlockRequests = async function(opts, cb) {
+  try {
+    let wallet = await promisify(this.getWallet.bind(this))({});
+    let addresses = await promisify(this.storage.fetchAddresses.bind(this.storage))(wallet.id);
+    if (addresses.length == 0) return cb(null, []);
+    const addressStrs = _.map(addresses, 'address');
 
-    try {
+    //Receive addresses for requests that were accepted, but not in blockchain yet
+    const acceptedAddresses = await localMeritDaemon.getMempoolAcceptedAddresses(addressStrs);
 
-        let wallet = await promisify(this.getWallet.bind(this))({});
-        let addresses = await promisify(this.storage.fetchAddresses.bind(this.storage))(wallet.id);
-        if (addresses.length == 0) return cb(null, []);
-        const addressStrs = _.map(addresses, 'address');
+    const mapAndFilterReferrals = referralObjs => {
+      const referrals = _.map(referralObjs.reverse(), r => {
+        let referral = Bitcore.Referral(r.raw, wallet.network);
+        referral.timestamp = r.timestamp;
+        return referral;
+      });
 
-        //Receive addresses for requests that were accepted, but not in blockchain yet
-        const acceptedAddresses = await localMeritDaemon.getMempoolAcceptedAddresses(addressStrs);
+      return _.filter(referrals, r => {
+        if (r.address.type == 'scripthash') return false; //do not count script hash addresses
+        return addressStrs.indexOf(r.address.toString()) == -1; //filter our own unlock request
+      });
+    };
 
-        const mapAndFilterReferrals = (referralObjs) => {
-            const referrals = _.map(referralObjs.reverse(), r => Bitcore.Referral(r.raw, wallet.network));
-            return _.filter(referrals, r => {
-                if (r.address.type == 'scripthash') return false; //do not count script hash addresses
-                return (addressStrs.indexOf(r.address.toString()) == -1); //filter our own unlock request
-            });
-        };
+    const mempoolReferrals = mapAndFilterReferrals(await localMeritDaemon.getMempoolReferrals(addressStrs));
+    const mempoolRequests = _.map(mempoolReferrals, r => {
+      const address = r.address.toString();
+      const parentAddress = r.parentAddress.toString();
+      const isConfirmed = acceptedAddresses.indexOf(address) != -1;
+      return {
+        rId: r.hash,
+        alias: r.alias,
+        isConfirmed,
+        address,
+        parentAddress,
+        timestamp: r.timestamp * 1000,
+      };
+    });
 
-        const mempoolReferrals = mapAndFilterReferrals(await localMeritDaemon.getMempoolReferrals(addressStrs));
-        const mempoolRequests = _.map(mempoolReferrals, r => {
-            const address = r.address.toString();
-            const parentAddress = r.parentAddress.toString();
-            const isConfirmed = acceptedAddresses.indexOf(address) != -1;
-            return { rId: r.hash, alias: r.alias, isConfirmed, address, parentAddress};
-        });
+    const bcReferrals = mapAndFilterReferrals(await localMeritDaemon.getBlockchainReferrals(addressStrs));
+    const bcRequests = _.map(bcReferrals, r => {
+      const address = r.address.toString();
+      const parentAddress = r.parentAddress.toString();
+      return {
+        rId: r.hash,
+        alias: r.alias,
+        isConfirmed: true,
+        address,
+        parentAddress,
+        timestamp: null, //  is not contain in the getBlockchainReferrals
+      };
+    });
 
-        const bcReferrals = mapAndFilterReferrals(await localMeritDaemon.getBlockchainReferrals(addressStrs));
-        const bcRequests = _.map(bcReferrals, r => {
-            const address = r.address.toString();
-            const parentAddress = r.parentAddress.toString();
-            return { rId: r.hash, alias: r.alias, isConfirmed: true, address, parentAddress};
-        });
-
-        let requests = mempoolRequests.concat(bcRequests);
-        cb(null, requests);
-
-    } catch (err) {
-        cb(err);
-    }
-
+    let requests = mempoolRequests.concat(bcRequests);
+    requests = _.sortBy(requests, 'timestamp').reverse();
+    cb(null, requests);
+  } catch (err) {
+    cb(err);
+  }
 };
 
 /**
@@ -3247,17 +3492,15 @@ WalletService.prototype.getUnlockRequests = async function(opts, cb) {
  * @returns {TxProposal[]} Transaction proposals, first newer
  */
 WalletService.prototype.getTxHistory = function(opts, cb) {
-
   var self = this;
   if (opts.skip < 0) {
-    log.warn("Invalid parameters sent to getTxHistory.");
+    log.warn('Invalid parameters sent to getTxHistory.');
     return cb(Errors.INVALID_PARAMETERS);
   }
 
   opts = opts || {};
-  opts.limit = (_.isUndefined(opts.limit) ? Defaults.HISTORY_LIMIT : opts.limit);
-  if (opts.limit > Defaults.HISTORY_LIMIT)
-    return cb(Errors.HISTORY_LIMIT_EXCEEDED);
+  opts.limit = _.isUndefined(opts.limit) ? Defaults.HISTORY_LIMIT : opts.limit;
+  if (opts.limit > Defaults.HISTORY_LIMIT) return cb(Errors.HISTORY_LIMIT_EXCEEDED);
 
   function decorate(wallet, txs, addresses, proposals, notes) {
     var indexedAddresses = _.keyBy(addresses, 'address');
@@ -3269,7 +3512,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       if (_.isBoolean(isMine)) filter.isMine = isMine;
       if (_.isBoolean(isChange)) filter.isChange = isChange;
       return _.sumBy(_.filter(items, filter), 'amount');
-    };
+    }
 
     function classify(items, isInvite) {
       return _.map(items, function(item) {
@@ -3282,14 +3525,13 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           index: item.index,
           // TODO: handle singleAddress and change addresses
           // isChange: address ? (address.isChange || wallet.singleAddress) : false,
-          isChange: address ? ((address.isChange || wallet.singleAddress) && !isInvite) : false,
+          isChange: address ? (address.isChange || wallet.singleAddress) && !isInvite : false,
           data: item.data,
-        }
+        };
       });
-    };
+    }
 
     return _.map(txs, function(tx) {
-
       var amountIn, amountOut, amountOutChange;
       var amount, action, addressTo;
       var inputs, outputs;
@@ -3301,21 +3543,21 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         amountOut = sum(outputs, true, false);
         amountOutChange = sum(outputs, true, true);
 
-        if (amountIn == (amountOut + amountOutChange + (amountIn > 0 ? tx.fees : 0))) {
+        if (amountIn == amountOut + amountOutChange + (amountIn > 0 ? tx.fees : 0)) {
           amount = amountOut;
           action = 'moved';
         } else {
-          amount = amountIn - amountOut - amountOutChange - ((amountIn > 0 && amountOutChange >0 ) ? tx.fees : 0);
+          amount = amountIn - amountOut - amountOutChange - (amountIn > 0 && amountOutChange > 0 ? tx.fees : 0);
           action = amount > 0 ? 'sent' : 'received';
         }
 
         amount = Math.abs(amount);
         if (action == 'sent' || action == 'moved') {
           var firstExternalOutput = _.find(outputs, {
-            isMine: false
+            isMine: false,
           });
           addressTo = firstExternalOutput ? firstExternalOutput.address : 'N/A';
-        };
+        }
       } else {
         action = 'invalid';
         amount = 0;
@@ -3327,8 +3569,8 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           address: o.address,
           alias: o.alias,
           index: o.index,
-        }
-      };
+        };
+      }
 
       var newTx = {
         txid: tx.txid,
@@ -3361,7 +3603,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         // });
         if (action == 'received') {
           outputs = _.filter(outputs, {
-            isMine: true
+            isMine: true,
           });
         }
         newTx.outputs = _.map(outputs, formatOutput);
@@ -3380,7 +3622,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
         _.each(newTx.outputs, function(output) {
           var query = {
             toAddress: output.address,
-            amount: output.amount
+            amount: output.amount,
           };
           var txpOut = _.find(proposal.outputs, query);
           output.message = txpOut ? txpOut.message : null;
@@ -3398,7 +3640,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
       return newTx;
     });
-  };
+  }
 
   function getNormalizedTxs(addresses, from, to, cb) {
     var txs, fromCache, totalItems;
@@ -3407,107 +3649,112 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
     fromCache = false;
 
-    async.series([
+    async.series(
+      [
+        function(next) {
+          if (!useCache) return next();
 
-      function(next) {
-        if (!useCache) return next();
+          self.storage.getTxHistoryCache(self.walletId, from, to, function(err, res) {
+            if (err) return next(err);
+            if (!res || !res[0]) return next();
 
-        self.storage.getTxHistoryCache(self.walletId, from, to, function(err, res) {
-          if (err) return next(err);
-          if (!res || !res[0]) return next();
+            txs = res;
+            fromCache = true;
 
-          txs = res;
-          fromCache = true;
-
-          return next()
-        });
-      },
-      function(next) {
-        if (txs) return next();
-
-        var addressStrs = _.map(addresses, 'address');
-        var bc = self._getBlockchainExplorer(network);
-        if (!bc) return next(new Error('Could not get blockchain explorer instance'));
-
-        bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
-          if (err) return next(err);
-
-          txs = self._normalizeTxHistory(rawTxs);
-          totalItems = total;
-          return next();
-        });
-      },
-      function(next) {
-        if (!useCache || fromCache) return next();
-
-        var txsToCache = _.filter(txs, function(i) {
-          return i.confirmations >= Defaults.CONFIRMATIONS_TO_START_CACHING;
-        }).reverse();
-
-        if (!txsToCache.length) return next();
-
-        var fwdIndex = totalItems - to;
-        if (fwdIndex < 0) fwdIndex = 0;
-        self.storage.storeTxHistoryCache(self.walletId, totalItems, fwdIndex, txsToCache, next);
-      },
-      function(next) {
-        if (!useCache || !fromCache) return next();
-        if (!txs) return next();
-
-        // Fix tx confirmations for cached txs
-        self._getBlockchainHeight(network, function(err, height) {
-          if (err || !height) return next(err);
-          _.each(txs, function(tx) {
-            if (tx.blockheight >= 0) {
-              tx.confirmations = height - tx.blockheight + 1;
-            }
+            return next();
           });
-          log.warn("After blockHeight check");
-          next();
-        });
-      },
-    ], function(err) {
-      if (err) return cb(err);
+        },
+        function(next) {
+          if (txs) return next();
 
-      return cb(null, {
-        items: txs,
-        fromCache: fromCache
-      });
-    });
-  };
+          var addressStrs = _.map(addresses, 'address');
+          var bc = self._getBlockchainExplorer(network);
+          if (!bc) return next(new Error('Could not get blockchain explorer instance'));
+
+          bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
+            if (err) return next(err);
+
+            txs = self._normalizeTxHistory(rawTxs);
+            totalItems = total;
+            return next();
+          });
+        },
+        function(next) {
+          if (!useCache || fromCache) return next();
+
+          var txsToCache = _.filter(txs, function(i) {
+            return i.confirmations >= Defaults.CONFIRMATIONS_TO_START_CACHING;
+          }).reverse();
+
+          if (!txsToCache.length) return next();
+
+          var fwdIndex = totalItems - to;
+          if (fwdIndex < 0) fwdIndex = 0;
+          self.storage.storeTxHistoryCache(self.walletId, totalItems, fwdIndex, txsToCache, next);
+        },
+        function(next) {
+          if (!useCache || !fromCache) return next();
+          if (!txs) return next();
+
+          // Fix tx confirmations for cached txs
+          self._getBlockchainHeight(network, function(err, height) {
+            if (err || !height) return next(err);
+            _.each(txs, function(tx) {
+              if (tx.blockheight >= 0) {
+                tx.confirmations = height - tx.blockheight + 1;
+              }
+            });
+            log.warn('After blockHeight check');
+            next();
+          });
+        },
+      ],
+      function(err) {
+        if (err) return cb(err);
+
+        return cb(null, {
+          items: txs,
+          fromCache: fromCache,
+        });
+      }
+    );
+  }
 
   function tagLowFees(wallet, txs, cb) {
     var unconfirmed = _.filter(txs, {
-      confirmations: 0
+      confirmations: 0,
     });
     if (_.isEmpty(unconfirmed)) return cb();
 
-    self.getFeeLevels({
-      network: wallet.network
-    }, function(err, levels) {
-      if (err) {
-        log.warn('Could not fetch fee levels', err);
-      } else {
-        var level = _.find(levels, {
-          level: 'superEconomy'
-        });
-        if (!level || !level.nbBlocks) {
-          log.debug('Cannot compute super economy fee level from blockchain');
+    self.getFeeLevels(
+      {
+        network: wallet.network,
+      },
+      function(err, levels) {
+        if (err) {
+          log.warn('Could not fetch fee levels', err);
         } else {
-          var minFeePerKb = level.feePerKb;
-          _.each(unconfirmed, function(tx) {
-            tx.lowFees = tx.feePerKb < minFeePerKb;
+          var level = _.find(levels, {
+            level: 'superEconomy',
           });
+          if (!level || !level.nbBlocks) {
+            log.debug('Cannot compute super economy fee level from blockchain');
+          } else {
+            var minFeePerKb = level.feePerKb;
+            _.each(unconfirmed, function(tx) {
+              tx.lowFees = tx.feePerKb < minFeePerKb;
+            });
+          }
         }
+        return cb();
       }
-      return cb();
-    });
-  };
+    );
+  }
 
   self.getWallet({}, function(err, wallet) {
     if (err) return cb(err);
 
-      // Get addresses for this wallet
+    // Get addresses for this wallet
     self.storage.fetchAddresses(self.walletId, function(err, addresses) {
       if (err) return cb(err);
 
@@ -3516,69 +3763,76 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       var from = opts.skip || 0;
       var to = from + opts.limit;
 
+      async.waterfall(
+        [
+          function(next) {
+            return getNormalizedTxs(addresses, from, to, next);
+          },
+          function(txs, next) {
+            if (_.isEmpty(txs.items)) {
+              return next(null, []);
+            }
 
-      async.waterfall([
+            // TODO: Re-evaluate this because we are already paginating our gets.
+            // Fetch all proposals in [t - 7 days, t + 1 day]
+            var minTs = _.minBy(txs.items, 'time').time - 7 * 24 * 3600;
+            var maxTs = _.maxBy(txs.items, 'time').time + 1 * 24 * 3600;
 
-        function(next) {
-          return getNormalizedTxs(addresses, from, to, next);
-        },
-        function(txs, next) {
-          if (_.isEmpty(txs.items)) {
-            return next(null, []);
+            async.parallel(
+              [
+                function(done) {
+                  self.storage.fetchTxs(
+                    self.walletId,
+                    {
+                      minTs: minTs,
+                      maxTs: maxTs,
+                    },
+                    done
+                  );
+                },
+                function(done) {
+                  self.storage.fetchTxNotes(
+                    self.walletId,
+                    {
+                      minTs: minTs,
+                    },
+                    done
+                  );
+                },
+              ],
+              function(err, res) {
+                return next(err, {
+                  txs: txs,
+                  txps: res[0],
+                  notes: res[1],
+                });
+              }
+            );
+          },
+        ],
+        function(err, res) {
+          if (err) return cb(err);
+          if (!res.txs) {
+            var finalTxs = decorate(wallet, [], addresses, [], []);
+            res.txs = {
+              fromCache: false,
+            };
+          } else {
+            var finalTxs = decorate(wallet, res.txs.items, addresses, res.txps, res.notes);
           }
 
-          // TODO: Re-evaluate this because we are already paginating our gets.
-          // Fetch all proposals in [t - 7 days, t + 1 day]
-          var minTs = _.minBy(txs.items, 'time').time - 7 * 24 * 3600;
-          var maxTs = _.maxBy(txs.items, 'time').time + 1 * 24 * 3600;
+          tagLowFees(wallet, finalTxs, function(err) {
+            if (err) log.warn('Failed to tag unconfirmed with low fee');
 
+            if (res.txs && res.txs.fromCache) log.debug('History from cache for:', self.walletId, from, to);
 
-          async.parallel([
-
-            function(done) {
-              self.storage.fetchTxs(self.walletId, {
-                minTs: minTs,
-                maxTs: maxTs
-              }, done);
-            },
-            function(done) {
-              self.storage.fetchTxNotes(self.walletId, {
-                minTs: minTs
-              }, done);
-            },
-          ], function(err, res) {
-            return next(err, {
-              txs: txs,
-              txps: res[0],
-              notes: res[1]
-            });
+            return cb(null, finalTxs, !!res.txs.fromCache);
           });
-        },
-      ], function(err, res) {
-        if (err) return cb(err);
-        if (!res.txs) {
-          var finalTxs = decorate(wallet, [], addresses, [], []);
-          res.txs = {
-            fromCache: false
-          };
-        } else {
-          var finalTxs = decorate(wallet, res.txs.items, addresses, res.txps, res.notes);
         }
-
-        tagLowFees(wallet, finalTxs, function(err) {
-          if (err)
-            log.warn('Failed to tag unconfirmed with low fee');
-
-          if (res.txs && res.txs.fromCache)
-            log.debug("History from cache for:", self.walletId, from, to);
-
-          return cb(null, finalTxs, !!res.txs.fromCache);
-        });
-      });
+      );
     });
   });
 };
-
 
 /**
  * Scan the blockchain looking for addresses having some activity
@@ -3595,30 +3849,33 @@ WalletService.prototype.scan = function(opts, cb) {
     var bc = self._getBlockchainExplorer(network);
     if (!bc) return cb(new Error('Could not get blockchain explorer instance'));
     bc.getAddressActivity(address, cb);
-  };
+  }
 
   function scanBranch(derivator, cb) {
     var inactiveCounter = 0;
     var allAddresses = [];
     var gap = Defaults.SCAN_ADDRESS_GAP;
 
-    async.whilst(function() {
-      return inactiveCounter < gap;
-    }, function(next) {
-      var address = derivator.derive();
-      checkActivity(address.address, address.network, function(err, activity) {
-        if (err) return next(err);
+    async.whilst(
+      function() {
+        return inactiveCounter < gap;
+      },
+      function(next) {
+        var address = derivator.derive();
+        checkActivity(address.address, address.network, function(err, activity) {
+          if (err) return next(err);
 
-        allAddresses.push(address);
-        inactiveCounter = activity ? 0 : inactiveCounter + 1;
-        next();
-      });
-    }, function(err) {
-      derivator.rewind(gap);
-      return cb(err, _.dropRight(allAddresses, gap));
-    });
-  };
-
+          allAddresses.push(address);
+          inactiveCounter = activity ? 0 : inactiveCounter + 1;
+          next();
+        });
+      },
+      function(err) {
+        derivator.rewind(gap);
+        return cb(err, _.dropRight(allAddresses, gap));
+      }
+    );
+  }
 
   self._runLocked(cb, function(cb) {
     self.getWallet({}, function(err, wallet) {
@@ -3649,20 +3906,24 @@ WalletService.prototype.scan = function(opts, cb) {
             }
           });
 
-          async.eachSeries(derivators, function(derivator, next) {
-            scanBranch(derivator, function(err, addresses) {
-              if (err) return next(err);
-              self.storage.storeAddressAndWallet(wallet, addresses, next);
-            });
-          }, function(error) {
-            self.storage.fetchWallet(wallet.id, function(err, wallet) {
-              if (err) return cb(err);
-              wallet.scanStatus = error ? 'error' : 'success';
-              self.storage.storeWallet(wallet, function() {
+          async.eachSeries(
+            derivators,
+            function(derivator, next) {
+              scanBranch(derivator, function(err, addresses) {
+                if (err) return next(err);
+                self.storage.storeAddressAndWallet(wallet, addresses, next);
+              });
+            },
+            function(error) {
+              self.storage.fetchWallet(wallet.id, function(err, wallet) {
+                if (err) return cb(err);
+                wallet.scanStatus = error ? 'error' : 'success';
+                self.storage.storeWallet(wallet, function() {
                   return cb(error);
                 });
-            })
-          });
+              });
+            }
+          );
         });
       });
     });
@@ -3684,9 +3945,9 @@ WalletService.prototype.startScan = function(opts, cb) {
     };
     if (err) data.error = err;
     self._notify('ScanFinished', data, {
-      isGlobal: true
+      isGlobal: true,
     });
-  };
+  }
 
   self.getWallet({}, function(err, wallet) {
     if (err) return cb(err);
@@ -3697,7 +3958,7 @@ WalletService.prototype.startScan = function(opts, cb) {
     }, 100);
 
     return cb(null, {
-      started: true
+      started: true,
     });
   });
 };
@@ -3728,7 +3989,7 @@ WalletService.prototype.validateAddress = function(address, cb) {
       if (err) return cb(null, false);
       return cb(null, result);
     });
-  } catch(e) {
+  } catch (e) {
     return cb(new ClientError(`Invalid network: ${e.message}`));
   }
 };
@@ -3768,6 +4029,75 @@ WalletService.prototype.pushNotificationsUnsubscribe = function(opts, cb) {
   self.storage.removePushNotificationSub(self.copayerId, opts.token, cb);
 };
 
+// *** Backwards compatibility start *** //
+// These are the default settings for SMS subscriptions
+const DEFAULT_SMS_SUB_SETTINGS = {
+  IncomingTx: true,
+  IncomingInvite: true,
+  IncomingInviteRequest: true,
+  WalletUnlocked: true,
+  MiningReward: true,
+  GrowthReward: true,
+};
+// *** Backwards compatibility end *** //
+
+WalletService.prototype.smsNotificationsSubscribe = function(opts, cb) {
+  if (!opts.phoneNumber) return cb('Phone number was not provided');
+
+  // *** Backwards compatibility start *** //
+  // This will ensure that we have notification settings to store in the DB
+  // Old clients will not send any settings & we should subscribe them to all events by default
+  opts.settings = opts.settings || DEFAULT_SMS_SUB_SETTINGS;
+  // *** Backwards compatibility end *** //
+
+  this.storage.storeSmsNotificationSub(
+    {
+      walletId: this.walletId,
+      phoneNumber: opts.phoneNumber,
+      platform: opts.platform,
+      settings: opts.settings,
+    },
+    cb
+  );
+};
+
+WalletService.prototype.smsNotificationsUnsubscribe = function(cb) {
+  this.storage.removeSmsNotificationSub(this.walletId, cb);
+};
+
+WalletService.prototype.getSmsNotificationSubscription = function(cb) {
+  this.storage.fetchSmsNotificationSub(this.walletId, (err, result) => {
+    // *** Backwards compatibility start *** //
+    if (err) {
+      return cb(err, null);
+    }
+
+    if (!result) {
+      return cb(null, null);
+    }
+
+    // Older subscriptions will not have a settings property,
+    // We should attach the default settings to the document &
+    // send the updated doc to the client side
+    if (!result.settings) {
+      result.settings = DEFAULT_SMS_SUB_SETTINGS;
+    }
+
+    // Send obj back to client
+    cb(null, result);
+
+    // Update the doc behind the scenes
+    this.smsNotificationsSubscribe(result, err => {
+      if (err) {
+        console.log('Error upgrading SMS subscription');
+      } else {
+        console.log('Upgraded SMS subscription!');
+      }
+    });
+    // *** Backwards compatibility end *** //
+  });
+};
+
 /**
  * Subscribe this copayer to the specified tx to get a notification when the tx confirms.
  * @param {Object} opts
@@ -3800,7 +4130,7 @@ WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
   self.storage.removeTxConfirmationSub(self.copayerId, opts.txid, cb);
 };
 
-WalletService.prototype.getReferral = function (refid, cb) {
+WalletService.prototype.getReferral = function(refid, cb) {
   const bc = this._getBlockchainExplorer();
 
   bc.getReferral(refid, function(err, referral) {
@@ -3808,14 +4138,14 @@ WalletService.prototype.getReferral = function (refid, cb) {
 
     cb(null, referral);
   });
-}
+};
 /**
  * Validate that an EasyScript is on the blockchain, and that it can be unlocked.
  */
 WalletService.prototype.validateEasyScript = function(scriptId, cb) {
   localMeritDaemon.getInputForEasySend(scriptId, function(errMsg, result) {
     if (errMsg) {
-      return cb("Could not find easyScript on BlockChain.")
+      return cb('Could not find easyScript on BlockChain.');
     }
 
     return cb(errMsg, result);
@@ -3885,8 +4215,8 @@ WalletService.prototype.createVault = function(opts, cb) {
 
   let vaultId = '';
 
-  const readableWhitelist = _.map(opts.whitelist, (wl) => {
-      return Bitcore.Address.fromBuffer(new Buffer(wl.data)).toString();
+  const readableWhitelist = _.map(opts.whitelist, wl => {
+    return Bitcore.Address.fromBuffer(new Buffer(wl.data)).toString();
   });
   const toStore = _.cloneDeep(opts);
   toStore.whitelist = readableWhitelist;
@@ -3917,174 +4247,174 @@ WalletService.prototype.createVault = function(opts, cb) {
         toStore.coins[0] = txp;
         toStore.initialTxId = txid;
 
-        self._processBroadcast(txp, {
-          byThirdParty: true
-        },  function(err, txp) {
-
-         self.updateVaultInfo(toStore, function(err, result) {
-            if (err) return cb(err);
-            return cb(null, toStore);
-          });
-        });
+        self._processBroadcast(
+          txp,
+          {
+            byThirdParty: true,
+          },
+          function(err, txp) {
+            self.updateVaultInfo(toStore, function(err, result) {
+              if (err) return cb(err);
+              return cb(null, toStore);
+            });
+          }
+        );
       });
-    }
+    },
   ]);
-
-
 };
 
 WalletService.prototype.getVaultTxHistory = function(opts, cb) {
   var self = this;
 
   let decorate = (vault, txs) => {
+    return txs.filter(tx => !tx.isInvite).map(tx => {
+      const inputsAddresses = tx.inputs.map(i => i.address);
+      const output = tx.outputs.find(o => inputsAddresses.indexOf(o.address) == -1); // filtering change outputs
 
-      return txs.filter(tx => !tx.isInvite).map(tx => {
+      const txData = {
+        txid: tx.txid,
+        confirmations: tx.confirmation,
+        time: tx.time,
+        fee: tx.fees,
+      };
 
-         const inputsAddresses = tx.inputs.map(i => i.address);
-         const output = tx.outputs.find(o => inputsAddresses.indexOf(o.address) == -1); // filtering change outputs
-
-         const txData = {
-             txid: tx.txid,
-             confirmations: tx.confirmation,
-             time: tx.time,
-             fee: tx.fees
-         };
-
-         if (!output) {
-             return {
-                 ...txData,
-                 type:  'renewal',
-                 amount: tx.outputs[0].amount
-             }
-         } else {
-             return {
-                 ...txData,
-                 amount: output.amount,
-                 type:  output.address == new Bitcore.Address(vault.address).toString() ? 'stored' : 'sent',
-                 address: output.address,
-                 alias: output.alias
-             }
-         }
-
-      });
+      if (!output) {
+        return {
+          ...txData,
+          type: 'renewal',
+          amount: tx.outputs[0].amount,
+        };
+      } else {
+        return {
+          ...txData,
+          amount: output.amount,
+          type: output.address == new Bitcore.Address(vault.address).toString() ? 'stored' : 'sent',
+          address: output.address,
+          alias: output.alias,
+        };
+      }
+    });
   };
-
 
   function getNormalizedTxs(addresses, from, to, cb) {
     var txs, fromCache, totalItems;
     var useCache = addresses.length >= Defaults.HISTORY_CACHE_ADDRESS_THRESOLD;
     var network = opts.network;
 
-    async.series([
+    async.series(
+      [
+        function(next) {
+          if (!useCache) return next();
 
-      function(next) {
-        if (!useCache) return next();
+          self.storage.getTxHistoryCache(self.walletId, from, to, function(err, res) {
+            if (err) return next(err);
+            if (!res || !res[0]) return next();
 
-        self.storage.getTxHistoryCache(self.walletId, from, to, function(err, res) {
-          if (err) return next(err);
-          if (!res || !res[0]) return next();
+            txs = res;
+            fromCache = true;
 
-          txs = res;
-          fromCache = true;
-
-          return next()
-        });
-      },
-      function(next) {
-        if (txs) return next();
-
-        var addressStrs = addresses.join(',');
-        var bc = self._getBlockchainExplorer(network);
-        if (!bc) return next(new Error('Could not get blockchain explorer instance'));
-
-        bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
-          if (err) return next(err);
-
-          txs = self._normalizeTxHistory(rawTxs);
-
-          totalItems = total;
-          return next();
-        });
-      },
-      function(next) {
-        if (!useCache || fromCache) return next();
-
-        var txsToCache = _.filter(txs, function(i) {
-          return i.confirmations >= Defaults.CONFIRMATIONS_TO_START_CACHING;
-        }).reverse();
-
-        if (!txsToCache.length) return next();
-
-        var fwdIndex = totalItems - to;
-        if (fwdIndex < 0) fwdIndex = 0;
-        self.storage.storeTxHistoryCache(self.walletId, totalItems, fwdIndex, txsToCache, next);
-      },
-      function(next) {
-        if (!useCache || !fromCache) return next();
-        if (!txs) return next();
-
-        // Fix tx confirmations for cached txs
-        self._getBlockchainHeight(network, function(err, height) {
-          if (err || !height) return next(err);
-          _.each(txs, function(tx) {
-            if (tx.blockheight >= 0) {
-              tx.confirmations = height - tx.blockheight + 1;
-            }
+            return next();
           });
-          next();
-        });
-      },
-    ], function(err) {
-      if (err) return cb(err);
+        },
+        function(next) {
+          if (txs) return next();
 
-      return cb(null, {
-        items: txs,
-        fromCache: fromCache
-      });
-    });
-  };
+          var addressStrs = addresses.join(',');
+          var bc = self._getBlockchainExplorer(network);
+          if (!bc) return next(new Error('Could not get blockchain explorer instance'));
+
+          bc.getTransactions(addressStrs, from, to, function(err, rawTxs, total) {
+            if (err) return next(err);
+
+            txs = self._normalizeTxHistory(rawTxs);
+
+            totalItems = total;
+            return next();
+          });
+        },
+        function(next) {
+          if (!useCache || fromCache) return next();
+
+          var txsToCache = _.filter(txs, function(i) {
+            return i.confirmations >= Defaults.CONFIRMATIONS_TO_START_CACHING;
+          }).reverse();
+
+          if (!txsToCache.length) return next();
+
+          var fwdIndex = totalItems - to;
+          if (fwdIndex < 0) fwdIndex = 0;
+          self.storage.storeTxHistoryCache(self.walletId, totalItems, fwdIndex, txsToCache, next);
+        },
+        function(next) {
+          if (!useCache || !fromCache) return next();
+          if (!txs) return next();
+
+          // Fix tx confirmations for cached txs
+          self._getBlockchainHeight(network, function(err, height) {
+            if (err || !height) return next(err);
+            _.each(txs, function(tx) {
+              if (tx.blockheight >= 0) {
+                tx.confirmations = height - tx.blockheight + 1;
+              }
+            });
+            next();
+          });
+        },
+      ],
+      function(err) {
+        if (err) return cb(err);
+
+        return cb(null, {
+          items: txs,
+          fromCache: fromCache,
+        });
+      }
+    );
+  }
 
   function tagLowFees(txs, cb) {
     var unconfirmed = _.filter(txs, {
-      confirmations: 0
+      confirmations: 0,
     });
     if (_.isEmpty(unconfirmed)) return cb();
 
-    self.getFeeLevels({
-      network: opts.network
-    }, function(err, levels) {
-      if (err) {
-        log.warn('Could not fetch fee levels', err);
-      } else {
-        var level = _.find(levels, {
-          level: 'superEconomy'
-        });
-        if (!level || !level.nbBlocks) {
-          log.debug('Cannot compute super economy fee level from blockchain');
+    self.getFeeLevels(
+      {
+        network: opts.network,
+      },
+      function(err, levels) {
+        if (err) {
+          log.warn('Could not fetch fee levels', err);
         } else {
-          var minFeePerKb = level.feePerKb;
-          _.each(unconfirmed, function(tx) {
-            tx.lowFees = tx.feePerKb < minFeePerKb;
+          var level = _.find(levels, {
+            level: 'superEconomy',
           });
+          if (!level || !level.nbBlocks) {
+            log.debug('Cannot compute super economy fee level from blockchain');
+          } else {
+            var minFeePerKb = level.feePerKb;
+            _.each(unconfirmed, function(tx) {
+              tx.lowFees = tx.feePerKb < minFeePerKb;
+            });
+          }
         }
+        return cb();
       }
-      return cb();
-    });
-  };
+    );
+  }
 
-  this.storage.fetchVaultByCopayerId(self.copayerId, opts.id, function (err, vault) {
-
+  this.storage.fetchVaultByCopayerId(self.copayerId, opts.id, function(err, vault) {
     var address = new Bitcore.Address(vault.address).toString();
     var addresses = [address];
-      if (err) return cb(err);
-      if (addresses.length == 0) return cb(null, []);
+    if (err) return cb(err);
+    if (addresses.length == 0) return cb(null, []);
 
-      var from = opts.skip || 0;
-      var to = from + opts.limit;
+    var from = opts.skip || 0;
+    var to = from + opts.limit;
 
-
-      async.waterfall([
-
+    async.waterfall(
+      [
         function(next) {
           getNormalizedTxs(addresses, from, to, next);
         },
@@ -4098,76 +4428,107 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
           var minTs = _.minBy(txs.items, 'time').time - 7 * 24 * 3600;
           var maxTs = _.maxBy(txs.items, 'time').time + 1 * 24 * 3600;
 
-
-          async.parallel([
-
-            function(done) {
-              self.storage.fetchTxs(self.walletId, {
-                minTs: minTs,
-                maxTs: maxTs
-              }, done);
-            },
-            function(done) {
-              self.storage.fetchTxNotes(self.walletId, {
-                minTs: minTs
-              }, done);
-            },
-          ], function(err, res) {
-            return next(err, {
-              txs: txs,
-              txps: res[0],
-              notes: res[1]
-            });
-          });
+          async.parallel(
+            [
+              function(done) {
+                self.storage.fetchTxs(
+                  self.walletId,
+                  {
+                    minTs: minTs,
+                    maxTs: maxTs,
+                  },
+                  done
+                );
+              },
+              function(done) {
+                self.storage.fetchTxNotes(
+                  self.walletId,
+                  {
+                    minTs: minTs,
+                  },
+                  done
+                );
+              },
+            ],
+            function(err, res) {
+              return next(err, {
+                txs: txs,
+                txps: res[0],
+                notes: res[1],
+              });
+            }
+          );
         },
-      ], function(err, res) {
+      ],
+      function(err, res) {
         if (err) return cb(err);
 
         if (!res.txs) {
           var finalTxs = decorate(vault, []);
           res.txs = {
-            fromCache: false
+            fromCache: false,
           };
         } else {
           var finalTxs = decorate(vault, res.txs.items);
         }
 
         tagLowFees(finalTxs, function(err) {
-          if (err)
-            log.warn('Failed to tag unconfirmed with low fee');
+          if (err) log.warn('Failed to tag unconfirmed with low fee');
 
-          if (res.txs && res.txs.fromCache)
-            log.debug("History from cache for:", self.walletId, from, to);
+          if (res.txs && res.txs.fromCache) log.debug('History from cache for:', self.walletId, from, to);
 
           return cb(null, finalTxs, !!res.txs.fromCache);
         });
-      });
-    });
+      }
+    );
+  });
 };
 
 WalletService.prototype.updateVaultInfo = function(opts, cb) {
+  this.storage.fetchVaultById(opts._id, (err, vault) => {
+    if (err) return cb(err);
+    if (!vault) return cb(Errors.INVALID_PARAMETERS);
 
-    this.storage.fetchVaultById(opts._id, (err, vault) => {
+    vault = Object.assign(vault, opts);
+    this.getUtxos({ addresses: [new Bitcore.Address(vault.address).toString()] }, (err, coins) => {
+      if (err) return cb(err);
+      vault.coins = coins;
+      vault.amount =
+        vault.coins.reduce((amount, coin) => {
+          return amount + coin.micros;
+        }, 0) || 0;
+
+      this.storage.updateVault(this.copayerId, vault, (err, vault) => {
         if (err) return cb(err);
-        if (!vault) return cb(Errors.INVALID_PARAMETERS);
-
-        vault = Object.assign(vault, opts);
-        this.getUtxos({addresses: [new Bitcore.Address(vault.address).toString()]}, (err, coins) => {
-
-            if (err) return cb(err);
-            vault.coins = coins;
-            vault.amount = vault.coins.reduce((amount, coin) => {
-                    return amount + coin.micros
-                }, 0) || 0;
-
-            this.storage.updateVault(this.copayerId, vault, (err, vault) => {
-                if (err) return cb(err);
-                return cb(null, vault);
-            })
-        });
+        return cb(null, vault);
+      });
     });
+  });
 };
 
+WalletService.prototype.registerGlobalSend = async function(opts, cb) {
+  const address = await promisify(this.getRootAddress.bind(this))();
+  this.storage.registerGlobalSend(address.toString(), opts.scriptAddress, opts.globalsend, err => {
+    if (err) return cb(err);
+    cb(null);
+  });
+};
+
+WalletService.prototype.cancelGlobalSend = async function(opts, cb) {
+  const address = await promisify(this.getRootAddress.bind(this))();
+  this.storage.cancelGlobalSend(address.toString(), opts.scriptAddress, err => {
+    if (err) return cb(err);
+    cb(null);
+  });
+};
+
+WalletService.prototype.getGlobalSends = async function(opts, cb) {
+  const address = await promisify(this.getRootAddress.bind(this))();
+  this.storage.getGlobalSends(address.toString(), (err, links) => {
+    if (err) return cb(err);
+    return cb(null, links);
+  });
+};
 
 module.exports = WalletService;
 module.exports.ClientError = ClientError;

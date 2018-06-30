@@ -1,3 +1,14 @@
+.applicationWrapper
+  position: relative
+  display: flex
+  flex-direction: column
+  height: 100vh
+  overflow: hidden
+  justify-content: space-between
+  .main
+    flex: 1
+    position: relative
+    z-index: 2
 .dashboard__main
   > :not(router-outlet)
     display: block
@@ -29,3 +40,7 @@ span.badge
   min-width: 23px
   text-align: center
   color: white
+.wallet-details__content__navigation span.badge
+  position: relative
+  transform: translateY(-5px)
+  font-size: 12px !important

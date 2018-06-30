@@ -1,0 +1,4 @@
+provider: s3
+bucket: merit-lightwallet
+region: us-east-1
+endpoint: https://s3.us-east-1.amazonaws.com

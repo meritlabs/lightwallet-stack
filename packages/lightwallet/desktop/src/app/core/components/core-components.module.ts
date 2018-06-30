@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { CommonDirectivesModule } from '@merit/common/common-directives.module';
 
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
@@ -14,12 +15,13 @@ import { ToolbarComponent } from '@merit/desktop/app/core/components/toolbar/too
 import { VaultsListComponent } from '@merit/desktop/app/core/components/vaults-list/vaults-list.component';
 import { WalletsListComponent } from '@merit/desktop/app/core/components/wallets-list/wallets-list.component';
 import { VirtualScrollModule } from 'angular2-virtual-scroll';
-import { MomentModule } from 'ngx-moment';
 import { ClipModule } from 'ng2-clip';
+import { MomentModule } from 'ngx-moment';
+import { GetStartedTipsComponent } from './get-started-tips/get-started-tips.component';
 import { HistoryItemComponent } from './history-item/history-item.component';
 import { HistoryListComponent } from './history-list/history-list.component';
-import { GetStartedTipsComponent } from './get-started-tips/get-started-tips.component';
 import { ShareBoxComponent } from './share-box/share-box.component';
+import { TaskConfirmComponent } from '@merit/desktop/app/core/dialog/task-confirm/task-confirm.component';
 
 export function getComponents() {
   return [
@@ -36,6 +38,7 @@ export function getComponents() {
     SendMethodComponent,
     GetStartedTipsComponent,
     ShareBoxComponent,
+    TaskConfirmComponent,
   ];
 }
 
@@ -48,6 +51,7 @@ export function getComponents() {
     CommonPipesModule,
     VirtualScrollModule,
     ClipModule,
+    CommonDirectivesModule
   ],
   declarations: getComponents(),
   exports: getComponents(),

@@ -34,7 +34,7 @@ export class EditWalletView {
   }
 
   ionViewWillEnter() {
-    this.isWalletEncrypted = this.walletService.isEncrypted(this.wallet);
+    this.isWalletEncrypted = this.walletService.isWalletEncrypted(this.wallet);
   }
 
   changeBalanceHidden(isHidden) {
@@ -90,7 +90,7 @@ export class EditWalletView {
         {
           text: 'Delete',
           handler: () => {
-            if (!this.walletService.isEncrypted(this.wallet)) {
+            if (!this.walletService.isWalletEncrypted(this.wallet)) {
               this.doDeleteWallet();
             } else {
               this.showPasswordPrompt();
@@ -114,7 +114,7 @@ export class EditWalletView {
                 this.showPasswordPrompt(true);
               } else {
                 try {
-                  this.walletService.decrypt(this.wallet, data.password);
+                  this.walletService.decryptWallet(this.wallet, data.password);
                   this.doDeleteWallet();
                 } catch (e) {
                   this.showPasswordPrompt(true);

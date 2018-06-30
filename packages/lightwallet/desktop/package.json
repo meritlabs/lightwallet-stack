@@ -1,6 +1,6 @@
 {
   "name": "lightwallet-desktop",
-  "version": "1.6.5",
+  "version": "1.8.0",
   "main": "electron.main.js",
   "description": "Lightwallet implementation for desktops",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "node-notifier": "^5.2.1",
+    "electron-updater": "^2.21.10",
+    "electron-log": "^2.2.15",
     "merit-miner-node": "../../../../merit-miner-node"
   },
   "devDependencies": {
@@ -35,6 +37,7 @@
     "copy-webpack-plugin": "~4.4.1",
     "electron": "^1.8.4",
     "electron-builder": "^20.8.1",
+    "electron-publisher-s3": "^20.15.0",
     "file-loader": "^1.1.5",
     "hammerjs": "^2.0.8",
     "html-webpack-plugin": "^2.29.0",
@@ -50,8 +53,8 @@
     "typescript": "2.4.2",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "url-loader": "^0.6.2",
+    "web-animations-js": "^2.3.1",
     "webpack": "~3.11.0",
-    "webpack-dev-server": "2.11.0",
-    "web-animations-js": "^2.3.1"
+    "webpack-dev-server": "2.11.0"
   }
 }

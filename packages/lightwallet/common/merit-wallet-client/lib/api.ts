@@ -1,26 +1,29 @@
 import { ENV } from '@app/env';
+import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
+import { generateMnemonic, mnemonicToHDPrivateKey, validateImportMnemonic } from '@merit/common/utils/mnemonic';
 import * as Bip38 from 'bip38';
 import * as Bitcore from 'bitcore-lib';
-import { mnemonicToHDPrivateKey, validateImportMnemonic, generateMnemonic } from '@merit/common/utils/mnemonic';
 import * as EventEmitter from 'eventemitter3';
 import * as _ from 'lodash';
 import * as preconditions from 'preconditions';
 import * as querystring from 'querystring';
+import 'rxjs/add/observable/fromPromise';
+import 'rxjs/add/observable/interval';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { interval } from 'rxjs/observable/interval';
-import { catchError, map, mergeMap, retryWhen, switchMap, tap } from 'rxjs/operators';
+import { map, retryWhen, switchMap } from 'rxjs/operators';
 import * as request from 'superagent';
 import * as util from 'util';
 import { EasyReceiptResult } from '../../models/easy-receipt';
+import { ISendMethod } from '../../models/send-method';
 import { Common } from './common';
 import { Credentials } from './credentials';
 import { MWCErrors } from './errors';
 import { Logger } from './log';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
-import 'rxjs/add/observable/fromPromise';
-import 'rxjs/add/observable/interval';
+import { ISmsNotificationSettings } from '../../models/sms-subscription';
 
 const $ = preconditions.singleton();
 const { Constants, Utils } = Common;
@@ -124,8 +127,13 @@ export class API {
 
   public balance: any;
   public invitesBalance: any;
-  public availableInvites: number = 0;
-  public pendingInvites: number = 0;
+  public availableInvites: number = 0; // total invites I have 
+  public pendingInvites: number = 0; // invites that are currently pending confirmation
+  public sendableInvites: number = 0; // invites I can send right now
+
+
+  /** is disabled when wallet is temporary decrypted */
+  public credentialsSaveAllowed: boolean = true;
 
   constructor(opts: InitOptions) {
     this.eventEmitter = new EventEmitter.EventEmitter();
@@ -823,37 +831,6 @@ export class API {
     });
   };
 
-  /**
-   * Create and send invite tx to a given address
-   *
-   * @param {string} toAddress - merit address to send invite to
-   * @param {number=} amount - number of invites to send. defaults to 1
-   * @param {string=} message - message to send to a receiver
-   *
-   */
-  async sendInvite(toAddress: string, amount: number = 1, script = null, message: string = '', walletPassword: string = ''): Promise<any> {
-    amount = parseInt(amount as any);
-    const opts = {
-      invite: true,
-      outputs: [_.pickBy({
-        amount,
-        toAddress,
-        message,
-        script
-      })]
-    };
-
-    let txp = await this.createTxProposal(opts);
-    txp = await this.publishTxProposal({ txp });
-    txp = await this.signTxProposal(txp, walletPassword);
-
-    await this.getStatus();
-    if (this.availableInvites == 0) throw new Error('You do not have free invites you can send');
-
-    txp = await this.broadcastTxProposal(txp);
-
-    return txp;
-  }
 
   /**
    * Open a wallet and try to complete the public key ring.
@@ -1551,6 +1528,7 @@ export class API {
           if (res) {
             let walletId = res.walletId;
             c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.parentAddress);
+            this.name = walletName;
 
             let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
@@ -1760,6 +1738,7 @@ export class API {
       this.availableInvites = Math.max(0, status.invitesBalance.availableConfirmedAmount - 1);
       this.pendingInvites = status.invitesBalance.availableAmount - status.invitesBalance.availableConfirmedAmount;
       if (status.invitesBalance.availableConfirmedAmount == 0) this.pendingInvites =  Math.max(0,  this.pendingInvites - 1);
+      this.sendableInvites = Math.max(0, status.invitesBalance.availableAmount - 1);
     }
     //todo check if we use 'spendunconfirmed' options
     this.balance.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
@@ -2259,7 +2238,7 @@ export class API {
    * @param {Object} txp
    * @param {String} password - (optional) A password to decrypt the encrypted private key (if encryption is set).
    */
-  async signTxProposal(txp: any, password: string): Promise<any> {
+  async signTxProposal(txp: any, password?: string): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     $.checkArgument(txp.creatorId);
 
@@ -2592,6 +2571,23 @@ export class API {
     return this._doDeleteRequest(url);
   };
 
+  smsNotificationsSubscribe(phoneNumber: string, platform: string, settings: ISmsNotificationSettings) {
+    return this._doPostRequest('/v1/sms-notifications', {
+      phoneNumber,
+      platform,
+      walletId: this.id,
+      settings
+    });
+  }
+
+  smsNotificationsUnsubscribe() {
+    return this._doDeleteRequest('/v1/sms-notifications');
+  }
+
+  getSmsNotificationSubscription() {
+    return this._doGetRequest('/v1/sms-notifications');
+  }
+
   /**
    * Listen to a tx for its first confirmation.
    * @param {Object} opts
@@ -2729,4 +2725,53 @@ export class API {
   getDefaultFee() {
     return DEFAULT_FEE;
   }
+
+  deliverGlobalSend(globalSend: EasySend, type: ISendMethod) {
+    return this._doPostRequest('/v1/globalsend', {
+      globalSend: _.pick(globalSend, ['secret', 'senderPubKey', 'senderName', 'blockTimeout', 'parentAddress', 'inviteOnly']),
+      type: {
+        method: type.destination,
+        destination: type.value
+      }
+    });
+  }
+
+  /**
+   * registering global send on MWS so we can access history from any device
+   */
+  registerGlobalSend(easySend: EasySend) {
+    $.checkState(this.credentials);
+    return this._doPostRequest(`/v1/globalsend/register`, {scriptAddress: easySend.scriptAddress, globalsend: this.encryptGlobalSend(easySend)});
+  }
+
+  /**
+   * Mark globalsend as cancelled
+   */
+  cancelGlobalSend(scriptAddress: string) {
+    $.checkState(this.credentials);
+    return this._doPostRequest(`/v1/globalsend/cancel`, { scriptAddress });
+  }
+
+  /**
+   * receiving sent globalsends to add links to history and make them cancellable
+   */
+  async getGlobalSendHistory() {
+    $.checkState(this.credentials);
+    const globalSends = await this._doGetRequest(`/v1/globalsend/history`);
+    return globalSends.map(g => {
+      let globalSend = JSON.parse(this.decryptGlobalSend(g.globalsend));
+      globalSend.cancelled = g.cancelled;
+      return globalSend;
+    } );
+  }
+
+  private encryptGlobalSend(easySend: EasySend) {
+    return this._encryptMessage(JSON.stringify(easySend), this.credentials.personalEncryptingKey);
+  }
+
+  private decryptGlobalSend(data) {
+    return this._decryptMessage(data, this.credentials.personalEncryptingKey);
+  }
+
+
 }

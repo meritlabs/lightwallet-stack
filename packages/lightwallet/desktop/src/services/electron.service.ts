@@ -1,4 +1,34 @@
-declare const window: any;
+import { Observable } from 'rxjs/Observable';
+import { Observer } from 'rxjs/Observer';
+
+export interface IUpdateInfo {
+  size: string;
+  version: string;
+  releaseNotes: string[];
+  releaseDate: string;
+}
+
+export interface IUpdateProgress {
+  total?: number;
+  delta?: number;
+  transferred?: number;
+  percent?: number;
+  bytesPerSecond?: number;
+  timeRemaining?: number;
+}
+
+declare class ElectronInterface {
+  showNotification(title: string, message: string);
+  checkForUpdates(): Promise<IUpdateInfo>;
+  downloadUpdate(progressCallback: (progress: IUpdateProgress) => void): Promise<any>;
+  installUpdate(): void;
+}
+
+declare global {
+  interface Window {
+    electron: ElectronInterface;
+  }
+}
 
 let miner;
 
@@ -10,10 +40,43 @@ export class ElectronService {
     return typeof window.electron !== 'undefined';
   }
 
+  static get electron(): ElectronInterface {
+    return window.electron;
+  }
+
   static showNotification(title: string, message: string) {
-    if (ElectronService.isElectronAvailable) {
-      window.electron.showNotification(title, message);
+    if (this.isElectronAvailable) {
+      this.electron.showNotification(title, message);
     }
+  }
+
+  static checkForUpdates(): Promise<IUpdateInfo> {
+    if (this.isElectronAvailable) {
+      return this.electron.checkForUpdates();
+    }
+  }
+
+  static downloadUpdate(): Observable<IUpdateProgress> {
+    return new Observable<IUpdateProgress>((observer: Observer<IUpdateProgress>) => {
+      observer.next({
+        total: 0,
+        transferred: 0,
+        percent: 0,
+        bytesPerSecond: 0
+      });
+
+      this.electron.downloadUpdate((progress: IUpdateProgress) => {
+        if (progress.percent === 100) {
+          observer.complete();
+        } else {
+          observer.next(progress);
+        }
+      });
+    });
+  }
+
+  static installUpdate() {
+    return this.electron.installUpdate();
   }
 
   static getMinerInstance()  {
@@ -30,7 +93,7 @@ export class ElectronService {
 
   static setAgent() {
     const m = ElectronService.getMinerInstance();
-    if(!m) { return false; } 
+    if(!m) { return false; }
 
     let version = "0.0.0";
     if (typeof WEBPACK_CONFIG !== 'undefined') {
@@ -41,21 +104,21 @@ export class ElectronService {
 
   static isMining() {
     const m = ElectronService.getMinerInstance();
-    if(!m) { return false; } 
+    if(!m) { return false; }
 
     return m.IsStratumRunning() || m.IsMinerRunning();
   }
 
   static isConnectedToPool() {
     const m = ElectronService.getMinerInstance();
-    if(!m) { return false; } 
+    if(!m) { return false; }
 
     return m.IsStratumConnected();
   }
 
   static isStopping() {
     const m = ElectronService.getMinerInstance();
-    if(!m) { return false; } 
+    if(!m) { return false; }
     return m.IsStratumStopping() || m.IsMinerStopping();
   }
 
@@ -77,7 +140,7 @@ export class ElectronService {
 
   static stopMining() {
     const m = ElectronService.getMinerInstance();
-    if(!m) { return false; } 
+    if(!m) { return false; }
 
     m.DisconnectStratum();
     m.StopMiner();
@@ -86,7 +149,7 @@ export class ElectronService {
 
   static numberOfCores() {
     const m = ElectronService.getMinerInstance();
-    if(!m) { return false; } 
+    if(!m) { return false; }
     return m.NumberOfCores();
   }
 
@@ -104,7 +167,7 @@ export class ElectronService {
 
   static getMiningStats() {
     const m = ElectronService.getMinerInstance();
-    if(!m) { return {}; } 
+    if(!m) { return {}; }
     return m.MinerStats();
   }
 
