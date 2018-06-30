@@ -2303,7 +2303,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
         if (selectionError || _.isEmpty(inputs)) return cb(selectionError || new Error('Could not select tx inputs'));
 
         txp.setInputs(_.shuffle(inputs));
-        txp.fee = fee;
+        txp.fee = txp.isInvite? 0 : fee;
 
         var err = self._checkTx(txp);
 
