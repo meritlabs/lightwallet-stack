@@ -22,6 +22,9 @@ declare class ElectronInterface {
   checkForUpdates(): Promise<IUpdateInfo>;
   downloadUpdate(progressCallback: (progress: IUpdateProgress) => void): Promise<any>;
   installUpdate(): void;
+  // TODO: add proper typings for Mining classes/functions
+  MeritMiner: any;
+  getMinerInstance: Function;
 }
 
 declare global {
