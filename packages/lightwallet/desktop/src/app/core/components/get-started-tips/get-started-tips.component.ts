@@ -27,18 +27,12 @@ declare global {
   ],
 })
 export class GetStartedTipsComponent implements OnInit {
-  constructor(private persistenceService: PersistenceService2, private store: Store<IRootAppState>) {}
-
   active: boolean;
   getArticle: boolean;
   syncWallet: boolean;
   copy: string = 'COPY';
   showShare: boolean = false;
-  isElectron: boolean = false;
-
-  constructor(private persistenceService: PersistenceService2) {
-    this.isElectron = ElectronService.isElectronAvailable;
-  }
+  isElectron: boolean = ElectronService.isElectronAvailable;
 
   private _wallets: DisplayWallet[];
 
@@ -52,6 +46,8 @@ export class GetStartedTipsComponent implements OnInit {
   }
 
   setTipType: string = 'all';
+
+  constructor(private persistenceService: PersistenceService2, private store: Store<IRootAppState>) {}
 
   async ngOnInit() {
     const getActiveState = Boolean(await this.persistenceService.getUserSettings(UserSettingsKey.GetStartedTips));
