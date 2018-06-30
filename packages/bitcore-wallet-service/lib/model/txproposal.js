@@ -265,6 +265,7 @@ TxProposal.prototype.getEstimatedSize = function() {
 };
 
 TxProposal.prototype.getEstimatedFee = function() {
+  if (this.isInvite) return 0;
   $.checkState(_.isNumber(this.feePerKb));
   var fee = this.feePerKb * this.getEstimatedSize() / 1000;
   return parseInt(fee.toFixed(0));
