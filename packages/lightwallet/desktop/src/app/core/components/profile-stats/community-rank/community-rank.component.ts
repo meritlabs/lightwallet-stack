@@ -24,6 +24,7 @@ export class CommunityRankComponent implements OnInit {
 
   @Input() active: boolean;
   @Input() leaderboard: any[];
+  @Input() rankData: any;
   @Input()
   set ranks(val: any[]) {
     this._ranks = val;

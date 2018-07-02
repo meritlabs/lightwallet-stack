@@ -9,7 +9,7 @@
       <ng-container *ngIf="!loading; else percentileLoading">
         <div class="stats__item__info">
           <span>
-            <strong>10</strong> / Top 10%</span>
+            <strong>{{rankData.bestRank}}</strong> / {{rankData.percentileStr}}</span>
         </div>
       </ng-container>
       <ng-template #percentileLoading>
@@ -70,5 +70,5 @@
     </div>
   </div>
   <app-get-started-tips [wallets]="wallets" #getStarted></app-get-started-tips>
-  <app-community-rank [wallets]="wallets" [ranks]="ranks" [active]="rankActive" [leaderboard]="leaderboard" (close)="onRankClose($event)"></app-community-rank>
+  <app-community-rank [wallets]="wallets" [ranks]="ranks" [active]="rankActive" [leaderboard]="leaderboard" [rankData]="rankData" (close)="onRankClose($event)"></app-community-rank>
 </div>
