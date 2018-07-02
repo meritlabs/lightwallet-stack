@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @Component({
   selector: 'app-community-rank',
@@ -16,13 +17,48 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 export class CommunityRankComponent implements OnInit {
   constructor() {}
 
+  private _wallets: any[];
+  private _ranks: any;
+
   @Output() close: EventEmitter<any> = new EventEmitter();
 
   @Input() active: boolean;
+  @Input()
+  set ranks(val: any[]) {
+    this._ranks = val;
+    this.assignRanks();
+  }
 
-  ngOnInit() {}
+  get ranks(): any[] {
+    return this._ranks;
+  }
+
+  @Input()
+  set wallets(val: DisplayWallet[]) {
+    console.log(val);
+    this._wallets = val;
+    this.assignRanks();
+  }
+
+  get wallets(): DisplayWallet[] {
+    return this._wallets;
+  }
+
+  ngOnInit() {
+  }
 
   closePanel() {
     this.close.emit((this.active = false));
+  }
+
+  private assignRanks() {
+    if (!this._ranks || !this._wallets) return;
+
+    const ranksByAddress = [];
+    this._wallets.map((w) => {
+      const rank = this.ranks.find(r => r.address == w.referrerAddress);
+      ranksByAddress[w.referrerAddress] = rank;
+      w.rank = rank;
+    });
   }
 }
