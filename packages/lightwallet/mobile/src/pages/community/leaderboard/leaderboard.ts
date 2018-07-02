@@ -44,7 +44,7 @@ export class LeaderboardView {
   }
 
   async ionViewWillEnter() {
-    this.wallets = await this.profileService.getWallets();
+    this.wallets = await this.profileService.getConfimedWallets();
     await this.loadData();
     this.loading = false;
   }
@@ -67,9 +67,9 @@ export class LeaderboardView {
   }
 
   async getRankInfo() {
-    let ranks = [];
+    const ranks = [];
     await Promise.all(this.wallets.map(async (w) => {
-      let rankInfo = (await w.getCommunityRank()).ranks[0];
+      const rankInfo = (await w.getCommunityRank()).ranks[0];
       ranks.push(rankInfo);
     }));
     this.ranks = ranks;
@@ -82,8 +82,7 @@ export class LeaderboardView {
   }
 
   isOwnWallet(r) {
-    let res = !!this.ranks.some(w => w.address == r.address);
-    return res;
+    return !!this.ranks.some(w => w.address == r.address);
   }
 
 }

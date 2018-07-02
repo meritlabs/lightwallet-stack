@@ -104,6 +104,11 @@ export class ProfileService {
     return this.wallets;
   }
 
+  async getConfimedWallets() {
+    if (this.wallets == undefined) await this.loadProfile();
+    return this.wallets.filter(w => w.confirmed);
+  }
+
   async getVaults() {
     if (this.wallets == undefined) await this.loadProfile();
     let vaults = [];
