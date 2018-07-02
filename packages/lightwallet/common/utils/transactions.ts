@@ -1,6 +1,11 @@
 import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
 import * as _ from 'lodash';
-import { IDisplayTransaction, ITransactionIO, TransactionAction, VisitedTransaction } from '@merit/common/models/transaction';
+import {
+  IDisplayTransaction,
+  ITransactionIO,
+  IVisitedTransaction,
+  TransactionAction
+} from '@merit/common/models/transaction';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritWalletClient } from "@merit/common/merit-wallet-client";
 import { FeeService } from "@merit/common/services/fee.service";
@@ -25,7 +30,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
   let pendingString;
 
-  let visitedTxs = await persistenceService.getVisitedTransactions() || [];
+  const visitedTxs: IVisitedTransaction[] = await persistenceService.getVisitedTransactions() || [];
 
   walletHistory = await Promise.all(walletHistory.map(async (tx: IDisplayTransaction, i: number) => {
     if (!_.isNil(tx) && !_.isNil(tx.action)) {
@@ -129,11 +134,11 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
     if (easySendsByAddress[tx.addressTo]) {
       const easySend = easySendsByAddress[tx.addressTo];
       tx.name = tx.isInvite ? 'MeritInvite' : 'MeritMoney';
-      tx.type = tx.isInvite ? 'meritinvite' : 'meritmoney';
+      tx.type = <any>tx.name.toLowerCase();
       tx.easySend = easySend;
       tx.easySendUrl = getEasySendURL(easySend);
       tx.cancelled = easySend.cancelled;
-      if (tx.type == 'meritmoney') {
+      if (tx.type === 'meritmoney') {
         meritMoneyAddresses.push(tx.addressTo);
         tx.fees += easyReceiveFee;
         tx.amount -= easyReceiveFee;
@@ -142,26 +147,37 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
     tx.isNew = false;
 
-    let oneVisited = visitedTxs.find(visTx => visTx.txid === tx.txid);
-    if (!oneVisited) {
+    const visited = visitedTxs.find(visTx => visTx.txid === tx.txid);
+
+    if (!visited) {
       tx.isNew = true;
       // add new one in visited
-      visitedTxs.push(new VisitedTransaction(tx.txid, 1));
+      visitedTxs.push({
+        txid: tx.txid,
+        counter: 1
+      });
     }
+
     return tx;
   }));
 
-  //save to storage 
+  //save to storage
   persistenceService.setVisitedTransactions(visitedTxs);
 
   // remove meritmoney invites so we  have only one tx for meritmoney
   return walletHistory
     .filter(t => {
 
-      if (meritMoneyAddresses.indexOf(t.addressFrom) != -1) return false; //filtering out txs from cancelled MeritMoney/MeritInvite
+      if (meritMoneyAddresses.indexOf(t.addressFrom) !== -1) {
+        //filtering out txs from cancelled MeritMoney/MeritInvite
+        return false;
+      }
 
       if (t.type == 'meritinvite') {
-        if (meritMoneyAddresses.indexOf(t.addressTo) != -1) return false; //filtering out invites txs that were part of MeritMoney
+        if (meritMoneyAddresses.indexOf(t.addressTo) !== -1) {
+          //filtering out invites txs that were part of MeritMoney
+          return false;
+        }
       }
 
       return true;
