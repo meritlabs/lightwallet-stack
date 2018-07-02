@@ -126,13 +126,9 @@ export class DisplayWallet {
     this.inviteRequests = (await this.client.getUnlockRequests())
       .filter((request: IUnlockRequest) => !request.isConfirmed)
       .map((request: IUnlockRequest) => {
-        request.walletClient = this.client;
 
-        let oneVisited = visitedInvites.find(rId => rId === request.rId);
-        if (!oneVisited)
-          request.isNew = true;
-        else
-          request.isNew = false;
+        request.walletClient = this.client;
+        request.isNew = visitedInvites.findIndex(rId => rId === request.rId) === -1;
 
         return request;
       });

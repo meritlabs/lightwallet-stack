@@ -31,9 +31,9 @@ export class UnlockRequestService {
   activeRequests: Array<IUnlockRequest> = [];
 
   constructor(private profileService: ProfileService,
-    private persistenseService: PersistenceService,
-    private walletService: WalletService,
-    private contactsService: ContactsService) {
+              private persistenseService: PersistenceService,
+              private walletService: WalletService,
+              private contactsService: ContactsService) {
   }
 
   //todo subscribe to new block event, then update info
