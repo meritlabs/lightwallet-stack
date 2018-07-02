@@ -123,6 +123,7 @@ export class NetworkView {
   notifyCopy() {
     this.toastCtrl.success('Copied to clipboard');
   }
+
   private async loadRankingInfo() {
     this.wallets = await this.profileService.getWallets();
 
@@ -141,7 +142,7 @@ export class NetworkView {
         rankData.totalAnv += walletRank.anv;
         rankData.totalProbability += walletRank.anvpercent;
         if (!rankData.bestRank || rankData.bestRank > walletRank.rank) rankData.bestRank = walletRank.rank;
-        if (!rankData.bestPercentile || rankData.bestPercentile > walletRank.percentile) rankData.bestPercentile = walletRank.percentile;
+        if (!rankData.bestPercentile || rankData.bestPercentile < walletRank.percentile) rankData.bestPercentile = walletRank.percentile;
       });
 
       rankData.percentileStr = (rankData.bestPercentile > 20)
