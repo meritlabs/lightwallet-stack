@@ -130,6 +130,12 @@
               </span>
             </div>
           </div>
+          <div *ngIf="overMaximumAmount" class="notification-info" [class.danger]="true">
+            <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
+            <p>
+              You entered more than your available balance. We adjusted the amount to your maximum available balance.
+            </p>
+          </div>
           <div class="ui-input__wrapper ui-input__wrapper--currency" *ngIf="availableCurrencies?.length">
             <input type="text" name="" [value]="amountFiat$ | async" disabled
                    class="ui-input ui-input--form ui-input--text">
@@ -154,23 +160,27 @@
             <loading-spinner-small *ngIf="receiptLoading"></loading-spinner-small>
             <ng-container *ngIf="receipt$ | async as receipt">
               <div class="sendMerit__totals__table--top">
-                <label class="ui-label">
-                  Receipt
-                </label>
-                <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
-                  <div class="sendMerit__totals__table__column sending-via">
-                    {{ type.value == 'classic' ? 'Send to' : 'Sending via' }}
-                  </div>
-                  <div class="sendMerit__totals__table__column sending-via-value" *ngIf="type.value == 'classic'">
+                <div class="sendMerit__totals__table__centerTop">
+                  {{ type.value == 'classic' ? 'Send to' : 'Sending via' }}
+                  <span *ngIf="type.value == 'classic'">
                     {{ (address.value | address) || '...' }}
-                  </div>
-                  <div class="sendMerit__totals__table__column" *ngIf="type.value == 'easy'">
+                  </span>
+                  <span *ngIf="type.value == 'easy'">
                     MeritMoney Link
-                  </div>
+                  </span>
+                </div>
+                <div class="sendMerit__totals__receiptHeader">
+                  Receipt
                 </div>
                 <div class="sendMerit__totals__table__row">
                   <div class="sendMerit__totals__table__column">
-                    Amount
+                    <span *ngIf="type.value == 'classic'">
+                      {{ (address.value | address) || '...' }}
+                    </span>
+                    <span *ngIf="type.value == 'easy'">
+                      Recipient
+                    </span>
+                    <span> Receives </span>
                   </div>
                   <div class="sendMerit__totals__table__column">
                     <ng-container *ngIf="feeIncluded.value; else noRecipientFee">
@@ -183,20 +193,13 @@
                 </div>
                 <div class="sendMerit__totals__table__row">
                   <div class="sendMerit__totals__table__column">
-                    Your fee
+                    Fee
                   </div>
                   <div class="sendMerit__totals__table__column">
-                    {{ (feeIncluded.value ? 0 : receipt.fee) | toMRT }}
+                    {{ (receipt.fee) | toMRT }}
                   </div>
                 </div>
-                <div class="sendMerit__totals__table__row">
-                  <div class="sendMerit__totals__table__column">
-                    Recipient fee
-                  </div>
-                  <div class="sendMerit__totals__table__column">
-                    {{ (feeIncluded.value ? receipt.fee : 0) | toMRT }}
-                  </div>
-                </div>
+                <hr>
                 <div class="sendMerit__totals__table__row sendMerit__totals__table__row--strong">
                   <div class="sendMerit__totals__table__column">
                     Total
@@ -207,6 +210,9 @@
                 </div>
               </div>
               <div class="sendMerit__totals__table--bottom">
+                <div class="sendMerit__totals__receiptHeader sendMerit__totals__receiptHeader--smaller">
+                  Balance after Transaction
+                </div>
                 <div class="sendMerit__totals__table__row sendMerit__totals__table__row--divider">
                 </div>
                 <div class="sendMerit__totals__table__row">

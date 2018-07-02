@@ -235,6 +235,7 @@ TxProposal.prototype.getRawTx = function() {
 };
 
 TxProposal.prototype.getEstimatedSizeForSingleInput = function() {
+  if (this.isInvite) return 0;
   switch (this.addressType) {
     case Constants.SCRIPT_TYPES.P2PKH:
       return 147;
@@ -248,6 +249,7 @@ TxProposal.prototype.getEstimatedSizeForSingleInput = function() {
 };
 
 TxProposal.prototype.getEstimatedSize = function() {
+  if (this.isInvite) return 0;
   // Note: found empirically based on all multisig P2SH inputs and within m & n allowed limits.
   var safetyMargin = 0.02;
 
@@ -263,6 +265,7 @@ TxProposal.prototype.getEstimatedSize = function() {
 };
 
 TxProposal.prototype.getEstimatedFee = function() {
+  if (this.isInvite) return 0;
   $.checkState(_.isNumber(this.feePerKb));
   var fee = this.feePerKb * this.getEstimatedSize() / 1000;
   return parseInt(fee.toFixed(0));
