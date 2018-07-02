@@ -23,6 +23,7 @@ export class CommunityRankComponent implements OnInit {
   @Output() close: EventEmitter<any> = new EventEmitter();
 
   @Input() active: boolean;
+  @Input() leaderboard: any[];
   @Input()
   set ranks(val: any[]) {
     this._ranks = val;
