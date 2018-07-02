@@ -44,7 +44,7 @@ export class MiningView {
   pools: any[];
   selectedPool: any;
   mining: boolean = false;
-  stats: any = {};
+  stats: any;
   error: string;
 
   constructor(
