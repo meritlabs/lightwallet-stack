@@ -49,94 +49,15 @@
           </span>
         </div>
         <ul class="rankList">
-          <li class="rankList_item">
+          <li *ngFor="let r of leaderboard" class="rankList_item">
             <span class="wallet">
-              <p class="alias">@test</p>
+              <p *ngIf="r.alias" class="alias">@{{ r.alias }}</p>
+              <p *ngIf="!r.alias" class="alias">Anonymous</p>
             </span>
             <span class="rank">
-              <strong>5</strong>
+              <strong>{{r.anv | toMRT:8:true}}</strong>
               <p class="divider">/</p>
-              <strong>1</strong>
-            </span>
-          </li>
-          <li class="rankList_item">
-            <span class="wallet">
-              <p class="alias">@test2</p>
-            </span>
-            <span class="rank">
-              <strong>4</strong>
-              <p class="divider">/</p>
-              <strong>2</strong>
-            </span>
-          </li>
-          <li class="rankList_item">
-            <span class="wallet">
-              <p class="alias">@test3</p>
-            </span>
-            <span class="rank">
-              <strong>1</strong>
-              <p class="divider">/</p>
-              <strong>3</strong>
-            </span>
-          </li>
-          <li class="rankList_item">
-            <span class="wallet">
-              <p class="alias">@test3</p>
-            </span>
-            <span class="rank">
-              <strong>1</strong>
-              <p class="divider">/</p>
-              <strong>3</strong>
-            </span>
-          </li>
-          <li class="rankList_item">
-            <span class="wallet">
-              <p class="alias">@test3</p>
-            </span>
-            <span class="rank">
-              <strong>1</strong>
-              <p class="divider">/</p>
-              <strong>3</strong>
-            </span>
-          </li>
-          <li class="rankList_item">
-            <span class="wallet">
-              <p class="alias">@test3</p>
-            </span>
-            <span class="rank">
-              <strong>1</strong>
-              <p class="divider">/</p>
-              <strong>3</strong>
-            </span>
-          </li>
-          <li class="rankList_item">
-            <span class="wallet">
-              <p class="alias">@test3</p>
-            </span>
-            <span class="rank">
-              <strong>1</strong>
-              <p class="divider">/</p>
-              <strong>3</strong>
-            </span>
-          </li>
-          <li class="rankList_item">
-            <span class="wallet">
-              <p class="alias">@test3</p>
-            </span>
-            <span class="rank">
-              <strong>1</strong>
-              <p class="divider">/</p>
-              <strong>3</strong>
-            </span>
-          </li>
-          <li class="rankList_item">
-            <span class="wallet">
-              <p class="alias">@test3</p>
-            </span>
-            <span class="rank">
-              <strong>1</strong>
-              <p class="divider">/</p>
-              <strong>3</strong>
+              <strong>{{r.rank}}</strong>
             </span>
           </li>
         </ul>

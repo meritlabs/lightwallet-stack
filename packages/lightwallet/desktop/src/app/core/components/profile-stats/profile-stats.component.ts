@@ -21,7 +21,7 @@ export class ProfileStatsComponent {
   leaderboard: any;
   displayLeaderboard: any;
   offset: number = 0;
-  LIMIT: number = 10;
+  LIMIT: number = 100;
   constructor(private profileService: ProfileService) {}
 
   async ngOnInit() {
@@ -31,7 +31,7 @@ export class ProfileStatsComponent {
   }
 
   async getLeaderboard() {
-    this.leaderboard = (await this._wallets[0].getCommunityLeaderboard(100)).ranks;
+    this.leaderboard = (await this._wallets[0].getCommunityLeaderboard(this.LIMIT)).ranks;
     this.displayLeaderboard = this.leaderboard.slice(this.offset, this.LIMIT);
     console.log(this.leaderboard);
   }
