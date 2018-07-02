@@ -3,6 +3,7 @@ import { Storage } from '@ionic/storage';
 import { EasySend } from '@merit/common/models/easy-send';
 import { INotification } from '@merit/common/reducers/notifications.reducer';
 import { isEmpty } from 'lodash';
+import { IVisitedTransaction } from '@merit/common/models/transaction';
 
 export enum StorageKey {
   WalletPreferencesPrefix = 'merit_wallet_preferences_',
@@ -138,11 +139,11 @@ export class PersistenceService2 {
     }
   }
 
-  getVisitedTransactions() {
-    return this.storage.get(StorageKey.VisitedTransactions);
+  async getVisitedTransactions(): Promise<IVisitedTransaction[]> {
+    return (await this.storage.get(StorageKey.VisitedTransactions)) || [];
   }
 
-  setVisitedTransactions(transactions: string[]) {
+  setVisitedTransactions(transactions: IVisitedTransaction[]) {
     return this.storage.set(StorageKey.VisitedTransactions, transactions);
   }
 
