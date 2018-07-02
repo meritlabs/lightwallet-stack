@@ -147,8 +147,8 @@ export class PersistenceService2 {
     return this.storage.set(StorageKey.VisitedTransactions, transactions);
   }
 
-  getVisitedInvites() {
-    return this.storage.get(StorageKey.VisitedInvites);
+  async getVisitedInvites(): Promise<string[]> {
+    return (await this.storage.get(StorageKey.VisitedInvites)) || [];
   }
 
   setVisitedInvites(invites: string[]) {
