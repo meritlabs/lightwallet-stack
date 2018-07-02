@@ -6,6 +6,7 @@
     <div>
       <div class="history__item__info__title">
         <strong>{{ request.alias || request.address }}</strong>
+        <span *ngIf="request.isNew" class="badge-new">new</span>
       </div>
       <small class="date" *ngIf="request.timestamp">{{ request.timestamp | date:'medium' }}</small>
     </div>

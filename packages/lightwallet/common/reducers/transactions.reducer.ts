@@ -41,7 +41,7 @@ export class UpdateTransactionsAction implements Action {
 export class UpdateOneWalletTransactions implements Action {
   type = TransactionActionType.UpdateOne;
 
-  constructor(public walletId: string, public transactions: IDisplayTransaction[]) {}
+  constructor(public walletId: string, public transactions: IDisplayTransaction[]) { }
 }
 
 export class RefreshOneWalletTransactions implements Action {
@@ -85,6 +85,8 @@ export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, a
     default:
       return state;
   }
+
+
 }
 
 export const selectTransactionsState = createFeatureSelector<ITransactionsState>('transactions');

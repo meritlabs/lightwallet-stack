@@ -77,4 +77,10 @@ export interface IDisplayTransaction extends ITransaction {
   easySendUrl?: string;
   isSpent: boolean;
   cancelled: boolean;
+  isNew: boolean;
+}
+
+export interface IVisitedTransaction {
+  txid: string;
+  counter: number;
 }
