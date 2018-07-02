@@ -70,5 +70,5 @@
     </div>
   </div>
   <app-get-started-tips [wallets]="wallets" #getStarted></app-get-started-tips>
-  <app-community-rank [active]="rankActive" (close)="onRankClose($event)"></app-community-rank>
+  <app-community-rank [wallets]="wallets" [ranks]="ranks" [active]="rankActive" (close)="onRankClose($event)"></app-community-rank>
 </div>

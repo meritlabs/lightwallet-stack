@@ -19,37 +19,15 @@
           </span>
         </div>
         <ul class="rankList">
-          <li class="rankList_item">
+          <li *ngFor="let wallet of _wallets" class="rankList_item">
             <span class="wallet">
-              <p class="name">Personal wallet</p>
-              <p class="alias">@test</p>
+              <p class="name">{{wallet.name}}</p>
+              <p *ngIf="wallet.alias" class="alias">@{{wallet.alias}}</p>
             </span>
             <span class="rank">
-              <strong>5</strong>
+              <strong>{{wallet.rank.anv | toMRT:8:true}}</strong>
               <p class="divider">/</p>
-              <strong>341</strong>
-            </span>
-          </li>
-          <li class="rankList_item">
-            <span class="wallet">
-              <p class="name">Personal wallet</p>
-              <p class="alias">@test2</p>
-            </span>
-            <span class="rank">
-              <strong>4</strong>
-              <p class="divider">/</p>
-              <strong>342</strong>
-            </span>
-          </li>
-          <li class="rankList_item">
-            <span class="wallet">
-              <p class="name">Personal wallet</p>
-              <p class="alias">@test3</p>
-            </span>
-            <span class="rank">
-              <strong>1</strong>
-              <p class="divider">/</p>
-              <strong>1000271</strong>
+              <strong>{{wallet.rank.rank}}</strong>
             </span>
           </li>
         </ul>

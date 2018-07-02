@@ -25,10 +25,11 @@ export class ProfileStatsComponent {
   constructor(private profileService: ProfileService) {}
 
   async ngOnInit() {
-    this._wallets = await this.profileService.getWallets();
+    this._wallets = await this.profileService.getConfimedWallets();
     await Promise.all([this.getLeaderboard(), this.getRankInfo()]);
     this.loading = false;
   }
+
   async getLeaderboard() {
     this.leaderboard = (await this._wallets[0].getCommunityLeaderboard(100)).ranks;
     this.displayLeaderboard = this.leaderboard.slice(this.offset, this.LIMIT);
