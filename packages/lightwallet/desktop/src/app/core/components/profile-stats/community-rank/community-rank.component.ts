@@ -14,7 +14,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
     ]),
   ],
 })
-export class CommunityRankComponent implements OnInit {
+export class CommunityRankComponent {
   constructor() {}
 
   private _wallets: any[];
@@ -37,16 +37,12 @@ export class CommunityRankComponent implements OnInit {
 
   @Input()
   set wallets(val: DisplayWallet[]) {
-    console.log(val);
     this._wallets = val;
     this.assignRanks();
   }
 
   get wallets(): DisplayWallet[] {
     return this._wallets;
-  }
-
-  ngOnInit() {
   }
 
   closePanel() {
@@ -56,11 +52,8 @@ export class CommunityRankComponent implements OnInit {
   private assignRanks() {
     if (!this._ranks || !this._wallets) return;
 
-    const ranksByAddress = [];
     this._wallets.map((w) => {
-      const rank = this.ranks.find(r => r.address == w.referrerAddress);
-      ranksByAddress[w.referrerAddress] = rank;
-      w.rank = rank;
+      w.rank = this.ranks.find(r => r.address == w.referrerAddress);
     });
   }
 }

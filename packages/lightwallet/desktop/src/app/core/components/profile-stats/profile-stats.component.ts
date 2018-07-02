@@ -1,7 +1,6 @@
 import { OnInit, ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { forEach } from 'lodash';
 
 @Component({
   selector: 'profile-stats',
@@ -47,18 +46,15 @@ export class ProfileStatsComponent implements OnInit {
   async getLeaderboard() {
     this.leaderboard = (await this._wallets[0].getCommunityLeaderboard(this.LIMIT)).ranks;
     this.displayLeaderboard = this.leaderboard.slice(this.offset, this.LIMIT);
-    console.log('getLeaderboard');
   }
 
   async getRankInfo() {
     let ranks = [];
-    this._wallets.map(async w => {
+    await Promise.all(this._wallets.map(async (w) => {
       const rankInfo = (await w.getCommunityRank()).ranks[0];
-      rankInfo.walletName = w.rootAlias ? '@' + w.rootAlias : w.name;
       ranks.push(rankInfo);
-    });
+    }));
     this.ranks = ranks;
-    console.log('getRankInfo');
   }
 
   onRankClose($event) {
@@ -66,9 +62,7 @@ export class ProfileStatsComponent implements OnInit {
   }
 
   private loadRankingInfo() {
-    console.log('loadRankingInfo');
     const ranks = this.ranks;
-    console.log(ranks);
     let rankData = {
       totalAnv: 0,
       bestRank: 0,
@@ -76,9 +70,7 @@ export class ProfileStatsComponent implements OnInit {
       percentileStr: '',
     };
 
-    console.log(ranks.length);
     ranks.forEach(walletRank => {
-      console.log(walletRank);
       rankData.totalAnv += walletRank.anv;
       if (!rankData.bestRank || rankData.bestRank > walletRank.rank) rankData.bestRank = walletRank.rank;
       if (!rankData.bestPercentile || rankData.bestPercentile < walletRank.percentile) rankData.bestPercentile = walletRank.percentile;
