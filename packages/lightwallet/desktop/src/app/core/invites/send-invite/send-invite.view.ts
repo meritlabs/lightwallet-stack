@@ -21,6 +21,7 @@ import { cleanAddress } from '@merit/common/utils/addresses';
 import { getSendMethodDestinationType } from '@merit/common/utils/destination';
 import { getShareLink } from '@merit/common/utils/url';
 import { SendValidator } from '@merit/common/validators/send.validator';
+import { InviteValidator } from '@merit/common/validators/invite.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
@@ -44,8 +45,9 @@ export class SendInviteView {
     address: ['', [], [SendValidator.validateAddress(this.mwcService, true)]],
     type: ['easy'],
     password: [''],
+    wallet: [null],
     destination: ['', SendValidator.validateGlobalSendDestination],
-    amount: [1, [Validators.required, SendValidator.validateAmount]]
+    amount: [1, [Validators.required, SendValidator.validateAmount, InviteValidator.InviteQuantityValidator]],
   });
 
   emailSubject;
@@ -76,6 +78,7 @@ export class SendInviteView {
 
     if (this.hasAWalletWithInvites = wallets.length > 0) {
       this.selectedWallet = wallets[0];
+      this.formData.get("wallet").setValue(this.selectedWallet);
       const code = this.selectedWallet.alias || this.selectedWallet.referrerAddress;
       this.emailSubject = `Merit invite from ${code}`;
       this.emailBody = `${ code } invites you to Merit Community. Create your wallet now - ${ getShareLink(code) }`;

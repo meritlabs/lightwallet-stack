@@ -127,8 +127,10 @@ export class API {
 
   public balance: any;
   public invitesBalance: any;
-  public availableInvites: number = 0;
-  public pendingInvites: number = 0;
+  public availableInvites: number = 0; // total invites I have 
+  public pendingInvites: number = 0; // invites that are currently pending confirmation
+  public sendableInvites: number = 0; // invites I can send right now
+
 
   /** is disabled when wallet is temporary decrypted */
   public credentialsSaveAllowed: boolean = true;
@@ -1526,6 +1528,7 @@ export class API {
           if (res) {
             let walletId = res.walletId;
             c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.parentAddress);
+            this.name = walletName;
 
             let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
@@ -1735,6 +1738,7 @@ export class API {
       this.availableInvites = Math.max(0, status.invitesBalance.availableConfirmedAmount - 1);
       this.pendingInvites = status.invitesBalance.availableAmount - status.invitesBalance.availableConfirmedAmount;
       if (status.invitesBalance.availableConfirmedAmount == 0) this.pendingInvites =  Math.max(0,  this.pendingInvites - 1);
+      this.sendableInvites = Math.max(0, status.invitesBalance.availableAmount - 1);
     }
     //todo check if we use 'spendunconfirmed' options
     this.balance.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;

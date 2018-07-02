@@ -1,0 +1,60 @@
+<ion-content *ngIf="!loading">
+
+    <button ion-item text-left (click)="selectWallet()" detail-none class="send-to" *ngIf="mode == 'receive'">
+
+        <ion-avatar  item-start img-icon [class.default]="!wallet?.color"
+                     [style.box-shadow]="'0 0 0 2px ' + wallet?.color">
+            <img src="assets/img/icons/wallet.svg" class="wallet-icon" item-start>
+        </ion-avatar>
+
+        <h2>Receive to</h2>
+        <p>{{ wallet?.name }}<span *ngIf="wallet?.rootAlias"> | @{{wallet.rootAlias}}</span></p>
+        <p>Balance: {{wallet?.balance?.spendableAmount | toMRT:8 }} Invites: {{ wallet?.availableInvites || 0 }}</p>
+
+        <ion-icon name="ios-arrow-down" item-end ></ion-icon>
+    </button>
+
+    <div class="title">
+        <div>
+            <div *ngIf="mode == 'receive'">
+                <h2>{{receipt?.senderName}} sent you {{amountStr}}</h2>
+            </div>
+
+            <div *ngIf="mode == 'validate'">
+                <h2>You've received password protected transaction from {{receipt?.senderName}}</h2>
+            </div>
+
+            <div class="illustration">
+                <img src="assets/img/invite.svg" alt="" class="logo" />
+            </div>
+
+            <ion-item detail-none *ngIf="mode == 'validate'">
+                <ion-input type="text" [(ngModel)]="password" placeholder="Enter password"
+                           class="password-input" [class.incorrect]="validationError && !password"></ion-input>
+            </ion-item>
+        </div>
+    </div>
+
+
+</ion-content>
+
+<ion-footer *ngIf="!loading">
+    <ion-toolbar>
+
+        <ion-list>
+            <ion-item-group detail-none *ngIf="mode == 'receive'">
+                <button ion-item (click)="accept()" detail-none>Accept</button>
+                <button ion-item (click)="reject()" detail-none class="ignore">Reject</button>
+            </ion-item-group>
+
+
+            <ion-item-group detail-none *ngIf="mode == 'validate'">
+                <button ion-item clear  (click)="validate()">
+                    Validate
+                </button>
+                <button ion-item (click)="ignore()" detail-none class="ignore">Ignore</button>
+            </ion-item-group>
+        </ion-list>
+
+    </ion-toolbar>
+</ion-footer>
