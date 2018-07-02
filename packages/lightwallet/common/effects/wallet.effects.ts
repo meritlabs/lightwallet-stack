@@ -27,6 +27,7 @@ import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { distinctUntilChanged, map, skip, mergeMap, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { IUnlockRequest } from '@merit/common/services/unlock-request.service';
 
 @Injectable()
 export class WalletEffects {
@@ -119,24 +120,45 @@ export class WalletEffects {
   );
 
   constructor(private actions$: Actions,
-              private walletService: WalletService,
-              private addressService: AddressService,
-              private profileService: ProfileService,
-              private txFormatService: TxFormatService,
-              private store: Store<IRootAppState>,
-              private persistenceService: PersistenceService,
-              private persistenceService2: PersistenceService2) {
+    private walletService: WalletService,
+    private addressService: AddressService,
+    private profileService: ProfileService,
+    private txFormatService: TxFormatService,
+    private store: Store<IRootAppState>,
+    private persistenceService: PersistenceService,
+    private persistenceService2: PersistenceService2) {
   }
 
   private async updateAllWallets(): Promise<DisplayWallet[]> {
     const wallets = await this.profileService.getWallets();
     return Promise.all<DisplayWallet>(
       wallets.map(async w => {
-        const displayWallet = await createDisplayWallet(w, this.walletService, this.addressService, this.txFormatService);
+        const displayWallet = await createDisplayWallet(w, this.walletService, this.addressService, this.txFormatService, this.persistenceService2);
         displayWallet.importPreferences(await this.persistenceService2.getWalletPreferences(displayWallet.id));
+        await this.updateVisitedInviteRequests(displayWallet.inviteRequests);
         return displayWallet;
       })
     );
+  }
+
+  private async updateVisitedInviteRequests(inviteRequests: IUnlockRequest[]) {
+    const visitedInvites = await this.persistenceService2.getVisitedInvites() || [];
+    let updateVisitedInvites;
+
+    inviteRequests.forEach(request => {
+      const visited = visitedInvites.find(address => address === request.rId);
+
+      if (!visited) {
+        // add new one in visited
+        request.isNew = false;
+        visitedInvites.push(request.rId);
+        updateVisitedInvites = true;
+      }
+    });
+
+    if (updateVisitedInvites) {
+      this.persistenceService2.setVisitedInvites(visitedInvites);
+    }
   }
 
   private calculateTotals(wallets: DisplayWallet[]): IWalletTotals {

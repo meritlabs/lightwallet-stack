@@ -25,7 +25,7 @@ import { flatten } from 'lodash';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { distinctUntilKeyChanged, filter, map, switchMap, take, withLatestFrom } from 'rxjs/operators';
-import { FeeService } from "@merit/common/services/fee.service";
+import { FeeService } from '@merit/common/services/fee.service';
 
 @Injectable()
 export class TransactionEffects {
@@ -82,6 +82,7 @@ export class TransactionEffects {
   private async getWalletHistory(wallet: DisplayWallet): Promise<IDisplayTransaction[]> {
     const walletHistory = await wallet.client.getTxHistory({ includeExtendedInfo: true }); // TODO (ibby: add this and do infinite loading --> { skip: 0, limit: 50, includeExtendedInfo: true } )
     const easySends = await this.persistenceService.getEasySends();
-    return formatWalletHistory(walletHistory, wallet.client, easySends, this.feeService);
+    return formatWalletHistory(walletHistory, wallet.client, easySends, this.feeService, null, this.persistenceService);
   }
+
 }

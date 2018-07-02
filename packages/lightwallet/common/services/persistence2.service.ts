@@ -3,12 +3,15 @@ import { Storage } from '@ionic/storage';
 import { EasySend } from '@merit/common/models/easy-send';
 import { INotification } from '@merit/common/reducers/notifications.reducer';
 import { isEmpty } from 'lodash';
+import { IVisitedTransaction } from '@merit/common/models/transaction';
 
 export enum StorageKey {
   WalletPreferencesPrefix = 'merit_wallet_preferences_',
   NotificationSettings = 'merit_notification_settings',
   Notifications = 'merit_notifications',
   EasySends = 'merit_easysends',
+  VisitedTransactions = 'merit_visited_transactions',
+  VisitedInvites = 'merit_visited_invites',
   ViewSettingsPrefix = 'app_view_settings_',
   LastIgnoredUpdate = 'last_ignored_update',
 }
@@ -41,7 +44,7 @@ const DEFAULT_NOTIFICATION_SETTINGS: INotificationSettings = {
  */
 @Injectable()
 export class PersistenceService2 {
-  constructor(private storage: Storage) {}
+  constructor(private storage: Storage) { }
 
   /**
    * Use this method to set a generic value that doesn't require it's own function
@@ -80,8 +83,8 @@ export class PersistenceService2 {
   async getNotificationSettings(): Promise<INotificationSettings> {
     const settings = (await this.storage.get(StorageKey.NotificationSettings)) || {};
     return {
-      ... DEFAULT_NOTIFICATION_SETTINGS,
-      ... settings
+      ...DEFAULT_NOTIFICATION_SETTINGS,
+      ...settings
     };
   }
 
@@ -134,5 +137,21 @@ export class PersistenceService2 {
     for (let key in UserSettingsKey) {
       await this.setUserSettings(UserSettingsKey[key] as UserSettingsKey, false);
     }
+  }
+
+  async getVisitedTransactions(): Promise<IVisitedTransaction[]> {
+    return (await this.storage.get(StorageKey.VisitedTransactions)) || [];
+  }
+
+  setVisitedTransactions(transactions: IVisitedTransaction[]) {
+    return this.storage.set(StorageKey.VisitedTransactions, transactions);
+  }
+
+  async getVisitedInvites(): Promise<string[]> {
+    return (await this.storage.get(StorageKey.VisitedInvites)) || [];
+  }
+
+  setVisitedInvites(invites: string[]) {
+    return this.storage.set(StorageKey.VisitedInvites, invites);
   }
 }
