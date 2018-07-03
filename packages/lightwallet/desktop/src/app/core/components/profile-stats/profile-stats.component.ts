@@ -23,11 +23,13 @@ export class ProfileStatsComponent implements OnInit {
   LIMIT: number = 100;
 
   rankData: {
+    unlocked: boolean,
     totalAnv: number,
     bestRank: number,
     bestPercentile: number,
     percentileStr: string,
   } = {
+    unlocked: false,
     totalAnv: 0,
     bestRank: 0,
     bestPercentile: 0,
@@ -37,7 +39,7 @@ export class ProfileStatsComponent implements OnInit {
   constructor(private profileService: ProfileService) {}
 
   async ngOnInit() {
-    this._wallets = await this.profileService.getConfimedWallets();
+    this._wallets = await this.profileService.getWallets();
     await Promise.all([this.getLeaderboard(), this.getRankInfo()]);
     this.loadRankingInfo();
     this.loading = false;
@@ -50,7 +52,7 @@ export class ProfileStatsComponent implements OnInit {
 
   async getRankInfo() {
     let ranks = [];
-    await Promise.all(this._wallets.map(async (w) => {
+    await Promise.all(this._wallets.filter(w => w.confirmed).map(async (w) => {
       const rankInfo = (await w.getCommunityRank()).ranks[0];
       ranks.push(rankInfo);
     }));
@@ -70,8 +72,10 @@ export class ProfileStatsComponent implements OnInit {
   }
 
   private loadRankingInfo() {
+    const confirmedPresent = this._wallets.some(w => w.confirmed);
     const ranks = this.ranks;
     let rankData = {
+      unlocked: confirmedPresent,
       totalAnv: 0,
       bestRank: 0,
       bestPercentile: 0,
