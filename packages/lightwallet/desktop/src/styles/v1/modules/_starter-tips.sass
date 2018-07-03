@@ -1,10 +1,8 @@
-@import '~styles/v1/common/import-sass'
-
 .StarterTips
   position: relative
 
 .StarterTips_wrap
-  margin: 35px -20px -55px
+  margin: 53px -20px -55px
   background: $grey
   border-bottom: 1px solid $dark-grey-blue
   padding: 0 20px
@@ -14,44 +12,50 @@
   max-height: 0
   box-shadow: inset 0px -25px 40px -20px rgba(0, 0, 0, 0.05)
 
-.closeCross
-  width: 50px
-  height: 50px
-  border: 2px solid $dark-grey-blue
+.StarterTips .closeCross
+  height: 30px
   border-radius: 50px
-  background: $dark-grey-blue
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.15), 0px 0 3px rgba(255, 255, 255, 0.8)
+  box-shadow: 0 0 4px rgba(0, 0, 0, .45), 0px 0 3px rgba(255, 255, 255, .8)
   position: absolute
-  left: calc(50% - 25px)
-  bottom: -25px
+  right: 20px
+  top: 20px
   cursor: pointer
   z-index: 3
   opacity: 1
+  display: flex
+  align-items: center
+  justify-content: flex-end
+  padding: 0px 15px 0px 30px
   &:after
     content: ""
-    width: 16px
-    height: 16px
+    width: 8px
+    height: 8px
     display: block
     position: absolute
-    border-left: 2px solid $grey
-    border-top: 2px solid $grey
+    border-left: 2px solid $dark-grey-blue
+    border-top: 2px solid $dark-grey-blue
     transform: rotate(-135deg)
-    top: 8px
+    top: 4px
     left: 14px
     +transition(.15s, ease-in-out)
-  &.active
-    opacity: 1
-    &:after
+  &:before
+      content: ""
+      width: 8px
+      height: 8px
+      display: block
+      position: absolute
+      border-left: 2px solid $dark-grey-blue
+      border-top: 2px solid $dark-grey-blue
       transform: rotate(45deg)
-      top: 18px
-
+      top: 15px
+      left: 14px
+      +transition(.15s, ease-in-out)
 .StarterTips
   &_items
     display: flex
     justify-content: space-between
-    flex-flow: row wrap
   &_item
-    width: calc(100% / 3 - 10px)
+    width: 100%
     position: relative
     padding: 30px 20px
     border-radius: 15px
@@ -101,13 +105,13 @@
         line-height: 14px
         color: $grey
         box-shadow: 0 4px 5px -2px rgba(0, 0, 0, 0.28)
+.StarterTips
+  @for $i from 0 to 20
+    li:nth-child(#{$i + 1})
+      &:before
+        content: "#{$i + 1 }"
 
-@for $i from 0 to 20
-  li:nth-child(#{$i + 1})
-    &:before
-      content: "#{$i + 1 }"
-
-.shareBox
+.StarterTips .shareBox
   padding-top: 20px
 
 @keyframes highlight
@@ -121,7 +125,7 @@
     background: rgba(255, 255, 255, 1)
     box-shadow: 0 0 10px rgba(0, 176, 221, 1)
 
-.tipsModal
+.StarterTips .tipsModal
   position: fixed
   z-index: 1000
   width: calc(100vw - 40px)

@@ -977,6 +977,35 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/community/rank/', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+        server.getCommunityRank(function(err, txs) {
+            if (err) return returnError(err, res, req);
+            res.json(txs);
+            res.end();
+        });
+    });
+  });
+
+  router.post('/v1/community/ranks/', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+        server.getCommunityRanks(req.body.addresses, function(err, txs) {
+            if (err) return returnError(err, res, req);
+            res.json(txs);
+            res.end();
+        });
+    });
+  });
+
+  router.get('/v1/community/leaderboard/', function(req, res) {
+    let server = getServer(req, res);
+    server.getCommunityLeaderboard(req.query.limit, function(err, txs) {
+      if (err) return returnError(err, res, req);
+      res.json(txs);
+      res.end();
+    });
+  });
+
   this.app.use(opts.basePath || '/bws/api', router);
 
   // Pass bitcore node to th walletService to initialize it.
