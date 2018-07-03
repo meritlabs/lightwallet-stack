@@ -26,7 +26,7 @@ const smsNotificationSettingsText: SmsNotificationSettingsText = {
   GrowthReward: 'Growth rewards',
   WalletUnlocked: 'Wallet unlocked',
   IncomingPoolPayment: 'Incoming pool payment',
-  MarketPayment: 'Market payment',
+  MarketPayment: 'Market escrow',
 };
 
 export class NotificationSettingsController {
