@@ -4556,7 +4556,7 @@ WalletService.prototype.getCommunityRanks = async function(addresses, cb) {
 WalletService.prototype.getCommunityLeaderboard = async function(limit, cb) {
     try {
         if (!limit) limit = 100;
-        let result = await  localMeritDaemon.getCommunityLeaderboard(limit);
+        const result = await localMeritDaemon.getCommunityLeaderboard(limit);
         return cb(null, result);
     } catch (e) {
         return cb(e);
