@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
+import { Script } from 'bitcore-lib';
 
 import { ENV } from '@app/env';
 import { ProfileService } from '@merit/common/services/profile.service';
@@ -49,8 +48,12 @@ export class EscrowPaymentView implements OnInit {
       outputs: [{
         amount: this.amount,
         toAddress: this.sendTo,
-        message: '' + this.paymentId,
-      }]
+      },
+      {
+        script: Script.buildDataOut(`MeritMarket:${this.paymentId}`).toHex(),
+        amount: 0
+      }],
+      validateOutputs: false,
     };
 
     if (this.wallet.balance.spendableAmount < this.amount) {

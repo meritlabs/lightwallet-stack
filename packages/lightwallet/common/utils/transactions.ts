@@ -127,6 +127,12 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           tx.name = 'Pool Reward';
           tx.action = TransactionAction.POOL_REWARD;
           tx.isPoolReward = true;
+        } else {
+          if (tx.outputs.some(o => o.amount == 0 && _.get(o, 'data', '').toLowerCase().indexOf('market') > -1)) {
+            tx.name = 'Market Payment';
+            tx.action = TransactionAction.MARKET;
+            tx.isMarketPayment = true;
+          }
         }
       }
     }
