@@ -4,7 +4,7 @@ export class RateService {
 
   private readonly CACHE_TIME = 120000; //2min
   public mwClient: MeritWalletClient;
-  private MRT_TO_MIC = 1e8;
+  private MRT_TO_MIC = 1e6;
 
   private cache: {
     updatedTs: number,
