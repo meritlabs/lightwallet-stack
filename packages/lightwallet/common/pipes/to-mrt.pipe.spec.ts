@@ -7,8 +7,8 @@ import { RateService } from '@merit/common/services/rate.service';
   template: `
     <div #test1>{{ 123e6 | toMRT }}</div>
     <div #test2>{{ 123e6 | toMRT:null:true }}</div>
-    <div #test3>{{ 123e6 | toMRT:1 }}</div>
-    <div #test4>{{ 123e6 | toMRT:2 }}</div>
+    <div #test3>{{ 123e4 | toMRT:1 }}</div>
+    <div #test4>{{ 123e4 | toMRT:2 }}</div>
   `
 })
 class TestComponent {
@@ -38,12 +38,12 @@ describe('Pipes.ToMRT', () => {
 
   it('should convert micros to merit', () => {
     const el: HTMLElement = comp.test1.nativeElement;
-    expect(el.innerHTML).toBe('1.23 MRT');
+    expect(el.innerHTML).toBe('123 MRT');
   });
 
   it('should hide unit', () => {
     const el: HTMLElement = comp.test2.nativeElement;
-    expect(el.innerHTML).toBe('1.23');
+    expect(el.innerHTML).toBe('123');
   });
 
   it('should limit digits to 1', () => {

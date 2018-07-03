@@ -9,7 +9,7 @@ describe('Utils.Format', () => {
     }
   });
 
-  it('should format 10000000 micros to 1.00MRT', () => {
-    expect(formatAmount(100000000, 'mrt')).toBe('1.00');
+  it('should format 10000000 micros to 100.00MRT', () => {
+    expect(formatAmount(100000000, 'mrt')).toBe('100.00');
   });
 });
