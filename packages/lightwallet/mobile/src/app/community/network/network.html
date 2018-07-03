@@ -56,6 +56,43 @@
         <div item-end class="details">{{ (network?.growthRewards || 0) | toMRT:8 }}</div>
     </ion-item>
 
+    <ion-item class="pending-unlock-requests" navPush="LeaderboardView">
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/star.svg" alt="">
+            <ion-spinner color="primary" name="crescent" [hidden]="!refreshing"></ion-spinner>
+        </ion-avatar>
+        <ion-label>
+          <h2>Community rank</h2>
+        </ion-label>
+        <div item-end class="details">
+            <span  *ngIf="rankData?.bestRank">
+                {{rankData.bestRank}} ({{rankData.percentileStr}})
+            </span>
+            <span  *ngIf="!rankData?.bestRank">
+                ---
+            </span>
+            <ion-icon name="ios-arrow-forward" class="arrow"></ion-icon>
+        </div>
+    </ion-item>
+
+    <ion-item class="pending-unlock-requests">
+        <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/dices.svg" alt="">
+            <ion-spinner color="primary" name="crescent" [hidden]="!refreshing"></ion-spinner>
+        </ion-avatar>
+        <ion-label>
+          <h2>Growth reward estimate </h2>
+        </ion-label>
+        <div item-end class="details" *ngIf="rankData.estimateStr">
+            {{rankData.estimateStr}}
+        </div>
+        <div item-end class="details" *ngIf="!rankData.estimateStr">
+            ---
+        </div>
+    </ion-item>
+
+
+
 
   </ion-list>
 

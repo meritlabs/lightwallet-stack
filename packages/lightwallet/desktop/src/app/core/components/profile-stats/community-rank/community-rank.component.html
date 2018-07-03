@@ -1,0 +1,97 @@
+<div class="StarterTips">
+  <div class="closeCross" (click)="closePanel()" *ngIf="active">Close</div>
+  <div class="StarterTips_wrap" [@showTips]="active">
+    <div class="StarterTips_items">
+      <div class="StarterTips_item">
+        <h4 class="StarterTips_title" *ngIf="rankData.unlocked">
+          Your best rank is {{rankData.bestRank}} ({{rankData.percentileStr}})
+        </h4>
+        <h4 class="StarterTips_title" *ngIf="!rankData.unlocked">
+            Your best rank will be available soon!
+          </h4>
+        <p>
+          <small>
+            *Best rank is the best rating of all your wallets.
+            It is determined for all your unlocked wallets.
+            Not unlocked wallets cannot have Merit and rank cannot be determined for them.
+          </small>
+        </p>
+        <div class="header">
+          <span class="wallet">
+          </span>
+          <span class="rank">
+            <p>Score</p>
+            <p class="divider">/</p>
+            <p>World position</p>
+          </span>
+        </div>
+        <ul class="rankList">
+          <li *ngFor="let wallet of _wallets" class="rankList_item">
+            <span class="wallet">
+              <p class="name">{{wallet.name}}</p>
+              <p *ngIf="wallet.alias" class="alias">@{{wallet.alias}}</p>
+            </span>
+            <span class="rank" *ngIf="wallet.rank">
+              <strong>{{wallet.rank.anv | toMRT:8:true}}</strong>
+              <p class="divider">/</p>
+              <strong>{{wallet.rank.rank}}</strong>
+            </span>
+            <span class="notUnlocked" *ngIf="!wallet.rank">
+              Not unlocked
+            </span>
+          </li>
+        </ul>
+      </div>
+      <div class="StarterTips_item">
+        <h4 class="StarterTips_title">
+          Top 100 rank
+        </h4>
+        <p>
+          <small>*Rating of the to 100 Merit users</small>
+        </p>
+        <div class="header">
+          <span class="wallet">
+          </span>
+          <span class="rank">
+            <p>Score</p>
+            <p class="divider">/</p>
+            <p>World position</p>
+          </span>
+        </div>
+        <ul class="rankList">
+          <li *ngFor="let r of leaderboard" class="rankList_item">
+            <span class="wallet">
+              <p *ngIf="r.alias" class="alias">@{{ r.alias }}</p>
+              <p *ngIf="!r.alias" class="alias">Anonymous</p>
+            </span>
+            <span class="rank">
+              <strong>{{r.anv | toMRT:8:true}}</strong>
+              <p class="divider">/</p>
+              <strong>{{r.rank}}</strong>
+            </span>
+          </li>
+        </ul>
+      </div>
+      <div class="StarterTips_item">
+        <h4 class="StarterTips_title">
+          How to Up my rank?
+        </h4>
+        <p>You rank depends on the amout of Merit, that your community and you have.</p>
+        <p>If you want to increase you rank, you can:</p>
+        <ul>
+          <li>
+            Get more Merit with Security Rewards. All you need is to start mining!
+            <button class="ui-button ui-button--xs ui-button--blue" (click)="onMoreSecurityRewards()">Learn more</button>
+          </li>
+          <li>
+            Grow your community. Tell your friends about Merit, get invites and share your invite code with them!
+            <button class="ui-button ui-button--xs ui-button--blue" (click)="onMoreCommunity()">Learn more</button>
+          </li>
+          <!--<li>
+            Buy Merit on Market.
+          </li>-->
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

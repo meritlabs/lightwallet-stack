@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { Store } from '@ngrx/store';
@@ -19,9 +19,9 @@ declare global {
   styleUrls: ['./get-started-tips.component.sass'],
   animations: [
     trigger('showTips', [
-      state('true', style({ maxHeight: '1000px', padding: '30px 20px' })),
+      state('true', style({ maxHeight: '1000px', padding: '60px 20px 30px' })),
       state('false', style({})),
-      transition('* => *', animate('300ms ease-in-out')),
+      transition('* => *', animate('100ms ease-in-out')),
     ]),
   ],
 })
@@ -57,6 +57,7 @@ export class GetStartedTipsComponent implements OnInit {
       this.show();
     }
   }
+
   setType(type: string) {
     this.setTipType = type;
     this.show();
