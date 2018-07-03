@@ -171,10 +171,10 @@ export module Utils {
       _.each(txp.outputs, function(o) {
         $.checkState(o.script || o.toAddress, 'Output should have either toAddress or script specified');
         if (o.script) {
-          $.checkState(o.amount || o.micros, 'Output should have either amount or micros specified');
+          $.checkState(!isNaN(o.amount) || !isNaN(o.micros), 'Output should have either amount or micros specified');
           t.addOutput(new Transaction.Output({
             script: o.script,
-            micros: o.amount || o.micros,
+            micros: !isNaN(o.amount) ? o.amount : o.micros,
           }));
         } else {
           t.to(o.toAddress, o.amount);

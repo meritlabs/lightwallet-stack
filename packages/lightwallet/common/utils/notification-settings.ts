@@ -25,7 +25,8 @@ const smsNotificationSettingsText: SmsNotificationSettingsText = {
   MiningReward: 'Mining rewards',
   GrowthReward: 'Growth rewards',
   WalletUnlocked: 'Wallet unlocked',
-  IncomingPoolPayment: 'Incoming pool payment'
+  IncomingPoolPayment: 'Incoming pool payment',
+  MarketPayment: 'Market payment',
 };
 
 export class NotificationSettingsController {
