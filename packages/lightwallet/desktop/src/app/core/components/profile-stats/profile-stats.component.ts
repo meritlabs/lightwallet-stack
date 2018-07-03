@@ -61,6 +61,14 @@ export class ProfileStatsComponent implements OnInit {
     this.rankActive = $event;
   }
 
+  onMoreSecurityRewards() {
+    document.getElementById('startMiningBtn').click();
+  }
+
+  onMoreCommunity() {
+    document.getElementById('extendCommunityBtn').click();
+  }
+
   private loadRankingInfo() {
     const ranks = this.ranks;
     let rankData = {

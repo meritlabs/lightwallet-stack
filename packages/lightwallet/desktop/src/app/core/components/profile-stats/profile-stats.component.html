@@ -15,7 +15,7 @@
       <ng-template #percentileLoading>
         Spinner
       </ng-template>
-      <button class="ui-button ui-button--green ui-button--xs" (click)="rankActive = !rankActive; getStarted.active = false">{{rankActive? 'Hide': 'Show'}} details</button>
+      <button class="ui-button ui-button--green ui-button--xs" (click)="rankActive = !rankActive; getStarted.active = false" id="rankBtn">{{rankActive? 'Hide': 'Show'}} details</button>
     </div>
     <div class="stats__item">
       <p class="stats__item__title">My
@@ -32,7 +32,7 @@
       <ng-template #peopleLoading>
         <loading-spinner-small></loading-spinner-small>
       </ng-template>
-      <button class="ui-button ui-button--green ui-button--xs" (click)="getStarted.setType('community'); rankActive = false">Extend my community</button>
+      <button class="ui-button ui-button--green ui-button--xs" (click)="getStarted.setType('community'); rankActive = false" id="extendCommunityBtn">Extend my community</button>
     </div>
     <div class="stats__item">
       <p class="stats__item__title">Growth
@@ -46,7 +46,7 @@
           <span>MRT</span>
         </div>
       </ng-container>
-      <button class="ui-button ui-button--green ui-button--xs" (click)="getStarted.setType('growth'); rankActive = false">Get Growth Rewards</button>
+      <button class="ui-button ui-button--green ui-button--xs" (click)="getStarted.setType('growth'); rankActive = false" id="getGrowthRewardsBtn">Get Growth Rewards</button>
     </div>
     <ng-template #growthLoading>
       <loading-spinner-small></loading-spinner-small>
@@ -66,9 +66,18 @@
       <ng-template #miningLoading>
         <loading-spinner-small></loading-spinner-small>
       </ng-template>
-      <button class="ui-button ui-button--green ui-button--xs" (click)="getStarted.setType('mining'); rankActive = false">Start mining</button>
+      <button class="ui-button ui-button--green ui-button--xs" (click)="getStarted.setType('mining'); rankActive = false" id="startMiningBtn">Start mining</button>
     </div>
   </div>
   <app-get-started-tips [wallets]="wallets" #getStarted></app-get-started-tips>
-  <app-community-rank [wallets]="wallets" [ranks]="ranks" [active]="rankActive" [leaderboard]="leaderboard" [rankData]="rankData" (close)="onRankClose($event)"></app-community-rank>
+  <app-community-rank
+    [wallets]="wallets"
+    [ranks]="ranks"
+    [active]="rankActive"
+    [leaderboard]="leaderboard"
+    [rankData]="rankData"
+    [onMoreSecurityRewards]="onMoreSecurityRewards"
+    [onMoreCommunity]="onMoreCommunity"
+    (close)="onRankClose($event)">
+  </app-community-rank>
 </div>
