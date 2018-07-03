@@ -3,11 +3,18 @@
   <div class="StarterTips_wrap" [@showTips]="active">
     <div class="StarterTips_items">
       <div class="StarterTips_item">
-        <h4 class="StarterTips_title">
+        <h4 class="StarterTips_title" *ngIf="rankData.unlocked">
           Your best rank is {{rankData.bestRank}} ({{rankData.percentileStr}})
         </h4>
+        <h4 class="StarterTips_title" *ngIf="!rankData.unlocked">
+            Your best rank will be available soon!
+          </h4>
         <p>
-          <small>*Total rank is the best rating of all your wallets.</small>
+          <small>
+            *Best rank is the best rating of all your wallets.
+            It is determined for all your unlocked wallets.
+            Not unlocked wallets cannot have Merit and rank cannot be determined for them.
+          </small>
         </p>
         <div class="header">
           <span class="wallet">
@@ -24,10 +31,13 @@
               <p class="name">{{wallet.name}}</p>
               <p *ngIf="wallet.alias" class="alias">@{{wallet.alias}}</p>
             </span>
-            <span class="rank">
+            <span class="rank" *ngIf="wallet.rank">
               <strong>{{wallet.rank.anv | toMRT:8:true}}</strong>
               <p class="divider">/</p>
               <strong>{{wallet.rank.rank}}</strong>
+            </span>
+            <span class="notUnlocked" *ngIf="!wallet.rank">
+              Not unlocked
             </span>
           </li>
         </ul>
