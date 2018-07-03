@@ -21,7 +21,8 @@ export class EscrowPaymentView implements OnInit {
   amountInMrt = this.rateService.microsToMrt(this.amount);
   sendFrom = getQueryParam('pa');
   sendTo = getQueryParam('ea');
-  paymentId = +getQueryParam('pid');
+  entitiesType = getQueryParam('t');
+  entitiesIds = getQueryParam('ids');
   fee = 0;
   feeCalculated = false;
   success = false;
@@ -50,7 +51,7 @@ export class EscrowPaymentView implements OnInit {
         toAddress: this.sendTo,
       },
       {
-        script: Script.buildDataOut(`MeritMarket:${this.paymentId}`).toHex(),
+        script: Script.buildDataOut(`MeritMarket:${this.entitiesType}:${this.entitiesIds}`).toHex(),
         amount: 0
       }],
       validateOutputs: false,

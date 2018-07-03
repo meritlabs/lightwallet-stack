@@ -129,7 +129,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
           tx.isPoolReward = true;
         } else {
           if (tx.outputs.some(o => o.amount == 0 && _.get(o, 'data', '').toLowerCase().indexOf('market') > -1)) {
-            tx.name = 'Market Payment';
+            tx.name = 'Market Escrow';
             tx.action = TransactionAction.MARKET;
             tx.isMarketPayment = true;
           }
