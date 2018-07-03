@@ -57,6 +57,7 @@ export class GetStartedTipsComponent implements OnInit {
       this.show();
     }
   }
+
   setType(type: string) {
     this.setTipType = type;
     this.show();

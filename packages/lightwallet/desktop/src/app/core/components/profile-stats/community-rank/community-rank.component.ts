@@ -22,6 +22,8 @@ export class CommunityRankComponent {
 
   @Output() close: EventEmitter<any> = new EventEmitter();
 
+  @Input() onMoreSecurityRewards: Function;
+  @Input() onMoreCommunity: Function;
   @Input() active: boolean;
   @Input() leaderboard: any[];
   @Input() rankData: any;
