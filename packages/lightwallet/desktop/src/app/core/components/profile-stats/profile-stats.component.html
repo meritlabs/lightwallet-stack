@@ -8,14 +8,16 @@
       </div>
       <ng-container *ngIf="!loading; else percentileLoading">
         <div class="stats__item__info">
-          <span *ngIf="rankData.unlocked">
+          <span *ngIf="rankData.unlocked; else rankDataLocked">
             <strong>{{rankData.bestRank}}</strong> / {{rankData.percentileStr}}
           </span>
-          <span *ngIf="!rankData.unlocked">Unlock your wallets to see rank</span>
+          <ng-template #rankDataLocked>
+            <span>Unlock your wallets to see rank</span>
+          </ng-template>
         </div>
       </ng-container>
       <ng-template #percentileLoading>
-        Spinner
+        <loading-spinner-small></loading-spinner-small>
       </ng-template>
       <button class="ui-button ui-button--green ui-button--xs" (click)="rankActive = !rankActive; getStarted.active = false" id="rankBtn">{{rankActive? 'Hide': 'Show'}} details</button>
     </div>
