@@ -20,7 +20,7 @@ export class CommunityRankComponent {
   private _wallets: any[];
   private _ranks: any;
 
-  @Output() close: EventEmitter<any> = new EventEmitter();
+  @Output() close: EventEmitter<void> = new EventEmitter<void>();
 
   @Input() onMoreSecurityRewards: Function;
   @Input() onMoreCommunity: Function;
@@ -48,7 +48,8 @@ export class CommunityRankComponent {
   }
 
   closePanel() {
-    this.close.emit((this.active = false));
+    this.active = false;
+    this.close.emit();
   }
 
   private assignRanks() {

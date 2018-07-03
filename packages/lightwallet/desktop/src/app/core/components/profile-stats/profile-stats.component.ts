@@ -59,8 +59,8 @@ export class ProfileStatsComponent implements OnInit {
     this.ranks = ranks;
   }
 
-  onRankClose($event) {
-    this.rankActive = $event;
+  onRankClose() {
+    this.rankActive = false;
   }
 
   onMoreSecurityRewards() {
