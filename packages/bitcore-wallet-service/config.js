@@ -95,7 +95,7 @@ var config = {
   },
   meritMessagingUrl: process.env.MERIT_MESSAGING_URL || 'http://localhost:8300',
   smsOpts: {
-    enabled. process.env.SMS_ENABLED
+    enabled: process.env.SMS_ENABLED
   }
 };
 module.exports = config;
