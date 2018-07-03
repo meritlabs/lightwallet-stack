@@ -1,19 +1,46 @@
-import { OnInit, ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { ProfileService } from '@merit/common/services/profile.service';
+import { Component, Input } from '@angular/core';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+
+// TODO move this interface to a model file
+interface IRankData {
+  unlocked: boolean;
+  totalAnv: number;
+  bestRank: number;
+  bestPercentile: number;
+  percentileStr: string;
+}
+
+// TODO move this interface to a model file
+interface IRankInfo {
+  address: string;
+  alias?: string;
+  anv: number;
+  anvpercent: number;
+  percentile: string;
+  rank: number;
+}
 
 @Component({
   selector: 'profile-stats',
   templateUrl: './profile-stats.component.html',
   styleUrls: ['./profile-stats.component.sass'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProfileStatsComponent implements OnInit {
+export class ProfileStatsComponent {
+  private _wallets: DisplayWallet[];
+
   @Input() totals: any;
   @Input() loading: boolean;
-  @Input() wallets;
 
-  _wallets: Array<MeritWalletClient>;
+  @Input()
+  set wallets(val: DisplayWallet[]) {
+    this._wallets = val;
+    this.updateRankData();
+  }
+
+  get wallets(): DisplayWallet[] {
+    return this._wallets;
+  }
 
   rankActive: boolean;
   ranks: any;
@@ -22,13 +49,7 @@ export class ProfileStatsComponent implements OnInit {
   offset: number = 0;
   LIMIT: number = 100;
 
-  rankData: {
-    unlocked: boolean,
-    totalAnv: number,
-    bestRank: number,
-    bestPercentile: number,
-    percentileStr: string,
-  } = {
+  rankData: IRankData = {
     unlocked: false,
     totalAnv: 0,
     bestRank: 0,
@@ -36,27 +57,63 @@ export class ProfileStatsComponent implements OnInit {
     percentileStr: '',
   };
 
-  constructor(private profileService: ProfileService) {}
+  private async updateRankData() {
+    const hasConfirmedWallet = this.wallets.findIndex((wallet: DisplayWallet) => wallet.confirmed) !== -1;
 
-  async ngOnInit() {
-    this._wallets = await this.profileService.getWallets();
-    await Promise.all([this.getLeaderboard(), this.getRankInfo()]);
-    this.loadRankingInfo();
-    this.loading = false;
-  }
+    if (!hasConfirmedWallet) {
+      this.rankData = {
+        unlocked: false,
+        totalAnv: 0,
+        bestRank: 0,
+        bestPercentile: 0,
+        percentileStr: '',
+      };
+      return;
+    }
 
-  async getLeaderboard() {
-    this.leaderboard = (await this._wallets[0].getCommunityLeaderboard(this.LIMIT)).ranks;
+    const ranks: IRankInfo[] = await this.getRankInfo();
+    let topRank: IRankInfo;
+
+    ranks.forEach((rank: IRankInfo) => {
+      if (!topRank || rank.rank < topRank.rank) {
+        topRank = rank;
+      }
+    });
+
+    const topRankWallet: DisplayWallet = this.wallets.find((wallet: DisplayWallet) => wallet.referrerAddress === topRank.address);
+
+    this.rankData = {
+      unlocked: true,
+      totalAnv: ranks.reduce((total: number, rank: IRankInfo) => total + rank.anv, 0),
+      bestRank: topRank.rank,
+      bestPercentile: topRank.anvpercent,
+      percentileStr: this.getPercentileStr(topRank),
+    };
+    this.ranks = ranks;
+    this.leaderboard = (await topRankWallet.client.getCommunityLeaderboard(this.LIMIT)).ranks;
     this.displayLeaderboard = this.leaderboard.slice(this.offset, this.LIMIT);
   }
 
-  async getRankInfo() {
-    let ranks = [];
-    await Promise.all(this._wallets.filter(w => w.confirmed).map(async (w) => {
-      const rankInfo = (await w.getCommunityRank()).ranks[0];
-      ranks.push(rankInfo);
-    }));
-    this.ranks = ranks;
+
+  // TODO: move this function to a utils file
+  private getPercentileStr(rankData: IRankInfo) {
+    console.log('Best rank is ', rankData);
+    const percentile = Number(rankData.percentile);
+
+    return (percentile > 20)
+      ? 'Top ' + Math.max(Math.round(100 - percentile), 1) + '%'
+      : 'Bottom ' + Math.max(Math.round(percentile), 1) + '%';
+  }
+
+  private getRankInfo(): Promise<any[]> {
+    return Promise.all(
+      this.wallets
+        .filter((wallet: DisplayWallet) => wallet.confirmed)
+        .map((wallet: DisplayWallet) => wallet.client)
+        .map(async (walletClient: MeritWalletClient) =>
+          (await walletClient.getCommunityRank()).ranks[0],
+        ),
+    );
   }
 
   onRankClose() {
@@ -69,29 +126,5 @@ export class ProfileStatsComponent implements OnInit {
 
   onMoreCommunity() {
     document.getElementById('extendCommunityBtn').click();
-  }
-
-  private loadRankingInfo() {
-    const confirmedPresent = this._wallets.some(w => w.confirmed);
-    const ranks = this.ranks;
-    let rankData = {
-      unlocked: confirmedPresent,
-      totalAnv: 0,
-      bestRank: 0,
-      bestPercentile: 0,
-      percentileStr: '',
-    };
-
-    ranks.forEach(walletRank => {
-      rankData.totalAnv += walletRank.anv;
-      if (!rankData.bestRank || rankData.bestRank > walletRank.rank) rankData.bestRank = walletRank.rank;
-      if (!rankData.bestPercentile || rankData.bestPercentile < walletRank.percentile) rankData.bestPercentile = walletRank.percentile;
-    });
-
-    rankData.percentileStr = (rankData.bestPercentile > 20)
-      ? 'Top ' + Math.max(Math.round(100 - rankData.bestPercentile), 1) + '%'
-      : 'Bottom ' + Math.max(Math.round(rankData.bestPercentile), 1) + '%';
-
-    this.rankData = rankData;
   }
 }
