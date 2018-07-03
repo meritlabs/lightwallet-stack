@@ -97,7 +97,6 @@ export class ProfileStatsComponent {
 
   // TODO: move this function to a utils file
   private getPercentileStr(rankData: IRankInfo) {
-    console.log('Best rank is ', rankData);
     const percentile = Number(rankData.percentile);
 
     return (percentile > 20)
