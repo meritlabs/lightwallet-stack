@@ -61,8 +61,7 @@
         <ul class="rankList">
           <li *ngFor="let r of leaderboard" class="rankList_item">
             <span class="wallet">
-              <p *ngIf="r.alias" class="alias">@{{ r.alias }}</p>
-              <p *ngIf="!r.alias" class="alias">Anonymous</p>
+              <p class="alias">{{ r.alias? '@' + r.alias : 'Anonymous' }}</p>
             </span>
             <span class="rank">
               <strong>{{r.anv | toMRT:8:true}}</strong>
