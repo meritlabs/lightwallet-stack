@@ -17,5 +17,6 @@ export enum SmsNotificationSetting {
   WalletUnlocked = 'WalletUnlocked',
   MiningReward = 'MiningReward',
   GrowthReward = 'GrowthReward',
-  IncomingPoolPayment = 'IncomingPoolPayment'
+  IncomingPoolPayment = 'IncomingPoolPayment',
+  MarketPayment = 'MarketPayment',
 }
