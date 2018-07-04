@@ -147,7 +147,7 @@ BlockchainMonitor.prototype._handleNewBlock = function (network, hash) {
  * @param invites {Array<string>} Array of transaction IDs of the mined invites.
  * @private
  */
-BlockchainExplorer.prototype._handleMinedInvites = function(network, invites) {
+BlockchainMonitor.prototype._handleMinedInvites = function(network, invites) {
   if (!invites || !invites.length) {
     // Nothing to process
     return;
