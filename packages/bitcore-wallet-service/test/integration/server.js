@@ -3160,25 +3160,6 @@ describe('Wallet service', function() {
           });
         });
       });
-      it('should fail to create a tx exceeding max size in kb', function(done) {
-        var _oldDefault = Defaults.MAX_TX_SIZE_IN_KB;
-        Defaults.MAX_TX_SIZE_IN_KB = 1;
-        helpers.stubUtxos(server, wallet, _.range(1, 10, 0), function() {
-          var txOpts = {
-            outputs: [{
-              toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
-              amount: 8e8,
-            }],
-            feePerKb: 100e2,
-          };
-          server.createTx(txOpts, function(err, tx) {
-            should.exist(err);
-            err.code.should.equal('TX_MAX_SIZE_EXCEEDED');
-            Defaults.MAX_TX_SIZE_IN_KB = _oldDefault;
-            done();
-          });
-        });
-      });
       it('should fail with different error for insufficient funds and locked funds', function(done) {
         helpers.stubUtxos(server, wallet, [1, 1], function() {
           var txOpts = {
