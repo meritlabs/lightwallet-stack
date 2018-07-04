@@ -26,7 +26,7 @@
           </span>
         </div>
         <ul class="rankList">
-          <li *ngFor="let wallet of _wallets" class="rankList_item">
+          <li *ngFor="let wallet of wallets" class="rankList_item">
             <span class="wallet">
               <p class="name">{{wallet.name}}</p>
               <p *ngIf="wallet.alias" class="alias">@{{wallet.alias}}</p>
