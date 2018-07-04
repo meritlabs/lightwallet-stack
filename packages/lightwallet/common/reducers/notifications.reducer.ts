@@ -149,6 +149,11 @@ export function formatNotification(notification: INotification): INotification {
         notification.text = 'An invite has been requested from your wallet.';
         break;
 
+      case 'MinedInvite':
+        notification.title = 'Invite mined';
+        notification.text = 'Congratulations! You have mined an invite token.';
+        break;
+
       default:
         return null;
     }
