@@ -383,10 +383,12 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
           let notificationType = '';
 
           if (data.isCoinbase) {
-            if (out.index === 0) {
-              notificationType = 'MiningReward'
+            if (data.isInvite) {
+              notificationType = 'MinedInvite';
+            } else if (out.index === 0) {
+              notificationType = 'MiningReward';
             } else {
-              notificationType = 'GrowthReward'
+              notificationType = 'GrowthReward';
             }
           } else if (data.isInvite) {
             if (isAddressConfirmed) {

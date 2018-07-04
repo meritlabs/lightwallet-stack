@@ -74,6 +74,10 @@ var EMAIL_TYPES = {
     notifyDoer: true,
     notifyOthers: true,
   },
+  MinedInvite: {
+    notifyDoer: true,
+    notifyOthers: true
+  },
   'TxProposalFinallyRejected': {
     filename: 'txp_finally_rejected',
     notifyDoer: false,
@@ -103,7 +107,7 @@ var EMAIL_TYPES = {
     filename: 'pool_payment',
     notifyDoer: true,
     notifyOthers: false,
-  },
+  }
 };
 
 
