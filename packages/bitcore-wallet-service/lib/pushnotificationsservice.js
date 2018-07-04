@@ -84,6 +84,10 @@ var PUSHNOTIFICATIONS_TYPES = {
   'IncomingPoolPayment': {
     filename: 'pool_payment',
   },
+  MinedInvite: {
+    filename: 'mined_invite',
+  },
+
 };
 
 function PushNotificationsService() {};
