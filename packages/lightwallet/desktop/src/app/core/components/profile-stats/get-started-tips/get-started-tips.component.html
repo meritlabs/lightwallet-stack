@@ -1,5 +1,5 @@
 <div class="StarterTips">
-  <div class="closeCross" (click)="showHide()" [class.active]="active"></div>
+  <div class="closeCross" (click)="showHide()" *ngIf="active">Close</div>
   <div class="StarterTips_wrap" [@showTips]="active">
     <div class="StarterTips_items">
       <div class="StarterTips_item" [class.active]="setTipType === 'community'">
