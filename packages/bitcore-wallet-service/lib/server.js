@@ -1981,8 +1981,6 @@ WalletService.prototype._checkTx = function(txp) {
     disableLargeFees: true,
   };
 
-  if (txp.getEstimatedSize() / 1000 > Defaults.MAX_TX_SIZE_IN_KB) return Errors.TX_MAX_SIZE_EXCEEDED;
-
   try {
     var bitcoreTx = txp.getBitcoreTx();
     bitcoreError = bitcoreTx.getSerializationError(serializationOpts);
