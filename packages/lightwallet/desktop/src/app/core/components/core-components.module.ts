@@ -17,11 +17,12 @@ import { WalletsListComponent } from '@merit/desktop/app/core/components/wallets
 import { VirtualScrollModule } from 'angular2-virtual-scroll';
 import { ClipModule } from 'ng2-clip';
 import { MomentModule } from 'ngx-moment';
-import { GetStartedTipsComponent } from './get-started-tips/get-started-tips.component';
+import { GetStartedTipsComponent } from './profile-stats/get-started-tips/get-started-tips.component';
 import { HistoryItemComponent } from './history-item/history-item.component';
 import { HistoryListComponent } from './history-list/history-list.component';
 import { ShareBoxComponent } from './share-box/share-box.component';
 import { TaskConfirmComponent } from '@merit/desktop/app/core/dialog/task-confirm/task-confirm.component';
+import { CommunityRankComponent } from './profile-stats/community-rank/community-rank.component';
 
 export function getComponents() {
   return [
@@ -39,6 +40,7 @@ export function getComponents() {
     GetStartedTipsComponent,
     ShareBoxComponent,
     TaskConfirmComponent,
+    CommunityRankComponent,
   ];
 }
 
@@ -51,7 +53,7 @@ export function getComponents() {
     CommonPipesModule,
     VirtualScrollModule,
     ClipModule,
-    CommonDirectivesModule
+    CommonDirectivesModule,
   ],
   declarations: getComponents(),
   exports: getComponents(),
