@@ -136,6 +136,38 @@ BlockchainMonitor.prototype._handleNewBlock = function (network, hash) {
       self._handleTxConfirmations(network, block.tx);
       self._handleReferralConfirmations(network, block.referrals);
       self._handleVaultConfirmations(network, block.tx);
+      self._handleMinedInvites(network, block.invites);
+    });
+  });
+};
+
+/**
+ * Handles mined invites for a new block
+ * @param network {string} Type of network. Can be either "livenet" or "testnet"
+ * @param invites {Array<string>} Array of transaction IDs of the mined invites.
+ * @private
+ */
+BlockchainExplorer.prototype._handleMinedInvites = function(network, invites) {
+  if (!invites || !invites.length) {
+    // Nothing to process
+    return;
+  }
+
+  const explorer = this.explorers[network];
+
+  if (!explorer) {
+    return;
+  }
+
+  invites.forEach((inviteTxId) => {
+    explorer.getTransaction(inviteTxId, (err, tx) => {
+      if (err || !tx) {
+        console.log('Unable to fetch invite transaction: ', inviteTxId);
+        console.log(err);
+        return;
+      }
+
+      this._handleIncomingPayments(tx, network);
     });
   });
 };
