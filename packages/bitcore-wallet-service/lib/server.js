@@ -4540,6 +4540,9 @@ WalletService.prototype.getCommunityRank = async function(cb) {
         let result = await localMeritDaemon.getCommunityRank(addressStrs);
         return cb(null, result);
     } catch (e) {
+      if (typeof e === 'object' && e.code) {
+        delete e.code;
+      }
         return cb(e);
     }
 };
@@ -4549,6 +4552,9 @@ WalletService.prototype.getCommunityRanks = async function(addresses, cb) {
         let result = await localMeritDaemon.getCommunityRank(addresses);
         return cb(null, result);
     } catch (e) {
+      if (typeof e === 'object' && e.code) {
+        delete e.code;
+      }
         return cb(e);
     }
 };
@@ -4559,6 +4565,9 @@ WalletService.prototype.getCommunityLeaderboard = async function(limit, cb) {
         const result = await localMeritDaemon.getCommunityLeaderboard(limit);
         return cb(null, result);
     } catch (e) {
+      if (typeof e === 'object' && e.code) {
+        delete e.code;
+      }
         return cb(e);
     }
 };
