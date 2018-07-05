@@ -4531,45 +4531,45 @@ WalletService.prototype.getGlobalSends = async function(opts, cb) {
 };
 
 WalletService.prototype.getCommunityRank = async function(cb) {
-    let wallet = await promisify(this.getWallet.bind(this))({});
-    let addresses = await promisify(this.storage.fetchAddresses.bind(this.storage))(wallet.id);
-    if (addresses.length == 0) return cb(null, []);
-    const addressStrs = _.map(addresses, 'address');
+  const wallet = await promisify(this.getWallet.bind(this))({});
+  const addresses = await promisify(this.storage.fetchAddresses.bind(this.storage))(wallet.id);
+  if (!addresses || addresses.length === 0) return cb(null, []);
+  const addressStrs = _.map(addresses, 'address');
 
-    try {
-        let result = await localMeritDaemon.getCommunityRank(addressStrs);
-        return cb(null, result);
-    } catch (e) {
-      if (typeof e === 'object' && e.code) {
-        delete e.code;
-      }
-        return cb(e);
+  try {
+    const result = await localMeritDaemon.getCommunityRank(addressStrs);
+    return cb(null, result);
+  } catch (e) {
+    if (typeof e === 'object' && e.code) {
+      delete e.code;
     }
+    return cb(e);
+  }
 };
 
 WalletService.prototype.getCommunityRanks = async function(addresses, cb) {
-    try {
-        let result = await localMeritDaemon.getCommunityRank(addresses);
-        return cb(null, result);
-    } catch (e) {
-      if (typeof e === 'object' && e.code) {
-        delete e.code;
-      }
-        return cb(e);
+  try {
+    const result = await localMeritDaemon.getCommunityRank(addresses);
+    return cb(null, result);
+  } catch (e) {
+    if (typeof e === 'object' && e.code) {
+      delete e.code;
     }
+    return cb(e);
+  }
 };
 
 WalletService.prototype.getCommunityLeaderboard = async function(limit, cb) {
-    try {
-        if (!limit) limit = 100;
-        const result = await localMeritDaemon.getCommunityLeaderboard(limit);
-        return cb(null, result);
-    } catch (e) {
-      if (typeof e === 'object' && e.code) {
-        delete e.code;
-      }
-        return cb(e);
+  try {
+    limit = limit || 100;
+    const result = await localMeritDaemon.getCommunityLeaderboard(limit);
+    return cb(null, result);
+  } catch (e) {
+    if (typeof e === 'object' && e.code) {
+      delete e.code;
     }
+    return cb(e);
+  }
 };
 
 module.exports = WalletService;
