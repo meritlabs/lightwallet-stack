@@ -243,7 +243,7 @@ export class WalletSettingsView implements OnInit, OnDestroy {
             await new Promise<void>((resolve, reject) => {
               this.passwordPromptCtrl.createForWallet(this.wallet).onDidDismiss((password: string) => {
                 if (password) resolve();
-                else reject('You must decrypt you wallet before deleting it.');
+                else reject('You must decrypt your wallet before deleting it.');
               });
             });
           }
