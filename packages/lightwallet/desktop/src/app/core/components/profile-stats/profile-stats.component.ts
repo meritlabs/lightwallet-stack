@@ -71,7 +71,8 @@ export class ProfileStatsComponent {
       return;
     }
 
-    const ranks: IRankInfo[] = await this.getRankInfo();
+    const rankInfo: any = await this.getRankInfo();
+    const ranks: IRankInfo[] = rankInfo.ranks;
     let topRank: IRankInfo;
 
     ranks.forEach((rank: IRankInfo) => {
@@ -104,15 +105,12 @@ export class ProfileStatsComponent {
       : 'Bottom ' + Math.max(Math.round(percentile), 1) + '%';
   }
 
-  private getRankInfo(): Promise<any[]> {
-    return Promise.all(
-      this.wallets
-        .filter((wallet: DisplayWallet) => wallet.confirmed)
-        .map((wallet: DisplayWallet) => wallet.client)
-        .map(async (walletClient: MeritWalletClient) =>
-          (await walletClient.getCommunityRank()).ranks[0],
-        ),
-    );
+  private getRankInfo(): Promise<any> {
+    const addresses = this.wallets
+      .filter((wallet: DisplayWallet) => wallet.confirmed)
+      .map((wallet: DisplayWallet) => wallet.client.getRootAddress().toString());
+
+    return this.wallets[0].client.getCommunityRanks(addresses);
   }
 
   onRankClose() {
