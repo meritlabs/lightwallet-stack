@@ -4,16 +4,16 @@
     <div class="StarterTips_items">
       <div class="StarterTips_item">
         <h4 class="StarterTips_title" *ngIf="rankData.unlocked">
-          Your best rank is {{rankData.bestRank}} ({{rankData.percentileStr}})
+          Your community rank is {{rankData.bestRank}} ({{rankData.percentileStr}})
         </h4>
         <h4 class="StarterTips_title" *ngIf="!rankData.unlocked">
-          Your best rank will be available soon!
+          Your community rank will be available soon!
         </h4>
         <p>
           <small>
-            *Best rank is the best rating of all your wallets.
+            *Community rank selects the best ranking of all your wallets.
             It is determined for all your unlocked wallets.
-            Not unlocked wallets cannot have Merit and rank cannot be determined for them.
+            Locked wallets are not factored into the ranking system.
           </small>
         </p>
         <div class="header">
@@ -22,7 +22,7 @@
           <span class="rank">
             <p>Score</p>
             <p class="divider">/</p>
-            <p>World position</p>
+            <p>World Rank</p>
           </span>
         </div>
         <ul class="rankList">
@@ -44,10 +44,10 @@
       </div>
       <div class="StarterTips_item">
         <h4 class="StarterTips_title">
-          Top 100 rank
+          Top 100 Rankings
         </h4>
         <p>
-          <small>*Rating of the top 100 Merit users</small>
+          <small>*Ranking of the top 100 Merit Users</small>
         </p>
         <div class="header">
           <span class="wallet">
@@ -55,7 +55,7 @@
           <span class="rank">
             <p>Score</p>
             <p class="divider">/</p>
-            <p>World position</p>
+            <p>World Rank</p>
           </span>
         </div>
         <ul class="rankList">
@@ -73,13 +73,13 @@
       </div>
       <div class="StarterTips_item">
         <h4 class="StarterTips_title">
-          How to Up my rank?
+          How do I increase my rank?
         </h4>
-        <p>You rank depends on the amount of Merit, that your community and you have.</p>
+        <p>You rank depends on the size, activity, and growth of your community.</p>
         <p>If you want to increase you rank, you can:</p>
         <ul>
           <li>
-            Get more Merit with Security Rewards. All you need is to start mining!
+            Get more Merit with Mining Rewards. All you need is to start mining!
             <button class="ui-button ui-button--xs ui-button--blue" (click)="onMoreSecurityRewards()">Learn more
             </button>
           </li>

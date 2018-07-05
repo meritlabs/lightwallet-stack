@@ -9,7 +9,7 @@
       <ng-container *ngIf="!loading; else percentileLoading">
         <div class="stats__item__info">
           <span *ngIf="rankData.unlocked; else rankDataLocked">
-            <strong>{{rankData.bestRank}}</strong> / {{rankData.percentileStr}}
+            <strong>{{rankData.percentileStr}}</strong> (Rank: {{rankData.bestRank}})
           </span>
           <ng-template #rankDataLocked>
             <span>Unlock your wallets to see rank</span>
