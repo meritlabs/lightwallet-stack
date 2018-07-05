@@ -1,15 +1,15 @@
-import { Component, ViewEncapsulation, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { IRootAppState } from '@merit/common/reducers';
 import {
   INotification,
   selectNotifications,
-  selectTotalUnreadNotifications,
+  selectTotalUnreadNotifications
 } from '@merit/common/reducers/notifications.reducer';
 import {
   RefreshWalletsAction,
   selectWalletsLoading,
   selectWalletTotals,
-  selectWalletTotalsLoading,
+  selectWalletTotalsLoading
 } from '@merit/common/reducers/wallets.reducer';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
@@ -18,37 +18,15 @@ import { SetShareDialogAction } from '@merit/common/reducers/interface-preferenc
 @Component({
   selector: 'app-toolbar',
   templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.sass'],
+  styleUrls: ['./toolbar.component.sass']
 })
 export class ToolbarComponent {
   showMenu: boolean;
-  availableCurrencies: any = [
-    {
-      name: 'USD',
-      symbol: '$',
-      value: '1',
-    },
-    {
-      name: 'RUB',
-      symbol: 'R',
-      value: '0.1',
-    },
-    {
-      name: 'CAD',
-      symbol: 'R',
-      value: '2',
-    },
-    {
-      name: 'EUR',
-      symbol: 'R',
-      value: '3',
-    },
-  ];
 
   selectedCurrency: any = {
     name: 'USD',
     symbol: '$',
-    value: '1',
+    value: '1'
   };
 
   totals$: Observable<any> = this.store.select(selectWalletTotals);
@@ -63,7 +41,8 @@ export class ToolbarComponent {
 
   showAdvTb: boolean;
 
-  constructor(private store: Store<IRootAppState>) {}
+  constructor(private store: Store<IRootAppState>) {
+  }
 
   receiveSelection($event) {
     this.selectedCurrency = $event;
