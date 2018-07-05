@@ -5,10 +5,18 @@
   height: 100vh
   overflow: hidden
   justify-content: space-between
+
+  &.hasAlert
+    .main
+      height: calc(100% - 65px)
   .main
     flex: 1
-    position: relative
+    position: absolute
+    height: 100%
+    width: 100%
+    bottom: 0
     z-index: 2
+    transition: all .25s ease-in-out
 .dashboard__main
   > :not(router-outlet)
     display: block
