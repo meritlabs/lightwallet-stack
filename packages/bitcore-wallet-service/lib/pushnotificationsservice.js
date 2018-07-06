@@ -225,6 +225,8 @@ PushNotificationsService.prototype._sendPushNotifications = function (notificati
                       }
                     };
 
+                    notification.data.timestamp = notification.data.timestamp || Date.now();
+
                     if (sub.platform === 'web') {
                       pushNotification.notification.click_action = sub.packageName;
                       pushNotification.notification.icon =
