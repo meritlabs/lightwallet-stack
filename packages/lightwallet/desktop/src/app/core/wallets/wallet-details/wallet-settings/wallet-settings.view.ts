@@ -250,7 +250,7 @@ export class WalletSettingsView implements OnInit, OnDestroy {
 
           this.store.dispatch(new DeleteWalletAction(this.wallet.id));
           const primaryWallet = await getLatestValue(this.store.select(selectPrimaryWallet));
-          if (this.wallet.id == primaryWallet.id) {
+          if (primaryWallet && this.wallet.id == primaryWallet.id) {
             this.store.dispatch(new SetPrimaryWalletAction(null));
           }
           this.router.navigateByUrl('/wallets');
