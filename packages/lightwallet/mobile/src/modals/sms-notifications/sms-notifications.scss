@@ -5,7 +5,6 @@ modal-sms-notifications {
 
   img {
     max-width: 175px;
-    margin-bottom: 50px;
   }
 
   p {
@@ -14,10 +13,10 @@ modal-sms-notifications {
 
   ion-input[formControlName='phoneNumber'] input {
     border: 2px solid map_get($colors, primary);
-    border-radius: 25px;
-    padding: 10px 0;
+    border-radius: 6px;
+    padding: 5px 0 10px;
     text-align: center;
-    font-size: 1.4em;
+    font-size: 1.3em;
 
     &::placeholder {
       font-size: .8em;
