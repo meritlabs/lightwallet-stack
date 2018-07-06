@@ -371,7 +371,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
 
             // Check if the recipient address is unlocked; by checking if it has
             // received any invites in the past.
-            isAddressConfirmed = utxos.some(u => u.isInvite && u.txid !== out.txid);
+            isAddressConfirmed = utxos.some(u => u.isInvite && u.txid !== data.txid);
 
             cb();
           });
