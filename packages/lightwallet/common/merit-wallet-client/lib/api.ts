@@ -2765,6 +2765,21 @@ export class API {
     } );
   }
 
+  async getCommunityRank() {
+    $.checkState(this.credentials);
+    return this._doGetRequest(`/v1/community/rank`);
+  }
+
+  async getCommunityRanks(addresses) {
+    $.checkState(this.credentials);
+    return this._doPostRequest(`/v1/community/ranks`, {addresses: addresses});
+  }
+
+  async getCommunityLeaderboard(limit: number) {
+    $.checkState(this.credentials);
+    return this._doGetRequest(`/v1/community/leaderboard?limit=`+limit);
+  }
+
   private encryptGlobalSend(easySend: EasySend) {
     return this._encryptMessage(JSON.stringify(easySend), this.credentials.personalEncryptingKey);
   }
@@ -2772,6 +2787,7 @@ export class API {
   private decryptGlobalSend(data) {
     return this._decryptMessage(data, this.credentials.personalEncryptingKey);
   }
+
 
 
 }

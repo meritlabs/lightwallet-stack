@@ -16,6 +16,7 @@ import { PasswordValidator } from '@merit/common/validators/password.validator';
 import { ENV } from '@app/env';
 import { Store } from '@ngrx/store';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 import { take } from 'rxjs/operators';
 import 'rxjs/add/operator/toPromise';
@@ -161,7 +162,8 @@ export class CreateWalletView {
               private addressService: AddressService,
               private txFormatService: TxFormatService,
               private loader: Ng4LoadingSpinnerService,
-              private mwcService: MWCService) {
+              private mwcService: MWCService,
+              private persistenceService2: PersistenceService2) {
   }
 
   async ngOnInit() {
@@ -240,7 +242,7 @@ export class CreateWalletView {
         this.logger.error(e);
       }
 
-      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService);
+      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, this.persistenceService2);
       this.store.dispatch(new AddWalletAction(displayWallet));
       return this.router.navigateByUrl('/wallets');
     } catch (err) {

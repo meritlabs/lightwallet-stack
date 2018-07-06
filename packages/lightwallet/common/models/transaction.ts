@@ -11,7 +11,8 @@ export enum TransactionAction {
   MOVED = 'moved',
   MINING_REWARD = 'mining_reward',
   AMBASSADOR_REWARD = 'growth_reward',
-  POOL_REWARD = 'pool_reward'
+  POOL_REWARD = 'pool_reward',
+  MARKET = 'market',
 }
 
 export enum UnlockRequestStatus {
@@ -71,10 +72,17 @@ export interface IDisplayTransaction extends ITransaction {
   isMiningReward: boolean;
   isGrowthReward: boolean;
   isPoolReward: boolean;
+  isMarketPayment: boolean;
   isWalletUnlock: boolean;
   isConfirmed?: boolean;
   easySend?: EasySend;
   easySendUrl?: string;
   isSpent: boolean;
   cancelled: boolean;
+  isNew: boolean;
+}
+
+export interface IVisitedTransaction {
+  txid: string;
+  counter: number;
 }

@@ -26,6 +26,7 @@ BlockchainMonitor.prototype.start = function (opts, cb) {
 
   self.pushNotificationServiceEnabled = !!opts.pushNotificationsOpts;
   self.emailNotificationServiceEnabled = !!opts.emailOpts;
+  self.smsNotificationsEnabled = !!opts.smsOpts.enabled;
 
   async.parallel(
     [
@@ -136,6 +137,38 @@ BlockchainMonitor.prototype._handleNewBlock = function (network, hash) {
       self._handleTxConfirmations(network, block.tx);
       self._handleReferralConfirmations(network, block.referrals);
       self._handleVaultConfirmations(network, block.tx);
+      self._handleMinedInvites(network, block.invites);
+    });
+  });
+};
+
+/**
+ * Handles mined invites for a new block
+ * @param network {string} Type of network. Can be either "livenet" or "testnet"
+ * @param invites {Array<string>} Array of transaction IDs of the mined invites.
+ * @private
+ */
+BlockchainMonitor.prototype._handleMinedInvites = function(network, invites) {
+  if (!invites || !invites.length) {
+    // Nothing to process
+    return;
+  }
+
+  const explorer = this.explorers[network];
+
+  if (!explorer) {
+    return;
+  }
+
+  invites.forEach((inviteTxId) => {
+    explorer.getTransaction(inviteTxId, (err, tx) => {
+      if (err || !tx) {
+        console.log('Unable to fetch invite transaction: ', inviteTxId);
+        console.log(err);
+        return;
+      }
+
+      this._handleIncomingPayments(tx, network);
     });
   });
 };
@@ -338,7 +371,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
 
             // Check if the recipient address is unlocked; by checking if it has
             // received any invites in the past.
-            isAddressConfirmed = utxos.some(u => u.isInvite && u.txid !== out.txid);
+            isAddressConfirmed = utxos.some(u => u.isInvite && u.txid !== data.txid);
 
             cb();
           });
@@ -351,10 +384,12 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
           let notificationType = '';
 
           if (data.isCoinbase) {
-            if (out.index === 0) {
-              notificationType = 'MiningReward'
+            if (data.isInvite) {
+              notificationType = 'MinedInvite';
+            } else if (out.index === 0) {
+              notificationType = 'MiningReward';
             } else {
-              notificationType = 'GrowthReward'
+              notificationType = 'GrowthReward';
             }
           } else if (data.isInvite) {
             if (isAddressConfirmed) {
@@ -586,7 +621,9 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function (network, txids
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function (notification, cb) {
-  if (!(this.pushNotificationServiceEnabled || this.emailNotificationServiceEnabled)) return cb();
+  if (!(this.pushNotificationServiceEnabled || this.emailNotificationServiceEnabled || this.smsNotificationsEnabled)) {
+    return cb();
+  }
 
   this.storage.storeNotification(notification, (err, created) => {
     if (created) {

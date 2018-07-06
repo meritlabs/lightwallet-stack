@@ -91,7 +91,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       return req.copayerId
     });
 
-    var logFormat = ':remote-addr :date[iso] ":method :url" :status :res[content-length] :response-time ":user-agent" :walletId :copayerId';
+    var logFormat = ':remote-addr :date[iso] ":method :url" :status :res[content-length] :req[content-length] :response-time ":user-agent" :walletId :copayerId';
     var logOpts = {
       skip: function(req, res) {
         if (res.statusCode != 200) return false;
@@ -974,6 +974,35 @@ ExpressApp.prototype.start = function(opts, cb) {
           res.status(400).send();
         }
       });
+    });
+  });
+
+  router.get('/v1/community/rank/', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+        server.getCommunityRank(function(err, txs) {
+            if (err) return returnError(err, res, req);
+            res.json(txs);
+            res.end();
+        });
+    });
+  });
+
+  router.post('/v1/community/ranks/', function(req, res) {
+    getServerWithAuth(req, res, function(server) {
+        server.getCommunityRanks(req.body.addresses, function(err, txs) {
+            if (err) return returnError(err, res, req);
+            res.json(txs);
+            res.end();
+        });
+    });
+  });
+
+  router.get('/v1/community/leaderboard/', function(req, res) {
+    let server = getServer(req, res);
+    server.getCommunityLeaderboard(req.query.limit, function(err, txs) {
+      if (err) return returnError(err, res, req);
+      res.json(txs);
+      res.end();
     });
   });
 

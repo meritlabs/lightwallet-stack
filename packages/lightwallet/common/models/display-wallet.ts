@@ -1,6 +1,7 @@
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FiatAmount } from '@merit/common/models/fiat-amount';
 import { AddressService } from '@merit/common/services/address.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { IUnlockRequest } from '@merit/common/services/unlock-request.service';
 import { WalletService } from '@merit/common/services/wallet.service';
@@ -70,12 +71,14 @@ export class DisplayWallet {
   communitySize: number = 0;
 
   constructor(public client: MeritWalletClient,
-              private walletService: WalletService,
-              private addressService: AddressService,
-              private txFormatService?: TxFormatService) {
+    private walletService: WalletService,
+    private addressService: AddressService,
+    private txFormatService?: TxFormatService,
+    private persistenceService2?: PersistenceService2) {
     this.client = client;
     this.walletService = walletService;
     this.txFormatService = txFormatService;
+    this.persistenceService2 = persistenceService2;
 
     this.referrerAddress = this.client.getRootAddress().toString();
 
@@ -119,10 +122,14 @@ export class DisplayWallet {
 
   async updateStatus() {
     this.client.status = await this.client.getStatus();
+    let visitedInvites = await this.persistenceService2.getVisitedInvites() || [];
     this.inviteRequests = (await this.client.getUnlockRequests())
       .filter((request: IUnlockRequest) => !request.isConfirmed)
       .map((request: IUnlockRequest) => {
+
         request.walletClient = this.client;
+        request.isNew = visitedInvites.findIndex(rId => rId === request.rId) === -1;
+
         return request;
       });
   }
@@ -159,8 +166,8 @@ export class DisplayWallet {
   }
 }
 
-export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, addressService?: AddressService, txFormatService?: TxFormatService, options: IDisplayWalletOptions = {}): Promise<DisplayWallet> {
-  const displayWallet = new DisplayWallet(wallet, walletService, addressService, txFormatService);
+export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, addressService?: AddressService, txFormatService?: TxFormatService, persistenceService2?: PersistenceService2, options: IDisplayWalletOptions = {}): Promise<DisplayWallet> {
+  const displayWallet = new DisplayWallet(wallet, walletService, addressService, txFormatService, persistenceService2);
   return updateDisplayWallet(displayWallet, options);
 }
 

@@ -84,6 +84,10 @@ var PUSHNOTIFICATIONS_TYPES = {
   'IncomingPoolPayment': {
     filename: 'pool_payment',
   },
+  MinedInvite: {
+    filename: 'mined_invite',
+  },
+
 };
 
 function PushNotificationsService() {};
@@ -220,6 +224,8 @@ PushNotificationsService.prototype._sendPushNotifications = function (notificati
                         ...notification.data
                       }
                     };
+
+                    notification.data.timestamp = notification.data.timestamp || Date.now();
 
                     if (sub.platform === 'web') {
                       pushNotification.notification.click_action = sub.packageName;
