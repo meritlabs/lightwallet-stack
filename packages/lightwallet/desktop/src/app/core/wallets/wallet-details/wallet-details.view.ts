@@ -1,13 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { IRootAppState } from '@merit/common/reducers';
 import { getShareLink } from '@merit/common/utils/url';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { ActivatedRoute } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
-import { selectWalletById, selectNumberOfWallets } from '@merit/common/reducers/wallets.reducer';
-import { map } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
+import { selectNumberOfWallets, selectWalletById } from '@merit/common/reducers/wallets.reducer';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 
 @Component({
@@ -22,9 +21,10 @@ export class WalletDetailView {
 
   wallet$: Observable<DisplayWallet> = this.route.params
     .pipe(
-    switchMap(({ id }) =>
-      this.store.select(selectWalletById(id))
-    )
+      filter(({ id }) => !!id),
+      switchMap(({ id }) =>
+        this.store.select(selectWalletById(id))
+      )
     );
 
   shareLink$: Observable<string> = this.wallet$.pipe(
@@ -35,7 +35,8 @@ export class WalletDetailView {
 
   constructor(private store: Store<IRootAppState>,
               private route: ActivatedRoute,
-              private toastCtrl: ToastControllerService) { }
+              private toastCtrl: ToastControllerService) {
+  }
 
   onCopy() {
     this.toastCtrl.success('Share link copied to clipboard!');
