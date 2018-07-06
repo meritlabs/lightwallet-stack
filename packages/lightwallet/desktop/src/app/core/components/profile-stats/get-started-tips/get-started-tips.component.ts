@@ -21,12 +21,13 @@ declare global {
     trigger('showTips', [
       state('true', style({ maxHeight: '1000px', padding: '60px 20px 30px' })),
       state('false', style({})),
-      transition('* => *', animate('100ms ease-in-out')),
-    ]),
-  ],
+      transition('* => *', animate('100ms ease-in-out'))
+    ])
+  ]
 })
 export class GetStartedTipsComponent implements OnInit {
-  constructor(private persistenceService: PersistenceService2, private store: Store<IRootAppState>) {}
+  constructor(private persistenceService: PersistenceService2, private store: Store<IRootAppState>) {
+  }
 
   active: boolean;
   getArticle: boolean;
@@ -92,6 +93,7 @@ export class GetStartedTipsComponent implements OnInit {
   copyState() {
     this.copy = 'COPIED';
   }
+
   showShare() {
     this.store.dispatch(new SetShareDialogAction(true));
   }
