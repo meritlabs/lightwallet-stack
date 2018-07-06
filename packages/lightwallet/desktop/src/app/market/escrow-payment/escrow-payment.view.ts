@@ -25,6 +25,7 @@ export class EscrowPaymentView implements OnInit {
   entitiesIds = getQueryParam('ids');
   fee = 0;
   feeCalculated = false;
+  sending = false;
   success = false;
 
   constructor(private profileService: ProfileService, private rateService: RateService) {}
@@ -75,6 +76,7 @@ export class EscrowPaymentView implements OnInit {
 
   async send() {
     this.error = null;
+    this.sending = true;
 
     try {
 
@@ -92,8 +94,8 @@ export class EscrowPaymentView implements OnInit {
       window.opener.postMessage(message, ENV.marketUrl);
     } catch (e) {
       this.error = e.message;
-      return;
     }
+    this.sending = false;
   }
 
   cancel() {
