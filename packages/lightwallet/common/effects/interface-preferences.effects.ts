@@ -13,6 +13,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { filter, map, skip, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { of } from 'rxjs/observable/of';
 
 @Injectable()
 export class InterfacePreferencesEffects {
@@ -21,7 +22,21 @@ export class InterfacePreferencesEffects {
     .pipe(
       ofType(InterfaceActionType.SetPrimaryWallet),
       skip(1), // the init function emits this action, we can skip the first one
-      tap((action: SetPrimaryWalletAction) => this.persistenceService.setUserSettings(UserSettingsKey.primaryWalletID, action.primaryWallet.id))
+      switchMap((action: SetPrimaryWalletAction) => {
+        if (action.primaryWallet) {
+          return of(action.primaryWallet);
+        }
+
+        return this.store.select(selectWallets)
+          .pipe(
+            take(1),
+            map((wallets: DisplayWallet[]) =>
+              wallets[0]
+            )
+          );
+      }),
+      filter((wallet: DisplayWallet) => !!wallet),
+      tap((wallet: DisplayWallet) => this.persistenceService.setUserSettings(UserSettingsKey.primaryWalletID, wallet.id))
     );
 
   @Effect()
@@ -75,5 +90,6 @@ export class InterfacePreferencesEffects {
 
   constructor(private actions$: Actions,
               private persistenceService: PersistenceService2,
-              private store: Store<IRootAppState>) {}
+              private store: Store<IRootAppState>) {
+  }
 }
