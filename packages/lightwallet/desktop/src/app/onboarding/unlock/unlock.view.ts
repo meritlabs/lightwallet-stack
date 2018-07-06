@@ -146,6 +146,9 @@ export class UnlockComponent {
       this.currentUnlockDialogStep++;
     } else if (val === 'prev') {
       this.currentUnlockDialogStep--;
+      if (this.currentUnlockDialogStep < 0) {
+        this.showAgreement = false;
+      }
     }
   }
 }
