@@ -30,7 +30,10 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
   let pendingString;
 
-  const visitedTxs: IVisitedTransaction[] = await persistenceService.getVisitedTransactions() || [];
+  let visitedTxs: IVisitedTransaction[];
+  if (persistenceService) {
+    visitedTxs = await persistenceService.getVisitedTransactions() || [];
+  }
 
   walletHistory = await Promise.all(walletHistory.map(async (tx: IDisplayTransaction, i: number) => {
     if (!_.isNil(tx) && !_.isNil(tx.action)) {
@@ -152,22 +155,24 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
     tx.isNew = false;
 
-    const visited = visitedTxs.find(visTx => visTx.txid === tx.txid);
-
-    if (!visited) {
-      tx.isNew = true;
-      // add new one in visited
-      visitedTxs.push({
-        txid: tx.txid,
-        counter: 1
-      });
+    if (persistenceService) {
+      if (!visitedTxs.find(visTx => visTx.txid === tx.txid)) {
+        tx.isNew = true;
+        // add new one in visited
+        visitedTxs.push({
+          txid: tx.txid,
+          counter: 1
+        });
+      }
     }
 
     return tx;
   }));
 
-  //save to storage
-  persistenceService.setVisitedTransactions(visitedTxs);
+  if (persistenceService) {
+    //save to storage
+    persistenceService.setVisitedTransactions(visitedTxs);
+  }
 
   // remove meritmoney invites so we  have only one tx for meritmoney
   return walletHistory
