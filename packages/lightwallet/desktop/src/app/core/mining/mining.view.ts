@@ -100,16 +100,6 @@ export class MiningView {
             url: 'stratum+tcp://pool.merit.me:3333',
           },
           {
-            name: 'Merit Pool2',
-            website: 'https://pool2.merit.me',
-            url: 'stratum+tcp://pool2.merit.me:3333',
-          },
-          {
-            name: 'Merit Testnet Pool',
-            website: 'https://testnet.merit.me',
-            url: 'stratum+tcp://testnet.merit.me:3333',
-          },
-          {
             name: 'Parachute Pool',
             website: 'https://parachute.merit.me',
             url: 'stratum+tcp://parachute.merit.me:3333',
