@@ -3,8 +3,8 @@
   <app-record-passphrase [wallets]="wallets$ | async" (dismiss)="onGuideDismiss()"></app-record-passphrase>
 </ng-container>
 <ng-template #displayApp>
-  <div class="applicationWrapper">
-    <app-wallet-unlock-alert *ngIf="notUnlockedWallets?.length > 0" [unActive]="notUnlockedWallets?.length"></app-wallet-unlock-alert>
+  <div class="applicationWrapper" [class.hasAlert]="lockedWallets$ | async">
+    <app-wallet-unlock-alert *ngIf="lockedWallets$ | async as lockedWallets" [wallets]="lockedWallets"></app-wallet-unlock-alert>
     <div class="main">
       <app-toolbar (shareActivate)="shareActivate(true)"></app-toolbar>
       <app-share-box *ngIf="showShare$ | async" (dismiss)="shareActivate(false)"></app-share-box>
@@ -48,5 +48,5 @@
       </div>
     </div>
   </div>
-  <app-welcome-to-setup-tracker *ngIf="isWelcomeDialogEnabled" (close)="onWelcomeSetupTrackerClose()"></app-welcome-to-setup-tracker>
+  <app-welcome-to-setup-tracker *ngIf="isWelcomeDialogEnabled$ | async"></app-welcome-to-setup-tracker>
 </ng-template>

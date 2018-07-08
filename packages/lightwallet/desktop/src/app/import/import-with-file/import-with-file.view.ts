@@ -12,6 +12,7 @@ import { MWCService } from '@merit/common/services/mwc.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { Store } from '@ngrx/store';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
@@ -49,7 +50,8 @@ export class ImportWithFileView {
               private router: Router,
               private toastCtrl: ToastControllerService,
               private pushNotificationsService: PushNotificationsService,
-              private loadingCtrl: Ng4LoadingSpinnerService) {
+              private loadingCtrl: Ng4LoadingSpinnerService,
+              private persistenceService2: PersistenceService2) {
   }
 
   fileChangeListener($event) {
@@ -87,7 +89,7 @@ export class ImportWithFileView {
 
       this.store.dispatch(
         new AddWalletAction(
-          await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService)
+          await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, this.persistenceService2)
         )
       );
 

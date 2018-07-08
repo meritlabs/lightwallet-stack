@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
+import { Script } from 'bitcore-lib';
 
 import { ENV } from '@app/env';
 import { ProfileService } from '@merit/common/services/profile.service';
@@ -22,9 +21,11 @@ export class EscrowPaymentView implements OnInit {
   amountInMrt = this.rateService.microsToMrt(this.amount);
   sendFrom = getQueryParam('pa');
   sendTo = getQueryParam('ea');
-  paymentId = +getQueryParam('pid');
+  entitiesType = getQueryParam('t');
+  entitiesIds = getQueryParam('ids');
   fee = 0;
   feeCalculated = false;
+  sending = false;
   success = false;
 
   constructor(private profileService: ProfileService, private rateService: RateService) {}
@@ -49,8 +50,12 @@ export class EscrowPaymentView implements OnInit {
       outputs: [{
         amount: this.amount,
         toAddress: this.sendTo,
-        message: '' + this.paymentId,
-      }]
+      },
+      {
+        script: Script.buildDataOut(`MeritMarket:${this.entitiesType}:${this.entitiesIds}`).toHex(),
+        amount: 0
+      }],
+      validateOutputs: false,
     };
 
     if (this.wallet.balance.spendableAmount < this.amount) {
@@ -71,6 +76,7 @@ export class EscrowPaymentView implements OnInit {
 
   async send() {
     this.error = null;
+    this.sending = true;
 
     try {
 
@@ -88,8 +94,8 @@ export class EscrowPaymentView implements OnInit {
       window.opener.postMessage(message, ENV.marketUrl);
     } catch (e) {
       this.error = e.message;
-      return;
     }
+    this.sending = false;
   }
 
   cancel() {

@@ -205,7 +205,9 @@ Merit.prototype.getAPIMethods = function() {
 
     ['getMempoolReferrals', this, this.getMempoolReferrals, 1],
     ['getBlockchainReferrals', this, this.getBlockchainReferrals, 1],
-    ['getAddressMempool', this, this.getAddressMempool, 1]
+    ['getAddressMempool', this, this.getAddressMempool, 1],
+    ['getCommunityRank', this, this.getCommunityRank, 1],
+    ['getCommunityLeaderboard', this, this.getCommunityLeaderboard, 1],
   ];
   return methods;
 };
@@ -2477,6 +2479,18 @@ Merit.prototype.getBlockchainReferrals = async function(addresses) {
 
 Merit.prototype.getAddressMempool = async function(addresses) {
     const {err, result} = await promisify(this.client.getAddressMempool.bind(this.client))({addresses: addresses});
+    if (err) throw err;
+    return result;
+};
+
+Merit.prototype.getCommunityRank = async function(addresses) {
+    const {err, result} = await promisify(this.client.getaddressrank.bind(this.client))({addresses: addresses});
+    if (err) throw err;
+    return result;
+};
+
+Merit.prototype.getCommunityLeaderboard = async function(limit) {
+    const {err, result} = await promisify(this.client.getaddressleaderboard.bind(this.client))(limit);
     if (err) throw err;
     return result;
 };

@@ -4,13 +4,17 @@
   &__wrap
     display: flex
     justify-content: space-between
-    flex-flow: row wrap
     position: relative
     z-index: 2
   &__item
-    width: calc(100% / 3 - 10px)
     text-align: center
     position: relative
+    width: 100%
+    transition: all .3s linear
+    &.collapsed
+      width: 0px
+      overflow: hidden
+      opacity: 0
     &:after
       content: ""
       display: block
@@ -20,7 +24,7 @@
       height: 100%
       width: 1px
       background: linear-gradient(to bottom, rgba(255,255,255, 0.01) 0%,rgba(255,255,255,0.65) 48%,rgba(0,0,0,0) 100%)
-    &:nth-child(3)
+    &:last-of-type
       &:after
         display: none
     &__title

@@ -11,9 +11,6 @@
   <!--</div>-->
   <!--<div class="divider"></div>-->
   <div class="balance">
-    <ng-container *ngIf="totalsLoading$ | async">
-      <loading-spinner></loading-spinner>
-    </ng-container>
     <ng-container *ngIf="totals$ | async as totals">
       <div class="title">
         Available amount:

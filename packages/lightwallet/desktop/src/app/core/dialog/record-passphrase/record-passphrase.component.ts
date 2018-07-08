@@ -13,11 +13,13 @@ export class RecordPassphraseComponent {
   @Output() dismiss: EventEmitter<void> = new EventEmitter<void>();
   copy: string = 'COPY';
   showPhrase: boolean = false;
+  showNextBtn: boolean = false;
 
   copyState() {
     this.copy = 'COPIED';
     setTimeout(() => {
       this.copy = 'COPY';
     }, 1000);
+    this.showNextBtn=true;
   }
 }

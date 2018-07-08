@@ -1,10 +1,10 @@
 <div class="wrap">
   <merit-icon name="unlock-attention"></merit-icon>
   <div>
-    <ng-container *ngIf="unActive > 1; else oneUnActive">
+    <ng-container *ngIf="wallets.length > 1; else oneUnActive">
       <p>
         Looks like you have
-        <strong>{{unActive}}</strong> pending wallets!
+        <strong>{{ wallets.length }}</strong> pending wallets!
       </p>
     </ng-container>
     <ng-template #oneUnActive>

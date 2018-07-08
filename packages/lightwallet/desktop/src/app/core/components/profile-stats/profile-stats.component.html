@@ -1,26 +1,26 @@
 <div class="stats">
   <div class="container--fluid stats__wrap">
-    <!-- NOTE: Uncoment code for displaying rank widget -->
-    <!-- <div class="stats__item">
-      <p class="stats__item__title">Rank<br>&nbsp;</p>
+    <div class="stats__item">
+      <p class="stats__item__title">Community
+        <br>Rank</p>
       <div class="stats__item__picture">
         <img src="/assets/v1/images/stats/rankIcon.png" alt="">
       </div>
       <ng-container *ngIf="!loading; else percentileLoading">
         <div class="stats__item__info">
-          <span>Top</span> 10%
-          <i>Incoming feature</i>
-        </div>
-        <div class="stats__item__grows">
-          <p><span>▲</span></p>
-          <p>+1</p>
-          <p>(* for...)</p>
+          <span *ngIf="rankData.unlocked; else rankDataLocked">
+            <strong>{{rankData.percentileStr}}</strong> (Rank: {{rankData.bestRank}})
+          </span>
+          <ng-template #rankDataLocked>
+            <span>Unlock your wallets to see rank</span>
+          </ng-template>
         </div>
       </ng-container>
       <ng-template #percentileLoading>
-        Spinner
+        <loading-spinner-small></loading-spinner-small>
       </ng-template>
-    </div> -->
+      <button class="ui-button ui-button--green ui-button--xs" (click)="rankActive = !rankActive; getStarted.active = false" id="rankBtn">{{rankActive? 'Hide': 'Show'}} details</button>
+    </div>
     <div class="stats__item">
       <p class="stats__item__title">My
         <br>Community</p>
@@ -32,14 +32,11 @@
           {{ totals?.totalCommunitySize }}
           <span>People</span>
         </div>
-        <!--<div class="stats__item__grows">-->
-        <!--<p>+5</p>-->
-        <!--</div>-->
       </ng-container>
       <ng-template #peopleLoading>
         <loading-spinner-small></loading-spinner-small>
       </ng-template>
-      <button class="ui-button ui-button--xs" (click)="getStarted.setType('community')">Extend my community</button>
+      <button class="ui-button ui-button--green ui-button--xs" (click)="getStarted.setType('community'); rankActive = false" id="extendCommunityBtn">Extend my community</button>
     </div>
     <div class="stats__item">
       <p class="stats__item__title">Growth
@@ -53,7 +50,7 @@
           <span>MRT</span>
         </div>
       </ng-container>
-      <button class="ui-button ui-button--xs" (click)="getStarted.setType('growth')">Get Growth Rewards</button>
+      <button class="ui-button ui-button--green ui-button--xs" (click)="getStarted.setType('growth'); rankActive = false" id="getGrowthRewardsBtn">Get Growth Rewards</button>
     </div>
     <ng-template #growthLoading>
       <loading-spinner-small></loading-spinner-small>
@@ -73,8 +70,18 @@
       <ng-template #miningLoading>
         <loading-spinner-small></loading-spinner-small>
       </ng-template>
-      <button class="ui-button ui-button--xs" (click)="getStarted.setType('mining')">Start mining</button>
+      <button class="ui-button ui-button--green ui-button--xs" (click)="getStarted.setType('mining'); rankActive = false" id="startMiningBtn">Start mining</button>
     </div>
   </div>
   <app-get-started-tips [wallets]="wallets" #getStarted></app-get-started-tips>
+  <app-community-rank
+    [wallets]="wallets"
+    [ranks]="ranks"
+    [active]="rankActive"
+    [leaderboard]="leaderboard"
+    [rankData]="rankData"
+    [onMoreSecurityRewards]="onMoreSecurityRewards"
+    [onMoreCommunity]="onMoreCommunity"
+    (close)="onRankClose()">
+  </app-community-rank>
 </div>

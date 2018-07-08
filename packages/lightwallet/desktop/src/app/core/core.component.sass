@@ -5,10 +5,18 @@
   height: 100vh
   overflow: hidden
   justify-content: space-between
+
+  &.hasAlert
+    .main
+      height: calc(100% - 65px)
   .main
     flex: 1
-    position: relative
+    position: absolute
+    height: 100%
+    width: 100%
+    bottom: 0
     z-index: 2
+    transition: all .25s ease-in-out
 .dashboard__main
   > :not(router-outlet)
     display: block
@@ -44,3 +52,12 @@ span.badge
   position: relative
   transform: translateY(-5px)
   font-size: 12px !important
+.badge-new
+  background: #008000
+  color: #ffffff
+  padding: 1px
+  padding-left: 6px
+  padding-right: 6px
+  border-radius: 4px
+  font-size: 12px
+  vertical-align: top

@@ -96,5 +96,15 @@ LocalDaemon.prototype.getMempoolAcceptedAddresses = async function(addresses) {
     return acceptedAddresses;
 };
 
+LocalDaemon.prototype.getCommunityRank = function(addresses) {
+    return this.node.getCommunityRank(addresses);
+};
+
+
+LocalDaemon.prototype.getCommunityLeaderboard = function(limit) {
+    return this.node.getCommunityLeaderboard(limit);
+};
+
+
 
 module.exports = LocalDaemon;
