@@ -33,7 +33,7 @@
               </div>
 
 
-            <p class="global-settings__group__item__column" *ngIf="item.free_memory < 7096500224 "> Currently, we do not support GPU devices with VRAM smaller than 8Gb. </p>
+              <p class="global-settings__group__item__column" *ngIf="item.free_memory < 7096500224 ">You do not have enought free video memory available. Please close some applications and try again. You need 7GB free but only have {{(item.free_memory / (1024*1024*1024)).toFixed(2)}}GB free.</p>
 
         </div>
       </form>
