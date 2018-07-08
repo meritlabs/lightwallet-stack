@@ -131,6 +131,7 @@ export class MiningView {
 
       this.gpus_info.forEach((info: GPUInfo) => {
         info.value = false;
+        info.free_memory = this.freeMemoryOnDevice(info.id);
       });
 
     } catch (err) {
