@@ -39,7 +39,7 @@ export class MiningView {
   cores: number;
   gpus: number;
   gpus_info: GPUInfo[];
-  active_gpu_devices: number[] = [];
+  active_gpu_devices: number[];
   miningSettings: any;
   pools: any[];
   selectedPool: any;
@@ -55,7 +55,6 @@ export class MiningView {
   ) {
     this.maxCores = ElectronService.numberOfCores();
     this.maxGPUs = ElectronService.numberOfGPUDevices();
-    this.gpus_info = this.getGPUInfo();
     this.updateLabel();
     this.pools = [];
   }
@@ -83,10 +82,21 @@ export class MiningView {
         this.cores = Math.max(this.minCores, this.maxCores / 2);
       }
 
-      if (this.miningSettings.gpus) {
-        this.gpus = this.miningSettings.gpus;
+      if (this.miningSettings.gpus_info) {
+        this.gpus_info = this.miningSettings.gpus_info;
       } else {
-        this.gpus = Math.max(this.minGPUs, this.maxGPUs / 2) | 0;
+        this.gpus_info = this.getGPUInfo();
+
+        this.gpus_info.forEach((info: GPUInfo) => {
+          info.value = false;
+          info.free_memory = this.freeMemoryOnDevice(info.id);
+        });
+      }
+
+      if(this.miningSettings.active_gpu_devices){
+        this.active_gpu_devices = this.miningSettings.active_gpu_devices;
+      } else {
+        this.active_gpu_devices = [];
       }
 
       if (this.miningSettings.selectedPool) {
@@ -119,11 +129,6 @@ export class MiningView {
       ElectronService.setAgent();
       this.updateStats();
 
-      this.gpus_info.forEach((info: GPUInfo) => {
-        info.value = false;
-        info.free_memory = this.freeMemoryOnDevice(info.id);
-      });
-
     } catch (err) {
       if (err.text) console.log('Could not initialize: ', err.text);
     }
@@ -144,6 +149,8 @@ export class MiningView {
         this.active_gpu_devices.splice(dev_index, 1);
       }
     }
+
+    this.saveSettings();
   }
 
   async selectWallet(wallet: DisplayWallet, save: boolean) {
@@ -208,7 +215,8 @@ export class MiningView {
 
   saveSettings() {
     this.miningSettings.cores = this.cores;
-    this.miningSettings.gpus = this.gpus;
+    this.miningSettings.gpus_info = this.gpus_info;
+    this.miningSettings.active_gpu_devices = this.active_gpu_devices;
     this.miningSettings.pools = this.pools;
     this.miningSettings.selectedPool = this.selectedPool;
     this.persistenceService.setMiningSettings(this.miningSettings);
