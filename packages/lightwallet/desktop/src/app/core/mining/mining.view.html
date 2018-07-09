@@ -26,14 +26,14 @@
                 <label class="ui-label global-settings__group__item__title">{{ item.title }}</label>
               </div>
 
-              <div class="global-settings__group__item__column global-settings__group__item__column--30"  *ngIf="item.free_memory >= 7096500224">
+              <div class="global-settings__group__item__column global-settings__group__item__column--30"  *ngIf="item.free_memory >= 2147483648">
                 <span class="switcher-container" [ngClass]="{'checked': item.value}" (click)="chooseGPU(item, $event)">
                     <span class="switcher"></span>
                 </span>
               </div>
 
 
-              <p class="global-settings__group__item__column" *ngIf="item.free_memory < 7096500224 ">You do not have enought free video memory available. Please close some applications and try again. You need 7GB free but only have {{(item.free_memory / (1024*1024*1024)).toFixed(2)}}GB free.</p>
+              <p class="global-settings__group__item__column" *ngIf="item.free_memory < 2147483648 ">You do not have enough free video memory available. Please close some applications and try again. You need 2GB free but only have {{(item.free_memory / (1024*1024*1024)).toFixed(2)}}GB free.</p>
 
         </div>
       </form>
