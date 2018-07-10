@@ -1005,7 +1005,8 @@ Merit.prototype._spawnChildProcess = function(callback) {
         host: '127.0.0.1',
         port: self.spawn.config.rpcport,
         user: self.spawn.config.rpcuser,
-        pass: self.spawn.config.rpcpassword
+        pass: self.spawn.config.rpcpassword,
+        queue: self.spawn.config.rpcqueue,
       });
 
       self._loadTipFromNode(node, done);
@@ -1051,7 +1052,8 @@ Merit.prototype._connectProcess = function(config, callback) {
       port: config.rpcport,
       user: config.rpcuser,
       pass: config.rpcpassword,
-      rejectUnauthorized: _.isUndefined(config.rpcstrict) ? true : config.rpcstrict
+      rejectUnauthorized: _.isUndefined(config.rpcstrict) ? true : config.rpcstrict,
+      queue: config.rpcqueue,
     });
 
     self._loadTipFromNode(node, done);
