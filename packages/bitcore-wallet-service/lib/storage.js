@@ -1457,7 +1457,8 @@ Storage.prototype.checkKnownMessages = function (data, cb) {
     returnOriginal: false,
     upsert: true,
   }, function (err, result) {
-    cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
+    if (err) return cb(err);
+    return cb(null, result && result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
   });
 };
 
