@@ -98,6 +98,11 @@ export class UnlockComponent {
   }
 
   async onSubmit() {
+    if (this.creatingWallet) {
+      // prevent duplicate submissions
+      return;
+    }
+
     this.loadingCtrl.show();
     this.creatingWallet = true;
     let { inviteCode, alias } = this.formData.getRawValue();
