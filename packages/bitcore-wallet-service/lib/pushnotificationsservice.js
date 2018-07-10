@@ -221,11 +221,10 @@ PushNotificationsService.prototype._sendPushNotifications = function (notificati
                         walletId: notification.walletId,
                         copayerId: recipient.copayerId,
                         type: notification.type,
-                        ...notification.data
+                        ...notification.data,
+                        timestamp: Date.now()
                       }
                     };
-
-                    notification.data.timestamp = notification.data.timestamp || Date.now();
 
                     if (sub.platform === 'web') {
                       pushNotification.notification.click_action = sub.packageName;
@@ -264,7 +263,7 @@ PushNotificationsService.prototype._sendPushNotifications = function (notificati
             },
           ], function (err) {
             if (err) {
-              log.error('An error ocurred generating notification', err);
+              log.error('An error occurred generating notification', err);
             }
             return cb(err);
           });
