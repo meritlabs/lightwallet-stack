@@ -151,7 +151,7 @@ export class MeritLightWallet {
       if (this.platform.is('android')) {
         this.statusBar.backgroundColorByHexString('0488ab');
       } else if (this.platform.is('ios')) {
-        this.statusBar.styleLightContent();
+        this.statusBar.styleDefault();
       }
     }
 
