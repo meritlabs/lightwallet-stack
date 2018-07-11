@@ -56,7 +56,7 @@ export class GlobalsendReceiveView {
       this.type = 'MeritInvite';
     } else {
       this.type = 'MeritMoney';
-      this.amountStr = await this.easyReceiveService.getReceiverAmount(this.data.txs) + ' Merit';
+      this.amountStr = await this.easyReceiveService.getReceiverAmount(this.data.txs) + ' MRT';
     }
     this.loading = false;
   }
