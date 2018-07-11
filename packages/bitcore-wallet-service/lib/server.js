@@ -802,12 +802,21 @@ WalletService.prototype.getStatus = function(opts, cb) {
           });
         },
         function(next) {
+          status.pendingTxps = [];
+          next();
+          /**
+           * Depecrating geting pending Txps in the get status call since 
+           * the pendingTxps are literally  not used by the LW code yet.
+           * In any case, if any code needs pendingTxps, they can get it
+           * via the api call. The getStatus needs to be fast.
+            
           self.getPendingTxs({}, function(err, pendingTxps) {
             if (err) return next(err);
             status.pendingTxps = pendingTxps;
 
             next();
           });
+          */
         },
         function(next) {
           self.getPreferences({}, function(err, preferences) {
@@ -4562,7 +4571,9 @@ WalletService.prototype.getCommunityRanks = async function(addresses, cb) {
 WalletService.prototype.getCommunityLeaderboard = async function(limit, cb) {
   try {
     limit = limit || 100;
-    const result = await localMeritDaemon.getCommunityLeaderboard(limit);
+    //pull directly from mongodb. How the data in mongodb is updated is 
+    //outside of MWS. Likely a cron job that runs every once in a while.
+    const result = await promisify(this.storage.getLeaderboard.bind(this.storage))(limit);
     return cb(null, result);
   } catch (e) {
     if (typeof e === 'object' && e.code) {
