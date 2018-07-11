@@ -123,22 +123,15 @@ export class MeritLightWallet {
   /**
    * Get Easy send params eiter from url or from branch
    */
-  private loadEasySend() {
-
+  private async loadEasySend() {
     if (!this.platform.is('cordova')) return this.loadEasySendInBrowser();
 
-    return new Promise((resolve) => {
-      try {
-        this.deepLinkService.initBranch(async (data) => {
-          const receipt = this.validateAndSaveEasySend(data);
-          return resolve(receipt);
-        });
-      } catch (err) {
-        this.logger.error(err);
-        return resolve();
-      }
-    });
-
+    try {
+      const data = await this.deepLinkService.initBranch();
+      return this.validateAndSaveEasySend(data);
+    } catch (err) {
+      this.logger.error(err);
+    }
   }
 
   /*
