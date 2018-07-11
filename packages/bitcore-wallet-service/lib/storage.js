@@ -36,6 +36,7 @@ var collections = {
   SMS_NOTIFICATION_SUBS: 'sms_notification_subs',
   GLOBALSENDS: 'global_sends',
   KNOWN_MESSAGES: 'known_messages',
+  LEADERBOARD: 'leaderboard',
 };
 
 var Storage = function (opts) {
@@ -1459,6 +1460,16 @@ Storage.prototype.checkKnownMessages = function (data, cb) {
   }, function (err, result) {
     if (err) return cb(err);
     return cb(null, result && result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
+  });
+};
+
+Storage.prototype.getLeaderboard = function (limit, cb) {
+  this.db.collection(collections.LEADERBOARD).findOne({
+    limit: parseInt(limit), 
+  }, function (err, result) {
+    if (err) return cb(err);
+    if (!result) return cb();
+    return cb(null, result);
   });
 };
 
