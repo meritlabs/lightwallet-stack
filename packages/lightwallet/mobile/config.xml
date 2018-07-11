@@ -133,11 +133,11 @@
         <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
         <variable name="ANDROID_SUPPORT_V4_VERSION" value="27.+" />
     </plugin>
-    <plugin name="branch-cordova-sdk" spec="^2.6.24" />
     <plugin name="cordova-plugin-fcm" spec="^2.1.2" />
     <plugin name="cordova-plugin-compat" spec="^1.2.0" />
     <plugin name="cordova.plugins.diagnostic" spec="^3.9.2" />
     <plugin name="cordova-plugin-app-version" spec="^0.1.9" />
+    <plugin name="branch-cordova-sdk" spec="^3.0.0" />
     <engine name="android" spec="6.4.0" />
     <engine name="ios" spec="4.5.4" />
 </widget>

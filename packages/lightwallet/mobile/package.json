@@ -21,7 +21,7 @@
     "url": "https://github.com/meritlabs/lightwallet-stack"
   },
   "dependencies": {
-    "branch-cordova-sdk": "^2.6.24",
+    "branch-cordova-sdk": "^3.0.0",
     "cordova-android": "6.4.0",
     "cordova-clipboard": "^1.1.1",
     "cordova-ios": "4.5.4",
