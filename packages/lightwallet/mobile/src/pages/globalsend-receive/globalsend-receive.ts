@@ -1,5 +1,13 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController, LoadingController, ModalController, Events } from 'ionic-angular';
+import {
+  Events,
+  IonicPage,
+  LoadingController,
+  ModalController,
+  NavController,
+  NavParams,
+  ViewController
+} from 'ionic-angular';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { ProfileService } from '@merit/common/services/profile.service';
@@ -63,7 +71,7 @@ export class GlobalsendReceiveView {
 
 
   async accept() {
-    let loader = this.loadingCtrl.create({content: 'Accepting payment...'});
+    let loader = this.loadingCtrl.create({ content: 'Accepting payment...' });
     loader.present();
     try {
       await this.acceptEasyReceipt(this.receipt, this.data);
@@ -77,7 +85,7 @@ export class GlobalsendReceiveView {
   }
 
   async reject() {
-    let loader = this.loadingCtrl.create({content: 'Rejecting payment...'});
+    let loader = this.loadingCtrl.create({ content: 'Rejecting payment...' });
     loader.present();
     try {
       await this.rejectEasyReceipt(this.receipt, this.data);
@@ -92,7 +100,7 @@ export class GlobalsendReceiveView {
 
   async ignore() {
 
-    let loader = this.loadingCtrl.create({content: 'Ignoring...'});
+    let loader = this.loadingCtrl.create({ content: 'Ignoring...' });
     loader.present();
     try {
       await this.easyReceiveService.deletePendingReceipt(this.receipt);
@@ -106,7 +114,7 @@ export class GlobalsendReceiveView {
   }
 
   async validate() {
-    let loader = this.loadingCtrl.create({content: 'Validating...'});
+    let loader = this.loadingCtrl.create({ content: 'Validating...' });
     loader.present();
     this.validationError = false;
     try {
@@ -121,14 +129,14 @@ export class GlobalsendReceiveView {
       if (!txs.length) {
         this.validationError = true;
         this.password = '';
-      }  else {
+      } else {
         this.data = data;
         this.mode = 'receive';
       }
 
     } catch (e) {
       console.warn(e);
-      this.toastCtrl.error('Unexpected error occured');
+      this.toastCtrl.error('Unexpected error occurred');
     }
 
     loader.dismiss();
@@ -137,19 +145,19 @@ export class GlobalsendReceiveView {
   }
 
   private async acceptEasyReceipt(receipt: EasyReceipt, data: any): Promise<any> {
-      const acceptanceTx = await this.easyReceiveService.acceptEasyReceipt(this.wallet, receipt, data, this.wallet.rootAddress.toString());
-      this.events.publish('Remote:IncomingTx'); // update wallet info
+    await this.easyReceiveService.acceptEasyReceipt(this.wallet, receipt, data, this.wallet.rootAddress.toString());
+    this.events.publish('Remote:IncomingTx'); // update wallet info
   }
 
   private rejectEasyReceipt(receipt: EasyReceipt, data): Promise<any> {
-      return this.easyReceiveService.rejectEasyReceipt(this.wallet, receipt, data);
+    return this.easyReceiveService.rejectEasyReceipt(this.wallet, receipt, data);
   }
 
   selectWallet() {
     const modal = this.modalCtrl.create('SelectWalletModal', {
-        selectedWallet: this.wallet,
-        showInvites: true,
-        availableWallets: this.wallets
+      selectedWallet: this.wallet,
+      showInvites: true,
+      availableWallets: this.wallets
     }, MERIT_MODAL_OPTS);
 
     modal.onDidDismiss(async (wallet) => {
