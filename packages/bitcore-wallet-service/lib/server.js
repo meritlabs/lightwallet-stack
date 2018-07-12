@@ -1630,7 +1630,8 @@ WalletService.prototype._getBalanceFromAddresses = async function(addresses, inv
 
   try {
     var addressStrs = _.map(addresses, 'address');
-    let balance = await localMeritDaemon.getAddressBalance(addressStrs, {invites: invites, detailed: true});
+    let balance = await localMeritDaemon.getAddressBalance(
+      addressStrs, {invites: invites, detailed: true, mempool: true});
 
     balance.lockedAmount = 0;
     balance.lockedConfirmedAmount = 0;
@@ -1641,6 +1642,7 @@ WalletService.prototype._getBalanceFromAddresses = async function(addresses, inv
   } catch(err) {
     return cb(err);
   }
+
 };
 
 WalletService.prototype._getBalanceOneStep = function(addresses, opts, cb) {
