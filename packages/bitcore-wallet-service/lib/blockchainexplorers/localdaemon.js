@@ -105,6 +105,12 @@ LocalDaemon.prototype.getCommunityLeaderboard = function(limit) {
     return this.node.getCommunityLeaderboard(limit);
 };
 
+LocalDaemon.prototype.getAddressBalance = async function(addresses, options) {
+  const {err, result} = await promisify(this.node.getAddressBalance.bind(this.node))(addresses, options);
+  if(err) throw err;
+  return result;
+};
+
 
 
 module.exports = LocalDaemon;
