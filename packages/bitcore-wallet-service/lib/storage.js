@@ -229,9 +229,6 @@ Storage.prototype._completeTxData = function (walletId, txs, cb) {
         action.copayerName = wallet.getCopayer(action.copayerId).name;
       });
 
-      if (tx.status == 'accepted')
-        tx.raw = tx.getRawTx();
-
     });
     return cb(null, txs);
   });
@@ -1465,7 +1462,7 @@ Storage.prototype.checkKnownMessages = function (data, cb) {
 
 Storage.prototype.getLeaderboard = function (limit, cb) {
   this.db.collection(collections.LEADERBOARD).findOne({
-    limit: parseInt(limit), 
+    limit: parseInt(limit),
   }, function (err, result) {
     if (err) return cb(err);
     if (!result) return cb();
