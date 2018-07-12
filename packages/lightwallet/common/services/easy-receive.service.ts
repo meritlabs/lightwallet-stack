@@ -111,7 +111,7 @@ export class EasyReceiveService {
   /**
    * Define amount that is shown to recipient (initial amount minus fee)
    */
-  async getReceiverAmount(txs: Array<any>) {
+  async getReceiverAmount(txs: Array<any>): Promise<number> {
     const tx = txs.find(tx => !tx.invite);
     const amount = tx ? tx.amount : 0;
     return amount - this.rateService.microsToMrt(await this.feeService.getEasyReceiveFee());
