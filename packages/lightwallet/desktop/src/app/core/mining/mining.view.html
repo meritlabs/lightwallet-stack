@@ -26,14 +26,14 @@
                 <label class="ui-label global-settings__group__item__title">{{ item.title }}</label>
               </div>
 
-              <div class="global-settings__group__item__column global-settings__group__item__column--30"  *ngIf="item.total_memory >= 8000000000">
+              <div class="global-settings__group__item__column global-settings__group__item__column--30"  *ngIf="item.free_memory >= 2147483648">
                 <span class="switcher-container" [ngClass]="{'checked': item.value}" (click)="chooseGPU(item, $event)">
                     <span class="switcher"></span>
                 </span>
               </div>
 
 
-            <p class="global-settings__group__item__column" *ngIf="item.total_memory < 8000000000 "> Currently, we do not support GPU devices with VRAM smaller than 8Gb. </p>
+              <p class="global-settings__group__item__column" *ngIf="item.free_memory < 2147483648 ">You do not have enough free video memory available. Please close some applications and try again. You need 2GB free but only have {{(item.free_memory / (1024*1024*1024)).toFixed(2)}}GB free.</p>
 
         </div>
       </form>
@@ -96,7 +96,7 @@
               </div>
               <div class="global-settings__group__item__column global-settings__group__item__column--30">
                   <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{ active_gpu_devices.length }}</label>
+                  global-settings__group__item__title--dark">{{ active_gpu_devices ? active_gpu_devices.length : '0'}}</label>
               </div>
           </div>
       </div>
