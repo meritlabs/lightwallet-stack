@@ -14,7 +14,7 @@ const DEFAULT_STATE: IGoalsState = {
   loading: true,
   progress: null,
   settings: null,
-  statusByTask: {}
+  statusByTask: {},
 };
 
 export enum GoalsActionType {
@@ -65,28 +65,27 @@ export class SetTaskStatus implements Action {
   constructor(public taskSlug: TaskSlug, public status: ProgressStatus) {}
 }
 
-export type GoalAction =
-  SetGoalsLoadingAction
-  & RefreshGoalsProgressAction
-  & UpdateGoalsProgressAction
-  & RefreshGoalSettingsAction
-  & UpdateGoalSettingsAction
-  & SetTaskStatus
-  & SaveGoalSettingsAction;
+export type GoalAction = SetGoalsLoadingAction &
+  RefreshGoalsProgressAction &
+  UpdateGoalsProgressAction &
+  RefreshGoalSettingsAction &
+  UpdateGoalSettingsAction &
+  SetTaskStatus &
+  SaveGoalSettingsAction;
 
 export function goalsReducer(state: IGoalsState = DEFAULT_STATE, action: GoalAction) {
   switch (action.type) {
     case GoalsActionType.SetLoading:
       return {
         ...state,
-        loading: action.loading
+        loading: action.loading,
       };
 
     case GoalsActionType.RefreshProgress:
     case GoalsActionType.SetTaskStatus:
       return {
         ...state,
-        loading: true
+        loading: true,
       };
 
     case GoalsActionType.UpdateProgress:
@@ -94,13 +93,13 @@ export function goalsReducer(state: IGoalsState = DEFAULT_STATE, action: GoalAct
         ...state,
         loading: false,
         progress: action.progress,
-        statusByTask: action.statusByTask
+        statusByTask: action.statusByTask,
       };
 
     case GoalsActionType.UpdateSettings:
       return {
         ...state,
-        settings: action.settings
+        settings: action.settings,
       };
 
     default:
@@ -113,4 +112,5 @@ export const selectGoalsLoading = createSelector(selectGoalsState, state => stat
 export const selectGoalsProgress = createSelector(selectGoalsState, state => state.progress);
 export const selectGoalSettings = createSelector(selectGoalsState, state => state.settings);
 export const selectStatusByTask = createSelector(selectGoalsState, state => state.statusByTask);
-export const selectStatusForTask = (taskSlug: TaskSlug) => createSelector(selectStatusByTask, status => status[taskSlug]);
+export const selectStatusForTask = (taskSlug: TaskSlug) =>
+  createSelector(selectStatusByTask, status => status[taskSlug]);

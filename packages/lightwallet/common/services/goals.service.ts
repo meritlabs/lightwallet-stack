@@ -226,6 +226,8 @@ export class GoalsService {
   }
 
   async setSettings(settings: IGoalSettings) {
+    console.log(settings);
+
     await this.client.setData('/settings/', settings);
     return settings;
   }
