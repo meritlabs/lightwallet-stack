@@ -50,9 +50,10 @@ export class MeritMarketClient {
    *
    * @param {Object} str - The serialized JSON created with #export
    */
-  import(str: string): any {
+  import(str: string | string[]): any {
     try {
-      let credentials = Credentials.fromObj(JSON.parse(str));
+      const backup = typeof str === 'string' ? [str] : str;
+      let credentials = Credentials.fromObj(JSON.parse(backup[0]));
       this.credentials = credentials;
     } catch (ex) {
       throw MWCErrors.INVALID_BACKUP;

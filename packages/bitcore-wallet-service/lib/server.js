@@ -802,12 +802,21 @@ WalletService.prototype.getStatus = function(opts, cb) {
           });
         },
         function(next) {
+          status.pendingTxps = [];
+          next();
+          /**
+           * Depecrating geting pending Txps in the get status call since 
+           * the pendingTxps are literally  not used by the LW code yet.
+           * In any case, if any code needs pendingTxps, they can get it
+           * via the api call. The getStatus needs to be fast.
+            
           self.getPendingTxs({}, function(err, pendingTxps) {
             if (err) return next(err);
             status.pendingTxps = pendingTxps;
 
             next();
           });
+          */
         },
         function(next) {
           self.getPreferences({}, function(err, preferences) {
@@ -1611,7 +1620,7 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
   return balance;
 };
 
-WalletService.prototype._getBalanceFromAddresses = function(addresses, invites, cb) {
+WalletService.prototype._getBalanceFromAddresses = async function(addresses, invites, cb) {
   var self = this;
 
   if (_.isFunction(invites)) {
@@ -1619,29 +1628,21 @@ WalletService.prototype._getBalanceFromAddresses = function(addresses, invites, 
     invites = false;
   }
 
-  self._getUtxosForCurrentWallet(addresses, invites, function(err, utxos) {
-    if (err) return cb(err);
+  try {
+    var addressStrs = _.map(addresses, 'address');
+    let balance = await localMeritDaemon.getAddressBalance(
+      addressStrs, {invites: invites, detailed: true, mempool: true});
 
-    var balance = self._totalizeUtxos(utxos);
-
-    // Compute balance by address
-    var byAddress = {};
-    _.each(_.keyBy(_.sortBy(utxos, 'address'), 'address'), function(value, key) {
-      byAddress[key] = {
-        address: key,
-        path: value.path,
-        amount: 0,
-      };
-    });
-
-    _.each(utxos, function(utxo) {
-      byAddress[utxo.address].amount += utxo.micros;
-    });
-
-    balance.byAddress = _.values(byAddress);
+    balance.lockedAmount = 0;
+    balance.lockedConfirmedAmount = 0;
+    balance.availableAmount = balance.totalAmount;
+    balance.availableConfirmedAmount = balance.totalConfirmedAmount;
 
     return cb(null, balance);
-  });
+  } catch(err) {
+    return cb(err);
+  }
+
 };
 
 WalletService.prototype._getBalanceOneStep = function(addresses, opts, cb) {
@@ -4562,7 +4563,9 @@ WalletService.prototype.getCommunityRanks = async function(addresses, cb) {
 WalletService.prototype.getCommunityLeaderboard = async function(limit, cb) {
   try {
     limit = limit || 100;
-    const result = await localMeritDaemon.getCommunityLeaderboard(limit);
+    //pull directly from mongodb. How the data in mongodb is updated is 
+    //outside of MWS. Likely a cron job that runs every once in a while.
+    const result = await promisify(this.storage.getLeaderboard.bind(this.storage))(limit);
     return cb(null, result);
   } catch (e) {
     if (typeof e === 'object' && e.code) {

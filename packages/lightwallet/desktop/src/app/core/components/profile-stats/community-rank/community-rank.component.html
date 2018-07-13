@@ -4,7 +4,8 @@
     <div class="StarterTips_items">
       <div class="StarterTips_item">
         <h4 class="StarterTips_title" *ngIf="rankData.unlocked">
-          Your community rank is {{rankData.bestRank}} ({{rankData.percentileStr}})
+          You are in the {{rankData.percentileStr}}.
+          <span *ngIf="rankData.bestPercentile && rankData.bestPercentile > 90"> (Rank: {{rankData.bestRank}})</span>
         </h4>
         <h4 class="StarterTips_title" *ngIf="!rankData.unlocked">
           Your community rank will be available soon!
@@ -20,7 +21,7 @@
           <span class="wallet">
           </span>
           <span class="rank">
-            <p>Score</p>
+            <p>Growth Score</p>
             <p class="divider">/</p>
             <p>World Rank</p>
           </span>

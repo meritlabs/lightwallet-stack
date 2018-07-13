@@ -187,7 +187,7 @@ Merit.prototype.getAPIMethods = function() {
     ['sendTransaction', this, this.sendTransaction, 1],
     ['estimateSmartFee', this, this.estimateSmartFee, 1],
     ['getAddressTxids', this, this.getAddressTxids, 2],
-    ['getAddressBalance', this, this.getAddressBalance, 2],
+    ['getAddressBalance', this, this.getAddressBalance, 1],
     ['getAddressUnspentOutputs', this, this.getAddressUnspentOutputs, 2],
     ['getAddressHistory', this, this.getAddressHistory, 2],
     ['getAddressSummary', this, this.getAddressSummary, 1],
@@ -1005,7 +1005,8 @@ Merit.prototype._spawnChildProcess = function(callback) {
         host: '127.0.0.1',
         port: self.spawn.config.rpcport,
         user: self.spawn.config.rpcuser,
-        pass: self.spawn.config.rpcpassword
+        pass: self.spawn.config.rpcpassword,
+        queue: self.spawn.config.rpcqueue,
       });
 
       self._loadTipFromNode(node, done);
@@ -1051,7 +1052,8 @@ Merit.prototype._connectProcess = function(config, callback) {
       port: config.rpcport,
       user: config.rpcuser,
       pass: config.rpcpassword,
-      rejectUnauthorized: _.isUndefined(config.rpcstrict) ? true : config.rpcstrict
+      rejectUnauthorized: _.isUndefined(config.rpcstrict) ? true : config.rpcstrict,
+      queue: config.rpcqueue,
     });
 
     self._loadTipFromNode(node, done);
@@ -1152,9 +1154,11 @@ Merit.prototype.syncPercentage = function(callback) {
 };
 
 Merit.prototype._normalizeAddressArg = function(addressArg) {
-  var addresses = [addressArg];
+  var addresses;
   if (Array.isArray(addressArg)) {
     addresses = addressArg;
+  } else {
+    addresses = [addressArg];
   }
   return addresses;
 };
@@ -1168,19 +1172,21 @@ Merit.prototype._normalizeAddressArg = function(addressArg) {
 Merit.prototype.getAddressBalance = function(addressArg, options, callback) {
   var self = this;
   var addresses = self._normalizeAddressArg(addressArg);
-  var cacheKey = addresses.join('');
+  var cacheKeySuffix = addresses.join('');
+  var cacheKey = options.invites ? 'i' + cacheKeySuffix: cacheKeySuffix;
   var balance = self.balanceCache.get(cacheKey);
   if (balance) {
     return setImmediate(function() {
       callback(null, balance);
     });
   } else {
-    this.client.getAddressBalance({addresses: addresses}, function(err, response) {
+    let req = {addresses, invites: options.invites, detailed: options.detailed};
+    this.client.getAddressBalance(req, function(err, response) {
       if (err) {
         return callback(self._wrapRPCError(err));
       }
-      self.balanceCache.set(cacheKey, response.result);
-      callback(null, response.result);
+      self.balanceCache.set(cacheKey, {result: response.result});
+      callback(null, {result: response.result});
     });
   }
 };
