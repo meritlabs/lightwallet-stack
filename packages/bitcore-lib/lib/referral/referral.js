@@ -56,6 +56,7 @@ function Referral(data, network) {
     this.pubkey = null;
     this.signature = null;
     this.alias = '';
+    this.message = '';
 
     if (data) {
       if (data instanceof Referral) {
@@ -164,7 +165,8 @@ Referral.prototype.toObject = Referral.prototype.toJSON = function toObject() {
         addressType: this.addressType,
         pubkey: this.pubkey.toString(),
         signature: this.signature.toString('hex'),
-        alias: this.alias
+        alias: this.alias,
+        message: this.message
     };
 
     return obj;
@@ -187,6 +189,7 @@ Referral.prototype.fromObject = function fromObject(arg) {
     this.pubkey = PublicKey.fromString(referral.pubkey, this.network.name);
     this.signature = BufferUtil.hexToBuffer(referral.signature);
     this.alias = referral.alias || '';
+    this.message = referral.message || '';
 
     return this;
 };
