@@ -33,12 +33,14 @@ export class MeritMarketClient {
     this.onAuthenticationError = cb;
   }
 
-  static fromObj(obj) {
+  static fromObj(obj, walletIndex) {
     let client = new this({
       baseUrl: obj.baseUrl || ENV.marketApi,
     });
 
-    return client.import(obj.credentials);
+    const backup = typeof obj.credentials === 'string' ? [obj.credentials] : obj.credentials;
+
+    return client.import(backup[walletIndex]);
   }
 
   login() {
@@ -48,12 +50,11 @@ export class MeritMarketClient {
   /**
    * Import wallets
    *
-   * @param {Object} str - The serialized JSON created with #export
+   * @param {string} backup - The serialized JSON created with #export
    */
-  import(str: string | string[]): any {
+  import(backup: string): any {
     try {
-      const backup = typeof str === 'string' ? [str] : str;
-      let credentials = Credentials.fromObj(JSON.parse(backup[0]));
+      let credentials = Credentials.fromObj(JSON.parse(backup));
       this.credentials = credentials;
     } catch (ex) {
       throw MWCErrors.INVALID_BACKUP;
