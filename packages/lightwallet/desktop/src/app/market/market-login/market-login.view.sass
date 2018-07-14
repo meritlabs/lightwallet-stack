@@ -1,17 +1,69 @@
 \:host
+  display: flex
+  height: 100%
+  flex-direction: column
+  align-items: center
+  justify-content: center
+
+.wallets__group__wallet
+  position: relative
+  width: 500px
+  &:hover
+    .inline-right merit-icon
+      right: 15px
+      color: rgba(0, 0, 0, .15)
+  .wallet-name
     display: flex
-    height: 100%
-    flex-direction: column
     align-items: center
-    justify-content: center
+  .controls
+    margin-right: 40px
+  .inline-right
+    merit-icon
+      position: absolute
+      width: 18px
+      height: 18px
+      right: 20px
+      transition: all .2s ease-in .2s
+      color: rgba(0, 0, 0, .1)
 
 .text
-    font-size: 36px
-    margin-bottom: 40px
+  font-size: 36px
+  margin-bottom: 40px
+
+.buttons
+  display: flex
+  justify-content: center
 
 button
-    margin: 60px 0
+  position: relative
+  margin: 60px 20px
+  &::before
+    content: ''
+    position: absolute
+    top: 0
+    right: 0
+    bottom: 0
+    left: 0
+    border: 1px solid transparent
+    border-radius: 4px
+
+  &.loading::before
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUAQMAAAC3R49OAAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMAF/VASP8AAABBSURBVHheZckxFYAgFADA8zkwYgMr2MBKNpBoRCHCHxl4YADnsxymy/DoQmyh7aGmUHJwBnfjraxiW+yTNMj9xx9ZVxpfjbpEWgAAAABJRU5ErkJggg==)
+    animation: caramel .5s linear infinite
 
 .error
-    color: #ff7675
-    font-size: 18px
+  min-height: 20px
+  color: #ff7675
+  font-size: 18px
+
+@keyframes caramel
+  from
+    background-position: 0 0
+  to
+    background-position: 20px 0
+
+.retry
+  opacity: 0
+  transition: opacity .2s
+  &.visible
+    opacity: 1

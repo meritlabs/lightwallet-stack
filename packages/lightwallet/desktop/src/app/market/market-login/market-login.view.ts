@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
 
 import { ENV } from '@app/env';
-import { IRootAppState } from '@merit/common/reducers';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { MeritMarketClient } from '@merit/common/merit-market-client/api';
 
@@ -12,37 +10,50 @@ import { MeritMarketClient } from '@merit/common/merit-market-client/api';
   styleUrls: ['./market-login.view.sass'],
 })
 export class MarketLoginView implements OnInit {
+  loadingWallets = false;
+  logging: boolean;
   error: boolean;
+  selectedWalletIndex = -1;
+  profile;
 
   constructor(private persistenceService: PersistenceService) {}
 
-  ngOnInit() {
-    this.login();
+  async ngOnInit() {
+    this.loadingWallets = true;
+    this.profile = await this.persistenceService.getProfile();
+    this.loadingWallets = false;
+
+    console.log(this.profile.wallets);
+
+    if (this.profile.wallets.length === 1) {
+      this.login(0);
+    }
   }
 
-  async login() {
+  toWallets() {
     this.error = false;
+    this.selectedWalletIndex = -1;
+  }
 
-    let profile = await this.persistenceService.getProfile();
+  async login(walletIndex: number) {
+    this.selectedWalletIndex = walletIndex;
+    this.logging = true;
 
     try {
-      const authData = await MeritMarketClient.fromObj(profile).login();
+      const authData = await MeritMarketClient.fromObj(this.profile, walletIndex).login();
 
       if (authData.token) {
-        // in case we're in a top window just redirect to market
-        if (!window.opener) {
-          // window.location.replace(`${ENV.marketUrl}?token=${encodeURIComponent(authData.token)}`);
-        } else {
-          // else we're in a popup and can send token trough postMessage
-          const message = JSON.stringify({
-            message: "Lightwallet.Market.Auth",
-            data: { token: authData.token }
-          });
-          window.opener.postMessage(message, ENV.marketUrl);
-        }
+        // else we're in a popup and can send token trough postMessage
+        const message = JSON.stringify({
+          message: "Lightwallet.Market.Auth",
+          data: { token: authData.token }
+        });
+        window.opener.postMessage(message, ENV.marketUrl);
       }
     } catch (e) {
       this.error = true;
     }
+
+    this.logging = false;
   }
 }
