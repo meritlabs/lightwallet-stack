@@ -1,5 +1,49 @@
-<div class="text">Logging in to market. Please wait...</div>
-<ng-container *ngIf="error">
-  <div class="error">Access to market denied. Check that your wallet is confirmed.</div>
-  <button role="button" class="ui-button ui-button--blue" (click)="login()">Try again</button>
+<ng-container *ngIf="profile?.wallets.length > 1 && selectedWalletIndex < 0; else loggingTemplate">
+  <h1 class="main-header">Select wallet</h1>
+
+  <div class="wallets__group__wallet" *ngFor="let wallet of profile?.wallets; index as i" (click)="login(i)">
+    <div class="wallets__group__wallet__info">
+      <div class="wallets__group__wallet__icon">
+        <wallet-icon [strokeColor]=wallet.color></wallet-icon>
+      </div>
+      <div class="wallets__group__wallet__details">
+        <div>
+          <div class="wallet-name">
+            <p class="large-black-text">{{ wallet.name }}</p>
+          </div>
+          <p class="alias" *ngIf="wallet.rootAlias">{{ '@' + wallet.rootAlias }}</p>
+          <p class="regular-blue-text" *ngIf="!wallet.balanceHidden; else balanceHidden">
+            {{ wallet.balance.totalConfirmedAmount | toMRT }}
+          </p>
+          <ng-template #balanceHidden>
+            <p class="regular-blue-text">
+              [Balance hidden]
+            </p>
+          </ng-template>
+        </div>
+        <div class="inline-right">
+          <div class="controls">
+            <p class="invites regular-blue-text">{{ wallet?.availableInvites || 0 }} Invites <span *ngIf="wallet.pendingInvites">(+{{wallet.pendingInvites}} pending)</span></p>
+          </div>
+          <merit-icon name="right-arrow"></merit-icon>
+        </div>
+      </div>
+    </div>
+  </div>
 </ng-container>
+
+<ng-template #loggingTemplate>
+  <ng-container *ngIf="loadingWallets; else loggingText">
+    <div class="text">Loading list of wallets...</div>
+  </ng-container>
+  <ng-template #loggingText>
+    <div class="text">Logging in to market. Please wait...</div>
+  </ng-template>
+  <div class="retry" [ngClass]="{ visible: error }">
+    <div class="error">Access to market denied. Check that your wallet is confirmed.</div>
+    <div class="buttons">
+      <button role="button" class="ui-button ui-button--white" *ngIf="profile?.wallets.length > 1" (click)="toWallets()" [disabled]="logging">Select wallet</button>
+      <button role="button" class="ui-button ui-button--blue" [ngClass]="{ loading: logging }" (click)="login(selectedWalletIndex)" [disabled]="logging">Try again</button>
+    </div>
+  </div>
+</ng-template>

@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
 
 import { ENV } from '@app/env';
-import { IRootAppState } from '@merit/common/reducers';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { MeritMarketClient } from '@merit/common/merit-market-client/api';
+import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 
 @Component({
   selector: 'view-market-login',
@@ -12,37 +11,67 @@ import { MeritMarketClient } from '@merit/common/merit-market-client/api';
   styleUrls: ['./market-login.view.sass'],
 })
 export class MarketLoginView implements OnInit {
+  loadingWallets = false;
+  logging: boolean;
   error: boolean;
+  selectedWalletIndex = -1;
+  profile;
 
-  constructor(private persistenceService: PersistenceService) {}
+  constructor(
+    private persistenceService: PersistenceService,
+    private passwordPromptCtrl: PasswordPromptController,
+  ) {}
 
-  ngOnInit() {
-    this.login();
+  async ngOnInit() {
+    this.loadingWallets = true;
+    this.profile = await this.persistenceService.getProfile();
+    this.loadingWallets = false;
+
+    console.log(this.profile.wallets);
+
+    if (this.profile.wallets.length === 1) {
+      this.login(0);
+    }
   }
 
-  async login() {
+  toWallets() {
     this.error = false;
+    this.selectedWalletIndex = -1;
+  }
 
-    let profile = await this.persistenceService.getProfile();
+  login(walletIndex: number) {
+    const client = MeritMarketClient.fromObj(this.profile, walletIndex);
 
+    if (client.credentials.isPrivKeyEncrypted()) {
+      this.passwordPromptCtrl.createForWallet(client).onDidDismiss((password: string) => {
+        this.selectedWalletIndex = walletIndex;
+        if (password) {
+          this.loginWithPassword(client, password);
+        } else {
+          this.error = true;
+        }
+      });
+    } else {
+      this.selectedWalletIndex = walletIndex;
+      this.loginWithPassword(client);
+    }
+  }
+
+  async loginWithPassword(client: any, password?: string) {
+    this.logging = true;
     try {
-      const authData = await MeritMarketClient.fromObj(profile).login();
+      const authData = await client.login(password);
 
       if (authData.token) {
-        // in case we're in a top window just redirect to market
-        if (!window.opener) {
-          // window.location.replace(`${ENV.marketUrl}?token=${encodeURIComponent(authData.token)}`);
-        } else {
-          // else we're in a popup and can send token trough postMessage
-          const message = JSON.stringify({
-            message: "Lightwallet.Market.Auth",
-            data: { token: authData.token }
-          });
-          window.opener.postMessage(message, ENV.marketUrl);
-        }
+        const message = JSON.stringify({
+          message: "Lightwallet.Market.Auth",
+          data: { token: authData.token }
+        });
+        window.opener.postMessage(message, ENV.marketUrl);
       }
     } catch (e) {
       this.error = true;
     }
+    this.logging = false;
   }
 }

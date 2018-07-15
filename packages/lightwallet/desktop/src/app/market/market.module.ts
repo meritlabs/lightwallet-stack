@@ -9,6 +9,7 @@ import { MarketLoginView } from '@merit/desktop/app/market/market-login/market-l
 import { EscrowPaymentView } from '@merit/desktop/app/market/escrow-payment/escrow-payment.view';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { SendService } from '@merit/common/services/send.service';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import { SendService } from '@merit/common/services/send.service';
     MarketRoutingModule,
     Ng4LoadingSpinnerModule,
     SharedComponentsModule.forRoot(),
+    CommonPipesModule,
   ],
   declarations: [
     MarketLoginView,
