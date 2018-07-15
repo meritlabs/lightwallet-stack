@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ENV } from '@app/env';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { MeritMarketClient } from '@merit/common/merit-market-client/api';
+import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 
 @Component({
   selector: 'view-market-login',
@@ -16,7 +17,10 @@ export class MarketLoginView implements OnInit {
   selectedWalletIndex = -1;
   profile;
 
-  constructor(private persistenceService: PersistenceService) {}
+  constructor(
+    private persistenceService: PersistenceService,
+    private passwordPromptCtrl: PasswordPromptController,
+  ) {}
 
   async ngOnInit() {
     this.loadingWallets = true;
@@ -35,15 +39,29 @@ export class MarketLoginView implements OnInit {
     this.selectedWalletIndex = -1;
   }
 
-  async login(walletIndex: number) {
+  login(walletIndex: number) {
     this.selectedWalletIndex = walletIndex;
-    this.logging = true;
+    const client = MeritMarketClient.fromObj(this.profile, walletIndex);
 
+    if (client.credentials.isPrivKeyEncrypted()) {
+      this.passwordPromptCtrl.createForWallet(client).onDidDismiss((password: string) => {
+        if (password) {
+          this.loginWithPassword(client, password);
+        } else {
+          this.error = true;
+        }
+      });
+    } else {
+      this.loginWithPassword(client);
+    }
+  }
+
+  async loginWithPassword(client: any, password?: string) {
+    this.logging = true;
     try {
-      const authData = await MeritMarketClient.fromObj(this.profile, walletIndex).login();
+      const authData = await client.login(password);
 
       if (authData.token) {
-        // else we're in a popup and can send token trough postMessage
         const message = JSON.stringify({
           message: "Lightwallet.Market.Auth",
           data: { token: authData.token }
@@ -53,7 +71,6 @@ export class MarketLoginView implements OnInit {
     } catch (e) {
       this.error = true;
     }
-
     this.logging = false;
   }
 }
