@@ -40,11 +40,11 @@ export class MarketLoginView implements OnInit {
   }
 
   login(walletIndex: number) {
-    this.selectedWalletIndex = walletIndex;
     const client = MeritMarketClient.fromObj(this.profile, walletIndex);
 
     if (client.credentials.isPrivKeyEncrypted()) {
       this.passwordPromptCtrl.createForWallet(client).onDidDismiss((password: string) => {
+        this.selectedWalletIndex = walletIndex;
         if (password) {
           this.loginWithPassword(client, password);
         } else {
@@ -52,6 +52,7 @@ export class MarketLoginView implements OnInit {
         }
       });
     } else {
+      this.selectedWalletIndex = walletIndex;
       this.loginWithPassword(client);
     }
   }
