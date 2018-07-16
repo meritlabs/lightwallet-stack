@@ -37,10 +37,7 @@ export class UnlockComponent {
       [Validators.required, Validators.minLength(3)],
       [AddressValidator.validateAliasAvailability(this.mwcService)],
     ],
-    message: [
-      '',
-      [Validators.maxLength(100)]
-    ]
+    message: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(10)]],
   });
 
   easyReceipt: EasyReceipt;
