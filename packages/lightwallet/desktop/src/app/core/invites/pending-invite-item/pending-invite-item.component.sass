@@ -1,10 +1,18 @@
+.history__item
+  align-items: flex-start
 .history__item__info
   display: flex
   justify-content: space-between
   .info__details
+    min-width: 190px
     width: 100%
     position: relative
     z-index: 2
+    display: flex
+    flex-flow: column wrap
+    align-items: flex-start
+    small
+      font-size: 13px
   .info__navigation
     padding-left: 15px
     .ui-button
@@ -13,7 +21,7 @@
       font-size: 12px
   .history__item__info__title
     position: relative
-    max-width: 190px
+    width: 100%
     cursor: default
     .badge-new
       position: absolute
@@ -37,6 +45,7 @@
     display: block
     overflow: hidden
     position: relative
+    width: 100%
     &:after
       content: ""
       position: absolute
@@ -61,3 +70,24 @@
       border-radius: 4px
       padding: 0 5px
       opacity: 0
+  .history__item__info__message
+    font-style: italic
+    padding: 5px 15px 12px
+    border-radius: 4px
+    font-size: 15px
+    display: inline-block
+    margin-top: 5px
+    position: relative
+    &:before,
+    &:after
+      content: "“"
+      position: absolute
+      font-size: 18px
+      font-weight: 600
+      opacity: .5
+    &:before
+      left: 0
+      top: 0
+    &:after
+      right: 0
+      bottom: 0
