@@ -210,8 +210,8 @@ export class WalletService {
 
   /** =================== CREATE WALLET METHODS ================ */
 
-  createDefaultWallet(parentAddress: string, alias: string) {
-    return this.createWallet({ parentAddress, alias });
+  createDefaultWallet(parentAddress: string, alias: string, message: string) {
+    return this.createWallet({ parentAddress, alias, message});
   }
 
   // TODO add typings for `opts`
@@ -225,15 +225,17 @@ export class WalletService {
     const wallet: MeritWalletClient = await this.seedWallet(opts);
     let name = opts.name || 'Personal Wallet'; // TODO GetTextCatalog
     let myName = opts.myName || 'me'; // TODO GetTextCatalog
+    let message = opts.message || ""; // TODO GetTextCatalog
     let m = opts.m || 1;
     let n = opts.n || 1;
 
-    await wallet.createWallet(name, myName, m, n, {
+    await wallet.createWallet(name, myName, message, m, n, {
       network: ENV.network,
       singleAddress: opts.singleAddress,
       walletPrivKey: opts.walletPrivKey,
       parentAddress: opts.parentAddress,
-      alias: opts.alias
+      alias: opts.alias,
+      message: opts.message
     });
 
     await this.profileService.addWallet(wallet);

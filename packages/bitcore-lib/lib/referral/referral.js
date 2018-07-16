@@ -14,8 +14,9 @@ const Networks = require('../networks');
 const Address = require('../address');
 const PublicKey = require('../publickey');
 
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
 const INVITE_VERSION = 1;
+const MESSAGE_VERSION = 2;
 
 /**
 * @param {*} data - The encoded data in various formats
@@ -126,9 +127,14 @@ Referral.prototype.toBufferWriter = function(writer) {
     writer.writeVarintNum(signatureBuf.length);
     writer.write(signatureBuf);
 
-    if (this.version >= 1) {
+    if (this.version >= INVITE_VERSION) {
         writer.writeVarintNum(this.alias.length);
         writer.writeString(this.alias);
+    }
+
+    if(this.version >= MESSAGE_VERSION) {
+        writer.writeVarintNum(this.message.length);
+        writer.writeString(this.message);
     }
 
     return writer;
@@ -151,6 +157,10 @@ Referral.prototype.fromBufferReader = function(reader) {
     // check that we have more data for pre-daedalus support
     if (this.version >= INVITE_VERSION && !reader.eof()) {
         this.alias = reader.readVarLengthBuffer().toString();
+    }
+
+    if(this.version >= MESSAGE_VERSION && !reader.eof){
+      this.message = reader.readVarLengthBuffer().toString();
     }
 
     return this;

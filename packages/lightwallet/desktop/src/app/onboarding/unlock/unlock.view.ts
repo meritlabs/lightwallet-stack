@@ -37,6 +37,10 @@ export class UnlockComponent {
       [Validators.required, Validators.minLength(3)],
       [AddressValidator.validateAliasAvailability(this.mwcService)],
     ],
+    message: [
+      '',
+      [Validators.maxLength(100)]
+    ]
   });
 
   easyReceipt: EasyReceipt;
@@ -55,6 +59,9 @@ export class UnlockComponent {
   }
   get alias() {
     return this.formData.get('alias');
+  }
+  get message() {
+    return this.formData.get('message');
   }
 
   constructor(
@@ -100,13 +107,13 @@ export class UnlockComponent {
   async onSubmit() {
     this.loadingCtrl.show();
     this.creatingWallet = true;
-    let { inviteCode, alias } = this.formData.getRawValue();
+    let { inviteCode, message, alias } = this.formData.getRawValue();
 
     alias = cleanAddress(alias);
     inviteCode = cleanAddress(inviteCode);
 
     try {
-      const wallet = await this.walletService.createDefaultWallet(inviteCode, alias);
+      const wallet = await this.walletService.createDefaultWallet(inviteCode, alias, message);
       this.logger.info('Created a new default wallet!');
       await this.pushNotificationsService.subscribe(wallet);
 

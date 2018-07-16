@@ -66,13 +66,14 @@
             </span>
           </div>
         </div>
-        <div class="ui-input__group__tipbox" *ngIf="!inviteCode.valid" [class.active]="!inviteCode.valid">
-          Please enter the invite code you were given, which is usually the alias of the sender.
-          <hr>
-          <small>
-            <sup>*</sup>Allowed characters:
-            <strong>Numbers/letters only. No spaces.</strong>
-          </small>
+
+        <textarea name="message" formControlName="message" class="ui-input--textarea ui-input" placeholder="Enter message for your referrer" cols="30" rows="10"></textarea>
+        <div class="input-errors" [hidden]="!message.dirty || message.valid">
+          <div [hidden]="!message.hasError('maxlength')">
+            <span class="tooltip-error">
+              <span>Message should less than 100 symbols.</span>
+            </span>
+          </div>
         </div>
       </div>
       <div class="ui-input__group" [ngClass]="{'ui-input__group--disabled': !inviteCode.valid}" *ngIf="inviteCode.valid">

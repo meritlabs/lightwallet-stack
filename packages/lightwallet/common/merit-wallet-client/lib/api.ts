@@ -61,6 +61,7 @@ export interface ISendReferralOptions {
   pubkey?: string;
   network?: string;
   alias?: string;
+  message?: string;
 }
 
 export class API {
@@ -1458,6 +1459,7 @@ export class API {
    * Create a wallet.
    * @param {String} walletName
    * @param {String} copayerName
+   * @param {String} message
    * @param {Number} m
    * @param {Number} n
    * @param {object} opts (optional: advanced options)
@@ -1468,7 +1470,7 @@ export class API {
    * @param cb
    * @return {undefined}
    */
-  createWallet(walletName: string, copayerName: string, m: number, n: number, opts: any = {}): Promise<any> {
+  createWallet(walletName: string, copayerName: string, message: string, m: number, n: number, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
 
       if (!this._checkKeyDerivation()) return reject(new Error('Cannot create new wallet'));
@@ -1503,7 +1505,8 @@ export class API {
         addressType: Bitcore.Address.PayToPublicKeyHashType,
         signPrivKey: walletPrivKey,
         network: network,
-        alias: opts.alias
+        alias: opts.alias,
+        message: message
       };
 
       // Create wallet
@@ -1521,7 +1524,8 @@ export class API {
           singleAddress: true, //daedalus wallets are single-addressed
           id: opts.id,
           parentAddress: opts.parentAddress,
-          referralId: refid
+          referralId: refid,
+          message: message
         };
 
         return this._doPostRequest('/v1/wallets/', args).then(res => {
@@ -1552,9 +1556,10 @@ export class API {
    * @param {string} opts.address          - (optional) address to beacon
    * @param {number} opts.addressType      - address type: 1 - pubkey, 2 - sript, 3 - parameterizedscript
    * @param {PrivateKey} opts.signPrivKey  - private key to sign referral
-   * @param {string} opts.pubkey        - (optional) pubkey of beaconing address. omitted for script
+   * @param {string} opts.pubkey           - (optional) pubkey of beaconing address. omitted for script
    * @param {string} opts.network          - (optional) network
-   * @param {string} opts.alias          - (optional) Address alias
+   * @param {string} opts.alias            - (optional) Address alias
+   * @param {string} opts.message          - (optional) Message for referrer
    */
   async sendReferral(opts?: ISendReferralOptions): Promise<any> {
     opts.network = opts.network || ENV.network;
@@ -1607,7 +1612,8 @@ export class API {
       addressType: opts.addressType,
       pubkey: opts.pubkey,
       signature: signature.toString('hex'),
-      alias: opts.alias
+      alias: opts.alias,
+      message: opts.message
     }, opts.network);
 
     return this._doPostRequest('/v1/referral/', { referral: referral.serialize() });
