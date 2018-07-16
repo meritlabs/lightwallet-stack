@@ -66,7 +66,17 @@
             </span>
           </div>
         </div>
+      </div>
 
+      <div class="ui-input__group">
+        <label for="" class="ui-label">
+          Message
+          <span class="ui-tooltip">
+            <span class="ui-tooltip__text">
+              Text message for your referrer
+            </span>
+          </span>
+        </label>
         <textarea name="message" formControlName="message" class="ui-input--textarea ui-input" placeholder="Enter message for your referrer" cols="30" rows="10"></textarea>
         <div class="input-errors" [hidden]="!message.dirty || message.valid">
           <div [hidden]="!message.hasError('maxlength')">
