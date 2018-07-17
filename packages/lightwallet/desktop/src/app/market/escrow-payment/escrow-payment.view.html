@@ -12,8 +12,9 @@
     </p>
 
     <h4>
-        Are you sure you want to send
-        <strong>{{ amountInMrt }} MRT</strong> to Merit escrow?
+        Are you sure you want to send <strong>{{ amountInMrt }} MRT</strong> to Merit escrow from
+      <p class="wallet" *ngIf="wallet.rootAlias"><strong>Alias:</strong> {{ '@' + wallet.rootAlias }}<br></p>
+      <p class="wallet"><strong>(Addr:</strong> {{ wallet.rootAddress }})?</p>
     </h4>
 
     <p class="fee" [ngClass]="{ 'visible': !!fee }">
