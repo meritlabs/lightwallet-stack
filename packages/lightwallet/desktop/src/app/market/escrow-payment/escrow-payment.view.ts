@@ -6,6 +6,7 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { getQueryParam } from '@merit/common/utils/url';
+import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 
 @Component({
   selector: 'view-escrow-payment',
@@ -28,7 +29,11 @@ export class EscrowPaymentView implements OnInit {
   sending = false;
   success = false;
 
-  constructor(private profileService: ProfileService, private rateService: RateService) {}
+  constructor(
+    private profileService: ProfileService,
+    private rateService: RateService,
+    private passwordPromptCtrl: PasswordPromptController,
+  ) {}
 
   async ngOnInit() {
     const wallets = await this.profileService.getWallets();
@@ -78,11 +83,26 @@ export class EscrowPaymentView implements OnInit {
     this.error = null;
     this.sending = true;
 
-    try {
+    if (this.wallet.credentials.isPrivKeyEncrypted()) {
+      this.passwordPromptCtrl.createForWallet(this.wallet).onDidDismiss((password: string) => {
+        if (password) {
+          this.sendTx(password);
+        } else {
+          this.error = 'Wrong password';
+        }
+      });
+    } else {
+      this.sendTx();
+    }
 
+    this.sending = false;
+  }
+
+  private async sendTx(password?: string) {
+    try {
       this.txp = await this.wallet.publishTxProposal({ txp: this.txp });
       // TODO: add wallet password support
-      this.txp = await this.wallet.signTxProposal(this.txp, '');
+      this.txp = await this.wallet.signTxProposal(this.txp, password);
       this.txp = await this.wallet.broadcastTxProposal(this.txp);
 
       this.success = true;
@@ -95,7 +115,6 @@ export class EscrowPaymentView implements OnInit {
     } catch (e) {
       this.error = e.message;
     }
-    this.sending = false;
   }
 
   cancel() {
