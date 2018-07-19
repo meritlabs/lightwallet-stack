@@ -209,8 +209,6 @@ export class SendView implements OnInit, AfterViewInit {
         const { spendableAmount } = wallet ? wallet.balance : 0;
 
         if (!txData || this.success) {
-          this.success = false;
-
           return {
             amount: 0,
             fee: 0,
@@ -221,7 +219,6 @@ export class SendView implements OnInit, AfterViewInit {
         }
 
         this.receiptLoading = true;
-        this.easySendUrl = this.easySendDelivered = this.success = void 0;
 
         const receipt: Receipt = {
           amount: txData.amount,
@@ -300,6 +297,21 @@ export class SendView implements OnInit, AfterViewInit {
       });
 
     this.onSubmit$.subscribe();
+
+    this.formData.statusChanges
+      .pipe(
+        filter(() => this.formData.pristine),
+        switchMap(() =>
+          this.formData.statusChanges
+            .pipe(
+              filter(() => !this.formData.pristine),
+              take(1)
+            )
+        ),
+      )
+      .subscribe(() => {
+        this.easySendUrl = this.easySendDelivered = this.success = void 0;
+      });
   }
 
   onGlobalSendCopy() {
@@ -348,6 +360,8 @@ export class SendView implements OnInit, AfterViewInit {
     if (this.availableCurrencies.length) {
       this.selectCurrency(this.availableCurrencies[0]);
     }
+
+    this.formData.markAsPristine();
   }
 
   selectWallet(wallet) {
