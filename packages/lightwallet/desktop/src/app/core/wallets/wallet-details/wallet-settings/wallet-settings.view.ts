@@ -253,7 +253,6 @@ export class WalletSettingsView implements OnInit, OnDestroy {
           if (primaryWallet && this.wallet.id == primaryWallet.id) {
             this.store.dispatch(new SetPrimaryWalletAction(null));
           }
-          this.router.navigateByUrl('/wallets');
         } catch (err) {
           this.toastCtrl.error(err);
         }
