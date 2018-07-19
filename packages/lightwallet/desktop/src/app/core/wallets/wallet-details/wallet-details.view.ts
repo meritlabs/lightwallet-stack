@@ -28,6 +28,7 @@ export class WalletDetailView {
     );
 
   shareLink$: Observable<string> = this.wallet$.pipe(
+    filter(wallet => !!wallet),
     map(wallet =>
       getShareLink(wallet.alias || wallet.referrerAddress)
     )
