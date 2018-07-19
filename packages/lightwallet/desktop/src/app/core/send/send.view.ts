@@ -43,6 +43,7 @@ import {
   withLatestFrom,
 } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
 interface Receipt {
   amount: number;
@@ -114,7 +115,6 @@ export class SendView implements OnInit, AfterViewInit {
   }
 
   canSend: boolean;
-  sending: boolean;
   overMaximumAmount: boolean;
   success: boolean;
   showTour: boolean = !('showTour' in localStorage && localStorage.getItem('showTour') === 'false');
@@ -172,7 +172,7 @@ export class SendView implements OnInit, AfterViewInit {
     .pipe(
       withLatestFrom(this.txData$),
       tap(() => {
-        this.sending = true;
+        this.loadingCtrl.show();
         this.error = this.easySendUrl = this.easySendDelivered = null;
       }),
       switchMap(([_, txData]) =>
@@ -185,7 +185,7 @@ export class SendView implements OnInit, AfterViewInit {
           ),
       ),
       tap((success: boolean) => {
-        this.sending = false;
+        this.loadingCtrl.hide();
         this.success = success;
 
         if (success) {
@@ -260,7 +260,8 @@ export class SendView implements OnInit, AfterViewInit {
               private feeService: FeeService,
               private persistenceService: PersistenceService2,
               private mwcService: MWCService,
-              private toastCtrl: ToastControllerService) {
+              private toastCtrl: ToastControllerService,
+              private loadingCtrl: Ng4LoadingSpinnerService) {
   }
 
   async ngOnInit() {
