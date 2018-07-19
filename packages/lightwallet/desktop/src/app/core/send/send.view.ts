@@ -209,6 +209,8 @@ export class SendView implements OnInit, AfterViewInit {
         const { spendableAmount } = wallet ? wallet.balance : 0;
 
         if (!txData || this.success) {
+          this.success = false;
+
           return {
             amount: 0,
             fee: 0,
