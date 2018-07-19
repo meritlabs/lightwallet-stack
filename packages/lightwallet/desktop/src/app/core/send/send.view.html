@@ -1,5 +1,4 @@
 <app-lock-screen fullScreen *ngIf="!hasUnlockedWallet"></app-lock-screen>
-<loading-spinner sending-spinner *ngIf="sending"></loading-spinner>
 <send-tour *ngIf="showTour" (hideTour)="hideTour()"></send-tour>
 
 <div class="sendMerit">
@@ -148,7 +147,7 @@
         </div>
         <div class="sendMerit__form__group">
           <button type="submit" class="ui-button ui-button--blue"
-                  [disabled]="formData.pending || formData.invalid || receiptLoading">
+                  [disabled]="formData.pending || formData.invalid || receiptLoading || sending">
             Send Merit
           </button>
         </div>
