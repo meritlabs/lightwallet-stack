@@ -115,6 +115,7 @@ export class SendView implements OnInit, AfterViewInit {
   }
 
   canSend: boolean;
+  sending: boolean;
   overMaximumAmount: boolean;
   success: boolean;
   showTour: boolean = !('showTour' in localStorage && localStorage.getItem('showTour') === 'false');
@@ -172,6 +173,7 @@ export class SendView implements OnInit, AfterViewInit {
     .pipe(
       withLatestFrom(this.txData$),
       tap(() => {
+        this.sending = true;
         this.loadingCtrl.show();
         this.error = this.easySendUrl = this.easySendDelivered = null;
       }),
@@ -185,6 +187,7 @@ export class SendView implements OnInit, AfterViewInit {
           ),
       ),
       tap((success: boolean) => {
+        this.sending = false;
         this.loadingCtrl.hide();
         this.success = success;
 
