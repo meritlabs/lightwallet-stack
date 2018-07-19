@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { getEasySendURL } from '@merit/common/models/easy-send';
 import { ISendMethod, SendMethodType } from '@merit/common/models/send-method';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletAction, selectConfirmedWallets } from '@merit/common/reducers/wallets.reducer';
@@ -17,7 +16,7 @@ import { RateService } from '@merit/common/services/rate.service';
 import { ISendTxData, SendService } from '@merit/common/services/send.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { cleanAddress, isAddress } from '@merit/common/utils/addresses';
+import { cleanAddress } from '@merit/common/utils/addresses';
 import { getSendMethodDestinationType } from '@merit/common/utils/destination';
 import { SendValidator } from '@merit/common/validators/send.validator';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
@@ -41,7 +40,7 @@ import {
   switchMap,
   take,
   tap,
-  withLatestFrom
+  withLatestFrom,
 } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
 
@@ -56,9 +55,9 @@ interface Receipt {
 @Component({
   selector: 'view-send',
   templateUrl: './send.view.html',
-  styleUrls: ['./send.view.sass']
+  styleUrls: ['./send.view.sass'],
 })
-export class SendView implements OnInit {
+export class SendView implements OnInit, AfterViewInit {
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets);
 
@@ -79,7 +78,7 @@ export class SendView implements OnInit {
     wallet: [null, SendValidator.validateWallet],
     type: [SendMethodType.Easy],
     password: [],
-    destination: ['', SendValidator.validateGlobalSendDestination]
+    destination: ['', SendValidator.validateGlobalSendDestination],
   });
 
   get amountMrt() {
@@ -142,7 +141,7 @@ export class SendView implements OnInit {
         return this.formData.statusChanges.pipe(
           skipWhile(() => this.formData.pending),
           take(1),
-          map(() => formData)
+          map(() => formData),
         );
       }
       return of(formData);
@@ -156,7 +155,7 @@ export class SendView implements OnInit {
               console.log(err);
               this.error = err.message || 'Unknown error';
               return of({} as ISendTxData);
-            })
+            }),
           );
       }
 
@@ -165,7 +164,7 @@ export class SendView implements OnInit {
     tap((txData: ISendTxData) => {
       if (txData && txData.txp) this.canSend = true;
     }),
-    share()
+    share(),
   );
 
   submit: Subject<void> = new Subject<void>();
@@ -182,8 +181,8 @@ export class SendView implements OnInit {
             catchError(err => {
               this.error = err.message;
               return of(false);
-            })
-          )
+            }),
+          ),
       ),
       tap((success: boolean) => {
         this.sending = false;
@@ -194,7 +193,7 @@ export class SendView implements OnInit {
         }
       }),
       startWith(false),
-      share()
+      share(),
     );
 
 
@@ -212,7 +211,7 @@ export class SendView implements OnInit {
             fee: 0,
             total: 0,
             inWallet: spendableAmount,
-            remaining: spendableAmount
+            remaining: spendableAmount,
           };
         }
 
@@ -224,7 +223,7 @@ export class SendView implements OnInit {
           fee: txData.fee,
           total: feeIncluded ? txData.amount : txData.amount + txData.fee,
           inWallet: spendableAmount,
-          remaining: 0
+          remaining: 0,
         };
 
         receipt.remaining = receipt.inWallet - receipt.total;
@@ -232,7 +231,7 @@ export class SendView implements OnInit {
         return receipt;
       }),
       tap(() => this.receiptLoading = false),
-      startWith({} as Receipt)
+      startWith({} as Receipt),
     );
 
   amountFiat$: Observable<number> = this.amountMrt.valueChanges.pipe(
@@ -241,10 +240,10 @@ export class SendView implements OnInit {
       fromPromise(
         this.rateService.microsToFiat(
           this.rateService.mrtToMicro(amountMrt),
-          selectedCurrency.code
-        )
-      )
-    )
+          selectedCurrency.code,
+        ),
+      ),
+    ),
   );
 
   constructor(private route: ActivatedRoute,
@@ -279,9 +278,20 @@ export class SendView implements OnInit {
     }
 
     this.type.valueChanges.pipe(
-      filter((value: string) => (value === SendMethodType.Easy && this.address.invalid) || (value === SendMethodType.Classic && this.address.valid && !this.address.value)),
-      tap(() => this.address.updateValueAndValidity({ onlySelf: false }))
-    ).subscribe();
+      distinctUntilChanged()
+    )
+      .subscribe((value: SendMethodType) => {
+        if ((value === SendMethodType.Easy && this.address.invalid)
+          || (value === SendMethodType.Classic && this.address.valid)) {
+          // Re-validate address field to make sure it's marked as valid when necessary
+          this.address.updateValueAndValidity({ onlySelf: false });
+        }
+
+        if (value === SendMethodType.Classic && this.destination.invalid) {
+          this.destination.setValue('');
+          this.destination.markAsPristine();
+        }
+      });
 
     this.onSubmit$.subscribe();
   }
@@ -309,7 +319,7 @@ export class SendView implements OnInit {
 
     const wallets = await this.wallets$.pipe(
       skipWhile(wallets => !wallets || !wallets.length),
-      take(1)
+      take(1),
     ).toPromise();
 
     this.hasUnlockedWallet = wallets.length > 0;
@@ -367,7 +377,7 @@ export class SendView implements OnInit {
       fee,
       wallet: wallet.client,
       feeIncluded,
-      toAddress: this.address.value || 'MeritMoney link'
+      toAddress: this.address.value || 'MeritMoney link',
     };
   }
 
@@ -391,7 +401,7 @@ export class SendView implements OnInit {
           await wallet.deliverGlobalSend(txData.easySend, {
             type: SendMethodType.Easy,
             destination: destinationType,
-            value: destination
+            value: destination,
           });
 
           this.easySendDelivered = true;
@@ -406,7 +416,7 @@ export class SendView implements OnInit {
       this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
         skipRewards: true,
         skipAlias: true,
-        skipShareCode: true
+        skipShareCode: true,
       }));
     }, 1750);
 
