@@ -1,5 +1,4 @@
 <app-lock-screen fullScreen *ngIf="!hasUnlockedWallet"></app-lock-screen>
-<loading-spinner sending-spinner *ngIf="sending"></loading-spinner>
 <send-tour *ngIf="showTour" (hideTour)="hideTour()"></send-tour>
 
 <div class="sendMerit">
