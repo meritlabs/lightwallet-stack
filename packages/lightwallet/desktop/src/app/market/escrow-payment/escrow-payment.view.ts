@@ -84,18 +84,18 @@ export class EscrowPaymentView implements OnInit {
     this.sending = true;
 
     if (this.wallet.credentials.isPrivKeyEncrypted()) {
-      this.passwordPromptCtrl.createForWallet(this.wallet).onDidDismiss((password: string) => {
+      this.passwordPromptCtrl.createForWallet(this.wallet).onDidDismiss(async (password: string) => {
         if (password) {
-          this.sendTx(password);
+          await this.sendTx(password);
         } else {
           this.error = 'Wrong password';
         }
+        this.sending = false;
       });
     } else {
-      this.sendTx();
+      await this.sendTx();
+      this.sending = false;
     }
-
-    this.sending = false;
   }
 
   private async sendTx(password?: string) {

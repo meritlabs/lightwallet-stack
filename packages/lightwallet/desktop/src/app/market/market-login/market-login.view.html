@@ -43,7 +43,12 @@
     <div class="error">Access to market denied. Check that your wallet is confirmed.</div>
     <div class="buttons">
       <button role="button" class="ui-button ui-button--white" *ngIf="profile?.wallets.length > 1" (click)="toWallets()" [disabled]="logging">Select wallet</button>
-      <button role="button" class="ui-button ui-button--blue" [ngClass]="{ loading: logging }" (click)="login(selectedWalletIndex)" [disabled]="logging">Try again</button>
+      <button role="button" class="ui-button ui-button--with-load ui-button--blue"
+        [ngClass]="{ 'ui-button--with-load__loading': logging }"
+        (click)="login(selectedWalletIndex)"
+        [disabled]="logging">
+        Try again
+      </button>
     </div>
   </div>
 </ng-template>
