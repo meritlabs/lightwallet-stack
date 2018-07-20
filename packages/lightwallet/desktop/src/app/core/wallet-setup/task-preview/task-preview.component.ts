@@ -22,7 +22,7 @@ export class TaskPreviewComponent implements OnInit {
   readinessBackground: string;
 
   get showLockOverlay() {
-    return !this.isConfirmed && this.goal.slug !== 'creator';
+    return !this.isConfirmed && this.goal.slug !== 'creator' && this.goal.status !== 2;
   }
 
   async ngOnInit() {
