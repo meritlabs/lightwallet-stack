@@ -10696,7 +10696,7 @@ var errors = require('./errors');
 var $ = require('./util/preconditions');
 
 var UNITS = {
-  'MRT'      : [1e8, 8],
+  'MRT'      : [1e6, 6],
   'mMRT'     : [1e5, 5],
   'uMRT'     : [1e2, 2],
   'bits'     : [1e2, 2],

@@ -92,7 +92,7 @@ Utils._tryVerifyMessage = function(hash, sig, publicKeyBuffer) {
 Utils.formatAmount = function(micros, unit, opts) {
   var UNITS = {
     mrt: {
-      toMicros: 100000000,
+      toMicros: 1000000,
       maxDecimals: 6,
       minDecimals: 2,
     },

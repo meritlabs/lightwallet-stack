@@ -14,7 +14,7 @@ export const DEFAULT_WALLET_COLOR: string = '#00B0DD'; // primary color
 
 export const UNITS = {
   mrt: {
-    toMicros: 100000000,
+    toMicros: 1000000,
     full: {
       maxDecimals: 8,
       minDecimals: 8,
