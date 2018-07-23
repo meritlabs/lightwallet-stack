@@ -199,6 +199,30 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   };
 
+  function GetWallet(req, res, next) {
+    getServerWithAuth(req, res, server => {
+      req.wallet = server;
+      next();
+    });
+  }
+
+  function GatewayForward(url, method) {
+    return (req, res) => {
+      request({
+        url,
+        method,
+        headers: {
+          "x-wallet-id": req.walletId
+        }
+      }, (err, response) => {
+        if (!err && parseInt(response.statusCode) >= 200) {
+          res.status(response.statusCode).send(response);
+        } else {
+          res.status(400).send(err);
+        }
+      });
+    }
+  }
 
   var createWalletLimiter;
 
