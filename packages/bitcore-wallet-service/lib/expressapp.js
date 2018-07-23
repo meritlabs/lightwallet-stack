@@ -197,7 +197,7 @@ ExpressApp.prototype.start = function(opts, cb) {
 
       return cb(server);
     });
-  };
+  }
 
   function GetWallet(req, res, next) {
     getServerWithAuth(req, res, server => {
@@ -957,47 +957,23 @@ ExpressApp.prototype.start = function(opts, cb) {
     res.end();
   });
 
-  router.post('/v1/globalsend/register', function(req, res) {
-      getServerWithAuth(req, res, function(server) {
-          server.registerGlobalSend(req.body, function(err) {
-              if (err) return returnError(err, res, req);
-              res.json('ok').end();
-          });
-      });
-  });
+  router.post('/v1/globalsend/register', GetWallet, GatewayForward(opts.services.globalSend + '/globalsend/register', 'POST'));
 
-  router.post('/v1/globalsend/cancel', function(req, res) {
-      getServerWithAuth(req, res, function(server) {
-          server.cancelGlobalSend(req.body, function(err) {
-              if (err) return returnError(err, res, req);
-              res.json('ok').end();
-          });
-      });
-  });
+  router.post('/v1/globalsend/cancel', GetWallet, GatewayForward(opts.services.globalSend + '/globalsend/cancel', 'POST'));
 
-  router.get('/v1/globalsend/history', function(req, res) {
-      getServerWithAuth(req, res, function(server) {
-          server.getGlobalSends(req, function(err, links) {
-              if (err) return returnError(err, res, req);
-              res.json(links).end();
-          });
-      });
-  });
+  router.get('/v1/globalsend/history', GetWallet, GatewayForward(opts.services.globalSend + '/globalsend', 'GET'));
 
-
-  router.post('/v1/globalsend', (req, res) => {
-    getServerWithAuth(req, res, () => {
-      request({
-        method: 'POST',
-        uri: opts.meritMessagingUrl + '/globalsend',
-        json: req.body
-      }, (err, response) => {
-        if (!err && parseInt(response.statusCode) === 200) {
-          res.send();
-        } else {
-          res.status(400).send();
-        }
-      });
+  router.post('/v1/globalsend', GetWallet, (req, res) => {
+    request({
+      method: 'POST',
+      uri: opts.meritMessagingUrl + '/notification/globalsend',
+      json: req.body
+    }, (err, response) => {
+      if (!err && parseInt(response.statusCode) === 200) {
+        res.status(200).send();
+      } else {
+        res.status(400).send();
+      }
     });
   });
 
