@@ -11,12 +11,12 @@ export type ISmsNotificationSettings = {
 };
 
 export enum SmsNotificationSetting {
-  IncomingTx = 'IncomingTx',
-  IncomingInvite = 'IncomingInvite',
-  IncomingInviteRequest = 'IncomingInviteRequest',
-  WalletUnlocked = 'WalletUnlocked',
-  MiningReward = 'MiningReward',
-  GrowthReward = 'GrowthReward',
-  IncomingPoolPayment = 'IncomingPoolPayment',
-  MarketPayment = 'MarketPayment',
+  IncomingTx = 'incoming_tx',
+  IncomingInvite = 'incoming_invite',
+  IncomingInviteRequest = 'incoming_invite_request',
+  WalletUnlocked = 'wallet_unlocked',
+  MiningReward = 'mining_reward',
+  GrowthReward = 'growth_reward',
+  IncomingPoolPayment = 'incoming_pool_payment',
+  MarketPayment = 'market_payment',
 }
