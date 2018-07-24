@@ -52,14 +52,14 @@ ExpressApp.prototype.start = function(opts, cb) {
     res.setHeader('x-service-version', WalletService.getServiceVersion());
     next();
   });
-  var allowCORS = function(req, res, next) {
+  const allowCORS = function(req, res, next) {
     if ('OPTIONS' == req.method) {
       res.sendStatus(200);
       res.end();
       return;
     }
     next();
-  }
+  };
   this.app.use(allowCORS);
   this.app.enable('trust proxy');
 
@@ -132,11 +132,11 @@ ExpressApp.prototype.start = function(opts, cb) {
         error: m,
       }).end();
     }
-  };
+  }
 
   function logDeprecated(req) {
     log.warn('DEPRECATED', req.method, req.url, '(' + req.header('x-client-version') + ')');
-  };
+  }
 
   function getCredentials(req) {
     var identity = req.header('x-identity');
@@ -147,14 +147,14 @@ ExpressApp.prototype.start = function(opts, cb) {
       signature: req.header('x-signature'),
       session: req.header('x-session'),
     };
-  };
+  }
 
   function getServer(req, res) {
     var opts = {
       clientVersion: req.header('x-client-version'),
     };
     return WalletService.getInstance(opts);
-  };
+  }
 
   function getServerWithAuth(req, res, opts, cb) {
     if (_.isFunction(opts)) {
@@ -225,7 +225,7 @@ ExpressApp.prototype.start = function(opts, cb) {
         json: req.body
       }, (err, response) => {
         if (!err && parseInt(response.statusCode) >= 200) {
-          res.status(response.statusCode).send(response);
+          res.status(response.statusCode).send(response.body || {});
         } else {
           res.status(400).send(err);
         }
@@ -743,54 +743,15 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.post('/v1/pushnotifications/subscriptions/', function(req, res) {
-    getServerWithAuth(req, res, function(server) {
-      server.pushNotificationsSubscribe(req.body, function(err, response) {
-        if (err) return returnError(err, res, req);
-        res.json(response);
-      });
-    });
-  });
+  router.post('/v1/pushnotifications/subscriptions/', GetWallet, GatewayForward(opts.services.messaging + '/subscription/push', 'POST'));
 
+  router.delete('/v1/pushnotifications/subscriptions/:token', GetWallet, GatewayForward(opts.services.messaging + '/subscription/push/:token', 'DELETE'));
 
-  router.delete('/v1/pushnotifications/subscriptions/:token', function(req, res) {
-    var opts = {
-      token: req.params['token'],
-    };
-    getServerWithAuth(req, res, function(server) {
-      server.pushNotificationsUnsubscribe(opts, function(err, response) {
-        if (err) return returnError(err, res, req);
-        res.json(response);
-      });
-    });
-  });
+  router.post('/v1/sms-notifications', GetWallet, GatewayForward(opts.services.messaging + '/subscription/sms', 'POST'));
 
-  router.post('/v1/sms-notifications', (req, res) => {
-    getServerWithAuth(req, res, server => {
-      server.smsNotificationsSubscribe(req.body, (err, response) => {
-        if (err) return returnError(err, res, req);
-        res.json(response);
-      });
-    });
-  });
+  router.delete('/v1/sms-notifications', GetWallet, GatewayForward(opts.services.messaging + '/subscription/sms', 'DELETE'));
 
-  router.delete('/v1/sms-notifications', (req, res) => {
-    getServerWithAuth(req, res, server => {
-      server.smsNotificationsUnsubscribe((err, response) => {
-        if (err) return returnError(err, res, req);
-        res.json(response);
-      });
-    });
-  });
-
-  router.get('/v1/sms-notifications', (req, res) => {
-    getServerWithAuth(req, res, server => {
-      server.getSmsNotificationSubscription((err, response) => {
-        if (err) return returnError(err, res, req);
-        res.json(response);
-      });
-    });
-  });
+  router.get('/v1/sms-notifications', GetWallet, GatewayForward(opts.services.messaging + '/subscription/sms', 'GET'));
 
   router.post('/v1/txconfirmations/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
