@@ -1006,6 +1006,20 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/wallet-id/:address', (req, res) => {
+    const server = new WalletService();
+    server.storage.fetchAddress(req.params.address, (err, addr) => {
+      if (!err && addr) {
+        res.json({
+          walletId: addr.walletId,
+          isChange: addr.isChange
+        });
+      } else {
+        res.status(400).send()
+      }
+    });
+  });
+
   this.app.use(opts.basePath || '/bws/api', router);
 
   // Pass bitcore node to th walletService to initialize it.
