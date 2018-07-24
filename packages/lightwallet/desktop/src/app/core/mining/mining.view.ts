@@ -85,7 +85,7 @@ export class MiningView {
       if (this.miningSettings.gpus_info) {
         this.gpus_info = this.miningSettings.gpus_info;
       } else {
-        this.gpus_info = this.getGPUInfo();
+        this.gpus_info = MiningView.getGPUInfo();
 
         this.gpus_info.forEach((info: GPUInfo) => {
           info.value = false;
@@ -288,11 +288,14 @@ export class MiningView {
     }
   }
   
-  getGPUInfo() : GPUInfo[] {
+  static getGPUInfo() : GPUInfo[] {
     let raw_info = ElectronService.GPUDevicesInfo();
     let res = [];
     for (let info of raw_info)
-      res.push(new GPUInfo(info['id'], info['title'], info['total_memory']));
+      res.push(new GPUInfo(
+        info['id'], info['title'], info['total_memory'], info['temperature'],
+        info['gpu_util'], info['memory_util'], info['fan_speed']
+      ));
 
     return res;
   }

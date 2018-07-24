@@ -22,6 +22,7 @@
   "dependencies": {
     "node-notifier": "^5.2.1",
     "electron-updater": "^2.21.10",
+    "chart.js": "^2.7.2",
     "electron-log": "^2.2.15",
     "merit-miner-node": "../../../../merit-miner-node"
   },
