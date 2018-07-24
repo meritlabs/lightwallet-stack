@@ -208,6 +208,14 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   function GatewayForward(url, method) {
     return (req, res) => {
+      const regex = /\/(:[a-zA-Z]+)[\/]?.*$/gm;
+
+      while (regex.test(url)) {
+        url = url.replace(regex, a =>
+          '/' + req.params[a.replace('/:', '')]
+        );
+      }
+
       request({
         url,
         method,
