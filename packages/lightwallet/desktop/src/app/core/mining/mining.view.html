@@ -44,7 +44,14 @@
   </div>
   <div [hidden]="!mining">
       <div class="global-settings__group">
-          <gpu-stat></gpu-stat>
+          <div class="gpu-stats-container container--fluid">
+              <div class="gpu-chart">
+                <gpu-temp-widget></gpu-temp-widget>
+              </div>
+              <div class="gpu-chart">
+                <gpu-utilization-widget></gpu-utilization-widget>
+              </div>
+          </div>
 
           <label class="ui-label global-settings__group__title">Summary</label>
           <div class="global-settings__group__item">

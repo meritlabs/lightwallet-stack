@@ -30,7 +30,8 @@ import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/w
 import { ClipModule } from 'ng2-clip';
 import { WalletUnlockAlertComponent } from '@merit/desktop/app/components/wallet-unlock-alert/wallet-unlock-alert.component';
 import { MomentModule } from 'ngx-moment';
-import { GpuStatComponent} from "@merit/desktop/app/components/gpu-stat/gpu-stat.component";
+import { GpuTempWidgetComponent} from "@merit/desktop/app/components/charts/gpu-temp-widget/gpu-temp-widget.component";
+import { GpuUtilizationWidgetComponent } from "@merit/desktop/app/components/charts/gpu-utilization-widget/gpu-utilization-widget.component.ts";
 
 export function getComponents() {
   return [
@@ -53,7 +54,8 @@ export function getComponents() {
     WalletUnlockAlertComponent,
     SmsNotificationsPromptComponent,
     UpdateDialogComponent,
-    GpuStatComponent
+    GpuTempWidgetComponent,
+    GpuUtilizationWidgetComponent
   ];
 }
 

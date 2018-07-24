@@ -1,16 +1,14 @@
 import { Component, ElementRef, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from "@angular/core";
 import * as Chart from "chart.js";
-import { Store } from "@ngrx/store";
-import { IRootAppState } from "@merit/common/reducers";
-import { MiningView } from "@merit/desktop/app/core/mining/mining.view";
+import { MiningView } from "../../../core/mining/mining.view";
 
 @Component({
-  selector: "gpu-stat",
-  templateUrl: "./gpu-stat.component.html",
-  styleUrls: ["./gpu-stat.component.sass"]
+  selector: "gpu-temp-widget",
+  templateUrl: "./gpu-temp-widget.component.html",
+  styleUrls: ["./gpu-temp-widget.component.sass"]
 })
 
-export class GpuStatComponent implements OnInit, OnChanges, OnDestroy {
+export class GpuTempWidgetComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild("canvas")
   private canvas: ElementRef;
   private datasets: any[];
@@ -18,8 +16,7 @@ export class GpuStatComponent implements OnInit, OnChanges, OnDestroy {
 
   chart: any;
 
-  constructor(private store: Store<IRootAppState>) {
-  }
+  constructor() {}
 
   ngOnInit() {
     this.datasets = [];
@@ -50,7 +47,7 @@ export class GpuStatComponent implements OnInit, OnChanges, OnDestroy {
 
     this.chart.update();
 
-    this.updateTimer = setTimeout(this.updateData.bind(this), 500);
+    this.updateTimer = setTimeout(this.updateData.bind(this), 1000);
   }
 
   private createChart() {
@@ -58,24 +55,25 @@ export class GpuStatComponent implements OnInit, OnChanges, OnDestroy {
       type: "line",
       data: { datasets: this.datasets },
       options: {
+        pointStyle: 'line',
+        tooltips: {
+          enabled: 'false'
+        },
         title: {
           display: true,
           text: 'GPU Temperature'
         },
         responsive: true,
-        legend: {
-          display: true
-        },
+        legend: { display: true },
         scales: {
           xAxes: [{
             type: "time",
             time: { displayFormats: { minute: "h:mm a" } },
             distribution: "linear"
           }],
-
           yAxes: [{
             ticks: {
-              beginAtZero: true
+              beginAtZero: false
             }
           }]
         }
@@ -94,5 +92,4 @@ export class GpuStatComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     this.chart && this.chart.resize();
   }
-
 }
