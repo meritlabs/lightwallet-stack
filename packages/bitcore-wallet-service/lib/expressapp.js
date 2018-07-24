@@ -221,7 +221,8 @@ ExpressApp.prototype.start = function(opts, cb) {
         method,
         headers: {
           "x-wallet-id": req.walletId
-        }
+        },
+        json: req.body
       }, (err, response) => {
         if (!err && parseInt(response.statusCode) >= 200) {
           res.status(response.statusCode).send(response);
