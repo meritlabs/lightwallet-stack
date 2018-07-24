@@ -348,7 +348,20 @@ ExpressApp.prototype.start = function(opts, cb) {
     getServerWithAuth(req, res, function(server) {
       server.getPreferences({}, function(err, preferences) {
         if (err) return returnError(err, res, req);
-        res.json(preferences);
+
+        request({
+          url: opts.services.messaging + '/subscription/email',
+          headers: {'x-wallet-id': server.walletId}
+        }, (err, res2) => {
+          if (!err && res2) {
+            preferences.emailNotifications = {
+              email: res2.email
+            };
+          }
+
+          res.json(preferences);
+        });
+
       });
     });
   });
@@ -356,6 +369,18 @@ ExpressApp.prototype.start = function(opts, cb) {
   router.put('/v1/preferences', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       server.savePreferences(req.body, function(err, result) {
+        if (typeof req.body.email !== 'undefined') {
+          request({
+            url: opts.services.messaging + '/subscription/email',
+            method: 'post',
+            headers: {'x-wallet-id': server.walletId},
+            json: {
+              active: req.body.email !== null,
+              email: req.body.email || ''
+            }
+          });
+        }
+
         if (err) return returnError(err, res, req);
         res.json(result);
       });
