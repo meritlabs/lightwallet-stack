@@ -44,7 +44,7 @@
   </div>
   <div [hidden]="!mining">
       <div class="global-settings__group">
-          <div class="gpu-stats-container container--fluid">
+          <div class="gpu-stats-container container--fluid" *ngIf="mining">
               <div class="gpu-chart">
                 <gpu-temp-widget></gpu-temp-widget>
               </div>
