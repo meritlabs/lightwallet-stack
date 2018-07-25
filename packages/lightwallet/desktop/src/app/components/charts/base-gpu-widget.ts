@@ -1,8 +1,11 @@
-import { ElementRef, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from "@angular/core";
+import { ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from "@angular/core";
 
 export abstract class BaseGpuWidget implements OnInit, OnChanges, OnDestroy {
   @ViewChild("canvas")
   protected canvas: ElementRef;
+
+  @Input() active_gpu_devices: number[];
+
   protected datasets: any[];
   protected updateTimer: any;
   protected updateInterval: number;

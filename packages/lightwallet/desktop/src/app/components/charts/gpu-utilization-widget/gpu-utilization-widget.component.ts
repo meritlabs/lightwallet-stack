@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 import * as Chart from "chart.js";
 import { MiningView } from "@merit/desktop/app/core/mining/mining.view";
 import { BaseGpuWidget } from "@merit/desktop/app/components/charts/base-gpu-widget";
+import { GPUInfo } from "@merit/desktop/app/core/mining/gpu-info.model";
 
 @Component({
   selector: "gpu-utilization-widget",
@@ -16,6 +17,8 @@ export class GpuUtilizationWidgetComponent extends BaseGpuWidget {
 
   protected updateData(): void {
     let data = MiningView.getGPUInfo();
+
+    data = data.filter((item, index, array) => {return this.active_gpu_devices.includes(item.id) });
 
     // Initializing dataset for each GPU
     if (this.datasets.length == 0) {

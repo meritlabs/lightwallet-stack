@@ -17,6 +17,8 @@ export class GpuTempWidgetComponent extends BaseGpuWidget {
   protected updateData(): void {
     let data = MiningView.getGPUInfo();
 
+    data = data.filter((item, index, array) => {return this.active_gpu_devices.includes(item.id) });
+
     // Initializing dataset for each GPU
     if (this.datasets.length == 0) {
       this.datasets.length = data.length;
