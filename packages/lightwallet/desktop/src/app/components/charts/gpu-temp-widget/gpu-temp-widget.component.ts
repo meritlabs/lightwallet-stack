@@ -1,31 +1,20 @@
-import { Component, ElementRef, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from "@angular/core";
+import { Component } from "@angular/core";
 import * as Chart from "chart.js";
-import { MiningView } from "../../../core/mining/mining.view";
+import { MiningView } from "@merit/desktop/app/core/mining/mining.view";
+import { BaseGpuWidget } from "@merit/desktop/app/components/charts/base-gpu-widget";
 
 @Component({
   selector: "gpu-temp-widget",
-  templateUrl: "./gpu-temp-widget.component.html",
-  styleUrls: ["./gpu-temp-widget.component.sass"]
+  templateUrl: "../base-gpu-widget.component.html",
+  styleUrls: ["../base-gpu-widget.component.sass"]
 })
 
-export class GpuTempWidgetComponent implements OnInit, OnChanges, OnDestroy {
-  @ViewChild("canvas")
-  private canvas: ElementRef;
-  private datasets: any[];
-  private updateTimer: any;
-
-  chart: any;
-
-  constructor() {}
-
-  ngOnInit() {
-    this.datasets = [];
-    this.createChart();
-
-    this.updateTimer = setTimeout(this.updateData.bind(this), 1000);
+export class GpuTempWidgetComponent extends BaseGpuWidget {
+  constructor() {
+    super();
   }
 
-  private updateData(): void {
+  protected updateData(): void {
     let data = MiningView.getGPUInfo();
 
     // Initializing dataset for each GPU
@@ -47,49 +36,17 @@ export class GpuTempWidgetComponent implements OnInit, OnChanges, OnDestroy {
 
     this.chart.update();
 
-    this.updateTimer = setTimeout(this.updateData.bind(this), 1000);
+    console.log("Chart updated", this.chart);
+    console.log(this.datasets);
+
+    this.updateTimer = setTimeout(this.updateData.bind(this), this.updateInterval);
   }
 
-  private createChart() {
-    this.chart = new Chart(this.canvas.nativeElement, {
-      type: "line",
-      data: { datasets: this.datasets },
-      options: {
-        pointStyle: 'line',
-        tooltips: {
-          enabled: 'false'
-        },
-        title: {
-          display: true,
-          text: 'GPU Temperature'
-        },
-        responsive: true,
-        legend: { display: true },
-        scales: {
-          xAxes: [{
-            type: "time",
-            time: { displayFormats: { minute: "h:mm a" } },
-            distribution: "linear"
-          }],
-          yAxes: [{
-            ticks: {
-              beginAtZero: false
-            }
-          }]
-        }
-      }
-    });
-  }
+  protected createChart() {
+    let chartConfig = this.baseChartConfig;
+    chartConfig["options"]["title"]["text"] = "GPU Temperature(degrees Celsius)";
+    chartConfig["data"] = { datasets: this.datasets };
 
-  ngOnDestroy() {
-    this.deleteChart();
-  }
-
-  private deleteChart() {
-    this.chart && this.chart.clear() && this.chart.destroy();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    this.chart && this.chart.resize();
+    this.chart = new Chart(this.canvas.nativeElement, chartConfig);
   }
 }
