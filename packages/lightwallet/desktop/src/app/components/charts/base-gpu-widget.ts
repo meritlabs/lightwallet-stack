@@ -22,7 +22,10 @@ export abstract class BaseGpuWidget implements OnInit, OnChanges, OnDestroy {
         tooltips: { enabled: 'false' },
         title: { display: true },
         responsive: true,
-        legend: { display: true },
+        legend: {
+          display: true,
+          position: 'bottom'
+        },
         scales: {
           xAxes: [{
             type: "time",

@@ -2,7 +2,6 @@ import { Component } from "@angular/core";
 import * as Chart from "chart.js";
 import { MiningView } from "@merit/desktop/app/core/mining/mining.view";
 import { BaseGpuWidget } from "@merit/desktop/app/components/charts/base-gpu-widget";
-import { GPUInfo } from "@merit/desktop/app/core/mining/gpu-info.model";
 
 @Component({
   selector: "gpu-utilization-widget",
@@ -28,13 +27,13 @@ export class GpuUtilizationWidgetComponent extends BaseGpuWidget {
         this.datasets[2 * i] = {
           data: [],
           label: data[i].title + " cores",
-          borderColor: "#00dd4f"
+          borderColor: "#0046ff"
         };
 
         this.datasets[2 * i + 1] = {
           data: [],
           label: data[i].title + " memory",
-          borderColor: "#cd00dd"
+          borderColor: "#2eb483"
         };
       }
     }

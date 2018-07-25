@@ -1,4 +1,4 @@
-<div class="global-settings container--inner">
+<div class="global-settings container--inner" [ngClass]="{'full-width-for-chart': mining && active_gpu_devices.length}">
   <message-box error [hidden]="!error">{{ error }}</message-box>
   <div class="global-settings__title title--primary">
     <p>Mining</p>
