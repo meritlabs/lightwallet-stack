@@ -42,7 +42,7 @@ export abstract class BaseGpuWidget implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.datasets = [];
     this.createChart();
-    this.updateInterval = 2500;
+    this.updateInterval = 4000;
 
     this.updateTimer = setTimeout(this.updateData.bind(this), this.updateInterval);
   }
