@@ -46,10 +46,10 @@
       <div class="global-settings__group">
           <div class="gpu-stats-container container--fluid" *ngIf="mining && active_gpu_devices.length">
               <div class="gpu-chart">
-                  <gpu-temp-widget [active_gpu_devices]="active_gpu_devices"></gpu-temp-widget>
+                  <gpu-temp-widget [active_gpu_devices]="active_gpu_devices" [slug]="'temp'"></gpu-temp-widget>
               </div>
               <div class="gpu-chart">
-                  <gpu-utilization-widget [active_gpu_devices]="active_gpu_devices"></gpu-utilization-widget>
+                  <gpu-utilization-widget [active_gpu_devices]="active_gpu_devices" [slug]="'util'"></gpu-utilization-widget>
               </div>
           </div>
       </div>

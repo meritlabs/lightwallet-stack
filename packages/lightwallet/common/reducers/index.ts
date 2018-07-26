@@ -1,9 +1,10 @@
-import { appReducer, IAppState } from '@merit/common/reducers/app.reducer';
-import { goalsReducer, IGoalsState } from '@merit/common/reducers/goals.reducer';
+import { IAppState, appReducer } from '@merit/common/reducers/app.reducer';
+import { IGoalsState, goalsReducer} from '@merit/common/reducers/goals.reducer';
 import { IInterfaceState, interfaceReducer } from '@merit/common/reducers/interface-preferences.reducer';
 import { INotificationsState, notificationsReducer } from '@merit/common/reducers/notifications.reducer';
 import { ITransactionsState, transactionsReducer } from '@merit/common/reducers/transactions.reducer';
 import { IWalletsState, walletsReducer } from '@merit/common/reducers/wallets.reducer';
+import { IGpuStatsState, gpuStatsReducer } from "@merit/common/reducers/gpustats.reducer";
 
 export interface IRootAppState {
   app: IAppState;
@@ -12,6 +13,7 @@ export interface IRootAppState {
   notifications: INotificationsState;
   interface: IInterfaceState;
   goals: IGoalsState;
+  stats: IGpuStatsState;
 }
 
 export const reducer = {
@@ -21,4 +23,5 @@ export const reducer = {
   notifications: notificationsReducer,
   interface: interfaceReducer,
   goals: goalsReducer,
+  stats: gpuStatsReducer
 };

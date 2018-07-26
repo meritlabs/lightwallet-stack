@@ -1,19 +1,34 @@
 import { ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from "@angular/core";
+import { Store } from '@ngrx/store';
+import { IRootAppState } from "@merit/common/reducers";
+import { IGPUStatDataset, selectGpuStatsState } from "@merit/common/reducers/gpustats.reducer";
 
 export abstract class BaseGpuWidget implements OnInit, OnChanges, OnDestroy {
   @ViewChild("canvas")
   protected canvas: ElementRef;
 
   @Input() active_gpu_devices: number[];
+  @Input() slug: string;
 
-  protected datasets: any[];
+  protected store: Store<IRootAppState>;
+  datasets: IGPUStatDataset[] = [];
+
   protected updateTimer: any;
   protected updateInterval: number;
   protected baseChartConfig: {};
 
   chart: any;
 
-  constructor() {
+  constructor() {}
+
+  ngOnInit() {
+    this.store.select(selectGpuStatsState).subscribe(data => {
+      this.datasets = data.stats[this.slug];
+
+      if(this.chart)
+        this.chart.data.datasets = this.datasets;
+    });
+
     this.baseChartConfig = {
       type: "line",
       data: { datasets: this.datasets },
@@ -40,10 +55,7 @@ export abstract class BaseGpuWidget implements OnInit, OnChanges, OnDestroy {
         }
       }
     };
-  }
 
-  ngOnInit() {
-    this.datasets = [];
     this.createChart();
     this.updateInterval = 4000;
 
