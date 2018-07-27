@@ -1,4 +1,4 @@
-<div class="global-settings container--inner">
+<div class="global-settings container--inner" [ngClass]="{'full-width-for-chart': mining && active_gpu_devices.length}">
   <message-box error [hidden]="!error">{{ error }}</message-box>
   <div class="global-settings__title title--primary">
     <p>Mining</p>
@@ -8,7 +8,7 @@
     <app-select (selectionEvent)="selectWallet($event, true)" [selected]="selectedWallet" [input]="wallets$ | async" cssClass="ui-input ui-input--select ui-input--form"></app-select>
 
     <div class="ui-label">Select Mining Pool</div>
-    <app-select (selectionEvent)="selectPool($event)" [selected]="selectedPool" [input]="pools" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+    <app-select-pool (selectionEvent)="selectPool($event)" [selected]="selectedPool" [input]="pools" cssClass="ui-input ui-input--select ui-input--form"></app-select-pool>
 
     <div class="ui-label">CPU Threads</div>
 

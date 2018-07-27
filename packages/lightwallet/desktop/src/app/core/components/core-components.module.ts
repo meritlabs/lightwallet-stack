@@ -10,6 +10,7 @@ import { NotificationsHistoryComponent } from '@merit/desktop/app/core/component
 import { NotificationsComponent } from '@merit/desktop/app/core/components/notifications/notifications.component';
 import { ProfileStatsComponent } from '@merit/desktop/app/core/components/profile-stats/profile-stats.component';
 import { SelectComponent } from '@merit/desktop/app/core/components/select/select.component';
+import { SelectPoolComponent } from '@merit/desktop/app/core/components/select-pool/select-pool.component';
 import { SendMethodComponent } from '@merit/desktop/app/core/components/send-method/send-method.component';
 import { ToolbarComponent } from '@merit/desktop/app/core/components/toolbar/toolbar.component';
 import { VaultsListComponent } from '@merit/desktop/app/core/components/vaults-list/vaults-list.component';
@@ -41,6 +42,7 @@ export function getComponents() {
     ShareBoxComponent,
     TaskConfirmComponent,
     CommunityRankComponent,
+    SelectPoolComponent
   ];
 }
 
