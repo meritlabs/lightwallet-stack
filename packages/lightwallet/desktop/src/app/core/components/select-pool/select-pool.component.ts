@@ -48,18 +48,17 @@ export class SelectPoolComponent implements OnInit {
     this.input = this.input.filter((item : IPool) => item.name != pool.name || item.url != pool.url || item.website != pool.website);
 
     this.persistenceService.setAvailablePools(this.input);
+    this.selected = this.input[0];
   }
 
   saved($event) : void {
-    console.log("saved($event)", $event);
-
     this.close();
 
     this.input = $event;
+    this.selected = this.input[this.input.length - 1]
   }
 
   close() : void {
-    console.log("closing!");
     this.showModal = false;
   }
 }
