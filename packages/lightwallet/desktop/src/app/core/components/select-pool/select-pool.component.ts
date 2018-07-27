@@ -12,6 +12,7 @@ export class SelectPoolComponent {
   @Input() input: any;
   @Input() cssClass: any;
   show: boolean = false;
+  showModal: boolean = false;
 
   select(item) {
     this.show = false;
@@ -25,6 +26,6 @@ export class SelectPoolComponent {
   }
 
   addNewPool() : void {
-
+    this.showModal = true;
   }
 }

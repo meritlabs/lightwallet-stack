@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonDirectivesModule } from '@merit/common/common-directives.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { SharedComponentsModule } from '@merit/desktop/app/components/shared-components.module';
@@ -11,6 +12,7 @@ import { NotificationsComponent } from '@merit/desktop/app/core/components/notif
 import { ProfileStatsComponent } from '@merit/desktop/app/core/components/profile-stats/profile-stats.component';
 import { SelectComponent } from '@merit/desktop/app/core/components/select/select.component';
 import { SelectPoolComponent } from '@merit/desktop/app/core/components/select-pool/select-pool.component';
+import { AddPoolFormComponent } from '@merit/desktop/app/core/components/add-pool-form/add-pool-form.component';
 import { SendMethodComponent } from '@merit/desktop/app/core/components/send-method/send-method.component';
 import { ToolbarComponent } from '@merit/desktop/app/core/components/toolbar/toolbar.component';
 import { VaultsListComponent } from '@merit/desktop/app/core/components/vaults-list/vaults-list.component';
@@ -42,7 +44,8 @@ export function getComponents() {
     ShareBoxComponent,
     TaskConfirmComponent,
     CommunityRankComponent,
-    SelectPoolComponent
+    SelectPoolComponent,
+    AddPoolFormComponent
   ];
 }
 
@@ -56,6 +59,7 @@ export function getComponents() {
     VirtualScrollModule,
     ClipModule,
     CommonDirectivesModule,
+    ReactiveFormsModule
   ],
   declarations: getComponents(),
   exports: getComponents(),
