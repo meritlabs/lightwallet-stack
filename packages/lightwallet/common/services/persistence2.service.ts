@@ -4,6 +4,7 @@ import { EasySend } from '@merit/common/models/easy-send';
 import { INotification } from '@merit/common/reducers/notifications.reducer';
 import { isEmpty } from 'lodash';
 import { IVisitedTransaction } from '@merit/common/models/transaction';
+import { IPool } from "../../desktop/src/app/core/components/select-pool/select-pool.component";
 
 export enum StorageKey {
   WalletPreferencesPrefix = 'merit_wallet_preferences_',
@@ -15,6 +16,7 @@ export enum StorageKey {
   ViewSettingsPrefix = 'app_view_settings_',
   MiningSettings = 'mining_settings',
   LastIgnoredUpdate = 'last_ignored_update',
+  AvailablePools = 'available_pools',
 }
 
 export enum UserSettingsKey {
@@ -39,6 +41,23 @@ const DEFAULT_NOTIFICATION_SETTINGS: INotificationSettings = {
   smsNotifications: false,
   phoneNumber: ''
 };
+
+const DEFAULT_AVAILABLE_POOLS = [
+  {
+    name: 'Merit Pool',
+    website: 'https://pool.merit.me',
+    url: 'stratum+tcp://pool.merit.me:3333',
+    editable: false,
+    removable: false
+  },
+  {
+    name: 'Parachute Pool',
+    website: 'https://parachute.merit.me',
+    url: 'stratum+tcp://parachute.merit.me:3333',
+    editable: false,
+    removable: false
+  },
+];
 
 /**
  * New storage service with the goal of minimizing & cleaning up the previous service.
@@ -95,6 +114,20 @@ export class PersistenceService2 {
 
   async getNotifications(): Promise<INotification[]> {
     return (await this.storage.get(StorageKey.Notifications)) || [];
+  }
+
+  setAvailablePools(pools: IPool[]) {
+    return this.storage.set(StorageKey.AvailablePools, pools);
+  }
+
+  async getAvailablePools() : Promise<IPool[]> {
+    return (await this.storage.get(StorageKey.AvailablePools)) || DEFAULT_AVAILABLE_POOLS;
+  }
+
+  async addNewPool(pool: IPool) {
+    const pools = await this.getAvailablePools();
+    pools.push(pool);
+    return this.setAvailablePools(pools);
   }
 
   async addEasySend(easySend: EasySend) {

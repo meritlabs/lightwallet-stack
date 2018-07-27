@@ -1,16 +1,19 @@
-<div class="selectbox" [ngClass]="{'selectbox--disabled' : input.length === 0}">
+<div class="selectbox" [ngClass]="{'selectbox--disabled' : input?.length === 0}">
     <button (click)="show=!show" (blur)="onBlur()"
             class="{{ cssClass }} selectbox__selected"  role="button" type="button">
         <img src="{{selected?.iconUrl}}" alt="" *ngIf="selected?.iconUrl" class="selectbox__dropdown__icon">
         <span *ngIf="selected?.color" [style.background]="selected?.color" class="selectbox__color"></span>
-        <span>{{ input.length > 0 ? selected?.name : "No items to select" }}</span>
+        <span>{{ input?.length > 0 ? selected?.name : "No items to select" }}</span>
     </button>
     <div class="selectbox__dropdown showHidden"
-         [hidden]="!show || input.length === 0"
+         [hidden]="!show || input?.length === 0"
          [ngClass]="{'showHidden--animated' : show}">
         <button *ngFor="let item of input"
                 (click)="select(item)" class="selectbox__dropdown__item" role="button" type="button">
             <img src="{{item?.iconUrl}}" alt="" *ngIf="item?.iconUrl" class="selectbox__dropdown__icon">
+
+            <img *ngIf="item.removable" src="https://cdn2.iconfinder.com/data/icons/e-business-helper/240/627249-delete3-512.png" alt="" class="selectbox__dropdown__icon" (click)="deletePool(item)">
+
             <span *ngIf="item?.color" [style.background]="item?.color" class="selectbox__color"></span>
             <span>{{ item?.name }}</span></button>
 
@@ -23,4 +26,4 @@
     </div>
 </div>
 
-<add-pool-modal [show]="showModal" [pool]="{}"></add-pool-modal>
+<add-pool-modal [show]="showModal" [pool]="{}" (onSave)="saved($event)" (onClose)="close"></add-pool-modal>
