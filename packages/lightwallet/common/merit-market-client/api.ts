@@ -1,11 +1,9 @@
 import { ENV } from '@app/env';
-import { HttpClient } from '@angular/common/http';
 import * as request from 'superagent';
 import { each, isString } from 'lodash';
 
 import * as Bitcore from 'bitcore-lib';
 import { Credentials } from '@merit/common/merit-wallet-client/lib/credentials';
-import { Common } from '@merit/common/merit-wallet-client/lib/common';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { Logger } from '@merit/common/merit-wallet-client/lib/log';
 
@@ -20,6 +18,8 @@ export class MeritMarketClient {
   private credentials: Credentials;
   private log: any;
 
+  public name: string;
+
   public onAuthenticationError: any;
 
   constructor(opts: MarketClientOptions) {
@@ -33,34 +33,73 @@ export class MeritMarketClient {
     this.onAuthenticationError = cb;
   }
 
-  static fromObj(obj) {
+  static fromObj(obj, walletIndex) {
     let client = new this({
       baseUrl: obj.baseUrl || ENV.marketApi,
     });
 
-    return client.import(obj.credentials);
+    const backup = typeof obj.credentials === 'string' ? [obj.credentials] : obj.credentials;
+
+    return client.import(backup[walletIndex]);
   }
 
-  login() {
-    return this._doPostRequest('/sessions');
+  login(password?: string) {
+    return this._doPostRequest('/sessions', { password });
   }
 
   /**
    * Import wallets
    *
-   * @param {Object} str - The serialized JSON created with #export
+   * @param {string} backup - The serialized JSON created with #export
    */
-  import(str: string | string[]): any {
+  import(backup: string): any {
     try {
-      const backup = typeof str === 'string' ? [str] : str;
-      let credentials = Credentials.fromObj(JSON.parse(backup[0]));
+      const backupObj = JSON.parse(backup);
+      let credentials = Credentials.fromObj(backupObj);
       this.credentials = credentials;
+      this.name = backupObj.walletName;
     } catch (ex) {
       throw MWCErrors.INVALID_BACKUP;
     }
 
     return this;
   }
+
+  /**
+   * Is private key currently encrypted?
+   *
+   * @return {Boolean}
+   */
+  isPrivKeyEncrypted(): any {
+    return this.credentials && this.credentials.isPrivKeyEncrypted();
+  };
+
+  /**
+   * Returns unencrypted extended private key and mnemonics
+   *
+   * @param password
+   */
+  getKeys(password: string): any {
+    return this.credentials.getKeys(password);
+  };
+
+
+  /**
+   * Checks is password is valid
+   * Returns null (keys not encrypted), true or false.
+   *
+   * @param password
+   */
+  checkPassword(password: string): any {
+    if (!this.isPrivKeyEncrypted()) return;
+
+    try {
+      let keys = this.getKeys(password);
+      return !!keys.xPrivKey;
+    } catch (e) {
+      return false;
+    }
+  };
 
   /**
    * Do a GET request
@@ -93,28 +132,23 @@ export class MeritMarketClient {
    * @param {String} url
    * @param {Object} args
    */
-  protected _doRequest(method: string, url: string, args?: any): Promise<{ body: any; header: any }> {
+  protected _doRequest(method: string, url: string, args: any = {}): Promise<{ body: any; header: any }> {
     return new Promise((resolve, reject) => {
       let headers = {};
 
       if (this.credentials) {
-        let privkey = args._requestPrivKey || this.credentials.walletPrivKey;
+        const privkey =  this.credentials
+          .getDerivedXPrivKey(args.password)
+          .deriveChild('m/0/0')
+          .privateKey;
 
-        if (privkey) {
-          delete args['_requestPrivKey'];
-          privkey =  this.credentials
-            .getDerivedXPrivKey('')
-            .deriveChild('m/0/0')
-            .privateKey;
+        const debug = !ENV.production;
+        const [sig, ts] = this._signRequest(url, privkey, debug);
 
-          const debug = !ENV.production;
-          const [sig, ts] = this._signRequest(url, privkey, debug);
-
-          headers['X-Pubkey'] = privkey.toPublicKey().toString();
-          headers['X-Signature'] = sig;
-          headers['X-Timestamp'] = ts;
-          headers['X-Debug'] = debug;
-        }
+        headers['X-Pubkey'] = privkey.toPublicKey().toString();
+        headers['X-Signature'] = sig;
+        headers['X-Timestamp'] = ts;
+        headers['X-Debug'] = debug;
       }
 
       let r = this.request[method](this.baseUrl + url);
