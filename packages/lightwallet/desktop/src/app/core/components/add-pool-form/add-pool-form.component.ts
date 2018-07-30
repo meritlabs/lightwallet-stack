@@ -35,8 +35,10 @@ export class AddPoolFormComponent implements OnChanges {
 
   ngOnChanges(changes) {
     if (changes.pool) {
-      if(this.pool == undefined)
+      if(this.pool == undefined){
         this.clearData();
+        this.action = PoolFormAction.CREATE;
+      }
 
       if(this.pool != undefined && this.pool){
         this.action = PoolFormAction.EDIT;

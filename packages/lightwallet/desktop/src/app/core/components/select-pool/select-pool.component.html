@@ -7,8 +7,8 @@
     </button>
     <ul class="selectpool__dropdown selectbox__dropdown showHidden" [hidden]="!show || input?.length === 0" [ngClass]="{'showHidden--animated' : show}">
         <li *ngFor="let item of input">
-            <img *ngIf="item.removable" src="https://cdn2.iconfinder.com/data/icons/e-business-helper/240/627249-delete3-512.png" alt="" class="selectbox__dropdown__icon selectbox__dropdown__icon-hover" (click)="deletePool(item)">
-            <img *ngIf="item.removable" src="https://image.flaticon.com/icons/svg/61/61456.svg" alt="" class="selectbox__dropdown__icon selectbox__dropdown__icon-hover" (click)="editPool(item)">
+            <img *ngIf="item.removable" src="/assets/v1/icons/rubbish-bin.svg" alt="" class="selectbox__dropdown__icon selectbox__dropdown__icon-hover" (click)="deletePool(item)">
+            <img *ngIf="item.removable" src="/assets/v1/icons/edit.svg" alt="" class="selectbox__dropdown__icon selectbox__dropdown__icon-hover" (click)="editPool(item)">
             <button (click)="select(item)" class="selectbox__dropdown__item" role="button" type="button">
                 <img src="{{item?.iconUrl}}" alt="" *ngIf="item?.iconUrl" class="selectbox__dropdown__icon">
                 <span *ngIf="item?.color" [style.background]="item?.color" class="selectbox__color"></span>
@@ -18,7 +18,7 @@
 
         <!-- Add new pool button -->
         <li>
-            <img src="https://png.icons8.com/metro/1600/plus-math.png" alt="" class="selectbox__dropdown__icon selectbox__dropdown__icon-hover">
+            <img src="/assets/v1/icons/add.svg" alt="" class="selectbox__dropdown__icon selectbox__dropdown__icon-hover" (click)="addNewPool()">
 
             <button (click)="addNewPool()" class="selectbox__dropdown__item" role="button" type="button">
                 <span>Add own(custom) pool</span>
