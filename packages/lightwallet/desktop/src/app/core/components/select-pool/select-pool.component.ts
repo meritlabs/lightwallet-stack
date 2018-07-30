@@ -54,7 +54,7 @@ export class SelectPoolComponent implements OnInit {
   deletePool(pool : IPool){
     this.input = this.input.filter((item : IPool) => item.name != pool.name || item.url != pool.url || item.website != pool.website);
 
-    this.selected = this.input[0];
+    this.select(this.input[0]);
     this.activePoolToEdit = undefined;
     this.persistenceService.setAvailablePools(this.input);
   }
