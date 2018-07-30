@@ -15,7 +15,7 @@ export interface IPool {
   styleUrls: ['./select-pool.component.sass']
 })
 export class SelectPoolComponent implements OnInit {
-  @Output() selectionEvent = new EventEmitter<string>();
+  @Output() selectionEvent = new EventEmitter<IPool>();
   @Input() selected: any;
   @Input() cssClass: any;
 
@@ -31,7 +31,7 @@ export class SelectPoolComponent implements OnInit {
     this.input = await this.persistenceService.getAvailablePools();
   }
 
-  select(item) {
+  select(item : IPool) {
     this.show = false;
     this.selectionEvent.emit(item);
   }
