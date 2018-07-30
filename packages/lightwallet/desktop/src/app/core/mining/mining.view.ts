@@ -299,4 +299,23 @@ export class MiningView {
 
     return res;
   }
+
+  getGraphsStat() {
+    console.log(this.stats);
+    return [this.stats.current.attempts];
+  }
+
+  getGraphsLabels() {
+    return ["Graphs"];
+  }
+
+  getCyclesAndSharesStat() {
+    return [this.stats.current.cycles, this.stats.current.shares];
+  }
+
+  getCyclesAndSharesLabels() {
+    return ["Cycles", "Shares"];
+  }
+
+
 }

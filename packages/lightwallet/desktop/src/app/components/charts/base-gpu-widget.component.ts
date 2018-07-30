@@ -7,15 +7,16 @@ export abstract class BaseGpuWidget implements OnInit, OnChanges, OnDestroy {
   @ViewChild("canvas")
   protected canvas: ElementRef;
 
-  @Input() active_gpu_devices: number[];
-  @Input() slug: string;
+  @Input() title: string = "Chart";
+  @Input() slug: string = "slug-example";
+  @Input() updateInterval: string = "Chart";
 
   protected store: Store<IRootAppState>;
   datasets: IGPUStatDataset[] = [];
 
   protected updateTimer: any;
-  protected updateInterval: number;
   protected baseChartConfig: {};
+  protected borderColors: string[] = ["#00b0dd", "#2eb483"];
 
   chart: any;
 
@@ -57,7 +58,6 @@ export abstract class BaseGpuWidget implements OnInit, OnChanges, OnDestroy {
     };
 
     this.createChart();
-    this.updateInterval = 4000;
 
     this.updateTimer = setTimeout(this.updateData.bind(this), this.updateInterval);
   }
