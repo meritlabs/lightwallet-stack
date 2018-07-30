@@ -8,6 +8,7 @@
     <ul class="selectpool__dropdown selectbox__dropdown showHidden" [hidden]="!show || input?.length === 0" [ngClass]="{'showHidden--animated' : show}">
         <li *ngFor="let item of input">
             <img *ngIf="item.removable" src="https://cdn2.iconfinder.com/data/icons/e-business-helper/240/627249-delete3-512.png" alt="" class="selectbox__dropdown__icon selectbox__dropdown__icon-hover" (click)="deletePool(item)">
+            <img *ngIf="item.removable" src="https://image.flaticon.com/icons/svg/61/61456.svg" alt="" class="selectbox__dropdown__icon selectbox__dropdown__icon-hover" (click)="editPool(item)">
             <button (click)="select(item)" class="selectbox__dropdown__item" role="button" type="button">
                 <img src="{{item?.iconUrl}}" alt="" *ngIf="item?.iconUrl" class="selectbox__dropdown__icon">
                 <span *ngIf="item?.color" [style.background]="item?.color" class="selectbox__color"></span>
@@ -26,4 +27,4 @@
     </ul>
 </div>
 
-<add-pool-modal [show]="showModal" [pool]="{}" (onSave)="saved($event)" (onClose)="close"></add-pool-modal>
+<add-pool-modal [show]="showModal" [pool]="activePoolToEdit" (onSave)="saved($event)" (onClose)="close()"></add-pool-modal>

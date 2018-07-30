@@ -1,12 +1,12 @@
 <div class="add-pool-modal" *ngIf="show">
     <div class="add-pool-modal-body">
         <div class="modal_title">
-            <p>Add new pool</p>
+            <p *ngIf="!pool">Add new pool</p>
+            <p *ngIf="pool">Edit the pool</p>
         </div>
 
         <div class="modal_body">
             <form class="import_form" [formGroup]="formData" (ngSubmit)="savePool()">
-
                 <div class="sendMerit__form__group">
                     <label for="" class="ui-label">Pool name</label>
                     <div class="ui-input__wrapper ui-input__wrapper--password">
@@ -28,7 +28,7 @@
                         <input type="text" name="" class="ui-input ui-input--form ui-input--text" formControlName="host">
                     </div>
 
-                    <div class="input-errors" [hidden]="!host.dirty || host.valid">
+                    <div class="input-errors" [hidden]="!host.dirty || host.valid || !host.errors.incorrectHostValue">
                         <div>
                           <span class="tooltip-error">
                             <span> Invalid host </span>
@@ -52,12 +52,15 @@
                     </div>
                 </div>
 
-                <button type="submit" [disabled]="formData.pending || formData.invalid" name="button" class="ui-button ui-button--blue ui-button--add">
+                <button type="submit" [disabled]="formData.pending || formData.invalid" name="button" class="ui-button ui-button--blue ui-button--add"  *ngIf="!pool">
                     Add pool
                 </button>
 
-                <button type="button" name="button" (click)="onClose.emit()" class="ui-button ui-button--white"> Cancel </button>
+                <button type="submit" [disabled]="formData.pending || formData.invalid" name="button" class="ui-button ui-button--blue"  *ngIf="pool">
+                    Edit pool
+                </button>
 
+                <button type="button" name="button" (click)="closeModal()" class="ui-button ui-button--white"> Cancel </button>
             </form>
         </div>
     </div>

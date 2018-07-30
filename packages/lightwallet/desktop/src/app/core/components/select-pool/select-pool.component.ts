@@ -18,9 +18,11 @@ export class SelectPoolComponent implements OnInit {
   @Output() selectionEvent = new EventEmitter<string>();
   @Input() selected: any;
   @Input() cssClass: any;
-  show: boolean = false;
-  showModal: boolean = false;
+
+  private show: boolean = false;
+  private showModal: boolean = false;
   private input: IPool[];
+  activePoolToEdit: IPool = undefined;
 
   constructor(private persistenceService: PersistenceService2){
   }
@@ -44,11 +46,17 @@ export class SelectPoolComponent implements OnInit {
     this.showModal = true;
   }
 
+  editPool(pool: IPool){
+    this.showModal = true;
+    this.activePoolToEdit = pool;
+  }
+
   deletePool(pool : IPool){
     this.input = this.input.filter((item : IPool) => item.name != pool.name || item.url != pool.url || item.website != pool.website);
 
-    this.persistenceService.setAvailablePools(this.input);
     this.selected = this.input[0];
+    this.activePoolToEdit = undefined;
+    this.persistenceService.setAvailablePools(this.input);
   }
 
   saved($event) : void {
@@ -60,5 +68,6 @@ export class SelectPoolComponent implements OnInit {
 
   close() : void {
     this.showModal = false;
+    this.activePoolToEdit = undefined;
   }
 }
