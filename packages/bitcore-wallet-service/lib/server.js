@@ -805,11 +805,11 @@ WalletService.prototype.getStatus = function(opts, cb) {
           status.pendingTxps = [];
           next();
           /**
-           * Depecrating geting pending Txps in the get status call since 
+           * Depecrating geting pending Txps in the get status call since
            * the pendingTxps are literally  not used by the LW code yet.
            * In any case, if any code needs pendingTxps, they can get it
            * via the api call. The getStatus needs to be fast.
-            
+
           self.getPendingTxs({}, function(err, pendingTxps) {
             if (err) return next(err);
             status.pendingTxps = pendingTxps;
@@ -2272,14 +2272,8 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
           // Set groups length to 0 to end the while loop
           groups = [];
 
-          if (txpAmount === totalAmount - 1) {
-            // Sending all available invites
-            const utxoToKeep = utxos.find(tx => !tx.isCoinbase);
-            // Keep one non-coinbase utxo & send the rest
-            inputs = utxos.filter(tx => tx.txid !== utxoToKeep.txid);
-          } else {
-            const coinbaseUtxos = [],
-              nonCoinbaseUtxos = [];
+          const coinbaseUtxos = [],
+            nonCoinbaseUtxos = [];
 
             utxos.forEach(tx => {
               if (tx.confirmations > 6) {
