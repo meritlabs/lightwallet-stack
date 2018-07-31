@@ -73,12 +73,4 @@ export class GpuUtilizationWidgetComponent extends BaseGpuWidget {
 
     this.updateTimer = setTimeout(this.updateData.bind(this), this.updateInterval);
   }
-
-  protected createChart() {
-    let chartConfig = this.baseChartConfig;
-    chartConfig["options"]["title"]["text"] = this.title;
-    chartConfig["data"] = { datasets: this.datasets };
-
-    this.chart = new Chart(this.canvas.nativeElement, chartConfig);
-  }
 }

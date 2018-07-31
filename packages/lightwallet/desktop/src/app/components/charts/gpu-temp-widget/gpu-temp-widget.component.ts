@@ -11,14 +11,11 @@ import {
 } from "@merit/common/reducers/gpustats.reducer";
 import { IRootAppState } from "@merit/common/reducers";
 
-import * as Chart from "chart.js";
-
 @Component({
   selector: "gpu-temp-widget",
   templateUrl: "../base-gpu-widget.component.html",
   styleUrls: ["../base-gpu-widget.component.sass"]
 })
-
 export class GpuTempWidgetComponent extends BaseGpuWidget {
   @Input() active_gpu_devices: number[];
 
@@ -64,13 +61,5 @@ export class GpuTempWidgetComponent extends BaseGpuWidget {
     this.chart.update();
 
     this.updateTimer = setTimeout(this.updateData.bind(this), this.updateInterval);
-  }
-
-  protected createChart() {
-    let chartConfig = this.baseChartConfig;
-    chartConfig["options"]["title"]["text"] = this.title;
-    chartConfig["data"] = { datasets: this.datasets };
-
-    this.chart = new Chart(this.canvas.nativeElement, chartConfig);
   }
 }

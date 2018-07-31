@@ -1,7 +1,10 @@
 import { ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from "@angular/core";
 import { Store } from '@ngrx/store';
+
 import { IRootAppState } from "@merit/common/reducers";
 import { IGPUStatDataset, selectGpuStatsState } from "@merit/common/reducers/gpustats.reducer";
+
+import * as Chart from "chart.js";
 
 export abstract class BaseGpuWidget implements OnInit, OnChanges, OnDestroy {
   @ViewChild("canvas")
@@ -64,7 +67,13 @@ export abstract class BaseGpuWidget implements OnInit, OnChanges, OnDestroy {
 
   protected abstract updateData(): void;
 
-  protected abstract createChart(): void;
+  protected createChart(): void {
+    let chartConfig = this.baseChartConfig;
+    chartConfig["options"]["title"]["text"] = this.title;
+    chartConfig["data"] = { datasets: this.datasets };
+
+    this.chart = new Chart(this.canvas.nativeElement, chartConfig);
+  }
 
 
   ngOnDestroy() {

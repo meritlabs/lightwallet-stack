@@ -1,14 +1,9 @@
 import { Component, Input} from "@angular/core";
-
-import { BaseGpuWidget } from "@merit/desktop/app/components/charts/base-gpu-widget.component";
-
-import * as Chart from "chart.js";
-import {
-  GpuAddDatasetsAction, GpuAddStatAction, IGPUStat,
-  IGPUStatDataset
-} from "@merit/common/reducers/gpustats.reducer";
-import { IRootAppState } from "@merit/common/reducers";
 import { Store } from "@ngrx/store";
+
+import { GpuAddDatasetsAction, GpuAddStatAction, IGPUStat, IGPUStatDataset } from "@merit/common/reducers/gpustats.reducer";
+import { BaseGpuWidget } from "@merit/desktop/app/components/charts/base-gpu-widget.component";
+import { IRootAppState } from "@merit/common/reducers";
 
 
 @Component({
@@ -61,12 +56,5 @@ export class ChartComponent extends BaseGpuWidget {
     this.updateTimer = setTimeout(this.updateData.bind(this), this.updateInterval);
   }
 
-  protected createChart(): void {
-    let chartConfig = this.baseChartConfig;
-    chartConfig["options"]["title"]["text"] = this.title;
-    chartConfig["data"] = { datasets: this.datasets };
-
-    this.chart = new Chart(this.canvas.nativeElement, chartConfig);
-  }
 
 }
