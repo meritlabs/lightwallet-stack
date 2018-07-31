@@ -2268,6 +2268,10 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
           // Use a different way to pick UTXOs for invite transactions
           // We'll use coinbase invites first if available, then use non-coinbase
 
+
+          // Set groups length to 0 to end the while loop
+          groups = [];
+
           if (txpAmount === totalAmount - 1) {
             // Sending all available invites
             const utxoToKeep = utxos.find(tx => !tx.isCoinbase);
