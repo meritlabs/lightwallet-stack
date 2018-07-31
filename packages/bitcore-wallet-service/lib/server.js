@@ -2264,6 +2264,53 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
         return i < groups.length && _.isEmpty(inputs);
       },
       function(next) {
+        if (txp.isInvite) {
+          // Use a different way to pick UTXOs for invite transactions
+          // We'll use coinbase invites first if available, then use non-coinbase
+
+          if (txpAmount === totalAmount - 1) {
+            // Sending all available invites
+            const utxoToKeep = utxos.find(tx => !tx.isCoinbase);
+            // Keep one non-coinbase utxo & send the rest
+            inputs = utxos.filter(tx => tx.txid !== utxoToKeep.txid);
+          } else {
+            // Prioritize coinbase utxos
+            utxos = _.sortBy(utxos, 'isCoinbase');
+
+            const coinbaseUtxos = [],
+              nonCoinbaseUtxos = [];
+
+            utxos.forEach(tx => {
+              if (tx.confirmations > 6) {
+                if (tx.isCoinbase) {
+                  coinbaseUtxos.push(tx)
+                } else {
+                  nonCoinbaseUtxos.push(tx);
+                }
+              }
+            });
+
+            let pickingCoinbase = coinbaseUtxos.length > 0;
+
+            for (let i = 0, totalInputAmount = 0; totalInputAmount < txpAmount; i++) {
+              if (pickingCoinbase) {
+                if (coinbaseUtxos[i]) {
+                  totalInputAmount += coinbaseUtxos[i].micros;
+                  inputs.push(coinbaseUtxos[i]);
+                } else {
+                  i = 0;
+                  pickingCoinbase = false;
+                }
+              } else {
+                totalInputAmount += nonCoinbaseUtxos[i].micros;
+                inputs.push(nonCoinbaseUtxos[i]);
+              }
+            }
+          }
+          return;
+        }
+
+
         var group = groups[i++];
 
         var candidateUtxos = _.filter(utxos, function(utxo) {
