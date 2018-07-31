@@ -1,7 +1,7 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import * as Chart from "chart.js";
 import { MiningView } from "@merit/desktop/app/core/mining/mining.view";
-import { BaseGpuWidget } from "@merit/desktop/app/components/charts/base-gpu-widget";
+import { BaseGpuWidget } from "@merit/desktop/app/components/charts/base-gpu-widget.component";
 import {
   GpuAddDatasetsAction,
   GpuAddStatAction,
@@ -18,6 +18,8 @@ import { IRootAppState } from "@merit/common/reducers";
 })
 
 export class GpuUtilizationWidgetComponent extends BaseGpuWidget {
+  @Input() active_gpu_devices: number[];
+
   constructor(protected store: Store<IRootAppState>) {
     super();
   }
@@ -70,13 +72,5 @@ export class GpuUtilizationWidgetComponent extends BaseGpuWidget {
     this.chart.update();
 
     this.updateTimer = setTimeout(this.updateData.bind(this), this.updateInterval);
-  }
-
-  protected createChart() {
-    let chartConfig = this.baseChartConfig;
-    chartConfig["options"]["title"]["text"] = "GPU cores and memory utilization(%)";
-    chartConfig["data"] = { datasets: this.datasets };
-
-    this.chart = new Chart(this.canvas.nativeElement, chartConfig);
   }
 }

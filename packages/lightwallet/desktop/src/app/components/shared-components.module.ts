@@ -32,6 +32,7 @@ import { WalletUnlockAlertComponent } from '@merit/desktop/app/components/wallet
 import { MomentModule } from 'ngx-moment';
 import { GpuTempWidgetComponent} from "@merit/desktop/app/components/charts/gpu-temp-widget/gpu-temp-widget.component";
 import { GpuUtilizationWidgetComponent } from "@merit/desktop/app/components/charts/gpu-utilization-widget/gpu-utilization-widget.component.ts";
+import { ChartComponent } from "@merit/desktop/app/components/charts/chart.component";
 
 export function getComponents() {
   return [
@@ -55,7 +56,8 @@ export function getComponents() {
     SmsNotificationsPromptComponent,
     UpdateDialogComponent,
     GpuTempWidgetComponent,
-    GpuUtilizationWidgetComponent
+    GpuUtilizationWidgetComponent,
+    ChartComponent
   ];
 }
 

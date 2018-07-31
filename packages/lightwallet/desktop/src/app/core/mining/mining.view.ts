@@ -287,7 +287,7 @@ export class MiningView {
       this.startMining();
     }
   }
-  
+
   static getGPUInfo() : GPUInfo[] {
     let raw_info = ElectronService.GPUDevicesInfo();
     let res = [];
@@ -299,4 +299,25 @@ export class MiningView {
 
     return res;
   }
+
+  getGraphsStat() {
+    return [this.stats.total.attempts + this.stats.current.attempts];
+  }
+
+  getGraphsLabels() {
+    return ["Graphs"];
+  }
+
+  getCyclesAndSharesStat() {
+    return [
+      this.stats.total.cycles + this.stats.current.cycles,
+      this.stats.total.shares + this.stats.current.shares
+    ];
+  }
+
+  getCyclesAndSharesLabels() {
+    return ["Cycles", "Shares"];
+  }
+
+
 }
