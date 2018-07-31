@@ -2278,9 +2278,6 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
             // Keep one non-coinbase utxo & send the rest
             inputs = utxos.filter(tx => tx.txid !== utxoToKeep.txid);
           } else {
-            // Prioritize coinbase utxos
-            utxos = _.sortBy(utxos, 'isCoinbase');
-
             const coinbaseUtxos = [],
               nonCoinbaseUtxos = [];
 
