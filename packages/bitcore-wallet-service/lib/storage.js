@@ -36,6 +36,7 @@ var collections = {
   SMS_NOTIFICATION_SUBS: 'sms_notification_subs',
   GLOBALSENDS: 'global_sends',
   KNOWN_MESSAGES: 'known_messages',
+  LEADERBOARD: 'leaderboard',
 };
 
 var Storage = function (opts) {
@@ -227,9 +228,6 @@ Storage.prototype._completeTxData = function (walletId, txs, cb) {
       _.each(tx.actions, function (action) {
         action.copayerName = wallet.getCopayer(action.copayerId).name;
       });
-
-      if (tx.status == 'accepted')
-        tx.raw = tx.getRawTx();
 
     });
     return cb(null, txs);
@@ -1457,7 +1455,18 @@ Storage.prototype.checkKnownMessages = function (data, cb) {
     returnOriginal: false,
     upsert: true,
   }, function (err, result) {
-    cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
+    if (err) return cb(err);
+    return cb(null, result && result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
+  });
+};
+
+Storage.prototype.getLeaderboard = function (limit, cb) {
+  this.db.collection(collections.LEADERBOARD).findOne({
+    limit: parseInt(limit),
+  }, function (err, result) {
+    if (err) return cb(err);
+    if (!result) return cb();
+    return cb(null, result);
   });
 };
 

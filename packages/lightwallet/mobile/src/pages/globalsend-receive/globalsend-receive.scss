@@ -1,5 +1,11 @@
 view-globalsend-receive {
 
+  .scroll-content {
+    padding-top: 0;
+    padding-top: const(safe-area-inset-top);
+    padding-top: env(safe-area-inset-top);
+  }
+
   text-align: center;
 
 

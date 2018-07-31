@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
@@ -30,8 +30,9 @@ export class PendingInviteItemComponent {
   @Input() inviteRequests;
   @Input() wallets;
 
+  @Output() approveInviteRequest: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   sending: { [referralId: string]: boolean } = {};
-  isInviteSent: boolean = false;
 
   async approveRequest(request: IUnlockRequest) {
     const availableInvites = this.availableInvites[0];
@@ -58,7 +59,7 @@ export class PendingInviteItemComponent {
 
     dialog.onDidDismiss(async (value: string) => {
       if (value === 'yes') {
-        this.isInviteSent = true;
+        this.approveInviteRequest.emit(true);
         this.sending[request.referralId] = true;
         try {
           let wallet = request.walletClient;

@@ -49,7 +49,7 @@ export interface IFullGoal extends IGoal {
 export enum ProgressStatus {
   Incomplete = 0,
   InProgress,
-  Complete
+  Complete,
 }
 
 export interface IProgress {

@@ -87,7 +87,7 @@ export class ProfileStatsComponent {
       unlocked: true,
       totalAnv: ranks.reduce((total: number, rank: IRankInfo) => total + rank.anv, 0),
       bestRank: topRank.rank,
-      bestPercentile: topRank.anvpercent,
+      bestPercentile: +topRank.percentile,
       percentileStr: this.getPercentileStr(topRank),
     };
     this.ranks = ranks;

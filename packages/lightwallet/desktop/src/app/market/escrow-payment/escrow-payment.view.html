@@ -23,10 +23,13 @@
     </p>
 
     <div class="buttons">
-        <button type="button" class="ui-button ui-button--white ui-button--md" (click)="cancel()">
+        <button type="button" class="ui-button ui-button--white ui-button--md" (click)="cancel()" [disabled]="sending">
             Cancel
         </button>
-        <button type="button" class="ui-button ui-button--blue ui-button--md" (click)="send()" [disabled]="!feeCalculated || !!error || success || sending">
+        <button type="button" class="ui-button ui-button--with-load ui-button--blue ui-button--md"
+            [ngClass]="{ 'ui-button--with-load__loading': !feeCalculated || sending }"
+            (click)="send()"
+            [disabled]="!feeCalculated || !!error || success || sending">
             Send Merit
         </button>
     </div>
