@@ -117,10 +117,10 @@
     <div class="global-settings__group">
       <div class="gpu-stats-container container--fluid" *ngIf="mining">
         <div class="gpu-chart">
-          <chart [slug]="'graph'" [updateInterval]="1000" [title]="'Number of graphs'" [getData]="getGraphsStat.bind(this)" [getLabels]="getGraphsLabels.bind(this)"></chart>
+          <chart [slug]="'graph'" [updateInterval]="1000" [title]="'Number of graphs(total)'" [getData]="getGraphsStat.bind(this)" [getLabels]="getGraphsLabels.bind(this)"></chart>
         </div>
         <div class="gpu-chart">
-          <chart [slug]="'cyclesAndShares'" [updateInterval]="1000" [title]="'Number of found cycles and shares'" [getData]="getCyclesAndSharesStat.bind(this)" [getLabels]="getCyclesAndSharesLabels.bind(this)"></chart>
+          <chart [slug]="'cyclesAndShares'" [updateInterval]="1000" [title]="'Number of found cycles and shares(total)'" [getData]="getCyclesAndSharesStat.bind(this)" [getLabels]="getCyclesAndSharesLabels.bind(this)"></chart>
         </div>
       </div>
 
