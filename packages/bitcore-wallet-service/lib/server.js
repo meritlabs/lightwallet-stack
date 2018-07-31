@@ -2275,32 +2275,24 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
           const coinbaseUtxos = [],
             nonCoinbaseUtxos = [];
 
-            utxos.forEach(tx => {
-              if (tx.confirmations > 6) {
-                if (tx.isCoinbase) {
-                  coinbaseUtxos.push(tx)
-                } else {
-                  nonCoinbaseUtxos.push(tx);
-                }
-              }
-            });
-
-            let pickingCoinbase = coinbaseUtxos.length > 0;
-
-            for (let i = 0, totalInputAmount = 0; totalInputAmount < txpAmount; i++) {
-              if (pickingCoinbase) {
-                if (coinbaseUtxos[i]) {
-                  totalInputAmount += coinbaseUtxos[i].micros;
-                  inputs.push(coinbaseUtxos[i]);
-                } else {
-                  i = 0;
-                  pickingCoinbase = false;
-                }
+          utxos.forEach(tx => {
+            if (tx.confirmations > 6) {
+              if (tx.isCoinbase) {
+                coinbaseUtxos.push(tx)
               } else {
-                totalInputAmount += nonCoinbaseUtxos[i].micros;
-                inputs.push(nonCoinbaseUtxos[i]);
+                nonCoinbaseUtxos.push(tx);
               }
             }
+          });
+
+          const combinedUtxos = [
+            ...coinbaseUtxos,
+            ...nonCoinbaseUtxos
+          ];
+
+          for (let i = 0, totalInputAmount = 0; totalInputAmount < txpAmount; i++) {
+            totalInputAmount += combinedUtxos[i].micros;
+            inputs.push(combinedUtxos[i]);
           }
           return;
         }
