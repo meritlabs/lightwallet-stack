@@ -2272,28 +2272,19 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
           // Set groups length to 0 to end the while loop
           groups = [];
 
-          const coinbaseUtxos = [],
-            nonCoinbaseUtxos = [];
-
-          utxos.forEach(tx => {
-            if (tx.confirmations > 6) {
-              if (tx.isCoinbase) {
-                coinbaseUtxos.push(tx)
-              } else {
-                nonCoinbaseUtxos.push(tx);
-              }
+          utxos = utxos.sort((a, b) => {
+            if (a.isCoinbase === b.isCoinbase) {
+              return a.micros > b.micros;
             }
+
+            return a.isCoinbase > b.isCoinbase;
           });
 
-          const combinedUtxos = [
-            ...coinbaseUtxos,
-            ...nonCoinbaseUtxos
-          ];
-
           for (let i = 0, totalInputAmount = 0; totalInputAmount < txpAmount; i++) {
-            totalInputAmount += combinedUtxos[i].micros;
-            inputs.push(combinedUtxos[i]);
+            totalInputAmount += utxos[i].micros;
+            inputs.push(utxos[i]);
           }
+
           return;
         }
 
