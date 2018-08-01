@@ -301,7 +301,8 @@ export class MiningView {
   }
 
   getGraphsStat() {
-    return [this.stats.total.attempts + this.stats.current.attempts];
+    return this.mining ? 
+     [this.stats.total.attempts + this.stats.current.attempts] : [];
   }
 
   getGraphsLabels() {
@@ -309,10 +310,10 @@ export class MiningView {
   }
 
   getCyclesAndSharesStat() {
-    return [
+    return this.mining ? [
       this.stats.total.cycles + this.stats.current.cycles,
       this.stats.total.shares + this.stats.current.shares
-    ];
+    ] : [];
   }
 
   getCyclesAndSharesLabels() {
