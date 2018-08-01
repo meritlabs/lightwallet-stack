@@ -46,20 +46,20 @@
     <div class="global-settings__group">
       <div class="gpu-stats-container container--fluid">
         <div class="gpu-chart">
-          <chart [slug]="'graph'" [updateInterval]="5000" [title]="'Number of graphs(total)'" [getData]="getGraphsStat.bind(this)" [getLabels]="getGraphsLabels.bind(this)"></chart>
+          <chart [slug]="'graph'" [updateInterval]="10000" [title]="'Number of graphs(total)'" [getData]="getGraphsStat.bind(this)" [getLabels]="getGraphsLabels.bind(this)"></chart>
         </div>
         <div class="gpu-chart">
-          <chart [slug]="'cyclesAndShares'" [updateInterval]="5000" [title]="'Number of found cycles and shares(total)'" [getData]="getCyclesAndSharesStat.bind(this)" [getLabels]="getCyclesAndSharesLabels.bind(this)"></chart>
+          <chart [slug]="'cyclesAndShares'" [updateInterval]="10000" [title]="'Number of found cycles and shares(total)'" [getData]="getCyclesAndSharesStat.bind(this)" [getLabels]="getCyclesAndSharesLabels.bind(this)"></chart>
         </div>
       </div>
       <div class="gpu-stats-container container--fluid" *ngIf="mining && active_gpu_devices.length">
         <div class="gpu-chart">
           <gpu-temp-widget [active_gpu_devices]="active_gpu_devices" [slug]="'temp'"
-                           [updateInterval]="5000" [title]="'GPU Temperature(degrees Celsius)'"></gpu-temp-widget>
+                           [updateInterval]="10000" [title]="'GPU Temperature(degrees Celsius)'"></gpu-temp-widget>
         </div>
         <div class="gpu-chart">
           <gpu-utilization-widget [active_gpu_devices]="active_gpu_devices" [slug]="'util'"
-                                  [updateInterval]="5000" [title]="'GPU cores and memory utilization(%)'"></gpu-utilization-widget>
+                                  [updateInterval]="10000" [title]="'GPU cores and memory utilization(%)'"></gpu-utilization-widget>
         </div>
       </div>
     </div>
