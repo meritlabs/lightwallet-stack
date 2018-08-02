@@ -46,10 +46,10 @@
     <div class="global-settings__group">
       <div class="gpu-stats-container container--fluid">
         <div class="gpu-chart">
-          <chart [slug]="'graph'" [dataLimit]="100" [updateInterval]="50" [title]="'Number of graphs(total)'" [getData]="getGraphsStat.bind(this)" [getLabels]="getGraphsLabels.bind(this)"></chart>
+          <chart [slug]="'graph'" [dataLimit]="200" [updateInterval]="10000" [title]="'Number of graphs(total)'" [getData]="getGraphsStat.bind(this)" [getLabels]="getGraphsLabels.bind(this)"></chart>
         </div>
         <div class="gpu-chart">
-          <chart [slug]="'cyclesAndShares'" [dataLimit]="100" [updateInterval]="50" [title]="'Number of found cycles and shares(total)'" [getData]="getCyclesAndSharesStat.bind(this)" [getLabels]="getCyclesAndSharesLabels.bind(this)"></chart>
+          <chart [slug]="'cyclesAndShares'" [dataLimit]="200" [updateInterval]="10000" [title]="'Number of found cycles and shares(total)'" [getData]="getCyclesAndSharesStat.bind(this)" [getLabels]="getCyclesAndSharesLabels.bind(this)"></chart>
         </div>
       </div>
       <div class="gpu-stats-container container--fluid" *ngIf="mining && active_gpu_devices.length">
