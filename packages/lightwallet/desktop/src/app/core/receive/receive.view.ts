@@ -27,7 +27,7 @@ export class ReceiveView implements OnInit {
   address: string;
   alias: string;
   qrAddress: string;
-  amount: number = 0;
+  amount?: number = null;
   amountMicros: number;
   availableUnits: Array<string>;
   amountCurrency: string;
