@@ -13,6 +13,7 @@ export abstract class BaseGpuWidget implements OnInit, OnChanges, OnDestroy {
   @Input() title: string = "Chart";
   @Input() slug: string = "slug-example";
   @Input() updateInterval: string = "Chart";
+  @Input() dataLimit: number = 100;
 
   protected store: Store<IRootAppState>;
   datasets: IGPUStatDataset[] = [];
@@ -49,7 +50,11 @@ export abstract class BaseGpuWidget implements OnInit, OnChanges, OnDestroy {
           xAxes: [{
             type: "time",
             time: { displayFormats: { minute: "h:mm a" } },
-            distribution: "linear"
+            distribution: "linear",
+            ticks: {
+              autoSkip: true,
+              maxTicksLimit: 20,
+            },
           }],
           yAxes: [{
             ticks: {

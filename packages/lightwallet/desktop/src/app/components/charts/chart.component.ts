@@ -32,7 +32,9 @@ export class ChartComponent extends BaseGpuWidget {
         ds[i] = {
           data: [],
           label: labels[i],
-          borderColor: (this.borderColors[i]) ? this.borderColors[i] : "#00b0dd"
+          borderColor: (this.borderColors[i]) ? this.borderColors[i] : "#00b0dd",
+          borderWidth: 2,
+          pointRadius: 0
         };
       }
 
@@ -48,7 +50,7 @@ export class ChartComponent extends BaseGpuWidget {
       dataToPush.push(item);
     }
 
-    this.store.dispatch(new GpuAddStatAction(this.slug, dataToPush));
+    this.store.dispatch(new GpuAddStatAction(this.slug, dataToPush, this.dataLimit));
 
     this.chart.data.datasets = this.datasets;
     this.chart.update();

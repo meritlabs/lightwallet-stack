@@ -40,13 +40,17 @@ export class GpuUtilizationWidgetComponent extends BaseGpuWidget {
         ds[2 * i] = {
           data: [],
           label: data[i].title + " cores",
-          borderColor: "#0046ff"
+          borderColor: "#0046ff",
+          borderWidth: 2,
+          pointRadius: 0
         };
 
         ds[2 * i + 1] = {
           data: [],
           label: data[i].title + " memory",
-          borderColor: "#2eb483"
+          borderColor: "#2eb483",
+          borderWidth: 2,
+          pointRadius: 0
         };
       }
 
@@ -66,7 +70,7 @@ export class GpuUtilizationWidgetComponent extends BaseGpuWidget {
       dataToPush.push(temp_item);
     }
 
-    this.store.dispatch(new GpuAddStatAction(this.slug, dataToPush));
+    this.store.dispatch(new GpuAddStatAction(this.slug, dataToPush, this.dataLimit));
 
     this.chart.data.datasets = this.datasets;
     this.chart.update();
