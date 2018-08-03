@@ -39,7 +39,9 @@ export class GpuTempWidgetComponent extends BaseGpuWidget {
         ds[i] = {
           data: [],
           label: data[i].title,
-          borderColor: "#00b0dd"
+          borderColor: "#00b0dd",
+          borderWidth: 2,
+          pointRadius: 0
         };
       }
 
@@ -55,7 +57,7 @@ export class GpuTempWidgetComponent extends BaseGpuWidget {
       dataToPush.push(item);
     }
 
-    this.store.dispatch(new GpuAddStatAction(this.slug, dataToPush));
+    this.store.dispatch(new GpuAddStatAction(this.slug, dataToPush, this.dataLimit));
 
     this.chart.data.datasets = this.datasets;
     this.chart.update();
