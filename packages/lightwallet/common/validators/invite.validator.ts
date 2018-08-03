@@ -5,12 +5,13 @@ export class InviteValidator {
 
   static InviteQuantityValidator(control: AbstractControl) {
     try {
-      const wallet:DisplayWallet = control.parent.get("wallet").value;  
+      const wallet:DisplayWallet = control.parent.get("selectedWallet").value;
+      console.log('Wallet', wallet);
       if (control.value > wallet.sendableInvites) {
         return { NotEnoughInvites: true }
-      } 
+      }
     } catch (e) {
-      return null; 
+      return null;
     }
   }
 }
