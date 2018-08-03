@@ -2285,7 +2285,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
             inputs.push(utxos[i]);
           }
 
-          return;
+          return next();
         }
 
 
