@@ -1015,6 +1015,19 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v1/address/:walletId', (req, res) => {
+    const server = new WalletService();
+    server.storage.fetchWallet(req.params.walletId, (err, wallet) => {
+      if (!err && wallet) {
+        const xpub = new Bitcore.HDPublicKey(wallet.copayers[0].xPubKey);
+        const address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, wallet.network);
+        res.json({ address })
+      } else {
+        res.status(400).send();
+      }
+    });
+  });
+
   this.app.use(opts.basePath || '/bws/api', router);
 
   // Pass bitcore node to th walletService to initialize it.
