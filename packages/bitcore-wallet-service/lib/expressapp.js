@@ -958,6 +958,7 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   router.get('/v1/globalsend/history', GetWallet, GatewayForward(opts.services.globalSend + '/globalsend', 'GET'));
 
+  // Deliver globalsend
   router.post('/v1/globalsend', GetWallet, (req, res) => {
     request({
       method: 'POST',
@@ -972,15 +973,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.get('/v1/community/rank/', function(req, res) {
-    getServerWithAuth(req, res, function(server) {
-        server.getCommunityRank(function(err, txs) {
-            if (err) return returnError(err, res, req);
-            res.json(txs);
-            res.end();
-        });
-    });
-  });
+  router.get('/v1/community/rank/', GetWallet, GatewayForward(opts.services.communityInfo + '/info'));
 
   router.post('/v1/community/ranks/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
