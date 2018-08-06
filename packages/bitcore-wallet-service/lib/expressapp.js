@@ -15,6 +15,8 @@ var Defaults = Common.Defaults;
 var WalletService = require('./server');
 var Stats = require('./stats');
 
+var Bitcore = require('bitcore-lib');
+
 const request = require('request');
 
 log.debug = log.verbose;
