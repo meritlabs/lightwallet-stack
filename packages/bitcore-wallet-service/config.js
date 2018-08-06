@@ -98,8 +98,10 @@ var config = {
     enabled: process.env.SMS_ENABLED
   },
   services: {
-    globalSend: 'http://localhost:9300',
-    messaging: process.env.MERIT_MESSAGING_URL || 'http://localhost:8300'
+    messaging: process.env.MERIT_MESSAGING_URL || 'http://localhost:8300',
+    inviteRequests: process.env.INVITE_REQUESTS_URL || 'http://localhost:8301',
+    communityInfo: process.env.COMMUNITY_INFO_URL || 'http://localhost:8302',
+    globalSend: process.env.GLOBALSEND_URL || 'http://localhost:8303',
   }
 };
 module.exports = config;
