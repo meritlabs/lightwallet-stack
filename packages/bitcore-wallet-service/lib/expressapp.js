@@ -1015,7 +1015,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     server.storage.fetchWallet(req.params.walletId, (err, wallet) => {
       if (!err && wallet) {
         const xpub = new Bitcore.HDPublicKey(wallet.copayers[0].xPubKey);
-        const address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, wallet.network);
+        const address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, wallet.network).toString();
         res.json({ address })
       } else {
         res.status(400).send();
