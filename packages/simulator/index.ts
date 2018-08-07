@@ -35,6 +35,9 @@ export class MeritSimulator {
     return walletClient;
   }
 
+  public async doIt() {
+    await this.createWallet();
+  }
 
   private randomString(length = 5) {
     var text = "";
@@ -45,5 +48,5 @@ export class MeritSimulator {
   
     return "test" + text;
   }
-  
+
 }
