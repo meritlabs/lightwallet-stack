@@ -1,94 +1,101 @@
 {
-    "name": "merit-simulator",
-    "description": "Merit LightWallet application",
-    "authors": [
-      "Merit Foundation"
-    ],
-    "version": "1.1.0",
-    "homepage": "https://github.com/meritlabs/lightwallet-stack",
-    "license": "MIT",
-    "keywords": [
-      "merit",
-      "wallet",
-      "lightwallet",
-      "labs",
-      "mrt",
-      "multisignature",
-      "bitcore"
-    ],
-    "contributors": [
-      {
-        "name": "Merit Foundation",
-        "email": "support@merit.me"
-      }
-    ],
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/meritlabs/lightwallet-stack"
+  "name": "merit-simulator",
+  "description": "Merit LightWallet application",
+  "authors": [
+    "Merit Foundation"
+  ],
+  "version": "1.1.0",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
+  "license": "MIT",
+  "keywords": [
+    "merit",
+    "wallet",
+    "lightwallet",
+    "labs",
+    "mrt",
+    "multisignature",
+    "bitcore"
+  ],
+  "contributors": [
+    {
+      "name": "Merit Foundation",
+      "email": "support@merit.me"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meritlabs/lightwallet-stack"
+  },
+  "scripts": {
+    "clean": "ionic-app-scripts clean",
+    "build": "ionic-app-scripts build",
+    "lint": "ionic-app-scripts lint",
+    "ionic:build": "ionic-app-scripts build",
+    "ionic:serve": "ionic-app-scripts serve",
+    "ionic": "ionic-app-scripts",
+    "test": "jest",
+    "test:e2e": "npm run test:desktop:e2e && npm run test:mobile:e2e",
+    "test:desktop:e2e": "protractor ./protractor.desktop.conf.js",
+    "test:mobile:e2e": "protractor ./protractor.mobile.conf.js",
+    "pretest:e2e": "webdriver-manager update --standalone false --gecko false --quiet"
+  },
+  "dependencies": {
+    "bip38": "^1.3.0",
+    "bitcore-lib": "^0.9.9",
+    "bitcore-payment-protocol": "^1.2.2",
+    "buffer-compare": "^1.1.1",
+    "chalk": "^2.4.1",
+    "commander": "^2.17.1",
+    "elliptic": "^6.4.0",
+    "inquirer": "^6.1.0",
+    "ora": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/commander": "^2.12.2",
+    "@types/inquirer": "0.0.42",
+    "@types/ora": "^1.3.4"
+  },
+  "config": {
+    "ionic_webpack": "mobile/webpack.config.js",
+    "ionic_watch": "mobile/watch.config.js",
+    "ionic_root_dir": "mobile",
+    "ionic_src_dir": "mobile/src",
+    "ionic_www_dir": "mobile/www",
+    "ionic_build_dir": "mobile/www/build",
+    "ionic_ts_config": "tsconfig.mobile.json",
+    "ionic_app_entry_point": "mobile/src/app/main.ts",
+    "ionic_app_ng_module_path": "mobile/src/app/app.module.ts"
+  },
+  "jest": {
+    "rootDir": ".",
+    "preset": "jest-preset-angular",
+    "setupTestFrameworkScriptFile": "<rootDir>/jest-setup.ts",
+    "moduleNameMapper": {
+      "^@merit\\/common\\/([a-zA-Z0-9_\\.\\-\\/]+)$": "<rootDir>/common/$1",
+      "^@merit\\/(mobile|desktop)\\/([a-zA-Z0-9_\\.\\-\\/]+)$": "<rootDir>/$1/src/$2",
+      "@app/env": "<rootDir>/common/environments/environment.example.ts",
+      "^ionic-angular\\/([a-zA-Z0-9_\\.\\-\\/]+)$": "<rootDir>/node_modules/ionic-angular/umd/$1"
     },
-    "scripts": {
-      "clean": "ionic-app-scripts clean",
-      "build": "ionic-app-scripts build",
-      "lint": "ionic-app-scripts lint",
-      "ionic:build": "ionic-app-scripts build",
-      "ionic:serve": "ionic-app-scripts serve",
-      "ionic": "ionic-app-scripts",
-      "test": "jest",
-      "test:e2e": "npm run test:desktop:e2e && npm run test:mobile:e2e",
-      "test:desktop:e2e": "protractor ./protractor.desktop.conf.js",
-      "test:mobile:e2e": "protractor ./protractor.mobile.conf.js",
-      "pretest:e2e": "webdriver-manager update --standalone false --gecko false --quiet"
-    },
-    "dependencies": {
-      "bip38": "^1.3.0",
-      "bitcore-lib": "^0.9.9",
-      "bitcore-payment-protocol": "^1.2.2",
-      "buffer-compare": "^1.1.1",
-      "elliptic": "^6.4.0"
-    },
-    "devDependencies": {
-    },
-    "config": {
-      "ionic_webpack": "mobile/webpack.config.js",
-      "ionic_watch": "mobile/watch.config.js",
-      "ionic_root_dir": "mobile",
-      "ionic_src_dir": "mobile/src",
-      "ionic_www_dir": "mobile/www",
-      "ionic_build_dir": "mobile/www/build",
-      "ionic_ts_config": "tsconfig.mobile.json",
-      "ionic_app_entry_point": "mobile/src/app/main.ts",
-      "ionic_app_ng_module_path": "mobile/src/app/app.module.ts"
-    },
-    "jest": {
-      "rootDir": ".",
-      "preset": "jest-preset-angular",
-      "setupTestFrameworkScriptFile": "<rootDir>/jest-setup.ts",
-      "moduleNameMapper": {
-        "^@merit\\/common\\/([a-zA-Z0-9_\\.\\-\\/]+)$": "<rootDir>/common/$1",
-        "^@merit\\/(mobile|desktop)\\/([a-zA-Z0-9_\\.\\-\\/]+)$": "<rootDir>/$1/src/$2",
-        "@app/env": "<rootDir>/common/environments/environment.example.ts",
-        "^ionic-angular\\/([a-zA-Z0-9_\\.\\-\\/]+)$": "<rootDir>/node_modules/ionic-angular/umd/$1"
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.spec.json"
       },
-      "globals": {
-        "ts-jest": {
-          "tsConfigFile": "tsconfig.spec.json"
-        },
-        "__TRANSFORM_HTML__": true
-      },
-      "transformIgnorePatterns": [
-        "node_modules/(?!@ngrx|bitcore-*|@ionic)"
-      ],
-      "testMatch": [
-        "**/*.spec.ts"
-      ],
-      "testPathIgnorePatterns": [
-        "/node_modules/",
-        "/electron-dist/"
-      ],
-      "transform": {
-        "^.+\\.(ts|html)$": "<rootDir>/node_modules/jest-preset-angular/preprocessor.js",
-        "^.+\\.js$": "babel-jest"
-      }
+      "__TRANSFORM_HTML__": true
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!@ngrx|bitcore-*|@ionic)"
+    ],
+    "testMatch": [
+      "**/*.spec.ts"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/electron-dist/"
+    ],
+    "transform": {
+      "^.+\\.(ts|html)$": "<rootDir>/node_modules/jest-preset-angular/preprocessor.js",
+      "^.+\\.js$": "babel-jest"
     }
   }
-  
+}
