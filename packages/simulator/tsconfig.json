@@ -1,0 +1,45 @@
+{
+    "compilerOptions": {
+      "allowSyntheticDefaultImports": true,
+      "allowUnreachableCode": true,
+      "declaration": false,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "lib": [
+        "dom",
+        "es2015"
+      ],
+      "baseUrl": ".",
+      "paths": {
+        "@merit/common/*": ["../lightwallet/common/*"],
+        "@app/env": ["common/environments/environment.example"]
+      },
+      "module": "es2015",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "target": "es5",
+      "typeRoots": [
+        "node_modules/@types"
+      ],
+      "types": [
+        "node",
+        "file-saver"
+      ]
+    },
+    "include": [
+      "mobile/src/**/*.ts",
+      "common/**/*.ts"
+    ],
+    "exclude": [
+      "node_modules",
+      "mobile/node_modules",
+      "**/*.spec.ts",
+      "desktop/e2e/**/*.ts",
+      "mobile/e2e/**/*.ts"
+    ],
+    "compileOnSave": false,
+    "atom": {
+      "rewriteTsconfig": false
+    }
+  }
+  
