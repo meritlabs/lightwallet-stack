@@ -7,13 +7,16 @@ export class MeritSimulator {
     opts = opts || {bwsurl: "http//127.0.0.1/bws/api", verbose: true};
   
     const mwc = MeritWalletClient.getInstance({
-    baseUrl: opts.bwsurl,
-    verbose: opts.verbose || false,
-    timeout: 100000,
-    transports: ['polling'],
-  });
+      baseUrl: opts.bwsurl,
+      verbose: opts.verbose || false,
+      timeout: 100000,
+      transports: ['polling'],
+    });
 
-  return mwc;
-}
+    return mwc;
+  }
 
+  public createWallet() {
+    
+  }
 }
