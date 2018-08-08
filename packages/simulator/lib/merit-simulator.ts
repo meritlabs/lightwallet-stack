@@ -89,7 +89,7 @@ export class MeritSimulator {
   inviteAddress(address: string)
   inviteAddress(address: string, parentAddress: string)
   inviteAddress(address: string, parentNode: INode)
-  inviteAddress(address: string, parent?: string | INode) {
+  async inviteAddress(address: string, parent?: string | INode) {
     let parentClient: MeritWalletClient;
 
     if (!parent) {
@@ -100,9 +100,21 @@ export class MeritSimulator {
       parentClient = parent.client;
     }
 
-    parentClient.createTxProposal({
+    let txp = await parentClient.createTxProposal({
+      invite: true,
+      outputs: [
+        {
+          amount: 1,
+          toAddress: address,
+          message: '',
+          script: null
+        }
+      ]
+    });
 
-    })
+    txp = await parentClient.publishTxProposal({ txp });
+    txp = await parentClient.signTxProposal(txp);
+    await parentClient.broadcastTxProposal(txp);
   }
 
   async createWallet(): Promise<MeritWalletClient> {
