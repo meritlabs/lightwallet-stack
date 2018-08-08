@@ -3,9 +3,7 @@
       "moduleResolution": "node",
       "experimentalDecorators": true,
       "target": "es5",
-      "lib": [
-        "es2017","es2015","dom","es6"
-      ],
+      "lib": ["es2017", "dom"],
       "baseUrl": "./",
       "paths": {
         "@merit/common/*": ["./lightwallet/common/*"],
@@ -17,10 +15,6 @@
       "strict": false,
       "typeRoots": [
         "node_modules/@types"
-      ],
-      "types": [
-        "node",
-        "file-saver"
       ]
     },
     "include": [
@@ -31,4 +25,3 @@
     ],
     "compileOnSave": false
   }
-  
