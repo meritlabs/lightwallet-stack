@@ -17,6 +17,7 @@ describe('Merit Simulator', () => {
     meritSimulator = new MeritSimulator({
       mwsUrl: 'https://testnet.mws.merit.me/bws/api',
       verbose: true,
+      network: 'testnet'
     });
   });
 

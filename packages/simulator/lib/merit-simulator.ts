@@ -7,11 +7,12 @@ import { DerivationPath } from '@merit/common/utils/derivation-path';
 
 // Parent Alias: webdemo
 // Parent Address: mRSLCXZrU76xkSGZVPY3pQC4i9ExASu2aP
-const NETWORK: string = 'testnet';
+// const NETWORK: string = 'testnet';
 
 export interface IMeritSimulatorOptions {
   verbose: boolean;
   mwsUrl: string;
+  network: string;
 }
 
 export interface INode {
@@ -70,7 +71,7 @@ export class MeritSimulator {
   async importWallet(mnemonic: string): Promise<MeritWalletClient> {
     const client = this.getClient();
     const opts: any = {
-      network: NETWORK,
+      network: this.opts.network,
     };
 
     await client.importFromMnemonic(mnemonic, opts);
@@ -124,14 +125,14 @@ export class MeritSimulator {
     let walletClient: MeritWalletClient = this.getClient();
 
     walletClient.seedFromRandomWithMnemonic({
-      network: NETWORK,
+      network: this.opts.network,
       passphrase: '',
       account: 0,
     });
 
     let walletAlias: string = this.randomAlias();
     await walletClient.createWallet('@' + walletAlias, 'me', 1, 1, {
-      network: NETWORK,
+      network: this.opts.network,
       singleAddress: true,
       walletPrivKey: null,
       parentAddress: 'mRSLCXZrU76xkSGZVPY3pQC4i9ExASu2aP',

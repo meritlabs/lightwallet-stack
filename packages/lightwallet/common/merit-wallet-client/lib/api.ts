@@ -145,7 +145,7 @@ export class API {
     this.logLevel = opts.logLevel || 'debug';
     this.log = Logger.getInstance();
     this.log.setLevel(this.logLevel);
-    this.log.info('Hello Merit Wallet Client!');
+    this.log.debug('Hello Merit Wallet Client!');
   }
 
 
