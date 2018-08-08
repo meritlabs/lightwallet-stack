@@ -1,4 +1,8 @@
+#!/usr/bin/env node
+
 import { MeritWalletClient } from '../lightwallet/common/merit-wallet-client';
+import chalk from 'chalk'
+import * as ora from 'ora'
 
 // Parent Alias: webdemo
 // Parent Address: mRSLCXZrU76xkSGZVPY3pQC4i9ExASu2aP
@@ -30,13 +34,17 @@ export class MeritSimulator {
       account: 0
     });
     
-    await walletClient.createWallet("test1", "me", 1, 1, {network: NETWORK, singleAddress: true, walletPrivKey: null, parentAddress: "mRSLCXZrU76xkSGZVPY3pQC4i9ExASu2aP", alias: this.randomString()})
-
+    let walletAlias: string = this.randomString();
+    await walletClient.createWallet("test1", "me", 1, 1, {network: NETWORK, singleAddress: true, walletPrivKey: null, parentAddress: "mRSLCXZrU76xkSGZVPY3pQC4i9ExASu2aP", alias: walletAlias})
+    console.log(chalk.magentaBright('New wallet created with alias: ' + walletAlias))
+    
     return walletClient;
   }
-
+  
   public async doIt() {
+    const spinner = ora('Creating wallet ...').start();
     await this.createWallet();
+    spinner.stop();
   }
 
   private randomString(length = 5) {
