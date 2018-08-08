@@ -52,9 +52,9 @@ commander
     console.log('MWS is ', mws);
 
     try {
-      checkMnemonic(rootWallet);
+      checkMnemonic('turkey walnut rocket ordinary always fiction noise skull sketch aunt clown wild');
       spinner.start('Importing root wallet');
-      await sim.setRootWallet(rootWallet.toLowerCase().trim());
+      await sim.setRootWallet('turkey walnut rocket ordinary always fiction noise skull sketch aunt clown wild');
       spinner.succeed('Root wallet imported');
 
     } catch (err) {

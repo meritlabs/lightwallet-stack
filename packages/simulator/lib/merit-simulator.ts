@@ -87,40 +87,6 @@ export class MeritSimulator {
     });
   }
 
-  inviteAddress(address: string)
-  inviteAddress(address: string, parentAddress: string)
-  inviteAddress(address: string, parentNode: INode)
-  async inviteAddress(address: string, parent?: string | INode) {
-    let parentClient: MeritWalletClient;
-
-    if (!parent) {
-      parentClient = this.getRootWallet();
-    } else if (typeof parent === 'string') {
-      parentClient = this.nodesIndex[parent].client;
-    } else {
-      parentClient = parent.client;
-    }
-
-    let txp = await parentClient.createTxProposal({
-      invite: true,
-      outputs: [
-        {
-          amount: 1,
-          toAddress: address,
-          message: '',
-          script: null
-        }
-      ]
-    });
-
-    console.log('publishing ... ');
-    txp = await parentClient.publishTxProposal({ txp });
-    console.log('signing ...');
-    txp = await parentClient.signTxProposal(txp);
-    console.log('broadcasting...');
-    await parentClient.broadcastTxProposal(txp);
-  }
-
   async createWallet(): Promise<MeritWalletClient> {
     let walletClient: MeritWalletClient = this.getClient();
 
@@ -141,6 +107,49 @@ export class MeritSimulator {
     console.log(chalk.magentaBright('New wallet created with alias: ' + walletAlias));
 
     return walletClient;
+  }
+
+  inviteAddress(address: string)
+  inviteAddress(address: string, parentAddress: string, amount?: number)
+  inviteAddress(address: string, parentNode: INode, amount?: number)
+  async inviteAddress(address: string, parent?: string | INode, amount?: number) {
+    amount = amount || 1;
+    return this.sendTx(address, amount, true, parent);
+  }
+
+  sendMerit(address: string, amount: number)
+  sendMerit(address: string, amount: number, parentAddress: string)
+  sendMerit(address: string, amount: number, parentNode: INode)
+  async sendMerit(address: string, amount: number, parent?: string | INode) {
+    return this.sendTx(address, amount, false, parent);
+  }
+
+  private async sendTx(toAddress: string, amount: number, invite: boolean, parent: string | INode) {
+    let parentClient: MeritWalletClient;
+
+    if (!parent) {
+      parentClient = this.getRootWallet();
+    } else if (typeof parent === 'string') {
+      parentClient = this.nodesIndex[parent].client;
+    } else {
+      parentClient = parent.client;
+    }
+
+    let txp = await parentClient.createTxProposal({
+      invite,
+      outputs: [
+        {
+          amount,
+          toAddress,
+          message: '',
+          script: null
+        }
+      ]
+    });
+
+    txp = await parentClient.publishTxProposal({ txp });
+    txp = await parentClient.signTxProposal(txp);
+    await parentClient.broadcastTxProposal(txp);
   }
 
   randomAlias() {

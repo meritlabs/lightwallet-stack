@@ -7,7 +7,7 @@
       "baseUrl": "./",
       "paths": {
         "@merit/common/*": ["../lightwallet/common/*"],
-        "@app/env": ["../lightwallet/common/environments/environment.dev"]
+        "@app/env": ["../lightwallet/common/environments/environment.staging"]
       },
       "module": "commonjs",
       "outDir": "./",
