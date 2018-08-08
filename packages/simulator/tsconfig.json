@@ -6,8 +6,8 @@
       "lib": ["es2017", "dom"],
       "baseUrl": "./",
       "paths": {
-        "@merit/common/*": ["./lightwallet/common/*"],
-        "@app/env": ["./lightwallet/common/environments/environment.dev"]
+        "@merit/common/*": ["../lightwallet/common/*"],
+        "@app/env": ["../lightwallet/common/environments/environment.dev"]
       },
       "module": "commonjs",
       "outDir": "./",
@@ -18,7 +18,7 @@
       ]
     },
     "include": [
-      "**.ts"
+      "**/*.ts"
     ],
     "exclude": [
       "node_modules"
