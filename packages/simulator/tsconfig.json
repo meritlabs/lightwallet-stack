@@ -1,23 +1,21 @@
 {
     "compilerOptions": {
-      "allowSyntheticDefaultImports": true,
-      "allowUnreachableCode": true,
-      "declaration": false,
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "lib": [
-        "dom",
-        "es2015"
-      ],
-      "baseUrl": ".",
-      "paths": {
-        "@merit/common/*": ["../lightwallet/common/*"],
-        "@app/env": ["common/environments/environment.example"]
-      },
-      "module": "es2015",
+      "outDir": "./dist/out-tsc",
       "moduleResolution": "node",
-      "sourceMap": true,
+      "experimentalDecorators": true,
       "target": "es5",
+      "lib": [
+        "es2017","es2015","dom","es6"
+      ],
+      "baseUrl": "./",
+      "paths": {
+        "@merit/common/*": ["./lightwallet/common/*"],
+        "@app/env": ["./lightwallet/common/environments/environment.dev"]
+      },
+      "module": "commonjs",
+      "outDir": "./",
+      "sourceMap": false,
+      "strict": false,
       "typeRoots": [
         "node_modules/@types"
       ],
@@ -27,19 +25,11 @@
       ]
     },
     "include": [
-      "mobile/src/**/*.ts",
-      "common/**/*.ts"
+      "**.ts"
     ],
     "exclude": [
-      "node_modules",
-      "mobile/node_modules",
-      "**/*.spec.ts",
-      "desktop/e2e/**/*.ts",
-      "mobile/e2e/**/*.ts"
+      "node_modules"
     ],
-    "compileOnSave": false,
-    "atom": {
-      "rewriteTsconfig": false
-    }
+    "compileOnSave": false
   }
   
