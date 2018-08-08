@@ -56,7 +56,6 @@
   },
   "bin": "./index.js",
   "jest": {
-    "rootDir": ".",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -69,7 +68,6 @@
       "json",
       "node"
     ],
-    "setupTestFrameworkScriptFile": "<rootDir>/jest-setup.ts",
     "testEnvironment": "node"
   }
 }
