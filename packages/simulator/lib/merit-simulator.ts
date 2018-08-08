@@ -39,6 +39,14 @@ export class MeritSimulator {
     return this.rootWallet;
   }
 
+  getNodesIndex() {
+    return this.nodesIndex;
+  }
+
+  getNodesTree() {
+    return this.nodes;
+  }
+
   addNode(client: MeritWalletClient) {
     const node: INode = {
       address: client.getRootAddress(),
@@ -87,7 +95,9 @@ export class MeritSimulator {
     });
   }
 
-  async createWallet(): Promise<MeritWalletClient> {
+  async createWallet(parentWallet?: MeritWalletClient): Promise<MeritWalletClient> {
+    parentWallet = parentWallet || this.getRootWallet();
+
     let walletClient: MeritWalletClient = this.getClient();
 
     walletClient.seedFromRandomWithMnemonic({
@@ -101,10 +111,11 @@ export class MeritSimulator {
       network: this.opts.network,
       singleAddress: true,
       walletPrivKey: null,
-      parentAddress: 'mRSLCXZrU76xkSGZVPY3pQC4i9ExASu2aP',
+      parentAddress: parentWallet.rootAddress.toString(),
       alias: walletAlias,
     });
-    console.log(chalk.magentaBright('New wallet created with alias: ' + walletAlias));
+
+    walletClient.rootAlias = walletAlias;
 
     return walletClient;
   }

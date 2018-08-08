@@ -840,7 +840,7 @@ export class API {
    * @fires API#walletCompleted
    */
   openWallet(): Promise<any> {
-    this.log.warn('Opening wallet');
+    this.log.debug('Opening wallet');
     return new Promise((resolve, reject) => {
 
       $.checkState(this.credentials);
@@ -1479,12 +1479,12 @@ export class API {
       if (!_.includes(['testnet', 'livenet'], network)) return reject(new Error('Invalid network'));
 
       if (!this.credentials) {
-        this.log.info('Generating new keys');
+        this.log.debug('Generating new keys');
         this.seedFromRandom({
           network: network
         });
       } else {
-        this.log.info('Using existing keys');
+        this.log.debug('Using existing keys');
       }
 
       if (network != this.credentials.network) {
@@ -1568,12 +1568,12 @@ export class API {
     }
 
     if (!this.credentials) {
-      this.log.info('Generating new keys');
+      this.log.debug('Generating new keys');
       this.seedFromRandom({
         network: opts.network
       });
     } else {
-      this.log.info('Using existing keys');
+      this.log.debug('Using existing keys');
     }
 
     let parentAddress = opts.parentAddress;
