@@ -112,8 +112,11 @@ export class MeritSimulator {
       ]
     });
 
+    console.log('publishing ... ');
     txp = await parentClient.publishTxProposal({ txp });
+    console.log('signing ...');
     txp = await parentClient.signTxProposal(txp);
+    console.log('broadcasting...');
     await parentClient.broadcastTxProposal(txp);
   }
 
@@ -127,7 +130,7 @@ export class MeritSimulator {
     });
 
     let walletAlias: string = this.randomAlias();
-    await walletClient.createWallet('test1', 'me', 1, 1, {
+    await walletClient.createWallet('@' + walletAlias, 'me', 1, 1, {
       network: NETWORK,
       singleAddress: true,
       walletPrivKey: null,
