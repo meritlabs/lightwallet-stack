@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-      "outDir": "./dist/out-tsc",
       "moduleResolution": "node",
       "experimentalDecorators": true,
       "target": "es5",
