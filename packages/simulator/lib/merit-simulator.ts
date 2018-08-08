@@ -4,6 +4,10 @@ import * as ora from 'ora';
 import * as shortid from 'shortid';
 import { couldBeAlias, isAlias } from '@merit/common/utils/addresses';
 import { DerivationPath } from '@merit/common/utils/derivation-path';
+import { ENV } from '@merit/common/environments/environment.example';
+import { Address, HDPrivateKey, PrivateKey, Script } from 'bitcore-lib';
+import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
+
 
 // Parent Alias: webdemo
 // Parent Address: mRSLCXZrU76xkSGZVPY3pQC4i9ExASu2aP
@@ -120,6 +124,74 @@ export class MeritSimulator {
     return walletClient;
   }
 
+  async getGlobalSendLink(mrtAmount: number, inviteAmount: number, timeout: number): Promise<string> {
+    const rootWallet = this.getRootWallet();
+
+    const easySend = this.createEasySendScriptHash(rootWallet, timeout);
+    easySend.inviteOnly = mrtAmount <= 0;
+    const referral = easySend.scriptReferralOpts;
+    await rootWallet.sendReferral(referral);
+    await this.inviteAddress(referral.address, null, inviteAmount);
+
+    if (mrtAmount > 0) {
+      await this.sendMerit(referral.address, mrtAmount, null);
+    }
+
+    return getEasySendURL(easySend);
+  }
+
+  private createEasySendScriptHash(wallet: MeritWalletClient, timeout: number, password?: string): EasySend {
+    const rootKey = HDPrivateKey.fromString(wallet.credentials.xPrivKey);
+    const signPrivKey = rootKey.privateKey;
+    const pubkey = signPrivKey.publicKey;
+
+    const easySend = this.bulidScript(wallet, password, timeout);
+    const easySendAddress = Address(easySend.script.getAddressInfo()).toString();
+
+    const scriptReferralOpts = {
+      parentAddress: wallet.getRootAddress().toString(),
+      pubkey: pubkey.toString(), // sign pubkey used to verify signature
+      signPrivKey,
+      address: easySendAddress,
+      addressType: Address.PayToScriptHashType, // script address
+      network: ENV.network
+    };
+
+    // easy send address is a mix of script_id pubkey_id
+    easySend.parentAddress = wallet.getRootAddress().toString();
+    easySend.scriptAddress = easySendAddress;
+    easySend.scriptReferralOpts = scriptReferralOpts;
+
+    easySend.script.isOutput = true;
+
+    return easySend;
+  }
+
+  private bulidScript(wallet: MeritWalletClient, passphrase: string, timeout: number): EasySend {
+    passphrase = passphrase || '';
+    const pubKey = wallet.getRootAddressPubkey();
+    const rcvPair = PrivateKey.forNewEasySend(passphrase, ENV.network);
+    const pubKeys = [
+      rcvPair.key.publicKey.toBuffer(),
+      pubKey.toBuffer()
+    ];
+    const script = Script.buildEasySendOut(pubKeys, timeout, ENV.network);
+
+    return {
+      receiverPubKey: rcvPair.key.publicKey,
+      script: script.toMixedScriptHashOut(pubKey),
+      senderName: wallet.rootAlias || wallet.rootAddress.toString(),
+      senderPubKey: pubKey.toString(),
+      secret: rcvPair.secret.toString('hex'),
+      blockTimeout: timeout,
+      parentAddress: '',
+      scriptAddress: '',
+      scriptReferralOpts: {},
+      cancelled: false,
+      inviteOnly: false
+    };
+  }
+
   inviteAddress(address: string)
   inviteAddress(address: string, parentAddress: string, amount?: number)
   inviteAddress(address: string, parentNode: INode, amount?: number)
@@ -137,6 +209,10 @@ export class MeritSimulator {
 
   private async sendTx(toAddress: string, amount: number, invite: boolean, parent: string | INode) {
     let parentClient: MeritWalletClient;
+
+    if (!invite) {
+      amount = amount * 1e8;
+    }
 
     if (!parent) {
       parentClient = this.getRootWallet();
