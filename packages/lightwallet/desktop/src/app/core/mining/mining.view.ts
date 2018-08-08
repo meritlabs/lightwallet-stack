@@ -13,6 +13,7 @@ import { IRootAppState } from '@merit/common/reducers';
 import { filter, take } from 'rxjs/operators';
 
 import { GPUInfo } from './gpu-info.model';
+import { IPool } from "@merit/desktop/app/core/components/select-pool/select-pool.component";
 
 @Component({
   selector: 'view-mining',
@@ -41,8 +42,8 @@ export class MiningView {
   gpus_info: GPUInfo[];
   active_gpu_devices: number[];
   miningSettings: any;
-  pools: any[];
-  selectedPool: any;
+  pools: IPool[];
+  selectedPool: IPool;
   mining: boolean = false;
   stats: any;
   error: string;
@@ -69,6 +70,7 @@ export class MiningView {
         .toPromise();
 
       this.miningSettings = await this.persistenceService.getMinerSettings();
+      this.pools = await this.persistenceService.getAvailablePools();
 
       if (this.miningSettings.selectedWallet) {
         this.selectWallet(this.miningSettings.selectedWallet, false);
@@ -93,37 +95,16 @@ export class MiningView {
         });
       }
 
-      if(this.miningSettings.active_gpu_devices){
+      if (this.miningSettings.active_gpu_devices)
         this.active_gpu_devices = this.miningSettings.active_gpu_devices;
-      } else {
+      else
         this.active_gpu_devices = [];
-      }
 
-      if (this.miningSettings.selectedPool) {
-        this.pools = this.miningSettings.pools;
+      if (this.miningSettings.selectedPool)
         this.selectedPool = this.miningSettings.selectedPool;
-      } else {
-        this.pools = [
-          {
-            name: 'Merit Pool',
-            website: 'https://pool.merit.me',
-            url: 'stratum+tcp://pool.merit.me:3333',
-          },
-          {
-            name: 'Parachute Pool',
-            website: 'https://parachute.merit.me',
-            url: 'stratum+tcp://parachute.merit.me:3333',
-          },
-          /*
-           * TODO : Add support for custom pools
-          {
-            name: 'Custom',
-            url: ''
-          },
-           */
-        ];
+      else
         this.selectedPool = this.pools[0];
-      }
+
 
       this.saveSettings();
       ElectronService.setAgent();
@@ -165,7 +146,7 @@ export class MiningView {
     }
   }
 
-  selectPool(pool: any) {
+  selectPool(pool: IPool) {
     if (!pool) return;
     this.error = null;
     this.selectedPool = pool;
@@ -217,7 +198,6 @@ export class MiningView {
     this.miningSettings.cores = this.cores;
     this.miningSettings.gpus_info = this.gpus_info;
     this.miningSettings.active_gpu_devices = this.active_gpu_devices;
-    this.miningSettings.pools = this.pools;
     this.miningSettings.selectedPool = this.selectedPool;
     this.persistenceService.setMiningSettings(this.miningSettings);
   }
