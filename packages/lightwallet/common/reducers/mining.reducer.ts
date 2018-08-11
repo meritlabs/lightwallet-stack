@@ -98,7 +98,6 @@ export function miningReducer(state: IMiningState = DEFAULT_STATE, action: Minin
       };
 
     case MiningActions.UpdateMiningDatasets:
-      console.log('Updating store with datasets', {...action.datasets});
       return {
         ...state,
         miningDatasets: {
