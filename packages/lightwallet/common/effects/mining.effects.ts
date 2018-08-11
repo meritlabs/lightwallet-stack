@@ -32,7 +32,7 @@ function updateGpuDatasets(gpuInfo: IGPUInfo[], gpuTemp: IMiningDataset[], gpuUt
         ...baseDataset,
         data: [],
         label: data.title,
-        borderColor: borderColors[i]
+        borderColor: '#0046ff'
       });
 
       gpuUtil.push(
