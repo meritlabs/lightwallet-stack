@@ -379,21 +379,10 @@ export class CoreView implements OnInit, AfterViewInit {
       this.logger.debug('Got a spent MeritMoney. Removing from pending receipts.');
       await this.easyReceiveService.deletePendingReceipt(receipt);
 
-      if (receipt.scriptAddress && (await this.persistenceService2.cancelEasySend(receipt.scriptAddress))) {
-        this.store.dispatch(new RefreshOneWalletTransactions(wallet.id));
-      }
-
       await this.showSpentEasyReceiptAlert();
 
       if (cancelling) {
-        const data = this.easyReceiveService.generateEasyScipt(receipt, password);
-        const scriptAddress = this.easyReceiveService.getScriptAddress(data);
-        this.persistenceService2
-          .cancelEasySend(scriptAddress)
-          .then(() => {
-            this.store.dispatch(new RefreshOneWalletTransactions(wallet.id));
-          })
-          .catch(() => {});
+        this.store.dispatch(new RefreshOneWalletTransactions(wallet.id));
       }
 
       return processAll ? await this.processPendingEasyReceipts() : null;

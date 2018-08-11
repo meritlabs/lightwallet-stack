@@ -12,6 +12,8 @@
       {{ isCredit? 'Received to:' : 'Sent from:' }}
       <span class="source">{{ tx.wallet.name }}</span>
     </div>
+    <p class="cancelled" *ngIf="tx.cancelled">Cancelled</p>
+    <p class="claimed" *ngIf="tx.claimed">Claimed by: {{ tx.claimedBy }}</p>
     <p class="date">{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
 
     <ng-container *ngIf="tx.easySendUrl && tx.type === 'meritmoney'">

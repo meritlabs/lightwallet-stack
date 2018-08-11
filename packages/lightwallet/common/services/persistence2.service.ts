@@ -9,7 +9,6 @@ export enum StorageKey {
   WalletPreferencesPrefix = 'merit_wallet_preferences_',
   NotificationSettings = 'merit_notification_settings',
   Notifications = 'merit_notifications',
-  EasySends = 'merit_easysends',
   VisitedTransactions = 'merit_visited_transactions',
   VisitedInvites = 'merit_visited_invites',
   ViewSettingsPrefix = 'app_view_settings_',
@@ -94,35 +93,6 @@ export class PersistenceService2 {
 
   async getNotifications(): Promise<INotification[]> {
     return (await this.storage.get(StorageKey.Notifications)) || [];
-  }
-
-  async addEasySend(easySend: EasySend) {
-    const easySends = await this.getEasySends();
-    easySends.push(easySend);
-    return this.setEasySends(easySends);
-  }
-
-  async cancelEasySend(scriptAddress: string) {
-    const easySends = await this.getEasySends();
-
-    const idx = easySends.findIndex(tx => tx.scriptAddress == scriptAddress);
-
-    if (idx !== -1) {
-      easySends[idx].cancelled = true;
-      await this.setEasySends(easySends);
-      return true;
-    } else {
-      console.log('Couldn\'t find EasySend to cancel', scriptAddress);
-      return false;
-    }
-  }
-
-  setEasySends(easySends: EasySend[]) {
-    return this.storage.set(StorageKey.EasySends, easySends);
-  }
-
-  async getEasySends(): Promise<EasySend[]> {
-    return (await this.storage.get(StorageKey.EasySends)) || [];
   }
 
   setUserSettings(key: UserSettingsKey, value: any) {
