@@ -24,6 +24,7 @@ import { Logger } from './log';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { ISmsNotificationSettings } from '../../models/sms-subscription';
+import { IGlobalSendHistory } from '../../models/globalsend-history.model';
 
 const $ = preconditions.singleton();
 const { Constants, Utils } = Common;
@@ -31,6 +32,7 @@ const { Constants, Utils } = Common;
 const Package = require('../../../package.json');
 
 const DEFAULT_FEE = 10000;
+
 
 /**
  * Merit Wallet Client; (re-)written in typescript.
@@ -71,7 +73,7 @@ export class API {
   public timeout: number;
   public logLevel: string;
   public privateKeyEncryptionOpts: any = {
-    iter: 10000
+    iter: 10000,
   };
   public credentials: Credentials; // TODO: Make public with getters/setters
   public notificationIncludeOwn: boolean;
@@ -170,7 +172,7 @@ export class API {
   async _fetchLatestNotifications(interval: number): Promise<any[]> {
     let opts: any = {
       lastNotificationId: this.lastNotificationId,
-      includeOwn: this.notificationIncludeOwn
+      includeOwn: this.notificationIncludeOwn,
     };
 
     if (!this.lastNotificationId)
@@ -191,9 +193,9 @@ export class API {
         switchMap(() => fromPromise(this._fetchLatestNotifications(int))),
         retryWhen(err =>
           err.pipe(
-            map((err) => !err || err !== MWCErrors.NOT_FOUND && err !== MWCErrors.NOT_AUTHORIZED)
-          )
-        )
+            map((err) => !err || err !== MWCErrors.NOT_FOUND && err !== MWCErrors.NOT_AUTHORIZED),
+          ),
+        ),
       );
   }
 
@@ -296,7 +298,7 @@ export class API {
         body = JSON.parse(body);
       } catch (e) {
         body = {
-          error: body
+          error: body,
         };
       }
     }
@@ -313,7 +315,7 @@ export class API {
     }
     this.log.error(ret);
     return ret;
-  }
+  };
 
   /**
    * Sign an HTTP request
@@ -325,10 +327,10 @@ export class API {
    * @param {Object} args - The arguments in case this is a POST/PUT request
    * @param {String} privKey - Private key to sign the request
    */
-  private _signRequest = function (method, url, args, privKey) {
+  private _signRequest = function(method, url, args, privKey) {
     let message = [method.toLowerCase(), url, JSON.stringify(args)].join('|');
     return Utils.signMessage(message, privKey);
-  }
+  };
 
 
   /**
@@ -393,7 +395,7 @@ export class API {
 
         let xpriv;
         if (words && (!c.mnemonicHasPassphrase || opts.passphrase)) {
-          let m: string  = generateMnemonic();
+          let m: string = generateMnemonic();
           xpriv = mnemonicToHDPrivateKey(m, opts.passphrase, c.network).toString();
         }
         if (!xpriv) {
@@ -517,7 +519,7 @@ export class API {
   static fromObj(obj) {
     let wallet = new this({
       baseUrl: obj.baseUrl || ENV.mwsUrl,
-      timeout: 100000
+      timeout: 100000,
     });
 
     wallet.import(obj.credentials);
@@ -564,9 +566,9 @@ export class API {
           coins: v.coins,
           masterPubKey: v.masterPubKey,
           status: v.status,
-          whitelist: v.whitelist
+          whitelist: v.whitelist,
         };
-      })
+      }),
     };
   }
 
@@ -632,7 +634,7 @@ export class API {
           m: 1,
           n: 1,
           walletName: 'Personal Wallet',
-          copayerName: 'me'
+          copayerName: 'me',
         };
 
         //call 'recreate wallet' method to create wallet instance with exision
@@ -644,7 +646,7 @@ export class API {
           pubKey: pubkey.toString(),
           rootAddress: rootAddress.toString(),
           network: this.credentials.network,
-          singleAddress: true //daedalus wallets are single-addressed
+          singleAddress: true, //daedalus wallets are single-addressed
         };
 
         let res = await this._doPostRequest('/v1/recreate_wallet/', args);
@@ -681,7 +683,7 @@ export class API {
     function derive(nonCompliantDerivation) {
       return Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, {
         nonCompliantDerivation: nonCompliantDerivation,
-        entropySourcePath: opts.entropySourcePath
+        entropySourcePath: opts.entropySourcePath,
       });
     }
 
@@ -788,7 +790,7 @@ export class API {
       let privateKey = new Bitcore.PrivateKey(_privateKey);
       let address = privateKey.publicKey.toAddress();
       return this.getUtxos({
-        addresses: address.toString()
+        addresses: address.toString(),
       }).then((utxos) => {
         return resolve(_.sumBy(utxos, 'micros'));
       });
@@ -801,7 +803,7 @@ export class API {
       let address = privateKey.publicKey.toAddress();
 
       return this.getUtxos({
-        addresses: address.toString()
+        addresses: address.toString(),
       }).then((utxos) => {
         if (!_.isArray(utxos) || utxos.length == 0) return reject(new Error('No utxos found'));
 
@@ -856,7 +858,7 @@ export class API {
 
           if (!this.credentials.hasWalletInfo()) {
             let me: any = _.find(wallet.copayers, {
-              id: this.credentials.copayerId
+              id: this.credentials.copayerId,
             });
             this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.parentAddress);
           }
@@ -887,7 +889,7 @@ export class API {
 
   _getHeaders() {
     return {
-      'x-client-version': 'MWC-' + Package.version
+      'x-client-version': 'MWC-' + Package.version,
     };
   };
 
@@ -925,7 +927,7 @@ export class API {
 
       r.accept('json');
 
-      _.each(headers, function (v, k) {
+      _.each(headers, function(v, k) {
         if (v) r.set(k, v);
       });
 
@@ -950,7 +952,7 @@ export class API {
         if (res.body && this.DEBUG_MODE) {
           this.log.info('BWS Response: ');
           this.log.info(util.inspect(res.body, {
-            depth: 10
+            depth: 10,
           }));
         }
 
@@ -1127,7 +1129,7 @@ export class API {
     });
   };
 
-  private _buildSecret = function (walletId, walletPrivKey, network) {
+  private _buildSecret = function(walletId, walletPrivKey, network) {
     if (_.isString(walletPrivKey)) {
       walletPrivKey = Bitcore.PrivateKey.fromString(walletPrivKey);
     }
@@ -1163,7 +1165,7 @@ export class API {
       return {
         walletId: walletId,
         walletPrivKey: walletPrivKey,
-        network: networkChar == 'T' ? 'testnet' : 'livenet'
+        network: networkChar == 'T' ? 'testnet' : 'livenet',
       };
     } catch (ex) {
       throw new Error('Invalid secret');
@@ -1187,7 +1189,7 @@ export class API {
 
     let xpriv = new Bitcore.HDPrivateKey(derivedXPrivKey);
 
-    _.each(txp.inputs, function (i) {
+    _.each(txp.inputs, function(i) {
       $.checkState(i.path, 'Input derivation path not available (signing transaction)');
       if (!derived[i.path]) {
         derived[i.path] = xpriv.deriveChild(i.path).privateKey;
@@ -1197,11 +1199,11 @@ export class API {
 
     let t = Utils.buildTx(txp);
 
-    let signatures = _.map(privs, function (priv, i) {
+    let signatures = _.map(privs, function(priv, i) {
       return t.getSignatures(priv);
     });
 
-    signatures = _.map(_.sortBy(_.flatten(signatures), 'inputIndex'), function (s) {
+    signatures = _.map(_.sortBy(_.flatten(signatures), 'inputIndex'), function(s) {
       return s.signature.toDER().toString('hex');
     });
 
@@ -1215,13 +1217,13 @@ export class API {
 
   _getCurrentSignatures(txp: any): any {
     let acceptedActions = _.filter(txp.actions, {
-      type: 'accept'
+      type: 'accept',
     });
 
-    return _.map(acceptedActions, function (x: any) {
+    return _.map(acceptedActions, function(x: any) {
       return {
         signatures: x.signatures,
-        xpub: x.xpub
+        xpub: x.xpub,
       };
     });
   };
@@ -1233,7 +1235,7 @@ export class API {
     let i = 0,
       x = new Bitcore.HDPublicKey(xpub);
 
-    _.each(signatures, function (signatureHex) {
+    _.each(signatures, function(signatureHex) {
       let input = txp.inputs[i];
       try {
         let signature = Bitcore.crypto.Signature.fromString(signatureHex);
@@ -1242,7 +1244,7 @@ export class API {
           inputIndex: i,
           signature: signature,
           sigtype: Bitcore.crypto.Signature.SIGHASH_ALL,
-          publicKey: pub
+          publicKey: pub,
         };
         t.inputs[i].addSignature(t, s);
         i++;
@@ -1261,7 +1263,7 @@ export class API {
     $.checkState(txp.status == 'accepted');
 
     let sigs = this._getCurrentSignatures(txp);
-    _.each(sigs, function (x) {
+    _.each(sigs, function(x) {
       this._addSignaturesToBitcoreTx(txp, t, x.signatures, x.xpub);
     });
   };
@@ -1293,7 +1295,7 @@ export class API {
         name: encCopayerName,
         xPubKey: xPubKey,
         requestPubKey: requestPubKey,
-        customData: encCustomData
+        customData: encCustomData,
       };
       if (opts.dryRun) args.dryRun = true;
 
@@ -1388,8 +1390,8 @@ export class API {
   };
 
 
-  private _extractPublicKeyRing = function (copayers) {
-    return _.map(copayers, function (copayer: any) {
+  private _extractPublicKeyRing = function(copayers) {
+    return _.map(copayers, function(copayer: any) {
       let pkr: any = _.pick(copayer, ['xPubKey', 'requestPubKey']);
       pkr.copayerName = copayer.name;
       return pkr;
@@ -1481,7 +1483,7 @@ export class API {
       if (!this.credentials) {
         this.log.info('Generating new keys');
         this.seedFromRandom({
-          network: network
+          network: network,
         });
       } else {
         this.log.info('Using existing keys');
@@ -1503,7 +1505,7 @@ export class API {
         addressType: Bitcore.Address.PayToPublicKeyHashType,
         signPrivKey: walletPrivKey,
         network: network,
-        alias: opts.alias
+        alias: opts.alias,
       };
 
       // Create wallet
@@ -1521,7 +1523,7 @@ export class API {
           singleAddress: true, //daedalus wallets are single-addressed
           id: opts.id,
           parentAddress: opts.parentAddress,
-          referralId: refid
+          referralId: refid,
         };
 
         return this._doPostRequest('/v1/wallets/', args).then(res => {
@@ -1535,7 +1537,7 @@ export class API {
             return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then(
               wallet => {
                 return resolve(n > 1 ? secret : null);
-              }
+              },
             );
           } else {
             return reject(Error(res));
@@ -1570,7 +1572,7 @@ export class API {
     if (!this.credentials) {
       this.log.info('Generating new keys');
       this.seedFromRandom({
-        network: opts.network
+        network: opts.network,
       });
     } else {
       this.log.info('Using existing keys');
@@ -1594,7 +1596,7 @@ export class API {
 
     const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
       Bitcore.Address.fromString(parentAddress, opts.network).toBufferLean(),
-      Bitcore.Address.fromString(opts.address, opts.network).toBufferLean()
+      Bitcore.Address.fromString(opts.address, opts.network).toBufferLean(),
     ]));
 
     const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
@@ -1607,7 +1609,7 @@ export class API {
       addressType: opts.addressType,
       pubkey: opts.pubkey,
       signature: signature.toString('hex'),
-      alias: opts.alias
+      alias: opts.alias,
     }, opts.network);
 
     return this._doPostRequest('/v1/referral/', { referral: referral.serialize() });
@@ -1631,14 +1633,14 @@ export class API {
 
     if (!this.credentials) {
       this.seedFromRandom({
-        network: secretData.network
+        network: secretData.network,
       });
     }
 
     this.credentials.addWalletPrivateKey(secretData.walletPrivKey.toString());
 
     const wallet = await this.doJoinWallet(secretData.walletId, secretData.walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, copayerName, {
-      dryRun: !!opts.dryRun
+      dryRun: !!opts.dryRun,
     });
 
     if (!opts.dryRun) {
@@ -1659,7 +1661,7 @@ export class API {
 
     // First: Try to get the wallet with current credentials
     await this.getStatus({
-      includeExtendedInfo: true
+      includeExtendedInfo: true,
     });
 
     let c = this.credentials;
@@ -1676,7 +1678,7 @@ export class API {
       network: c.network,
       id: walletId,
       supportBIP44AndP2PKH,
-      beacon: c.beacon
+      beacon: c.beacon,
     };
 
     const body = await this._doPostRequest('/v1/wallets/', args);
@@ -1693,7 +1695,7 @@ export class API {
     return Promise.all(this.credentials.publicKeyRing.map((item: any) => {
       let name = item.copayerName || ('copayer ' + i++);
       return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
-        supportBIP44AndP2PKH
+        supportBIP44AndP2PKH,
       });
     }));
   };
@@ -1737,7 +1739,7 @@ export class API {
     if (this.confirmed) {
       this.availableInvites = Math.max(0, status.invitesBalance.availableConfirmedAmount - 1);
       this.pendingInvites = status.invitesBalance.availableAmount - status.invitesBalance.availableConfirmedAmount;
-      if (status.invitesBalance.availableConfirmedAmount == 0) this.pendingInvites =  Math.max(0,  this.pendingInvites - 1);
+      if (status.invitesBalance.availableConfirmedAmount == 0) this.pendingInvites = Math.max(0, this.pendingInvites - 1);
       this.sendableInvites = Math.max(0, status.invitesBalance.availableAmount - 1);
     }
     //todo check if we use 'spendunconfirmed' options
@@ -1782,7 +1784,7 @@ export class API {
       processCustomData(status),
       this._processWallet(status.wallet),
       this._processTxps(status.pendingTxps),
-      validateAddress()
+      validateAddress(),
     ]);
 
     return status;
@@ -1898,7 +1900,7 @@ export class API {
 
     return PayPro.get({
       url: opts.payProUrl,
-      http: this.payProHttp
+      http: this.payProHttp,
     });
   };
 
@@ -1916,7 +1918,7 @@ export class API {
     if (opts.addresses) {
       url += '?' + querystring.stringify({
         addresses: [].concat(opts.addresses).join(','),
-        invites: opts.invites
+        invites: opts.invites,
       });
     }
     return this._doGetRequest(url);
@@ -1999,7 +2001,7 @@ export class API {
 
     const hash = Utils.buildTx(opts.txp).uncheckedSerialize();
     const args = {
-      proposalSignature: Utils.signMessage(hash, this.credentials.requestPrivKey)
+      proposalSignature: Utils.signMessage(hash, this.credentials.requestPrivKey),
     };
 
     try {
@@ -2015,7 +2017,11 @@ export class API {
    */
   async signAddressAndUnlock(opts: any = {}): Promise<any> {
     const refid: string = await this.sendReferral(opts);
-    await this._doPostRequest('/v1/addresses/unlock/', { address: opts.address, parentAddress: opts.parentAddress, refid });
+    await this._doPostRequest('/v1/addresses/unlock/', {
+      address: opts.address,
+      parentAddress: opts.parentAddress,
+      refid,
+    });
 
     return refid;
   };
@@ -2043,7 +2049,7 @@ export class API {
       pubkey: address.publicKeys[0],
       addressType: 1,
       signPrivKey,
-      network: address.network
+      network: address.network,
     };
 
     return this.signAddressAndUnlock(unlockOpts);
@@ -2105,7 +2111,7 @@ export class API {
       requestPubKey: requestPubKey,
       signature: sig,
       name: encCopayerName,
-      restrictions: opts.restrictions
+      restrictions: opts.restrictions,
     };
 
     return this._doPutRequest('/v1/copayers/' + copayerId + '/', opts);
@@ -2209,7 +2215,7 @@ export class API {
         encryptedPkr: opts.doNotEncryptPkr ? null : Utils.encryptMessage(JSON.stringify(this.credentials.publicKeyRing), this.credentials.personalEncryptingKey),
         unencryptedPkr: opts.doNotEncryptPkr ? JSON.stringify(this.credentials.publicKeyRing) : null,
         m: this.credentials.m,
-        n: this.credentials.n
+        n: this.credentials.n,
       };
     } else {
       result = txps;
@@ -2224,7 +2230,7 @@ export class API {
 
     const paypro = await PayPro.get({
       url: txp.payProUrl,
-      http: this.payProHttp
+      http: this.payProHttp,
     });
 
     if (!paypro) {
@@ -2265,7 +2271,7 @@ export class API {
 
     const url = '/v1/txproposals/' + txp.id + '/signatures/';
     const args = {
-      signatures
+      signatures,
     };
 
     txp = await this._doPostRequest(url, args);
@@ -2325,7 +2331,7 @@ export class API {
 
     const url = '/v1/txproposals/' + txp.id + '/rejections/';
     const args = {
-      reason: this._encryptMessage(reason, this.credentials.sharedEncryptingKey) || ''
+      reason: this._encryptMessage(reason, this.credentials.sharedEncryptingKey) || '',
     };
 
     txp = await this._doPostRequest(url, args);
@@ -2388,8 +2394,8 @@ export class API {
         rawTx: t.serialize({
           disableSmallFees: true,
           disableLargeFees: true,
-          disableDustOutputs: true
-        })
+          disableDustOutputs: true,
+        }),
       });
     }
 
@@ -2467,7 +2473,7 @@ export class API {
     opts = opts || {};
     $.checkState(this.credentials && this.credentials.isComplete());
     const args = {
-      includeCopayerBranches: opts.includeCopayerBranches
+      includeCopayerBranches: opts.includeCopayerBranches,
     };
     return this._doPostRequest('/v1/addresses/scan', args);
   };
@@ -2545,7 +2551,7 @@ export class API {
    * Get all rates
    * @returns {Promise<any>}
    */
-  getRates():Promise<any> {
+  getRates(): Promise<any> {
     return this._doGetRequest('/v1/rates');
   }
 
@@ -2576,7 +2582,7 @@ export class API {
       phoneNumber,
       platform,
       walletId: this.id,
-      settings
+      settings,
     });
   }
 
@@ -2731,8 +2737,8 @@ export class API {
       globalSend: _.pick(globalSend, ['secret', 'senderPubKey', 'senderName', 'blockTimeout', 'parentAddress', 'inviteOnly']),
       type: {
         method: type.destination,
-        destination: type.value
-      }
+        destination: type.value,
+      },
     });
   }
 
@@ -2741,7 +2747,12 @@ export class API {
    */
   registerGlobalSend(easySend: EasySend) {
     $.checkState(this.credentials);
-    return this._doPostRequest(`/v1/globalsend/register`, {scriptAddress: easySend.scriptAddress, globalsend: this.encryptGlobalSend(easySend)});
+    return this._doPostRequest(`/v1/globalsend/register`, {
+      scriptAddress: easySend.scriptAddress,
+      globalsend: this.encryptGlobalSend(easySend),
+      blockTimeout: easySend.blockTimeout,
+      inviteOnly: easySend.inviteOnly,
+    });
   }
 
   /**
@@ -2755,14 +2766,9 @@ export class API {
   /**
    * receiving sent globalsends to add links to history and make them cancellable
    */
-  async getGlobalSendHistory() {
+  async getGlobalSendHistory(): Promise<IGlobalSendHistory> {
     $.checkState(this.credentials);
-    const globalSends = await this._doGetRequest(`/v1/globalsend/history`);
-    return globalSends.map(g => {
-      let globalSend = JSON.parse(this.decryptGlobalSend(g.globalsend));
-      globalSend.cancelled = g.cancelled;
-      return globalSend;
-    } );
+    return this._doGetRequest(`/v1/globalsend/history`);
   }
 
   async getCommunityRank() {
@@ -2772,22 +2778,21 @@ export class API {
 
   async getCommunityRanks(addresses) {
     $.checkState(this.credentials);
-    return this._doPostRequest(`/v1/community/ranks`, {addresses: addresses});
+    return this._doPostRequest(`/v1/community/ranks`, { addresses: addresses });
   }
 
   async getCommunityLeaderboard(limit: number) {
     $.checkState(this.credentials);
-    return this._doGetRequest(`/v1/community/leaderboard?limit=`+limit);
+    return this._doGetRequest(`/v1/community/leaderboard?limit=` + limit);
   }
 
   private encryptGlobalSend(easySend: EasySend) {
     return this._encryptMessage(JSON.stringify(easySend), this.credentials.personalEncryptingKey);
   }
 
-  private decryptGlobalSend(data) {
+  decryptGlobalSend(data) {
     return this._decryptMessage(data, this.credentials.personalEncryptingKey);
   }
-
 
 
 }

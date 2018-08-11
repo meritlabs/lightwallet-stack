@@ -1,28 +1,34 @@
-import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
+import { getEasySendURL } from '@merit/common/models/easy-send';
 import * as _ from 'lodash';
 import {
   IDisplayTransaction,
   ITransactionIO,
   IVisitedTransaction,
-  TransactionAction
+  TransactionAction,
 } from '@merit/common/models/transaction';
 import { ContactsService } from '@merit/common/services/contacts.service';
-import { MeritWalletClient } from "@merit/common/merit-wallet-client";
-import { FeeService } from "@merit/common/services/fee.service";
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { FeeService } from '@merit/common/services/fee.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { IGlobalSendHistory, IGlobalSendHistoryItem } from '@merit/common/models/globalsend-history.model';
 
-export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [], feeService: FeeService, contactsProvider?: ContactsService, persistenceService?: PersistenceService2): Promise<IDisplayTransaction[]> {
+export async function formatWalletHistory(walletHistory: IDisplayTransaction[],
+                                          wallet: MeritWalletClient,
+                                          globalSendHistory: IGlobalSendHistory = [],
+                                          feeService: FeeService,
+                                          contactsProvider?: ContactsService,
+                                          persistenceService?: PersistenceService2): Promise<IDisplayTransaction[]> {
   if (_.isEmpty(walletHistory)) return [];
 
   const easyReceiveFee = await feeService.getEasyReceiveFee();
 
   walletHistory = _.sortBy(walletHistory, 'time');
 
-  const easySendsByAddress = {};
+  const globalSendsByAddress = {};
 
-  easySends.forEach((easySend: EasySend) => {
-    if (easySend && easySend.scriptAddress) {
-      easySendsByAddress[easySend.scriptAddress] = easySend;
+  globalSendHistory.forEach((globalSend: IGlobalSendHistoryItem) => {
+    if (globalSend && globalSend.scriptAddress) {
+      globalSendsByAddress[globalSend.scriptAddress] = globalSend;
     }
   });
 
@@ -81,12 +87,12 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
       tx.from = {
         alias: inputAlias,
-        address: inputAddress
+        address: inputAddress,
       };
 
       tx.to = {
         alias: outputAlias,
-        address: outputAddress
+        address: outputAddress,
       };
 
       if (!tx.isCoinbase && !tx.isWalletUnlock && contactsProvider) {
@@ -139,13 +145,20 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
       }
     }
 
-    if (easySendsByAddress[tx.addressTo]) {
-      const easySend = easySendsByAddress[tx.addressTo];
+    if (globalSendsByAddress[tx.addressTo]) {
+      const globalSend = globalSendsByAddress[tx.addressTo];
       tx.name = tx.isInvite ? 'MeritInvite' : 'MeritMoney';
       tx.type = <any>tx.name.toLowerCase();
-      tx.easySend = easySend;
-      tx.easySendUrl = getEasySendURL(easySend);
-      tx.cancelled = easySend.cancelled;
+
+      if (tx.cancelled = globalSend.cancelled) {
+        tx.cancelled = true;
+      } else if (tx.claimed = globalSend.claimed) {
+        tx.claimedBy = globalSend.claimedBy;
+      } else {
+        tx.easySend = JSON.parse(wallet.decryptGlobalSend(globalSend.globalSend));
+        tx.easySendUrl = getEasySendURL(tx.easySend);
+      }
+
       if (tx.type === 'meritmoney') {
         meritMoneyAddresses.push(tx.addressTo);
         tx.fees += easyReceiveFee;
@@ -161,7 +174,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
         // add new one in visited
         visitedTxs.push({
           txid: tx.txid,
-          counter: 1
+          counter: 1,
         });
       }
     }
