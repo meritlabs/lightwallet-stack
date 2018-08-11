@@ -19,13 +19,12 @@ export class SelectPoolComponent implements OnInit {
   @Input() selected: any;
   @Input() cssClass: any;
 
-  private show: boolean = false;
-  private showModal: boolean = false;
-  private input: IPool[];
+  show: boolean = false;
+  showModal: boolean = false;
+  input: IPool[];
   activePoolToEdit: IPool = undefined;
 
-  constructor(private persistenceService: PersistenceService2){
-  }
+  constructor(private persistenceService: PersistenceService2){}
 
   async ngOnInit(){
     this.input = await this.persistenceService.getAvailablePools();
