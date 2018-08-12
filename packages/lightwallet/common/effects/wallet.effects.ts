@@ -30,9 +30,9 @@ import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { distinctUntilChanged, map, mergeMap, skip, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
-import { IUnlockRequest } from '@merit/common/services/unlock-request.service';
 import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
+import { InviteRequest, InviteRequestsService } from '@merit/common/services/invite-request.service';
 
 @Injectable()
 export class WalletEffects {
@@ -141,14 +141,15 @@ export class WalletEffects {
               private persistenceService: PersistenceService,
               private persistenceService2: PersistenceService2,
               private storage: Storage,
-              private router: Router) {
+              private router: Router,
+              private inviteRequestsService: InviteRequestsService) {
   }
 
   private async updateAllWallets(): Promise<DisplayWallet[]> {
     const wallets = await this.profileService.getWallets();
     return Promise.all<DisplayWallet>(
       wallets.map(async w => {
-        const displayWallet = await createDisplayWallet(w, this.walletService, this.addressService, this.txFormatService, this.persistenceService2);
+        const displayWallet = await createDisplayWallet(w, this.walletService, this.addressService, this.inviteRequestsService, this.txFormatService, this.persistenceService2);
         displayWallet.importPreferences(await this.persistenceService2.getWalletPreferences(displayWallet.id));
         await this.updateVisitedInviteRequests(displayWallet.inviteRequests);
         return displayWallet;
@@ -156,23 +157,23 @@ export class WalletEffects {
     );
   }
 
-  private async updateVisitedInviteRequests(inviteRequests: IUnlockRequest[]) {
+  private async updateVisitedInviteRequests(inviteRequests: InviteRequest[]) {
     const visitedInvites = await this.persistenceService2.getVisitedInvites() || [];
     let updateVisitedInvites;
 
     inviteRequests.forEach(request => {
-      const visited = visitedInvites.find(address => address === request.rId);
+      const visited = visitedInvites.find(address => address === request.id);
 
       if (!visited) {
         // add new one in visited
         request.isNew = false;
-        visitedInvites.push(request.rId);
+        visitedInvites.push(request.id);
         updateVisitedInvites = true;
       }
     });
 
     if (updateVisitedInvites) {
-      this.persistenceService2.setVisitedInvites(visitedInvites);
+      return this.persistenceService2.setVisitedInvites(visitedInvites);
     }
   }
 

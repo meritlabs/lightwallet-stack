@@ -19,16 +19,17 @@ import { Store } from '@ngrx/store';
 import { startsWith } from 'lodash';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { InviteRequestsService } from '@merit/common/services/invite-request.service';
 
 @Component({
   selector: 'view-phrase-import',
   templateUrl: './phrase-import.view.html',
-  styleUrls: ['./phrase-import.view.scss']
+  styleUrls: ['./phrase-import.view.scss'],
 })
 export class PhraseImportView {
 
   formData: FormGroup = this.formBuilder.group({
-    words: ['', [Validators.required, MnemonicValidator.validateMnemonicImport]]
+    words: ['', [Validators.required, MnemonicValidator.validateMnemonicImport]],
   });
 
   showPass: boolean;
@@ -48,7 +49,9 @@ export class PhraseImportView {
               private pushNotificationsService: PushNotificationsService,
               private toastCtrl: ToastControllerService,
               private loadingCtrl: Ng4LoadingSpinnerService,
-              private persistenceService2:PersistenceService2 ) {}
+              private persistenceService2: PersistenceService2,
+              private inviteRequestsService: InviteRequestsService) {
+  }
 
 
   async importMnemonic() {
@@ -66,7 +69,7 @@ export class PhraseImportView {
       const opts: any = {
         account: pathData.account,
         networkName: pathData.networkName,
-        derivationStrategy: pathData.derivationStrategy
+        derivationStrategy: pathData.derivationStrategy,
       };
 
       let wallet;
@@ -85,14 +88,14 @@ export class PhraseImportView {
 
         this.store.dispatch(
           new AddWalletAction(
-            await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, this.persistenceService2)
-          )
+            await createDisplayWallet(wallet, this.walletService, this.addressService, this.inviteRequestsService, this.txFormatService, this.persistenceService2),
+          ),
         );
 
         // update state so we're allowed to access the dashboard, in case this is done via onboarding import
         this.store.dispatch(new UpdateAppAction({
           loading: false,
-          authorized: true
+          authorized: true,
         }));
 
         this.loadingCtrl.hide();

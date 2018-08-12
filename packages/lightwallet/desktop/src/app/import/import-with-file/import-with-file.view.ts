@@ -17,6 +17,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { Store } from '@ngrx/store';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { InviteRequestsService } from '@merit/common/services/invite-request.service';
 
 @Component({
   selector: 'view-import-with-file',
@@ -51,7 +52,8 @@ export class ImportWithFileView {
               private toastCtrl: ToastControllerService,
               private pushNotificationsService: PushNotificationsService,
               private loadingCtrl: Ng4LoadingSpinnerService,
-              private persistenceService2: PersistenceService2) {
+              private persistenceService2: PersistenceService2,
+              private inviteRequestsService: InviteRequestsService) {
   }
 
   fileChangeListener($event) {
@@ -89,7 +91,7 @@ export class ImportWithFileView {
 
       this.store.dispatch(
         new AddWalletAction(
-          await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, this.persistenceService2)
+          await createDisplayWallet(wallet, this.walletService, this.addressService, this.inviteRequestsService, this.txFormatService, this.persistenceService2)
         )
       );
 

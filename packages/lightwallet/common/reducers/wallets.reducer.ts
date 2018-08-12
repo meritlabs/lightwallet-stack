@@ -1,6 +1,6 @@
 import { DisplayWallet, IDisplayWalletOptions } from '@merit/common/models/display-wallet';
-import { IUnlockRequest } from '@merit/common/services/unlock-request.service';
 import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
+import { InviteRequest } from '@merit/common/services/invite-request.service';
 
 export interface IWalletsState {
   wallets: DisplayWallet[];
@@ -8,7 +8,7 @@ export interface IWalletsState {
   loading: boolean;
   totals: IWalletTotals;
   totalsLoading: boolean;
-  inviteRequests: IUnlockRequest[];
+  inviteRequests: InviteRequest[];
 }
 
 export interface IWalletTotals {
@@ -106,7 +106,7 @@ export class DeleteWalletCompletedAction implements Action {
 export class UpdateInviteRequestsAction implements Action {
   type = WalletsActionType.UpdateInviteRequests;
 
-  constructor(public inviteRequests: IUnlockRequest[]) {}
+  constructor(public inviteRequests: InviteRequest[]) {}
 }
 
 export class IgnoreInviteRequestAction implements Action {

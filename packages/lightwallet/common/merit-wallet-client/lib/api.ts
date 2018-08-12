@@ -25,6 +25,7 @@ import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { ISmsNotificationSettings } from '../../models/sms-subscription';
 import { IGlobalSendHistory } from '../../models/globalsend-history.model';
+import { IInviteRequest } from '../../services/invite-request.service';
 
 const $ = preconditions.singleton();
 const { Constants, Utils } = Common;
@@ -2442,16 +2443,6 @@ export class API {
     return txps;
   }
 
-  /**
-   * gets all unlock requests (active and hidden) for this wallet
-   *
-   */
-  getUnlockRequests(): Promise<any> {
-    $.checkState(this.credentials && this.credentials.isComplete());
-
-    return this._doGetRequest('/v1/unlockrequests/');
-  }
-
   async getTx(id: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
@@ -2794,5 +2785,12 @@ export class API {
     return this._decryptMessage(data, this.credentials.personalEncryptingKey);
   }
 
+  getInviteRequests(): Promise<IInviteRequest[]> {
+    return this._doGetRequest('/v1/invite-requests');
+  }
+
+  deleteInviteRequest(id: string): Promise<void> {
+    return this._doDeleteRequest('/v1/invite-requests/' + id);
+  }
 
 }

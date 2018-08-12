@@ -22,10 +22,10 @@ import { RateService } from '@merit/common/services/rate.service';
 import { SendService } from '@merit/common/services/send.service';
 import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { VaultsService } from '@merit/common/services/vaults.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { GoalsService } from '@merit/common/services/goals.service';
+import { InviteRequestsService } from '@merit/common/services/invite-request.service';
 
 @NgModule()
 export class CommonProvidersModule {
@@ -55,7 +55,7 @@ export class CommonProvidersModule {
         RateService,
         TxFormatService,
         AddressService,
-        UnlockRequestService,
+        InviteRequestsService,
         WalletService,
         AlertService,
         GoalsService,
