@@ -209,17 +209,18 @@ ExpressApp.prototype.start = function(opts, cb) {
   }
 
   function GatewayForward(url, method = 'GET') {
-    return (req, res) => {
-      const regex = /\/(:[a-zA-Z]+)[\/]?.*$/gm;
+    const regex = /\/(:[a-zA-Z]+)[\/]?.*$/gm;
 
-      while (regex.test(url)) {
-        url = url.replace(regex, a =>
+    return (req, res) => {
+      let reqUrl = url;
+      while (regex.test(reqUrl)) {
+        reqUrl = reqUrl.replace(regex, a =>
           '/' + req.params[a.replace('/:', '')]
         );
       }
 
       request({
-        url,
+        url: reqUrl,
         method,
         headers: {
           "x-wallet-id": req.walletId
