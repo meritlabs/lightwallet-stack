@@ -43,8 +43,7 @@ export class InviteRequest implements IInviteRequest {
   }
 
   async accept(wallet: MeritWalletClient) {
-    await this.walletService.sendInvite(wallet, this.address);
-    return this.delete();
+    return this.walletService.sendInvite(wallet, this.address);
   }
 
   ignore() {

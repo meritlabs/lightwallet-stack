@@ -26,6 +26,10 @@ export interface IDynamicComponent {
   init(config?: any): void;
 }
 
+export function promisifyDismissCb(cmp: any): Promise<any> {
+  return new Promise<any>(resolve => cmp.onDidDismiss(resolve.bind(resolve)));
+}
+
 @Injectable()
 export class DOMController {
   rnd: Renderer2;

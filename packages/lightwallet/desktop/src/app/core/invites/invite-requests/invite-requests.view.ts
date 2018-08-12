@@ -36,7 +36,7 @@ export class InviteRequestsView {
 
   async onInviteRequestRemove(request: InviteRequest) {
     const latest: InviteRequest[] = await getLatestValue(this.inviteRequests$);
-    const idx: number = latest.findIndex(request => request.id == request.id);
+    const idx: number = latest.findIndex(req => req.id == request.id);
 
     if (idx > -1) {
       latest.splice(idx, 1);

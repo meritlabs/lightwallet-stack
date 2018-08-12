@@ -32,6 +32,7 @@ import { Address, PublicKey } from 'bitcore-lib';
 import { Observable } from 'rxjs/Observable';
 import { filter, map } from 'rxjs/operators';
 import { IGoalSettings } from '@merit/common/models/goals';
+import { WalletSelectorController } from '@merit/desktop/app/components/wallet-selector/wallet-selector.controller';
 
 @Component({
   selector: 'view-core',
@@ -102,13 +103,13 @@ export class CoreView implements OnInit, AfterViewInit {
   recordPassphrase: boolean = true;
   lockedWallets$: Observable<DisplayWallet[]> = this.wallets$.pipe(
     map((wallets: DisplayWallet[]) => wallets.filter((wallet: DisplayWallet) => !wallet.confirmed)),
-    map((wallets: DisplayWallet[]) => (wallets && wallets.length ? wallets : null))
+    map((wallets: DisplayWallet[]) => (wallets && wallets.length ? wallets : null)),
   );
   isWelcomeDialogEnabled$: Observable<boolean> = this.store
     .select(selectGoalSettings)
     .pipe(
       filter((goalSettings: IGoalSettings) => !!goalSettings),
-      map((goalSettings: IGoalSettings) => goalSettings.isWelcomeDialogEnabled)
+      map((goalSettings: IGoalSettings) => goalSettings.isWelcomeDialogEnabled),
     );
   showShare$: Observable<boolean> = this.store.select(selectShareDialogState);
 
@@ -125,8 +126,10 @@ export class CoreView implements OnInit, AfterViewInit {
     private domSanitizer: DomSanitizer,
     private smsNotificationsService: SmsNotificationsService,
     private smsNotificationsPromptCtrl: SmsNotificationsPromptController,
-    private goalsService: GoalsService
-  ) {}
+    private goalsService: GoalsService,
+    private walletSelectorCtrl: WalletSelectorController,
+  ) {
+  }
 
   async ngOnInit() {
     this.recordPassphrase = Boolean(await this.persistenceService2.getUserSettings(UserSettingsKey.recordPassphrase));
@@ -137,15 +140,19 @@ export class CoreView implements OnInit, AfterViewInit {
       this.processEasyReceipt(receipt, null, false, null, true);
     });
 
-    const smsPromptSetting = await this.persistenceService2.getUserSettings(UserSettingsKey.SmsNotificationsPrompt);
+    try {
+      const smsPromptSetting = await this.persistenceService2.getUserSettings(UserSettingsKey.SmsNotificationsPrompt);
 
-    if (smsPromptSetting == true) return;
+      if (!smsPromptSetting) {
+        const smsNotificationStatus = await this.smsNotificationsService.getSmsSubscriptionStatus();
 
-    const smsNotificationStatus = await this.smsNotificationsService.getSmsSubscriptionStatus();
-
-    if (smsNotificationStatus.enabled) return;
-
-    this.smsNotificationsPromptCtrl.create();
+        if (!smsNotificationStatus.enabled) {
+          this.smsNotificationsPromptCtrl.create();
+        }
+      }
+    } catch (err) {
+      console.log('Error fetching SMS settings');
+    }
   }
 
   ngAfterViewInit() {
@@ -154,7 +161,7 @@ export class CoreView implements OnInit, AfterViewInit {
 
   getIconStyle(icon: string) {
     return this.domSanitizer.bypassSecurityTrustStyle(
-      `mask-image: url('${icon}'); -webkit-mask-image: url('${icon}');`
+      `mask-image: url('${icon}'); -webkit-mask-image: url('${icon}');`,
     );
   }
 
@@ -171,7 +178,7 @@ export class CoreView implements OnInit, AfterViewInit {
     const passwordPrompt = this.passwordPromptCtrl.create(
       message,
       [Validators.required],
-      [PasswordValidator.ValidateEasyReceivePassword(receipt, this.easyReceiveService)]
+      [PasswordValidator.ValidateEasyReceivePassword(receipt, this.easyReceiveService)],
     );
     passwordPrompt.onDidDismiss((password: any) => {
       if (password) {
@@ -185,7 +192,7 @@ export class CoreView implements OnInit, AfterViewInit {
     receipt: EasyReceipt,
     data: any,
     wallet?: MeritWalletClient,
-    inviteOnly?: boolean
+    inviteOnly?: boolean,
   ) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
 
@@ -231,7 +238,7 @@ export class CoreView implements OnInit, AfterViewInit {
     data: any,
     wallet?: MeritWalletClient,
     cancelling?: boolean,
-    inviteOnly?: boolean
+    inviteOnly?: boolean,
   ) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
 
@@ -247,7 +254,7 @@ export class CoreView implements OnInit, AfterViewInit {
       title,
       `You clicked on a ${
         inviteOnly ? 'MeritInvite' : 'MeritMoney'
-      } link that you created.  Would you like to cancel it?`,
+        } link that you created.  Would you like to cancel it?`,
       [
         {
           text: 'Cancel ' + (inviteOnly ? 'MeritInvite' : 'MeritMoney'),
@@ -255,10 +262,10 @@ export class CoreView implements OnInit, AfterViewInit {
           class: 'primary',
         },
         {
-          text: "Don't Cancel",
+          text: 'Don\'t Cancel',
           value: 'no',
         },
-      ]
+      ],
     );
 
     confirmDialog.onDidDismiss((val: string) => {
@@ -287,7 +294,7 @@ export class CoreView implements OnInit, AfterViewInit {
           skipShareCode: true,
           skipRewards: true,
           skipAlias: true,
-        })
+        }),
       );
     } catch (err) {
       console.log(err);
@@ -309,7 +316,7 @@ export class CoreView implements OnInit, AfterViewInit {
           skipShareCode: true,
           skipRewards: true,
           skipAlias: true,
-        })
+        }),
       );
     } catch (err) {
       console.log(err);
@@ -327,7 +334,7 @@ export class CoreView implements OnInit, AfterViewInit {
     this.confirmDialogCtrl.create(
       'Transaction expired',
       'The Merit from this link has not been lost! You can ask the sender to make a new transaction.',
-      [{ text: 'Ok' }]
+      [{ text: 'Ok' }],
     );
   }
 
@@ -345,7 +352,7 @@ export class CoreView implements OnInit, AfterViewInit {
     password?: string,
     processAll: boolean = true,
     wallet?: MeritWalletClient,
-    cancelling?: boolean
+    cancelling?: boolean,
   ): Promise<void> {
     password = password || '';
     const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, password);

@@ -8,6 +8,8 @@ import { ConfirmDialogControllerService } from '@merit/desktop/app/components/co
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
 import { InviteRequest } from '@merit/common/services/invite-request.service';
+import { WalletSelectorController } from '@merit/desktop/app/components/wallet-selector/wallet-selector.controller';
+import { promisifyDismissCb } from '@merit/desktop/app/components/dom.controller';
 
 @Component({
   selector: 'invite-request-item',
@@ -29,6 +31,7 @@ export class InviteRequestItemComponent {
     private logger: LoggerService,
     private toastCtrl: ToastControllerService,
     private walletService: WalletService,
+    private walletSelectorCtrl: WalletSelectorController,
   ) {
   }
 
@@ -56,14 +59,20 @@ export class InviteRequestItemComponent {
 
           if (this.wallets.length > 1) {
             // Show wallet selector
+            const selector = this.walletSelectorCtrl.create(this.wallets, 'Select a wallet to send an invite from:');
+            const selectedWallet: DisplayWallet = await promisifyDismissCb(selector);
 
+            if (!selectedWallet) {
+              // user cancelled
+              return;
+            } else {
+              wallet = selectedWallet;
+            }
           } else {
             wallet = this.wallets[0];
           }
 
-
-          await this.walletService.sendInvite(wallet.client, this.request.address);
-
+          await this.request.accept(wallet.client);
           this.store.dispatch(new RefreshOneWalletTransactions(wallet.id));
           this.remove.emit();
           this.toastCtrl.success('The invite request has been confirmed.');
@@ -80,7 +89,7 @@ export class InviteRequestItemComponent {
   ignoreRequest() {
     const dialog = this.confirmDialogCtrl.create(
       'Ignore Invite Request',
-      'Are you sure you would like to ignore this invite request?',
+      'Are you sure you would like to ignore this invite request? This action cannot be reversed.',
       [
         {
           text: 'Yes',
