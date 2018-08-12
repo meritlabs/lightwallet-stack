@@ -29,7 +29,7 @@ export class InvitesWidgetComponent {
 
   async onInviteRequestRemove(request: InviteRequest) {
     const latest: InviteRequest[] = await getLatestValue(this.inviteRequests$);
-    const idx: number = latest.findIndex(request => request.id == request.id);
+    const idx: number = latest.findIndex(r => r.id == request.id);
 
     if (idx > -1) {
       latest.splice(idx, 1);

@@ -1,8 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
-import { IgnoreInviteRequestAction, UpdateInviteRequestsAction } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
@@ -11,12 +10,12 @@ import { Store } from '@ngrx/store';
 import { InviteRequest } from '@merit/common/services/invite-request.service';
 
 @Component({
-  selector: 'app-pending-invite-item',
-  templateUrl: './pending-invite-item.component.html',
-  styleUrls: ['./pending-invite-item.component.sass'],
+  selector: 'invite-request-item',
+  templateUrl: './invite-request-item.component.html',
+  styleUrls: ['./invite-request-item.component.sass'],
   host: { class: 'invite-request-list' },
 })
-export class PendingInviteItemComponent {
+export class InviteRequestItemComponent {
   @Input() request: InviteRequest;
   @Input() availableInvites: number;
   @Input() wallets: DisplayWallet[];
@@ -29,8 +28,9 @@ export class PendingInviteItemComponent {
     private confirmDialogCtrl: ConfirmDialogControllerService,
     private logger: LoggerService,
     private toastCtrl: ToastControllerService,
-    private walletService: WalletService
-  ) {}
+    private walletService: WalletService,
+  ) {
+  }
 
   async approveRequest() {
     const dialog = this.confirmDialogCtrl.create(
@@ -45,7 +45,7 @@ export class PendingInviteItemComponent {
         {
           text: 'No',
         },
-      ]
+      ],
     );
 
     dialog.onDidDismiss(async (value: string) => {
@@ -76,7 +76,8 @@ export class PendingInviteItemComponent {
       }
     });
   }
-  ignoreRequest(request: InviteRequest) {
+
+  ignoreRequest() {
     const dialog = this.confirmDialogCtrl.create(
       'Ignore Invite Request',
       'Are you sure you would like to ignore this invite request?',
@@ -89,12 +90,13 @@ export class PendingInviteItemComponent {
         {
           text: 'No',
         },
-      ]
+      ],
     );
 
     dialog.onDidDismiss(async (value: string) => {
       if (value === 'yes') {
-        this.store.dispatch(new IgnoreInviteRequestAction(request.address));
+        await this.request.ignore();
+        this.remove.emit();
       }
     });
   }

@@ -12,8 +12,8 @@
   </div>
   <ng-container *ngIf="inviteRequests?.length > 0; else noPendingInvites">
     <div class="listWrap">
-      <app-pending-invite-item *ngFor="let request of (inviteRequests | slice:0:2)" [request]="request" [availableInvites]="availableInvites$ | async"
-                               [wallets]="wallets$ | async" (remove)="onInviteRequestRemove(request)"></app-pending-invite-item>
+      <invite-request-item *ngFor="let request of (inviteRequests | slice:0:2)" [request]="request" [availableInvites]="availableInvites$ | async"
+                               [wallets]="wallets$ | async" (remove)="onInviteRequestRemove(request)"></invite-request-item>
     </div>
     <button class="ui-button ui-button--sm ui-button--blue" routerLink="/invites/requests" *ngIf="inviteRequests.length > 2">Show all pending requests</button>
   </ng-container>
