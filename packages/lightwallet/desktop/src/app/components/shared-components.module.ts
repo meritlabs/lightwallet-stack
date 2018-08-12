@@ -30,6 +30,23 @@ import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/w
 import { ClipModule } from 'ng2-clip';
 import { WalletUnlockAlertComponent } from '@merit/desktop/app/components/wallet-unlock-alert/wallet-unlock-alert.component';
 import { MomentModule } from 'ngx-moment';
+import { WalletListItemComponent } from '@merit/desktop/app/components/wallet-list-item/wallet-list-item.component';
+import { WalletSelectorComponent } from '@merit/desktop/app/components/wallet-selector/wallet-selector.component';
+import { WalletSelectorController } from '@merit/desktop/app/components/wallet-selector/wallet-selector.controller';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
+
+
+export function getDynamicComponents() {
+  return [
+    ToastNotificationComponent,
+    PasswordPromptComponent,
+    ConfirmDialogComponent,
+    GlobalsendLinkPopupComponent,
+    SmsNotificationsPromptComponent,
+    UpdateDialogComponent,
+    WalletSelectorComponent,
+  ];
+}
 
 export function getComponents() {
   return [
@@ -37,34 +54,33 @@ export function getComponents() {
     LoadingSpinnerSmallComponent,
     MessageBoxComponent,
     MeritIconComponent,
-    ToastNotificationComponent,
     LockScreenComponent,
     WalletIconComponent,
-    PasswordPromptComponent,
     BackdropComponent,
-    ConfirmDialogComponent,
     IllustationsWorryFreeComponent,
     IllustationsSendingMeritComponent,
     IllustationsThatsItComponent,
     IllustationsYourWayComponent,
-    GlobalsendLinkPopupComponent,
     UICheckboxComponent,
     WalletUnlockAlertComponent,
-    SmsNotificationsPromptComponent,
-    UpdateDialogComponent
+    WalletListItemComponent,
+    ...getDynamicComponents(),
   ];
 }
 
 @NgModule({
   entryComponents: [
-    ToastNotificationComponent,
-    PasswordPromptComponent,
-    ConfirmDialogComponent,
-    GlobalsendLinkPopupComponent,
-    SmsNotificationsPromptComponent,
-    UpdateDialogComponent
+    ...getDynamicComponents(),
   ],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule, CommonDirectivesModule, MomentModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ClipModule,
+    CommonDirectivesModule,
+    MomentModule,
+    CommonPipesModule,
+  ],
   declarations: getComponents(),
   exports: getComponents(),
 })
@@ -79,7 +95,8 @@ export class SharedComponentsModule {
         ConfirmDialogControllerService,
         GlobalsendLinkPopupController,
         SmsNotificationsPromptController,
-        UpdateDialogController
+        UpdateDialogController,
+        WalletSelectorController,
       ],
     };
   }
