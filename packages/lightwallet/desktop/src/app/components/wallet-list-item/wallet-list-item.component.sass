@@ -1,0 +1,91 @@
+@import '~styles/v1/common/import-sass'
+
+\:host
+  display: flex
+  flex-flow: row wrap
+  justify-content: space-between
+  align-items: center
+  padding: 20px
+  background: $white
+  margin-bottom: 10px
+  border-radius: 5px
+  box-shadow: 0 2px 5px -2px rgba(46, 51, 88, 0.21)
+  user-select: none
+  position: relative
+
+  &:not(.locked)
+    cursor: pointer
+  +transition(.2s, ease-in-out)
+
+  &:hover:not(.locked)
+    box-shadow: 0 5px 10px -5px rgba(46, 51, 88, .3)
+    background: rgb(250, 250, 250)
+    transform: translate3d(0, -1px, 0)
+    > .details .inline-right merit-icon
+      right: 15px
+      color: rgba(0, 0, 0, .15)
+
+  > .icon
+    width: 40px
+    height: 40px
+    display: flex
+    justify-content: center
+    align-items: center
+    margin-right: 20px
+    img
+      width: 100%
+
+  > .details
+    width: calc(100% - 60px)
+    display: flex
+    justify-content: space-between
+    flex-flow: row wrap
+    align-items: center
+    .inline-right
+      display: flex
+      justify-content: flex-end
+      align-items: center
+      merit-icon
+        position: absolute
+        width: 18px
+        height: 18px
+        right: 20px
+        transition: all .2s ease-in .2s
+        color: rgba(0, 0, 0, .1)
+    .controls
+      display: flex
+      flex-direction: column
+      align-items: flex-end
+      margin-right: 40px
+    .share-link
+      position: relative
+      margin-top: 7px
+      +font(400, 14px, 1, $blue)
+    .manageIt
+      width: 20px
+      height: 20px
+      background: $blue
+      mask-image: url('/assets/v1/icons/ui/manage-wallet.svg')
+      mask-repeat: no-repeat
+      margin-left: 20px
+
+    .wallet-name
+      display: flex
+      align-items: center
+
+      .locked
+        merit-icon
+          height: 15px
+          background: $saffron
+
+    .large-black-text
+      +font(600, 16px, 22px, $gun-metal)
+      letter-spacing: .38px
+    .alias
+      +font(400, 14px, 16px, $steel-two)
+      margin-bottom: 5px
+    .regular-blue-text
+      +font(400, 14px, 24px, $blue)
+      small
+        font-size: 13px
+        color: $cool-grey
