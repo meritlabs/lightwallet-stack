@@ -7,7 +7,7 @@ import { WalletSelectorComponent } from '@merit/desktop/app/components/wallet-se
 export class WalletSelectorController {
   constructor(private domCtrl: DOMController) {}
 
-  create(wallets: DisplayWallet[], text: string = 'Select a wallet to continue') {
-    this.domCtrl.create(WalletSelectorComponent, { wallets, text });
+  create(wallets: DisplayWallet[], text: string = 'Select a wallet to continue'): WalletSelectorComponent {
+    return this.domCtrl.create(WalletSelectorComponent, { wallets: wallets, text });
   }
 }

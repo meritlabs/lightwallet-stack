@@ -1,6 +1,8 @@
-<div class="ui-prompt">
-  <h2 class="title">Select a wallet</h2>
-  <p>{{ text }}</p>
-
-</div>
-<app-backdrop (click)="onBackdropClick()"></app-backdrop>
+<ng-container *ngIf="ready">
+  <div class="ui-prompt">
+    <h2 class="title">Select a wallet</h2>
+    <p>{{ config.text }}</p>
+    <wallet-list-item *ngFor="let wallet of config.wallets" [wallet]="wallet" (click)="dismiss(wallet)"></wallet-list-item>
+  </div>
+  <app-backdrop (click)="onBackdropClick()"></app-backdrop>
+</ng-container>

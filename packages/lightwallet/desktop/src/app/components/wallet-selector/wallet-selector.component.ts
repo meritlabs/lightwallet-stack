@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { IDynamicComponent } from '@merit/desktop/app/components/dom.controller';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { safeCall } from '@merit/common/utils';
@@ -11,7 +11,8 @@ export interface IWalletSelectorConfig {
 @Component({
   selector: 'wallet-selector',
   templateUrl: './wallet-selector.component.html',
-  styleUrls: ['./wallet-selector.component.sass']
+  styleUrls: ['./wallet-selector.component.sass'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class WalletSelectorComponent implements IDynamicComponent {
   config: IWalletSelectorConfig;
@@ -33,5 +34,9 @@ export class WalletSelectorComponent implements IDynamicComponent {
 
   onDidDismiss(callback: (wallet: DisplayWallet) => any) {
     this._onDismiss = callback;
+  }
+
+  onBackdropClick() {
+    this.dismiss();
   }
 }
