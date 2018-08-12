@@ -208,7 +208,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   }
 
-  function GatewayForward(url, method) {
+  function GatewayForward(url, method = 'GET') {
     return (req, res) => {
       const regex = /\/(:[a-zA-Z]+)[\/]?.*$/gm;
 
@@ -958,7 +958,7 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   router.post('/v1/globalsend/cancel', GetWallet, GatewayForward(opts.services.globalSend + '/globalsend/cancel', 'POST'));
 
-  router.get('/v1/globalsend/history', GetWallet, GatewayForward(opts.services.globalSend + '/globalsend', 'GET'));
+  router.get('/v1/globalsend/history', GetWallet, GatewayForward(opts.services.globalSend + '/globalsend'));
 
   // Deliver globalsend
   router.post('/v1/globalsend', GetWallet, (req, res) => {
@@ -976,6 +976,9 @@ ExpressApp.prototype.start = function(opts, cb) {
   });
 
   router.get('/v1/community/rank/', GetWallet, GatewayForward(opts.services.communityInfo + '/info'));
+
+  router.get('/v1/invite-requests', GetWallet, GatewayForward(opts.services.inviteRequests));
+  router.delete('/v1/invite-requests/:id', GetWallet, GatewayForward(opts.services.inviteRequests + '/:id', 'DELETE'));
 
   router.post('/v1/community/ranks/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
