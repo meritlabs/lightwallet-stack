@@ -973,7 +973,8 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.get('/v1/community/rank/', GetWallet, GatewayForward(opts.services.communityInfo + '/info'));
+  router.get('/v1/rank-info/', GetWallet, GatewayForward(opts.services.communityInfo + '/info'));
+  router.get('/v1/leaderboard', GatewayForward(opts.services.communityInfo + '/leaderboard'));
 
   router.get('/v1/invite-requests', GetWallet, GatewayForward(opts.services.inviteRequests));
   router.delete('/v1/invite-requests/:id', GetWallet, GatewayForward(opts.services.inviteRequests + '/:id', 'DELETE'));
