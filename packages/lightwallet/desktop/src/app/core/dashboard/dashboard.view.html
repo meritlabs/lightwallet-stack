@@ -7,9 +7,9 @@
         Send Merit
       </h2>
       <div class="ui-input__wrapper ui-input__wrapper--mrt">
-        <input type="text" name="" [(ngModel)]="amount" (keypress)="sendSubmit($event)" class="ui-input ui-input--form ui-input--text">
+        <input type="number" name="" [(ngModel)]="amount" (keypress)="sendSubmit($event)" step="0.00000001" min="0" class="ui-input ui-input--form ui-input--text">
         <div class="ui-input__addon">MRT</div>
-        <button [disabled]="!amount || amount == 0" [routerLink]='"/send"' [queryParams]="{ amount: amount }" class="ui-button ui-button--blue ui-button--sm"
+        <button [disabled]="!amount || amount <= 0" [routerLink]='"/send"' [queryParams]="{ amount: amount }" class="ui-button ui-button--blue ui-button--sm"
           id="sendMrt">SEND</button>
       </div>
     </div>
