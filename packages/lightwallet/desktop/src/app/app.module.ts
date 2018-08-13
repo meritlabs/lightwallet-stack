@@ -36,6 +36,7 @@ import { Events } from 'ionic-angular/util/events';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { MiningEffects } from '@merit/common/effects/mining.effects';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
@@ -90,11 +91,12 @@ export function getProviders() {
     ReactiveFormsModule,
     EffectsModule.forRoot([
       AppEffects,
+      MiningEffects,
       WalletEffects,
       TransactionEffects,
       NotificationEffects,
       GoalEffects,
-      InterfacePreferencesEffects,
+      InterfacePreferencesEffects
     ]),
     SharedComponentsModule.forRoot(),
     Ng4LoadingSpinnerModule.forRoot(),

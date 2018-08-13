@@ -30,9 +30,7 @@ import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/w
 import { ClipModule } from 'ng2-clip';
 import { WalletUnlockAlertComponent } from '@merit/desktop/app/components/wallet-unlock-alert/wallet-unlock-alert.component';
 import { MomentModule } from 'ngx-moment';
-import { GpuTempWidgetComponent} from "@merit/desktop/app/components/charts/gpu-temp-widget/gpu-temp-widget.component";
-import { GpuUtilizationWidgetComponent } from "@merit/desktop/app/components/charts/gpu-utilization-widget/gpu-utilization-widget.component.ts";
-import { ChartComponent } from "@merit/desktop/app/components/charts/chart.component";
+import { ChartComponent } from '@merit/desktop/app/components/charts/chart.component';
 
 export function getComponents() {
   return [
@@ -55,8 +53,6 @@ export function getComponents() {
     WalletUnlockAlertComponent,
     SmsNotificationsPromptComponent,
     UpdateDialogComponent,
-    GpuTempWidgetComponent,
-    GpuUtilizationWidgetComponent,
     ChartComponent
   ];
 }
@@ -72,7 +68,7 @@ export function getComponents() {
   ],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule, CommonDirectivesModule, MomentModule],
   declarations: getComponents(),
-  exports: getComponents(),
+  exports: getComponents()
 })
 export class SharedComponentsModule {
   static forRoot(): ModuleWithProviders {
@@ -80,13 +76,13 @@ export class SharedComponentsModule {
       ngModule: SharedComponentsModule,
       providers: [
         ToastControllerService,
-        { provide: ToastControllerServiceBase, useClass: ToastControllerService },
+        {provide: ToastControllerServiceBase, useClass: ToastControllerService},
         PasswordPromptController,
         ConfirmDialogControllerService,
         GlobalsendLinkPopupController,
         SmsNotificationsPromptController,
         UpdateDialogController
-      ],
+      ]
     };
   }
 }

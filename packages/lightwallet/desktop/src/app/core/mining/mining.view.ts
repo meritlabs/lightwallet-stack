@@ -6,68 +6,85 @@ import { Observable } from 'rxjs/Observable';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { Store } from '@ngrx/store';
 import { WalletService } from '@merit/common/services/wallet.service';
-
-import { selectWallets, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
-
+import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { IRootAppState } from '@merit/common/reducers';
-import { filter, take } from 'rxjs/operators';
-
-import { GPUInfo } from './gpu-info.model';
-import { IPool } from "@merit/desktop/app/core/components/select-pool/select-pool.component";
+import { IGPUInfo } from './gpu-info.model';
+import { pick } from 'lodash';
+import { IPool } from '@merit/desktop/app/core/components/select-pool/select-pool.component';
+import { getLatestValue } from '@merit/common/utils/observables';
+import { map } from 'rxjs/operators';
+import {
+  IMiningDataset,
+  selectCycleAndShareDatasets,
+  selectGPUTempDatasets,
+  selectGPUUtilDatasets,
+  selectGraphDatasets,
+  selectIsConnected,
+  selectIsMining,
+  selectIsStopping, selectMiningDatasets,
+  selectMiningStats,
+  StartMiningAction, StopMiningAction
+} from '@merit/common/reducers/mining.reducer';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 
 @Component({
   selector: 'view-mining',
   templateUrl: './mining.view.html',
   styleUrls: ['./mining.view.sass'],
-  encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.None
 })
 export class MiningView {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
-  walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   selectedWallet: DisplayWallet;
 
   address: string;
   alias: string;
   workers: number = 1;
   threadsPerWorker: number = 1;
-  miningLabel: string;
   updateTimer: any;
-  statTimer: any;
   minCores: number = 0;
-  maxCores: number;
+  maxCores: number = ElectronService.numberOfCores();
   minGPUs: number = 0;
-  maxGPUs: number;
+  maxGPUs: number = ElectronService.numberOfGPUDevices();
   cores: number;
   gpus: number;
-  gpus_info: GPUInfo[];
-  active_gpu_devices: number[];
+  gpusInfo: IGPUInfo[];
+  activeGpuDevices: number[];
   miningSettings: any;
-  pools: IPool[];
+  pools: IPool[] = [];
   selectedPool: IPool;
   mining: boolean = false;
-  stats: any;
   error: string;
+
+  connected$: Observable<boolean> = this.store.select(selectIsConnected);
+  mining$: Observable<boolean> = this.store.select(selectIsMining);
+  stopping$: Observable<boolean> = this.store.select(selectIsStopping);
+
+  datasets$ = this.store.select(selectMiningDatasets);
+  gpuTempDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGPUTempDatasets);
+  gpuUtilDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGPUUtilDatasets);
+  cycleAndShareDatasets$: Observable<IMiningDataset[]> = this.store.select(selectCycleAndShareDatasets);
+  graphDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGraphDatasets);
+
+  stats$: Observable<any> = this.store.select(selectMiningStats);
+
+  miningLabel$: Observable<string> = combineLatest(this.mining$, this.stopping$)
+    .pipe(
+      map(([mining, stopping]) => stopping ? 'Stopping' : mining ? 'Stop' : 'Start')
+    );
+
 
   constructor(
     private store: Store<IRootAppState>,
     private walletService: WalletService,
     private persistenceService: PersistenceService2,
-    private addressService: AddressService,
+    private addressService: AddressService
   ) {
-    this.maxCores = ElectronService.numberOfCores();
-    this.maxGPUs = ElectronService.numberOfGPUDevices();
-    this.updateLabel();
-    this.pools = [];
   }
 
   async ngOnInit() {
     try {
-      const wallets = await this.wallets$
-        .pipe(
-          filter(w => w.length > 0),
-          take(1),
-        )
-        .toPromise();
+      const wallets = await getLatestValue(this.wallets$, w => w.length > 0);
 
       this.miningSettings = await this.persistenceService.getMinerSettings();
       this.pools = await this.persistenceService.getAvailablePools();
@@ -84,50 +101,59 @@ export class MiningView {
         this.cores = Math.max(this.minCores, this.maxCores / 2);
       }
 
-      if (this.miningSettings.gpus_info) {
-        this.gpus_info = this.miningSettings.gpus_info;
+      if (this.miningSettings.gpusInfo) {
+        this.gpusInfo = this.miningSettings.gpusInfo;
       } else {
-        this.gpus_info = MiningView.getGPUInfo();
+        this.gpusInfo = MiningView.getGPUInfo();
 
-        this.gpus_info.forEach((info: GPUInfo) => {
+        this.gpusInfo.forEach((info: IGPUInfo) => {
           info.value = false;
           info.free_memory = this.freeMemoryOnDevice(info.id);
         });
       }
 
-      if (this.miningSettings.active_gpu_devices)
-        this.active_gpu_devices = this.miningSettings.active_gpu_devices;
+      if (this.miningSettings.activeGpuDevices)
+        this.activeGpuDevices = this.miningSettings.activeGpuDevices;
       else
-        this.active_gpu_devices = [];
+        this.activeGpuDevices = [];
 
       if (this.miningSettings.selectedPool)
         this.selectedPool = this.miningSettings.selectedPool;
       else
         this.selectedPool = this.pools[0];
 
-
       this.saveSettings();
       ElectronService.setAgent();
-      this.updateStats();
 
+      combineLatest(this.mining$, this.connected$)
+        .subscribe(([mining, connected]) => {
+          if (mining) {
+            if (!connected) {
+              this.error = 'Disconnected from pool. Reconnecting...';
+            } else {
+              this.error = null;
+            }
+          }
+        });
     } catch (err) {
       if (err.text) console.log('Could not initialize: ', err.text);
     }
   }
 
-  chooseGPU(item : GPUInfo, event): void {
-    this.gpus_info[this.gpus_info.indexOf(item)].value = !this.gpus_info[this.gpus_info.indexOf(item)].value;
+  chooseGPU(index: number): void {
+    this.gpusInfo[index].value = !this.gpusInfo[index].value;
 
-    for (let i = 0; i < this.gpus_info.length; i++) {
+    for (let i = 0; i < this.gpusInfo.length; i++) {
       // push
-      let dev_index = this.active_gpu_devices.indexOf(this.gpus_info[i].id);
-      if (this.gpus_info[i].value && dev_index == -1) {
-        this.active_gpu_devices.push(this.gpus_info[i].id);
+      const deviceIndex: number = this.activeGpuDevices.indexOf(this.gpusInfo[i].id);
+
+      if (this.gpusInfo[i].value && deviceIndex == -1) {
+        this.activeGpuDevices.push(this.gpusInfo[i].id);
       }
 
       // remove
-      if (!this.gpus_info[i].value && dev_index != -1) {
-        this.active_gpu_devices.splice(dev_index, 1);
+      if (!this.gpusInfo[i].value && deviceIndex != -1) {
+        this.activeGpuDevices.splice(deviceIndex, 1);
       }
     }
 
@@ -139,8 +165,8 @@ export class MiningView {
 
     this.selectedWallet = wallet;
     this.address = this.selectedWallet.client.getRootAddress().toString();
-    let info = await this.addressService.getAddressInfo(this.address);
-    this.alias = info.alias;
+    const {alias} = await this.addressService.getAddressInfo(this.address);
+    this.alias = alias;
     if (save) {
       this.saveSettings();
     }
@@ -161,24 +187,6 @@ export class MiningView {
     return ElectronService.isStopping();
   }
 
-  mineButtonLabel() {
-    if (this.isMining()) {
-      if (this.isStopping()) {
-        return 'Stopping';
-      } else {
-        return 'Stop';
-      }
-    }
-    return 'Start';
-  }
-
-  updateLabel() {
-    this.miningLabel = this.mineButtonLabel();
-    if (this.isStopping()) {
-      this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
-    }
-  }
-
   computeUtilization() {
     if (this.cores % 2 == 0) {
       this.workers = this.cores / 2;
@@ -195,20 +203,22 @@ export class MiningView {
   }
 
   saveSettings() {
-    this.miningSettings.cores = this.cores;
-    this.miningSettings.gpus_info = this.gpus_info;
-    this.miningSettings.active_gpu_devices = this.active_gpu_devices;
-    this.miningSettings.selectedPool = this.selectedPool;
+    this.miningSettings = {
+      ...this.miningSettings,
+      cores: this.cores,
+      gpusInfo: this.gpusInfo,
+      activeGpuDevices: this.activeGpuDevices,
+      selectedPool: this.selectedPool
+    };
+
     this.persistenceService.setMiningSettings(this.miningSettings);
   }
 
   stopMining() {
     this.error = null;
     if (!this.isStopping()) {
-      console.log('stats', this.stats);
+      this.store.dispatch(new StopMiningAction());
       ElectronService.stopMining();
-      this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
-      this.statTimer = setTimeout(this.updateStats.bind(this), 1000);
     }
   }
 
@@ -224,7 +234,7 @@ export class MiningView {
     this.error = null;
     this.computeUtilization();
 
-    if ((this.threadsPerWorker * this.workers) == 0 && this.active_gpu_devices.length == 0)
+    if ((this.threadsPerWorker * this.workers) == 0 && this.activeGpuDevices.length == 0)
       return;
 
     try {
@@ -233,28 +243,14 @@ export class MiningView {
         this.address,
         this.workers,
         this.threadsPerWorker,
-        this.active_gpu_devices,
+        this.activeGpuDevices
       );
-      this.updateTimer = setTimeout(this.updateLabel.bind(this), 250);
-      this.statTimer = setTimeout(this.updateStats.bind(this), 1000);
+
+      this.store.dispatch(new StartMiningAction());
     } catch (e) {
       console.log(e);
       this.error = e.message;
       // this.error = "Error Connecting to the Selected Pool";
-    }
-  }
-
-  updateStats() {
-    this.mining = this.isMining();
-    this.stats = ElectronService.getMiningStats();
-
-    if (this.mining) {
-      if (this.isConnected()) {
-        this.error = null;
-      } else if (!this.isStopping()) {
-        this.error = 'Disconnected from Pool, Reconnecting...';
-      }
-      this.statTimer = setTimeout(this.updateStats.bind(this), 1000);
     }
   }
 
@@ -268,37 +264,12 @@ export class MiningView {
     }
   }
 
-  static getGPUInfo() : GPUInfo[] {
-    let raw_info = ElectronService.GPUDevicesInfo();
-    let res = [];
-    for (let info of raw_info)
-      res.push(new GPUInfo(
-        info['id'], info['title'], info['total_memory'], info['temperature'],
-        info['gpu_util'], info['memory_util'], info['fan_speed']
-      ));
+  static getGPUInfo(): IGPUInfo[] {
+    const rawInfo = ElectronService.GPUDevicesInfo();
+    const gpuInfos: IGPUInfo[] = [];
+    for (let info of rawInfo)
+      gpuInfos.push(pick(info, 'id', 'title', 'total_memory', 'temperature', 'gpu_util', 'memory_util', 'fan_speed'));
 
-    return res;
+    return gpuInfos;
   }
-
-  getGraphsStat() {
-    return this.mining ? 
-     [this.stats.total.attempts + this.stats.current.attempts] : [];
-  }
-
-  getGraphsLabels() {
-    return ["Graphs"];
-  }
-
-  getCyclesAndSharesStat() {
-    return this.mining ? [
-      this.stats.total.cycles + this.stats.current.cycles,
-      this.stats.total.shares + this.stats.current.shares
-    ] : [];
-  }
-
-  getCyclesAndSharesLabels() {
-    return ["Cycles", "Shares"];
-  }
-
-
 }
