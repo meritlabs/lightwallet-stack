@@ -12,6 +12,11 @@
             <strong>{{rankData.percentileStr}}</strong>
               <span *ngIf="rankData.bestPercentile && rankData.bestPercentile > 90"> (Rank: {{rankData.bestRank}})
               </span>
+            <div class="stats__item__grows">
+              <p><span>▲</span></p>
+              <p>+1</p>
+              <p>(* for...)</p>
+            </div>
           </span>
           <ng-template #rankDataLocked>
             <span>Unlock your wallets to see rank</span>
