@@ -224,7 +224,7 @@ export class ProfileService {
     await this.refreshData();
     const wallets = await this.getWallets();
 
-    let network = {
+    const network = {
       communitySize: 0,
       networkValue: 0,
       miningRewards: 0,
@@ -245,9 +245,9 @@ export class ProfileService {
 
     if (addresses.length) {
 
-      const getCommunitySizes = () => addresses.map(async (a) => {
-        const { referralcount } = await wallets[0].getCommunityInfo(a);
-        let w = network.wallets.find(w => w.referralAddress == a);
+      const getCommunitySizes = () => addresses.map(async (address) => {
+        const { referralcount } = await wallets[0].getCommunityInfo(address);
+        let w = network.wallets.find(w => w.referralAddress == address);
         w.communitySize = referralcount;
         network.communitySize += referralcount;
       });

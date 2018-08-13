@@ -2,8 +2,7 @@ import * as _ from 'lodash';
 import * as preconditions from 'preconditions';
 const $ = preconditions.singleton();
 import * as Bitcore from 'bitcore-lib';
-import { Common } from './common';
-let Utils = Common.Utils;
+import { Utils } from './common';
 import { Logger } from "./log";
 const log = Logger.getInstance();
 

@@ -127,9 +127,9 @@ export class DisplayWallet {
   }
 
   async updateRewards() {
-    this.totalNetworkValueMicro = await this.client.getANV(this.client.getRootAddress());
+    this.totalNetworkValueMicro = await this.client.getANV();
 
-    const rewardsData = await this.client.getRewards([this.client.getRootAddress()]);
+    const rewardsData = await this.client.getRewards();
     // If we cannot properly fetch data, let's return wallets as-is.
     if (rewardsData && rewardsData.length > 0) {
       this.miningRewardsMicro = sumBy(rewardsData, 'rewards.mining');
@@ -137,7 +137,7 @@ export class DisplayWallet {
       this.formatNetworkInfo();
     }
 
-    this.communitySize = (await this.client.getCommunityInfo(this.client.getRootAddress())).referralcount;
+    this.communitySize = (await this.client.getCommunityInfo()).referralcount;
   }
 
   private formatNetworkInfo() {

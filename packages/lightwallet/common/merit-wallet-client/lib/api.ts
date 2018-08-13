@@ -3,43 +3,36 @@ import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
 import { generateMnemonic, mnemonicToHDPrivateKey, validateImportMnemonic } from '@merit/common/utils/mnemonic';
 import * as Bip38 from 'bip38';
 import * as Bitcore from 'bitcore-lib';
-import * as EventEmitter from 'eventemitter3';
 import * as _ from 'lodash';
 import * as preconditions from 'preconditions';
-import * as querystring from 'querystring';
 import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/observable/interval';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { interval } from 'rxjs/observable/interval';
 import { map, retryWhen, switchMap } from 'rxjs/operators';
-import * as request from 'superagent';
 import * as util from 'util';
 import { EasyReceiptResult } from '../../models/easy-receipt';
 import { ISendMethod } from '../../models/send-method';
-import { Common } from './common';
+import { Constants, Utils } from './common';
 import { Credentials } from './credentials';
-import { MWCErrors } from './errors';
+import { MwcError, MWCErrors } from './errors';
 import { Logger } from './log';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
 import { ISmsNotificationSettings } from '../../models/sms-subscription';
 import { IGlobalSendHistory } from '../../models/globalsend-history.model';
 import { IInviteRequest } from '../../services/invite-request.service';
+import { IRankInfo } from '../../models/rank';
+import * as request from 'request-promise-native';
+import * as queryString from 'querystring'
 
 const $ = preconditions.singleton();
-const { Constants, Utils } = Common;
 
 const Package = require('../../../package.json');
 
 const DEFAULT_FEE = 10000;
 
-
-/**
- * Merit Wallet Client; (re-)written in typescript.
- * TODO:
- *
- */
 
 export interface InitOptions {
   request?: any;
@@ -67,7 +60,6 @@ export interface ISendReferralOptions {
 }
 
 export class API {
-  public request: any;
   public baseUrl: string;
   public payProHttp: string;
   public doNotVerifyPayPro: boolean;
@@ -108,7 +100,6 @@ export class API {
   public confirmed: boolean;
   public parentAddress: string;
   public balanceHidden: boolean;
-  public eventEmitter: any;
   public status: any;
   public secret: string;
   public email: string;
@@ -139,10 +130,7 @@ export class API {
   public credentialsSaveAllowed: boolean = true;
 
   constructor(opts: InitOptions) {
-    this.eventEmitter = new EventEmitter.EventEmitter();
-    this.request = opts.request || request;
     this.baseUrl = opts.baseUrl || ENV.mwsUrl;
-    this.payProHttp = null; // Only for testing
     this.doNotVerifyPayPro = opts.doNotVerifyPayPro;
     this.timeout = opts.timeout || 50000;
     this.logLevel = opts.logLevel || 'debug';
@@ -309,10 +297,10 @@ export class API {
         ret = MWCErrors[body.code];
         if (body.message) ret.message = body.message;
       } else {
-        ret = new Error(body.code + ': ' + body.message);
+        ret = body.code + ': ' + body.message;
       }
     } else {
-      ret = new Error(body.error || JSON.stringify(body));
+      ret = body.error || JSON.stringify(body);
     }
     this.log.error(ret);
     return ret;
@@ -835,13 +823,6 @@ export class API {
   };
 
 
-  /**
-   * Open a wallet and try to complete the public key ring.
-   *
-   * @param {Callback} cb - The callback that handles the response. It returns a flag indicating that the wallet is
-   *   complete.
-   * @fires API#walletCompleted
-   */
   openWallet(): Promise<any> {
     this.log.warn('Opening wallet');
     return new Promise((resolve, reject) => {
@@ -852,13 +833,13 @@ export class API {
         return resolve(true); // wallet is already open
       }
 
-      return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1').then((ret) => {
-        let wallet = ret.wallet;
+      return this._doGetRequest('/v1/wallets/', { includeExtendedInfo: 1}).then((ret) => {
+        const wallet = ret.wallet;
 
         return this._processStatus(ret).then(() => {
 
           if (!this.credentials.hasWalletInfo()) {
-            let me: any = _.find(wallet.copayers, {
+            const me: any = _.find(wallet.copayers, {
               id: this.credentials.copayerId,
             });
             this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.parentAddress);
@@ -878,8 +859,6 @@ export class API {
 
           this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
 
-          this.eventEmitter.emit('walletCompleted', wallet.id);
-
           return resolve(ret);
         });
       }).catch(err => {
@@ -895,137 +874,85 @@ export class API {
   };
 
 
-  /**
-   * Do an HTTP request
-   * @private
-   *
-   * @param {Object} method
-   * @param {String} url
-   * @param {Object} args
-   */
-  protected _doRequest(method: string, url: string, args: any, useSession: boolean, secondRun = false): Promise<{ body: any, header: any }> {
-    return new Promise((resolve, reject) => {
+  protected async _doRequest(method: string, url: string, qs?: any, body?: any, useSession?: boolean, secondRun?: boolean) {
+    body = body || {};
 
-      let headers = this._getHeaders();
-
-      if (this.credentials) {
-        headers['x-identity'] = this.credentials.copayerId;
-
-        if (useSession && this.session) {
-          headers['x-session'] = this.session;
-        } else {
-          let reqSignature;
-          let key = args._requestPrivKey || this.credentials.requestPrivKey;
-          if (key) {
-            delete args['_requestPrivKey'];
-            reqSignature = this._signRequest(method, url, args, key);
+    if (qs) {
+      Object.keys(qs)
+        .forEach((key: string) => {
+          if (typeof qs[key] === 'undefined' || qs[key] === null) {
+            delete qs[key];
           }
-          headers['x-signature'] = reqSignature;
-        }
+        });
+    }
+
+    const headers = this._getHeaders();
+
+    if (this.credentials) {
+      headers['x-identity'] = this.credentials.copayerId;
+
+      if (useSession && this.session) {
+        headers['x-session'] = this.session;
+      } else if (this.credentials.requestPrivKey) {
+        headers['x-signature'] = this._signRequest(method, qs? url + '?' + queryString.stringify(qs) : url, body, this.credentials.requestPrivKey);
       }
+    }
 
-      let r = this.request[method](this.baseUrl + url);
+    const reqOpts: request.Options = {
+      method,
+      url: this.baseUrl + url,
+      headers,
+      timeout: this.timeout,
+      json: true,
+      resolveWithFullResponse: true,
+      simple: false,
+      qs,
+      body,
+    };
 
-      r.accept('json');
+    let res: request.FullResponse;
 
-      _.each(headers, function(v, k) {
-        if (v) r.set(k, v);
-      });
+    try {
+      res = await request(reqOpts);
+    } catch (err) {
+      // Technical issue
+      console.log(err);
+      throw 'Unexpected error occurred';
+    }
 
-      if (args) {
-        if (method == 'post' || method == 'put') {
-          r.send(args);
+    if (!res.statusCode) {
+      throw MWCErrors.CONNECTION_ERROR.text;
+    }
 
-        } else {
-          r.query(args);
-        }
-      }
+    if (res.statusCode >= 400) {
+      // failed request
 
-      r.timeout(this.timeout);
-      r.ok(res => res.status < 500); // dont reject on failed status
+      switch (res.statusCode) {
+        case 404:
+          throw MWCErrors.NOT_FOUND.text;
 
-      return Promise.resolve(r).then((res) => {
-
-        /**
-         * Universal MWC Logger.  It will log all output returned from BWS
-         * if the private static DEBUG_MODE is set to true above.
-         */
-        if (res.body && this.DEBUG_MODE) {
-          this.log.info('BWS Response: ');
-          this.log.info(util.inspect(res.body, {
-            depth: 10,
-          }));
-        }
-
-        if (res.status !== 200) {
-          if (res.status === 404)
-            return reject(MWCErrors.NOT_FOUND);
-
-          if (res.code == MWCErrors.AUTHENTICATION_ERROR.code) {
-            if (this.onAuthenticationError) this.onAuthenticationError();
-            return reject(MWCErrors.AUTHENTICATION_ERROR);
-          }
-
-          if (!res.status) {
-            return reject(MWCErrors.CONNECTION_ERROR);
-          }
-
-          this.log.error('HTTP Error:' + res.status);
-
-          if (!res.body) return reject(new Error(res.status.toString()));
-
-          return reject(this._parseError(res.body));
-        }
-
-        if (res.body === '{"error":"read ECONNRESET"}') {
-          return reject(MWCErrors.ECONNRESET_ERROR);
-        }
-
-        if (this.onConnectionRestored) {
-          this.onConnectionRestored();
-        }
-
-        return resolve(res);
-      }).catch((err) => {
-
-        if (!err.status) {
-          return reject(MWCErrors.CONNECTION_ERROR);
-        } else if (err.status == 502 || err.status == 504) {
-          return reject(MWCErrors.SERVER_UNAVAILABLE);
-        }
-
-        if (!err.response || !err.response.text) {
-          return reject(err);
-        }
-
-        let errObj; // not an instance of Error
-        try {
-          errObj = JSON.parse(err.response.text);
-        } catch (e) {
-          return reject(err);
-        }
-
-        if (errObj.code == MWCErrors.AUTHENTICATION_ERROR.code) {
-          if (!secondRun) { //trying to restore session one time
-            return this._doRequest('post', '/v1/login', {}, null, true).then(() => {
-              return this._doRequest(method, url, args, useSession, true);
-            }).catch(() => {
-              if (this.onAuthenticationError) {
-                return Promise.resolve(this.onAuthenticationError());
-              }
-            });
+        case 401:
+          if (!secondRun) {
+            await this._doRequest('post', '/v1/login', null, null, false, true);
+            return this._doRequest(method, url, qs, body, useSession, true);
           } else {
-            if (this.onAuthenticationError) {
-              return Promise.resolve(this.onAuthenticationError());
-            }
+            throw MWCErrors.AUTHENTICATION_ERROR.text;
           }
-        }
 
-        if (errObj.code && MWCErrors[errObj.code]) return reject(MWCErrors[errObj.code]);
-        return reject(err);
-      });
-    });
-  };
+        case 502:
+        case 504:
+          throw MWCErrors.SERVER_UNAVAILABLE.text;
+
+        default:
+          if (MWCErrors[res.statusCode]) {
+            throw MWCErrors[res.statusCode].text
+          }
+          throw res.body && (res.body.error || res.body.message || res.body) || 'Unknown error occurred';
+      }
+    }
+
+    return res.body;
+  }
 
   private _login(): Promise<any> {
     return this._doPostRequest('/v1/login', {});
@@ -1035,99 +962,38 @@ export class API {
     return this._doPostRequest('/v1/logout', {});
   };
 
-  /**
-   * Do an HTTP request
-   * @private
-   *
-   * @param {Object} method
-   * @param {String} url
-   * @param {Object} args
-   */
-  private _doRequestWithLogin(method: string, url: string, args: any): Promise<any> {
+  private async _doRequestWithLogin(method: string, url: string, qs?: any, body?: any): Promise<any> {
+    if (!this.session) {
+      const s = await this._login();
+      if (!s) {
+        throw MWCErrors.NOT_AUTHORIZED.text;
+      }
+      this.session = s;
+    }
 
-    let doLogin = (): Promise<any> => {
-      return new Promise((resolve, reject) => {
-        return this._login().then((s) => {
-          if (!s) return reject(MWCErrors.NOT_AUTHORIZED);
-          this.session = s;
-          return resolve();
-        }).catch((err) => {
-          return reject(err);
-        });
-      });
-    };
-
-    let loginIfNeeded = (): Promise<any> => {
-      return new Promise((resolve, reject) => {
-        if (this.session) {
-          return resolve();
-        }
-        return resolve(doLogin());
-      });
-    };
-
-
-    return loginIfNeeded().then(() => {
-      return this._doRequest(method, url, args, true);
-    }).then((res) => {
-      return res.body;
-    });
+    return this._doRequest(method, url, qs, body, true);
   };
 
-  /**
-   * Do a POST request
-   * @private
-   *
-   * @param {String} url
-   * @param {Object} args
-   * @param {Callback} cb
-   */
-  _doPostRequest(url: string, args?: any): Promise<any> {
-    args = args || {};
-    return this._doRequest('post', url, args, false)
-      .then(res => res.body);
+  _doPostRequest(url: string, body?: any): Promise<any> {
+    return this._doRequest('post', url, null, body, false);
   };
 
-  _doPutRequest(url: string, args: any): Promise<any> {
-    return this._doRequest('put', url, args, false).then((res) => {
-      return res.body;
-    });
+  _doPutRequest(url: string, body: any): Promise<any> {
+    return this._doRequest('put', url, null, body, false);
   };
 
-  /**
-   * Do a GET request
-   * @private
-   *
-   * @param {String} url
-   * @param {Callback} cb
-   */
-  _doGetRequest(url: string): Promise<any> {
-    url += url.indexOf('?') > 0 ? '&' : '?';
-    url += 'r=' + _.random(10000, 99999);
-    return this._doRequest('get', url, {}, false).then((res) => {
-      return res.body;
-    });
+  _doGetRequest(url: string, qs?: any): Promise<any> {
+    qs = qs || {};
+    return this._doRequest('get', url, { ...qs, r: _.random(10000, 99999) }, null, false);
   };
 
-  _doGetRequestWithLogin(url: string): Promise<any> {
-    url += url.indexOf('?') > 0 ? '&' : '?';
-    url += 'r=' + _.random(10000, 99999);
-    return this._doRequestWithLogin('get', url, {}).catch((err) => {
-      this.log.warn('Were not able to complete getRequest: ', err);
-    });
+  _doGetRequestWithLogin(url: string, qs?: any): Promise<any> {
+    qs = qs || {};
+    return this._doRequestWithLogin('get', url, { ...qs, r: _.random(10000, 99999) });
   };
 
-  /**
-   * Do a DELETE request
-   * @private
-   *
-   * @param {String} url
-   * @param {Callback} cb
-   */
   private _doDeleteRequest(url: string): Promise<any> {
-    return this._doRequest('delete', url, {}, false).then((res) => {
-      return res.body;
-    });
+    return this._doRequest('delete', url, null, null, false);
   };
 
   private _buildSecret = function(walletId, walletPrivKey, network) {
@@ -1425,10 +1291,10 @@ export class API {
    * @param {string} network - 'livenet' (default) or 'testnet'
    * @returns {Callback} cb - Returns error or an object with status information
    */
-  getFeeLevels(network: string = this.network): Promise<any> {
+  getFeeLevels(network: string = this.network || ENV.netmask): Promise<any> {
     (!$.checkArgument(network || _.includes(['livenet', 'testnet'], network)));
 
-    return this._doGetRequest('/v1/feelevels/?network=' + (network || ENV.network));
+    return this._doGetRequest('/v1/feelevels', { network });
   };
 
   /**
@@ -1802,17 +1668,17 @@ export class API {
    */
   // TODO: Make this return a promise of []Notifications
   getNotifications(opts: any = {}): Promise<any> {
-
     $.checkState(this.credentials);
 
-    let url = '/v1/notifications/';
+    const qs = {};
+
     if (opts.lastNotificationId) {
-      url += '?notificationId=' + opts.lastNotificationId;
+      qs.notificationId = opts.lastNotificationId;
     } else if (opts.timeSpan) {
-      url += '?timeSpan=' + opts.timeSpan;
+      qs.timeSpan = opts.timeSpan;
     }
 
-    return this._doGetRequest(url);
+    return this._doGetRequest('/v1/notifications/', qs);
   };
 
   /**
@@ -1824,43 +1690,51 @@ export class API {
    */
   async getStatus(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
-    let qs = [];
-    qs.push('includeExtendedInfo=' + (opts.includeExtendedInfo ? '1' : '0'));
-    qs.push('twoStep=' + (opts.twoStep ? '1' : '0'));
 
-    const result = await this._doGetRequest('/v1/wallets/?' + qs.join('&'));
+    const qs = {
+      includeExtendedInfo: Number(Boolean(opts.includeExtendedInfo)),
+      twoStep: Number(Boolean(opts.twoStep)),
+    };
+
+    const result = await this._doGetRequest('/v1/wallets/', qs);
 
     if (result.wallet.status == 'pending') {
-      let c = this.credentials;
+      const c = this.credentials;
       result.wallet.secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
     }
 
     return this._processStatus(result);
   };
 
-  getANV(addr: any): Promise<any> {
+  getANV(addr?: string): Promise<any> {
     $.checkState(this.credentials);
 
-    const keys = [addr];
-    const network = this.credentials.network;
+    addr = addr || this.getRootAddress().toString();
 
-    return this._doGetRequest('/v1/anv/?network=' + network + '&keys=' + keys.join(','));
+    return this._doGetRequest('/v1/anv/', {
+      network: this.credentials.network,
+      keys: addr,
+    });
   }
 
-  getCommunityInfo(addr: string) {
+  getCommunityInfo(addr?: string) {
     $.checkState(this.credentials);
 
-    const keys = [addr],
-      network = this.credentials.network;
+    addr = addr || this.getRootAddress().toString();
 
-    return this._doGetRequest('/v1/communityinfo/?network=' + network + '&keys=' + keys.join(','));
+    return this._doGetRequest('/v1/communityinfo/', {
+      network: this.credentials.network,
+      keys: addr,
+    });
   }
 
-  getRewards(address: any): Promise<any> {
+  getRewards(addresses?: string[]): Promise<any> {
     $.checkState(this.credentials);
-    const addresses = [address];
-    const network = this.credentials.network;
-    return this._doGetRequest('/v1/rewards/?network=' + network + '&addresses=' + addresses.join(','));
+    addresses = addresses || [this.getRootAddress().toString()];
+    return this._doGetRequest('/v1/rewards/', {
+      network: this.credentials.network,
+      addresses: addresses.join(','),
+    });
   }
 
   /**
@@ -1914,15 +1788,13 @@ export class API {
    */
   getUtxos(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-    let url = '/v1/utxos/';
-
-    if (opts.addresses) {
-      url += '?' + querystring.stringify({
-        addresses: [].concat(opts.addresses).join(','),
+    if (opts.addresses && opts.addresses.length) {
+      qs = {
+        addresses: opts.addresses.join(','),
         invites: opts.invites,
-      });
+      }
     }
-    return this._doGetRequest(url);
+    return this._doGetRequest('/v1/utxos/', qs);
   };
 
   _getCreateTxProposalArgs(opts: any): any {
@@ -2135,16 +2007,15 @@ export class API {
    */
   async getMainAddresses(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
-    let args = [];
-    if (opts.limit) args.push('limit=' + opts.limit);
-    if (opts.reverse) args.push('reverse=1');
-    let qs = '';
-    if (args.length > 0) {
-      qs = '?' + args.join('&');
-    }
-    const url = '/v1/addresses/' + qs;
 
-    const addresses = await this._doGetRequest(url);
+    const qs = {
+      limit: opts.limit,
+      reverse: opts.reverse? 1 : 0,
+    };
+
+    const url = '/v1/addresses/';
+
+    const addresses = await this._doGetRequest(url, qs);
 
     if (!opts.doNotVerify) {
       const fake = addresses.sort(address => !Verifier.checkAddress(this.credentials, address));
@@ -2162,22 +2033,18 @@ export class API {
    *
    * @param {Boolean} opts.twoStep[=false] - Optional: use 2-step balance computation for improved performance
    */
-  getBalance(opts: any = {}): Promise<number> {
+  async getBalance(opts: any = {}): Promise<number> {
     $.checkState(this.credentials && this.credentials.isComplete());
-    let url = '/v1/balance/';
-    if (opts.twoStep) url += '?twoStep=1';
-
-    return this._doGetRequest(url).then(balance => balance.availableAmount);
+    const balance = await this._doGetRequest('/v1/balance/', { twoStep: Number(Boolean(opts.twoStep)) });
+    return balance.availableAmount;
   };
 
   /**
    * Update wallet invites balance
    */
-  getInvitesBalance(opts: any = {}): Promise<number> {
+  getInvitesBalance(): Promise<number> {
     $.checkState(this.credentials && this.credentials.isComplete());
-    let url = '/v1/invites/';
-
-    return this._doGetRequest(url);
+    return this._doGetRequest('/v1/invites/');
   };
 
   /**
@@ -2425,19 +2292,14 @@ export class API {
   async getTxHistory(opts: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    const args = [];
-    if (opts) {
-      if (opts.skip) args.push('skip=' + opts.skip);
-      if (opts.limit) args.push('limit=' + opts.limit);
-      if (opts.includeExtendedInfo) args.push('includeExtendedInfo=1');
-    }
-    let qs = '';
-    if (args.length > 0) {
-      qs = '?' + args.join('&');
-    }
+    const qs = {
+      skip: opts.skip,
+      limit: opts.limit,
+      includeExtendedInfo: Number(Boolean(opts.includeExtendedInfo)),
+    };
 
-    const url = '/v1/txhistory/' + qs;
-    const txps = await this._doGetRequest(url);
+    const url = '/v1/txhistory/';
+    const txps = await this._doGetRequest(url, qs);
     await this._processTxps(txps);
 
     return txps;
@@ -2503,16 +2365,8 @@ export class API {
    */
   async getTxNotes(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
-    let args = [];
-    if (_.isNumber(opts.minTs)) {
-      args.push('minTs=' + opts.minTs);
-    }
-    let qs = '';
-    if (args.length > 0) {
-      qs = '?' + args.join('&');
-    }
 
-    const notes = await this._doGetRequest('/v1/txnotes/' + qs);
+    const notes = await this._doGetRequest('/v1/txnotes/', { minTs: opts.minTs });
 
     return this._processTxNotes(notes);
   }
@@ -2527,15 +2381,10 @@ export class API {
    */
   getFiatRate(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
-    let args = [];
-    if (opts.ts) args.push('ts=' + opts.ts);
-    if (opts.provider) args.push('provider=' + opts.provider);
-    let qs = '';
-    if (args.length > 0) {
-      qs = '?' + args.join('&');
-    }
-
-    return this._doGetRequest('/v1/fiatrates/' + opts.code + '/' + qs);
+    return this._doGetRequest('/v1/fiatrates/' + opts.code + '/', {
+      ts: opts.ts,
+      provider: opts.provider,
+    });
   }
 
   /**
@@ -2615,18 +2464,12 @@ export class API {
    * @param {Boolean} opts.returnInputs - Indicates it if should return (or not) the inputs
    */
   getSendMaxInfo(opts: any = {}): Promise<any> {
-    let args = [];
-
-    if (opts.feeLevel) args.push('feeLevel=' + opts.feeLevel);
-    if (opts.feePerKb) args.push('feePerKb=' + opts.feePerKb);
-    if (opts.excludeUnconfirmedUtxos) args.push('excludeUnconfirmedUtxos=1');
-    if (opts.returnInputs) args.push('returnInputs=1');
-    let qs = '';
-    if (args.length > 0)
-      qs = '?' + args.join('&');
-    const url = '/v1/sendmaxinfo/' + qs;
-
-    return this._doGetRequest(url);
+    return this._doGetRequest('/v1/sendmaxinfo/', {
+      feeLevel: opts.feeLevel,
+      feePerKb: opts.feePerKb,
+      excludeUnconfirmedUtxos: Number(Boolean(excludeUnconfirmedUtxos)),
+      returnInputs: Number(Boolean(returnInputs)),
+    });
   };
 
   /**
@@ -2638,11 +2481,13 @@ export class API {
    */
   async getStatusByIdentifier(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
-    let qs = [];
-    qs.push('includeExtendedInfo=' + (opts.includeExtendedInfo ? '1' : '0'));
-    qs.push('twoStep=' + (opts.twoStep ? '1' : '0'));
 
-    const result = await this._doGetRequest('/v1/wallets/' + opts.identifier + '?' + qs.join('&'));
+    const qs = {
+      includeExtendedInfo: Number(Boolean(opts.includeExtendedInfo)),
+      twoStep: Number(Boolean(opts.twoStep)),
+    };
+
+    const result = await this._doGetRequest('/v1/wallets/', qs);
 
     if (!result || !result.wallet)
       throw new Error('Could not get status by identifier.');
@@ -2762,19 +2607,14 @@ export class API {
     return this._doGetRequest(`/v1/globalsend/history`);
   }
 
-  async getCommunityRank() {
+  async getCommunityLeaderboard() {
     $.checkState(this.credentials);
-    return this._doGetRequest(`/v1/community/rank`);
+    return this._doGetRequest('/v1/leaderboard');
   }
 
-  async getCommunityRanks(addresses) {
+  async getRankInfo(): Promise<IRankInfo> {
     $.checkState(this.credentials);
-    return this._doPostRequest(`/v1/community/ranks`, { addresses: addresses });
-  }
-
-  async getCommunityLeaderboard(limit: number) {
-    $.checkState(this.credentials);
-    return this._doGetRequest(`/v1/community/leaderboard?limit=` + limit);
+    return this._doGetRequest('/v1/rank-info');
   }
 
   private encryptGlobalSend(easySend: EasySend) {

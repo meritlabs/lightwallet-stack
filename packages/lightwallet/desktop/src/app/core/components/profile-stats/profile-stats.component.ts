@@ -1,25 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-
-// TODO move this interface to a model file
-interface IRankData {
-  unlocked: boolean;
-  totalAnv: number;
-  bestRank: number;
-  bestPercentile: number;
-  percentileStr: string;
-}
-
-// TODO move this interface to a model file
-interface IRankInfo {
-  address: string;
-  alias?: string;
-  anv: number;
-  anvpercent: number;
-  percentile: string;
-  rank: number;
-}
+import { ILeaderboard, IRankData, IRankInfo } from '@merit/common/models/rank';
 
 @Component({
   selector: 'profile-stats',
@@ -43,11 +24,8 @@ export class ProfileStatsComponent {
   }
 
   rankActive: boolean;
-  ranks: any;
-  leaderboard: any;
-  displayLeaderboard: any;
-  offset: number = 0;
-  LIMIT: number = 100;
+  ranks: IRankInfo[];
+  leaderboard: ILeaderboard;
 
   rankData: IRankData = {
     unlocked: false,
@@ -71,17 +49,15 @@ export class ProfileStatsComponent {
       return;
     }
 
-    const rankInfo: any = await this.getRankInfo();
-    const ranks: IRankInfo[] = rankInfo.ranks;
-    let topRank: IRankInfo;
+    const rankInfo = await this.getRankInfo();
+    const ranks: IRankInfo[] = rankInfo;
+    let topRank: IRankInfo = rankInfo[0];
 
-    ranks.forEach((rank: IRankInfo) => {
-      if (!topRank || rank.rank < topRank.rank) {
-        topRank = rank;
+    for (let i = 1; i < ranks.length; i++) {
+      if (ranks[i].rank < topRank.rank) {
+        topRank = ranks[i];
       }
-    });
-
-    const topRankWallet: DisplayWallet = this.wallets.find((wallet: DisplayWallet) => wallet.referrerAddress === topRank.address);
+    }
 
     this.rankData = {
       unlocked: true,
@@ -90,9 +66,9 @@ export class ProfileStatsComponent {
       bestPercentile: +topRank.percentile,
       percentileStr: this.getPercentileStr(topRank),
     };
+
     this.ranks = ranks;
-    this.leaderboard = (await topRankWallet.client.getCommunityLeaderboard(this.LIMIT)).ranks;
-    this.displayLeaderboard = this.leaderboard.slice(this.offset, this.LIMIT);
+    this.leaderboard = await this.wallets[0].client.getCommunityLeaderboard();
   }
 
 
@@ -105,12 +81,10 @@ export class ProfileStatsComponent {
       : 'Bottom ' + Math.max(Math.round(percentile), 1) + '%';
   }
 
-  private getRankInfo(): Promise<any> {
-    const addresses = this.wallets
-      .filter((wallet: DisplayWallet) => wallet.confirmed)
-      .map((wallet: DisplayWallet) => wallet.client.getRootAddress().toString());
-
-    return this.wallets[0].client.getCommunityRanks(addresses);
+  private getRankInfo(): Promise<IRankInfo[]> {
+    return Promise.all(
+      this.wallets.map(wallet => wallet.client.getRankInfo())
+    );
   }
 
   onRankClose() {

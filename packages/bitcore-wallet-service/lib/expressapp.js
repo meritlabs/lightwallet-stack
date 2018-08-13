@@ -103,8 +103,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     this.app.use(morgan(logFormat, logOpts));
   }
 
-  var router = express.Router();
-
+  const router = express.Router();
 
   function returnError(err, res, req) {
     if (err instanceof WalletService.ClientError) {
@@ -280,7 +279,6 @@ ExpressApp.prototype.start = function(opts, cb) {
       res.json({walletId, parentAddress});
     });
   });
-
 
   router.put('/v1/copayers/:id/', function(req, res) {
     req.body.copayerId = req.params['id'];
@@ -589,7 +587,6 @@ ExpressApp.prototype.start = function(opts, cb) {
       });
     });
   });
-
 
   router.get('/v1/unlockrequests', function(req, res) {
       getServerWithAuth(req, res, function(server) {

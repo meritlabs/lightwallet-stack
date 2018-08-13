@@ -6,10 +6,8 @@ import { mnemonicToHDPrivateKey, validateImportMnemonic, generateMnemonic } from
 
 const $ = preconditions.singleton();
 
-import { Common } from './common';
+import { Constants, Utils } from './common';
 import { ENV } from '@app/env';
-const Constants = Common.Constants;
-const Utils = Common.Utils;
 
 const FIELDS = [
   'network',
