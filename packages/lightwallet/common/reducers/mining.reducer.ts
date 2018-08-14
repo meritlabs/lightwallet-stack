@@ -1,4 +1,5 @@
 import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
+import { IGPUInfo } from '../../desktop/src/app/core/mining/gpu-info.model';
 
 export interface IMiningState {
   connected: boolean;
@@ -6,6 +7,7 @@ export interface IMiningState {
   stopping: boolean;
   stats: any;
   miningDatasets: IMiningDatasets;
+  gpuInfo: IGPUInfo[];
 }
 
 export type IMiningDatasets = {
@@ -39,6 +41,7 @@ const DEFAULT_STATE: IMiningState = {
     graphs: [],
     cyclesAndShares: [],
   },
+  gpuInfo: [],
 };
 
 export enum MiningActions {
@@ -47,7 +50,8 @@ export enum MiningActions {
   UpdateMiningDatasets = '[Mining] Update datasets',
   UpdateStats = '[Mining] Update stats',
   UpdateConnection = '[Mining] Update connection',
-  SetMiningStopped = '[Mining] Set mining to stopped'
+  SetMiningStopped = '[Mining] Set mining to stopped',
+  UpdateGPUInfo = '[Mining] Update GPU info',
 }
 
 export class StartMiningAction implements Action {
@@ -80,7 +84,13 @@ export class SetMiningStoppedAction implements Action {
   readonly type = MiningActions.SetMiningStopped;
 }
 
-export type MiningAction = StartMiningAction & StopMiningAction & UpdateMiningDatasetsAction & UpdateMiningStatsAction & UpdateMiningConnectionAction;
+export class UpdateGPUInfoAction implements Action {
+  readonly type = MiningActions.UpdateGPUInfo;
+
+  constructor(public gpuInfo: IGPUInfo[]) {}
+}
+
+export type MiningAction = StartMiningAction & StopMiningAction & UpdateMiningDatasetsAction & UpdateMiningStatsAction & UpdateMiningConnectionAction & UpdateGPUInfoAction;
 
 export function miningReducer(state: IMiningState = DEFAULT_STATE, action: MiningAction): IMiningState {
   switch (action.type) {
@@ -129,6 +139,12 @@ export function miningReducer(state: IMiningState = DEFAULT_STATE, action: Minin
         stopping: false
       };
 
+    case MiningActions.UpdateGPUInfo:
+      return {
+        ...state,
+        gpuInfo: action.gpuInfo,
+      };
+
     default:
       return state;
   }
@@ -140,6 +156,7 @@ export const selectIsStopping = createSelector(selectMiningState, state => state
 export const selectIsConnected = createSelector(selectMiningState, state => state.connected);
 export const selectMiningDatasets = createSelector(selectMiningState, state => state.miningDatasets);
 export const selectMiningStats = createSelector(selectMiningState, state => state.stats);
+export const selectGPUInfo = createSelector(selectMiningState, state => state.gpuInfo);
 export const selectGPUTempDatasets = createSelector(selectMiningDatasets, data => data.gpuTemp);
 export const selectGPUUtilDatasets = createSelector(selectMiningDatasets, data => data.gpuUtil);
 export const selectGraphDatasets = createSelector(selectMiningDatasets, data => data.graphs);

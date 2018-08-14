@@ -156,11 +156,12 @@ export class MiningEffects {
               .map(info => pick(info, 'id', 'title', 'total_memory', 'temperature', 'gpu_util',
                 'memory_util', 'fan_speed'));
 
-            updateGpuDatasets(gpuInfo, gpuTemp, gpuUtil);
-            updateMiningStats(stats, cyclesAndShares, graphs);
+            // updateGpuDatasets(gpuInfo, gpuTemp, gpuUtil);
+            // updateMiningStats(stats, cyclesAndShares, graphs);
 
-            this.store$.dispatch(new UpdateMiningDatasetsAction({gpuTemp, gpuUtil, cyclesAndShares, graphs}));
+            // this.store$.dispatch(new UpdateMiningDatasetsAction({gpuTemp, gpuUtil, cyclesAndShares, graphs}));
             this.store$.dispatch(new UpdateMiningStatsAction(stats));
+
           }),
           switchMap(() =>
             this.store$.select(selectIsMining)

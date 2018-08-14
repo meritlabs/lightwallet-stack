@@ -50,24 +50,24 @@
 
   </div>
   <div *ngIf="mining$ | async">
-    <div class="global-settings__group">
-      <div class="gpu-stats-container container--fluid">
-        <div class="gpu-chart">
-          <chart title="Number of graphs(total)" [datasets]="graphDatasets$ | async"></chart>
-        </div>
-        <div class="gpu-chart">
-          <chart title="Number of found cycles and shares(total)" [datasets]="cycleAndShareDatasets$ | async"></chart>
-        </div>
-      </div>
-      <div class="gpu-stats-container container--fluid" *ngIf="activeGpuDevices?.length">
-        <div class="gpu-chart">
-          <chart title="GPU Temperature(degrees Celsius)" [datasets]="gpuTempDatasets$ | async"></chart>
-        </div>
-        <div class="gpu-chart">
-          <chart title="GPU cores and memory utilization(%)" [datasets]="gpuUtilDatasets$ | async"></chart>
-        </div>
-      </div>
-    </div>
+    <!--<div class="global-settings__group">-->
+      <!--<div class="gpu-stats-container container&#45;&#45;fluid">-->
+        <!--<div class="gpu-chart">-->
+          <!--<chart title="Number of graphs(total)" [datasets]="graphDatasets$ | async"></chart>-->
+        <!--</div>-->
+        <!--<div class="gpu-chart">-->
+          <!--<chart title="Number of found cycles and shares(total)" [datasets]="cycleAndShareDatasets$ | async"></chart>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="gpu-stats-container container&#45;&#45;fluid" *ngIf="activeGpuDevices?.length">-->
+        <!--<div class="gpu-chart">-->
+          <!--<chart title="GPU Temperature(degrees Celsius)" [datasets]="gpuTempDatasets$ | async"></chart>-->
+        <!--</div>-->
+        <!--<div class="gpu-chart">-->
+          <!--<chart title="GPU cores and memory utilization(%)" [datasets]="gpuUtilDatasets$ | async"></chart>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
 
     <div class="global-settings__group">
       <label class="ui-label global-settings__group__title">Summary</label>
@@ -127,6 +127,12 @@
         </div>
       </div>
     </div>
+
+    <ng-container *ngIf="gpuInfo$ | async as gpuInfo">
+      <div class="global-settings__group">
+
+      </div>
+    </ng-container>
 
     <ng-container *ngIf="stats$ | async as stats">
       <div class="global-settings__group">

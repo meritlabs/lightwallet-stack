@@ -15,7 +15,7 @@ import { getLatestValue } from '@merit/common/utils/observables';
 import { map } from 'rxjs/operators';
 import {
   IMiningDataset,
-  selectCycleAndShareDatasets,
+  selectCycleAndShareDatasets, selectGPUInfo,
   selectGPUTempDatasets,
   selectGPUUtilDatasets,
   selectGraphDatasets,
@@ -23,7 +23,7 @@ import {
   selectIsMining,
   selectIsStopping, selectMiningDatasets,
   selectMiningStats,
-  StartMiningAction, StopMiningAction
+  StartMiningAction, StopMiningAction,
 } from '@merit/common/reducers/mining.reducer';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 
@@ -60,13 +60,14 @@ export class MiningView {
   mining$: Observable<boolean> = this.store.select(selectIsMining);
   stopping$: Observable<boolean> = this.store.select(selectIsStopping);
 
-  datasets$ = this.store.select(selectMiningDatasets);
-  gpuTempDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGPUTempDatasets);
-  gpuUtilDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGPUUtilDatasets);
-  cycleAndShareDatasets$: Observable<IMiningDataset[]> = this.store.select(selectCycleAndShareDatasets);
-  graphDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGraphDatasets);
+  // datasets$ = this.store.select(selectMiningDatasets);
+  // gpuTempDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGPUTempDatasets);
+  // gpuUtilDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGPUUtilDatasets);
+  // cycleAndShareDatasets$: Observable<IMiningDataset[]> = this.store.select(selectCycleAndShareDatasets);
+  // graphDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGraphDatasets);
 
   stats$: Observable<any> = this.store.select(selectMiningStats);
+  gpuInfo$: Observable<IGPUInfo[]> = this.store.select(selectGPUInfo);
 
   miningLabel$: Observable<string> = combineLatest(this.mining$, this.stopping$)
     .pipe(
