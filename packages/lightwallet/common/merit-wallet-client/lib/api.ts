@@ -983,13 +983,11 @@ export class API {
   };
 
   _doGetRequest(url: string, qs?: any): Promise<any> {
-    qs = qs || {};
-    return this._doRequest('get', url, { ...qs, r: _.random(10000, 99999) }, null, false);
+    return this._doRequest('get', url, qs, null, false);
   };
 
   _doGetRequestWithLogin(url: string, qs?: any): Promise<any> {
-    qs = qs || {};
-    return this._doRequestWithLogin('get', url, { ...qs, r: _.random(10000, 99999) });
+    return this._doRequestWithLogin('get', url, qs);
   };
 
   private _doDeleteRequest(url: string): Promise<any> {
@@ -1291,7 +1289,7 @@ export class API {
    * @param {string} network - 'livenet' (default) or 'testnet'
    * @returns {Callback} cb - Returns error or an object with status information
    */
-  getFeeLevels(network: string = this.network || ENV.netmask): Promise<any> {
+  getFeeLevels(network: string = this.network || ENV.network): Promise<any> {
     (!$.checkArgument(network || _.includes(['livenet', 'testnet'], network)));
 
     return this._doGetRequest('/v1/feelevels', { network });
@@ -1670,7 +1668,7 @@ export class API {
   getNotifications(opts: any = {}): Promise<any> {
     $.checkState(this.credentials);
 
-    const qs = {};
+    const qs: any = {};
 
     if (opts.lastNotificationId) {
       qs.notificationId = opts.lastNotificationId;
@@ -1788,6 +1786,9 @@ export class API {
    */
   getUtxos(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
+
+    let qs: any;
+
     if (opts.addresses && opts.addresses.length) {
       qs = {
         addresses: opts.addresses.join(','),
@@ -2467,8 +2468,8 @@ export class API {
     return this._doGetRequest('/v1/sendmaxinfo/', {
       feeLevel: opts.feeLevel,
       feePerKb: opts.feePerKb,
-      excludeUnconfirmedUtxos: Number(Boolean(excludeUnconfirmedUtxos)),
-      returnInputs: Number(Boolean(returnInputs)),
+      excludeUnconfirmedUtxos: Number(Boolean(opts.excludeUnconfirmedUtxos)),
+      returnInputs: Number(Boolean(opts.returnInputs)),
     });
   };
 
