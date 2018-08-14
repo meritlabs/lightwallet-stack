@@ -26,8 +26,6 @@ declare global {
   ]
 })
 export class GetStartedTipsComponent implements OnInit {
-  constructor(private persistenceService: PersistenceService2, private store: Store<IRootAppState>) {
-  }
 
   active: boolean;
   getArticle: boolean;
@@ -47,6 +45,9 @@ export class GetStartedTipsComponent implements OnInit {
 
   setTipType: string = 'all';
 
+  constructor(private persistenceService: PersistenceService2, private store: Store<IRootAppState>) {
+  }
+
   async ngOnInit() {
     const getActiveState = Boolean(await this.persistenceService.getUserSettings(UserSettingsKey.GetStartedTips));
 
@@ -61,12 +62,10 @@ export class GetStartedTipsComponent implements OnInit {
 
   setType(type: string) {
     this.setTipType = type;
-    this.show();
 
-    // TODO cancel any previous timeouts before setting a new one
-    setTimeout(() => {
-      this.setTipType = 'all';
-    }, 500);
+    if (this.active === false) {
+      this.show();
+    }
   }
 
   show() {
