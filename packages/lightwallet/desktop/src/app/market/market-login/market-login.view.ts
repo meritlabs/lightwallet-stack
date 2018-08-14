@@ -27,8 +27,6 @@ export class MarketLoginView implements OnInit {
     this.profile = await this.persistenceService.getProfile();
     this.loadingWallets = false;
 
-    console.log(this.profile.wallets);
-
     if (this.profile.wallets.length === 1) {
       this.login(0);
     }
