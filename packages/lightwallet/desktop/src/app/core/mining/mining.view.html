@@ -129,7 +129,38 @@
     </div>
 
     <ng-container *ngIf="gpuInfo$ | async as gpuInfo">
-      <div class="global-settings__group">
+      <div class="global-settings__group" *ngFor="let info of gpuInfo">
+        <label class="ui-label global-settings__group__title">{{ info.title }}</label>
+
+        <div class="global-settings__group__item">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">Memory usage</label>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ info.memory_util + '%' + ' (' + ((info.total_memory - (info.total_memory * info.memory_util / 100)) / 1024) + '/' + (info.total_memory / 1024) + 'MB)' }}</label>
+          </div>
+        </div>
+
+        <div class="global-settings__group__item">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">Utilization</label>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ info.gpu_util + '%' }}</label>
+          </div>
+        </div>
+
+        <div class="global-settings__group__item">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">Temperature</label>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ info.temperature + 'C' }}</label>
+          </div>
+        </div>
 
       </div>
     </ng-container>

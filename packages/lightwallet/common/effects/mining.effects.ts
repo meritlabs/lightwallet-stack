@@ -6,7 +6,7 @@ import {
   IMiningDataset,
   MiningActions,
   selectIsMining,
-  selectMiningDatasets, SetMiningStoppedAction,
+  selectMiningDatasets, SetMiningStoppedAction, UpdateGPUInfoAction,
   UpdateMiningConnectionAction,
   UpdateMiningDatasetsAction,
   UpdateMiningStatsAction
@@ -161,6 +161,7 @@ export class MiningEffects {
 
             // this.store$.dispatch(new UpdateMiningDatasetsAction({gpuTemp, gpuUtil, cyclesAndShares, graphs}));
             this.store$.dispatch(new UpdateMiningStatsAction(stats));
+            this.store$.dispatch(new UpdateGPUInfoAction(gpuInfo))
 
           }),
           switchMap(() =>

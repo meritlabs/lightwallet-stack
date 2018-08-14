@@ -67,7 +67,12 @@ export class MiningView {
   // graphDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGraphDatasets);
 
   stats$: Observable<any> = this.store.select(selectMiningStats);
-  gpuInfo$: Observable<IGPUInfo[]> = this.store.select(selectGPUInfo);
+  gpuInfo$: Observable<IGPUInfo[]> = this.store.select(selectGPUInfo)
+    .pipe(
+      map((gpuInfo: IGPUInfo[]) =>
+        gpuInfo.filter(info => info.id in this.activeGpuDevices)
+      )
+    );
 
   miningLabel$: Observable<string> = combineLatest(this.mining$, this.stopping$)
     .pipe(
