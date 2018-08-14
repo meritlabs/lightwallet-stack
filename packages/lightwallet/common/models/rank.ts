@@ -4,15 +4,29 @@ export interface IRankData {
   bestRank: number;
   bestPercentile: number;
   percentileStr: string;
+  rankChangeDay: number;
+  totalCommunitySize: number;
+  totalCommunitySizeChange: number;
 }
 
 export interface IRankInfo {
   address: string;
   alias?: string;
+  lastUpdated: number;
   anv: number;
-  anvpercent: number;
+  anvChange: number;
+  anvChangeDay: number;
+  anvChangeWeek: number;
+  anvPercent: number;
   percentile: string;
   rank: number;
+  rankChange: number;
+  rankChangeDay: number;
+  rankChangeWeek: number;
+  communitySize: number;
+  communitySizeChange: number;
+  communitySizeChangeDay: number;
+  communitySizeChangeWeek: number;
 }
 
 export interface ILeaderboard {

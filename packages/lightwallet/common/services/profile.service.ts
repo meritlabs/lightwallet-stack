@@ -162,11 +162,7 @@ export class ProfileService {
   }
 
   async deleteWallet(wallet: MeritWalletClient) {
-
-    wallet.eventEmitter.removeAllListeners();
-
     this.wallets = this.wallets.filter(w => (w.id != wallet.id));
-
     return this.storeProfile();
   }
 

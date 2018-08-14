@@ -18,7 +18,6 @@ export interface IWalletTotals {
   totalWalletsBalance: string;
   totalWalletsBalanceFiat: string;
   allBalancesHidden: boolean;
-  totalCommunitySize: number;
   invites: number;
 }
 
