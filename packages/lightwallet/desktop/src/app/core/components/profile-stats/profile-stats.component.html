@@ -7,15 +7,13 @@
         <img src="/assets/v1/images/stats/rankIcon.png" alt="">
       </div>
       <ng-container *ngIf="!loading; else percentileLoading">
-        <div class="stats__item__info">
+        <div class="stats__item__info" *ngIf="rankData">
           <span *ngIf="rankData.unlocked; else rankDataLocked">
             <strong>{{rankData.percentileStr}}</strong>
-              <span *ngIf="rankData.bestPercentile && rankData.bestPercentile > 90"> (Rank: {{rankData.bestRank}})
-              </span>
-            <div class="stats__item__grows">
-              <p><span>▲</span></p>
-              <p>+1</p>
-              <p>(* for...)</p>
+              <span>(Rank: {{rankData.bestRank}})</span>
+            <div class="stats__item__grows" *ngIf="rankData.rankChangeDay !== 0">
+              <p><span>{{ rankData.rankChangeDay > 0? '▲' : '▲' }}</span></p>
+              <p>{{ rankData.rankChangeDay }}</p>
             </div>
           </span>
           <ng-template #rankDataLocked>
@@ -35,9 +33,13 @@
         <img src="/assets/v1/images/stats/communityIcon.png" alt="">
       </div>
       <ng-container *ngIf="!loading; else peopleLoading">
-        <div class="stats__item__info">
+        <div class="stats__item__info" *ngIf="rankData?.totalCommunitySize">
           {{ rankData.totalCommunitySize || 0 }}
           <span>People</span>
+          <div class="stats__item__grows" *ngIf="rankData.totalCommunitySizeChange !== 0">
+            <p><span>{{ rankData.totalCommunitySizeChange > 0? '▲' : '▲' }}</span></p>
+            <p>{{ rankData.totalCommunitySizeChange }}</p>
+          </div>
         </div>
       </ng-container>
       <ng-template #peopleLoading>

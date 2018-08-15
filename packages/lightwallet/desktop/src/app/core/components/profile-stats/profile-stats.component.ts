@@ -92,17 +92,26 @@ export class ProfileStatsComponent {
       : 'Bottom ' + Math.max(Math.round(percentile), 1) + '%';
   }
 
-  private getRankInfo(): Promise<IRankInfo[]> {
-    return Promise.all(
-      this.wallets.map(wallet => wallet.client.getRankInfo())
-    );
+  private async getRankInfo(): Promise<IRankInfo[]> {
+    const rankInfo: IRankInfo[] = [];
+
+    for (let i = 0; i < this.wallets.length; i++) {
+      try {
+        rankInfo.push(await this.wallets[i].client.getRankInfo())
+      } catch (err) {
+        console.log('Error occurred while getting rank info for wallet: ' + this.wallets[i].client.rootAddress.toString());
+        console.log(err);
+      }
+    }
+
+    return rankInfo;
   }
 
   onButtonClick(type?: 'rank' | 'community' | 'growth' | 'mining') {
     switch (type) {
       case 'rank':
         this.rankActive = true;
-        this.getStarted.active = false;
+        this.getStarted.hide();
         break;
 
       case 'community':

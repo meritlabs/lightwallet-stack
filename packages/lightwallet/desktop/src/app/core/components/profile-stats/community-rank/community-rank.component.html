@@ -3,13 +3,15 @@
   <div class="StarterTips_wrap" [@showTips]="active">
     <div class="StarterTips_items">
       <div class="StarterTips_item">
-        <h4 class="StarterTips_title" *ngIf="rankData.unlocked">
+        <h4 class="StarterTips_title" *ngIf="rankData?.unlocked; else locked">
           You are in the {{rankData.percentileStr}}.
-          <span *ngIf="rankData.bestPercentile && rankData.bestPercentile > 90"> (Rank: {{rankData.bestRank}})</span>
+          <span> (Rank: {{rankData.bestRank}})</span>
         </h4>
-        <h4 class="StarterTips_title" *ngIf="!rankData.unlocked">
-          Your community rank will be available soon!
-        </h4>
+        <ng-template #locked>
+          <h4 class="StarterTips_title">
+            Your community rank will be available soon!
+          </h4>
+        </ng-template>
         <p>
           <small>
             *Community rank selects the best ranking of all your wallets.
