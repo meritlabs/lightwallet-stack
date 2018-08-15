@@ -1,12 +1,15 @@
 import { NgModule } from '@angular/core';
 import { GtagDirective } from '@merit/common/directives/gtag.directive';
+import { ScrollTopDirective } from '@merit/common/directives/scroll-top.directive';
 
 @NgModule({
   declarations: [
-    GtagDirective
+    GtagDirective,
+    ScrollTopDirective
   ],
   exports: [
-    GtagDirective
+    GtagDirective,
+    ScrollTopDirective
   ]
 })
 export class CommonDirectivesModule {}
