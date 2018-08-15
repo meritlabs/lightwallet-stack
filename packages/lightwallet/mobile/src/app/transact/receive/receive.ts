@@ -1,4 +1,4 @@
-import { Component, Renderer2, ViewChild } from '@angular/core';
+import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Clipboard } from '@ionic-native/clipboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Button, Events, Footer, IonicPage, ModalController, NavController, NavParams, TextInput } from 'ionic-angular';
@@ -22,13 +22,14 @@ import {
 } from '../../../../../common/reducers/wallets.reducer';
 import { DisplayWallet } from '../../../../../common/models/display-wallet';
 import { ReceiveViewController } from '../../../../../common/controllers/receive-view.controller';
+import { getLatestValue } from '../../../../../common/utils/observables';
 
 @IonicPage()
 @Component({
   selector: 'view-receive',
   templateUrl: 'receive.html',
 })
-export class ReceiveView {
+export class ReceiveView implements OnInit {
   ctrl: ReceiveViewController;
 
   @ViewChild('amountInput') amountInput: TextInput;
@@ -56,16 +57,10 @@ export class ReceiveView {
               private rnd: Renderer2,
               private store: Store<IRootAppState>) {
     this.ctrl = new ReceiveViewController(configService, store, toastCtrl);
-    this.protocolHandler = 'merit';
-    this.availableUnits = [
-      this.configService.get().wallet.settings.unitCode.toUpperCase(),
-      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
-    ];
-    this.amountCurrency = this.availableUnits[0];
   }
 
-  ionViewWillEnter() {
-    return this.loadData();
+  ngOnInit() {
+    return this.ctrl.init();
   }
 
   toggleFooter() {
@@ -93,15 +88,14 @@ export class ReceiveView {
     this.amountInput.getNativeElement().focus();
   }
 
-  selectWallet() {
+  async selectWallet() {
     const modal = this.modalCtrl.create('SelectWalletModal', {
-      selectedWallet: this.,
-      availableWallets: this.wallets
+      selectedWallet: this.ctrl.selectedWallet,
+      availableWallets: getLatestValue(this.ctrl.wallets$),
     }, MERIT_MODAL_OPTS);
-    modal.onDidDismiss((wallet) => {
+    modal.onDidDismiss((wallet: DisplayWallet) => {
       if (wallet) {
-        this.wallet = wallet;
-        this.generateAddress();
+        this.ctrl.selectWallet(wallet);
       }
     });
     return modal.present();
@@ -110,13 +104,13 @@ export class ReceiveView {
   showShareButton() {
     return (
       this.platformService.isCordova
-      && this.qrAddress
+      && this.ctrl.qrAddress
     );
   }
 
   share() {
     if (SocialSharing.installed())
-      return this.socialSharing.share(this.qrAddress);
+      return this.socialSharing.share(this.ctrl.qrAddress);
   }
 
   copyToClipboard(addressString: string) {
@@ -131,23 +125,11 @@ export class ReceiveView {
   }
 
   async toggleCurrency() {
-    const rate = await this.rateService.getRate(this.availableUnits[1]);
+    const rate = await this.rateService.getRate(this.ctrl.availableUnits[1]);
+
     if (rate > 0) {
-      this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
-      this.changeAmount();
+      this.ctrl.amountCurrency = this.ctrl.amountCurrency == this.ctrl.availableUnits[0] ? this.ctrl.availableUnits[1] : this.ctrl.availableUnits[0];
+      this.ctrl.changeAmount();
     }
-  }
-
-  changeAmount() {
-    if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
-      this.amountMicros = this.rateService.mrtToMicro(this.amount);
-    } else {
-      this.amountMicros = this.rateService.fromFiatToMicros(this.amount, this.amountCurrency);
-    }
-    this.formatAddress();
-  }
-
-  private formatAddress() {
-    this.qrAddress = `${ this.protocolHandler }:${ this.address }${ this.amountMicros ? '?micros=' + this.amountMicros : '' }`;
   }
 }
