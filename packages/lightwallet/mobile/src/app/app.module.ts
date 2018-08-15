@@ -42,6 +42,19 @@ import { ToastControllerService } from '@merit/common/services/toast-controller.
 import { AlertService } from '@merit/common/services/alert.service';
 import { MobileAlertService } from '../services/mobile-alert.service';
 import { MobileToastControllerService } from '../services/mobile-toast-controller.service';
+import { EffectsModule } from '@ngrx/effects';
+import { AppEffects } from '@merit/common/effects/app.effects';
+import { WalletEffects } from '@merit/common/effects/wallet.effects';
+import { TransactionEffects } from '@merit/common/effects/transaction.effects';
+import { NotificationEffects } from '@merit/common/effects/notification.effects';
+import { GoalEffects } from '@merit/common/effects/goal.effects';
+import { InterfacePreferencesEffects } from '@merit/common/effects/interface-preferences.effects';
+import { CommonPipesModule } from '@merit/common/common-pipes.module';
+import { mobileAppReducer } from '@merit/common/reducers';
+import { MobileAppEffects } from '../effects/mobile-app-effects.service';
+import { MobileWalletEffects } from '../effects/mobile-wallet-effects.service';
+import { LoadingControllerService } from '../../../common/services/loading-controller.service';
+import { MobileLoadingControllerService } from '../services/mobile-loading-controller.service';
 
 export function getProviders() {
   return [
@@ -50,6 +63,7 @@ export function getProviders() {
     { provide: PollingNotificationsService, useClass: MobilePollingNotificationsService },
     { provide: ToastControllerService, useClass: MobileToastControllerService },
     { provide: AlertService, useClass: MobileAlertService },
+    { provide: LoadingControllerService, useClass: MobileLoadingControllerService },
     ContactsService,
     AddressScannerService,
     DeepLinkService,
@@ -110,6 +124,13 @@ export function loadConfigs(appService) {
         deps: [HttpClient]
       }
     }),
+    StoreModule.forRoot(mobileAppReducer),
+    EffectsModule.forRoot([
+      MobileAppEffects,
+      MobileWalletEffects,
+      TransactionEffects,
+      NotificationEffects,
+    ]),
     IonicStorageModule.forRoot(),
     CommonProvidersModule.forRoot()
   ],

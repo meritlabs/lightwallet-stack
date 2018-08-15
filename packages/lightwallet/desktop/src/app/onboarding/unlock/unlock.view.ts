@@ -30,12 +30,12 @@ export class UnlockComponent {
     inviteCode: [
       '',
       [Validators.required, Validators.minLength(3)],
-      [AddressValidator.validateAddress(this.mwcService)],
+      [AddressValidator.validateAddress()],
     ],
     alias: [
       '',
       [Validators.required, Validators.minLength(3)],
-      [AddressValidator.validateAliasAvailability(this.mwcService)],
+      [AddressValidator.validateAliasAvailability],
     ],
   });
 

@@ -6,49 +6,49 @@
   </ion-navbar>
 </ion-header>
 <ion-content no-bounce>
-  <div class="big-header">
-    <div class="amount-area" (click)="focusInput()">
-      <div class="main-amount" enter-to-next>
-        <ion-item no-lines>
-          <ion-input
-            #amount
-            type="number"
-            pattern="[0-9]"
-            [(ngModel)]="formData.amount"
-            (ngModelChange)="processAmount($event)"
-            placeholder="Enter amount to send"
-            (keypress)="amountKeypress($event.keyCode)"
-            (ionFocus)="amountFocused = true"
-            (ionBlur)="amountFocused = false"
-          >
-          </ion-input>
-        </ion-item>
-        <div class="amount-sm">Invite token<span *ngIf="formData.amount >1">s</span></div>
+  <form [formGroup]="formCtrl.formData">
+    <div class="big-header">
+      <div class="amount-area" (click)="focusInput()">
+        <div class="main-amount" enter-to-next>
+          <ion-item no-lines>
+            <ion-input
+              #amount
+              type="number"
+              pattern="[0-9]"
+              formControlName="amount"
+              placeholder="Enter amount to send"
+              (keypress)="amountKeypress($event.keyCode)"
+              (ionFocus)="amountFocused = true"
+              (ionBlur)="amountFocused = false"
+            >
+            </ion-input>
+          </ion-item>
+          <div class="amount-sm">Invite token<span *ngIf="formCtrl.formData.amount.value >1">s</span></div>
+        </div>
       </div>
     </div>
-  </div>
-  <ion-list>
-    <ion-item>
-      <ion-avatar item-start img-icon>
-        <img src="assets/img/icons/email.svg" alt="">
-      </ion-avatar>
-      <ion-label stacked>
-        <p>Recipient (optional)</p>
-      </ion-label>
-      <ion-input placeholder="Phone number or Email address" [(ngModel)]="formData.destination"></ion-input>
-    </ion-item>
-    <button ion-item (click)="selectWallet()" detail-none *ngIf="wallet">
-      <ion-avatar item-start img-icon>
-        <img src="assets/img/icons/wallet.svg">
-      </ion-avatar>
-      <p>From</p>
-      <h2>{{wallet?.name}}</h2>
-            <p *ngIf="wallet?.rootAlias">@{{wallet.rootAlias}}</p>
-      <p>Invites: {{wallet?.availableInvites}}</p>
-      <ion-icon name="ios-arrow-down" item-end></ion-icon>
-    </button>
-  </ion-list>
-
+    <ion-list>
+      <ion-item>
+        <ion-avatar item-start img-icon>
+          <img src="assets/img/icons/email.svg" alt="">
+        </ion-avatar>
+        <ion-label stacked>
+          <p>Recipient (optional)</p>
+        </ion-label>
+        <ion-input placeholder="Address, Alias, Phone number or Email address" [(ngModel)]="customDestination" (ngModelChange)="onDestinationChange()"></ion-input>
+      </ion-item>
+      <button ion-item (click)="selectWallet()" detail-none *ngIf="wallet">
+        <ion-avatar item-start img-icon>
+          <img src="assets/img/icons/wallet.svg">
+        </ion-avatar>
+        <p>From</p>
+        <h2>{{wallet?.name}}</h2>
+        <p *ngIf="wallet?.rootAlias">@{{wallet.rootAlias}}</p>
+        <p>Invites: {{wallet?.availableInvites}}</p>
+        <ion-icon name="ios-arrow-down" item-end></ion-icon>
+      </button>
+    </ion-list>
+  </form>
 
   <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length" [hidden]="link">
     <img src="assets/img/icons/invite.svg" color="primary" item-end>
@@ -94,7 +94,7 @@
 
   <ion-footer [hidden]="link || amountFocused">
     <p [hidden]="!error" class="error">{{ error }}</p>
-    <slide-to-action text="Slide to create link" (confirm)="send()" [disabled]="!isSendAllowed()"></slide-to-action>
+    <slide-to-action [text]="'Slide to create link'" (confirm)="send()" [disabled]="!isSendAllowed()"></slide-to-action>
   </ion-footer>
 
 

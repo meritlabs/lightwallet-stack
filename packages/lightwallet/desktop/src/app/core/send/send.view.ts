@@ -73,7 +73,7 @@ export class SendView implements OnInit, AfterViewInit {
 
   formData: FormGroup = this.formBuilder.group({
     amountMrt: ['', [Validators.required, SendValidator.validateAmount]],
-    address: ['', [], [SendValidator.validateAddress(this.mwcService)]],
+    address: ['', [], [SendValidator.validateAddress()]],
     selectedCurrency: [],
     feeIncluded: [false],
     wallet: [null, SendValidator.validateWallet],

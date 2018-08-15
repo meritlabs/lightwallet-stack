@@ -7,6 +7,8 @@ export interface IRankData {
   rankChangeDay: number;
   totalCommunitySize: number;
   totalCommunitySizeChange: number;
+  estimateStr?: string;
+  totalProbability?: number;
 }
 
 export interface IRankInfo {

@@ -1,32 +1,32 @@
-<message-box error *ngIf="(availableInvites$ | async) == 0">
+<message-box error *ngIf="(formCtrl.availableInvites$ | async) == 0">
   You do not have any available invites to send.
 </message-box>
-<message-box success *ngIf="success">
+<message-box success *ngIf="formCtrl.success">
   Invite(s) successfully sent
-  <div *ngIf="easySendUrl">
-    <ng-container *ngIf="easySendDelivered === undefined">
+  <div *ngIf="formCtrl.easySendUrl">
+    <ng-container *ngIf="formCtrl.easySendDelivered === undefined">
       Your MeritMoney Link is now ready to share:
     </ng-container>
-    <ng-container *ngIf="easySendDelivered === true">
+    <ng-container *ngIf="formCtrl.easySendDelivered === true">
       Your MeritInvite Link is ready and was successfully delivered to your recipient!
     </ng-container>
-    <ng-container *ngIf="easySendDelivered === false">
+    <ng-container *ngIf="formCtrl.easySendDelivered === false">
       Your MeritInvite Link is ready, however, we were not able to deliver it to your recipient. You can copy the link and send it to them directly:
     </ng-container>
-    <div class="easysend-url-container" [clip]="easySendUrl" (click)="onGlobalSendCopy()">
+    <div class="easysend-url-container" [clip]="formCtrl.easySendUrl" (click)="formCtrl.onGlobalSendCopy()">
       <small class="click_to_copy">Click to copy</small>
-      {{ easySendUrl }}
+      {{ formCtrl.easySendUrl }}
     </div>
   </div>
 </message-box>
 
 <div class="container--inner">
-  <form [formGroup]="formData" (ngSubmit)="sendInvite(selectedWallet.client)">
+  <form [formGroup]="formCtrl.formData" (ngSubmit)="formCtrl.submit()">
     <div class="sendMerit__form__group">
       <label for="" class="ui-label">Send from</label>
-      <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async"
+      <app-select (selectionEvent)="formCtrl.selectWallet($event)" [selected]="formCtrl.selectedWallet" [input]="wallets$ | async"
                   cssClass="ui-input ui-input--select ui-input--form"></app-select>
-      {{ selectedWallet?.availableInvites || 0 }} invites available. {{ selectedWallet?.pendingInvites? '(' + selectedWallet.pendingInvites + ' pending)' : '' }}
+      {{ formCtrl.selectedWallet?.availableInvites || 0 }} invites available. {{ formCtrl.selectedWallet?.pendingInvites? '(' + formCtrl.selectedWallet.pendingInvites + ' pending)' : '' }}
     </div>
 
     <send-method formControlName="type" [invite]="true"></send-method>
@@ -65,12 +65,12 @@
         </div>
       </div>
       <div class="sendMerit__form__group">
-        <label class="ui-label" *ngIf="selectedWallet?.availableInvites">Password &nbsp;
+        <label class="ui-label" *ngIf="formCtrl.selectedWallet?.availableInvites">Password &nbsp;
           <small>(optional)</small>
         </label>
         <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password" placeholder="Enter a password to protect your MeritInvite link"
-               *ngIf="selectedWallet?.availableInvites">
-        <div class="notification-info" *ngIf="selectedWallet?.availableInvites">
+               *ngIf="formCtrl.selectedWallet?.availableInvites">
+        <div class="notification-info" *ngIf="formCtrl.selectedWallet?.availableInvites">
           <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
           <p>
             You will see a link after confirming the transaction that you can share with your recipient.
@@ -78,16 +78,6 @@
         </div>
       </div>
     </ng-template>
-
-    <!--<div class="notification-info email-info" *ngIf="showEmailMessage && hasAWalletWithInvites">-->
-    <!--<span class="icon">-->
-    <!--<img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">-->
-    <!--</span>-->
-    <!--<p>-->
-    <!--<strong>{{ formData.value.address }}</strong> is not a member of Merit community yet?-->
-    <!--<br>-->
-    <!--<a href="mailto:{{ formData.value.address.trim() }}?subject={{ emailSubject }}&body={{ emailBody }}">Send an email</a> with invite link.</p>-->
-    <!--</div>-->
 
     <div class="sendMerit__form__group">
       <label class="ui-label">Number of invites</label>
@@ -116,7 +106,7 @@
 
 
     <button class="ui-button ui-button--blue" type="submit" role="button" scrollTop
-            [disabled]="formData.invalid || formData.pending || ((availableInvites$ | async) == 0)">SEND
+            [disabled]="formCtrl.formData.invalid || formCtrl.formData.pending || ((formCtrl.availableInvites$ | async) == 0)">SEND
     </button>
   </form>
 

@@ -15,11 +15,11 @@ export class SendValidator {
     return null;
   }
 
-  static validateAddress(mwcService: MWCService, allowUnconfirmed?: boolean) {
+  static validateAddress(allowUnconfirmed?: boolean) {
     return async (control: AbstractControl) => {
       if (control.parent && control.parent.get('type').value === 'easy') return null;
 
-      return AddressValidator.validateAddress(mwcService, allowUnconfirmed)(control);
+      return AddressValidator.validateAddress(allowUnconfirmed)(control);
     };
   }
 

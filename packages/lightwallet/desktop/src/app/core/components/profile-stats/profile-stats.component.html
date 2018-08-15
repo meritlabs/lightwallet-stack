@@ -1,4 +1,4 @@
-<div class="stats">
+<div class="stats">ngIf="activeUnlockRequests"
   <div class="container--fluid stats__wrap">
     <div class="stats__item">
       <p class="stats__item__title">Community
@@ -36,8 +36,8 @@
         <div class="stats__item__info" *ngIf="rankData?.totalCommunitySize">
           {{ rankData.totalCommunitySize || 0 }}
           <span>People</span>
-          <div class="stats__item__grows" *ngIf="rankData.totalCommunitySizeChange !== 0">
-            <p><span>{{ rankData.totalCommunitySizeChange > 0? '▲' : '▲' }}</span></p>
+          <div class="stats__item__grows" *ngIf="rankData.totalCommunitySizeChange > 0">
+            <p><span>▲</span></p>
             <p>{{ rankData.totalCommunitySizeChange }}</p>
           </div>
         </div>

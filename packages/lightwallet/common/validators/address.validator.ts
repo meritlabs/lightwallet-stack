@@ -1,9 +1,8 @@
 import { AbstractControl } from '@angular/forms';
-import { MWCService } from '@merit/common/services/mwc.service';
 import { cleanAddress, couldBeAlias, getAddressInfo, isAddress } from '@merit/common/utils/addresses';
 
 export class AddressValidator {
-  static validateAddress(mwcService: MWCService, allowUnconfirmed?: boolean) {
+  static validateAddress(allowUnconfirmed?: boolean) {
     return async (abstractCtrl: AbstractControl) => {
       let { value } = abstractCtrl;
 
@@ -18,29 +17,27 @@ export class AddressValidator {
       if (!isAddress(value) && !couldBeAlias(value))
         return { InvalidFormat: true };
 
-      const addressInfo = await getAddressInfo(value, mwcService);
+      const addressInfo = await getAddressInfo(value);
 
       if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || (!allowUnconfirmed && !addressInfo.isConfirmed))
         return { AddressNotFound: true };
     };
   }
 
-  static validateAliasAvailability(mwcService: MWCService) {
-    return async (abstractCtrl: AbstractControl) => {
-      let { value } = abstractCtrl;
+  static async validateAliasAvailability(abstractCtrl: AbstractControl) {
+    let { value } = abstractCtrl;
 
-      if (!value)
-        return null;
+    if (!value)
+      return null;
 
-      value = cleanAddress(value);
+    value = cleanAddress(value);
 
-      if (!couldBeAlias(value))
-        return { InvalidFormat: true };
+    if (!couldBeAlias(value))
+      return { InvalidFormat: true };
 
-      const addressInfo = await getAddressInfo(value, mwcService);
+    const addressInfo = await getAddressInfo(value);
 
-      if (addressInfo && addressInfo.isConfirmed)
-        return { AliasInUse: true };
-    };
+    if (addressInfo && addressInfo.isConfirmed)
+      return { AliasInUse: true };
   }
 }

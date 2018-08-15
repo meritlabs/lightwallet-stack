@@ -36,6 +36,8 @@ import { Events } from 'ionic-angular/util/events';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { LoadingControllerService } from '@merit/common/services/loading-controller.service';
+import { DesktopLoadingControllerService } from '@merit/desktop/services/desktop-loading-controller.service';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
@@ -61,6 +63,7 @@ export function getProviders() {
     PollingNotificationsService,
     { provide: PushNotificationsService, useClass: WebPushNotificationsService },
     { provide: AlertService, useClass: DesktopAlertService },
+    { provide: LoadingControllerService, useClass: DesktopLoadingControllerService },
     Events,
     Platform,
     DOMController,

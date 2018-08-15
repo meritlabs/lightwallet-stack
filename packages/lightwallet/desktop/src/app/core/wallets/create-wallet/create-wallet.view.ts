@@ -30,8 +30,8 @@ export class CreateWalletView {
 
   formData: FormGroup = this.formBuilder.group({
     walletName: ['Personal wallet', Validators.required],
-    parentAddress: ['', Validators.required, AddressValidator.validateAddress(this.mwcService)],
-    alias: ['', [], AddressValidator.validateAliasAvailability(this.mwcService)],
+    parentAddress: ['', Validators.required, AddressValidator.validateAddress()],
+    alias: ['', [], AddressValidator.validateAliasAvailability],
     bwsurl: [ENV.mwsUrl],
     recoveryPhrase: '',
     password: '',

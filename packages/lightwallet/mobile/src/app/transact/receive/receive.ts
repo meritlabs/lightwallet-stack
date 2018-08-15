@@ -12,6 +12,16 @@ import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { AddressService } from '@merit/common/services/address.service';
+import { Store } from '@ngrx/store';
+import { IRootAppState } from '../../../../../common/reducers';
+import { Observable } from 'rxjs';
+import {
+  selectConfirmedWallets,
+  selectWallets,
+  selectWalletsLoading,
+} from '../../../../../common/reducers/wallets.reducer';
+import { DisplayWallet } from '../../../../../common/models/display-wallet';
+import { ReceiveViewController } from '../../../../../common/controllers/receive-view.controller';
 
 @IonicPage()
 @Component({
@@ -19,25 +29,7 @@ import { AddressService } from '@merit/common/services/address.service';
   templateUrl: 'receive.html',
 })
 export class ReceiveView {
-  protocolHandler: string;
-  address: string;
-  alias: string;
-  qrAddress: string;
-  amount: number;
-  amountMicros: number;
-  availableUnits: Array<string>;
-  amountCurrency: string;
-
-  wallets;
-  wallet;
-
-  addressGenerationInProgress: boolean;
-
-  error: string;
-  mainAddressGapReached: boolean;
-
-  hasUnlockedWallets: boolean;
-  loading: boolean;
+  ctrl: ReceiveViewController;
 
   @ViewChild('amountInput') amountInput: TextInput;
   @ViewChild(Footer) footer: Footer;
@@ -61,23 +53,15 @@ export class ReceiveView {
               private addressService: AddressService,
               private platformService: PlatformService,
               private navParams: NavParams,
-              private rnd: Renderer2) {
+              private rnd: Renderer2,
+              private store: Store<IRootAppState>) {
+    this.ctrl = new ReceiveViewController(configService, store, toastCtrl);
     this.protocolHandler = 'merit';
     this.availableUnits = [
       this.configService.get().wallet.settings.unitCode.toUpperCase(),
       this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
     ];
     this.amountCurrency = this.availableUnits[0];
-  }
-
-  ionViewDidLoad() {
-    // Get a new address if we just received an incoming TX (on an address we already have)
-    this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
-      this.logger.info('Got an incomingTx on receive screen: ', n);
-      if (this.wallet && this.wallet.id == walletId && n.data.address == this.address) {
-        this.generateAddress();
-      }
-    });
   }
 
   ionViewWillEnter() {
@@ -109,56 +93,9 @@ export class ReceiveView {
     this.amountInput.getNativeElement().focus();
   }
 
-  async loadData() {
-    if (this.loading) return;
-    this.loading = true;
-    this.wallets = await this.profileService.getWallets();
-
-    this.hasUnlockedWallets = this.wallets.some(w => {
-      if (w.confirmed) {
-        this.wallet = w;
-        return true;
-      }
-    });
-
-    const { wallet } = this.navParams.data;
-    if (wallet && wallet.confirmed) {
-      this.wallet = wallet;
-    }
-
-    if (this.wallet)  this.generateAddress();
-
-    this.loading = false;
-  }
-
-  async generateAddress() {
-    this.addressGenerationInProgress = true;
-    this.error = null;
-
-    try {
-      this.address = this.wallet.getRootAddress().toString();
-      this.addressGenerationInProgress = false;
-      this.formatAddress();
-      let info = await this.addressService.getAddressInfo(this.address);
-      this.alias = info.alias;
-    } catch (err) {
-      if (err.code == MWCErrors.MAIN_ADDRESS_GAP_REACHED.code) {
-        this.mainAddressGapReached = true;
-        return this.generateAddress();
-      } else {
-        this.addressGenerationInProgress = false;
-
-        if (err.text)
-          this.error = err.text;
-
-        return this.toastCtrl.error(err.text || 'Failed to generate new address');
-      }
-    }
-  }
-
   selectWallet() {
     const modal = this.modalCtrl.create('SelectWalletModal', {
-      selectedWallet: this.wallet,
+      selectedWallet: this.,
       availableWallets: this.wallets
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet) => {
@@ -173,10 +110,7 @@ export class ReceiveView {
   showShareButton() {
     return (
       this.platformService.isCordova
-      && this.wallet
-      && this.wallet.isComplete()
       && this.qrAddress
-      && !this.addressGenerationInProgress
     );
   }
 

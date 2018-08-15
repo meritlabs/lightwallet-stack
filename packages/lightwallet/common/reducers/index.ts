@@ -22,3 +22,10 @@ export const reducer = {
   interface: interfaceReducer,
   goals: goalsReducer,
 };
+
+export const mobileAppReducer = {
+  wallets: walletsReducer,
+  app: appReducer,
+  transactions: transactionsReducer,
+  notifications: notificationsReducer,
+};
