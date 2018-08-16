@@ -4539,6 +4539,8 @@ WalletService.prototype.getCommunityRank = async function(cb) {
 
   try {
     const result = await localMeritDaemon.getCommunityRank(addressStrs);
+    result.ranks = result.anv_ranks;
+    delete result.anv_ranks;
     return cb(null, result);
   } catch (e) {
     if (typeof e === 'object' && e.code) {
@@ -4551,6 +4553,8 @@ WalletService.prototype.getCommunityRank = async function(cb) {
 WalletService.prototype.getCommunityRanks = async function(addresses, cb) {
   try {
     const result = await localMeritDaemon.getCommunityRank(addresses);
+    result.ranks = result.anv_ranks;
+    delete result.anv_ranks;
     return cb(null, result);
   } catch (e) {
     if (typeof e === 'object' && e.code) {
