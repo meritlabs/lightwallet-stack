@@ -33,7 +33,7 @@
               <p *ngIf="wallet.alias" class="alias">@{{wallet.alias}}</p>
             </span>
             <span class="rank" *ngIf="wallet.rank">
-              <strong>{{wallet.rank.anv | toMRT:8:true}}</strong>
+              <strong>{{wallet.rank.anv}}</strong>
               <p class="divider">/</p>
               <strong>{{wallet.rank.rank}}</strong>
             </span>
@@ -65,7 +65,7 @@
               <p class="alias">{{ r.alias? '@' + r.alias : 'Anonymous' }}</p>
             </span>
             <span class="rank">
-              <strong>{{r.anv | toMRT:8:true}}</strong>
+              <strong>{{r.anv}}</strong>
               <p class="divider">/</p>
               <strong>{{r.rank}}</strong>
             </span>
