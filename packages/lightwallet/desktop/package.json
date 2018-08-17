@@ -20,6 +20,7 @@
     "url": "https://github.com/meritlabs/lightwallet-stack"
   },
   "dependencies": {
+    "@swimlane/ngx-charts": "^7.3.0",
     "chart.js": "^2.7.2",
     "electron-log": "^2.2.15",
     "electron-updater": "^2.21.10",

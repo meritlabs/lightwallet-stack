@@ -5,6 +5,7 @@ import { ElectronService } from '@merit/desktop/services/electron.service';
 import { Observable } from 'rxjs/Observable';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { Store } from '@ngrx/store';
+import { ChartComponent} from "@merit/desktop/app/components/charts/chart.component";
 import { WalletService } from '@merit/common/services/wallet.service';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { IRootAppState } from '@merit/common/reducers';
@@ -24,7 +25,7 @@ import {
   selectIsStopping, selectMiningDatasets,
   selectMiningStats,
   StartMiningAction, StopMiningAction,
-} from '@merit/common/reducers/mining.reducer';
+} from '@merit/common/reducers/mining.reducer';1
 import { combineLatest } from 'rxjs/observable/combineLatest';
 
 @Component({
