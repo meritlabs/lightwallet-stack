@@ -43,7 +43,6 @@ export class SendValidator {
     }
   }
 
-
   static validateGlobalSendDestination(control: AbstractControl) {
     const { value } = control;
 
@@ -59,6 +58,21 @@ export class SendValidator {
       };
 
     // validate email / phone number
+
+    return null;
+  }
+
+  static validatePasswordConfirm(control: AbstractControl) {
+    if (control.parent) {
+      const { value: password } = control.parent.get('password');
+      const { value } = control.value;
+
+      if (password != value) {
+        return {
+          PasswordMismatch: true
+        };
+      }
+    }
 
     return null;
   }
