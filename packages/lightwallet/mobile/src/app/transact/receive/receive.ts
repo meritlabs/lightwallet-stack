@@ -36,7 +36,6 @@ export class ReceiveView implements OnInit {
   @ViewChild(Footer) footer: Footer;
 
   private footerHeight: number;
-  private toggleButtonHeight: number;
   private footerBottom: number;
   isFooterCollapsed: boolean;
 
