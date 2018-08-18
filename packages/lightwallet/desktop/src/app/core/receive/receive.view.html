@@ -1,4 +1,4 @@
-<app-lock-screen fullScreen *ngIf="!hasUnlockedWallet"></app-lock-screen>
+<app-lock-screen fullScreen *ngIf="!ctrl.hasUnlockedWallet"></app-lock-screen>
 <div class="receiveMerit">
   <div class="receiveMerit__header container--inner title--primary">
     <p>Receive Merit</p>
@@ -8,7 +8,7 @@
       <div class="receiveMerit__form__group">
         <label for="receiveAmount" class="ui-label">Amount</label>
         <div class="ui-input__wrapper ui-input__wrapper--mrt">
-          <input type="text" name="" id="receiveAmount" [(ngModel)]="amount" (ngModelChange)="changeAmount()" class="ui-input ui-input--form ui-input--text">
+          <input type="text" name="" id="receiveAmount" [(ngModel)]="ctrl.amount" (ngModelChange)="ctrl.changeAmount()" class="ui-input ui-input--form ui-input--text">
           <div class="ui-input__addon">MRT</div>
         </div>
         <!-- NOTE: Uncoment for return currency switcher -->
@@ -19,19 +19,19 @@
           </div>
         </div> -->
       </div>
-      <div *ngIf="wallets$ | async as wallets; else empty">
+      <div *ngIf="ctrl.wallets$ | async as wallets; else empty">
         <div class="receiveMerit__form__group">
           <label for="" class="ui-label">Receive in</label>
-          <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+          <app-select (selectionEvent)="ctrl.selectWallet($event)" [selected]="ctrl.selectedWallet" [input]="wallets" cssClass="ui-input ui-input--select ui-input--form"></app-select>
         </div>
 
-        <div *ngIf="address" class="receiveMerit__form__group">
+        <div *ngIf="ctrl.address" class="receiveMerit__form__group">
           <label for="" class="ui-label">Address</label>
-          <input type="text" name="" [value]="address"  disabled="disabled" placeholder="Loading address.." class="ui-input ui-input--form ui-input--text">
+          <input type="text" name="" [value]="ctrl.address"  disabled="disabled" placeholder="Loading address.." class="ui-input ui-input--form ui-input--text">
         </div>
-        <div *ngIf="alias" class="receiveMerit__form__group">
+        <div *ngIf="ctrl.alias" class="receiveMerit__form__group">
           <label for="" class="ui-label">Alias</label>
-          <input type="text" name="" [value]="'@'+alias"  disabled="disabled" placeholder="Loading alias.." class="ui-input ui-input--form ui-input--text">
+          <input type="text" name="" [value]="'@'+ctrl.alias"  disabled="disabled" placeholder="Loading alias.." class="ui-input ui-input--form ui-input--text">
         </div>
       </div>
     </div>
@@ -43,15 +43,15 @@
         <div class="receiveMeritEmpty__description"><a href="/wallets">Click here</a> to create one.</div>
       </div>
     </ng-template>
-    <div class="receiveMerit__totals" *ngIf="hasUnlockedWallet">
+    <div class="receiveMerit__totals" *ngIf="ctrl.hasUnlockedWallet">
       <div class="receiveMerit__totals__qr">
         <div class="receiveMerit__totals__qr__box">
-          <ng-container  *ngIf="qrAddress && address">
-            <qr-code [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
+          <ng-container  *ngIf="ctrl.qrAddress && ctrl.address">
+            <qr-code [value]="ctrl.qrAddress" [size]="220" [foreground]="'#334'"></qr-code>
           </ng-container>
         </div>
         <h3>or</h3>
-        <button class="receiveMerit__totals__qr__copy" [clip]="qrAddress" (click)="onCopy()">Copy Link</button>
+        <button class="receiveMerit__totals__qr__copy" [clip]="ctrl.qrAddress" (click)="ctrl.onCopy()">Copy Link</button>
       </div>
     </div>
   </div>

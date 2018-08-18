@@ -7,7 +7,7 @@
           <img src="assets/img/icons/invite.svg" alt="" class="invites-icon">
         </ion-avatar>
         <span class="amount">
-        {{ totalInvites }}
+        {{ availableInvites$ | async }}
       </span>
       </div>
     </ion-buttons>
@@ -22,96 +22,76 @@
 
 <ion-content>
 
-  <ion-refresher (ionRefresh)="doRefresh($event)" [enabled]="!loading">
-      <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+  <!--<ion-refresher (ionRefresh)="doRefresh($event)" [enabled]="!loading">-->
+      <!--<ion-refresher-content></ion-refresher-content>-->
+  <!--</ion-refresher>-->
 
-  <ion-item [hidden]="activeTab === 'confirmed'"
-            (click)="showHiddenRequests = true"
-            *ngIf="hiddenRequests?.length && !showHiddenRequests">
-      <ion-avatar img-icon item-start>
-         <img src="assets/img/icons/hidden.svg">
-      </ion-avatar>
-      <h2>Hidden Requests</h2>
-      <ion-badge item-end>{{hiddenRequests.length}}</ion-badge>
-  </ion-item>
+  <div [hidden]="activeTab === 'history'">
+    <ng-container *ngIf="inviteRequests$ | async as inviteRequests">
 
-  <div [hidden]="activeTab === 'confirmed'">
-    <div *ngIf="!activeRequests?.length && !hiddenRequests?.length" class="cta">
-        <img src="assets/img/invite-spread.svg" alt="">
-
-      <div class="info-box">
-        <b>No Requests Yet.</b> You can spread the word by telling friends, colleagues, and loved ones about Merit.
-
-        <p>Once they use your alias as their <i>unlock code</i> when signing up, you will receive an "invite request" here.
-        With a simple click, you can send them an invite, and they're in!</p>
-
-        <p>The more people you invite, the higher your chances of winning <strong>growth rewards!</strong></p>
-      </div>
-
-      <button ion-button class="action-button" (click)="toSendInvite()">
-        Send an Invite
-      </button>
-    </div>
-
-    <ion-list>
-      <button ion-item *ngFor="let request of (showHiddenRequests && hiddenRequests); trackBy: request?.address" (click)="processRequest(request)" text-wrap>
-        <ion-avatar item-start img-icon>
-          <img src="assets/img/icons/incoming_request.svg">
-        </ion-avatar>
-          <h2 [class.address]="request.alias">{{ request.alias ? '@' + request.alias : request.address }}</h2>
-          <p *ngIf="request.alias" class="address">{{ request.address }}</p>
-      </button>
-
-      <button ion-item *ngFor="let request of activeRequests; trackBy: request?.address" (click)="processRequest(request)"
-                text-wrap>
-        <ion-avatar item-start img-icon>
-          <img src="assets/img/icons/incoming_request.svg">
-        </ion-avatar>
+      <ion-list *ngIf="inviteRequests.length; else noInviteRequests">
+        <button ion-item *ngFor="let request of inviteRequests; trackBy: request?.address" (click)="processRequest(request)" text-wrap>
+          <ion-avatar item-start img-icon>
+            <img src="assets/img/icons/incoming_request.svg">
+          </ion-avatar>
           <h2 [class.address]="!request.alias">{{ request.alias ? '@' + request.alias : request.address }}</h2>
           <p *ngIf="request.alias" class="address">{{ request.address }}</p>
-      </button>
-    </ion-list>
+        </button>
+      </ion-list>
+
+      <ng-template #noInviteRequests>
+        <div class="cta">
+          <img src="assets/img/invite-spread.svg" alt="">
+
+          <div class="info-box">
+            <b>No Requests Yet.</b> You can spread the word by telling friends, colleagues, and loved ones about Merit.
+
+            <p>Once they use your alias as their <i>unlock code</i> when signing up, you will receive an "invite request" here.
+              With a simple click, you can send them an invite, and they're in!</p>
+
+            <p>The more people you invite, the higher your chances of winning <strong>growth rewards!</strong></p>
+          </div>
+
+          <button ion-button class="action-button" (click)="toSendInvite()">
+            Send an Invite
+          </button>
+        </div>
+      </ng-template>
+
+    </ng-container>
   </div>
 
   <ion-list [hidden]="activeTab === 'active'">
-      <div *ngIf="!confirmedRequests?.length" class="cta">
-      <img src="assets/img/invite-sent.svg" alt="">
-
-      <div class="info-box">
-          <b>No sent invites yet.</b> You can either approve invite requests, that people send to you, or send invites to existing addresses/aliases.
-          <p>
-          This means, you can unlock users that even haven't asked you for invite, or give people powers to unlock whoever they want by sending them additional invites.
-          </p>
-          <p>The more people you invite, the higher your chances of winning <strong>growth rewards!</strong></p>
-      </div>
-
-      <button ion-button class="action-button" (click)="toSendInvite()">
-          Send an Invite
-      </button>
-  </div>
-
-
-
-    <div *ngFor="let request of confirmedRequests; trackBy: request?.address" text-wrap>
-
-      <ion-item *ngIf="!request.isVault">
-          <contact-avatar item-start [contact]="request.contact" fallback="assets/img/icons/confirm.svg"></contact-avatar>
+    <ng-container *ngIf="sentInvites$ | async as sentInvites; else noSentInvites">
+      <div *ngFor="let tx of sentInvites; trackBy: request?.address" text-wrap>
+        <ion-item>
+          <contact-avatar item-start [contact]="tx.contact" [fallback]="tx.isVault? 'assets/img/icons/vault-avatar.svg' : 'assets/img/icons/confirm.svg'"></contact-avatar>
           <ion-label>
-              <h2>
-                  {{request.label}}
-              </h2>
+            <h2>
+              {{ tx.name }}
+            </h2>
           </ion-label>
         </ion-item>
+      </div>
+    </ng-container>
 
-      <ion-item *ngIf="request.isVault">
-          <ion-avatar item-start img-icon>
-              <img src="assets/img/icons/vault-avatar.svg">
-          </ion-avatar>
-          <h2>{{ request.label }}</h2>
-        </ion-item>
+    <ng-template #noSentInvites>
+      <div class="cta">
+        <img src="assets/img/invite-sent.svg" alt="">
 
-    </div>
+        <div class="info-box">
+          <b>No sent invites yet.</b> You can either approve invite requests, that people send to you, or send invites to existing addresses/aliases.
+          <p>
+            This means, you can unlock users that even haven't asked you for invite, or give people powers to unlock whoever they want by sending them additional invites.
+          </p>
+          <p>The more people you invite, the higher your chances of winning <strong>growth rewards!</strong></p>
+        </div>
+
+        <button ion-button class="action-button" (click)="toSendInvite()">
+          Send an Invite
+        </button>
+      </div>
+    </ng-template>
   </ion-list>
 
 </ion-content>

@@ -39,10 +39,7 @@ export class PushNotificationsService {
   async enable() {
     const wallets = await this.getWallets();
     this.disablePolling();
-    wallets.forEach((walletClient: MeritWalletClient) => {
-      this.logger.info('Subscribing to push with: ', walletClient);
-      this.subscribe(walletClient);
-    });
+    wallets.forEach((walletClient: MeritWalletClient) => this.subscribe(walletClient));
   }
 
   async disable() {

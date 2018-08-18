@@ -82,6 +82,7 @@ export interface IDisplayTransaction extends ITransaction {
   isSpent: boolean;
   cancelled?: boolean;
   isNew: boolean;
+  isVault?: boolean;
 }
 
 export interface IVisitedTransaction {

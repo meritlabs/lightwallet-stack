@@ -11,85 +11,72 @@
 
 <ion-content [class.footerCollapsed]="isFooterCollapsed">
 
-  <div *ngIf="loading">
+  <div *ngIf="ctrl.walletsLoading$ | async; else loaded">
       <ion-spinner></ion-spinner>
   </div>
 
-  <div *ngIf="!loading && !hasUnlockedWallets" class="unlock-screen">
+  <ng-template #loaded>
+    <div *ngIf="ctrl.wallets$ | async as wallets; else noWallets">
+
+      <div class="container" *ngIf="ctrl.qrAddress">
+        <qr-code [value]="ctrl.qrAddress" [size]="220" foreground="#334"></qr-code>
+      </div>
+
+    </div>
+
+    <ng-template #noWallets>
+      <div class="unlock-screen">
         <div class="unlock-backdrop"></div>
 
         <div class="unlock-popup">
-            <div class="top-label">Before you start...</div>
-            <img src="assets/img/icons/confirm.svg">
-            <h2>Waiting for invite</h2>
-            <div class="bottom-label">You cannot receive Merit until you are invited.</div>
+          <div class="top-label">Before you start...</div>
+          <img src="assets/img/icons/confirm.svg">
+          <h2>Waiting for invite</h2>
+          <div class="bottom-label">You cannot receive Merit until you are invited.</div>
         </div>
 
         <div class="qr-stub">
-            <img src="assets/img/icons/qr_l.svg">
+          <img src="assets/img/icons/qr_l.svg">
         </div>
 
         <ion-footer>
-            <ion-toolbar>
-                <ion-item>
-                    <ion-avatar item-start img-icon>
-                        <img src="assets/img/icons/request-amount-gray.svg" alt="">
-                    </ion-avatar>
-                    <ion-label>
-                        <h2></h2>
-                        <p></p>
-                    </ion-label>
-                </ion-item>
-                <ion-item>
-                    <ion-avatar item-start img-icon>
-                        <img src="assets/img/icons/merit-gray.svg" alt="">
-                    </ion-avatar>
-                    <ion-label>
-                        <h2></h2>
-                        <p></p>
-                    </ion-label>
-                </ion-item>
-                <ion-item>
-                    <ion-avatar item-start img-icon>
-                        <img src="assets/img/icons/wallet-gray.svg" alt="">
-                    </ion-avatar>
-                    <ion-label>
-                        <h2></h2>
-                        <p></p>
-                    </ion-label>
-                </ion-item>
-            </ion-toolbar>
+          <ion-toolbar>
+            <ion-item>
+              <ion-avatar item-start img-icon>
+                <img src="assets/img/icons/request-amount-gray.svg" alt="">
+              </ion-avatar>
+              <ion-label>
+                <h2></h2>
+                <p></p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-avatar item-start img-icon>
+                <img src="assets/img/icons/merit-gray.svg" alt="">
+              </ion-avatar>
+              <ion-label>
+                <h2></h2>
+                <p></p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-avatar item-start img-icon>
+                <img src="assets/img/icons/wallet-gray.svg" alt="">
+              </ion-avatar>
+              <ion-label>
+                <h2></h2>
+                <p></p>
+              </ion-label>
+            </ion-item>
+          </ion-toolbar>
         </ion-footer>
-    </div>
-
-    <div *ngIf="!loading && hasUnlockedWallets">
-
-      <ion-card *ngIf="wallet && !wallet.isComplete()" margin-top>
-        <ion-card-header>This wallet is incomplete.</ion-card-header>
-        <ion-card-content>
-          All signing devices must be added to this multisig wallet before merit addresses can be created.
-        </ion-card-content>
-        <button (click)="toCopayers()" ion-button>Open Wallet</button>
-      </ion-card>
-
-      <div class="container" *ngIf="wallet && wallet.isComplete() && qrAddress && !addressGenerationInProgress">
-        <qr-code *ngIf="address" [value]="qrAddress" [level]="M" [size]="220" [foreground]="'#334'"></qr-code>
       </div>
+    </ng-template>
+  </ng-template>
 
-      <div class="container">
-        <div class="spinner-wrapper" *ngIf="addressGenerationInProgress">
-          <ion-spinner></ion-spinner>
-        </div>
-      </div>
-
-      <div class="container" *ngIf="wallet && wallet.isComplete() && !qrAddress && !addressGenerationInProgress">
-        No address available for this wallet
-      </div>
-
-    </div>
 </ion-content>
 
-<ion-footer *ngIf="!loading && hasUnlockedWallets" text-center>
+<ion-footer *ngIf="hasUnlockedWallets" text-center>
 
   <button #toggleButton ion-button round small outline icon-start class="footer-toggle-button" (click)="toggleFooter()">
     <ion-icon [name]="isFooterCollapsed? 'arrow-up' : 'arrow-down'"></ion-icon> {{ isFooterCollapsed? 'Show options' : 'Hide options'}}
@@ -97,14 +84,14 @@
 
   <ion-toolbar>
 
-    <ion-item *ngIf="!wallet">
+    <ion-item>
       <ion-label>
         <h2>You don't have any wallets</h2>
       </ion-label>
     </ion-item>
 
 
-    <div *ngIf="wallet" enter-to-next>
+    <div enter-to-next>
 
       <div class="row error" *ngIf="mainAddressGapReached">
         <span style="flex: 1" text-right>Maximum number of consecutive addresses without activity reached</span>
@@ -118,28 +105,27 @@
           <ion-label stacked>
             <p>Request Amount (optional)</p>
           </ion-label>
-          <ion-input #amountInput type="number" pattern="[0-9\.]" min="0" [(ngModel)]="amount" (ionChange)="changeAmount()" [placeholder]="'0.00 ' + amountCurrency"></ion-input>
-          <button ion-button item-end clear color="primary" (click)="toggleCurrency()">{{ amountCurrency }}</button>
+          <ion-input #amountInput type="number" pattern="[0-9\.]" min="0" [(ngModel)]="ctrl.amount" (ionChange)="ctrl.changeAmount()" [placeholder]="'0.00 ' + amountCurrency"></ion-input>
+          <button ion-button item-end clear color="primary" (click)="ctrl.toggleCurrency()">{{ amountCurrency }}</button>
         </ion-item>
 
-        <button ion-item detail-none text-wrap (click)="copyToClipboard(address)" [clip]="address">
+        <button ion-item detail-none text-wrap (click)="copyToClipboard(ctrl.address)" [clip]="ctrl.address">
           <ion-avatar img-icon item-start>
             <img src="assets/img/icons/merit.svg" alt="">
           </ion-avatar>
           <ion-label stacked>
             <p>Merit Address</p>
-            <h2 *ngIf="alias">@{{alias}}</h2>
-            <h2 *ngIf="!alias" class="address">{{address}}</h2>
+            <h2 [class.address]="!ctrl.alias">{{ctrl.alias? '@' + ctrl.alias : ctrl.address}}</h2>
           </ion-label>
         </button>
 
-        <button ion-item detail-none (click)="selectWallet()">
+        <button ion-item detail-none (click)="ctrl.selectWallet()">
           <ion-avatar img-icon item-start>
             <img src="assets/img/icons/wallet.svg" alt="">
           </ion-avatar>
           <ion-label stacked>
             <p>Receive to</p>
-            <h2>{{ wallet.name || wallet._id }}</h2>
+            <h2>{{ ctrl.selectedWallet.name || ctrl.selectedWallet._id }}</h2>
           </ion-label>
         </button>
       </ion-list>

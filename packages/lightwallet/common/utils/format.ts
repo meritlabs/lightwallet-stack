@@ -1,6 +1,8 @@
 import { UNITS } from '@merit/common/utils/constants';
 import * as _ from 'lodash';
 
+const MRT_TO_MIC = 1e8;
+
 function clipDecimals(number, decimals) {
   const x = number.toString().split('.');
   const d = (x[1] || '0').substring(0, decimals);
@@ -29,3 +31,11 @@ export const formatAmount = (micros: number, unit: string, opts: any = {}): stri
     amount: string = clipDecimals((micros / u.toMicros), u[precision].maxDecimals).toFixed(u[precision].maxDecimals);
   return addSeparators(amount, opts.thousandsSeparator || ',', opts.decimalSeparator || '.', u[precision].minDecimals);
 };
+
+export function mrtToMicro(mrt: number): number {
+  return Math.round(mrt * MRT_TO_MIC);
+}
+
+export function microsToMrt(micros: number): number {
+  return parseFloat((micros / this.MRT_TO_MIC).toFixed(8));
+}

@@ -7,6 +7,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { isNil, sumBy } from 'lodash';
 import { DEFAULT_WALLET_COLOR } from '../utils/constants';
 import { InviteRequest, InviteRequestsService } from '@merit/common/services/invite-request.service';
+import { IRankInfo } from '@merit/common/models/rank';
 
 export interface IDisplayWalletOptions {
   skipStatus?: boolean;
@@ -14,6 +15,7 @@ export interface IDisplayWalletOptions {
   skipAnv?: boolean;
   skipAlias?: boolean;
   skipShareCode?: boolean;
+  skipRankInfo?: boolean;
 }
 
 export function ClientProperty(target: DisplayWallet, key: keyof MeritWalletClient) {
@@ -44,6 +46,10 @@ export class DisplayWallet {
   @ClientProperty sendableInvites: number;
   @ClientProperty confirmed: boolean;
 
+  get address() {
+    return this.client.getRootAddress().toString();
+  }
+
   referrerAddress: string;
   alias: string;
   shareCode: string;
@@ -66,9 +72,10 @@ export class DisplayWallet {
   growthRewardsMerit: string;
   growthRewardsFiat: string;
 
-  inviteRequests: InviteRequest[];
+  communitySize: number;
 
-  communitySize: number = 0;
+  inviteRequests: InviteRequest[];
+  rankInfo: IRankInfo;
 
   constructor(public client: MeritWalletClient,
               private walletService: WalletService,
@@ -126,6 +133,11 @@ export class DisplayWallet {
       });
   }
 
+  async updateRankInfo() {
+    this.rankInfo = await this.client.getRankInfo();
+    this.communitySize = this.rankInfo.communitySize || 0;
+  }
+
   async updateRewards() {
     this.totalNetworkValueMicro = await this.client.getANV();
 
@@ -136,8 +148,6 @@ export class DisplayWallet {
       this.growthRewardsMicro = sumBy(rewardsData, 'rewards.ambassador');
       this.formatNetworkInfo();
     }
-
-    this.communitySize = (await this.client.getCommunityInfo()).referralcount;
   }
 
   private formatNetworkInfo() {
@@ -181,6 +191,9 @@ export async function updateDisplayWallet(displayWallet: DisplayWallet, options:
 
   if (!options.skipShareCode)
     await displayWallet.updateShareCode();
+
+  if (!options.skipRankInfo)
+    await displayWallet.updateRankInfo();
 
   return displayWallet;
 }

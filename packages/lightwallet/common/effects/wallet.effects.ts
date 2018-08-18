@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { createDisplayWallet, DisplayWallet, updateDisplayWallet } from '@merit/common/models/display-wallet';
 import { IRootAppState } from '@merit/common/reducers';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
@@ -12,7 +12,7 @@ import {
   selectWalletById,
   selectWallets,
   UpdateInviteRequestsAction,
-  UpdateOneWalletAction,
+  UpdateOneWalletAction, UpdateRankDataAction,
   UpdateWalletsAction,
   UpdateWalletTotalsAction,
   WalletsActionType,
@@ -33,6 +33,17 @@ import { distinctUntilChanged, map, mergeMap, skip, switchMap, take, tap, withLa
 import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
 import { InviteRequest, InviteRequestsService } from '@merit/common/services/invite-request.service';
+import { IRankData, IRankInfo } from '@merit/common/models/rank';
+
+const REWARDS_PER_BLOCK: number = 5;
+
+function getPercentileStr(rankData: IRankInfo) {
+  const percentile = Number(rankData.percentile);
+
+  return (percentile > 20)
+    ? 'Top ' + Math.max(Math.round(100 - percentile), 1) + '%'
+    : 'Bottom ' + Math.max(Math.round(percentile), 1) + '%';
+}
 
 @Injectable()
 export class WalletEffects {
@@ -62,6 +73,16 @@ export class WalletEffects {
     ofType(WalletsActionType.Update, WalletsActionType.UpdateOne, WalletsActionType.Add, WalletsActionType.DeleteWallet),
     withLatestFrom(this.store.select(selectWallets)),
     map(([action, wallets]) => new UpdateWalletTotalsAction(this.calculateTotals(wallets))),
+  );
+
+  @Effect()
+  updateRankData$: Observable<UpdateRankDataAction> = this.actions$.pipe(
+    ofType(WalletsActionType.Update, WalletsActionType.UpdateOne, WalletsActionType.Add, WalletsActionType.DeleteWallet),
+    withLatestFrom(this.store.select(selectWallets)),
+    switchMap(([action, wallets]) =>
+      fromPromise(this.calculateRankData(wallets))
+    ),
+    map(rankData => new UpdateRankDataAction(rankData)),
   );
 
   @Effect()
@@ -101,14 +122,7 @@ export class WalletEffects {
           .then(() => this.profileService.isAuthorized()),
       )
         .pipe(
-          tap(async (authorized: boolean) => {
-            if (!authorized) {
-              await this.storage.clear();
-              this.router.navigateByUrl('/onboarding');
-            } else {
-              this.router.navigateByUrl('/wallets');
-            }
-          }),
+          tap(this.onWalletDelete.bind(this)),
           mergeMap((authorized: boolean) => [
             new UpdateAppAction({ authorized }),
             new DeleteWalletCompletedAction(wallet.id),
@@ -132,17 +146,28 @@ export class WalletEffects {
     ),
   );
 
-  constructor(private actions$: Actions,
-              private walletService: WalletService,
-              private addressService: AddressService,
-              private profileService: ProfileService,
-              private txFormatService: TxFormatService,
-              private store: Store<IRootAppState>,
-              private persistenceService: PersistenceService,
-              private persistenceService2: PersistenceService2,
-              private storage: Storage,
-              private router: Router,
-              private inviteRequestsService: InviteRequestsService) {
+  constructor(
+    protected actions$: Actions,
+    protected walletService: WalletService,
+    protected addressService: AddressService,
+    protected profileService: ProfileService,
+    protected txFormatService: TxFormatService,
+    protected store: Store<IRootAppState>,
+    protected persistenceService: PersistenceService,
+    protected persistenceService2: PersistenceService2,
+    protected storage: Storage,
+    protected inviteRequestsService: InviteRequestsService,
+    @Optional() private router?: Router,
+  ) {
+  }
+
+  protected async onWalletDelete(authorized: boolean) {
+    if (!authorized) {
+      await this.storage.clear();
+      this.router.navigateByUrl('/onboarding');
+    } else {
+      this.router.navigateByUrl('/wallets');
+    }
   }
 
   private async updateAllWallets(): Promise<DisplayWallet[]> {
@@ -184,6 +209,7 @@ export class WalletEffects {
       totalNetworkValue: 0,
       totalWalletsBalance: 0,
       invites: 0,
+      communitySize: 0,
     };
 
     let allBalancesHidden = true;
@@ -193,6 +219,7 @@ export class WalletEffects {
       totals.totalMiningRewards += w.miningRewardsMicro;
       totals.totalGrowthRewards += w.growthRewardsMicro;
       totals.invites += w.availableInvites;
+      totals.communitySize += w.rankInfo.communitySize;
 
       if (!w.balanceHidden) {
         allBalancesHidden = false;
@@ -208,6 +235,67 @@ export class WalletEffects {
       totalWalletsBalanceFiat: this.txFormatService.formatAlternativeStr(totals.totalWalletsBalance),
       allBalancesHidden,
       invites: totals.invites,
+      communitySize: totals.communitySize,
     };
+  }
+
+  private async calculateRankData(wallets: DisplayWallet[]): Promise<IRankData> {
+    const hasConfirmedWallet = wallets.findIndex((wallet: DisplayWallet) => wallet.confirmed) !== -1;
+
+    if (!hasConfirmedWallet) {
+      return {
+        unlocked: false,
+        totalAnv: 0,
+        bestRank: 0,
+        bestPercentile: 0,
+        percentileStr: '',
+        rankChangeDay: 0,
+        totalCommunitySize: 0,
+        totalCommunitySizeChange: 0,
+        totalProbability: 0,
+        estimateStr: '',
+      };
+    }
+
+    const ranks: IRankInfo[] = wallets.map(wallet => wallet.rankInfo);
+    let topRank: IRankInfo = ranks[0];
+
+    for (let i = 1; i < ranks.length; i++) {
+      if (ranks[i].rank < topRank.rank) {
+        topRank = ranks[i];
+      }
+    }
+
+    const rankData: IRankData = {
+      unlocked: true,
+      totalAnv: 0,
+      bestRank: topRank.rank,
+      bestPercentile: +topRank.percentile,
+      percentileStr: getPercentileStr(topRank),
+      rankChangeDay: topRank.rankChangeDay,
+      totalCommunitySize: 0,
+      totalCommunitySizeChange: 0,
+      totalProbability: 0,
+      estimateStr: '',
+    };
+
+    ranks.forEach((rank: IRankInfo) => {
+      rankData.totalAnv += rank.anv;
+      rankData.totalCommunitySize += rank.communitySize;
+      rankData.totalCommunitySizeChange += rank.communitySizeChangeDay;
+      rankData.totalProbability += rank.anvPercent;
+    });
+
+    const estimateMinutesPerReward = 1 / (rankData.totalProbability * REWARDS_PER_BLOCK);
+
+    if (estimateMinutesPerReward < 120) {
+      rankData.estimateStr = `Every ${Math.ceil(estimateMinutesPerReward)}min`
+    } else if (estimateMinutesPerReward < 2880) {
+      rankData.estimateStr = `Every ${ Math.ceil(estimateMinutesPerReward/60)}hrs`
+    } else {
+      rankData.estimateStr = `Every ${ Math.ceil(estimateMinutesPerReward/1440)}days`
+    }
+
+    return rankData
   }
 }

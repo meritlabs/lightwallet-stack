@@ -49,12 +49,27 @@ export class MWCService {
       mwc.import(walletData);
     }
 
-    if (!mwc.onAuthenticationError) {
-      mwc.setOnAuthenticationError(() => {
-        this.events.publish(MWCErrors.AUTHENTICATION);
-      });
-    }
-
     return mwc;
   }
+}
+
+let plainMwc: MeritWalletClient;
+
+export function getMWCInstance(walletData?, opts?: { bwsurl?: string; verbose?: boolean; }): MeritWalletClient {
+  if (!walletData && !opts && plainMwc) return plainMwc;
+
+  opts = opts || {};
+
+  const mwc = MeritWalletClient.getInstance({
+    baseUrl: opts.bwsurl || ENV.mwsUrl,
+    verbose: opts.verbose || false,
+    timeout: 100000,
+    transports: ['polling'],
+  });
+
+  if (walletData) {
+    mwc.import(walletData);
+  }
+
+  return mwc;
 }

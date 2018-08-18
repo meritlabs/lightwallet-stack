@@ -10,61 +10,75 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { getSendMethodDestinationType } from '@merit/common/utils/destination';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
-import {
-  AlertController,
-  IonicPage,
-  LoadingController,
-  ModalController,
-  NavController,
-  NavParams,
-  Platform
-} from 'ionic-angular';
+import { IonicPage, ModalController, NavParams, Platform } from 'ionic-angular';
+import { SendInviteFormController } from '@merit/common/controllers/send-invite-form.controller';
+import { Store } from '@ngrx/store';
+import { IRootAppState } from '@merit/common/reducers';
+import { FormBuilder } from '@angular/forms';
+import { AlertService } from '@merit/common/services/alert.service';
+import { LoadingControllerService } from '@merit/common/services/loading-controller.service';
+import { couldBeAlias, isAddress, isEmail, isPhoneNumber } from '@merit/common/utils/addresses';
+import { getLatestValue } from '@merit/common/utils/observables';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @IonicPage()
 @Component({
   selector: 'view-send-invite-amount',
-  templateUrl: 'send-invite-amount.html'
+  templateUrl: 'send-invite-amount.html',
 })
 export class SendInviteAmountView {
 
-  wallets: Array<MeritWalletClient>;
-  wallet: MeritWalletClient;
-  formData = {
-    amount: null,
-    destination: ''
-  };
-  address;
-  error: string;
-  link: string;
-  copied: boolean;
-  showShareButton: boolean;
-  amountFocused: boolean;
-  easySendDelivered: boolean;
-
   @ViewChild('amount') amountInput: ElementRef;
 
-  constructor(private navCtrl: NavController,
-              private navParams: NavParams,
-              private profileService: ProfileService,
-              private toastCtrl: ToastControllerService,
-              private loadCtrl: LoadingController,
-              private modalCtrl: ModalController,
-              private alertCtrl: AlertController,
-              private socialSharing: SocialSharing,
-              private platform: Platform,
-              private easySendService: EasySendService,
-              private logger: LoggerService,
-              private walletService: WalletService
-  ) {
-    this.address = this.navParams.get('address');
-    this.showShareButton = this.platform.is('cordova') && SocialSharing.installed();
+  showShareButton = this.plt.is('cordova') && SocialSharing.installed();
+  amountFocused: boolean;
+  formCtrl: SendInviteFormController;
+  customDestination: string = '';
+
+  get address() {
+    return this.formCtrl.address;
   }
 
-  async ionViewWillEnter() {
-    this.wallets = await this.profileService.getWallets();
-    this.wallet = this.wallets.find(w => w.availableInvites > 0);
-    if (!this.wallet) {
-      this.error = 'You have no wallets with available invites now';
+  get type() {
+    return this.formCtrl.type;
+  }
+
+  get destination() {
+    return this.formCtrl.destination;
+  }
+
+  get amount() {
+    return this.formCtrl.amount;
+  }
+
+  constructor(
+    store: Store<IRootAppState>,
+    formBuilder: FormBuilder,
+    walletService: WalletService,
+    toastCtrl: ToastControllerService,
+    logger: LoggerService,
+    alertCtrl: AlertService,
+    loadingCtrl: LoadingControllerService,
+    private plt: Platform,
+    private navParams: NavParams,
+    private modalCtrl: ModalController,
+  ) {
+    this.formCtrl = new SendInviteFormController(store, formBuilder, walletService, logger, toastCtrl, loadingCtrl, alertCtrl);
+  }
+
+  async ngOnInit() {
+    await this.formCtrl.init();
+  }
+
+  onDestinationChange() {
+    const value = this.customDestination;
+
+    if ((couldBeAlias(value) || isAddress(value) && this.formCtrl.type == SendMethodType.Easy)) {
+      this.formCtrl.type.setValue(SendMethodType.Classic);
+      this.formCtrl.destination.setValue(value);
+    } else if ((isEmail(value) || isPhoneNumber(value)) && this.formCtrl.type == SendMethodType.Classic) {
+      this.formCtrl.type.setValue(SendMethodType.Easy);
+      this.formCtrl.address.setValue(value);
     }
   }
 
@@ -72,71 +86,20 @@ export class SendInviteAmountView {
     this.focusInput();
   }
 
-  async send() {
-    if (!this.wallet) {
-      this.wallet = this.wallets.find(w => (w.availableInvites > 0));
-    }
-    if (!this.wallet || !this.wallet.availableInvites) {
-      return this.toastCtrl.error('You have no active invites');
-    }
-
-    if (this.wallet.availableInvites < this.formData.amount) {
-      return this.toastCtrl.error('You don\'t have enough invites in your wallet for this transaction.');
-    }
-
-    const loader = this.loadCtrl.create({ content: 'Creating MeritInvite link...' });
-    try {
-      loader.present();
-
-      const easySend = await this.walletService.sendMeritInvite(this.wallet, this.formData.amount);
-
-      const destination = getSendMethodDestinationType(this.formData.destination);
-
-      if (destination) {
-        try {
-          await this.wallet.deliverGlobalSend(easySend, {
-            type: SendMethodType.Easy,
-            destination,
-            value: this.formData.destination
-          });
-          this.easySendDelivered = true;
-        } catch (err) {
-          this.logger.error('Error delivering GlobalSend', err);
-          this.easySendDelivered = false;
-        }
-      }
-
-      this.link = getEasySendURL(easySend);
-      this.wallet.availableInvites -= this.formData.amount;
-
-    } catch (e) {
-      console.log(e);
-      this.toastCtrl.error('Failed to send invite');
-    } finally {
-      loader.dismiss();
-    }
-  }
-
-  selectWallet() {
+  async selectWallet() {
     const modal = this.modalCtrl.create('SelectWalletModal', {
-      selectedWallet: this.wallet,
+      selectedWallet: this.formCtrl.selectedWallet,
       showInvites: true,
-      availableWallets: this.wallets.filter(wallet => wallet.availableInvites > 0)
+      availableWallets: await getLatestValue(this.formCtrl.wallets$),
     }, MERIT_MODAL_OPTS);
-    modal.onDidDismiss((wallet) => {
+
+    modal.onDidDismiss((wallet: DisplayWallet) => {
       if (wallet) {
-        this.wallet = wallet;
-        this.processAmount(this.formData.amount);
+        this.formCtrl.selectWallet(wallet);
       }
     });
-    return modal.present();
-  }
 
-  processAmount(amount) {
-    this.error = '';
-    if (amount > this.wallet.availableInvites) {
-      this.error = 'Not enough invites';
-    }
+    return modal.present();
   }
 
   amountKeypress(key) {
@@ -145,38 +108,6 @@ export class SendInviteAmountView {
 
   focusInput() {
     this.amountInput['_native']['nativeElement'].focus();
+    this.amountFocused = true;
   }
-
-
-  copyToClipboard() {
-    this.copied = true;
-    this.toastCtrl.success('Copied to clipboard');
-  }
-
-
-  async toWallets() {
-    if (this.copied) {
-      this.navCtrl.pop();
-    } else {
-      this.alertCtrl.create({
-        title: 'Have you copied/shared your link?',
-        message: 'Do not forget to copy or share your link, or you can lose invite',
-        buttons: [
-          { text: 'Cancel', role: 'cancel' },
-          {
-            text: 'Ok', handler: () => {
-              this.navCtrl.pop();
-            }
-          }
-        ]
-      }).present();
-    }
-  }
-
-  isSendAllowed() {
-    return (
-      !this.error && this.formData.amount
-    );
-  }
-
 }

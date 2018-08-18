@@ -1,72 +1,66 @@
 <ion-content>
 
-  <ion-refresher (ionRefresh)="doRefresh($event)">
-        <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+  <!--<ion-refresher (ionRefresh)="doRefresh($event)">-->
+        <!--<ion-refresher-content></ion-refresher-content>-->
+  <!--</ion-refresher>-->
 
   <button ion-button full primary navPush="TellPeopleView" class="tell-people-button">
     Share your unlock code
     <img src="assets/img/icons/growth_dark.svg">
   </button>
-  <button ion-button full primary navPush="SendInviteAmountView" [disabled]="!availableInvites" class="send-invite-button">
+  <button ion-button full primary navPush="SendInviteAmountView" [disabled]="!(availableInvites$ | async)" class="send-invite-button">
     Send invite token
     <img src="assets/img/icons/send.svg">
   </button>
 
-  <div class="loading-indicator" [hidden]="!loading">
-      <div>Loading community data...</div>
-  </div>
 
-
-  <ion-list no-lines [hidden]="loading">
-    <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView" [navParams]="{ wallets: wallets }">
+  <ion-list no-lines *ngIf="rankData$ | async as rankData; else rankDataLoading">
+    <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView">
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/network.svg">
-        <ion-spinner color="primary" name="crescent" [hidden]="!refreshing"></ion-spinner>
       </ion-avatar>
       <ion-label>
-        <h2>People invited</h2>
+        <h2>Community</h2>
       </ion-label>
        <div item-end class="details">
-           {{network.communitySize}} people
-           <ion-badge *ngIf="activeUnlockRequests"> +{{activeUnlockRequests}}</ion-badge>
+           {{ rankData.communitySize }} people
+           <ion-badge *ngIf="rankData.totalCommunitySizeChange > 0"> ▲ {{ rankData.totalCommunitySizeChange }}</ion-badge>
        </div>
-
     </button>
 
     <ion-item class="pending-unlock-requests">
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/invite.svg">
-            <ion-spinner color="primary" name="crescent" [hidden]="!refreshing"></ion-spinner>
         </ion-avatar>
         <ion-label>
           <h2>Invite tokens</h2>
         </ion-label>
-        <div item-end class="details">{{availableInvites}} INV</div>
+        <div item-end class="details">{{ availableInvites$ | async }} INV</div>
     </ion-item>
 
     <ion-item class="pending-unlock-requests">
         <ion-avatar item-start img-icon>
             <img src="assets/img/icons/growth.svg" alt="">
-            <ion-spinner color="primary" name="crescent" [hidden]="!refreshing"></ion-spinner>
         </ion-avatar>
         <ion-label>
           <h2>Growth rewards</h2>
         </ion-label>
-        <div item-end class="details">{{ (network?.growthRewards || 0) | toMRT:8 }}</div>
+        <div item-end class="details">{{ (totals$ | async).growthRewards | toMRT:8 }}</div>
     </ion-item>
 
     <ion-item class="pending-unlock-requests" navPush="LeaderboardView">
         <ion-avatar item-start img-icon>
             <img src="assets/img/icons/star.svg" alt="">
-            <ion-spinner color="primary" name="crescent" [hidden]="!refreshing"></ion-spinner>
         </ion-avatar>
         <ion-label>
           <h2>Community rank</h2>
         </ion-label>
         <div item-end class="details">
-            <span  *ngIf="rankData?.bestRank">
-                {{rankData.bestRank}} ({{rankData.percentileStr}})
+            <span  *ngIf="rankData.bestRank">
+                {{ rankData.bestRank }} ({{ bestRank.percentileStr }})
+              <ion-badge *ngIf="rankData.rankChangeDay !== 0">
+                {{ rankData.rankChangeDay > 0? '▲' : '▲' }} {{ rankData.rankChangeDay }}
+              </ion-badge>
             </span>
             <span  *ngIf="!rankData?.bestRank">
                 ---
@@ -78,26 +72,27 @@
     <ion-item class="pending-unlock-requests">
         <ion-avatar item-start img-icon>
             <img src="assets/img/icons/dices.svg" alt="">
-            <ion-spinner color="primary" name="crescent" [hidden]="!refreshing"></ion-spinner>
         </ion-avatar>
         <ion-label>
           <h2>Growth reward estimate </h2>
         </ion-label>
         <div item-end class="details" *ngIf="rankData.estimateStr">
-            {{rankData.estimateStr}}
+            {{ rankData.estimateStr }}
         </div>
         <div item-end class="details" *ngIf="!rankData.estimateStr">
             ---
         </div>
     </ion-item>
-
-
-
-
   </ion-list>
 
-  <div *ngIf="!loading && network">
-      <ion-list *ngFor="let wallet of network.wallets" no-lines class="wallet" [style.box-shadow]="'0 0 1px 0 '+wallet.color">
+  <ng-template #rankDataLoading>
+    <div class="loading-indicator">
+      <div>Loading community data...</div>
+    </div>
+  </ng-template>
+
+  <div *ngIf="wallets$ | async as wallets">
+      <ion-list *ngFor="let wallet of wallets" no-lines class="wallet" [style.box-shadow]="'0 0 1px 0 ' + wallet.color">
         <div *ngIf="!wallet.confirmed" item-end class="locked-info">
             <div class="backdrop"></div>
 
@@ -106,10 +101,10 @@
                 <h2>Waiting for invite</h2>
                 <div class="bottom-label">You can ask another person for invite by sharing your address: </div>
                 <div class="address-line">
-                    <div class="address" [clip]="wallet.referralAddress" (click)="notifyCopy()">
-                        {{wallet.referralAddress}}
+                    <div class="address" [clip]="wallet.address" (click)="notifyCopy()">
+                        {{ wallet.address }}
                     </div>
-                    <button ion-button icon-only clear (click)="shareAddress(wallet.referralAddress)">
+                    <button ion-button icon-only clear (click)="shareAddress(wallet.address)">
                         <ion-icon merit-icon name="share"></ion-icon>
                     </button>
                 </div>
@@ -131,10 +126,9 @@
           </ion-avatar>
           <ion-label [clip]="wallet.alias? '@'+wallet.alias : wallet.referralAddress" (click)="notifyCopy()">
             <p>Invite Code (click to copy)</p>
-            <h2 *ngIf="wallet.alias">@{{wallet.alias}}</h2>
-            <h2 *ngIf="!wallet.alias" class="address" >{{wallet.referralAddress}}</h2>
+            <h2>{{ wallet.alias? '@' + wallet.alias : wallet.address }}</h2>
           </ion-label>
-          <button ion-button icon-only clear item-end *ngIf="shareButtonAvailable" (click)="shareAddress(wallet.alias? wallet.alias : wallet.referrerAddress)">
+          <button ion-button icon-only clear item-end *ngIf="shareButtonAvailable" (click)="shareAddress(wallet.alias? wallet.alias : wallet.address)">
             <ion-icon merit-icon name="share"></ion-icon>
           </button>
         </ion-item>
@@ -145,7 +139,7 @@
               </ion-avatar>
               <ion-label >
                   <p>People invited</p>
-                  <h2>{{ wallet.communitySize || 0 }} people</h2>
+                  <h2>{{ wallet.communitySize }} people</h2>
               </ion-label>
         </ion-item>
 
@@ -155,11 +149,11 @@
           </ion-avatar>
           <ion-label>
             <p>Growth Rewards</p>
-            <h2>{{ (wallet.growthRewards || 0) | toMRT }}</h2>
+            <h2>{{ wallet.growthRewardsMerit }}</h2>
           </ion-label>
           <ion-note item-end class="balance">
             <span class="fiat-amount">
-              {{ (wallet.growthRewards || 0) | toFiat }}
+              {{ wallet.growthRewardsFiat }}
             </span>
           </ion-note>
         </ion-item>

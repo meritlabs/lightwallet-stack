@@ -1,0 +1,69 @@
+@import "~styles/v1/common/import-sass"
+
+\:host
+  background: $dark-grey-blue
+  padding: 35px 20px 55px
+  display: block
+  > .wrap
+    display: flex
+    justify-content: space-between
+    position: relative
+    z-index: 2
+    > .item
+      text-align: center
+      position: relative
+      width: 100%
+      transition: all .3s linear
+      &.collapsed
+        width: 0
+        overflow: hidden
+        opacity: 0
+      &:after
+        content: ""
+        display: block
+        position: absolute
+        right: -10px
+        top: 0
+        height: 100%
+        width: 1px
+        background: linear-gradient(to bottom, rgba(255,255,255, 0.01) 0%,rgba(255,255,255,0.65) 48%,rgba(0,0,0,0) 100%)
+      &:last-of-type
+        &:after
+          display: none
+      .title
+        +font(500, 16px, 24px, $cool-grey)
+        margin: 0px auto 35px
+        max-width: 120px
+        width: 100%
+      .info
+        +font(500, 17px, 15px, $white)
+        letter-spacing: -0.5px
+        margin-bottom: 25px
+        span
+          font-size: 14px
+      .movement
+        display: flex
+        justify-content: center
+        align-items: center
+        +font(500, 14px, 14px)
+        letter-spacing: -0.4px
+        &.positive
+          color: $light-green-blue
+        &.negative
+          color: $red2
+        p
+          margin: 0 2px
+          span
+            font-size: 10px
+      .picture
+        width: 60px
+        height: 60px
+        border-radius: 60px
+        display: flex
+        justify-content: center
+        align-items: center
+        margin: 0px auto 20px
+        background: rgba(0,0,0, .2)
+      i
+        font-style: italic
+        opacity: .9

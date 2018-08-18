@@ -1,6 +1,7 @@
 import { DisplayWallet, IDisplayWalletOptions } from '@merit/common/models/display-wallet';
 import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 import { InviteRequest } from '@merit/common/services/invite-request.service';
+import { IRankData, IRankInfo } from '@merit/common/models/rank';
 
 export interface IWalletsState {
   wallets: DisplayWallet[];
@@ -9,6 +10,7 @@ export interface IWalletsState {
   totals: IWalletTotals;
   totalsLoading: boolean;
   inviteRequests: InviteRequest[];
+  rankData: IRankData;
 }
 
 export interface IWalletTotals {
@@ -19,6 +21,7 @@ export interface IWalletTotals {
   totalWalletsBalanceFiat: string;
   allBalancesHidden: boolean;
   invites: number;
+  communitySize: number;
 }
 
 const DEFAULT_STATE: IWalletsState = {
@@ -31,11 +34,13 @@ const DEFAULT_STATE: IWalletsState = {
     totalWalletsBalance: '0.00',
     totalWalletsBalanceFiat: '0.00',
     allBalancesHidden: false,
-    invites: 0
+    invites: 0,
+    communitySize: 0,
   },
   loading: true,
   totalsLoading: true,
-  inviteRequests: []
+  inviteRequests: [],
+  rankData: {} as IRankData,
 };
 
 export enum WalletsActionType {
@@ -49,7 +54,8 @@ export enum WalletsActionType {
   UpdateInviteRequests = '[Wallets] Update Invite Wait List',
   DeleteWallet = '[Wallets] Delete wallet',
   DeleteWalletCompleted = '[Wallets] Delete wallet completed',
-  IgnoreInviteRequest = '[Wallets] Ignore invite request'
+  IgnoreInviteRequest = '[Wallets] Ignore invite request',
+  UpdateRankData = '[Wallets] Update rank data',
 }
 
 export class AddWalletAction implements Action {
@@ -112,6 +118,11 @@ export class IgnoreInviteRequestAction implements Action {
   constructor(public address: string) {}
 }
 
+export class UpdateRankDataAction implements Action {
+  readonly type = WalletsActionType.UpdateRankData;
+  constructor(public rankData: IRankData) {}
+}
+
 export type WalletsAction =
   AddWalletAction
   & UpdateWalletsAction
@@ -122,7 +133,8 @@ export type WalletsAction =
   & UpdateInviteRequestsAction
   & DeleteWalletAction
   & DeleteWalletCompletedAction
-  & IgnoreInviteRequestAction;
+  & IgnoreInviteRequestAction
+  & UpdateRankDataAction;
 
 export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
@@ -200,6 +212,12 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
         }
       };
 
+    case WalletsActionType.UpdateRankData:
+      return {
+        ...state,
+        rankData: action.rankData,
+      };
+
     default:
       return state;
   }
@@ -220,5 +238,6 @@ export const selectNumberOfInviteRequests = createSelector(selectInviteRequests,
   if (inviteRequests.length > 99) return '99+';
   return inviteRequests.length.toString();
 });
+export const selectRankData = createSelector(selectWalletsState, state => state.rankData);
 
 export const selectNumberOfWallets = createSelector(selectWallets, wallets => wallets.length);

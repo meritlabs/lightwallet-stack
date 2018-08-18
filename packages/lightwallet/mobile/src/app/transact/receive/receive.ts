@@ -1,4 +1,4 @@
-import { Component, Renderer2, ViewChild } from '@angular/core';
+import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Clipboard } from '@ionic-native/clipboard';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { Button, Events, Footer, IonicPage, ModalController, NavController, NavParams, TextInput } from 'ionic-angular';
@@ -12,32 +12,25 @@ import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { AddressService } from '@merit/common/services/address.service';
+import { Store } from '@ngrx/store';
+import { IRootAppState } from '../../../../../common/reducers';
+import { Observable } from 'rxjs';
+import {
+  selectConfirmedWallets,
+  selectWallets,
+  selectWalletsLoading,
+} from '../../../../../common/reducers/wallets.reducer';
+import { DisplayWallet } from '../../../../../common/models/display-wallet';
+import { ReceiveViewController } from '../../../../../common/controllers/receive-view.controller';
+import { getLatestValue } from '../../../../../common/utils/observables';
 
 @IonicPage()
 @Component({
   selector: 'view-receive',
   templateUrl: 'receive.html',
 })
-export class ReceiveView {
-  protocolHandler: string;
-  address: string;
-  alias: string;
-  qrAddress: string;
-  amount: number;
-  amountMicros: number;
-  availableUnits: Array<string>;
-  amountCurrency: string;
-
-  wallets;
-  wallet;
-
-  addressGenerationInProgress: boolean;
-
-  error: string;
-  mainAddressGapReached: boolean;
-
-  hasUnlockedWallets: boolean;
-  loading: boolean;
+export class ReceiveView implements OnInit {
+  ctrl: ReceiveViewController;
 
   @ViewChild('amountInput') amountInput: TextInput;
   @ViewChild(Footer) footer: Footer;
@@ -61,27 +54,13 @@ export class ReceiveView {
               private addressService: AddressService,
               private platformService: PlatformService,
               private navParams: NavParams,
-              private rnd: Renderer2) {
-    this.protocolHandler = 'merit';
-    this.availableUnits = [
-      this.configService.get().wallet.settings.unitCode.toUpperCase(),
-      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
-    ];
-    this.amountCurrency = this.availableUnits[0];
+              private rnd: Renderer2,
+              private store: Store<IRootAppState>) {
+    this.ctrl = new ReceiveViewController(configService, store, toastCtrl);
   }
 
-  ionViewDidLoad() {
-    // Get a new address if we just received an incoming TX (on an address we already have)
-    this.events.subscribe('Remote:IncomingTx', (walletId, type, n) => {
-      this.logger.info('Got an incomingTx on receive screen: ', n);
-      if (this.wallet && this.wallet.id == walletId && n.data.address == this.address) {
-        this.generateAddress();
-      }
-    });
-  }
-
-  ionViewWillEnter() {
-    return this.loadData();
+  ngOnInit() {
+    return this.ctrl.init();
   }
 
   toggleFooter() {
@@ -109,62 +88,14 @@ export class ReceiveView {
     this.amountInput.getNativeElement().focus();
   }
 
-  async loadData() {
-    if (this.loading) return;
-    this.loading = true;
-    this.wallets = await this.profileService.getWallets();
-
-    this.hasUnlockedWallets = this.wallets.some(w => {
-      if (w.confirmed) {
-        this.wallet = w;
-        return true;
-      }
-    });
-
-    const { wallet } = this.navParams.data;
-    if (wallet && wallet.confirmed) {
-      this.wallet = wallet;
-    }
-
-    if (this.wallet)  this.generateAddress();
-
-    this.loading = false;
-  }
-
-  async generateAddress() {
-    this.addressGenerationInProgress = true;
-    this.error = null;
-
-    try {
-      this.address = this.wallet.getRootAddress().toString();
-      this.addressGenerationInProgress = false;
-      this.formatAddress();
-      let info = await this.addressService.getAddressInfo(this.address);
-      this.alias = info.alias;
-    } catch (err) {
-      if (err.code == MWCErrors.MAIN_ADDRESS_GAP_REACHED.code) {
-        this.mainAddressGapReached = true;
-        return this.generateAddress();
-      } else {
-        this.addressGenerationInProgress = false;
-
-        if (err.text)
-          this.error = err.text;
-
-        return this.toastCtrl.error(err.text || 'Failed to generate new address');
-      }
-    }
-  }
-
-  selectWallet() {
+  async selectWallet() {
     const modal = this.modalCtrl.create('SelectWalletModal', {
-      selectedWallet: this.wallet,
-      availableWallets: this.wallets
+      selectedWallet: this.ctrl.selectedWallet,
+      availableWallets: getLatestValue(this.ctrl.wallets$),
     }, MERIT_MODAL_OPTS);
-    modal.onDidDismiss((wallet) => {
+    modal.onDidDismiss((wallet: DisplayWallet) => {
       if (wallet) {
-        this.wallet = wallet;
-        this.generateAddress();
+        this.ctrl.selectWallet(wallet);
       }
     });
     return modal.present();
@@ -173,16 +104,13 @@ export class ReceiveView {
   showShareButton() {
     return (
       this.platformService.isCordova
-      && this.wallet
-      && this.wallet.isComplete()
-      && this.qrAddress
-      && !this.addressGenerationInProgress
+      && this.ctrl.qrAddress
     );
   }
 
   share() {
     if (SocialSharing.installed())
-      return this.socialSharing.share(this.qrAddress);
+      return this.socialSharing.share(this.ctrl.qrAddress);
   }
 
   copyToClipboard(addressString: string) {
@@ -197,23 +125,11 @@ export class ReceiveView {
   }
 
   async toggleCurrency() {
-    const rate = await this.rateService.getRate(this.availableUnits[1]);
+    const rate = await this.rateService.getRate(this.ctrl.availableUnits[1]);
+
     if (rate > 0) {
-      this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
-      this.changeAmount();
+      this.ctrl.amountCurrency = this.ctrl.amountCurrency == this.ctrl.availableUnits[0] ? this.ctrl.availableUnits[1] : this.ctrl.availableUnits[0];
+      this.ctrl.changeAmount();
     }
-  }
-
-  changeAmount() {
-    if (this.amountCurrency.toUpperCase() == this.configService.get().wallet.settings.unitName.toUpperCase()) {
-      this.amountMicros = this.rateService.mrtToMicro(this.amount);
-    } else {
-      this.amountMicros = this.rateService.fromFiatToMicros(this.amount, this.amountCurrency);
-    }
-    this.formatAddress();
-  }
-
-  private formatAddress() {
-    this.qrAddress = `${ this.protocolHandler }:${ this.address }${ this.amountMicros ? '?micros=' + this.amountMicros : '' }`;
   }
 }

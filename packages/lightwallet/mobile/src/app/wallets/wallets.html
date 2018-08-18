@@ -3,22 +3,21 @@
         <ion-title>Dashboard</ion-title>
         <ion-buttons end>
             <button ion-button clear icon-only class="header-action-button"
-                    navPush="SettingsView" [navParams]="{ wallets: wallets }">
+                    navPush="SettingsView">
                 <ion-icon name="settings" merit-icon></ion-icon>
             </button>
-            <ion-spinner class="refreshing" color="light" [hidden]="!refreshing"></ion-spinner>
         </ion-buttons>
     </ion-navbar>
     <ion-toolbar>
-        <ion-row>
+        <ion-row *ngIf="totals$ | async as totals">
 
             <ion-col col-4>
                 <small>Total</small>
                 <ion-avatar img-icon>
                     <img src="assets/img/icons/merit_white.svg" alt="">
                 </ion-avatar>
-                <span class="merit-amount" [hidden]="loading">
-                  {{ (totalAmount || 0) | toMRT:8:true }}
+                <span class="merit-amount">
+                  {{ totals.totalWalletsBalance }}
                   <small>MRT</small>
                 </span>
             </ion-col>
@@ -28,8 +27,8 @@
                 <ion-avatar img-icon>
                     <img src="assets/img/icons/invite_white.svg" alt="">
                 </ion-avatar>
-                <span class="merit-amount" [hidden]="loading">
-                  {{ totalInvites || 0}}
+                <span class="merit-amount">
+                  {{ totals.invites }}
                   <small>INV</small>
                 </span>
             </ion-col>
@@ -40,8 +39,8 @@
                 <ion-avatar img-icon>
                     <img src="assets/img/icons/network_dark.svg" alt="">
                 </ion-avatar>
-                <span class="merit-amount" [hidden]="loading">
-                  {{ communitySize || '0' }}
+                <span class="merit-amount">
+                  {{ totals.communitySize }}
                   <small>People</small>
                 </span>
             </ion-col>
@@ -72,12 +71,12 @@
         </button>
     </ion-item-divider>
 
-    <ion-item no-lines *ngIf="!wallets?.length && loading">
+    <ion-item no-lines *ngIf="loading$ | async">
         <ion-spinner item-start></ion-spinner>
         <h2>Loading...</h2>
     </ion-item>
 
-    <ion-list class="wallets" *ngIf="wallets">
+    <ion-list class="wallets" *ngIf="wallets$ | async as wallets">
 
         <div *ngFor="let wallet of wallets; trackBy: wallet?.id">
             <button ion-item *ngIf="wallet.confirmed; else notConfirmed" navPush="WalletDetailsView"
@@ -103,19 +102,16 @@
                     </p>
                     <ng-template #notHidden>
                         <p class="merit-amount">
-                            {{ wallet.balance.spendableAmount | toMRT}}
+                            {{ wallet.client.balance.spendableAmount | toMRT}}
                         </p>
                     </ng-template>
                 </ion-label>
 
-                <ion-note *ngIf="!wallet.isComplete(); else isComplete" class="assertive">Incomplete</ion-note>
                 <ng-template #isComplete>
                     <ion-note class="balance" item-end>
-                        <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.alternativeBalanceAvailable">
-                            {{ wallet.balance.spendableAmount | toFiat }}
+                        <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.client.alternativeBalanceAvailable">
+                            {{ wallet.client.balance.spendableAmount | toFiat }}
                         </div>
-
-                        <span class="error" *ngIf="wallet.error">{{ wallet.error }}</span>
                     </ion-note>
                 </ng-template>
 
