@@ -11,12 +11,11 @@ import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { interval } from 'rxjs/observable/interval';
 import { map, retryWhen, switchMap } from 'rxjs/operators';
-import * as util from 'util';
 import { EasyReceiptResult } from '../../models/easy-receipt';
 import { ISendMethod } from '../../models/send-method';
 import { Constants, Utils } from './common';
 import { Credentials } from './credentials';
-import { MwcError, MWCErrors } from './errors';
+import { MWCErrors } from './errors';
 import { Logger } from './log';
 import { PayPro } from './paypro';
 import { Verifier } from './verifier';
@@ -24,8 +23,7 @@ import { ISmsNotificationSettings } from '../../models/sms-subscription';
 import { IGlobalSendHistory } from '../../models/globalsend-history.model';
 import { IInviteRequest } from '../../services/invite-request.service';
 import { IRankInfo } from '../../models/rank';
-import * as request from 'request-promise-native';
-import * as queryString from 'querystring'
+import * as queryString from 'querystring';
 
 const $ = preconditions.singleton();
 
@@ -833,7 +831,7 @@ export class API {
         return resolve(true); // wallet is already open
       }
 
-      return this._doGetRequest('/v1/wallets/', { includeExtendedInfo: 1}).then((ret) => {
+      return this._doGetRequest('/v1/wallets/', { includeExtendedInfo: 1 }).then((ret) => {
         const wallet = ret.wallet;
 
         return this._processStatus(ret).then(() => {
@@ -867,10 +865,11 @@ export class API {
     });
   };
 
-  _getHeaders() {
-    return {
+  _getHeaders(): Headers {
+    return new Headers({
       'x-client-version': 'MWC-' + Package.version,
-    };
+      'Content-Type': 'application/json',
+    });
   };
 
 
@@ -884,50 +883,64 @@ export class API {
             delete qs[key];
           }
         });
+
+      url = url + '?' + queryString.stringify(qs);
     }
 
-    const headers = this._getHeaders();
+    const headers: Headers = this._getHeaders();
 
     if (this.credentials) {
-      headers['x-identity'] = this.credentials.copayerId;
+      headers.set('x-identity', this.credentials.copayerId);
 
       if (useSession && this.session) {
-        headers['x-session'] = this.session;
+        headers.set('x-session', this.session);
       } else if (this.credentials.requestPrivKey) {
-        headers['x-signature'] = this._signRequest(method, qs? url + '?' + queryString.stringify(qs) : url, body, this.credentials.requestPrivKey);
+        headers.set('x-signature', this._signRequest(method, url, body, this.credentials.requestPrivKey));
       }
     }
 
-    const reqOpts: request.Options = {
+    const reqOpts: any = {
       method,
-      url: this.baseUrl + url,
       headers,
-      timeout: this.timeout,
-      json: true,
-      resolveWithFullResponse: true,
-      simple: false,
-      qs,
-      body,
+      mode: 'cors',
     };
 
-    let res: request.FullResponse;
+    if (['PUT', 'POST'].indexOf(method.toUpperCase()) > -1) {
+      try {
+        reqOpts.body = JSON.stringify(body);
+      } catch (err) {
+        reqOpts.body = body;
+      }
+    }
+
+    let res: Response;
 
     try {
-      res = await request(reqOpts);
+      res = await fetch(this.baseUrl + url, reqOpts);
     } catch (err) {
       // Technical issue
       console.log(err);
       throw 'Unexpected error occurred';
     }
 
-    if (!res.statusCode) {
+    let respBody: any;
+
+    try {
+      respBody = await res.json();
+    } catch (err) {
+      // Can't parse body
+      console.log(err);
+      throw 'Unexpected error occurred';
+    }
+
+    if (!res.status) {
       throw MWCErrors.CONNECTION_ERROR.text;
     }
 
-    if (res.statusCode >= 400) {
+    if (res.status >= 400) {
       // failed request
 
-      switch (res.statusCode) {
+      switch (res.status) {
         case 404:
           throw MWCErrors.NOT_FOUND.text;
 
@@ -944,14 +957,14 @@ export class API {
           throw MWCErrors.SERVER_UNAVAILABLE.text;
 
         default:
-          if (MWCErrors[res.statusCode]) {
-            throw MWCErrors[res.statusCode].text
+          if (MWCErrors[res.status]) {
+            throw MWCErrors[res.status].text;
           }
-          throw res.body && (res.body.error || res.body.message || res.body) || 'Unknown error occurred';
+          throw respBody && (respBody.error || respBody.message || respBody) || 'Unknown error occurred';
       }
     }
 
-    return res.body;
+    return respBody;
   }
 
   private _login(): Promise<any> {
@@ -1793,7 +1806,7 @@ export class API {
       qs = {
         addresses: opts.addresses.join(','),
         invites: opts.invites,
-      }
+      };
     }
     return this._doGetRequest('/v1/utxos/', qs);
   };
@@ -2011,7 +2024,7 @@ export class API {
 
     const qs = {
       limit: opts.limit,
-      reverse: opts.reverse? 1 : 0,
+      reverse: opts.reverse ? 1 : 0,
     };
 
     const url = '/v1/addresses/';
