@@ -31,7 +31,7 @@ export class InviteRequest implements IInviteRequest {
 
   isNew: boolean;
 
-  constructor(private wallet: MeritWalletClient,
+  constructor(public wallet: MeritWalletClient,
               private walletService: WalletService) {
   }
 
