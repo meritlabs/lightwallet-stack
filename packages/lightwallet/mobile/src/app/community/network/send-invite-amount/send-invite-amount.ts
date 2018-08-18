@@ -73,10 +73,10 @@ export class SendInviteAmountView {
   onDestinationChange() {
     const value = this.customDestination;
 
-    if ((couldBeAlias(value) || isAddress(value) && this.formCtrl.type == SendMethodType.Easy)) {
+    if ((couldBeAlias(value) || isAddress(value) && this.type.value == SendMethodType.Easy)) {
       this.formCtrl.type.setValue(SendMethodType.Classic);
       this.formCtrl.destination.setValue(value);
-    } else if ((isEmail(value) || isPhoneNumber(value)) && this.formCtrl.type == SendMethodType.Classic) {
+    } else if ((isEmail(value) || isPhoneNumber(value)) && this.type.value == SendMethodType.Classic) {
       this.formCtrl.type.setValue(SendMethodType.Easy);
       this.formCtrl.address.setValue(value);
     }
