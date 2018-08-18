@@ -5,23 +5,23 @@ import { IVault } from '@merit/common/models/vault';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
-import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
-import { Events, IonicPage, NavController, Platform } from 'ionic-angular';
+import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { IonicPage, NavController, Platform } from 'ionic-angular';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Observable } from 'rxjs/Observable';
 import { Store } from '@ngrx/store';
-import { IRootAppState } from '../../../../common/reducers';
+import { IRootAppState } from '@merit/common/reducers';
 import {
   IWalletTotals,
   selectWallets,
   selectWalletsLoading,
   selectWalletTotals,
-} from '../../../../common/reducers/wallets.reducer';
+} from '@merit/common/reducers/wallets.reducer';
 
 @IonicPage()
 @Component({
   selector: 'view-wallets',
-  templateUrl: 'wallets.html'
+  templateUrl: 'wallets.html',
 })
 export class WalletsView {
 
@@ -42,7 +42,8 @@ export class WalletsView {
               private profileService: ProfileService,
               private platform: Platform,
               private store: Store<IRootAppState>,
-  ) {}
+  ) {
+  }
 
   async ngOnInit() {
     this.showCommunityPopup = !(await this.profileService.isCommunityPopupClosed());
@@ -51,7 +52,8 @@ export class WalletsView {
   async ionViewDidLoad() {
     try {
       this.vaults = await this.profileService.getVaults();
-    } catch (e) {} finally {
+    } catch (e) {
+    } finally {
     }
   }
 

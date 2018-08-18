@@ -1,7 +1,7 @@
 <ion-header no-border>
   <ion-navbar color="primary">
     <ion-title>
-      {{ recipient?.name?.formatted? 'Sending To: ' + recipient.name.formatted : sendMethod?.type == 'easy' ? 'MeritMoney Link' : 'Sending To: ' + (sendMethod.alias? '@' + sendMethod.alias : sendMethod.value)}}
+      {{ recipient?.name?.formatted? 'Sending To: ' + recipient.name.formatted : sendMethod.value == 'easy' ? 'MeritMoney Link' : 'Sending To: ' + (sendMethod.alias? '@' + sendMethod.alias : sendMethod.value)}}
     </ion-title>
   </ion-navbar>
 </ion-header>

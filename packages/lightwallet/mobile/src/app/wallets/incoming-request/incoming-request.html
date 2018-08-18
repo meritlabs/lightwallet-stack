@@ -1,51 +1,51 @@
 <ion-header no-border>
   <ion-navbar color="light">
     <ion-title>
-      <span *ngIf="!unlockRequest?.isConfirmed">Invite Request</span>
-      <span *ngIf="unlockRequest?.isConfirmed">Invite Sent</span>
+      <span *ngIf="!isConfirmed">Invite Request</span>
+      <span *ngIf="isConfirmed">Invite Sent</span>
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <button ion-item text-left (click)="selectWallet()" detail-none class="send-from" *ngIf="!unlockRequest.isConfirmed">
+  <button ion-item text-left (click)="selectWallet()" detail-none class="send-from" *ngIf="!isConfirmed">
 
     <img src="assets/img/icons/wallet.svg" class="wallet-icon" item-start>
 
     <h2>Send From</h2>
-    <p>{{ unlockRequest.walletClient.name }}</p>
+    <p>{{ selectedWallet.name }}</p>
 
     <span item-end>
-        {{ unlockRequest?.walletClient?.availableInvites || 0 }}
+        {{ selectedWallet.availableInvites || 0 }}
         <img src="assets/img/icons/invite.svg" alt="" class="invites-icon">
     </span>
   </button>
 
   <div class="container">
-    <div *ngIf="unlockRequest">
-      <span class="date">{{ (unlockRequest.timestamp * 1000) | amDateFormat: 'DD MMM, hh:mma' }}</span>
-      <span class="to-wallet">{{ unlockRequest.isConfirmed? 'Sent from' : 'Requested from' }} <strong>{{ unlockRequest?.walletClient?.name }}</strong></span>
+    <div *ngIf="inviteRequest">
+      <span class="date">{{ (inviteRequest.timestamp * 1000) | amDateFormat: 'DD MMM, hh:mma' }}</span>
+      <span class="to-wallet">Requested from <strong>{{ inviteRequest.wallet.name }}</strong></span>
       <ion-avatar img-icon>
-        <img src="assets/img/icons/incoming_request_l.svg" *ngIf="!unlockRequest.isConfirmed">
-        <img src="assets/img/icons/confirm.svg" *ngIf="unlockRequest.isConfirmed">
+        <img src="assets/img/icons/incoming_request_l.svg" *ngIf="!isConfirmed">
+        <img src="assets/img/icons/confirm.svg" *ngIf="isConfirmed">
       </ion-avatar>
-      <span class="wallet-name" *ngIf="unlockRequest.alias">@{{unlockRequest.alias }}</span>
-      <span class="wallet-name address" *ngIf="!unlockRequest.alias">{{unlockRequest.address}}</span>
-      <p *ngIf="unlockRequest.alias">{{unlockRequest.address}}</p>
+      <span class="wallet-name" *ngIf="inviteRequest.alias">@{{inviteRequest.alias }}</span>
+      <span class="wallet-name address" *ngIf="!inviteRequest.alias">{{inviteRequest.address}}</span>
+      <p *ngIf="inviteRequest.alias">{{inviteRequest.address}}</p>
     </div>
   </div>
 </ion-content>
 
 
 <ion-footer>
-  <ion-toolbar *ngIf="unlockRequest">
+  <ion-toolbar *ngIf="inviteRequest">
 
     <ion-list>
-      <ion-item-group *ngIf="!unlockRequest.isConfirmed" detail-none>
+      <ion-item-group *ngIf="!isConfirmed" detail-none>
         <button ion-item (click)="accept()" detail-none>Send Invite</button>
         <button ion-item (click)="decline()" detail-none class="ignore">Ignore</button>
       </ion-item-group>
-      <ion-item-group *ngIf="unlockRequest.isConfirmed" detail-none>
+      <ion-item-group *ngIf="isConfirmed" detail-none>
         <button ion-item (click)="createContact()" detail-none>
           <ion-icon name="add"></ion-icon>
           Create new contact

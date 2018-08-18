@@ -1,9 +1,13 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform, Tabs, ViewController, AlertController } from 'ionic-angular';
-import { SocialSharing } from '@ionic-native/social-sharing';
+import { Component, OnInit } from '@angular/core';
+import { IonicPage } from 'ionic-angular';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { Observable } from 'rxjs';
+import { ILeaderboard } from '@merit/common/models/rank';
+import { getLatestValue } from '@merit/common/utils/observables';
+import { IRootAppState } from '@merit/common/reducers';
+import { Store } from '@ngrx/store';
 
 
 @IonicPage()
@@ -11,78 +15,20 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
   selector: 'view-leaderboard',
   templateUrl: 'leaderboard.html',
 })
-export class LeaderboardView {
+export class LeaderboardView implements OnInit {
 
-  wallets: Array<MeritWalletClient>;
-  leaderboard: Array<{
-    rank: number,
-    alias?: string,
-    address?: string,
-    anv: number
-  }>;
-  displayLeaderboard: Array<{
-    rank: number,
-    alias?: string,
-    address?: string,
-    anv: number
-  }>;
-
-  ranks: Array<any>;
-  ownOutranked: Array<any>;
-
-  offset: number = 10;
-  readonly LIMIT: number = 10;
-  readonly LIST_LENGTH: number = 100;
+  wallets$: Observable<DisplayWallet[]>;
+  leaderboard: ILeaderboard;
 
   loading: boolean = true;
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private profileService: ProfileService
-  ) {
+  constructor(private store: Store<IRootAppState>) {
   }
 
-  async ionViewWillEnter() {
-    this.wallets = await this.profileService.getConfimedWallets();
-    await this.loadData();
+
+  async ngOnInit() {
+    const wallets: DisplayWallet[] = await getLatestValue(this.wallets$);
+    this.leaderboard = await wallets[0].client.getCommunityLeaderboard();
     this.loading = false;
   }
-
-  async doRefresh(refresher) {
-    this.offset = 0;
-    await this.loadData();
-
-    refresher.complete();
-  }
-
-  async loadData() {
-    await Promise.all([this.getLeaderboard(), this.getRankInfo()]);
-    this.ownOutranked = this.ranks.filter(r => r.rank > this.LIST_LENGTH);
-  }
-
-  async getLeaderboard() {
-    this.leaderboard = (await this.wallets[0].getCommunityLeaderboard(this.LIST_LENGTH)).ranks;
-    this.displayLeaderboard = this.leaderboard.slice(0, this.offset + this.LIMIT);
-  }
-
-  async getRankInfo() {
-    const ranks = [];
-    await Promise.all(this.wallets.map(async (w) => {
-      const rankInfo = (await w.getCommunityRank()).ranks[0];
-      ranks.push(rankInfo);
-    }));
-    this.ranks = ranks;
-  }
-
-  showMore(infiniter) {
-    this.offset += this.LIMIT;
-    this.displayLeaderboard = this.leaderboard.slice(0, this.offset + this.LIMIT);
-    infiniter.complete();
-  }
-
-  isOwnWallet(r) {
-    return !!this.ranks.some(w => w.address == r.address);
-  }
-
 }

@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
-import { IUnlockRequest, UnlockRequestService } from '@merit/common/services/unlock-request.service';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Observable } from 'rxjs';
 import { InviteRequest } from '../../../../common/services/invite-request.service';
@@ -32,7 +31,6 @@ export class UnlockRequestsView {
     private navCtrl: NavController,
     private navParams: NavParams,
     private toastCtrl: ToastControllerService,
-    private unlockRequestService: UnlockRequestService,
     private profileService: ProfileService,
     private store: Store<IRootAppState>,
   ) {
@@ -54,12 +52,6 @@ export class UnlockRequestsView {
     //   if (!isVault) r.label = r.alias ? '@' + r.alias : r.address;
     //   return r;
     // });
-  }
-
-  async doRefresh(refresher) {
-    Promise.all([this.profileService.refreshData(), this.unlockRequestService.loadRequestsData()]);
-    await this.ionViewWillEnter();
-    refresher.complete();
   }
 
   async processRequest(request: InviteRequest) {
