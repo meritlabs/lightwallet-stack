@@ -17,9 +17,12 @@ import { PasswordPromptController } from '@merit/desktop/app/components/password
 import { Store } from '@ngrx/store';
 import 'rxjs/add/operator/isEmpty';
 import 'rxjs/add/operator/toPromise';
-import { take } from 'rxjs/operators';
+import { debounceTime, filter, take } from 'rxjs/operators';
 import { SendFormController } from '@merit/common/controllers/send-form.controller';
 import { LoadingControllerService } from '@merit/common/services/loading-controller.service';
+import { validateEmail, validatePhoneNumber } from '@merit/common/utils/destination';
+import { SendMethodType } from '@merit/common/models/send-method';
+import { couldBeAlias, isAddress } from '@merit/common/utils/addresses';
 
 @Component({
   selector: 'view-send',
@@ -99,6 +102,22 @@ export class SendView implements OnInit {
       this.amountMrt.setErrors(null);
       this.amountMrt.markAsDirty();
     }
+
+    this.destination.valueChanges
+      .pipe(
+        filter(() => this.type.value === SendMethodType.Easy),
+        debounceTime(500),
+        filter(value => !validateEmail(value) && !validatePhoneNumber(value)),
+        filter(value => couldBeAlias(value) || isAddress(value))
+      )
+      .subscribe(value => {
+        this.type.setValue(SendMethodType.Classic, { emitEvent: false });
+        this.destination.setValue('', { emitEvent: false });
+        this.destination.markAsPristine({ onlySelf: true });
+        this.address.setValue(value, { emitEvent: false });
+        this.address.markAsDirty();
+        this.address.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+      });
   }
 
   hideTour() {
