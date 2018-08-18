@@ -35,3 +35,7 @@ export const formatAmount = (micros: number, unit: string, opts: any = {}): stri
 export function mrtToMicro(mrt: number): number {
   return Math.round(mrt * MRT_TO_MIC);
 }
+
+export function microsToMrt(micros: number): number {
+  return parseFloat((micros / this.MRT_TO_MIC).toFixed(8));
+}
