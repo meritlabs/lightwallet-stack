@@ -7,6 +7,7 @@ import { ToUnitPipe } from '@merit/common/pipes/to-unit.pipe';
 import { ToMrtPipe } from '@merit/common/pipes/to-mrt.pipe';
 import { UnescapePipe } from '@merit/common/pipes/unescape.pipe';
 import { AddressPipe } from '@merit/common/pipes/address.pipe';
+import { AbsPipe } from '@merit/common/pipes/abs.pipe';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { AddressPipe } from '@merit/common/pipes/address.pipe';
     UnescapePipe,
     AddressPipe,
     AddressErrorMessagePipe,
-    AliasErrorMessagePipe
+    AliasErrorMessagePipe,
+    AbsPipe,
   ],
   exports: [
     ChunksPipe,
@@ -27,7 +29,8 @@ import { AddressPipe } from '@merit/common/pipes/address.pipe';
     UnescapePipe,
     AddressPipe,
     AddressErrorMessagePipe,
-    AliasErrorMessagePipe
+    AliasErrorMessagePipe,
+    AbsPipe,
   ]
 })
 export class CommonPipesModule {}
