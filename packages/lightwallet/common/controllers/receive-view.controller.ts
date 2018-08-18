@@ -5,7 +5,7 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { IRootAppState } from '@merit/common/reducers';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { Store } from '@ngrx/store';
-import { getLatestDefinedValue } from '@merit/common/utils/observables';
+import { getLatestDefinedValue, getLatestValue } from '@merit/common/utils/observables';
 import { getAddressInfo } from '@merit/common/utils/addresses';
 import { mrtToMicro } from '@merit/common/utils/format';
 
@@ -51,6 +51,7 @@ export class ReceiveViewController {
 
   async init() {
     try {
+      await getLatestValue(this.walletsLoading$, loading => !loading);
       const wallets = await getLatestDefinedValue(this.wallets$);
       this.hasUnlockedWallet = wallets.length > 0;
       this.selectWallet(wallets[0]);
