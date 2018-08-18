@@ -65,7 +65,7 @@ export class SendValidator {
   static validatePasswordConfirm(control: AbstractControl) {
     if (control.parent) {
       const { value: password } = control.parent.get('password');
-      const { value } = control.value;
+      const { value } = control;
 
       if (password != value) {
         return {
