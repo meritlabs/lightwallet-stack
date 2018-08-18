@@ -33,7 +33,7 @@ import { PopupService as MobilePopupService } from '@merit/mobile/app/core/popup
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { MobilePollingNotificationsService } from '@merit/mobile/services/mobile-polling-notifications.service';
 import { TouchIdService } from '@merit/mobile/services/touch-id.service';
-import { StoreModule } from '@ngrx/store';
+import { Store, StoreModule } from '@ngrx/store';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MomentModule } from 'ngx-moment';
@@ -55,6 +55,11 @@ import { MobileAppEffects } from '../effects/mobile-app-effects.service';
 import { MobileWalletEffects } from '../effects/mobile-wallet-effects.service';
 import { LoadingControllerService } from '../../../common/services/loading-controller.service';
 import { MobileLoadingControllerService } from '../services/mobile-loading-controller.service';
+import { IRootAppState } from '../../../common/reducers';
+import { ProfileService } from '../../../common/services/profile.service';
+import { UpdateAppAction } from '../../../common/reducers/app.reducer';
+import { RefreshWalletsAction, selectWalletsLoading } from '../../../common/reducers/wallets.reducer';
+import { filter, take } from 'rxjs/operators';
 
 export function getProviders() {
   return [
@@ -97,8 +102,28 @@ export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
 }
 
-export function loadConfigs(appService) {
-  return () => appService.getInfo();
+export function loadConfigs(appService: AppSettingsService, profileService: ProfileService, store: Store<IRootAppState>) {
+  return async () => {
+    await appService.getInfo();
+
+    const authorized = await profileService.isAuthorized();
+
+    store.dispatch(new UpdateAppAction({
+      loading: false,
+      authorized
+    }));
+
+    if (authorized) {
+      store.dispatch(new RefreshWalletsAction());
+
+      await store.select(selectWalletsLoading)
+        .pipe(
+          filter((loading: boolean) => !loading),
+          take(1)
+        )
+        .toPromise();
+    }
+  };
 }
 
 @NgModule({
@@ -145,7 +170,7 @@ export function loadConfigs(appService) {
     {
       provide: APP_INITIALIZER,
       useFactory: loadConfigs,
-      deps: [AppSettingsService],
+      deps: [AppSettingsService, ProfileService, Store],
       multi: true
     }
   ]
