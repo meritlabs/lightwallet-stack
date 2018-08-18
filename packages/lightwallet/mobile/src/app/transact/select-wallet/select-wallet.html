@@ -31,8 +31,6 @@
             <ion-icon
               *ngIf="!wallet.balanceHidden && (wallet.balance.totalAmount != wallet.balance.spendableAmount)"
               name="timer-outline"></ion-icon>
-
-            <span class="error" *ngIf="wallet.error">{{wallet.error}}</span>
           </span>
         </p>
         <p *ngIf="showInvites">
