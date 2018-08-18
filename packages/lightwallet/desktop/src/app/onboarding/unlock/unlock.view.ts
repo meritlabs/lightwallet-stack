@@ -153,6 +153,7 @@ export class UnlockComponent {
       this.currentUnlockDialogStep--;
       if (this.currentUnlockDialogStep < 0) {
         this.showAgreement = false;
+        this.currentUnlockDialogStep = 0;
       }
     }
   }

@@ -107,6 +107,13 @@
                 </span>
               </span>
         </div>
+        <div [hidden]="amount.hasError('required') || !amount.hasError('NotEnoughInvites')">
+          <span class="tooltip-error">
+            <span>
+              You don't have enough invites
+            </span>
+          </span>
+        </div>
       </div>
     </div>
 
@@ -115,5 +122,4 @@
             [disabled]="formCtrl.formData.invalid || formCtrl.formData.pending || ((formCtrl.availableInvites$ | async) == 0)">SEND
     </button>
   </form>
-
 </div>

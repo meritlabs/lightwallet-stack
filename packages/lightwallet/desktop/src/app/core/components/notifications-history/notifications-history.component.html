@@ -11,7 +11,7 @@
       <p>{{ item.title }}</p>
     </div>
     <div class="time">
-      <p>{{ item.timestamp | amTimeAgo }}</p>
+      <p>{{ item.createdOn | amFromUnix | amTimeAgo }}</p>
     </div>
   </div>
   <div class="content">

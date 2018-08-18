@@ -11,8 +11,11 @@
           <div class="network__personal-wallet__toolbar">
             <div class="network__personal-wallet__toolbar__item
           network__personal-wallet__toolbar__item--mrt">
-              <p>{{ wallet.totalBalanceMicros | toMRT:null:true }}
+              <p *ngIf="!wallet.balanceHidden">{{ wallet.totalBalanceMicros | toMRT:null:true }}
                 <span>MRT</span>
+              </p>
+              <p *ngIf="wallet.balanceHidden">
+                [Balance hidden]
               </p>
             </div>
             <div class="network__personal-wallet__toolbar__item
@@ -47,7 +50,7 @@
               </div>
             </div>
           </div>
-          <div class="network__personal-wallet__panel__row">
+          <div class="network__personal-wallet__panel__row" *ngIf="!wallet.balanceHidden">
             <div class="network__personal-wallet__panel__col">
               <div class="network__personal-wallet__panel__icon">
                 <img src="/assets/v1/icons/ui/network/mining.svg" alt="">
@@ -64,7 +67,7 @@
               <p *ngIf="wallet.miningRewardsMicro | toFiat | async as miningRewardsFiat">{{ miningRewardsFiat }}</p>
             </div>
           </div>
-          <div class="network__personal-wallet__panel__row">
+          <div class="network__personal-wallet__panel__row" *ngIf="!wallet.balanceHidden">
             <div class="network__personal-wallet__panel__col">
               <div class="network__personal-wallet__panel__icon">
                 <img src="/assets/v1/icons/ui/network/rewards.svg" alt="">

@@ -1,5 +1,5 @@
 {
-  "network": "testnet",
+  "network": "livenet",
   "port": 3001,
   "services": [
     "meritd",
@@ -9,9 +9,9 @@
   ],
   "servicesConfig": {
     "meritd": {
-        "spawn": {
-            "datadir": "./data-and-logs/data-1"
-        }
+      "spawn": {
+        "datadir": "/home/ibby/.merit"
+      }
     }
   }
 }
