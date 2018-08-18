@@ -1,55 +1,30 @@
 <ion-header no-border>
-    <ion-navbar color="primary">
-        <ion-title smaller-title>Leaderboard</ion-title>
-    </ion-navbar>
+  <ion-navbar color="primary">
+    <ion-title smaller-title>Leaderboard</ion-title>
+  </ion-navbar>
 
-    <div class="title">
-        <ion-item>
-            <b>Rank</b>
-            <div item-end>ANV</div>
-        </ion-item>
-    </div>
+  <div class="title">
+    <ion-item>
+      <b>Rank</b>
+      <div item-end>ANV</div>
+    </ion-item>
+  </div>
 </ion-header>
 
 <ion-content no-bounce>
+  <div *ngIf="loading" class="loading">
+    Loading leaderboard...
+  </div>
 
-    <ion-refresher (ionRefresh)="doRefresh($event)">
-        <ion-refresher-content></ion-refresher-content>
-    </ion-refresher>
-
-    <div  *ngIf="loading" class="loading">
-        Loading leaderboard...
-    </div>
-
-    <div *ngIf="!loading">
-
-
-        <ion-list class="main-list">
-            <ion-item *ngFor="let address of displayLeaderboard" class="row" [class.own-wallet]="isOwnWallet(address)">
-                <b>{{address.rank}} </b>
-                {{address.alias ?  '@'+address.alias : 'Anonymous'}}
-                <div item-end class="value">
-                    {{address.anv | toMRT:8:true}}
-                </div>
-            </ion-item>
-            <div  *ngIf="(offset >= LIST_LENGTH) && ownOutranked.length">
-                <ion-item class="own-wallet">
-                    ...
-                </ion-item>
-                <ion-item *ngFor="let address of ownOutranked" class="row" [class.own-wallet]="isOwnWallet(address)">
-                    <b>{{address.rank}} </b>
-                    {{address.alias ?  '@'+address.alias : 'Anonymous'}}
-                    <div item-end class="value">
-                        {{address.anv | toMRT:8:true}}
-                    </div>
-                </ion-item>
-            </div>
-        </ion-list>
-
-    </div>
-
-    <ion-infinite-scroll (ionInfinite)="showMore($event)" *ngIf="offset < LIST_LENGTH">
-        <ion-infinite-scroll-content></ion-infinite-scroll-content>
-    </ion-infinite-scroll>
-
+  <div *ngIf="!loading">
+    <ion-list class="main-list">
+      <ion-item *ngFor="let address of leaderboard?.ranks" class="row">
+        <b>{{address.rank}} </b>
+        {{address.alias ? '@'+address.alias : 'Anonymous'}}
+        <div item-end class="value">
+          {{address.anv | toMRT:8:true}}
+        </div>
+      </ion-item>
+    </ion-list>
+  </div>
 </ion-content>
