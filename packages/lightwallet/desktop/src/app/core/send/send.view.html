@@ -1,4 +1,4 @@
-<app-lock-screen fullScreen *ngIf="!hasUnlockedWallet"></app-lock-screen>
+<app-lock-screen fullScreen *ngIf="!ctrl.hasUnlockedWallet"></app-lock-screen>
 <send-tour *ngIf="showTour" (hideTour)="hideTour()"></send-tour>
 
 <div class="sendMerit">
@@ -8,36 +8,36 @@
       <p>Send Merit</p>
     </div>
 
-    <message-box error *ngIf="error">{{ error }}</message-box>
-    <message-box success *ngIf="success">
+    <message-box error *ngIf="ctrl.error">{{ ctrl.error }}</message-box>
+    <message-box success *ngIf="ctrl.success">
       <!-- TODO(ibby) create success-message & info-message components... or just a global message component with different styles -->
       Transaction successfully sent
-      <div *ngIf="easySendUrl">
-        <ng-container *ngIf="easySendDelivered === undefined">
+      <div *ngIf="ctrl.easySendUrl">
+        <ng-container *ngIf="ctrl.easySendDelivered === undefined">
           Your MeritMoney Link is now ready to share:
         </ng-container>
-        <ng-container *ngIf="easySendDelivered === true">
+        <ng-container *ngIf="ctrl.easySendDelivered === true">
           Your MeritMoney Link is ready and was successfully delivered to your recipient!
         </ng-container>
-        <ng-container *ngIf="easySendDelivered === false">
+        <ng-container *ngIf="ctrl.easySendDelivered === false">
           Your MeritMoney Link is ready, however, we were not able to deliver it to your recipient. You can copy the
           link and send it to them directly:
         </ng-container>
-        <div class="easysend-url-container" [clip]="easySendUrl" (click)="onGlobalSendCopy()">
+        <div class="easysend-url-container" [clip]="ctrl.easySendUrl" (click)="ctrl.onGlobalSendCopy()">
           <small class="click_to_copy">Click to copy</small>
-          {{ easySendUrl }}
+          {{ ctrl.easySendUrl }}
         </div>
       </div>
     </message-box>
 
     <div class="sendMerit__content">
 
-      <form class="sendMerit__form" [formGroup]="formData" (ngSubmit)="submit.next()">
+      <form class="sendMerit__form" [formGroup]="ctrl.formData" (ngSubmit)="ctrl.submit.next()">
         <div class="sendMerit__form__group">
           <label class="ui-label">Send from</label>
-          <app-select (selectionEvent)="selectWallet($event)" [selected]="wallet.value" [input]="wallets$ | async"
+          <app-select (selectionEvent)="ctrl.selectWallet($event)" [selected]="wallet.value" [input]="ctrl.wallets$ | async"
                       cssClass="ui-input ui-input--select ui-input--form"></app-select>
-          <label class="ui-label available-amount-label" *ngIf="wallet.valid">
+          <label class="ui-label available-amount-label" *ngIf="ctrl.wallet.valid">
             {{ wallet.value.balance.spendableAmount | toMRT }}, {{ wallet.value.availableInvites || 0 }} invites
             available
           </label>
@@ -129,25 +129,25 @@
               </span>
             </div>
           </div>
-          <div *ngIf="overMaximumAmount" class="notification-info" [class.danger]="true">
+          <div *ngIf="ctrl.overMaximumAmount" class="notification-info" [class.danger]="true">
             <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
             <p>
               You entered more than your available balance. We adjusted the amount to your maximum available balance.
             </p>
           </div>
-          <div class="ui-input__wrapper ui-input__wrapper--currency" *ngIf="availableCurrencies?.length">
-            <input type="text" name="" [value]="amountFiat$ | async" disabled
+          <div class="ui-input__wrapper ui-input__wrapper--currency" *ngIf="ctrl.availableCurrencies?.length">
+            <input type="text" name="" [value]="ctrl.amountFiat$ | async" disabled
                    class="ui-input ui-input--form ui-input--text">
             <div class="ui-input__addon">
-              <app-select (selectionEvent)="selectCurrency($event)" [selected]="selectedCurrency.value"
-                          [input]="availableCurrencies"
+              <app-select (selectionEvent)="ctrl.selectCurrency($event)" [selected]="selectedCurrency.value"
+                          [input]="ctrl.availableCurrencies"
                           cssClass="ui-button ui-button--transparent ui-button--select-currency ui-button--md ui-button--with-caret"></app-select>
             </div>
           </div>
         </div>
         <div class="sendMerit__form__group">
           <button type="submit" class="ui-button ui-button--blue" scrollTop
-                  [disabled]="formData.pending || formData.invalid || receiptLoading || sending">
+                  [disabled]="ctrl.formData.pending || ctrl.formData.invalid || ctrl.receiptLoading || ctrl.sending">
             Send Merit
           </button>
         </div>
@@ -156,8 +156,8 @@
       <div class="sendMerit__totals">
         <div class="sendMerit__form__group">
           <div class="sendMerit__totals__table">
-            <loading-spinner-small *ngIf="receiptLoading"></loading-spinner-small>
-            <ng-container *ngIf="receipt$ | async as receipt">
+            <loading-spinner-small *ngIf="ctrl.receiptLoading"></loading-spinner-small>
+            <ng-container *ngIf="ctrl.receipt$ | async as receipt">
               <div class="sendMerit__totals__table--top">
                 <div class="sendMerit__totals__table__centerTop">
                   {{ type.value == 'classic' ? 'Send to' : 'Sending via' }}
