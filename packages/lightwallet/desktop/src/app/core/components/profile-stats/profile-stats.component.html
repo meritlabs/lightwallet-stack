@@ -1,96 +1,94 @@
-<div class="stats">ngIf="activeUnlockRequests"
-  <div class="container--fluid stats__wrap">
-    <div class="stats__item">
-      <p class="stats__item__title">Community
-        <br>Rank</p>
-      <div class="stats__item__picture">
-        <img src="/assets/v1/images/stats/rankIcon.png" alt="">
-      </div>
-      <ng-container *ngIf="!loading; else percentileLoading">
-        <div class="stats__item__info" *ngIf="rankData">
+<div class="container--fluid wrap">
+  <div class="item">
+    <p class="title">Community
+      <br>Rank</p>
+    <div class="picture">
+      <img src="/assets/v1/images/stats/rankIcon.png" alt="">
+    </div>
+    <ng-container *ngIf="!loading; else percentileLoading">
+      <div class="info" *ngIf="rankData">
           <span *ngIf="rankData.unlocked; else rankDataLocked">
             <strong>{{rankData.percentileStr}}</strong>
               <span>(Rank: {{rankData.bestRank}})</span>
-            <div class="stats__item__grows" *ngIf="rankData.rankChangeDay !== 0">
-              <p><span>{{ rankData.rankChangeDay > 0? '▲' : '▲' }}</span></p>
-              <p>{{ rankData.rankChangeDay }}</p>
+            <div class="movement" [class.positive]="rankData.rankChangeDay > 0" [class.negative]="rankData.rankChangeDay < 0" *ngIf="rankData.rankChangeDay !== 0">
+              <p>{{ rankData.rankChangeDay > 0? '▲' : '▼' }}</p>
+              <p>{{ rankData.rankChangeDay | abs }}</p>
             </div>
           </span>
-          <ng-template #rankDataLocked>
-            <span>Unlock your wallets to see rank</span>
-          </ng-template>
-        </div>
-      </ng-container>
-      <ng-template #percentileLoading>
-        <loading-spinner-small></loading-spinner-small>
-      </ng-template>
-      <button class="ui-button ui-button--green ui-button--xs" (click)="onButtonClick('rank')">{{rankActive? 'Hide': 'Show'}} details</button>
-    </div>
-    <div class="stats__item">
-      <p class="stats__item__title">My
-        <br>Community</p>
-      <div class="stats__item__picture">
-        <img src="/assets/v1/images/stats/communityIcon.png" alt="">
+        <ng-template #rankDataLocked>
+          <span>Unlock your wallets to see rank</span>
+        </ng-template>
       </div>
-      <ng-container *ngIf="!loading; else peopleLoading">
-        <div class="stats__item__info" *ngIf="rankData?.totalCommunitySize">
-          {{ rankData.totalCommunitySize || 0 }}
-          <span>People</span>
-          <div class="stats__item__grows" *ngIf="rankData.totalCommunitySizeChange > 0">
-            <p><span>▲</span></p>
-            <p>{{ rankData.totalCommunitySizeChange }}</p>
-          </div>
-        </div>
-      </ng-container>
-      <ng-template #peopleLoading>
-        <loading-spinner-small></loading-spinner-small>
-      </ng-template>
-      <button class="ui-button ui-button--green ui-button--xs" (click)="onButtonClick('community')">Extend my community</button>
-    </div>
-    <div class="stats__item">
-      <p class="stats__item__title">Growth
-        <br>Rewards</p>
-      <div class="stats__item__picture">
-        <img src="/assets/v1/images/stats/growthIcon.png" alt="">
-      </div>
-      <ng-container *ngIf="!loading; else growthLoading">
-        <div class="stats__item__info">
-          {{totals?.totalGrowthRewards || '0.00'}}
-          <span>MRT</span>
-        </div>
-      </ng-container>
-      <button class="ui-button ui-button--green ui-button--xs" (click)="onButtonClick('growth')">Get Growth Rewards</button>
-    </div>
-    <ng-template #growthLoading>
+    </ng-container>
+    <ng-template #percentileLoading>
       <loading-spinner-small></loading-spinner-small>
     </ng-template>
-    <div class="stats__item">
-      <p class="stats__item__title">Mining
-        <br>Rewards</p>
-      <div class="stats__item__picture">
-        <img src="/assets/v1/images/stats/miningIcon.png" alt="">
-      </div>
-      <ng-container *ngIf="!loading; else miningLoading">
-        <div class="stats__item__info">
-          {{totals?.totalMiningRewards || '0.00'}}
-          <span>MRT</span>
-        </div>
-      </ng-container>
-      <ng-template #miningLoading>
-        <loading-spinner-small></loading-spinner-small>
-      </ng-template>
-      <button class="ui-button ui-button--green ui-button--xs" (click)="onButtonClick('mining')">Start mining</button>
-    </div>
+    <button class="ui-button ui-button--green ui-button--xs" (click)="onButtonClick('rank')">{{rankActive? 'Hide': 'Show'}} details</button>
   </div>
-  <app-get-started-tips [wallets]="wallets"></app-get-started-tips>
-  <app-community-rank
-    [wallets]="wallets"
-    [ranks]="ranks"
-    [active]="rankActive"
-    [leaderboard]="leaderboard?.ranks"
-    [rankData]="rankData"
-    [onMoreSecurityRewards]="onMoreSecurityRewards"
-    [onMoreCommunity]="onMoreCommunity"
-    (close)="onButtonClick()">
-  </app-community-rank>
+  <div class="item">
+    <p class="title">My
+      <br>Community</p>
+    <div class="picture">
+      <img src="/assets/v1/images/stats/communityIcon.png" alt="">
+    </div>
+    <ng-container *ngIf="!loading; else peopleLoading">
+      <div class="info" *ngIf="rankData?.totalCommunitySize">
+        {{ rankData.totalCommunitySize || 0 }}
+        <span>People</span>
+        <div class="movement" [class.positive]="rankData.totalCommunitySizeChange > 0" *ngIf="rankData.totalCommunitySizeChange > 0">
+          <p><span>▲</span></p>
+          <p>{{ rankData.totalCommunitySizeChange }}</p>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #peopleLoading>
+      <loading-spinner-small></loading-spinner-small>
+    </ng-template>
+    <button class="ui-button ui-button--green ui-button--xs" (click)="onButtonClick('community')">Extend my community</button>
+  </div>
+  <div class="item">
+    <p class="title">Growth
+      <br>Rewards</p>
+    <div class="picture">
+      <img src="/assets/v1/images/stats/growthIcon.png" alt="">
+    </div>
+    <ng-container *ngIf="!loading; else growthLoading">
+      <div class="info">
+        {{totals?.totalGrowthRewards || '0.00'}}
+        <span>MRT</span>
+      </div>
+    </ng-container>
+    <button class="ui-button ui-button--green ui-button--xs" (click)="onButtonClick('growth')">Get Growth Rewards</button>
+  </div>
+  <ng-template #growthLoading>
+    <loading-spinner-small></loading-spinner-small>
+  </ng-template>
+  <div class="item">
+    <p class="title">Mining
+      <br>Rewards</p>
+    <div class="picture">
+      <img src="/assets/v1/images/stats/miningIcon.png" alt="">
+    </div>
+    <ng-container *ngIf="!loading; else miningLoading">
+      <div class="info">
+        {{totals?.totalMiningRewards || '0.00'}}
+        <span>MRT</span>
+      </div>
+    </ng-container>
+    <ng-template #miningLoading>
+      <loading-spinner-small></loading-spinner-small>
+    </ng-template>
+    <button class="ui-button ui-button--green ui-button--xs" (click)="onButtonClick('mining')">Start mining</button>
+  </div>
 </div>
+<app-get-started-tips [wallets]="wallets"></app-get-started-tips>
+<app-community-rank
+  [wallets]="wallets"
+  [ranks]="ranks"
+  [active]="rankActive"
+  [leaderboard]="leaderboard?.ranks"
+  [rankData]="rankData"
+  [onMoreSecurityRewards]="onMoreSecurityRewards"
+  [onMoreCommunity]="onMoreCommunity"
+  (close)="onButtonClick()">
+</app-community-rank>
