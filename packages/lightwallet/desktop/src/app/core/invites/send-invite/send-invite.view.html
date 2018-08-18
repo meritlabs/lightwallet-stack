@@ -24,7 +24,7 @@
   <form [formGroup]="formCtrl.formData" (ngSubmit)="formCtrl.submit()">
     <div class="sendMerit__form__group">
       <label for="" class="ui-label">Send from</label>
-      <app-select (selectionEvent)="formCtrl.selectWallet($event)" [selected]="formCtrl.selectedWallet" [input]="wallets$ | async"
+      <app-select (selectionEvent)="formCtrl.selectWallet($event)" [selected]="formCtrl.selectedWallet" [input]="formCtrl.wallets$ | async"
                   cssClass="ui-input ui-input--select ui-input--form"></app-select>
       {{ formCtrl.selectedWallet?.availableInvites || 0 }} invites available. {{ formCtrl.selectedWallet?.pendingInvites? '(' + formCtrl.selectedWallet.pendingInvites + ' pending)' : '' }}
     </div>
