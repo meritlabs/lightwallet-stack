@@ -33,39 +33,39 @@ export class SendView implements OnInit {
   ctrl: SendFormController;
 
   get amountMrt() {
-    return this.ctrl.formData.get('amountMrt');
+    return this.ctrl.amountMrt;
   }
 
   get selectedCurrency() {
-    return this.ctrl.formData.get('selectedCurrency');
+    return this.ctrl.selectedCurrency;
   }
 
   get feeIncluded() {
-    return this.ctrl.formData.get('feeIncluded');
+    return this.ctrl.feeIncluded;
   }
 
   get wallet() {
-    return this.ctrl.formData.get('wallet');
+    return this.ctrl.wallet;
   }
 
   get type() {
-    return this.ctrl.formData.get('type');
+    return this.ctrl.type;
   }
 
   get password() {
-    return this.ctrl.formData.get('password');
+    return this.ctrl.password;
   }
 
-  get passwordConfirm() {
-    return this.ctrl.formData.get('passwordConfirm');
+  get confirmPassword() {
+    return this.ctrl.confirmPassword;
   }
 
   get address() {
-    return this.ctrl.formData.get('address');
+    return this.ctrl.address;
   }
 
   get destination() {
-    return this.ctrl.formData.get('destination');
+    return this.ctrl.destination;
   }
 
   showTour: boolean = !('showTour' in localStorage && localStorage.getItem('showTour') === 'false');

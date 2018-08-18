@@ -80,23 +80,33 @@
                 </div>
               </div>
             </div>
-            <div class="sendMerit__form__group">
-              <label class="ui-label" *ngIf="wallet.value?.availableInvites">Password &nbsp;
-                <small>(optional)</small>
-              </label>
-              <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password"
-                     placeholder="Enter a password to protect your MeritMoney link"
-                     *ngIf="wallet.value?.availableInvites">
-              <div class="notification-info" [class.danger]="!wallet.value?.availableInvites">
-                <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
-                <p *ngIf="wallet.value?.availableInvites">
-                  You will see a link after confirming the transaction that you can share with your recipient.
-                </p>
-                <p *ngIf="!wallet.value?.availableInvites">
-                  You don't have an available invite to use MeritMoney, please select another wallet or use ClassicSend.
-                </p>
+
+            <ng-container *ngIf="wallet.value?.availableInvites">
+              <div class="sendMerit__form__group">
+                <label class="ui-label">Password &nbsp;
+                  <small>(optional)</small>
+                </label>
+                <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password"
+                       placeholder="Enter a password to protect your MeritMoney link">
               </div>
+
+              <div class="sendMerit__form__group" [hidden]="!password.value?.length">
+                <label class="ui-label">Confirm password</label>
+                <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="confirmPassword"
+                       placeholder="Enter a password to protect your MeritMoney link">
+              </div>
+            </ng-container>
+
+            <div class="notification-info" [class.danger]="!wallet.value?.availableInvites">
+              <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
+              <p *ngIf="wallet.value?.availableInvites">
+                You will see a link after confirming the transaction that you can share with your recipient.
+              </p>
+              <p *ngIf="!wallet.value?.availableInvites">
+                You don't have an available invite to use MeritMoney, please select another wallet or use ClassicSend.
+              </p>
             </div>
+            <br />
           </ng-template>
         </ng-container>
         <div class="sendMerit__form__group"

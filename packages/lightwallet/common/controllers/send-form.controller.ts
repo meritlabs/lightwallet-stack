@@ -91,8 +91,8 @@ export class SendFormController {
     return this.formData.get('password');
   }
 
-  get passwordConfirm() {
-    return this.formData.get('passwordConfirm');
+  get confirmPassword() {
+    return this.formData.get('confirmPassword');
   }
 
   get address() {
@@ -269,7 +269,7 @@ export class SendFormController {
       });
 
     this.password.valueChanges.subscribe(() => {
-      this.passwordConfirm.updateValueAndValidity({ onlySelf: false });
+      this.confirmPassword.updateValueAndValidity({ onlySelf: false });
     });
 
     this.onSubmit$.subscribe();

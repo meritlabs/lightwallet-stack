@@ -33,6 +33,7 @@ export class SendInviteFormController {
     address: ['', [], [SendValidator.validateAddress(true)]],
     type: ['easy'],
     password: [''],
+    confirmPassword: ['', SendValidator.validatePasswordConfirm],
     wallet: [null],
     destination: ['', SendValidator.validateGlobalSendDestination],
     amount: [1, [Validators.required, SendValidator.validateAmount, InviteValidator.InviteQuantityValidator]],
@@ -66,6 +67,14 @@ export class SendInviteFormController {
     return this.formData.get('wallet');
   }
 
+  get password() {
+    return this.formData.get('password');
+  }
+
+  get confirmPassword() {
+    return this.formData.get('confirmPassword');
+  }
+
   constructor(
     public store: Store<IRootAppState>,
     protected formBuilder: FormBuilder,
@@ -88,6 +97,10 @@ export class SendInviteFormController {
       filter((value: string) => (value === 'easy' && this.address.invalid) || (value === 'classic' && this.address.valid && !this.address.value)),
       tap(() => this.address.updateValueAndValidity({ onlySelf: false })),
     ).subscribe();
+
+    this.password.valueChanges.subscribe(() => {
+      this.confirmPassword.updateValueAndValidity({ onlySelf: false });
+    });
   }
 
   submit() {

@@ -34,6 +34,15 @@ export class SendInviteView {
     return this.formCtrl.amount;
   }
 
+
+  get password() {
+    return this.formCtrl.password;
+  }
+
+  get confirmPassword() {
+    return this.formCtrl.confirmPassword;
+  }
+
   constructor(store: Store<IRootAppState>,
               formBuilder: FormBuilder,
               walletService: WalletService,
