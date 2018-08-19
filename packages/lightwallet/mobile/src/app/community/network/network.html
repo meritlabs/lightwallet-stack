@@ -15,7 +15,7 @@
 
 
   <ion-list no-lines *ngIf="rankData$ | async as rankData; else rankDataLoading">
-    <button ion-item class="pending-unlock-requests" navPush="UnlockRequestsView">
+    <button ion-item class="pending-unlock-requests">
       <ion-avatar item-start img-icon>
         <img src="assets/img/icons/network.svg">
       </ion-avatar>
@@ -37,6 +37,16 @@
         </ion-label>
         <div item-end class="details">{{ availableInvites$ | async }} INV</div>
     </ion-item>
+
+    <button ion-item navPush="UnlockRequestsView">
+      <ion-avatar item-start img-icon>
+        <img src="assets/img/icons/invite.svg">
+      </ion-avatar>
+      <ion-label>
+        <h2>Invite Waitlist</h2>
+      </ion-label>
+      <div item-end class="details">{{ nInviteRequests$ | async }} requests</div>
+    </button>
 
     <ion-item class="pending-unlock-requests">
         <ion-avatar item-start img-icon>
