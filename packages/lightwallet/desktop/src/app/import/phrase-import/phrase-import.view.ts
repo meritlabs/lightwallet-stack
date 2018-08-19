@@ -88,7 +88,7 @@ export class PhraseImportView {
 
         this.store.dispatch(
           new AddWalletAction(
-            await createDisplayWallet(wallet, this.walletService, this.addressService, this.inviteRequestsService, this.txFormatService, this.persistenceService2),
+            await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService, this.txFormatService, this.persistenceService2),
           ),
         );
 

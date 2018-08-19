@@ -243,7 +243,7 @@ export class CreateWalletView {
         this.logger.error(e);
       }
 
-      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, this.inviteRequestsService, this.txFormatService, this.persistenceService2);
+      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService, this.txFormatService, this.persistenceService2);
       this.store.dispatch(new AddWalletAction(displayWallet));
       return this.router.navigateByUrl('/wallets');
     } catch (err) {
