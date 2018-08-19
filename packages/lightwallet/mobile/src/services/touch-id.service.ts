@@ -27,7 +27,11 @@ export class TouchIdService {
   }
 
   async checkAndroid() {
-    return (await this.androidFingerprintAuth.isAvailable()).isAvailable;
+    try {
+      return (await this.androidFingerprintAuth.isAvailable()).isAvailable;
+    } catch (e) {
+      return false;
+    }
   }
 
   async verifyIOSFingerprint(): Promise<any> {
