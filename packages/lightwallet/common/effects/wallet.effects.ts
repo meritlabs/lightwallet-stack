@@ -174,7 +174,7 @@ export class WalletEffects {
     const wallets = await this.profileService.getWallets();
     return Promise.all<DisplayWallet>(
       wallets.map(async w => {
-        const displayWallet = await createDisplayWallet(w, this.walletService, this.addressService, this.inviteRequestsService, this.txFormatService, this.persistenceService2);
+        const displayWallet = await createDisplayWallet(w, this.walletService, this.inviteRequestsService, this.txFormatService, this.persistenceService2);
         displayWallet.importPreferences(await this.persistenceService2.getWalletPreferences(displayWallet.id));
         await this.updateVisitedInviteRequests(displayWallet.inviteRequests);
         return displayWallet;
@@ -286,14 +286,18 @@ export class WalletEffects {
       rankData.totalProbability += rank.anvPercent;
     });
 
-    const estimateMinutesPerReward = 1 / (rankData.totalProbability * REWARDS_PER_BLOCK);
-
-    if (estimateMinutesPerReward < 120) {
-      rankData.estimateStr = `Every ${Math.ceil(estimateMinutesPerReward)}min`
-    } else if (estimateMinutesPerReward < 2880) {
-      rankData.estimateStr = `Every ${ Math.ceil(estimateMinutesPerReward/60)}hrs`
+    if (rankData.totalProbability === 0) {
+      rankData.estimateStr = 'No rewards';
     } else {
-      rankData.estimateStr = `Every ${ Math.ceil(estimateMinutesPerReward/1440)}days`
+      const estimateMinutesPerReward = 1 / (rankData.totalProbability * REWARDS_PER_BLOCK);
+
+      if (estimateMinutesPerReward < 120) {
+        rankData.estimateStr = `Every ${Math.ceil(estimateMinutesPerReward)}min`
+      } else if (estimateMinutesPerReward < 2880) {
+        rankData.estimateStr = `Every ${ Math.ceil(estimateMinutesPerReward/60)}hrs`
+      } else {
+        rankData.estimateStr = `Every ${ Math.ceil(estimateMinutesPerReward/1440)}days`
+      }
     }
 
     return rankData
