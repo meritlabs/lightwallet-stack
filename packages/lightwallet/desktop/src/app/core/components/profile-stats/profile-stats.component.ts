@@ -2,7 +2,10 @@ import { Component, Input, ViewChild } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { ILeaderboard, IRankData, IRankInfo } from '@merit/common/models/rank';
 import { GetStartedTipsComponent } from '@merit/desktop/app/core/components/profile-stats/get-started-tips/get-started-tips.component';
-import { IWalletTotals } from '@merit/common/reducers/wallets.reducer';
+import { IWalletTotals, selectRankData } from '@merit/common/reducers/wallets.reducer';
+import { Observable } from 'rxjs';
+import { IRootAppState } from '@merit/common/reducers';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'profile-stats',
@@ -28,57 +31,15 @@ export class ProfileStatsComponent {
   @ViewChild(GetStartedTipsComponent) getStarted: GetStartedTipsComponent;
 
   rankActive: boolean;
-  ranks: IRankInfo[];
   leaderboard: ILeaderboard;
 
-  rankData: IRankData;
+  rankData$: Observable<IRankData> = this.store.select(selectRankData);
+
+  constructor(private store: Store<IRootAppState>) {
+  }
+
 
   private async updateRankData() {
-    const hasConfirmedWallet = this.wallets.findIndex((wallet: DisplayWallet) => wallet.confirmed) !== -1;
-
-    if (!hasConfirmedWallet) {
-      this.rankData = {
-        unlocked: false,
-        totalAnv: 0,
-        bestRank: 0,
-        bestPercentile: 0,
-        percentileStr: '',
-        rankChangeDay: 0,
-        totalCommunitySize: 0,
-        totalCommunitySizeChange: 0,
-      };
-      return;
-    }
-
-    const rankInfo = await this.getRankInfo();
-    const ranks: IRankInfo[] = rankInfo;
-    let topRank: IRankInfo = rankInfo[0];
-
-    for (let i = 1; i < ranks.length; i++) {
-      if (ranks[i].rank < topRank.rank) {
-        topRank = ranks[i];
-      }
-    }
-
-    const rankData: IRankData = {
-      unlocked: true,
-      totalAnv: 0,
-      bestRank: topRank.rank,
-      bestPercentile: +topRank.percentile,
-      percentileStr: this.getPercentileStr(topRank),
-      rankChangeDay: topRank.rankChangeDay,
-      totalCommunitySize: 0,
-      totalCommunitySizeChange: 0,
-    };
-
-    ranks.forEach((rank: IRankInfo) => {
-      rankData.totalAnv += rank.anv;
-      rankData.totalCommunitySize += rank.communitySize;
-      rankData.totalCommunitySizeChange += rank.communitySizeChangeDay;
-    });
-
-    this.rankData = rankData;
-    this.ranks = ranks;
     this.leaderboard = await this.wallets[0].client.getCommunityLeaderboard();
   }
 
@@ -95,14 +56,16 @@ export class ProfileStatsComponent {
   private async getRankInfo(): Promise<IRankInfo[]> {
     const rankInfo: IRankInfo[] = [];
 
-    for (let i = 0; i < this.wallets.length; i++) {
-      try {
-        rankInfo.push(await this.wallets[i].client.getRankInfo())
-      } catch (err) {
-        console.log('Error occurred while getting rank info for wallet: ' + this.wallets[i].client.rootAddress.toString());
-        console.log(err);
-      }
-    }
+    await Promise.all(
+      this.wallets.map(async wallet => {
+        try {
+          rankInfo.push(await wallet.client.getRankInfo())
+        } catch (err) {
+          console.log('Error occurred while getting rank info for wallet: ' + wallet.address);
+          console.log(err);
+        }
+      })
+    );
 
     return rankInfo;
   }

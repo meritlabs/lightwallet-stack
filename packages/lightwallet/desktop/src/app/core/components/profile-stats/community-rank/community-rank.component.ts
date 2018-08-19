@@ -17,10 +17,9 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 export class CommunityRankComponent {
   constructor() {}
 
-  private _wallets: any[];
-  private _ranks: any;
-
   @Output() close: EventEmitter<void> = new EventEmitter<void>();
+  @Output() onCommunity: EventEmitter<void> = new EventEmitter<void>();
+  @Output() onMining: EventEmitter<void> = new EventEmitter<void>();
 
   @Input() onMoreSecurityRewards: Function;
   @Input() onMoreCommunity: Function;
@@ -28,35 +27,10 @@ export class CommunityRankComponent {
   @Input() leaderboard: any[];
   @Input() rankData: any;
   @Input()
-  set ranks(val: any[]) {
-    this._ranks = val;
-    this.assignRanks();
-  }
-
-  get ranks(): any[] {
-    return this._ranks;
-  }
-
-  @Input()
-  set wallets(val: DisplayWallet[]) {
-    this._wallets = val;
-    this.assignRanks();
-  }
-
-  get wallets(): DisplayWallet[] {
-    return this._wallets;
-  }
+  wallets: DisplayWallet[];
 
   closePanel() {
     this.active = false;
     this.close.emit();
-  }
-
-  private assignRanks() {
-    if (!this._ranks || !this._wallets) return;
-
-    this._wallets.map((w) => {
-      w.rank = this.ranks.find(r => r.address == w.referrerAddress);
-    });
   }
 }

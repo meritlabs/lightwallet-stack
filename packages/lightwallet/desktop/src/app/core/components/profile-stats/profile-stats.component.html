@@ -6,7 +6,7 @@
       <img src="/assets/v1/images/stats/rankIcon.png" alt="">
     </div>
     <ng-container *ngIf="!loading; else percentileLoading">
-      <div class="info" *ngIf="rankData">
+      <div class="info" *ngIf="rankData$ | async as rankData">
           <span *ngIf="rankData.unlocked; else rankDataLocked">
             <strong>{{rankData.percentileStr}}</strong>
               <span>(Rank: {{rankData.bestRank}})</span>
@@ -32,10 +32,10 @@
       <img src="/assets/v1/images/stats/communityIcon.png" alt="">
     </div>
     <ng-container *ngIf="!loading; else peopleLoading">
-      <div class="info" *ngIf="rankData?.totalCommunitySize">
-        {{ rankData.totalCommunitySize || 0 }}
+      <div class="info" *ngIf="rankData$ | async as rankData">
+        {{ rankData?.totalCommunitySize || 0 }}
         <span>People</span>
-        <div class="movement" [class.positive]="rankData.totalCommunitySizeChange > 0" *ngIf="rankData.totalCommunitySizeChange > 0">
+        <div class="movement" [class.positive]="rankData?.totalCommunitySizeChange > 0" *ngIf="rankData?.totalCommunitySizeChange > 0">
           <p><span>▲</span></p>
           <p>{{ rankData.totalCommunitySizeChange }}</p>
         </div>
@@ -84,11 +84,10 @@
 <app-get-started-tips [wallets]="wallets"></app-get-started-tips>
 <app-community-rank
   [wallets]="wallets"
-  [ranks]="ranks"
   [active]="rankActive"
   [leaderboard]="leaderboard?.ranks"
-  [rankData]="rankData"
-  [onMoreSecurityRewards]="onMoreSecurityRewards"
-  [onMoreCommunity]="onMoreCommunity"
+  [rankData]="rankData$ | async"
+  (onMining)="onButtonClick('mining')"
+  (onCommunity)="onButtonClick('community')"
   (close)="onButtonClick()">
 </app-community-rank>

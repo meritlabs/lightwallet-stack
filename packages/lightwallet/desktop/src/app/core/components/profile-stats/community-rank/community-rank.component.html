@@ -34,12 +34,12 @@
               <p class="name">{{wallet.name}}</p>
               <p *ngIf="wallet.alias" class="alias">@{{wallet.alias}}</p>
             </span>
-            <span class="rank" *ngIf="wallet.rank">
-              <strong>{{wallet.rank.anv}}</strong>
+            <span class="rank" *ngIf="wallet.rankInfo">
+              <strong>{{wallet.rankInfo.cgs}}</strong>
               <p class="divider">/</p>
-              <strong>{{wallet.rank.rank}}</strong>
+              <strong>{{wallet.rankInfo.rank}}</strong>
             </span>
-            <span class="notUnlocked" *ngIf="!wallet.rank">
+            <span class="notUnlocked" *ngIf="!wallet.rankInfo">
               Not unlocked
             </span>
           </li>
@@ -67,7 +67,7 @@
               <p class="alias">{{ r.alias? '@' + r.alias : 'Anonymous' }}</p>
             </span>
             <span class="rank">
-              <strong>{{r.anv}}</strong>
+              <strong>{{r.cgs}}</strong>
               <p class="divider">/</p>
               <strong>{{r.rank}}</strong>
             </span>
@@ -83,12 +83,12 @@
         <ul>
           <li>
             Get more Merit with Mining Rewards. All you need is to start mining!
-            <button class="ui-button ui-button--xs ui-button--blue" (click)="onMoreSecurityRewards()">Learn more
+            <button class="ui-button ui-button--xs ui-button--blue" (click)="onMining.emit()">Learn more
             </button>
           </li>
           <li>
             Grow your community. Tell your friends about Merit, get invites and share your invite code with them!
-            <button class="ui-button ui-button--xs ui-button--blue" (click)="onMoreCommunity()">Learn more</button>
+            <button class="ui-button ui-button--xs ui-button--blue" (click)="onCommunity.emit()">Learn more</button>
           </li>
           <!--<li>
             Buy Merit on Market.
