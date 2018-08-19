@@ -24,11 +24,14 @@ export class SelectWalletModal {
     private viewCtrl: ViewController,
     private profileService: ProfileService,
     private store: Store<IRootAppState>,
-  ) {}
-
-  async ngOnInit() {
+  ) {
     this.selectedWallet = this.navParams.get('selectedWallet');
     this.showInvites = this.navParams.get('showInvites');
+    const wallets = this.navParams.get('wallets');
+
+    if (wallets) {
+      this.wallets$ = wallets;
+    }
   }
 
   cancel() {
