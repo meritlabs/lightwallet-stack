@@ -1,105 +1,107 @@
 <ion-content>
 
-  <div *ngIf="loadingContacts" class="loader">
-    <ion-spinner></ion-spinner>
-  </div>
+  <ng-container *ngIf="hasUnlockedWallets$ | async">
+    <div *ngIf="searchResult && !showSlider" class="content">
 
-  <div *ngIf="!loadingContacts && !hasUnlockedWallets" class="unlock-screen">
-    <div class="unlock-backdrop" *ngIf="!hasUnlockedWallets"></div>
-
-    <div class="unlock-popup">
-      <div class="top-label">Before you start...</div>
-      <img src="assets/img/icons/confirm.svg">
-      <h2>Waiting for invite</h2>
-      <div class="bottom-label">You cannot send Merit until you are invited.</div>
-    </div>
-
-    <ion-list>
-      <ion-item *ngFor="let idx of [0,1,2,3,4,5,6,7,8,9,10]" class="contact-stub">
-        <ion-avatar item-start img-icon></ion-avatar>
-        <h2></h2>
-        <p></p>
-      </ion-item>
-    </ion-list>
-  </div>
-
-
-  <div *ngIf="!loadingContacts && searchResult && hasUnlockedWallets && !showSlider" class="content">
-
-    <button ion-button full primary (click)="easySend()" [disabled]="!hasActiveInvites" class="global-send-button">
-      Send via MeritMoney Link
-      <img src="assets/img/icons/send.svg">
-    </button>
-
-    <div class="or-line">
-      <div class="hr"></div>
-      <div class="or">or</div>
-      <div class="hr"></div>
-    </div>
-
-    <div class="searchbar-wrapper">
-      <ion-searchbar [(ngModel)]="searchQuery" [debounce]="50" (ngModelChange)="parseSearch()" (keyup)="onSearchKeyUp($event)"
-                     (ionCancel)="clearSearch()" placeholder="Enter @alias/address"></ion-searchbar>
-      <button ion-button clear item-end (click)="openScanner()" class="scan-button" *ngIf="!searchQuery">
-        <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
+      <button ion-button full primary (click)="easySend()" [disabled]="!(hasAvailableInvites$ | async)"
+              class="global-send-button">
+        Send via MeritMoney Link
+        <img src="assets/img/icons/send.svg">
       </button>
 
-      <ion-spinner color="primary"  *ngIf="searchQuery && searchInProgress"></ion-spinner>
-    </div>
-
-    <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
-      <h2>What is a MeritMoney link?</h2>
-      <p>You can send Merit to anyone as easily as pasting a link.  Whether it's via email, sms, or a social channel, just copy the link you receive during the final step.</p>
-      <p>MeritMoney links require 1 invite; the recipient will become part of your community.</p>
-      <img src="assets/img/easysend.png" color="primary" item-end>
-    </div>
-
-    <div class="no-results" *ngIf="!searchResult.contacts?.length && searchQuery" padding-top>
-
-      <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
-        Address is not confirmed yet
-      </div>
-      <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
-        Alias not found
+      <div class="or-line">
+        <div class="hr"></div>
+        <div class="or">or</div>
+        <div class="hr"></div>
       </div>
 
-    </div>
+      <div class="searchbar-wrapper">
+        <ion-searchbar [(ngModel)]="searchQuery" [debounce]="50" (ngModelChange)="parseSearch()"
+                       (keyup)="onSearchKeyUp($event)"
+                       (ionCancel)="clearSearch()" placeholder="Enter @alias/address"></ion-searchbar>
+        <button ion-button clear item-end (click)="openScanner()" class="scan-button" *ngIf="!searchQuery">
+          <ion-icon name="qr-code" merit-icon color="primary"></ion-icon>
+        </button>
 
-    <div *ngIf="searchResult.toNewEntity" margin-top class="no-results">
+        <ion-spinner color="primary" *ngIf="searchQuery && searchInProgress"></ion-spinner>
+      </div>
 
-      <button color="light" ion-button *ngIf="searchResult.toNewEntity.destination == 'address'" (click)="createContact()" class="send-button">
+      <div class="global-illustration" *ngIf="!loadingContacts && !searchQuery && !contacts?.length">
+        <h2>What is a MeritMoney link?</h2>
+        <p>You can send Merit to anyone as easily as pasting a link. Whether it's via email, sms, or a social channel,
+          just copy the link you receive during the final step.</p>
+        <p>MeritMoney links require 1 invite; the recipient will become part of your community.</p>
+        <img src="assets/img/easysend.png" color="primary" item-end>
+      </div>
+
+      <div class="no-results" *ngIf="!searchResult.contacts?.length && searchQuery" padding-top>
+
+        <div class="no-results-label" *ngIf="searchResult.error == 'ADDRESS_NOT_CONFIRMED'">
+          Address is not confirmed yet
+        </div>
+        <div class="no-results-label" *ngIf="searchResult.error == 'ALIAS_NOT_FOUND'">
+          Alias not found
+        </div>
+
+      </div>
+
+      <div *ngIf="searchResult.toNewEntity" margin-top class="no-results">
+
+        <button color="light" ion-button *ngIf="searchResult.toNewEntity.destination == 'address'"
+                (click)="createContact()" class="send-button">
           Create New Contact
-      </button>
-      <button color="light" ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length"
-              (click)="bindAddressToContact()"
-              class="send-button">
+        </button>
+        <button color="light" ion-button *ngIf="searchResult.toNewEntity.destination == 'address' && contacts?.length"
+                (click)="bindAddressToContact()"
+                class="send-button">
           Bind to existing contact
-      </button>
-      <button color="light" ion-button padding (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
+        </button>
+        <button color="light" ion-button padding (click)="sendToEntity(searchResult.toNewEntity)" class="send-button">
           <div>Send To This {{ isInputAlias(searchQuery) ?'Alias' : 'Address' }}</div>
-      </button>
-      <div class="address">{{isInputAlias(searchQuery) ? '@' : ''}}{{searchQuery}}</div>
+        </button>
+        <div class="address">{{isInputAlias(searchQuery) ? '@' : ''}}{{searchQuery}}</div>
 
+      </div>
+
+
+      <div class="contacts-list">
+        <ion-list *ngIf="searchResult.contacts?.length" class="list-with-merit">
+          <ion-item-divider>Friends with Merit
+            <!--<button ion-button clear item-end (click)="showRecent = true">Recent</button>-->
+          </ion-item-divider>
+          <ion-item *ngFor="let contact of searchResult.contacts" (click)="sendToContact(contact)" class="contact">
+            <contact-avatar [contact]="contact" item-start></contact-avatar>
+            {{ contact.name.formatted }}
+            <button ion-button icon-only clear item-end (click)="editContact(contact, $event)">
+              <ion-icon name="settings"></ion-icon>
+            </button>
+          </ion-item>
+        </ion-list>
+
+      </div>
     </div>
+  </ng-container>
 
+  <ng-template #noUnlockedWallets>
+    <div class="unlock-screen">
+      <div class="unlock-backdrop"></div>
 
-      <div [hidden]="showRecent" class="contacts-list">
-      <ion-list *ngIf="searchResult.contacts?.length" class="list-with-merit">
-        <ion-item-divider>Friends with Merit
-          <!--<button ion-button clear item-end (click)="showRecent = true">Recent</button>-->
-        </ion-item-divider>
-        <ion-item *ngFor="let contact of searchResult.contacts" (click)="sendToContact(contact)" class="contact">
-          <contact-avatar [contact]="contact" item-start></contact-avatar>
-          {{ contact.name.formatted }}
-          <button ion-button icon-only clear item-end (click)="editContact(contact, $event)">
-            <ion-icon name="settings"></ion-icon>
-          </button>
+      <div class="unlock-popup">
+        <div class="top-label">Before you start...</div>
+        <img src="assets/img/icons/confirm.svg">
+        <h2>Waiting for invite</h2>
+        <div class="bottom-label">You cannot send Merit until you are invited.</div>
+      </div>
+
+      <ion-list>
+        <ion-item *ngFor="let idx of [0,1,2,3,4,5,6,7,8,9,10]" class="contact-stub">
+          <ion-avatar item-start img-icon></ion-avatar>
+          <h2></h2>
+          <p></p>
         </ion-item>
       </ion-list>
-
     </div>
+  </ng-template>
 
-
-  </div>
 
 </ion-content>

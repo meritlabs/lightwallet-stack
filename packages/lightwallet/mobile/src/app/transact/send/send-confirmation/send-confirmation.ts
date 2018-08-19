@@ -10,7 +10,10 @@ import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { TouchIdService } from '@merit/mobile/services/touch-id.service';
 import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
-
+import { SendFormController } from '../../../../../../common/controllers/send-form.controller';
+import { MeritContact } from '../../../../../../common/models/merit-contact';
+import { getLatestValue } from '../../../../../../common/utils/observables';
+import 'rxjs/add/operator/toPromise';
 
 @IonicPage()
 @Component({
@@ -23,6 +26,11 @@ export class SendConfirmationView {
   viewData: any;
   unlockValue: number = 0;
 
+  ctrl: SendFormController;
+  recipient: MeritContact;
+  sendMethod: ISendMethod;
+  priceReviewClass: string = '';
+
   constructor(private navParams: NavParams,
               private navCtrl: NavController,
               private toastCtrl: ToastControllerService,
@@ -31,9 +39,7 @@ export class SendConfirmationView {
               private rateService: RateService,
               private logger: LoggerService,
               private sendService: SendService
-  ) {
-    this.txData = navParams.get('txData');
-  }
+  ) {}
 
   ionViewDidEnter() {
     this.navCtrl.swipeBackEnabled = false;
@@ -44,75 +50,39 @@ export class SendConfirmationView {
   }
 
   async ngOnInit() {
+    const { sendFormCtrl, recipient, sendMethod } = this.navParams.data;
+    this.ctrl = sendFormCtrl;
+    this.recipient = recipient;
+    this.sendMethod = sendMethod;
 
-    const viewData: any = {
-      recipient: this.txData.recipient,
-      amount: this.txData.amount,
-      totalAmount: this.txData.feeIncluded ? this.txData.amount : this.txData.amount + this.txData.fee,
-      password: this.txData.password,
-      fee: this.txData.fee,
-      walletName: this.txData.wallet.name || this.txData.wallet.id,
-      walletColor: this.txData.wallet.color,
-      walletCurrentBalance: this.txData.wallet.balance.totalAmount,
-      feeIncluded: this.txData.feeIncluded,
-      methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'MeritMoney Link' : 'Classic Send',
-      destination: this.txData.sendMethod.alias ? '@' + this.txData.sendMethod.alias : this.txData.sendMethod.value,
-      easySendDelivered: this.navParams.get('easySendDelivered')
-    };
-
-    viewData.walletRemainingBalance = this.txData.wallet.balance.totalAmount - viewData.totalAmount;
-
-    const amountMrtLength = (this.rateService.microsToMrt(viewData.amount) + '').length;
+    const amountMrtLength = String(sendFormCtrl.amountMrt.value).length;
 
     if (amountMrtLength < 5) {
-      viewData.priceReviewClass = 'big';
+      this.priceReviewClass = 'big';
     } else if (amountMrtLength < 9) {
-      viewData.priceReviewClass = 'medium';
+      this.priceReviewClass = 'medium';
     } else if (amountMrtLength < 12) {
-      viewData.priceReviewClass = 'small';
+      this.priceReviewClass = 'small';
     } else {
-      viewData.priceReviewClass = 'tiny';
+      this.priceReviewClass = 'tiny';
     }
-
-    this.viewData = viewData;
   }
 
   async send() {
+    this.ctrl.submit.next();
+    console.log('Submitted.. waiting for status');
 
-    const loadingSpinner = this.loadingCtrl.create({
-      content: 'Sending transaction...',
-      dismissOnPageChange: true
-    });
-    loadingSpinner.present();
+    const success = await getLatestValue(this.ctrl.onSubmit$);
 
-    try {
-
-      await this.sendService.send(this.txData.wallet, this.txData);
-
-      if (this.txData.sendMethod.type === SendMethodType.Easy) {
-        let easySendDelivered;
-
-        if (this.txData.sendMethod.destination === SendMethodDestination.Email || this.txData.sendMethod.destination === SendMethodDestination.Sms) {
-          try {
-            await this.txData.wallet.deliverGlobalSend(this.txData.easySend, { type: SendMethodType.Easy, destination: this.txData.sendMethod.destination, value: this.txData.sendMethod.value });
-            easySendDelivered = true;
-          } catch (err) {
-            this.logger.error('Unable to deliver GlobalSend', err);
-            easySendDelivered = false;
-          }
-        }
-
-        this.navCtrl.push('EasySendShareView', { txData: this.txData, easySendDelivered });
+    if (success) {
+      if (this.sendMethod.type === SendMethodType.Easy) {
+        this.navCtrl.push('EasySendShareView', { sendFormCtrl: this.ctrl });
       } else {
         this.navCtrl.popToRoot();
         this.toastCtrl.success('Your transaction is complete');
       }
-    } catch (err) {
-      this.logger.warn(err);
-      return this.toastCtrl.error(err);
-    } finally {
-      loadingSpinner.dismiss();
-      this.txData.referralsToSign = [];
+    } else {
+      this.toastCtrl.error(this.ctrl.error || 'Unknown error occurred while sending your transaction.');
     }
   }
 

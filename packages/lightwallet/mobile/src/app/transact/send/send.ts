@@ -17,8 +17,15 @@ import { Observable } from 'rxjs';
 import { DisplayWallet } from '../../../../../common/models/display-wallet';
 import { Store } from '@ngrx/store';
 import { IRootAppState } from '../../../../../common/reducers';
-import { selectConfirmedWallets, selectInvites, selectWallets } from '../../../../../common/reducers/wallets.reducer';
+import {
+  selectConfirmedWallets,
+  selectInvites,
+  selectWallets,
+  selectWalletsLoading,
+} from '../../../../../common/reducers/wallets.reducer';
 import { couldBeAlias, isAddress } from '../../../../../common/utils/addresses';
+import { getLatestValue } from '../../../../../common/utils/observables';
+import { map } from 'rxjs/operators';
 
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';
 const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
@@ -36,20 +43,18 @@ export class SendView {
     return this.slides.isEnd();
   }
 
-  recentContacts: Array<MeritContact> = [];
+  recentContacts: MeritContact[] = [];
   suggestedMethod: ISendMethod;
   searchQuery: string = '';
   loadingContacts: boolean;
-  contacts: Array<MeritContact> = [];
+  contacts: MeritContact[] = [];
   amount: number;
   searchResult: {
-    contacts: Array<MeritContact>,
+    contacts: MeritContact[],
     toNewEntity: { destination: string, contact: MeritContact },
     error: string
   } = { contacts: [], toNewEntity: null, error: null };
 
-  hasUnlockedWallets: boolean;
-  hasActiveInvites: boolean;
   showSlider: boolean;
 
   wallet: DisplayWallet;
@@ -57,7 +62,14 @@ export class SendView {
   searchInProgress: boolean;
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets);
+  walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   invites$: Observable<number> = this.store.select(selectInvites);
+  hasUnlockedWallets$: Observable<boolean> = this.wallets$.pipe(
+    map(wallets => wallets.length > 0)
+  );
+  hasAvailableInvites$: Observable<boolean> = this.invites$.pipe(
+    map(invites => invites > 0)
+  );
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
@@ -83,6 +95,7 @@ export class SendView {
 
   async ionViewWillEnter() {
     this.wallet = this.navParams.data.wallet;
+
     this.loadingContacts = true;
 
     // let pagesVisited = await this.persistenceService.getPagesVisited();
@@ -214,12 +227,12 @@ export class SendView {
   createContact() {
     let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
     let modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
-    modal.onDidDismiss((contact) => {
+    modal.onDidDismiss(async (contact) => {
       if (contact) {
         this.navCtrl.push('SendAmountView', {
           contact: contact,
           amount: this.amount,
-          isEasyEnabled: this.hasActiveInvites,
+          isEasyEnabled: await getLatestValue(this.hasAvailableInvites$),
           suggestedMethod: {
             type: SendMethodType.Classic,
             destination: SendMethodDestination.Address,
@@ -306,17 +319,16 @@ export class SendView {
     this.parseSearch();
   }
 
-  easySend() {
-    if (!this.hasActiveInvites) {
-      this.toastCtrl.create({
-        message: 'You do not have any available invites to use MeritMoney',
-        duration: 4000,
-        showCloseButton: true
-      });
-      return;
-    }
-
-    this.navCtrl.push('SendAmountView', {
+  async easySend() {
+    // if (!getLatestValue(this.hasAvailableInvites$)) {
+    //   this.toastCtrl.create({
+    //     message: 'You do not have any available invites to use MeritMoney',
+    //     duration: 4000,
+    //     showCloseButton: true
+    //   });
+    //   return;
+    // }
+    return this.navCtrl.push('SendAmountView', {
       suggestedMethod: { type: SendMethodType.Easy }
     });
   }

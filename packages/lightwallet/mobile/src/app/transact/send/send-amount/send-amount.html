@@ -1,12 +1,14 @@
 <ion-header no-border>
   <ion-navbar color="primary">
     <ion-title>
-      {{ recipient?.name?.formatted? 'Sending To: ' + recipient.name.formatted : sendMethod.value == 'easy' ? 'MeritMoney Link' : 'Sending To: ' + (sendMethod.alias? '@' + sendMethod.alias : sendMethod.value)}}
+      {{ recipient?.name?.formatted? 'Sending To: ' + recipient.name.formatted : sendMethod?.type == 'easy' ? 'MeritMoney Link' : 'Sending To: ' + (sendMethod?.alias? '@' + sendMethod?.alias : sendMethod?.value)}}
     </ion-title>
   </ion-navbar>
 </ion-header>
 <ion-content no-bounce>
-  <ng-container >
+  <div *ngIf="ctrl.receipt$ | async"></div>
+
+  <form [formGroup]="ctrl.formData">
     <div class="big-header">
       <div class="amount-area" (click)="focusInput()">
         <div class="currency-bar">
@@ -25,9 +27,7 @@
             <ion-input
               #amount
               type="number"
-              pattern="[0-9\.]"
-              [(ngModel)]="formData.amount"
-              (ngModelChange)="processAmount(formData.amount)"
+              formControlName="amountMrt"
               placeholder="Enter amount to send"
               (keypress)="amountKeypress($event.keyCode)"
               [class]="getAmountClass()"
@@ -35,31 +35,54 @@
           </ion-item>
           <div class="amount-sm">MRT</div>
         </div>
-        <div class="alternative-amount">
-          {{selectedCurrency?.type == 'mrt' ? amount?.fiatStr : amount?.mrtStr}}
+        <!--<div class="alternative-amount">
+          {{selectedCurrency?.value?.type == 'mrt' ? fiat : amount?.mrtStr}}
+        </div>-->
+      </div>
+
+      <div class="input-errors" [hidden]="!amountMrt.dirty || amountMrt.valid">
+        <div [hidden]="!amountMrt.hasError('required')">
+              <span class="tooltip-error">
+                <span>
+                  Amount is required
+                </span>
+              </span>
+        </div>
+        <div [hidden]="amountMrt.hasError('required') || !amountMrt.hasError('InvalidAmount')">
+              <span class="tooltip-error">
+                <span>
+                  Invalid amount
+                </span>
+              </span>
         </div>
       </div>
     </div>
+
     <ion-list>
-      <ion-item *ngIf="sendMethod?.type == 'easy'">
+      <ion-item *ngIf="sendMethod?.type == 'easy'" [class.hasErrors]="destination.dirty && destination.invalid">
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/email.svg" alt="">
         </ion-avatar>
         <ion-label stacked>
           <p>Recipient (optional)</p>
         </ion-label>
-        <ion-input placeholder="Phone number or Email address" [(ngModel)]="formData.destination"></ion-input>
+        <ion-input placeholder="Phone number or Email address" formControlName="destination"></ion-input>
       </ion-item>
+      <div class="input-errors" [hidden]="!destination.dirty || destination.valid">
+        <div [hidden]="!destination.hasError('InvalidDestination')">
+          Invalid email or phone number
+        </div>
+      </div>
       <button ion-item (click)="selectWallet()" detail-none class="wallet-selector" text-wrap>
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/wallet.svg">
         </ion-avatar>
-        <ion-label *ngIf="selectedWallet">
+        <ion-label *ngIf="wallet.value">
           <p>From</p>
-          <h2>{{selectedWallet.name}}</h2>
-          <p *ngIf="selectedWallet.rootAlias">@{{selectedWallet.rootAlias}}</p>
-          <p>{{selectedWallet.balance?.spendableAmount | toMRT}}</p>
-          <p *ngIf="sendMethod.type =='easy'">Invites: {{selectedWallet.availableInvites}}</p>
+          <h2>{{wallet.value.name}}</h2>
+          <p *ngIf="wallet.value.alias">@{{wallet.alias}}</p>
+          <p>{{wallet.value.balance?.spendableAmount | toMRT}}</p>
+          <p *ngIf="sendMethod?.type =='easy'">Invites: {{wallet.value.availableInvites}}</p>
         </ion-label>
         <ion-icon name="ios-arrow-down" item-end></ion-icon>
       </button>
@@ -73,7 +96,7 @@
             <ion-icon name="ios-information-circle-outline"></ion-icon>
           </button>
         </ion-label>
-        <ion-toggle [(ngModel)]="feeIncluded" [disabled]="!feeTogglerEnabled" (ngModelChange)="updateTxData()"></ion-toggle>
+        <ion-toggle formControlName="feeIncluded"></ion-toggle>
       </ion-item>
 
       <ion-item-group *ngIf="sendMethod?.type == 'easy'" enter-to-next>
@@ -82,28 +105,25 @@
             <img src="assets/img/icons/unlock.svg">
           </ion-avatar>
           <ion-label stacked>Add Password (Optional)</ion-label>
-          <ion-input type="text" class="password-input" [(ngModel)]="formData.password" placeholder="Type it here"
-                     autocomplete="new-password" autocorrect="off" autocapitalize="off"
-                     (keyup)="passwordKeyup($event.keyCode)"></ion-input>
+          <ion-input type="text" class="password-input" formControlName="password" placeholder="Type it here"
+                     autocomplete="new-password" autocorrect="off" autocapitalize="off"></ion-input>
         </ion-item>
 
-        <ion-item [hidden]="!formData.password">
+        <ion-item [hidden]="!password?.value?.length">
           <ion-avatar item-start img-icon>
             <img src="assets/img/icons/unlock.svg">
           </ion-avatar>
           <ion-label stacked>Confirm Password</ion-label>
-          <ion-input type="text" class="password-input" [(ngModel)]="formData.confirmPassword" placeholder="Repeat password"
-                     (keypress)="confirmPasswordKeypress($event.keyCode)" #confirmInput
-                     autocomplete="new-password" autocorrect="off" autocapitalize="off"></ion-input>
+          <ion-input type="text" class="password-input" formControlName="confirmPassword" placeholder="Repeat password"
+                     #confirmInput autocomplete="new-password" autocorrect="off" autocapitalize="off"></ion-input>
         </ion-item>
       </ion-item-group>
 
     </ion-list>
-  </ng-container>
+  </form>
 
-  <p [hidden]="!feeCalcError" class="feeCalcError">{{ feeCalcError }}</p>
   <button ion-button class="action-button" (click)="toConfirm()" [disabled]="!isSendAllowed()">
-    <div *ngIf="!feeLoading">Send Merit</div>
-    <ion-spinner *ngIf="feeLoading" color="light"></ion-spinner>
+    <div *ngIf="!ctrl.receiptLoading">Send Merit</div>
+    <ion-spinner *ngIf="ctrl.receiptLoading" color="light"></ion-spinner>
   </button>
 </ion-content>

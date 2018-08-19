@@ -4,9 +4,9 @@
   </ion-navbar>
 </ion-header>
 <ion-content>
-  <ng-container *ngIf="viewData">
+  <ng-container *ngIf="ctrl">
     <div class="big-header" text-center>
-      <h2>{{ viewData.amount | toMRT:null:true}} <small>MRT</small></h2>
+      <h2>{{ ctrl.amountMrt.value }} <small>MRT</small></h2>
     </div>
     <ion-list>
       <ion-item text-wrap class="destination">
@@ -15,7 +15,7 @@
         </ion-avatar>
         <ion-label>
           <p>Sending to</p>
-          <h2>{{ viewData.destination ? viewData.destination : 'MeritMoney Link'}}</h2>
+          <h2>{{ recipient?.name?.formatted? recipient.name.formatted : sendMethod?.type == 'easy' ? 'MeritMoney Link' : (sendMethod?.alias? '@' + sendMethod?.alias : sendMethod?.value) }}</h2>
         </ion-label>
       </ion-item>
 
@@ -25,11 +25,11 @@
         </ion-avatar>
         <ion-label>
           <p>Sending from</p>
-          <h2>{{ viewData.walletName }}</h2>
+          <h2>{{ ctrl.wallet.value.name }}</h2>
         </ion-label>
       </ion-item>
 
-      <ion-item *ngIf="viewData.password">
+      <ion-item *ngIf="ctrl.password.value">
         <ion-avatar item-start img-icon>
           <img src="assets/img/icons/unlock.svg">
         </ion-avatar>
@@ -37,7 +37,7 @@
         <ion-label stacked>
           <p>Password set</p>
         </ion-label>
-        <ion-input type="text" disabled [value]="viewData.password" class="password-input" [class.show]="showPassword"></ion-input>
+        <ion-input type="text" disabled [value]="ctrl.password.value" class="password-input" [class.show]="showPassword"></ion-input>
 
         <button ion-button item-end (click)="showPassword = !showPassword" clear>
           {{ showPassword? 'Hide' : 'Show' }}
@@ -47,16 +47,17 @@
       <ion-item>
         <ion-label>
           <p>Fee</p>
-          <h2>{{ viewData.fee | toMRT }}</h2>
+          <h2>{{ ctrl.lastReceipt.fee | toMRT }}</h2>
         </ion-label>
       </ion-item>
 
       <ion-item>
         <ion-label>
           <p>Total</p>
-          <h2>{{ viewData.totalAmount | toMRT }}</h2>
+          <h2>{{ ctrl.lastReceipt.amount | toMRT }}</h2>
         </ion-label>
       </ion-item>
+
     </ion-list>
   </ng-container>
 </ion-content>
@@ -64,4 +65,3 @@
 <ion-footer>
   <slide-to-action text="Slide to Send" (confirm)="send()"></slide-to-action>
 </ion-footer>
- 

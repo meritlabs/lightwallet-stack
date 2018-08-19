@@ -239,7 +239,18 @@ view-send-amount {
 
   .big-header {
     background: color($colors, primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .input-errors {
+      background: color($colors, danger);
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
   }
+
+
 
 }
 

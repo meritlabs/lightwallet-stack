@@ -55,8 +55,8 @@ export class SendAmountView {
     return this.ctrl.formData.get('password');
   }
 
-  get passwordConfirm() {
-    return this.ctrl.formData.get('passwordConfirm');
+  get confirmPassword() {
+    return this.ctrl.formData.get('confirmPassword');
   }
 
   get address() {
@@ -81,6 +81,8 @@ export class SendAmountView {
 
   loading: boolean = true;
 
+  sendMethod: ISendMethod;
+
   @ViewChild('amount') amountInput: ElementRef;
   @ViewChild('confirmInput') confirmInput: ElementRef;
 
@@ -101,27 +103,38 @@ export class SendAmountView {
     private toastCtrl: ToastControllerService,
   ) {
     this.ctrl = new SendFormController(store, formBuilder, sendService, logger, loadingCtrl, toastCtrl, rateService);
-    const { contact, suggestedMethod, amount } = this.navParams.data;
-
-    if (contact) {
-      this.recipient = contact;
-    }
-
-    if (suggestedMethod) {
-      this.ctrl.type.setValue(suggestedMethod);
-    }
-
-    if (amount) {
-      this.ctrl.amountMrt.setValue(amount);
-    }
   }
 
   async ngOnInit() {
     await this.ctrl.init();
 
+    const { contact, suggestedMethod, amount } = this.navParams.data;
+
+    if (suggestedMethod) {
+      console.log('Suggested method is ', suggestedMethod);
+      this.sendMethod = suggestedMethod;
+
+      this.type.setValue(suggestedMethod.type);
+
+      if (suggestedMethod.type === SendMethodType.Classic) {
+        this.address.setValue(suggestedMethod.alias || suggestedMethod.address);
+      }
+    }
+
+    this.recipient = contact;
+
+    if (amount) {
+      this.amountMrt.setValue(amount);
+      this.amountMrt.markAsDirty();
+      this.amountMrt.updateValueAndValidity();
+    }
+
     // todo add smart common amounts receive
     this.suggestedAmounts[this.CURRENCY_TYPE_MRT] = ['5', '10', '100'];
     this.suggestedAmounts[this.CURRENCY_TYPE_FIAT] = ['5', '10', '100'];
+
+    this.ctrl.receipt$.subscribe(receipt => console.log(receipt, { ...this.ctrl.formData.getRawValue() }));
+    this.ctrl.formData.valueChanges.subscribe(val => console.log({...val}))
   }
 
   async selectWallet() {
@@ -129,7 +142,7 @@ export class SendAmountView {
       {
         selectedWallet: this.wallet.value,
         showInvites: this.type.value == SendMethodType.Easy,
-        availableWallets: await getLatestValue(this.ctrl.invites$),
+        availableWallets: await getLatestValue(this.ctrl.wallets$),
       }, MERIT_MODAL_OPTS);
 
     modal.onDidDismiss((wallet: DisplayWallet) => {
@@ -164,11 +177,11 @@ export class SendAmountView {
   }
 
   isSendAllowed() {
-    return this.ctrl.formData.valid && this.ctrl.formData.dirty && !this.ctrl.formData.pending;
+    return !this.ctrl.formData.pending && this.ctrl.formData.valid && this.ctrl.canSend;
   }
 
   getAmountClass() {
-    const { length } = this.amountMrt.value.toString();
+    const { length } = String(this.amountMrt.value || 0);
     if (length < 6) return 'amount-big';
     if (length < 8) return 'amount-medium';
     if (length < 11) return 'amount-small';
@@ -176,13 +189,10 @@ export class SendAmountView {
   }
 
   public async toConfirm() {
-    this.loadingCtrl.show('Calculating fee...', true);
-
     this.navCtrl.push('SendConfirmationView', {
       sendFormCtrl: this.ctrl,
       recipient: this.recipient,
+      sendMethod: this.sendMethod,
     });
-
-    this.loadingCtrl.hide();
   }
 }
