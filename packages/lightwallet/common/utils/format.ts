@@ -37,5 +37,5 @@ export function mrtToMicro(mrt: number): number {
 }
 
 export function microsToMrt(micros: number): number {
-  return parseFloat((micros / this.MRT_TO_MIC).toFixed(8));
+  return parseFloat((micros / MRT_TO_MIC).toFixed(8));
 }
