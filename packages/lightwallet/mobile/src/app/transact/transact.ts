@@ -22,6 +22,10 @@ import { Subscription } from 'rxjs/Subscription';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 import { InviteRequestsService } from '@merit/common/services/invite-request.service';
+import { Observable } from 'rxjs';
+import { selectNumberOfInviteRequests } from '../../../../common/reducers/wallets.reducer';
+import { IRootAppState } from '../../../../common/reducers';
+import { Store } from '@ngrx/store';
 
 
 @IonicPage({
@@ -40,6 +44,8 @@ export class TransactView {
   private subs: Subscription[] = [];
   keyboardVisible: boolean = false;
 
+  nInviteRequests$: Observable<string> = this.store.select(selectNumberOfInviteRequests);
+
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private logger: LoggerService,
@@ -53,7 +59,8 @@ export class TransactView {
               private events: Events,
               private modalCtrl: ModalController,
               private persistenceService2: PersistenceService2,
-              private smsNotificationsService: SmsNotificationsService) {
+              private smsNotificationsService: SmsNotificationsService,
+              private store: Store<IRootAppState>) {
   }
 
   async ngOnInit() {

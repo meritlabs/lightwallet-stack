@@ -4,5 +4,5 @@
   <ion-tab root="HistoryView" name="history" tabTitle="History" tabIcon="history"></ion-tab>
   <ion-tab root="SendView" name="send" tabTitle="Send" tabIcon="send"></ion-tab>
   <ion-tab root="NetworkView" name="network" tabTitle="Community" tabIcon="md-people"
-           [tabBadge]="countUnlockRequests()"></ion-tab>
+           [tabBadge]="nInviteRequests$ | async"></ion-tab>
 </ion-tabs>
