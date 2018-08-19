@@ -11,6 +11,14 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { AddressScannerService } from '@merit/mobile/app/utilities/import/address-scanner.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { IRootAppState } from '@merit/common/reducers';
+import { Store } from '@ngrx/store';
+import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
+import { createDisplayWallet } from '@merit/common/models/display-wallet';
+import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
+import { InviteRequestsService } from '@merit/common/services/invite-request.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
 @IonicPage({
   defaultHistory: ['OnboardingView']
@@ -47,7 +55,11 @@ export class ImportView {
     private mnemonicService: MnemonicService,
     private addressScanner: AddressScannerService,
     private pushNotificationsService: PushNotificationsService,
-    private walletService: WalletService
+    private walletService: WalletService,
+    private store: Store<IRootAppState>,
+    private inviteRequestsService: InviteRequestsService,
+    private txFormatService: TxFormatService,
+    private persistenceService2: PersistenceService2,
   ) {
     this.formData.network = ENV.network;
     this.formData.derivationPath =
@@ -181,6 +193,19 @@ export class ImportView {
   private async processCreatedWallet(wallet: MeritWalletClient, loader?: Loading) {
     try {
       this.pushNotificationsService.subscribe(wallet);
+
+      this.store.dispatch(
+        new AddWalletAction(
+          await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService, this.txFormatService, this.persistenceService2),
+        ),
+      );
+
+      // update state so we're allowed to access the dashboard, in case this is done via onboarding import
+      this.store.dispatch(new UpdateAppAction({
+        loading: false,
+        authorized: true,
+      }));
+
       this.app.getRootNavs()[0].setRoot('TransactView');
     } catch (e) {
       throw e;
