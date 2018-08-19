@@ -45,8 +45,12 @@ export class MobileWalletEffects extends WalletEffects {
   protected async onWalletDelete(authorized: boolean) {
     if (!authorized) {
       await this.storage.clear();
-      const nav = this.app.getActiveNav();
-      nav.setRoot('onboarding');
+
+      try {
+        await this.app.getActiveNavs()[0].setRoot('onboarding');
+      } catch (err) {
+        console.log(err);
+      }
     }
   }
 }

@@ -11,17 +11,22 @@ export class MobileAppEffects {
   @Effect({ dispatch: false }) update$ = this.actions$.pipe(
     ofType(AppReducerActionType.UPDATE),
     filter((action: UpdateAppAction) => !action.payload.authorized),
-    tap(() => {
+    tap(async () => {
       // working with window.location as router may not be initialized here
       // lookup invite=aliasoraddress in querystring
       const invite = getQueryParam('invite');
 
-      const nav = this.app.getActiveNav();
+      try {
+        const nav = this.app.getActiveNavs()[0];
 
-      if (invite) {
-        nav.setRoot('unlock', { invite });
-      } else if (window.location.pathname.indexOf('/onboarding') !== 0) {
-        nav.setRoot('onboarding');
+        if (invite) {
+          await nav.setRoot('unlock', { invite });
+        } else if (window.location.pathname.indexOf('/onboarding') !== 0) {
+          await nav.setRoot('onboarding');
+        }
+      } catch (err) {
+        // Ignore error, this probably happened on init when the nav isn't ready yet
+        console.log(err);
       }
     }),
   );
