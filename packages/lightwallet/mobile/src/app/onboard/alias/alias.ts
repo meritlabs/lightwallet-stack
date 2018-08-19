@@ -6,15 +6,19 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { ConfigService } from '@merit/common/services/config.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
-import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
+import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
+import { IRootAppState } from '../../../../../common/reducers';
+import { Store } from '@ngrx/store';
+import { RefreshWalletsAction } from '../../../../../common/reducers/wallets.reducer';
+import { UpdateAppAction } from '../../../../../common/reducers/app.reducer';
 
 @IonicPage({
   segment: 'alias/:parentAddress',
-  defaultHistory: ['OnboardingView']
+  defaultHistory: ['OnboardingView'],
 })
 @Component({
   selector: 'view-alias',
@@ -25,24 +29,27 @@ export class AliasView {
   formData = {
     alias: '',
     aliasValidationError: '',
-    aliasCheckInProgress: false
+    aliasCheckInProgress: false,
   };
 
   @ViewChild(Content) content: Content;
 
   private parentAddress: string;
 
-  constructor(private walletService: WalletService,
-              private toastCtrl: ToastControllerService,
-              private loaderCtrl: LoadingController,
-              private navCtrl: NavController,
-              private navParams: NavParams,
-              private logger: LoggerService,
-              private config: ConfigService,
-              private pushNotificationService: PushNotificationsService,
-              private pollingNotificationService: PollingNotificationsService,
-              private emailNotificationService: EmailNotificationsService,
-              private addressService: AddressService) {
+  constructor(
+    private walletService: WalletService,
+    private toastCtrl: ToastControllerService,
+    private loaderCtrl: LoadingController,
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private logger: LoggerService,
+    private config: ConfigService,
+    private pushNotificationService: PushNotificationsService,
+    private pollingNotificationService: PollingNotificationsService,
+    private emailNotificationService: EmailNotificationsService,
+    private addressService: AddressService,
+    private store: Store<IRootAppState>,
+  ) {
   }
 
   async ionViewDidLoad() {
@@ -104,7 +111,7 @@ export class AliasView {
 
     let { alias } = this.formData;
 
-    alias = (alias && isAlias(alias))? alias.slice(1) : alias;
+    alias = (alias && isAlias(alias)) ? alias.slice(1) : alias;
 
     const loader = this.loaderCtrl.create({ content: 'Creating wallet...' });
     await loader.present();
@@ -118,9 +125,21 @@ export class AliasView {
         await this.pushNotificationService.subscribe(wallet);
       } else {
         this.logger.info('Subscribing to long polling for default wallet');
-        await this.emailNotificationService.init();
         this.pollingNotificationService.enablePolling(wallet);
       }
+
+      await this.emailNotificationService.init();
+
+      // update state to include our new wallet
+      this.store.dispatch(new RefreshWalletsAction());
+
+      // update state so we're allowed to access the dashboard
+      this.store.dispatch(
+        new UpdateAppAction({
+          loading: false,
+          authorized: true,
+        })
+      );
 
       await this.navCtrl.setRoot('BackupView', { mnemonic: wallet.getMnemonic() });
       await this.navCtrl.popToRoot();
