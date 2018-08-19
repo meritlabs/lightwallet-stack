@@ -1,6 +1,5 @@
 import { AbstractControl } from '@angular/forms';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { MWCService } from '@merit/common/services/mwc.service';
 import { validateEmail, validatePhoneNumber } from '@merit/common/utils/destination';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 
@@ -8,7 +7,7 @@ export class SendValidator {
   static validateWallet(control: AbstractControl) {
     if (!control.value || !(control.value instanceof DisplayWallet)) {
       return {
-        InvalidWallet: true
+        InvalidWallet: true,
       };
     }
 
@@ -24,20 +23,32 @@ export class SendValidator {
   }
 
   static validateAmount(control: AbstractControl) {
-    const { value } = control;
+    let { value } = control;
 
-    if (typeof value !== 'number' || value <= 0) return { InvalidAmount: true };
+    if (typeof value !== 'number') {
+      value = parseFloat(value);
+    }
+
+    if (isNaN(value) || value <= 0) {
+      return {
+        InvalidAmount: true,
+      };
+    }
+
+    if (typeof control.value !== 'number') {
+      control.setValue(value, { emitEvent: false });
+    }
 
     return null;
   }
 
   static validateMaximumAvailable(control: AbstractControl) {
-    const wallet:DisplayWallet = control.parent.get("wallet").value;
+    const wallet: DisplayWallet = control.parent.get('wallet').value;
 
     try {
       if (control.value > wallet.balance.spendableAmount) {
-        return { NotEnoughMRT: true } 
-      } 
+        return { NotEnoughMRT: true };
+      }
     } catch (e) {
       return null;
     }
@@ -54,7 +65,7 @@ export class SendValidator {
 
     if (!validatePhoneNumber(value) && !validateEmail(value))
       return {
-        InvalidDestination: true
+        InvalidDestination: true,
       };
 
     // validate email / phone number
@@ -69,7 +80,7 @@ export class SendValidator {
 
       if (password != value) {
         return {
-          PasswordMismatch: true
+          PasswordMismatch: true,
         };
       }
     }
