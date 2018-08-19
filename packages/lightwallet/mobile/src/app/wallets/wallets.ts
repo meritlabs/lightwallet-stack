@@ -17,8 +17,8 @@ import {
   selectWalletsLoading,
   selectWalletTotals,
 } from '@merit/common/reducers/wallets.reducer';
-import { getLatestValue } from '../../../../common/utils/observables';
-import { RefreshWalletsAction } from '../../../../common/reducers/wallets.reducer';
+import { getLatestValue } from '@merit/common/utils/observables';
+import { RefreshWalletsAction } from '@merit/common/reducers/wallets.reducer';
 
 @IonicPage()
 @Component({

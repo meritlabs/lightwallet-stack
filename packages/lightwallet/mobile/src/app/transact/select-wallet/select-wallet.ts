@@ -4,9 +4,9 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { Observable } from 'rxjs/Observable';
 import { Store } from '@ngrx/store';
-import { IRootAppState } from '../../../../../common/reducers';
-import { selectWallets } from '../../../../../common/reducers/wallets.reducer';
-import { DisplayWallet } from '../../../../../common/models/display-wallet';
+import { IRootAppState } from '@merit/common/reducers';
+import { selectWallets } from '@merit/common/reducers/wallets.reducer';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @IonicPage()
 @Component({

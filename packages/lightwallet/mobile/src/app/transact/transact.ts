@@ -23,8 +23,8 @@ import { PersistenceService2, UserSettingsKey } from '@merit/common/services/per
 import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 import { InviteRequestsService } from '@merit/common/services/invite-request.service';
 import { Observable } from 'rxjs';
-import { selectNumberOfInviteRequests } from '../../../../common/reducers/wallets.reducer';
-import { IRootAppState } from '../../../../common/reducers';
+import { selectNumberOfInviteRequests } from '@merit/common/reducers/wallets.reducer';
+import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
 
 

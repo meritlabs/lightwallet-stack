@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IMeritToastConfig, ToastControllerService } from '../../../common/services/toast-controller.service';
+import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 import { ToastOptions } from 'ionic-angular/components/toast/toast-options';
 import { Toast } from 'ionic-angular/components/toast/toast';

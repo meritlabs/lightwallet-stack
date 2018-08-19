@@ -4,14 +4,14 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Observable } from 'rxjs';
-import { InviteRequest } from '../../../../common/services/invite-request.service';
-import { IRootAppState } from '../../../../common/reducers';
-import { selectInviteRequests, selectInvites, selectWallets } from '../../../../common/reducers/wallets.reducer';
-import { IDisplayTransaction } from '../../../../common/models/transaction';
-import { selectSentInvites } from '../../../../common/reducers/transactions.reducer';
+import { InviteRequest } from '@merit/common/services/invite-request.service';
+import { IRootAppState } from '@merit/common/reducers';
+import { selectInviteRequests, selectInvites, selectWallets } from '@merit/common/reducers/wallets.reducer';
+import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { selectSentInvites } from '@merit/common/reducers/transactions.reducer';
 import { Store } from '@ngrx/store';
-import { DisplayWallet } from '../../../../common/models/display-wallet';
-import { getLatestDefinedValue } from '../../../../common/utils/observables';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { getLatestDefinedValue } from '@merit/common/utils/observables';
 
 @IonicPage()
 @Component({

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AlertService } from '@merit/common/services/alert.service';
 import { AlertController } from 'ionic-angular';
-import { MeritWalletClient } from '../../../common/merit-wallet-client';
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @Injectable()
 export class MobileAlertService extends AlertService {

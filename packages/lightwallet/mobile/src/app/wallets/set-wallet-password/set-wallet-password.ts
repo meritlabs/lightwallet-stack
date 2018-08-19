@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
-import { DisplayWallet } from '../../../../../common/models/display-wallet';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @IonicPage()
 @Component({

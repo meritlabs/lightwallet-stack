@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, Platform, Tabs, ViewController, Al
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { PlatformService } from '@merit/common/services/platform.service';
-import { SendFormController } from '../../../../../common/controllers/send-form.controller';
+import { SendFormController } from '@merit/common/controllers/send-form.controller';
 
 @IonicPage()
 @Component({

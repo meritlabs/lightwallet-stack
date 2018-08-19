@@ -10,9 +10,9 @@ import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { TouchIdService } from '@merit/mobile/services/touch-id.service';
 import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
-import { SendFormController } from '../../../../../../common/controllers/send-form.controller';
-import { MeritContact } from '../../../../../../common/models/merit-contact';
-import { getLatestValue } from '../../../../../../common/utils/observables';
+import { SendFormController } from '@merit/common/controllers/send-form.controller';
+import { MeritContact } from '@merit/common/models/merit-contact';
+import { getLatestValue } from '@merit/common/utils/observables';
 import 'rxjs/add/operator/toPromise';
 
 @IonicPage()

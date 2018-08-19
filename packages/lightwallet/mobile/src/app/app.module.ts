@@ -53,12 +53,12 @@ import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { mobileAppReducer } from '@merit/common/reducers';
 import { MobileAppEffects } from '../effects/mobile-app-effects.service';
 import { MobileWalletEffects } from '../effects/mobile-wallet-effects.service';
-import { LoadingControllerService } from '../../../common/services/loading-controller.service';
+import { LoadingControllerService } from '@merit/common/services/loading-controller.service';
 import { MobileLoadingControllerService } from '../services/mobile-loading-controller.service';
-import { IRootAppState } from '../../../common/reducers';
-import { ProfileService } from '../../../common/services/profile.service';
-import { UpdateAppAction } from '../../../common/reducers/app.reducer';
-import { RefreshWalletsAction, selectWalletsLoading } from '../../../common/reducers/wallets.reducer';
+import { IRootAppState } from '@merit/common/reducers';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
+import { RefreshWalletsAction, selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
 import { filter, take } from 'rxjs/operators';
 
 export function getProviders() {

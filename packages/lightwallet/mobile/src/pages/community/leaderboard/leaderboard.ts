@@ -8,7 +8,7 @@ import { ILeaderboard } from '@merit/common/models/rank';
 import { getLatestValue } from '@merit/common/utils/observables';
 import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
-import { selectWallets } from '../../../../../common/reducers/wallets.reducer';
+import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 
 
 @IonicPage()

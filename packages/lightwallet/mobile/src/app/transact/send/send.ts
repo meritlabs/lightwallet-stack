@@ -14,17 +14,17 @@ import { Events, IonicPage, ModalController, NavController, NavParams, Slides, T
 import * as _ from 'lodash';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { Observable } from 'rxjs';
-import { DisplayWallet } from '../../../../../common/models/display-wallet';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 import { Store } from '@ngrx/store';
-import { IRootAppState } from '../../../../../common/reducers';
+import { IRootAppState } from '@merit/common/reducers';
 import {
   selectConfirmedWallets,
   selectInvites,
   selectWallets,
   selectWalletsLoading,
-} from '../../../../../common/reducers/wallets.reducer';
-import { couldBeAlias, isAddress } from '../../../../../common/utils/addresses';
-import { getLatestValue } from '../../../../../common/utils/observables';
+} from '@merit/common/reducers/wallets.reducer';
+import { couldBeAlias, isAddress } from '@merit/common/utils/addresses';
+import { getLatestValue } from '@merit/common/utils/observables';
 import { map } from 'rxjs/operators';
 
 const ERROR_ADDRESS_NOT_CONFIRMED = 'ADDRESS_NOT_CONFIRMED';

@@ -11,10 +11,10 @@ import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
-import { IRootAppState } from '../../../../../common/reducers';
+import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
-import { RefreshWalletsAction } from '../../../../../common/reducers/wallets.reducer';
-import { UpdateAppAction } from '../../../../../common/reducers/app.reducer';
+import { RefreshWalletsAction } from '@merit/common/reducers/wallets.reducer';
+import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
 
 @IonicPage({
   segment: 'alias/:parentAddress',

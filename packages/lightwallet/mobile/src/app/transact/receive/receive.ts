@@ -13,16 +13,16 @@ import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { AddressService } from '@merit/common/services/address.service';
 import { Store } from '@ngrx/store';
-import { IRootAppState } from '../../../../../common/reducers';
+import { IRootAppState } from '@merit/common/reducers';
 import { Observable } from 'rxjs';
 import {
   selectConfirmedWallets,
   selectWallets,
   selectWalletsLoading,
-} from '../../../../../common/reducers/wallets.reducer';
-import { DisplayWallet } from '../../../../../common/models/display-wallet';
-import { ReceiveViewController } from '../../../../../common/controllers/receive-view.controller';
-import { getLatestValue } from '../../../../../common/utils/observables';
+} from '@merit/common/reducers/wallets.reducer';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { ReceiveViewController } from '@merit/common/controllers/receive-view.controller';
+import { getLatestValue } from '@merit/common/utils/observables';
 
 @IonicPage()
 @Component({

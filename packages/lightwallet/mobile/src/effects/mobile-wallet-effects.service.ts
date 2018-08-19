@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { WalletEffects } from '../../../common/effects/wallet.effects';
+import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { Actions, Effect } from '@ngrx/effects';
-import { WalletService } from '../../../common/services/wallet.service';
-import { AddressService } from '../../../common/services/address.service';
-import { ProfileService } from '../../../common/services/profile.service';
-import { TxFormatService } from '../../../common/services/tx-format.service';
+import { WalletService } from '@merit/common/services/wallet.service';
+import { AddressService } from '@merit/common/services/address.service';
+import { ProfileService } from '@merit/common/services/profile.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { Store } from '@ngrx/store';
-import { IRootAppState } from '../../../common/reducers';
-import { PersistenceService } from '../../../common/services/persistence.service';
-import { PersistenceService2 } from '../../../common/services/persistence2.service';
+import { IRootAppState } from '@merit/common/reducers';
+import { PersistenceService } from '@merit/common/services/persistence.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { Storage } from '@ionic/storage';
-import { InviteRequestsService } from '../../../common/services/invite-request.service';
+import { InviteRequestsService } from '@merit/common/services/invite-request.service';
 import { App } from 'ionic-angular';
 
 @Injectable()

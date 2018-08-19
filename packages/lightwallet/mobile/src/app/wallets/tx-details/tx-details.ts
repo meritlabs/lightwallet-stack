@@ -3,7 +3,7 @@ import { IDisplayTransaction, TransactionAction } from '@merit/common/models/tra
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { COINBASE_CONFIRMATION_THRESHOLD } from '@merit/common/utils/constants';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
-import { EasyReceiveService } from '../../../../../common/services/easy-receive.service';
+import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 
 @IonicPage({
   defaultHistory: ['WalletsView']

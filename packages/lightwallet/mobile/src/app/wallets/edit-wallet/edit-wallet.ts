@@ -6,7 +6,7 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
-import { DisplayWallet } from '../../../../../common/models/display-wallet';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @IonicPage()
 @Component({

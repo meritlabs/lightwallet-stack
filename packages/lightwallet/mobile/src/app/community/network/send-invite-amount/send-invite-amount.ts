@@ -20,7 +20,7 @@ import { LoadingControllerService } from '@merit/common/services/loading-control
 import { couldBeAlias, isAddress } from '@merit/common/utils/addresses';
 import { getLatestValue } from '@merit/common/utils/observables';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { validateEmail, validatePhoneNumber } from '../../../../../../common/utils/destination';
+import { validateEmail, validatePhoneNumber } from '@merit/common/utils/destination';
 
 @IonicPage()
 @Component({

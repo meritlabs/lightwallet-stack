@@ -9,7 +9,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
 import { App, Events, IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
 import { FeeService } from "@merit/common/services/fee.service";
-import { IDisplayTransaction } from '../../../../../common/models/transaction';
+import { IDisplayTransaction } from '@merit/common/models/transaction';
 
 @IonicPage({
   segment: 'wallet/:walletId',
