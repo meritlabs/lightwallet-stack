@@ -10,16 +10,17 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { getSendMethodDestinationType } from '@merit/common/utils/destination';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
-import { IonicPage, ModalController, NavParams, Platform } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, NavParams, Platform } from 'ionic-angular';
 import { SendInviteFormController } from '@merit/common/controllers/send-invite-form.controller';
 import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
 import { FormBuilder } from '@angular/forms';
 import { AlertService } from '@merit/common/services/alert.service';
 import { LoadingControllerService } from '@merit/common/services/loading-controller.service';
-import { couldBeAlias, isAddress, isEmail, isPhoneNumber } from '@merit/common/utils/addresses';
+import { couldBeAlias, isAddress } from '@merit/common/utils/addresses';
 import { getLatestValue } from '@merit/common/utils/observables';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { validateEmail, validatePhoneNumber } from '../../../../../../common/utils/destination';
 
 @IonicPage()
 @Component({
@@ -32,53 +33,83 @@ export class SendInviteAmountView {
 
   showShareButton = this.plt.is('cordova') && SocialSharing.installed();
   amountFocused: boolean;
-  formCtrl: SendInviteFormController;
+  ctrl: SendInviteFormController;
   customDestination: string = '';
 
+
   get address() {
-    return this.formCtrl.address;
+    return this.ctrl.address;
   }
 
   get type() {
-    return this.formCtrl.type;
+    return this.ctrl.type;
   }
 
   get destination() {
-    return this.formCtrl.destination;
+    return this.ctrl.destination;
   }
 
   get amount() {
-    return this.formCtrl.amount;
+    return this.ctrl.amount;
   }
+
+  get wallet() {
+    return this.ctrl.wallet;
+  }
+
+  get password() {
+    return this.ctrl.password;
+  }
+
+  get confirmPassword() {
+    return this.ctrl.confirmPassword;
+  }
+
 
   constructor(
     store: Store<IRootAppState>,
     formBuilder: FormBuilder,
     walletService: WalletService,
-    toastCtrl: ToastControllerService,
+    private toastCtrl: ToastControllerService,
     logger: LoggerService,
     alertCtrl: AlertService,
     loadingCtrl: LoadingControllerService,
     private plt: Platform,
     private navParams: NavParams,
     private modalCtrl: ModalController,
+    private socialSharing: SocialSharing,
+    private navCtrl: NavController,
   ) {
-    this.formCtrl = new SendInviteFormController(store, formBuilder, walletService, logger, toastCtrl, loadingCtrl, alertCtrl);
+    this.ctrl = new SendInviteFormController(store, formBuilder, walletService, logger, toastCtrl, loadingCtrl, alertCtrl);
   }
 
   async ngOnInit() {
-    await this.formCtrl.init();
+    await this.ctrl.init();
   }
 
   onDestinationChange() {
     const value = this.customDestination;
 
-    if ((couldBeAlias(value) || isAddress(value) && this.type.value == SendMethodType.Easy)) {
-      this.formCtrl.type.setValue(SendMethodType.Classic);
-      this.formCtrl.destination.setValue(value);
-    } else if ((isEmail(value) || isPhoneNumber(value)) && this.type.value == SendMethodType.Classic) {
-      this.formCtrl.type.setValue(SendMethodType.Easy);
-      this.formCtrl.address.setValue(value);
+    if ((validateEmail(value) || validatePhoneNumber(value)) && this.type.value == SendMethodType.Classic) {
+      this.type.setValue(SendMethodType.Easy);
+      this.destination.setValue(validatePhoneNumber(value) ? value.replace(/\D+/g, '') : value);
+    } else if ((couldBeAlias(value) || isAddress(value) && this.type.value == SendMethodType.Easy)) {
+      this.type.setValue(SendMethodType.Classic);
+      this.address.setValue(value);
+    } else if (!value || !value.length) {
+      this.type.setValue(SendMethodType.Easy);
+    }
+
+    console.log('Type is now ', this.type.value);
+  }
+
+  async send() {
+    await this.ctrl.sendInvite(this.wallet.value.client);
+
+    if (this.ctrl.success) {
+      if (this.type.value === SendMethodType.Classic) {
+        this.navCtrl.pop();
+      }
     }
   }
 
@@ -88,18 +119,22 @@ export class SendInviteAmountView {
 
   async selectWallet() {
     const modal = this.modalCtrl.create('SelectWalletModal', {
-      selectedWallet: this.formCtrl.selectedWallet,
+      selectedWallet: this.ctrl.selectedWallet,
       showInvites: true,
-      availableWallets: await getLatestValue(this.formCtrl.wallets$),
+      wallets: this.ctrl.wallets$,
     }, MERIT_MODAL_OPTS);
 
     modal.onDidDismiss((wallet: DisplayWallet) => {
       if (wallet) {
-        this.formCtrl.selectWallet(wallet);
+        this.ctrl.selectWallet(wallet);
       }
     });
 
     return modal.present();
+  }
+
+  isSendAllowed() {
+    return !this.ctrl.formData.pending && this.ctrl.formData.valid;
   }
 
   amountKeypress(key) {
@@ -109,5 +144,9 @@ export class SendInviteAmountView {
   focusInput() {
     this.amountInput['_native']['nativeElement'].focus();
     this.amountFocused = true;
+  }
+
+  share() {
+    return this.socialSharing.share(this.ctrl.easySendUrl);
   }
 }
