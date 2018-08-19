@@ -2,7 +2,7 @@
 
   <div class="flexbox">
     <div class="inner-container">
-      <h2>MeritMoney Link is {{ easySendDelivered === true? 'delivered' : 'ready' }}</h2>
+      <h2>MeritMoney Link is {{ ctrl.easySendDelivered === true? 'delivered' : 'ready' }}</h2>
 
       <div class="send-ready">
         <div class="send-ready-inner">
@@ -12,30 +12,30 @@
 
       <ion-card>
         <ion-card-header text-wrap>
-          <p *ngIf="easySendDelivered === undefined">
+          <p *ngIf="ctrl.easySendDelivered === undefined">
             Your MeritMoney Link is now ready to share:
           </p>
-          <p *ngIf="easySendDelivered === true">
+          <p *ngIf="ctrl.easySendDelivered === true">
             Your MeritMoney Link is ready and was successfully delivered to your recipient!
           </p>
-          <p *ngIf="easySendDelivered === false">
+          <p *ngIf="ctrl.easySendDelivered === false">
             Your MeritMoney Link is ready, however, we were not able to deliver it to your recipient. You can copy the
             link and send it to them directly:
           </p>
         </ion-card-header>
         <ion-card-content>
-          <a (click)="copyToClipboard(txData.easySendUrl)" [clip]="txData.easySendUrl">{{ txData.easySendUrl }}</a>
+          <a (click)="copyToClipboard(ctrl.easySendUrl)" [clip]="ctrl.easySendUrl">{{ ctrl.easySendUrl }}</a>
         </ion-card-content>
 
         <ion-row>
           <ion-col>
-            <button ion-button icon-left clear small (click)="copyToClipboard(txData.easySendUrl)" [clip]="txData.easySendUrl">
+            <button ion-button icon-left clear small (click)="copyToClipboard()" [clip]="ctrl.easySendUrl">
               <ion-icon name="clipboard"></ion-icon>
               <div>Copy</div>
             </button>
           </ion-col>
           <ion-col [hidden]="!showShareButton">
-            <button ion-button icon-left clear small (click)="share(txData.easySendUrl)">
+            <button ion-button icon-left clear small (click)="share(ctrl.easySendUrl)">
               <ion-icon name="share"></ion-icon>
               <div>Share</div>
             </button>

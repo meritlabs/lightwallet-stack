@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, Platform, Tabs, ViewController, Al
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { PlatformService } from '@merit/common/services/platform.service';
+import { SendFormController } from '../../../../../common/controllers/send-form.controller';
 
 @IonicPage()
 @Component({
@@ -17,6 +18,8 @@ export class EasySendShareView {
   showShareButton: boolean;
   copied: boolean;
 
+  ctrl: SendFormController;
+
   private backButtonAction: Function;
 
   constructor(
@@ -29,8 +32,7 @@ export class EasySendShareView {
     private platform: Platform,
     private alertController: AlertController
   ) {
-    this.txData = this.navParams.get('txData');
-    this.easySendDelivered = this.navParams.get('easySendDelivered');
+    this.ctrl = this.navParams.get('sendFormCtrl');
     this.showShareButton = this.platform.is('cordova') && SocialSharing.installed();
   }
 
