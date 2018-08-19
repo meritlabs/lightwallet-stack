@@ -8,6 +8,7 @@ import { ILeaderboard } from '@merit/common/models/rank';
 import { getLatestValue } from '@merit/common/utils/observables';
 import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
+import { selectWallets } from '../../../../../common/reducers/wallets.reducer';
 
 
 @IonicPage()
@@ -17,7 +18,7 @@ import { Store } from '@ngrx/store';
 })
 export class LeaderboardView implements OnInit {
 
-  wallets$: Observable<DisplayWallet[]>;
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   leaderboard: ILeaderboard;
 
   loading: boolean = true;
