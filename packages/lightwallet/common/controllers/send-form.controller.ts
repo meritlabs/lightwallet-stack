@@ -151,7 +151,7 @@ export class SendFormController {
       return of({} as ISendTxData);
     }),
     tap((txData: ISendTxData) => {
-      if (txData && txData.txp) this.canSend = true;
+      if (txData) this.canSend = true;
     }),
     share(),
   );
@@ -190,6 +190,8 @@ export class SendFormController {
 
   receiptLoading: boolean;
 
+  lastReceipt: IReceipt;
+
   receipt$: Observable<IReceipt> = combineLatest(this.txData$, this.onSubmit$)
     .pipe(
       map(([txData, submitSuccess]) => {
@@ -220,7 +222,10 @@ export class SendFormController {
 
         return receipt;
       }),
-      tap(() => this.receiptLoading = false),
+      tap((receipt: IReceipt) => {
+        this.receiptLoading = false;
+        this.lastReceipt = receipt;
+      }),
       startWith({} as IReceipt),
     );
 
