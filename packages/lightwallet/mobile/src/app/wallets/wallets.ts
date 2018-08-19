@@ -18,6 +18,7 @@ import {
   selectWalletTotals,
 } from '@merit/common/reducers/wallets.reducer';
 import { getLatestValue } from '../../../../common/utils/observables';
+import { RefreshWalletsAction } from '../../../../common/reducers/wallets.reducer';
 
 @IonicPage()
 @Component({
@@ -47,9 +48,6 @@ export class WalletsView {
 
   async ngOnInit() {
     this.showCommunityPopup = !(await this.profileService.isCommunityPopupClosed());
-  }
-
-  async ionViewDidLoad() {
     try {
       this.vaults = await this.profileService.getVaults();
     } catch (e) {
@@ -61,6 +59,11 @@ export class WalletsView {
     this.vaults = await this.profileService.getVaults();
   }
 
+  async doRefresh(r) {
+    this.store.dispatch(new RefreshWalletsAction());
+    await getLatestValue(this.store.select(selectWalletsLoading), loading => !loading);
+    r.complete();
+  }
 
   async toAddWallet() {
     const wallets = await getLatestValue(this.wallets$, wallets => wallets.length > 0);
