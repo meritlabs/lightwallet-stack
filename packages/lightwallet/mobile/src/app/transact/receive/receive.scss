@@ -92,11 +92,15 @@ view-receive {
   }
 
 
+  :not(.locked) .scroll-content {
+    margin-bottom: 344px !important;
+  }
+
   .scroll-content {
     background: #d5dbe3;
     height: auto;
 
-    margin-bottom: 344px !important;
+
 
     transition: margin-bottom .2s ease-in-out;
   }

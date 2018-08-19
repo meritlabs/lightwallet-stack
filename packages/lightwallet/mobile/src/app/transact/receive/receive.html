@@ -9,15 +9,14 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content [class.footerCollapsed]="isFooterCollapsed">
+<ion-content [class.footerCollapsed]="isFooterCollapsed" [class.locked]="!hasUnlockedWallet">
 
   <div *ngIf="ctrl.walletsLoading$ | async; else loaded">
       <ion-spinner></ion-spinner>
   </div>
 
   <ng-template #loaded>
-    <div *ngIf="ctrl.wallets$ | async as wallets; else noWallets">
-
+    <div *ngIf="ctrl.hasUnlockedWallet; else noWallets">
       <div class="container" *ngIf="ctrl.qrAddress">
         <qr-code [value]="ctrl.qrAddress" [size]="220" foreground="#334"></qr-code>
       </div>
@@ -76,7 +75,7 @@
 
 </ion-content>
 
-<ion-footer *ngIf="hasUnlockedWallets" text-center>
+<ion-footer *ngIf="ctrl.hasUnlockedWallet" text-center>
 
   <button #toggleButton ion-button round small outline icon-start class="footer-toggle-button" (click)="toggleFooter()">
     <ion-icon [name]="isFooterCollapsed? 'arrow-up' : 'arrow-down'"></ion-icon> {{ isFooterCollapsed? 'Show options' : 'Hide options'}}
@@ -84,19 +83,7 @@
 
   <ion-toolbar>
 
-    <ion-item>
-      <ion-label>
-        <h2>You don't have any wallets</h2>
-      </ion-label>
-    </ion-item>
-
-
     <div enter-to-next>
-
-      <div class="row error" *ngIf="mainAddressGapReached">
-        <span style="flex: 1" text-right>Maximum number of consecutive addresses without activity reached</span>
-      </div>
-
       <ion-list>
         <ion-item (click)="focusInput()">
           <ion-avatar img-icon item-start>
@@ -105,8 +92,8 @@
           <ion-label stacked>
             <p>Request Amount (optional)</p>
           </ion-label>
-          <ion-input #amountInput type="number" pattern="[0-9\.]" min="0" [(ngModel)]="ctrl.amount" (ionChange)="ctrl.changeAmount()" [placeholder]="'0.00 ' + amountCurrency"></ion-input>
-          <button ion-button item-end clear color="primary" (click)="ctrl.toggleCurrency()">{{ amountCurrency }}</button>
+          <ion-input #amountInput type="number" pattern="[0-9\.]" min="0" [(ngModel)]="ctrl.amount" (ionChange)="ctrl.changeAmount()" [placeholder]="'0.00 ' + ctrl.amountCurrency"></ion-input>
+          <button ion-button item-end clear color="primary" (click)="toggleCurrency()">{{ ctrl.amountCurrency }}</button>
         </ion-item>
 
         <button ion-item detail-none text-wrap (click)="copyToClipboard(ctrl.address)" [clip]="ctrl.address">
