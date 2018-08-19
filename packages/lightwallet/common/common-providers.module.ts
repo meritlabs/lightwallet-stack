@@ -41,7 +41,7 @@ export class CommonProvidersModule {
         EmailNotificationsService,
         SendService,
         FeeService,
-        LanguageService,
+        // LanguageService,
         LedgerService,
         LoggerService,
         MnemonicService,

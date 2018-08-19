@@ -48,7 +48,6 @@ export class LanguageService {
   constructor(private logger: LoggerService,
               private translate: TranslateService,
               private config: ConfigService) {
-    this.logger.info('LanguageService initialized.');
     this.translate.onLangChange.subscribe((event) => {
       this.logger.info('Settings language changed to: ' + event.lang);
     });

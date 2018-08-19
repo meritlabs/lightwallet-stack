@@ -45,10 +45,8 @@ export class AppSettingsService {
 
   constructor(public http: HttpClient,
               private logger: LoggerService,
-              private language: LanguageService,
-              private config: ConfigService) {
-    this.logger.info('AppService initialized.');
-  }
+              // private language: LanguageService,
+              private config: ConfigService) {}
 
   async getInfo(): Promise<AppSettings> {
     if (this.info) {
@@ -61,7 +59,7 @@ export class AppSettingsService {
   private async load(): Promise<AppSettings> {
     try {
       await this.config.load();
-      await this.language.load();
+      // await this.language.load();
       // TODO: Load TouchID here?
       this.info = await this.loadInfo();
       return this.info;
