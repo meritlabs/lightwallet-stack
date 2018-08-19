@@ -6,6 +6,7 @@ import { ConfigService } from '@merit/common/services/config.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
+import { DisplayWallet } from '../../../../../common/models/display-wallet';
 
 @IonicPage()
 @Component({
@@ -13,7 +14,7 @@ import { ToastControllerService, IMeritToastConfig } from '@merit/common/service
   templateUrl: 'edit-wallet.html',
 })
 export class EditWalletView {
-  wallet: MeritWalletClient;
+  wallet: DisplayWallet;
 
   isWalletEncrypted: boolean;
 
@@ -34,7 +35,7 @@ export class EditWalletView {
   }
 
   ionViewWillEnter() {
-    this.isWalletEncrypted = this.walletService.isWalletEncrypted(this.wallet);
+    this.isWalletEncrypted = this.walletService.isWalletEncrypted(this.wallet.client);
   }
 
   changeBalanceHidden(isHidden) {
@@ -90,7 +91,7 @@ export class EditWalletView {
         {
           text: 'Delete',
           handler: () => {
-            if (!this.walletService.isWalletEncrypted(this.wallet)) {
+            if (!this.walletService.isWalletEncrypted(this.wallet.client)) {
               this.doDeleteWallet();
             } else {
               this.showPasswordPrompt();
@@ -114,7 +115,7 @@ export class EditWalletView {
                 this.showPasswordPrompt(true);
               } else {
                 try {
-                  this.walletService.decryptWallet(this.wallet, data.password);
+                  this.walletService.decryptWallet(this.wallet.client, data.password);
                   this.doDeleteWallet();
                 } catch (e) {
                   this.showPasswordPrompt(true);
@@ -129,7 +130,7 @@ export class EditWalletView {
 
   private doDeleteWallet() {
 
-    this.profileService.deleteWallet(this.wallet).then(() => {
+    this.profileService.deleteWallet(this.wallet.client).then(() => {
       this.profileService.isAuthorized().then((authorized) => {
         if (authorized) {
           this.navCtrl.popToRoot();

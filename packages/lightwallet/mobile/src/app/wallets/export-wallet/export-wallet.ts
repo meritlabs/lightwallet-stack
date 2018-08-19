@@ -9,6 +9,7 @@ import { MWCService } from '@merit/common/services/mwc.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
+import { DisplayWallet } from '../../../../../common/models/display-wallet';
 
 @IonicPage()
 @Component({
@@ -17,7 +18,7 @@ import { ToastControllerService, IMeritToastConfig } from '@merit/common/service
 })
 export class ExportWalletView {
 
-  wallet: MeritWalletClient;
+  wallet: DisplayWallet;
   segment = 'mnemonic';
   accessGranted: boolean;
   formData = {
@@ -46,12 +47,12 @@ export class ExportWalletView {
   ionViewDidLoad() {
 
     let setQrInfo = (password) => {
-      this.walletsService.getEncodedWalletInfo(this.wallet, password).then((info) => {
+      this.walletsService.getEncodedWalletInfo(this.wallet.client, password).then((info) => {
         this.qrcode = info;
       });
     };
 
-    if (this.walletsService.isWalletEncrypted(this.wallet)) {
+    if (this.walletsService.isWalletEncrypted(this.wallet.client)) {
 
       let showPrompt = (highlightInvalid = false) => {
         this.alertController.create({
@@ -75,10 +76,10 @@ export class ExportWalletView {
                 showPrompt(true);
               } else {
                 try {
-                  this.walletsService.decryptWallet(this.wallet, data.password);
-                  this.mnemonic = this.wallet.getMnemonic();
+                  this.walletsService.decryptWallet(this.wallet.client, data.password);
+                  this.mnemonic = this.wallet.client.getMnemonic();
                   setQrInfo(data.password);
-                  this.walletsService.encryptWallet(this.wallet, data.password);
+                  this.walletsService.encryptWallet(this.wallet.client, data.password);
                   this.accessGranted = true;
                 } catch (err) {
                   showPrompt();
@@ -91,7 +92,7 @@ export class ExportWalletView {
       };
       showPrompt();
     } else {
-      this.mnemonic = this.wallet.getMnemonic();
+      this.mnemonic = this.wallet.client.getMnemonic();
       setQrInfo(null);
       this.accessGranted = true;
     }
@@ -107,7 +108,7 @@ export class ExportWalletView {
   async download() {
 
     const addressBook = await this.persistenceService.getAddressbook(this.wallet.credentials.network);
-    const exportData = this.wallet.export({ addressBook: addressBook });
+    const exportData = this.wallet.client.export({ addressBook: addressBook });
     const encryptedData = this.sjcl.encrypt(this.formData.password, exportData, { iter: 10000 });
     const walletName = this.wallet.name;
     const info: any = await this.appService.getInfo();

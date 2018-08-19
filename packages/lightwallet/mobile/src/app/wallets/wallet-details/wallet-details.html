@@ -69,7 +69,7 @@
      Loading transactions history...
   </div>
 
-  <transaction-history [transactions]="wallet.completeHistory" [hidden]="loading"></transaction-history>
+  <transaction-history [transactions]="wallet?.client?.completeHistory" [hidden]="loading"></transaction-history>
 
   <ion-infinite-scroll (ionInfinite)="loadMoreHistory($event)">
         <ion-infinite-scroll-content></ion-infinite-scroll-content>

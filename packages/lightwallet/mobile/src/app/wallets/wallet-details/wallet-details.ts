@@ -9,6 +9,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
 import { App, Events, IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
 import { FeeService } from "@merit/common/services/fee.service";
+import { IDisplayTransaction } from '../../../../../common/models/transaction';
 
 @IonicPage({
   segment: 'wallet/:walletId',
@@ -20,14 +21,14 @@ import { FeeService } from "@merit/common/services/fee.service";
 })
 export class WalletDetailsView {
 
-  wallet: MeritWalletClient;
+  wallet: DisplayWallet;
   loading: boolean;
   refreshing: boolean;
 
   offset: number = 0;
   limit: number = 10;
 
-  txs: Array<any> = [];
+  txs: IDisplayTransaction[] = [];
 
   constructor(private navCtrl: NavController,
               private app: App,
@@ -50,14 +51,8 @@ export class WalletDetailsView {
   async ngOnInit() {
     this.loading = true;
     this.wallet = this.navParams.get('wallet');
-    await Promise.all([this.getWalletHistory(), this.getCommunityInfo()]);
+    await this.getWalletHistory();
     this.loading = false;
-
-    this.events.subscribe('Remote:IncomingTx', () => {
-      this.wallet.getStatus();
-      this.getWalletHistory();
-      this.getCommunityInfo();
-    });
 
     this.easyReceiveService.cancelledEasySend$
       .subscribe(() => {
@@ -92,22 +87,15 @@ export class WalletDetailsView {
   async doRefresh(refresher) {
     this.refreshing = true;
     await this.getWalletHistory();
-    this.wallet.getStatus();
-    this.getCommunityInfo();
+    // this.wallet.getStatus();
+    // this.getCommunityInfo();
     this.refreshing = false;
     refresher.complete();
   }
 
-
-  private async getCommunityInfo() {
-    const addressesRewards = await this.wallet.getRewards([this.wallet.getRootAddress()]);
-    this.wallet.miningRewards = addressesRewards[0].rewards.mining;
-    this.wallet.growthRewards = addressesRewards[0].rewards.ambassador;
-  }
-
   private async getWalletHistory() {
     try {
-      this.txs = await this.wallet.getTxHistory({ skip: 0, limit: this.limit, includeExtendedInfo: true });
+      this.txs = await this.wallet.client.getTxHistory({ skip: 0, limit: this.limit, includeExtendedInfo: true });
       await this.formatHistory();
     } catch (e) {
       this.logger.warn(e);
@@ -115,14 +103,14 @@ export class WalletDetailsView {
   }
 
   private async formatHistory() {
-    const easySends = await this.wallet.getGlobalSendHistory();
-    this.wallet.completeHistory = await formatWalletHistory(this.txs, this.wallet, easySends, this.feeService, this.contactsService);
+    const easySends = await this.wallet.client.getGlobalSendHistory();
+    this.wallet.client.completeHistory = await formatWalletHistory(this.txs, this.wallet.client, easySends, this.feeService, this.contactsService);
   }
 
   async loadMoreHistory(infiniter) {
     this.offset += this.limit;
     try {
-      const txs = await this.wallet.getTxHistory({ skip: this.offset, limit: this.limit, includeExtendedInfo: true });
+      const txs = await this.wallet.client.getTxHistory({ skip: this.offset, limit: this.limit, includeExtendedInfo: true });
       this.txs = this.txs.concat(txs);
       await this.formatHistory();
     } catch (e) {
