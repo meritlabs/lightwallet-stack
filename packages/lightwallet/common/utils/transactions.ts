@@ -20,7 +20,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[],
                                           persistenceService?: PersistenceService2): Promise<IDisplayTransaction[]> {
   if (_.isEmpty(walletHistory)) return [];
 
-  const easyReceiveFee = await feeService.getEasyReceiveFee();
+  const easyReceiveFee = 20000;
 
   walletHistory = _.sortBy(walletHistory, 'time');
 

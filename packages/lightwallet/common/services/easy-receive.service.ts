@@ -114,7 +114,7 @@ export class EasyReceiveService {
   async getReceiverAmount(txs: Array<any>): Promise<number> {
     const tx = txs.find(tx => !tx.invite);
     const amount = tx ? tx.amount : 0;
-    return amount - this.rateService.microsToMrt(await this.feeService.getEasyReceiveFee());
+    return amount - this.rateService.microsToMrt(20000);
   }
 
   async getInvitesAmount(txs: Array<any>) {
@@ -163,7 +163,7 @@ export class EasyReceiveService {
 
   private async sendEasyReceiveTx(input: any, tx: any, destinationAddress: string, wallet: MeritWalletClient) {
     if (!tx.invite) tx.amount = this.rateService.mrtToMicro(tx.amount);
-    const fee = tx.invite ? 0 : await this.feeService.getEasyReceiveFee();
+    const fee = tx.invite ? 0 : 20000;
     const txp = await this.buildEasySendRedeemTransaction(input, tx, destinationAddress, fee);
     return this.walletService.broadcastRawTx(wallet, {
       rawTx: txp.serialize({ disableSmallFees: tx.invite }),
