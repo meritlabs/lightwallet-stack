@@ -23,7 +23,7 @@
         <h2>Community</h2>
       </ion-label>
        <div item-end class="details">
-           {{ rankData.communitySize }} people
+           {{ rankData?.communitySize || 0 }} people
            <ion-badge *ngIf="rankData.totalCommunitySizeChange > 0"> ▲ {{ rankData.totalCommunitySizeChange }}</ion-badge>
        </div>
     </button>
@@ -56,10 +56,10 @@
           <h2>Community rank</h2>
         </ion-label>
         <div item-end class="details">
-            <span  *ngIf="rankData.bestRank">
-                {{ rankData.bestRank }} ({{ bestRank.percentileStr }})
+            <span *ngIf="rankData.bestRank">
+                {{ rankData.bestRank }}
               <ion-badge *ngIf="rankData.rankChangeDay !== 0">
-                {{ rankData.rankChangeDay > 0? '▲' : '▲' }} {{ rankData.rankChangeDay }}
+                {{ rankData.rankChangeDay > 0? '▲' : '▼' }} {{ rankData.rankChangeDay | abs }}
               </ion-badge>
             </span>
             <span  *ngIf="!rankData?.bestRank">
