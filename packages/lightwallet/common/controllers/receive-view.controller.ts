@@ -8,9 +8,13 @@ import { Store } from '@ngrx/store';
 import { getLatestDefinedValue, getLatestValue } from '@merit/common/utils/observables';
 import { getAddressInfo } from '@merit/common/utils/addresses';
 import { mrtToMicro } from '@merit/common/utils/format';
+import { tap } from 'rxjs/operators';
 
 export class ReceiveViewController {
-  wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets);
+  wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets)
+    .pipe(
+      tap(wallets => this.hasUnlockedWallet = wallets.length > 0)
+    );
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
 
   hasUnlockedWallet: boolean;
@@ -19,11 +23,11 @@ export class ReceiveViewController {
   address: string;
   alias: string;
   qrAddress: string;
-  amount: number = 0;
+  amount: number;
   amountMicros: number;
-  availableUnits: Array<string>;
-  amountCurrency: string;
-  amountInFiat: any = 0;
+  availableUnits: string[];
+  amountCurrency: string = 'MRT';
+  amountInFiat: any;
 
   // For now, the first wallet in the list of wallets is the default.
   // TODO(AW): Let's add a setting where the user can choose their default wallet.
