@@ -183,6 +183,7 @@ export class WalletEffects {
   }
 
   private async updateVisitedInviteRequests(inviteRequests: InviteRequest[]) {
+    inviteRequests = inviteRequests || [];
     const visitedInvites = await this.persistenceService2.getVisitedInvites() || [];
     let updateVisitedInvites;
 
@@ -245,7 +246,7 @@ export class WalletEffects {
     if (!hasConfirmedWallet) {
       return {
         unlocked: false,
-        totalAnv: 0,
+        totalCGS: 0,
         bestRank: 0,
         bestPercentile: 0,
         percentileStr: '',
@@ -268,7 +269,7 @@ export class WalletEffects {
 
     const rankData: IRankData = {
       unlocked: true,
-      totalAnv: 0,
+      totalCGS: 0,
       bestRank: topRank.rank,
       bestPercentile: +topRank.percentile,
       percentileStr: getPercentileStr(topRank),
@@ -280,10 +281,10 @@ export class WalletEffects {
     };
 
     ranks.forEach((rank: IRankInfo) => {
-      rankData.totalAnv += rank.anv;
+      rankData.totalCGS += rank.cgs;
       rankData.totalCommunitySize += rank.communitySize;
       rankData.totalCommunitySizeChange += rank.communitySizeChangeDay;
-      rankData.totalProbability += rank.anvPercent;
+      rankData.totalProbability += rank.cgsPercent;
     });
 
     if (rankData.totalProbability === 0) {

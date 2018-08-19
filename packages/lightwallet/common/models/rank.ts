@@ -1,6 +1,6 @@
 export interface IRankData {
   unlocked: boolean;
-  totalAnv: number;
+  totalCGS: number;
   bestRank: number;
   bestPercentile: number;
   percentileStr: string;
@@ -15,11 +15,11 @@ export interface IRankInfo {
   address: string;
   alias?: string;
   lastUpdated: number;
-  anv: number;
-  anvChange: number;
-  anvChangeDay: number;
-  anvChangeWeek: number;
-  anvPercent: number;
+  cgs: number;
+  cgsChange: number;
+  cgsChangeDay: number;
+  cgsChangeWeek: number;
+  cgsPercent: number;
   percentile: string;
   rank: number;
   rankChange: number;
@@ -32,7 +32,7 @@ export interface IRankInfo {
 }
 
 export interface ILeaderboard {
-  lotteryanv: string;
+  lotterycgs: number;
   lotteryentrants: number;
   ranks: IRankInfo[];
 }
