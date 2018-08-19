@@ -17,6 +17,7 @@ import {
   selectWalletsLoading,
   selectWalletTotals,
 } from '@merit/common/reducers/wallets.reducer';
+import { getLatestValue } from '../../../../common/utils/observables';
 
 @IonicPage()
 @Component({
@@ -24,8 +25,6 @@ import {
   templateUrl: 'wallets.html',
 })
 export class WalletsView {
-
-  wallets: DisplayWallet[] = [];
 
   loading$: Observable<boolean> = this.store.select(selectWalletsLoading);
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
@@ -36,12 +35,13 @@ export class WalletsView {
   showCommunityPopup: boolean;
   communitySize: number;
 
-  constructor(private navCtrl: NavController,
-              private logger: LoggerService,
-              private toastCtrl: ToastControllerService,
-              private profileService: ProfileService,
-              private platform: Platform,
-              private store: Store<IRootAppState>,
+  constructor(
+    private navCtrl: NavController,
+    private logger: LoggerService,
+    private toastCtrl: ToastControllerService,
+    private profileService: ProfileService,
+    private platform: Platform,
+    private store: Store<IRootAppState>,
   ) {
   }
 
@@ -62,9 +62,10 @@ export class WalletsView {
   }
 
 
-  toAddWallet() {
+  async toAddWallet() {
+    const wallets = await getLatestValue(this.wallets$, wallets => wallets.length > 0);
     let referralAddress = '';
-    this.wallets.some((w: DisplayWallet) => {
+    wallets.some((w: DisplayWallet) => {
       if (w.availableInvites) {
         referralAddress = w.client.rootAddress.toString();
         return true;
