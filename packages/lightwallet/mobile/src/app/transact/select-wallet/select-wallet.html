@@ -17,7 +17,7 @@
         <h2>
           {{wallet.name || wallet._id}}
         </h2>
-        <p *ngIf="wallet?.rootAlias">@{{wallet.rootAlias}}</p>
+        <p *ngIf="wallet?.alias">@{{wallet.alias}}</p>
         <p>
           <span *ngIf="!wallet.confirmed">Not unlocked</span>
           <span *ngIf="wallet.confirmed">
