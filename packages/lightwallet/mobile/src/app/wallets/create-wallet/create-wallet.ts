@@ -5,21 +5,30 @@ import {
   LoadingController,
   ModalController,
   NavController,
-  NavParams
+  NavParams,
 } from 'ionic-angular';
 import { ENV } from '@app/env';
-import * as _ from 'lodash';
 import { ConfigService } from '@merit/common/services/config.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
-import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
+import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AddressValidator } from '@merit/common/validators/address.validator';
+import { PasswordValidator } from '@merit/common/validators/password.validator';
+import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
+import { IRootAppState } from '@merit/common/reducers';
+import { Store } from '@ngrx/store';
+import { createDisplayWallet } from '@merit/common/models/display-wallet';
+import { InviteRequestsService } from '@merit/common/services/invite-request.service';
+import { TxFormatService } from '@merit/common/services/tx-format.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
 @IonicPage({
-  defaultHistory: ['WalletsView']
+  defaultHistory: ['WalletsView'],
 })
 @Component({
   selector: 'view-create-wallet',
@@ -27,63 +36,163 @@ import { PushNotificationsService } from '@merit/common/services/push-notificati
 })
 export class CreateWalletView {
 
-  formData = {
-    walletName: '',
-    parentAddress: '',
-    alias: '',
-    aliasValidationError: '',
-    aliasCheckInProgress: false,
-    addressCheckError: '',
-    addressCheckInProgress: false,
-    bwsurl: ENV.mwsUrl,
+  formData: FormGroup = this.formBuilder.group({
+    walletName: ['Personal wallet', Validators.required],
+    parentAddress: ['', Validators.required, AddressValidator.validateAddress()],
+    alias: ['', [], AddressValidator.validateAliasAvailability],
+    bwsurl: [ENV.mwsUrl],
     recoveryPhrase: '',
     password: '',
-    repeatPassword: '',
-    color: '',
-    hideBalance: false
+    repeatPassword: ['', PasswordValidator.MatchPassword],
+    color: ['#00B0DD'],
+    hideBalance: false,
+  });
+
+  get parentAddress() {
+    return this.formData.get('parentAddress');
+  }
+
+  get alias() {
+    return this.formData.get('alias');
+  }
+
+  get recoveryPhrase() {
+    return this.formData.get('recoveryPhrase');
+  }
+
+  get password() {
+    return this.formData.get('password');
+  }
+
+  get repeatPassword() {
+    return this.formData.get('repeatPassword');
+  }
+
+  selectedColor = {
+    name: 'Merit blue',
+    color: '#00B0DD',
   };
 
-  parsedAddress: string;
-  defaultBwsUrl: string = ENV.mwsUrl;
+  availableColors: any = [
+    {
+      name: 'Sunglo',
+      color: '#E57373',
+    },
+    {
+      name: 'Carissma',
+      color: '#E985A7',
+    },
+    {
+      name: 'Light Wisteria',
+      color: '#ca85d6',
+    },
+    {
+      name: 'Lilac Bush',
+      color: '#A185D4',
+    },
+    {
+      name: 'Merit blue',
+      color: '#00B0DD',
+    },
+    {
+      name: 'Moody Blue',
+      color: '#7987d1',
+    },
+    {
+      name: 'Havelock Blue',
+      color: '#64aae3',
+    },
+    {
+      name: 'Picton Blue',
+      color: '#53b9e8',
+    },
+    {
+      name: 'Viking',
+      color: '#4ccdde',
+    },
+    {
+      name: 'Ocean Green',
+      color: '#48ae6c',
+    },
+    {
+      name: 'Puerto Rico',
+      color: '#44baad',
+    },
+    {
+      name: 'Wild Willow',
+      color: '#99c666',
+    },
+    {
+      name: 'Turmeric',
+      color: '#bcc84c',
+    },
+    {
+      name: 'Buttercup',
+      color: '#f5a623',
+    },
+    {
+      name: 'Supernova',
+      color: '#ffc30e',
+    },
+    {
+      name: 'Yellow Orange',
+      color: '#ffaf37',
+    },
+    {
+      name: 'Portage',
+      color: '#8997eb',
+    },
+    {
+      name: 'Gray',
+      color: '#808080',
+    },
+    {
+      name: 'Shuttle Gray',
+      color: '#5f6c82',
+    },
+    {
+      name: 'Tuna',
+      color: '#383d43',
+    },
+  ];
 
-  constructor(private navCtrl: NavController,
-              private navParams: NavParams,
-              private config: ConfigService,
-              private walletService: WalletService,
-              private loadCtrl: LoadingController,
-              private toastCtrl: ToastControllerService,
-              private modalCtrl: ModalController,
-              private logger: LoggerService,
-              private pushNotificationService: PushNotificationsService,
-              private pollingNotificationService: PollingNotificationsService,
-              private alertCtrl: AlertController,
-              private addressService: AddressService) {
+  constructor(
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private config: ConfigService,
+    private walletService: WalletService,
+    private loadCtrl: LoadingController,
+    private toastCtrl: ToastControllerService,
+    private modalCtrl: ModalController,
+    private logger: LoggerService,
+    private pushNotificationService: PushNotificationsService,
+    private pollingNotificationService: PollingNotificationsService,
+    private alertCtrl: AlertController,
+    private addressService: AddressService,
+    private formBuilder: FormBuilder,
+    private store: Store<IRootAppState>,
+    private inviteRequestsService: InviteRequestsService,
+    private txFormatService: TxFormatService,
+    private persistenceService2: PersistenceService2,
+  ) {
   }
 
-  ionViewDidEnter() {
-    let parentAddress = this.navParams.get('parentAddress');
-    if (!_.isNil(parentAddress)) {
-      this.formData.parentAddress = parentAddress.toString();
+  async ngOnInit() {
+    const { parentAddress } = this.navParams.data;
+
+    if (parentAddress) {
+      this.parentAddress.setValue(parentAddress);
+      this.parentAddress.markAsDirty();
+      this.parentAddress.updateValueAndValidity();
     }
-    this.validateParentAddress();
-  }
-
-  isCreationEnabled() {
-    return (
-      this.formData.parentAddress
-      && this.formData.walletName
-      && !this.formData.aliasCheckInProgress
-      && !this.formData.aliasValidationError
-      && !this.formData.addressCheckInProgress
-      && !this.formData.addressCheckError
-    );
   }
 
   selectColor() {
-    let modal = this.modalCtrl.create('SelectColorView', { color: this.formData.color });
+    let modal = this.modalCtrl.create('SelectColorView', { color: this.formData.get('color').value });
     modal.onDidDismiss((color) => {
       if (color) {
-        this.formData.color = color;
+        this.selectedColor = color;
+        this.formData.get('color').setValue(color.color);
       }
     });
     modal.present();
@@ -97,156 +206,68 @@ export class CreateWalletView {
   private showTooltip(title, message) {
     return this.alertCtrl.create({
       title, message,
-      buttons: ['Got it']
+      buttons: ['Got it'],
     }).present();
-  }
-
-  checkAlias() {
-    this.formData.aliasCheckInProgress = true;
-    this.validateAliasDebounce();
-  }
-
-  checkParentAddress() {
-    this.formData.addressCheckInProgress = true;
-    this.validateAddressDebounce();
-  }
-
-  private validateAliasDebounce = _.debounce(() => {
-    this.validateAlias();
-  }, 750);
-  private validateAddressDebounce = _.debounce(() => {
-    this.validateParentAddress();
-  }, 750);
-
-  private async validateParentAddress() {
-    this.formData.parentAddress = cleanAddress(this.formData.parentAddress);
-    let input = (this.formData.parentAddress && isAlias(this.formData.parentAddress)) ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
-
-    if (!input) {
-      this.formData.addressCheckInProgress = false;
-      return this.formData.addressCheckError = 'Address cannot be empty';
-    } else if (!this.addressService.isAddress(input)) {
-      if (!this.addressService.couldBeAlias(input)) {
-        this.formData.addressCheckInProgress = false;
-        return this.formData.addressCheckError = 'Incorrect address or alias format';
-      } else {
-        let aliasInfo = await this.addressService.getAddressInfo(input);
-        if (!aliasInfo || !aliasInfo.isValid || !aliasInfo.isBeaconed || !aliasInfo.isConfirmed) {
-          this.formData.addressCheckInProgress = false;
-          return this.formData.addressCheckError = 'Alias not found';
-        } else {
-          this.formData.addressCheckError = null;
-          this.formData.addressCheckInProgress = false;
-          return this.parsedAddress = aliasInfo.address;
-        }
-      }
-    } else {
-      let addressInfo = await this.addressService.getAddressInfo(input);
-      if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || !addressInfo.isConfirmed) {
-        this.formData.addressCheckInProgress = false;
-        return this.formData.addressCheckError = 'Address not found';
-      } else {
-        this.formData.addressCheckError = null;
-        this.formData.addressCheckInProgress = false;
-        return this.parsedAddress = addressInfo.address;
-      }
-    }
-
-
-  }
-
-  private async validateAlias() {
-    this.formData.alias = cleanAddress(this.formData.alias);
-
-    let input = (this.formData.alias && isAlias(this.formData.alias)) ? this.formData.alias.slice(1) : this.formData.alias;
-
-    if (!input) {
-      this.validateAliasDebounce.cancel();
-      this.formData.aliasCheckInProgress = false;
-      return this.formData.aliasValidationError = null;
-    }
-
-    if (input.length < 4) {
-      this.validateAliasDebounce.cancel();
-      this.formData.aliasCheckInProgress = false;
-      return this.formData.aliasValidationError = 'Alias should contain at least 4 symbols';
-    }
-
-    if (!this.addressService.couldBeAlias(input)) {
-      this.validateAliasDebounce.cancel();
-      this.formData.aliasCheckInProgress = false;
-      return this.formData.aliasValidationError = 'Incorrect alias format';
-    }
-
-
-    let addressExists = await this.addressService.getValidAddress(input);
-
-    if (addressExists) {
-      this.formData.aliasCheckInProgress = false;
-      return this.formData.aliasValidationError = 'Alias already in use';
-    } else {
-      this.formData.aliasValidationError = null;
-      return this.formData.aliasCheckInProgress = false;
-    }
-
-
   }
 
   async createWallet() {
 
-    if (this.formData.password != this.formData.repeatPassword) {
-      return this.toastCtrl.error(`Passwords don't match`);
-    }
-
-    let alias = (this.formData.alias && isAlias(this.formData.alias)) ? this.formData.alias.slice(1) : this.formData.alias;
-
-    const opts = {
-      name: this.formData.walletName,
-      parentAddress: this.parsedAddress,
-      alias: alias,
-      bwsurl: this.formData.bwsurl,
-      mnemonic: this.formData.recoveryPhrase,
-      networkName: ENV.network,
-      m: 1, //todo temp!
-      n: 1 //todo temp!
-    };
-
-    let loader = this.loadCtrl.create({
-      content: 'Creating wallet'
+    const loader = this.loadCtrl.create({
+      content: 'Creating wallet',
     });
 
     await loader.present();
+    let {
+      walletName: name,
+      parentAddress,
+      alias,
+      bwsurl,
+      recoveryPhrase: mnemonic,
+      hideBalance,
+      password,
+      color,
+    } = this.formData.getRawValue();
+
+    parentAddress = cleanAddress(parentAddress);
+    alias = cleanAddress(alias);
+
+    const opts = {
+      name,
+      parentAddress,
+      alias,
+      bwsurl,
+      mnemonic,
+      networkName: ENV.network,
+      m: 1, //todo temp!
+      n: 1, //todo temp!
+    };
 
     try {
       const wallet = await this.walletService.createWallet(opts);
-
-      let walletId = wallet.credentials.walletId;
-
       // Subscribe to push notifications or to long-polling for this wallet.
       if (this.config.get().pushNotificationsEnabled) {
         this.logger.info('Subscribing to push notifications for default wallet');
-        this.pushNotificationService.subscribe(wallet);
+        // this.pushNotificationService.subscribe(wallet);
       } else {
         this.logger.info('Subscribing to long polling for default wallet');
-        this.pollingNotificationService.enablePolling(wallet);
+        // this.pollingNotificationService.enablePolling(wallet);
       }
 
       let promises: Promise<any>[] = [];
-      if (this.formData.hideBalance) {
-        wallet.balanceHidden  = this.formData.hideBalance;
-        promises.push(this.walletService.setHiddenBalanceOption(walletId, this.formData.hideBalance));
+      if (hideBalance) {
+        promises.push(this.walletService.setHiddenBalanceOption(wallet.id, hideBalance));
       }
 
-      if (this.formData.password) {
-        promises.push(this.walletService.encryptWallet(wallet, this.formData.password));
+      if (password) {
+        promises.push(this.walletService.encryptWallet(wallet, password));
       }
 
-      if (this.formData.color) {
-        wallet.color = this.formData.color;
+      if (color) {
+        // TODO(ibby): fix this implementation
         const colorOpts = {
           colorFor: {
-            [walletId]: this.formData.color
-          }
+            [wallet.id]: color,
+          },
         };
         promises.push(this.config.set(colorOpts));
       }
@@ -255,16 +276,18 @@ export class CreateWalletView {
         await Promise.all(promises);
       } catch (e) {
         this.logger.error(e);
+        this.toastCtrl.error(e.message || e);
       }
 
-      // We should callback to the wallets list page to let it know that there is a new wallet
-      // and that it should updat it's list.
-      await loader.dismiss();
-      return this.navCtrl.pop();
+      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService, this.txFormatService, this.persistenceService2);
+      this.store.dispatch(new AddWalletAction(displayWallet));
+      this.navCtrl.pop();
     } catch (err) {
       this.logger.error(err);
-      await loader.dismiss();
-      await this.toastCtrl.error(err.text || 'Error occured when creating wallet');
+      this.toastCtrl.error(err.message || err);
+      // TODO: display error to user
+    } finally {
+      loader.dismiss();
     }
   }
 }

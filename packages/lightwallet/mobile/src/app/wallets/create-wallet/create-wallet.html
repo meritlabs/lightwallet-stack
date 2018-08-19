@@ -6,86 +6,91 @@
 
 <ion-content enter-to-next>
 
-  <ion-list>
-    <ion-item-group>
-      <ion-item>
-        <ion-label stacked>
-          <h2>Wallet name</h2>
-        </ion-label>
-        <ion-input placeholder="Family vacation funds" [(ngModel)]="formData.walletName"></ion-input>
-      </ion-item>
-
-      <div class="alias-item">
+  <form [formGroup]="formData" (submit)="createWallet()">
+    <ion-list>
+      <ion-item-group>
         <ion-item>
           <ion-label stacked>
-            <h2>
-              Referrer address
-            </h2>
+            <h2>Wallet name</h2>
           </ion-label>
-          <ion-input placeholder="Paste it here" [class.address]="formData.parentAddress.length > 20"
-                     [(ngModel)]="formData.parentAddress" (ngModelChange)="checkParentAddress()"></ion-input>
+          <ion-input placeholder="Family vacation funds" formControlName="walletName"></ion-input>
         </ion-item>
-        <ion-spinner *ngIf="formData.addressCheckInProgress" color="primary"></ion-spinner>
-        <p *ngIf="formData.addressCheckError" class="error-message">{{formData.addressCheckError}}</p>
-      </div>
 
-      <div class="alias-item">
+        <div class="alias-item">
+          <ion-item>
+            <ion-label stacked>
+              <h2>
+                Referrer address
+              </h2>
+            </ion-label>
+            <ion-input placeholder="Paste it here" [class.address]="parentAddress.value.length > 20"
+                       formControlName="parentAddress"></ion-input>
+          </ion-item>
+          <ion-spinner *ngIf="parentAddress.pending" color="primary"></ion-spinner>
+          <p *ngIf="!parentAddress.pending && parentAddress.invalid" class="error-message">Invalid address or alias</p>
+        </div>
+
+        <div class="alias-item">
+          <ion-item>
+            <ion-label stacked>
+              <h2>
+                Address alias
+                <!--<button ion-button clear (click)="showAliasTooltip()" class="tooltip-button">-->
+                <!--<ion-icon name="ios-information-circle-outline"></ion-icon>-->
+                <!--</button>-->
+              </h2>
+            </ion-label>
+            <ion-input placeholder="Enter address alias" formControlName="alias"></ion-input>
+          </ion-item>
+          <ion-spinner *ngIf="alias.pending" color="primary"></ion-spinner>
+          <p *ngIf="!alias.pending && alias.invalid" class="error-message">
+            {{
+            alias.hasError('InvalidFormat')? 'Invalid alias format' : alias.hasError('AliasInUse')? 'Alias already in use' : ''
+            }}
+          </p>
+        </div>
+
+
+        <ion-item (click)="selectColor()">
+          <ion-label>
+            <h2>Color</h2>
+          </ion-label>
+          <ion-note item-end class="wallet-color-indicator">
+            <span [style.background]="formData.value.color"></span>
+          </ion-note>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            <h2>Hide Balance</h2>
+          </ion-label>
+          <ion-toggle formControlName="hideBalance">
+          </ion-toggle>
+        </ion-item>
         <ion-item>
           <ion-label stacked>
-            <h2>
-              Address alias
-              <!--<button ion-button clear (click)="showAliasTooltip()" class="tooltip-button">-->
-              <!--<ion-icon name="ios-information-circle-outline"></ion-icon>-->
-              <!--</button>-->
-            </h2>
+            <h2>Password (optional)</h2>
           </ion-label>
-          <ion-input placeholder="Enter address alias" [(ngModel)]="formData.alias"
-                     (ngModelChange)="checkAlias()"></ion-input>
+          <ion-input type="text" class="password-input" placeholder="Enter spending password" formControlName="password"></ion-input>
         </ion-item>
-        <ion-spinner *ngIf="formData.aliasCheckInProgress" color="primary"></ion-spinner>
-        <p *ngIf="formData.aliasValidationError" class="error-message">{{formData.aliasValidationError}}</p>
-      </div>
+        <ion-item [hidden]="!password.value">
+          <ion-label stacked>
+            <h2>Confirm password</h2>
+          </ion-label>
+          <ion-input type="text" class="password-input"  placeholder="Repeat your password" formControlName="repeatPassword"></ion-input>
+        </ion-item>
+        <ion-item class="warning" no-lines [hidden]="!password.value">
+          <b>Warning</b> This password cannot be recovered. If the password is lost, there is no way you could recover
+          your
+          funds!
+        </ion-item>
+      </ion-item-group>
 
+    </ion-list>
 
-      <ion-item (click)="selectColor()">
-        <ion-label>
-          <h2>Color</h2>
-        </ion-label>
-        <ion-note item-end class="wallet-color-indicator">
-          <span [class.default]="!formData.color" [style.background]="formData.color? formData.color : ''"></span>
-        </ion-note>
-      </ion-item>
-
-      <ion-item>
-        <ion-label>
-          <h2>Hide Balance</h2>
-        </ion-label>
-        <ion-toggle [(ngModel)]="formData.hideBalance">
-        </ion-toggle>
-      </ion-item>
-      <ion-item>
-        <ion-label stacked>
-          <h2>Password (optional)</h2>
-        </ion-label>
-        <ion-input type="text" class="password-input" placeholder="Enter spending password" [(ngModel)]="formData.password"></ion-input>
-      </ion-item>
-      <ion-item [hidden]="!formData.password">
-        <ion-label stacked>
-          <h2>Confirm password</h2>
-        </ion-label>
-        <ion-input type="text" class="password-input"  placeholder="Repeat your password" [(ngModel)]="formData.repeatPassword"></ion-input>
-      </ion-item>
-    <ion-item class="warning" no-lines [hidden]="!formData.password">
-        <b>Warning</b> This password cannot be recovered. If the password is lost, there is no way you could recover
-        your
-        funds!
-    </ion-item>
-    </ion-item-group>
-
-  </ion-list>
-
-  <button ion-button [disabled]="!isCreationEnabled()" (click)="createWallet()" class="action-button">
-    Create new wallet
-  </button>
+    <button ion-button type="submit" [disabled]="formData.pending || formData.invalid || formData.pristine" class="action-button">
+      Create new wallet
+    </button>
+  </form>
 
 </ion-content>
