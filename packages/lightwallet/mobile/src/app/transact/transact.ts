@@ -94,21 +94,23 @@ export class TransactView {
       );
     }
 
-    const smsPromptSetting = await this.persistenceService2.getUserSettings(UserSettingsKey.SmsNotificationsPrompt);
+    try {
+      const smsPromptSetting = await this.persistenceService2.getUserSettings(UserSettingsKey.SmsNotificationsPrompt);
 
-    if (smsPromptSetting == true)
-      return;
+      if (!smsPromptSetting) {
+        const smsNotificationStatus = await this.smsNotificationsService.getSmsSubscriptionStatus();
 
-    const smsNotificationStatus = await this.smsNotificationsService.getSmsSubscriptionStatus();
+        if (!smsNotificationStatus.enabled) {
+          const modal = this.modalCtrl.create('SmsNotificationsModal');
+          modal.present();
+          modal.onDidDismiss(() => {
+            this.persistenceService2.setUserSettings(UserSettingsKey.SmsNotificationsPrompt, true);
+          });
+        }
+      }
+    } catch (err) {
 
-    if (smsNotificationStatus.enabled)
-      return;
-
-    const modal = this.modalCtrl.create('SmsNotificationsModal');
-    modal.present();
-    modal.onDidDismiss(() => {
-      this.persistenceService2.setUserSettings(UserSettingsKey.SmsNotificationsPrompt, true);
-    });
+    }
   }
 
   async ngOnDestroy() {

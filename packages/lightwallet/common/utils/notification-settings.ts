@@ -12,6 +12,8 @@ import { debounceTime, filter, switchMap, tap } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import { SmsNotificationSetting } from '@merit/common/models/sms-subscription';
+import { SendValidator } from '@merit/common/validators/send.validator';
+import { GeneralValidator } from '@merit/common/validators/general.validator';
 
 export type SavingStatus = 'saving' | 'saved' | 'none';
 export type SmsNotificationSettingsText = {
@@ -32,10 +34,10 @@ const smsNotificationSettingsText: SmsNotificationSettingsText = {
 export class NotificationSettingsController {
   formData: FormGroup = this.formBuilder.group({
     pushNotifications: [false],
-    emailNotifications: [false, [Validators.required]],
+    emailNotifications: [false, [Validators.required, GeneralValidator.validateEmail]],
     email: [''],
     smsNotifications: [false],
-    phoneNumber: ['', [Validators.required, Validators.pattern(/\d{10,}/)]]
+    phoneNumber: ['', [Validators.required, GeneralValidator.validatePhoneNumber]]
   });
   private subs: Subscription[] = [];
   private emailStatus: Subject<SavingStatus> = new Subject<SavingStatus>();
@@ -86,7 +88,7 @@ export class NotificationSettingsController {
 
     Object.keys(SmsNotificationSetting)
       .forEach((key: keyof SmsNotificationSetting) => {
-        this.formData.addControl(SmsNotificationSetting[key], new FormControl(status && status.settings && status.settings[key]));
+        this.formData.addControl(SmsNotificationSetting[key], new FormControl(status && status.settings && status.settings[SmsNotificationSetting[key]]));
 
         smsNotificationSettings.push({
           name: SmsNotificationSetting[key],
