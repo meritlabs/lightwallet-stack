@@ -823,3 +823,17 @@ $v-tab-send-selected-icon: url("../img/tab-icons/ico-send-selected.svg") !defaul
     margin-right: 16px;
   }
 }
+
+ion-item {
+  &.hasErrors {
+    padding-bottom: 30px;
+
+    + .input-errors {
+      position: relative;
+      color: color($colors, danger);
+      height: 0;
+      top: -30px;
+      left: 20px;
+    }
+  }
+}
