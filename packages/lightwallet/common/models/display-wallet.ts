@@ -46,9 +46,7 @@ export class DisplayWallet {
   @ClientProperty sendableInvites: number;
   @ClientProperty confirmed: boolean;
 
-  get address() {
-    return this.client.getRootAddress().toString();
-  }
+  address: string;
 
   referrerAddress: string;
   alias: string;
@@ -82,7 +80,7 @@ export class DisplayWallet {
               private inviteRequestsService: InviteRequestsService,
               private txFormatService?: TxFormatService,
               private persistenceService2?: PersistenceService2) {
-    this.referrerAddress = this.client.getRootAddress().toString();
+    this.referrerAddress = this.address = this.client.getRootAddress().toString();
 
     if (!this.client.color) {
       this.client.color = DEFAULT_WALLET_COLOR;
@@ -117,17 +115,8 @@ export class DisplayWallet {
   }
 
   // Alias if you have one; otherwise address.
-  async updateShareCode() {
-    try {
-      const { alias } = await getAddressInfo(this.referrerAddress);
-      if (alias) {
-        this.shareCode = '@' + alias;
-      } else {
-        this.shareCode = this.referrerAddress;
-      }
-    } catch (err) {
-      console.log('Error updating share code', err);
-    }
+  updateShareCode() {
+    this.shareCode = this.alias? '@' + this.alias : this.address;
   }
 
   async updateStatus() {
@@ -157,13 +146,13 @@ export class DisplayWallet {
         address: this.address,
         alias: this.alias,
         lastUpdated: Date.now(),
-        anv: 0,
-        anvChangeDay: 0,
-        anvChangeWeek: 0,
+        cgs: 0,
+        cgsChangeDay: 0,
+        cgsChangeWeek: 0,
         communitySize: 0,
-        anvPercent: 0,
+        cgsPercent: 0,
         communitySizeChange: 0,
-        anvChange: 0,
+        cgsChange: 0,
         communitySizeChangeDay: 0,
         communitySizeChangeWeek: 0,
         percentile: '0',
@@ -232,7 +221,7 @@ export async function updateDisplayWallet(displayWallet: DisplayWallet, options:
     await displayWallet.updateRewards();
 
   if (!options.skipShareCode)
-    await displayWallet.updateShareCode();
+    displayWallet.updateShareCode();
 
   if (!options.skipRankInfo)
     await displayWallet.updateRankInfo();
