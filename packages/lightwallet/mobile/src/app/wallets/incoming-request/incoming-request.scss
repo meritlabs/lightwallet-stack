@@ -6,7 +6,9 @@ view-incoming-request {
     padding-top: 0;
     padding-bottom: 0;
     min-height: 70px;
-    height: 70px;
+    height: 100%;
+    max-height: 85px;
+
     .item-start, .item {
       padding-top: 0;
       padding-bottom: 0;

@@ -13,10 +13,11 @@
     <img src="assets/img/icons/wallet.svg" class="wallet-icon" item-start>
 
     <h2>Send From</h2>
-    <p>{{ selectedWallet.name }}</p>
+    <p>{{ selectedWallet?.name }}</p>
+    <p *ngIf="selectedWallet?.alias">@{{ selectedWallet.alias }}</p>
 
     <span item-end>
-        {{ selectedWallet.availableInvites || 0 }}
+        {{ selectedWallet?.availableInvites || 0 }}
         <img src="assets/img/icons/invite.svg" alt="" class="invites-icon">
     </span>
   </button>
