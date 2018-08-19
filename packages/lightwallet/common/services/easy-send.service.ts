@@ -141,12 +141,10 @@ export class EasySendService {
     ];
     const script = Script.buildEasySendOut(pubKeys, timeout, ENV.network);
 
-    const addressInfo = await this.addressService.getAddressInfo(wallet.getRootAddress().toString());
-
     return {
       receiverPubKey: rcvPair.key.publicKey,
       script: script.toMixedScriptHashOut(pubKey),
-      senderName: addressInfo.alias ? addressInfo.alias : 'Someone',
+      senderName: wallet.rootAlias? wallet.rootAlias : 'Someone',
       senderPubKey: pubKey.toString(),
       secret: rcvPair.secret.toString('hex'),
       blockTimeout: timeout,
