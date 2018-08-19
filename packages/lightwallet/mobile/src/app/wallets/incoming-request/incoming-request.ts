@@ -14,6 +14,7 @@ import { Store } from '@ngrx/store';
 import { selectWalletsWithInvites } from '@merit/common/reducers/wallets.reducer';
 import { getLatestValue } from '@merit/common/utils/observables';
 import { ENV } from '@app/env';
+import { selectInviteRequests, UpdateInviteRequestsAction } from '../../../../../common/reducers/wallets.reducer';
 
 @IonicPage()
 @Component({
@@ -53,6 +54,9 @@ export class IncomingRequestModal {
     try {
       loader.present();
       await this.inviteRequest.accept(this.selectedWallet.client);
+      const inviteRequests = await getLatestValue(this.store.select(selectInviteRequests));
+      this.store.dispatch(new UpdateInviteRequestsAction(inviteRequests.filter((ir: InviteRequest) => ir.id !== this.inviteRequest.id)));
+      this.isConfirmed = true;
     } catch (e) {
       this.toastCtrl.error(e.text || 'Unknown Error');
     } finally {
@@ -62,6 +66,8 @@ export class IncomingRequestModal {
 
   async decline() {
     await this.inviteRequest.ignore();
+    const inviteRequests = await getLatestValue(this.store.select(selectInviteRequests));
+    this.store.dispatch(new UpdateInviteRequestsAction(inviteRequests.filter((ir: InviteRequest) => ir.id !== this.inviteRequest.id)));
     this.navCtrl.pop();
   }
 
@@ -100,7 +106,7 @@ export class IncomingRequestModal {
     const modal = this.modalCtrl.create('SelectWalletModal', {
       showInvites: true,
       selectedWallet: this.selectedWallet,
-      availableWallets: await getLatestValue(this.wallets$),
+      wallets: this.wallets$,
     }, MERIT_MODAL_OPTS);
     modal.onDidDismiss((wallet: DisplayWallet) => {
       if (wallet) {
