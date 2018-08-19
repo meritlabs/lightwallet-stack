@@ -98,7 +98,7 @@ export class SendService {
 
     if (txData.sendMethod.type == SendMethodType.Easy)  {
       const easySend = await this.easySendService.createEasySendScriptHash(wallet, txData.password);
-      const amount = txData.feeIncluded ? txData.amount : (txData.amount + await this.feeService.getEasyReceiveFee());
+      const amount = txData.feeIncluded ? txData.amount : txData.amount + 20000;
 
       txData.easySend = easySend;
       txData.txp = await this.easySendService.prepareTxp(wallet, amount, easySend);
@@ -141,7 +141,7 @@ export class SendService {
       const address = Address(easySend.script.getAddressInfo()).toString();
       const txp = await this.prepareTxp(wallet, amount, address);
       const sendFee = txp.fee;
-      const receiveFee = await this.feeService.getEasyReceiveFee();
+      const receiveFee = 20000;
       return sendFee + receiveFee;
     } else {
       let txp = await this.prepareTxp(wallet, amount, toAddress);
