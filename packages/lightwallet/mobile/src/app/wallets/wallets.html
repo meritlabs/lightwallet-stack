@@ -158,7 +158,7 @@
         <ion-item-divider>
             Vaults
             <button ion-button item-end round add-button icon-only
-                    navPush="VaultCreateView" [navParams]="{wallets: wallets}"
+                    navPush="VaultCreateView" [navParams]="{wallets: wallets$ | async}"
                     [disabled]="totalInvites == 0">
                 <ion-icon name="add"></ion-icon>
             </button>
@@ -166,7 +166,7 @@
 
         <ion-list class="vaults" *ngIf="vaults && vaults.length">
             <button ion-item detail-none *ngFor="let vault of vaults"
-                    navPush="VaultView" [navParams]="{vaultId: vault._id, vault: vault, wallets: wallets}">
+                    navPush="VaultView" [navParams]="{vaultId: vault._id, vault: vault, wallets: wallets$ | async}">
                 <ion-avatar item-start img-icon>
                     <img src="assets/img/icons/vault-avatar.svg">
                 </ion-avatar>
