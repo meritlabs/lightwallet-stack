@@ -42,13 +42,11 @@ export class MiningView {
   alias: string;
   workers: number = 1;
   threadsPerWorker: number = 1;
-  updateTimer: any;
   minCores: number = 0;
   maxCores: number = ElectronService.numberOfCores();
   minGPUs: number = 0;
   maxGPUs: number = ElectronService.numberOfGPUDevices();
   cores: number;
-  gpus: number;
   gpusInfo: IGPUInfo[];
   activeGpuDevices: number[];
   miningSettings: any;

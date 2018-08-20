@@ -19,11 +19,7 @@ import { IGPUInfo } from '../../desktop/src/app/core/mining/gpu-info.model';
 import { of } from 'rxjs/observable/of';
 
 const borderColors: string[] = ['#00b0dd', '#2eb483'];
-
-const baseDataset: IMiningDataset = {
-  // borderWidth: 2,
-  // pointRadius: 0
-} as IMiningDataset;
+const baseDataset: IMiningDataset = { } as IMiningDataset;
 
 function updateGpuDatasets(gpuInfo: IGPUInfo[], gpuTemp: IMiningDataset[], gpuUtil: IMiningDataset[]) {
   if (!gpuTemp.length) {
@@ -32,7 +28,6 @@ function updateGpuDatasets(gpuInfo: IGPUInfo[], gpuTemp: IMiningDataset[], gpuUt
         ...baseDataset,
         series: [],
         name: data.title,
-        // borderColor: '#0046ff'
       });
 
       gpuUtil.push(
@@ -40,13 +35,11 @@ function updateGpuDatasets(gpuInfo: IGPUInfo[], gpuTemp: IMiningDataset[], gpuUt
           ...baseDataset,
           series: [],
           name: data.title + ' cores',
-          // borderColor: '#0046ff'
         },
         {
           ...baseDataset,
           series: [],
           name: data.title + ' memory',
-          // borderColor: '#2eb483'
         }
       );
     });
