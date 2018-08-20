@@ -21,8 +21,8 @@ import { of } from 'rxjs/observable/of';
 const borderColors: string[] = ['#00b0dd', '#2eb483'];
 
 const baseDataset: IMiningDataset = {
-  borderWidth: 2,
-  pointRadius: 0
+  // borderWidth: 2,
+  // pointRadius: 0
 } as IMiningDataset;
 
 function updateGpuDatasets(gpuInfo: IGPUInfo[], gpuTemp: IMiningDataset[], gpuUtil: IMiningDataset[]) {
@@ -30,23 +30,23 @@ function updateGpuDatasets(gpuInfo: IGPUInfo[], gpuTemp: IMiningDataset[], gpuUt
     gpuInfo.forEach((data: IGPUInfo, i: number) => {
       gpuTemp.push({
         ...baseDataset,
-        data: [],
-        label: data.title,
-        borderColor: '#0046ff'
+        series: [],
+        name: data.title,
+        // borderColor: '#0046ff'
       });
 
       gpuUtil.push(
         {
           ...baseDataset,
-          data: [],
-          label: data.title + ' cores',
-          borderColor: '#0046ff'
+          series: [],
+          name: data.title + ' cores',
+          // borderColor: '#0046ff'
         },
         {
           ...baseDataset,
-          data: [],
-          label: data.title + ' memory',
-          borderColor: '#2eb483'
+          series: [],
+          name: data.title + ' memory',
+          // borderColor: '#2eb483'
         }
       );
     });
@@ -55,27 +55,27 @@ function updateGpuDatasets(gpuInfo: IGPUInfo[], gpuTemp: IMiningDataset[], gpuUt
   const t: Date = new Date();
 
   gpuInfo.forEach((data: IGPUInfo, i: number) => {
-    gpuTemp[i].data.push({
-      t,
-      y: data.temperature
+    gpuTemp[i].series.push({
+      name: t,
+      value: data.temperature
     });
 
-    gpuUtil[i * 2].data.push({
-      t,
-      y: data.gpu_util
+    gpuUtil[i * 2].series.push({
+      name: t,
+      value: data.gpu_util
     });
 
-    gpuUtil[i * 2 + 1].data.push({
-      t,
-      y: data.memory_util
+    gpuUtil[i * 2 + 1].series.push({
+      name: t,
+      value: data.memory_util
     });
   });
 
   // keep only most recent 100 in memory
-  const cutOff = gpuTemp[0].data.length - 100;
+  const cutOff = gpuTemp[0].series.length - 100;
   if (cutOff > 0) {
-    gpuTemp.forEach(ds => ds.data.splice(0, cutOff));
-    gpuUtil.forEach(ds => ds.data.splice(0, cutOff));
+    gpuTemp.forEach(ds => ds.series.splice(0, cutOff));
+    gpuUtil.forEach(ds => ds.series.splice(0, cutOff));
   }
 }
 
@@ -86,47 +86,44 @@ function updateMiningStats(stats: any, cyclesAndShares: IMiningDataset[], graphs
     cyclesAndShares.push(
       {
         ...baseDataset,
-        data: [],
-        borderColor: borderColors[0],
-        label: 'Cycles'
+        series: [],
+        name: 'Cycles'
       },
       {
         ...baseDataset,
-        data: [],
-        borderColor: borderColors[1],
-        label: 'Shares'
+        series: [],
+        name: 'Shares'
       }
     );
 
     graphs.push({
       ...baseDataset,
-      data: [],
-      borderColor: '#2eb483',
-      label: 'Graphs'
+      series: [],
+      name: 'Graphs'
     });
   }
 
-  cyclesAndShares[0].data.push({
-    t,
-    y: stats.total.cycles + stats.current.cycles
+  cyclesAndShares[0].series.push({
+    name: t,
+    value: stats.total.cycles + stats.current.cycles
   });
 
-  cyclesAndShares[1].data.push({
-    t,
-    y: stats.total.shares + stats.current.shares
+  cyclesAndShares[1].series.push({
+    name: t,
+    value: stats.total.shares + stats.current.shares
   });
 
-  graphs[0].data.push({
-    t,
-    y: stats.total.attempts + stats.current.attempts
+  graphs[0].series.push({
+    name: t,
+    value: stats.total.attempts + stats.current.attempts
   });
 
   // keep only most recent 200 in memory
-  const cutOff = graphs[0].data.length - 200;
+  const cutOff = graphs[0].series.length - 200;
   if (cutOff > 0) {
-    cyclesAndShares[0].data.splice(0, cutOff);
-    cyclesAndShares[1].data.splice(0, cutOff);
-    graphs[0].data.splice(0, cutOff);
+    cyclesAndShares[0].series.splice(0, cutOff);
+    cyclesAndShares[1].series.splice(0, cutOff);
+    graphs[0].series.splice(0, cutOff);
   }
 }
 
@@ -156,10 +153,10 @@ export class MiningEffects {
               .map(info => pick(info, 'id', 'title', 'total_memory', 'temperature', 'gpu_util',
                 'memory_util', 'fan_speed'));
 
-            // updateGpuDatasets(gpuInfo, gpuTemp, gpuUtil);
-            // updateMiningStats(stats, cyclesAndShares, graphs);
+            updateGpuDatasets(gpuInfo, gpuTemp, gpuUtil);
+            updateMiningStats(stats, cyclesAndShares, graphs);
 
-            // this.store$.dispatch(new UpdateMiningDatasetsAction({gpuTemp, gpuUtil, cyclesAndShares, graphs}));
+            this.store$.dispatch(new UpdateMiningDatasetsAction({gpuTemp, gpuUtil, cyclesAndShares, graphs}));
             this.store$.dispatch(new UpdateMiningStatsAction(stats));
             this.store$.dispatch(new UpdateGPUInfoAction(gpuInfo))
 

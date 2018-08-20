@@ -1,7 +1,14 @@
 <ngx-charts-area-chart-stacked
-  [results]="data"
-  [legend]="showLegend"
-  [xAxisLabel]="title"
+  [results]="_datasets"
+  [scheme]="colorScheme"
+  [legend]="legend"
+
+  [xAxis]="true"
+  [yAxis]="true"
+
   [showXAxisLabel]="showXAxisLabel"
   [showYAxisLabel]="showYAxisLabel"
+
+  [xAxisLabel]="title"
+  [xAxisTickFormatting]="dateTickFormatting"
 ></ngx-charts-area-chart-stacked>
