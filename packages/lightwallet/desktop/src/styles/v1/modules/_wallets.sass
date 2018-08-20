@@ -28,11 +28,11 @@
         cursor: pointer
       user-select: none
       position: relative
-      +transition(.2s, ease-in-out)
+      +transition(.2s)
       &__edit
         opacity: 0
         transform: translateX(-10px)
-        +transition(.2s, ease-in-out)
+        +transition(.2s)
       &__icon
         width: 40px
         height: 40px
@@ -147,7 +147,7 @@
             border: 0px
           a
             +font(300, 20px, 20px, $gun-metal)
-            +transition(.2s, ease-in-out)
+            +transition(.2s)
             &::after
               content: ""
               display: block
@@ -155,7 +155,7 @@
               height: 2px
               background: $blue
               transform: scaleX(0)
-              +transition(.2s, ease-in-out)
+              +transition(.2s)
             &.active,
             &:hover
               color: $blue
@@ -280,7 +280,7 @@
     cursor: pointer
     margin-right: 20px
     text-align: center
-    +transition(.2s, ease-in-out)
+    +transition(.2s)
     &:hover
       background: rgba(255, 255, 255, .1)
     &:before
