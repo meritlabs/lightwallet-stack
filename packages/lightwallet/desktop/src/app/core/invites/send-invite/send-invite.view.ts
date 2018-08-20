@@ -77,7 +77,7 @@ export class SendInviteView {
     const wallets: DisplayWallet[] = await this.wallets$.pipe(filter((wallets: DisplayWallet[]) => wallets.length > 0), take(1)).toPromise();
 
     if (this.hasAWalletWithInvites = wallets.length > 0) {
-      this.selectedWallet = wallets[0];
+      this.selectWallet(wallets[0]);
       this.formData.get("wallet").setValue(this.selectedWallet);
       const code = this.selectedWallet.alias || this.selectedWallet.referrerAddress;
       this.emailSubject = `Merit invite from ${code}`;
@@ -151,6 +151,8 @@ export class SendInviteView {
 
   selectWallet(wallet: DisplayWallet) {
     this.selectedWallet = wallet;
+    this.formData.get('wallet').setValue(wallet);
+    this.formData.get('amount').updateValueAndValidity({ onlySelf: false });
   }
 
   onGlobalSendCopy() {
