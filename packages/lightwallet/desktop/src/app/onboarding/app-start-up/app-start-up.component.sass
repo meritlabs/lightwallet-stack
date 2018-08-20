@@ -15,7 +15,7 @@
     &.animated
       opacity: 0
       animation: showChoices .2s forwards
-      animation-timing-function: ease-out
+      animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1)
       animation-delay: 2.5s
   &_title
     +font(500, 30px, 34px, $white)
@@ -23,14 +23,14 @@
     &.animated
       transform: scale(3)
       animation: pasteBack .2s forwards
-      animation-timing-function: ease-in
+      animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715)
       animation-delay: 1.8s
       i
         display: inline-block
         opacity: 0
         transform: scale(2) translateY(-20px)
         animation: typeIt .2s forwards
-        animation-timing-function: ease-in
+        animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715)
     @for $i from 0 to 20
       i:nth-child(#{$i + 1})
         animation-delay: #{$i / 10 + 0.5 }s
@@ -42,7 +42,7 @@
     &.animated
       opacity: 0
       animation: showCaption .2s forwards
-      animation-timing-function: ease-out
+      animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1)
       animation-delay: 2s
   &_choices
     display: flex
@@ -52,7 +52,7 @@
     &.animated
       opacity: 0
       animation: showChoices .2s forwards
-      animation-timing-function: ease-out
+      animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1)
       animation-delay: 2.5s
   &_choice
     +font(400, 16px, 22px, $white)

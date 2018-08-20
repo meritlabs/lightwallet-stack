@@ -95,7 +95,7 @@
         display: inline-block;
         height: 100%;
         opacity: 0;
-        transform: scale(1);
+        transform: scale3d(1, 1, 1);
         vertical-align: top;
         width: 20px;
       }
@@ -166,17 +166,17 @@
 
       @keyframes animWidth {
         0% {
-          transform: scale(1);
+          transform: scale3d(1, 1, 1);
         }
 
         50% {
           background-color: #00b0dd;
           opacity: 1;
-          transform: scale(3);
+          transform: scale3d(3, 3, 3);
         }
 
         100% {
-          transform: scale(1);
+          transform: scale3d(1, 1, 1);
         }
       }
     </style>
