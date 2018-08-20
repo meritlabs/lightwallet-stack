@@ -67,57 +67,57 @@
     animation: drop 2s infinite
     animation-delay: .7s
   &:after
-    transform: rotate(135deg)
+    transform: rotate3d(0, 0, 1, 135deg)
     animation: drop2 2s infinite
     animation-delay: .9s
 @keyframes rotate
   0%
-    transform: rotate(0deg)
+    transform: rotate3d(0,0,1, 0deg)
   20%
-    transform: rotate(180deg)
+    transform: rotate3d(0,0,1, 180deg)
   60%
-    transform: rotate(180deg)
+    transform: rotate3d(0,0,1, 180deg)
   80%
-    transform: rotate(360deg)
+    transform: rotate3d(0,0,1, 360deg)
   100%
-    transform: rotate(360deg)
+    transform: rotate3d(0,0,1, 360deg)
 @keyframes moveToLeft
   0%
-    transform: translate(0px, 0px)
+    transform: translate3d(0px, 0px, 0)
   50%
-    transform: translate(-40px, 0px)
+    transform: translate3d(-40px, 0px, 0)
   100%
-    transform: translate(-40px, -20px)
+    transform: translate3d(-40px, -20px, 0)
 @keyframes moveToRight
   0%
-    transform: translate(0px, 0px)
+    transform: translate3d(0px, 0px, 0)
   50%
-    transform: translate(40px, 0px)
+    transform: translate3d(40px, 0px, 0)
   100%
-    transform: translate(40px, -20px)
+    transform: translate3d(40px, -20px, 0)
 @keyframes drop
   0%
-    transform: translate(0px, 0px) rotate(-45deg)
+    transform: translate3d(0px, 0px, 0) rotate3d(0,0,1, -45deg)
     border-radius: 10px 10px 10px 10px
   30%
-    transform: translate(0px, 35px) rotate(-45deg)
+    transform: translate3d(0px, 35px, 0) rotate3d(0,0,1, -45deg)
     border-radius: 10px 10px 10px 0px
   50%
-    transform: translate(0px, 35px) rotate(-45deg)
+    transform: translate3d(0px, 35px, 0) rotate3d(0,0,1, -45deg)
     border-radius: 10px 10px 10px 0px
   80%
-    transform: translate(0px, 0px) rotate(-45deg)
+    transform: translate3d(0px, 0px, 0) rotate3d(0,0,1, -45deg)
     border-radius: 10px 10px 10px 10px
 @keyframes drop2
   0%
-    transform: translate(0px, 0px) rotate(135deg)
+    transform: translate3d(0px, 0px, 0) rotate3d(0,0,1, 135deg)
     border-radius: 10px 10px 10px 10px
   30%
-    transform: translate(0px, 65px) rotate(135deg)
+    transform: translate3d(0px, 65px, 0) rotate3d(0,0,1, 135deg)
     border-radius: 10px 10px 10px 0px
   50%
-    transform: translate(0px, 65px) rotate(135deg)
+    transform: translate3d(0px, 65px, 0) rotate3d(0,0,1, 135deg)
     border-radius: 10px 10px 10px 0px
   80%
-    transform: translate(0px, 0px) rotate(135deg)
+    transform: translate3d(0px, 0px, 0) rotate3d(0,0,1, 135deg)
     border-radius: 10px 10px 10px 10px
