@@ -22,27 +22,17 @@
         </ng-template>
       </div>
     </div>
-    <ul class="shareToolsList">
-      <li>
-        <ng-container>
-          <span class="cation">
-            <strong>1.</strong>
-          </span>
-          <button class="ui-button ui-button--xs ui-button--blue" [clip]="shareLink" (click)="onCopy()">copy invite link</button>
-        </ng-container>
-      </li>
-      <li>
-        <span class="cation">
-          <strong>2.</strong>
-          Share the link to grow your community.
-        </span>
-        <div class="share">
-          <span (click)="shareFacebook()">SHARE FB</span>
-          <span (click)="shareTweeter()">TWEET</span>
-          <span (click)="mailTo()">MAIL TO</span>
-        </div>
-      </li>
-    </ul>
+    <div class="shareToolsList">
+      <div class="cation">
+        Share the invite link to grow your community.
+      </div>
+      <div class="share">
+        <span (click)="shareFacebook()">share <merit-icon name="facebook"></merit-icon></span>
+        <span (click)="shareTweeter()">tweet <merit-icon name="tweeter"></merit-icon></span>
+        <span (click)="mailTo()">send <merit-icon name="mail"></merit-icon></span>
+        <span [clip]="shareLink" (click)="onCopy()">copy <merit-icon name="copy"></merit-icon></span>
+      </div>
+    </div>
   </div>
 </div>
 <div class="overlay" (click)="closeWindow()"></div>
