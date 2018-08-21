@@ -26,6 +26,7 @@ import { UnlockRequestService } from '@merit/common/services/unlock-request.serv
 import { VaultsService } from '@merit/common/services/vaults.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { GoalsService } from '@merit/common/services/goals.service';
+import { SocialSharing } from '@merit/common/services/social-sharing.service';
 
 @NgModule()
 export class CommonProvidersModule {
@@ -59,7 +60,8 @@ export class CommonProvidersModule {
         WalletService,
         AlertService,
         GoalsService,
-        SmsNotificationsService
+        SmsNotificationsService,
+        SocialSharing
       ]
     };
   }
