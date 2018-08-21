@@ -3,8 +3,8 @@
   <div>
     <div>
       <p class="shareDescription">When you bring an active new member into the Merit community, your
-        <strong>growth score</strong> will increase. There is a growth lottery every minute, and a higher score earns you a higher
-        chance to win.</p>
+        <strong>growth score</strong> will increase. There is a growth lottery every minute, and a higher score earns you
+        a higher chance to win.</p>
       <task-confirm [taskSlug]="taskSlug" [arrow]="'bottom'" [isDone]="goalIsDone"></task-confirm>
       <div class="walletSelection">
         <ng-container *ngIf="(wallets$ | async)?.length > 1; else singleWallet">
@@ -36,7 +36,9 @@
           <strong>2.</strong>
           Share the link to grow your community.
         </span>
-        <span id="pasteShareThis" class="shareBox addthis_share"></span>
+        <div class="share">
+          <span (click)="shareFacebook()">SHARE FB</span>
+        </div>
       </li>
     </ul>
   </div>
