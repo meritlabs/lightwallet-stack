@@ -11,6 +11,7 @@ import { Observable } from 'rxjs/Observable';
 import { filter, take } from 'rxjs/operators';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
 import { SocialSharing } from '@merit/common/services/social-sharing.service';
+import { ElectronService } from '@merit/desktop/services/electron.service';
 
 @Component({
   selector: 'app-share-box',
@@ -46,6 +47,10 @@ export class ShareBoxComponent implements OnInit {
       this.selectWallet(wallets[0]);
     }
     this.FB =  await this.socialSharing.authorizeFBSDK();
+  }
+
+  get isElectron(): boolean {
+    return ElectronService.isElectronAvailable;
   }
 
   selectWallet(wallet: DisplayWallet) {
