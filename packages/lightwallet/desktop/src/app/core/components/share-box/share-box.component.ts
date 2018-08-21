@@ -64,16 +64,15 @@ export class ShareBoxComponent implements OnInit {
   }
 
   shareFacebook() {
-    let _this = this;
     this.FB.ui({
       method: 'share_open_graph',
       action_type: 'og.shares',
       action_properties: JSON.stringify({
         object : {
-          'og:url': `${_this.shareLink}`,
-          'og:title': `${_this.shareTitle}`,
+          'og:url': `${this.shareLink}`,
+          'og:title': `${this.shareTitle}`,
           'og:site_name':'MeritLightWallet',
-          'og:description': `${_this.shareText} ${_this.shareLink}`,
+          'og:description': `${this.shareText} ${this.shareLink}`,
           'og:image': 'https://www.merit.me/uploads/2018/02/17/shareImage.png',
           'og:image:width':'250',
           'og:image:height':'257'
@@ -85,6 +84,14 @@ export class ShareBoxComponent implements OnInit {
   }
 
   shareTweeter() {
-    window.open(`https://twitter.com/intent/tweet?text=${this.shareText} ${this.shareLink}`, '_blank', 'toolbar=0,location=0,menubar=0,width=600,height=500');
+    this._newWindow(`https://twitter.com/intent/tweet?text=${this.shareText} ${this.shareLink}`);    
+  }
+
+  mailTo() {
+    window.location.href = (`mailto:?subject=${this.shareTitle}&body=${this.shareText} ${this.shareLink}`); 
+  }
+
+  private _newWindow(url) {
+    window.open(url, '_blank', 'toolbar=0,location=0,menubar=0,width=600,height=500');
   }
 }
