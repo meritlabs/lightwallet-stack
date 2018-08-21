@@ -139,6 +139,8 @@ export class MiningView {
             } else {
               this.error = null;
             }
+          } else {
+            this.error = null;
           }
         });
     } catch (err) {
