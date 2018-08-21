@@ -83,4 +83,8 @@ export class ShareBoxComponent implements OnInit {
       console.debug(response);
     });
   }
+
+  shareTweeter() {
+    window.open(`https://twitter.com/intent/tweet?text=${this.shareText} ${this.shareLink}`, '_blank', 'toolbar=0,location=0,menubar=0,width=600,height=500');
+  }
 }
