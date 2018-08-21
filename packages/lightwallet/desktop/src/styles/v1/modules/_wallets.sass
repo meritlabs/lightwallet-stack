@@ -31,7 +31,7 @@
       +transition(.2s)
       &__edit
         opacity: 0
-        transform: translateX(-10px)
+        transform: translate3d(-10px,0,0)
         +transition(.2s)
       &__icon
         width: 40px
@@ -91,7 +91,7 @@
         transform: translate3d(0, -1px, 0)
         .wallets__group__wallet__edit
           opacity: 1
-          transform: translateX(0)
+          transform: translate3d(0,0,0)
 
 .wallet-details
   &__header
@@ -154,13 +154,13 @@
               width: 100%
               height: 2px
               background: $blue
-              transform: scaleX(0)
+              transform: scale3d(0,0,0)
               +transition(.2s)
             &.active,
             &:hover
               color: $blue
               &::after
-                transform: scaleX(1)
+                transform: scale3d(1,0,0)
     &__title
       +font(900, 28px, 32px, $blue)
       margin-bottom: 40px
@@ -293,7 +293,7 @@
       background: $white
       margin-right: 5px
     &--send::before
-      transform: rotate(180deg)
+      transform: rotate3d(0,0,1,180deg)
 
 .wallet-details
   .backup__navigator
