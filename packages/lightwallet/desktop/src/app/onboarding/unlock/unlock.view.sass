@@ -140,9 +140,9 @@
             height: 8px
             border: solid white
             border-width: 0 2px 2px 0
-            -webkit-transform: rotate(45deg)
-            -ms-transform: rotate(45deg)
-            transform: rotate(45deg)
+            -webkit-transform: rotate3d(0,0,1, 45deg)
+            -ms-transform: rotate3d(0,0,1, 45deg)
+            transform: rotate3d(0,0,1, 45deg)
     &_nextbutton
       padding-top: 30px
       text-align: center
@@ -233,7 +233,7 @@
       width: 100%
       +font(500, 18px, 18px, $white)
       border: 0px
-      +transition(.1s, linear)
+      +transition(.1s)
       &--prev
         border-right: 1px solid $white
       &--next

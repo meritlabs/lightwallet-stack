@@ -32,17 +32,17 @@
   left: 5em
 @keyframes show
   from
-    transform: scale(0.001)
+    transform: scale3d(0.001, 0.001, 0.001)
   to
-    transform: scale(1)
+    transform: scale3d(1, 1, 1)
 @keyframes remove
   from
-    transform: scale(1)
+    transform: scale3d(1, 1, 1)
   to
-    transform: scale(0.001)
+    transform: scale3d(0.001, 0.001, 0.001)
 @keyframes shift
   to
-    transform: translateX(2.5em)
+    transform: translate3d(2.5em, 0, 0)
 .regot1
   animation-name: show
 .regot2, .regot3

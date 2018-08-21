@@ -7,7 +7,7 @@
   box-sizing: border-box
   cursor: pointer
   user-select: none
-  +transition(.2s, ease-in-out)
+  +transition(.2s)
   user-select: none
   &[disabled]
     opacity: .5
@@ -55,7 +55,7 @@
       font-weight: 900
       margin-left: 16px
       transform: translate3d(0, 0, 0)
-      +transition(.1s, ease-in-out)
+      +transition(.1s)
     &:hover:not([disabled])
       &:after
         transform: translate3d(2px, 0, 0)
@@ -70,7 +70,7 @@
       background: $blue
       mask-image: url('/assets/v1/icons/buttons/load.svg')
       mask-repeat: no-repeat
-      +transition(.1s, ease-in-out)
+      +transition(.1s)
     &:after
       transform: translate3d(0, 0, 0)
     &:hover:not([disabled])
@@ -84,7 +84,7 @@
       content: ""
       display: inline-block
       margin-left: 4px
-      transform: rotate(45deg)
+      transform: rotate3d(0,0,1, 45deg)
       width: 4px
       height: 4px
       border: 2px solid $blue
@@ -110,7 +110,7 @@
     &:before
       content: "›"
       display: inline-block
-      transform: rotate(180deg)
+      transform: rotate3d(0,0,1, 180deg)
       font-size: 25px
       position: relative
       margin-right: 5px
