@@ -27,7 +27,7 @@
         Share the invite link to grow your community.
       </div>
       <div class="share">
-        <span (click)="shareFacebook()">share <merit-icon name="facebook"></merit-icon></span>
+        <span (click)="shareFacebook()" *ngIf="!isElectron">share <merit-icon name="facebook"></merit-icon></span>
         <span (click)="shareTweeter()">tweet <merit-icon name="tweeter"></merit-icon></span>
         <span (click)="mailTo()">send <merit-icon name="mail"></merit-icon></span>
         <span [clip]="shareLink" (click)="onCopy()">copy <merit-icon name="copy"></merit-icon></span>
