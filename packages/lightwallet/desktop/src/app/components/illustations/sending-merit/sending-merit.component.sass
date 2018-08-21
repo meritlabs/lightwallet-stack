@@ -5,12 +5,12 @@
 .cls-23
   opacity: 0
   animation: showHide 15s infinite
-  animation-timing-function: ease-in
+  animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715)
 .cls-22
   opacity: 0
   animation: showHide 20s infinite
   animation-delay: 1s
-  animation-timing-function: ease-in
+  animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715)
 @keyframes pulse
   0%
     opacity: 1
@@ -26,13 +26,13 @@
     opacity: 1
 @keyframes showHide
   0%
-    transform: scale(1) translateX(0%)
+    transform: scale3d(1, 1, 1)  translate3d(0%, 0 ,0)
     opacity: 0
   50%
-    transform: scale(1.01) translateX(-10%)
+    transform: scale3d(1.01, 1.01, 1.01) translate3d(-10%, 0,0)
     opacity: .4
   100%
-    transform: scale(1)
+    transform: scale3d(1, 1, 1)
     opacity: 0
 .cls-1
   fill: #a9e06c

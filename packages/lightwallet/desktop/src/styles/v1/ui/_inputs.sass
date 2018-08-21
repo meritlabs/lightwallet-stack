@@ -45,7 +45,7 @@
     font-size: 15px
     line-height: 16px
     font-weight: 400
-    transform: translateY(10px)
+    transform: translate3d(0, 10px, 0)
     max-width: 400px
     width: 100%
     box-shadow: 0 0 2px rgba(0,0,0, .5)
@@ -53,7 +53,7 @@
       content: ""
       display: block
       background: #ff6661
-      transform: rotate(-45deg)
+      transform: rotate3d(0,0,1, -45deg)
       position: absolute
       height: 10px
       width: 10px
@@ -72,7 +72,7 @@
   letter-spacing: .3px
   border: 1px solid transparent
   margin-bottom: 30px
-  +transition(.3, ease-in-out)
+  +transition(.3)
   &:focus
     border-color: $blue
   &--text
@@ -90,7 +90,7 @@
       content: ""
       display: inline-block
       margin-left: 4px
-      transform: rotate(45deg)
+      transform: rotate3d(0,0,1, 45deg)
       width: 4px
       height: 4px
       border: 2px solid $input-text-color
@@ -134,7 +134,7 @@
     right: 16px
     top: 11px
     transform: translate3d(0,0,0)
-    transition: right .2s ease-in-out
+    transition: right .2s cubic-bezier(0.445, 0.05, 0.55, 0.95)
 .ui-checkbox
   position: relative
   input
@@ -157,7 +157,7 @@
     border-radius: 500rem
     background: #e9edf2
     border: 1px solid #b7bcc8
-    +transition(.15s, ease-out)
+    +transition(.15s)
     &::after
       content: ""
       display: block
@@ -169,7 +169,7 @@
       border: 1px solid #b7bcc8
       left: -1px
       top: -4px
-      +transition(.15s, ease-out)
+      +transition(.15s)
 .ui-input--textarea
   padding: 15px 16px
   border: 1px solid $light-blue-grey
