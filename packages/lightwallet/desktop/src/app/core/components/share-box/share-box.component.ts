@@ -10,13 +10,7 @@ import 'rxjs/add/operator/toPromise';
 import { Observable } from 'rxjs/Observable';
 import { filter, take } from 'rxjs/operators';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
-
-declare global {
-  interface Window {
-    addthis_config: any;
-    addthis_share: any;
-  }
-}
+import { SocialSharing } from '@merit/common/services/social-sharing.service';
 
 @Component({
   selector: 'app-share-box',
@@ -24,7 +18,7 @@ declare global {
   styleUrls: ['./share-box.component.sass'],
 })
 export class ShareBoxComponent implements OnInit {
-  constructor(private store: Store<IRootAppState>, private toastCtrl: ToastControllerService) {}
+  constructor(private store: Store<IRootAppState>, private toastCtrl: ToastControllerService, private socialSharing: SocialSharing) {}
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   selectedWallet = {
@@ -35,9 +29,10 @@ export class ShareBoxComponent implements OnInit {
   shareLink: string;
   goalIsDone: boolean;
   taskSlug: TaskSlug = TaskSlug.InviteFriends;
+  FB;
 
   shareTitle: string = 'Merit - digital currency for humans.';
-  shareText: string = `Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth.\n Get wallet now, your activation code: `;
+  shareText: string = `Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth.\n Get wallet now, your activation: `;
 
   @Output() dismiss: EventEmitter<void> = new EventEmitter<void>();
 
@@ -49,46 +44,8 @@ export class ShareBoxComponent implements OnInit {
     if (wallets.length > 0) {
       this.selectedWallet = wallets[0];
       this.selectWallet(wallets[0]);
-      this.initAddThis();
     }
-  }
-
-  private initAddThis() {
-    if (window.addthis_config && window.addthis_share) {
-      // move created shareThis into right container
-      const newParent = document.getElementById('pasteShareThis'),
-        oldParent = document.getElementById('shareThis');
-
-      while (oldParent.childNodes.length > 0) {
-        newParent.appendChild(oldParent.childNodes[0]);
-      }
-      if (window.addthis_config && window.addthis_share) {
-        let alias = this.shareAlias;
-
-        window.addthis_config.ui_email_title = this.shareTitle;
-        window.addthis_config.ui_email_note = this.shareText + alias;
-        window.addthis_share = {
-          url: this.shareLink,
-          title: this.shareTitle,
-          description: `${this.shareTitle}\n ${this.shareText}${alias}`,
-          passthrough: {
-            twitter: {
-              text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-            },
-            linkedin: {
-              title: this.shareTitle,
-              text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-              description: `${this.shareTitle}\n ${this.shareText}${alias}`,
-            },
-            facebook: {
-              title: this.shareTitle,
-              text: `${this.shareTitle}\n ${this.shareText}${alias}`,
-              description: `${this.shareTitle}\n ${this.shareText}${alias}`,
-            },
-          },
-        };
-      }
-    }
+    this.FB =  await this.socialSharing.authorizeFBSDK();
   }
 
   selectWallet(wallet: DisplayWallet) {
@@ -103,16 +60,27 @@ export class ShareBoxComponent implements OnInit {
   }
 
   closeWindow() {
-    if (window.addthis_config && window.addthis_share) {
-      // move created shareThis into right container
-      const newParent = document.getElementById('shareThis'),
-        oldParent = document.getElementById('pasteShareThis');
-
-      while (oldParent.childNodes.length > 0) {
-        newParent.appendChild(oldParent.childNodes[0]);
-      }
-    }
-
     this.store.dispatch(new SetShareDialogAction(false));
+  }
+
+  shareFacebook() {
+    let _this = this;
+    this.FB.ui({
+      method: 'share_open_graph',
+      action_type: 'og.shares',
+      action_properties: JSON.stringify({
+        object : {
+          'og:url': `${_this.shareLink}`,
+          'og:title': `${_this.shareTitle}`,
+          'og:site_name':'MeritLightWallet',
+          'og:description': `${_this.shareText} ${_this.shareLink}`,
+          'og:image': 'https://www.merit.me/uploads/2018/02/17/shareImage.png',
+          'og:image:width':'250',
+          'og:image:height':'257'
+        }
+      })
+    }, function(response){
+      console.debug(response);
+    });
   }
 }
