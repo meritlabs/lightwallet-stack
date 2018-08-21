@@ -184,6 +184,7 @@ export class MiningEffects {
   @Effect()
   onStop$: Observable<SetMiningStoppedAction> = this.actions$.pipe(
     ofType(MiningActions.StopMining),
+    tap(() => ElectronService.stopMining()),
     expand(() =>
       of(this._isStopping = ElectronService.isStopping())
         .pipe(

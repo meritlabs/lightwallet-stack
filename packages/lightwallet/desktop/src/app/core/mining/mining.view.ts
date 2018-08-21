@@ -226,7 +226,6 @@ export class MiningView {
     this.error = null;
     if (!this.isStopping()) {
       this.store.dispatch(new StopMiningAction());
-      ElectronService.stopMining();
     }
   }
 
