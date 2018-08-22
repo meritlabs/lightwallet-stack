@@ -18,7 +18,7 @@ import { Store } from '@ngrx/store';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
-import { WalletSettingsColors } from '@merit/common/const/wallet-colors'
+import { WalletSettingsColors } from '@merit/common/const/wallet-colors';
 import { take } from 'rxjs/operators';
 import 'rxjs/add/operator/toPromise';
 
@@ -41,37 +41,12 @@ export class CreateWalletView {
     hideBalance: false
   });
 
-  get parentAddress() {
-    return this.formData.get('parentAddress');
-  }
-
-  get alias() {
-    return this.formData.get('alias');
-  }
-
-  get recoveryPhrase() {
-    return this.formData.get('recoveryPhrase');
-  }
-
-  get password() {
-    return this.formData.get('password');
-  }
-
-  get repeatPassword() {
-    return this.formData.get('repeatPassword');
-  }
-
   selectedColor = {
     name: 'Merit blue',
     color: '#00B0DD'
   };
 
   availableColors: any = WalletSettingsColors;
-
-  selectColor(color: any) {
-    this.selectedColor = color;
-    this.formData.get('color').setValue(color.color);
-  }
 
   constructor(private formBuilder: FormBuilder,
               private walletService: WalletService,
@@ -173,5 +148,30 @@ export class CreateWalletView {
     } finally {
       this.loader.hide();
     }
+  }
+
+  selectColor(color: any) {
+    this.selectedColor = color;
+    this.formData.get('color').setValue(color.color);
+  }
+
+  get parentAddress() {
+    return this.formData.get('parentAddress');
+  }
+
+  get alias() {
+    return this.formData.get('alias');
+  }
+
+  get recoveryPhrase() {
+    return this.formData.get('recoveryPhrase');
+  }
+
+  get password() {
+    return this.formData.get('password');
+  }
+
+  get repeatPassword() {
+    return this.formData.get('repeatPassword');
   }
 }
