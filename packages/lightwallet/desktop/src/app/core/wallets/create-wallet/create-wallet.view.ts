@@ -144,13 +144,16 @@ export class CreateWalletView {
       console.log(displayWallet.client.getMnemonic());
       this.backUpWallet = true;
       this.createdWallet = displayWallet;
-      // return this.router.navigateByUrl(`/wallets/${displayWallet.client.id}`);
     } catch (err) {
       this.logger.error(err);
       // TODO: display error to user
     } finally {
       this.loader.hide();
     }
+  }
+
+  proceedToWallet() {   
+    this.router.navigateByUrl(`/wallets/${this.createdWallet.client.id}/settings`);
   }
 
   selectColor(color: any) {

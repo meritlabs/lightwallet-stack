@@ -14,11 +14,6 @@ export class BackupNewWallet {
   showPhrase: boolean = false;
   showNextBtn: boolean = false;
 
-  ngOnInit() {
-    console.log(this.wallet);
-    
-  }
-
   copyState() {
     this.copy = 'COPIED';
     setTimeout(() => {
