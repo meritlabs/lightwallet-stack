@@ -105,11 +105,11 @@ ellipse.cls-17
 .blink
   animation: blink .2s infinite
   animation-delay: 0s
-  animation-timing-function: ease-in
+  animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715)
 .blink-2
   animation: blink .1s infinite
   animation-delay: .5s
-  animation-timing-function: ease-out
+  animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1)
 .fly-1
   animation: fly-1 4s infinite
 .fly-3
@@ -122,26 +122,26 @@ ellipse.cls-17
   animation: planet-2 30s infinite
 @keyframes planet-1
   0%
-    transform: translate(20%, -20%)
+    transform: translate3d(20%, -20%, 0)
   100%
-    transform: translate(-90%, 58%)
+    transform: translate3d(-90%, 58%, 0)
 @keyframes planet-2
   0%
-    transform: translate(20%, -20%)
+    transform: translate3d(20%, -20%, 0)
     opacity: 1
   50%
     opacity: .7
   70%
     opacity: 0
   100%
-    transform: translate(-90%, 88%)
+    transform: translate3d(-90%, 88%, 0)
     opacity: 0
 
 @keyframes fly-1
   0%
-    transform: translate(-58%, 52%)
+    transform: translate3d(-58%, 52%, 0)
   100%
-    transform: translate(53%, -52%)
+    transform: translate3d(53%, -52%, 0)
 @keyframes blink
   0%
     opacity: 1

@@ -223,6 +223,7 @@ export class MiningView {
   }
 
   stopMining() {
+    debugger;
     this.error = null;
     if (!this.isStopping()) {
       this.store.dispatch(new StopMiningAction());
@@ -238,6 +239,7 @@ export class MiningView {
   }
 
   startMining() {
+    debugger;
     this.error = null;
     this.computeUtilization();
 

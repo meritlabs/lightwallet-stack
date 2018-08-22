@@ -16,8 +16,7 @@ import 'rxjs/add/operator/take'
 
 @Component({
   selector: 'view-file-backup',
-  templateUrl: './file-backup.view.html',
-  styleUrls: ['./file-backup.view.sass']
+  templateUrl: './file-backup.view.html'
 })
 export class FileBackupView {
 
