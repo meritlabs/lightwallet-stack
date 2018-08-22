@@ -12,12 +12,13 @@ import {
   UpdateMiningConnectionAction,
   UpdateMiningStatsAction
 } from '@merit/common/reducers/mining.reducer';
-import { delay, expand, map, switchMap, take, takeWhile, tap } from 'rxjs/operators';
+import { debounceTime, delay, expand, filter, map, switchMap, take, takeWhile, tap } from 'rxjs/operators';
 import { IRootAppState } from '@merit/common/reducers';
 import { ElectronService } from '../../desktop/src/services/electron.service';
 import { pick } from 'lodash';
 import { IGPUInfo } from '../../desktop/src/app/core/mining/gpu-info.model';
 import { of } from 'rxjs/observable/of';
+import { interval } from 'rxjs/observable/interval';
 
 const borderColors: string[] = ['#00b0dd', '#2eb483'];
 
@@ -190,20 +191,18 @@ export class MiningEffects {
   onStop$: Observable<SetMiningStoppedAction> = this.actions$.pipe(
     ofType(MiningActions.StopMining),
     tap(() => {
-      console.log('Stopping the miner');
-      ElectronService.stopMining()
+      ElectronService.stopMining();
+      this._isStopping = ElectronService.isStopping();
     }),
     switchMap(() =>
-      of(null)
-        .pipe(
-          expand(() =>
-            of(this._isStopping = ElectronService.isStopping())
-              .pipe(
-                delay(1000)
-              )
-          ),
-          takeWhile(() => this._isStopping)
-        )
+      this._isStopping ?
+        interval(500)
+          .pipe(
+            takeWhile(() => this._isStopping = ElectronService.isStopping()),
+            debounceTime(600),
+          )
+        :
+        of(null)
     ),
     map(() => new SetMiningStoppedAction())
   );
