@@ -47,6 +47,8 @@ export class CreateWalletView {
   };
 
   availableColors: any = WalletSettingsColors;
+  backUpWallet: boolean;
+  createdWallet;
 
   constructor(private formBuilder: FormBuilder,
               private walletService: WalletService,
@@ -140,8 +142,9 @@ export class CreateWalletView {
       const displayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, this.persistenceService2);
       this.store.dispatch(new AddWalletAction(displayWallet));    
       console.log(displayWallet.client.getMnemonic());
-      
-      return this.router.navigateByUrl(`/wallets/${displayWallet.client.id}`);
+      this.backUpWallet = true;
+      this.createdWallet = displayWallet;
+      // return this.router.navigateByUrl(`/wallets/${displayWallet.client.id}`);
     } catch (err) {
       this.logger.error(err);
       // TODO: display error to user
