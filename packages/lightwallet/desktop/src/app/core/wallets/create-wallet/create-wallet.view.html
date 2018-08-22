@@ -73,4 +73,4 @@
     </button>
   </form>
 </div>
-<backup-new-wallet *ngIf="backUpWallet" [wallet]="createdWallet"></backup-new-wallet>
+<backup-new-wallet *ngIf="backUpWallet" [wallet]="createdWallet" (dismiss)="proceedToWallet()"></backup-new-wallet>
