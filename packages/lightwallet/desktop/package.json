@@ -1,6 +1,6 @@
 {
   "name": "lightwallet-desktop",
-  "version": "1.9.2",
+  "version": "1.9.6",
   "main": "electron.main.js",
   "description": "Lightwallet implementation for desktops",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
