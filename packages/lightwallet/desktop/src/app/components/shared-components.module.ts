@@ -30,8 +30,8 @@ import { WalletIconComponent } from '@merit/desktop/app/components/wallet-icon/w
 import { ClipModule } from 'ng2-clip';
 import { WalletUnlockAlertComponent } from '@merit/desktop/app/components/wallet-unlock-alert/wallet-unlock-alert.component';
 import { MomentModule } from 'ngx-moment';
-import { ChartComponent } from '@merit/desktop/app/components/charts/chart.component';
 import { LineChartModule } from '@swimlane/ngx-charts';
+import { BaseGpuWidget } from '@merit/desktop/app/components/charts/base-gpu-widget.component';
 
 export function getComponents() {
   return [
@@ -54,7 +54,7 @@ export function getComponents() {
     WalletUnlockAlertComponent,
     SmsNotificationsPromptComponent,
     UpdateDialogComponent,
-    ChartComponent
+    BaseGpuWidget
   ];
 }
 

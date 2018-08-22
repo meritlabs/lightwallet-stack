@@ -9,7 +9,7 @@ import * as moment from 'moment';
   templateUrl: "./base-gpu-widget.component.html",
   styleUrls: ["./base-gpu-widget.component.sass"]
 })
-export abstract class BaseGpuWidget{
+export class BaseGpuWidget{
   // options
   gradient = false;
   showXAxis = true;

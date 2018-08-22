@@ -5,7 +5,6 @@ import { ElectronService } from '@merit/desktop/services/electron.service';
 import { Observable } from 'rxjs/Observable';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { Store } from '@ngrx/store';
-import { ChartComponent} from "@merit/desktop/app/components/charts/chart.component";
 import { WalletService } from '@merit/common/services/wallet.service';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { IRootAppState } from '@merit/common/reducers';
@@ -16,15 +15,18 @@ import { getLatestValue } from '@merit/common/utils/observables';
 import { map } from 'rxjs/operators';
 import {
   IMiningDataset,
-  selectCycleAndShareDatasets, selectGPUInfo,
+  selectCycleAndShareDatasets,
+  selectGPUInfo,
   selectGPUTempDatasets,
   selectGPUUtilDatasets,
   selectGraphDatasets,
   selectIsConnected,
   selectIsMining,
-  selectIsStopping, selectMiningDatasets,
+  selectIsStopping,
+  selectMiningDatasets,
   selectMiningStats,
-  StartMiningAction, StopMiningAction,
+  StartMiningAction,
+  StopMiningAction
 } from '@merit/common/reducers/mining.reducer';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 
