@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'backup-new-wallet',
@@ -7,5 +7,23 @@ import { Component } from '@angular/core';
 })
 
 export class BackupNewWallet {
+  @Input() wallet;
+  @Output() dismiss: EventEmitter<void> = new EventEmitter<void>();
 
+  copy: string = 'COPY';
+  showPhrase: boolean = false;
+  showNextBtn: boolean = false;
+
+  ngOnInit() {
+    console.log(this.wallet);
+    
+  }
+
+  copyState() {
+    this.copy = 'COPIED';
+    setTimeout(() => {
+      this.copy = 'COPY';
+    }, 1000);
+    this.showNextBtn=true;
+  }
 }
