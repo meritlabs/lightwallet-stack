@@ -141,7 +141,6 @@ export class CreateWalletView {
 
       const displayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, this.persistenceService2);
       this.store.dispatch(new AddWalletAction(displayWallet));    
-      console.log(displayWallet.client.getMnemonic());
       this.backUpWallet = true;
       this.createdWallet = displayWallet;
     } catch (err) {
