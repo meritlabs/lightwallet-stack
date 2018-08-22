@@ -66,14 +66,6 @@
             </span>
           </div>
         </div>
-        <div class="ui-input__group__tipbox" *ngIf="!inviteCode.valid" [class.active]="!inviteCode.valid">
-          Please enter the invite code you were given, which is usually the alias of the sender.
-          <hr>
-          <small>
-            <sup>*</sup>Allowed characters:
-            <strong>Numbers/letters only. No spaces.</strong>
-          </small>
-        </div>
       </div>
       <div class="ui-input__group" [ngClass]="{'ui-input__group--disabled': !inviteCode.valid}" *ngIf="inviteCode.valid">
         <label for="" class="ui-label">
@@ -114,6 +106,39 @@
           <br>
           <small>
             <sup>*</sup>Max length: 20 characters</small>
+        </div>
+      </div>
+      <div class="ui-input__group" *ngIf="alias.valid">
+        <label for="" class="ui-label">
+          Enter welcome message to your referrer
+          <span class="ui-tooltip">
+            <span class="ui-tooltip__text">
+              Welcome message will help your referrer to understand that you it`s you.
+            </span>
+          </span>
+        </label>
+        <textarea name="message" formControlName="message" class="ui-input--textarea ui-input" placeholder="Enter message here" cols="30"
+          rows="10"></textarea>
+        <div class="input-errors" [hidden]="!message.dirty || message.valid">
+          <div [hidden]="!message.hasError('maxlength')">
+            <span class="tooltip-error">
+              <span>Message should less than 100 characters.</span>
+            </span>
+          </div>
+          <div [hidden]="!message.hasError('minlength')">
+            <span class="tooltip-error">
+              <span>Message should be more than 10 characters.</span>
+            </span>
+          </div>
+        </div>
+        <div class="ui-input__group__tipbox" *ngIf="!message.valid" [class.active]="!message.valid">
+          Welcome message will help your referrer to understand that you it`s you.
+          <hr>
+          <small>
+            <sup>*</sup>Min length: 10 characters</small>
+          <br>
+          <small>
+            <sup>*</sup>Max length: 100 characters</small>
         </div>
       </div>
       <div class="unlock__form__group">

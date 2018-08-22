@@ -14,8 +14,9 @@ const Networks = require('../networks');
 const Address = require('../address');
 const PublicKey = require('../publickey');
 
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
 const INVITE_VERSION = 1;
+const MESSAGE_VERSION = 2;
 
 /**
 * @param {*} data - The encoded data in various formats
@@ -56,6 +57,7 @@ function Referral(data, network) {
     this.pubkey = null;
     this.signature = null;
     this.alias = '';
+    this.message = '';
 
     if (data) {
       if (data instanceof Referral) {
@@ -125,9 +127,14 @@ Referral.prototype.toBufferWriter = function(writer) {
     writer.writeVarintNum(signatureBuf.length);
     writer.write(signatureBuf);
 
-    if (this.version >= 1) {
+    if (this.version >= INVITE_VERSION) {
         writer.writeVarintNum(this.alias.length);
         writer.writeString(this.alias);
+    }
+
+    if(this.version >= MESSAGE_VERSION) {
+        writer.writeVarintNum(this.message.length);
+        writer.writeString(this.message);
     }
 
     return writer;
@@ -152,6 +159,10 @@ Referral.prototype.fromBufferReader = function(reader) {
         this.alias = reader.readVarLengthBuffer().toString();
     }
 
+    if(this.version >= MESSAGE_VERSION && !reader.eof){
+      this.message = reader.readVarLengthBuffer().toString();
+    }
+
     return this;
 };
 
@@ -164,7 +175,8 @@ Referral.prototype.toObject = Referral.prototype.toJSON = function toObject() {
         addressType: this.addressType,
         pubkey: this.pubkey.toString(),
         signature: this.signature.toString('hex'),
-        alias: this.alias
+        alias: this.alias,
+        message: this.message
     };
 
     return obj;
@@ -187,6 +199,7 @@ Referral.prototype.fromObject = function fromObject(arg) {
     this.pubkey = PublicKey.fromString(referral.pubkey, this.network.name);
     this.signature = BufferUtil.hexToBuffer(referral.signature);
     this.alias = referral.alias || '';
+    this.message = referral.message || '';
 
     return this;
 };

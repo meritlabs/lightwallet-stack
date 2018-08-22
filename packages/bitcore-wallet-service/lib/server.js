@@ -3436,6 +3436,7 @@ WalletService.prototype.getUnlockRequests = async function(opts, cb) {
       const referrals = _.map(referralObjs.reverse(), r => {
         let referral = Bitcore.Referral(r.raw, wallet.network);
         referral.timestamp = r.timestamp;
+        referral.message = r.message;
         return referral;
       });
 
@@ -3453,6 +3454,7 @@ WalletService.prototype.getUnlockRequests = async function(opts, cb) {
       return {
         rId: r.hash,
         alias: r.alias,
+        message: r.message,
         isConfirmed,
         address,
         parentAddress,
@@ -3467,6 +3469,7 @@ WalletService.prototype.getUnlockRequests = async function(opts, cb) {
       return {
         rId: r.hash,
         alias: r.alias,
+        message: r.message,
         isConfirmed: true,
         address,
         parentAddress,
