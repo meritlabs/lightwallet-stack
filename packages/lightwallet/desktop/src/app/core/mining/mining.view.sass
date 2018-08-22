@@ -149,10 +149,17 @@ input::-moz-focus-inner, input::-moz-focus-outer
         left: 14px
 
 .gpu-stats-container
-  display: flex
-  justify-content: space-between
   position: relative
+  display: block
+
+  &:after, &::after
+    content: ""
+    display: table
+    clear: both
 
   .gpu-chart
     position: relative
-    width: 100%
+    display: block
+    height: 400px
+    width: 50%
+    float: left

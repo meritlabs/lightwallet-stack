@@ -18,16 +18,13 @@ export type IMiningDatasets = {
 };
 
 export interface IMiningStat {
-  t: Date;
-  y: number | number[];
+  name: Date;
+  value: number | number[];
 }
 
 export interface IMiningDataset {
-  data: IMiningStat[],
-  label: string,
-  borderColor: string
-  borderWidth: number,
-  pointRadius: number
+  name: string;
+  series: IMiningStat[];
 }
 
 const DEFAULT_STATE: IMiningState = {

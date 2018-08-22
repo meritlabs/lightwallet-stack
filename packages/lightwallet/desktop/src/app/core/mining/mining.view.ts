@@ -5,6 +5,7 @@ import { ElectronService } from '@merit/desktop/services/electron.service';
 import { Observable } from 'rxjs/Observable';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { Store } from '@ngrx/store';
+import { ChartComponent} from "@merit/desktop/app/components/charts/chart.component";
 import { WalletService } from '@merit/common/services/wallet.service';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { IRootAppState } from '@merit/common/reducers';
@@ -41,13 +42,11 @@ export class MiningView {
   alias: string;
   workers: number = 1;
   threadsPerWorker: number = 1;
-  updateTimer: any;
   minCores: number = 0;
   maxCores: number = ElectronService.numberOfCores();
   minGPUs: number = 0;
   maxGPUs: number = ElectronService.numberOfGPUDevices();
   cores: number;
-  gpus: number;
   gpusInfo: IGPUInfo[];
   activeGpuDevices: number[];
   miningSettings: any;
@@ -60,11 +59,11 @@ export class MiningView {
   mining$: Observable<boolean> = this.store.select(selectIsMining);
   stopping$: Observable<boolean> = this.store.select(selectIsStopping);
 
-  // datasets$ = this.store.select(selectMiningDatasets);
-  // gpuTempDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGPUTempDatasets);
-  // gpuUtilDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGPUUtilDatasets);
-  // cycleAndShareDatasets$: Observable<IMiningDataset[]> = this.store.select(selectCycleAndShareDatasets);
-  // graphDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGraphDatasets);
+  datasets$ = this.store.select(selectMiningDatasets);
+  gpuTempDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGPUTempDatasets);
+  gpuUtilDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGPUUtilDatasets);
+  cycleAndShareDatasets$: Observable<IMiningDataset[]> = this.store.select(selectCycleAndShareDatasets);
+  graphDatasets$: Observable<IMiningDataset[]> = this.store.select(selectGraphDatasets);
 
   stats$: Observable<any> = this.store.select(selectMiningStats);
   gpuInfo$: Observable<IGPUInfo[]> = this.store.select(selectGPUInfo)
