@@ -204,7 +204,7 @@
           </div>
           <div class="global-settings__group__item__column global-settings__group__item__column--30">
             <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{ stats.total.attempts_per_second }}</label>
+                  global-settings__group__item__title--dark">{{ stats.total.attempts_per_second || 'Calculating...' }}</label>
           </div>
         </div>
         <div class="global-settings__group__item">
@@ -213,7 +213,7 @@
           </div>
           <div class="global-settings__group__item__column global-settings__group__item__column--30">
             <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{ stats.total.cycles_per_second }}</label>
+                  global-settings__group__item__title--dark">{{ stats.total.cycles_per_second || 'Calculating...' }}</label>
           </div>
         </div>
         <div class="global-settings__group__item">
@@ -222,7 +222,7 @@
           </div>
           <div class="global-settings__group__item__column global-settings__group__item__column--30">
             <label class="ui-label global-settings__group__item__title
-                  global-settings__group__item__title--dark">{{ stats.total.shares_per_second }}</label>
+                  global-settings__group__item__title--dark">{{ stats.total.shares_per_second || 'Calculating...' }}</label>
           </div>
         </div>
       </div>
