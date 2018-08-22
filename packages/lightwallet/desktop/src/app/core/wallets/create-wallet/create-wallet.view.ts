@@ -18,6 +18,7 @@ import { Store } from '@ngrx/store';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { WalletSettingsColors } from '@merit/common/const/wallet-colors';
 import { take } from 'rxjs/operators';
 import 'rxjs/add/operator/toPromise';
 
@@ -40,118 +41,14 @@ export class CreateWalletView {
     hideBalance: false
   });
 
-  get parentAddress() {
-    return this.formData.get('parentAddress');
-  }
-
-  get alias() {
-    return this.formData.get('alias');
-  }
-
-  get recoveryPhrase() {
-    return this.formData.get('recoveryPhrase');
-  }
-
-  get password() {
-    return this.formData.get('password');
-  }
-
-  get repeatPassword() {
-    return this.formData.get('repeatPassword');
-  }
-
   selectedColor = {
     name: 'Merit blue',
     color: '#00B0DD'
   };
 
-  availableColors: any = [
-    {
-      name: 'Sunglo',
-      color: '#E57373'
-    },
-    {
-      name: 'Carissma',
-      color: '#E985A7'
-    },
-    {
-      name: 'Light Wisteria',
-      color: '#ca85d6'
-    },
-    {
-      name: 'Lilac Bush',
-      color: '#A185D4'
-    },
-    {
-      name: 'Merit blue',
-      color: '#00B0DD'
-    },
-    {
-      name: 'Moody Blue',
-      color: '#7987d1'
-    },
-    {
-      name: 'Havelock Blue',
-      color: '#64aae3'
-    },
-    {
-      name: 'Picton Blue',
-      color: '#53b9e8'
-    },
-    {
-      name: 'Viking',
-      color: '#4ccdde'
-    },
-    {
-      name: 'Ocean Green',
-      color: '#48ae6c'
-    },
-    {
-      name: 'Puerto Rico',
-      color: '#44baad'
-    },
-    {
-      name: 'Wild Willow',
-      color: '#99c666'
-    },
-    {
-      name: 'Turmeric',
-      color: '#bcc84c'
-    },
-    {
-      name: 'Buttercup',
-      color: '#f5a623'
-    },
-    {
-      name: 'Supernova',
-      color: '#ffc30e'
-    },
-    {
-      name: 'Yellow Orange',
-      color: '#ffaf37'
-    },
-    {
-      name: 'Portage',
-      color: '#8997eb'
-    },
-    {
-      name: 'Gray',
-      color: '#808080'
-    },
-    {
-      name: 'Shuttle Gray',
-      color: '#5f6c82'
-    },
-    {
-      name: 'Tuna',
-      color: '#383d43'
-    }
-  ];
-
-  selectColor(color: any) {
-    this.selectedColor = color;
-    this.formData.get('color').setValue(color.color);
-  }
+  availableColors: any = WalletSettingsColors;
+  backUpWallet: boolean;
+  createdWallet;
 
   constructor(private formBuilder: FormBuilder,
               private walletService: WalletService,
@@ -243,13 +140,43 @@ export class CreateWalletView {
       }
 
       const displayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, this.persistenceService2);
-      this.store.dispatch(new AddWalletAction(displayWallet));
-      return this.router.navigateByUrl('/wallets');
+      this.store.dispatch(new AddWalletAction(displayWallet));    
+      this.backUpWallet = true;
+      this.createdWallet = displayWallet;
     } catch (err) {
       this.logger.error(err);
       // TODO: display error to user
     } finally {
       this.loader.hide();
     }
+  }
+
+  proceedToWallet() {   
+    this.router.navigateByUrl(`/wallets/${this.createdWallet.client.id}/settings`);
+  }
+
+  selectColor(color: any) {
+    this.selectedColor = color;
+    this.formData.get('color').setValue(color.color);
+  }
+
+  get parentAddress() {
+    return this.formData.get('parentAddress');
+  }
+
+  get alias() {
+    return this.formData.get('alias');
+  }
+
+  get recoveryPhrase() {
+    return this.formData.get('recoveryPhrase');
+  }
+
+  get password() {
+    return this.formData.get('password');
+  }
+
+  get repeatPassword() {
+    return this.formData.get('repeatPassword');
   }
 }
