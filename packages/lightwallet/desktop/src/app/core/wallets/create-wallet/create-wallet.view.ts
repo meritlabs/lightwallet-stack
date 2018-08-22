@@ -243,8 +243,10 @@ export class CreateWalletView {
       }
 
       const displayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, this.persistenceService2);
-      this.store.dispatch(new AddWalletAction(displayWallet));
-      return this.router.navigateByUrl('/wallets');
+      this.store.dispatch(new AddWalletAction(displayWallet));    
+      console.log(displayWallet.client.getMnemonic());
+      
+      return this.router.navigateByUrl(`/wallets/${displayWallet.client.id}`);
     } catch (err) {
       this.logger.error(err);
       // TODO: display error to user
