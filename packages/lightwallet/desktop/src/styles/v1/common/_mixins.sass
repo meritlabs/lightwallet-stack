@@ -36,8 +36,8 @@
   @if $height != null
     line-height: $height
 
-=transition($speed, $type)
-  transition: all $speed $type
+=transition($speed)
+  transition: all $speed cubic-bezier(.33,.5,.65,.5)
 
 =resetForAbsoluteCentering()
   top: 0

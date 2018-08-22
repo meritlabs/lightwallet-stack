@@ -132,12 +132,10 @@ export class MiningView {
 
       combineLatest(this.mining$, this.connected$)
         .subscribe(([mining, connected]) => {
-          if (mining) {
-            if (!connected) {
-              this.error = 'Disconnected from pool. Reconnecting...';
-            } else {
-              this.error = null;
-            }
+          if (mining && !connected) {
+            this.error = 'Disconnected from pool. Reconnecting...';
+          } else {
+            this.error = null;
           }
         });
     } catch (err) {
@@ -223,7 +221,6 @@ export class MiningView {
     this.error = null;
     if (!this.isStopping()) {
       this.store.dispatch(new StopMiningAction());
-      ElectronService.stopMining();
     }
   }
 

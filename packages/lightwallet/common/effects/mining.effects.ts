@@ -6,7 +6,9 @@ import {
   IMiningDataset,
   MiningActions,
   selectIsMining,
-  selectMiningDatasets, SetMiningStoppedAction, UpdateGPUInfoAction,
+  selectMiningDatasets,
+  SetMiningStoppedAction,
+  UpdateGPUInfoAction,
   UpdateMiningConnectionAction,
   UpdateMiningDatasetsAction,
   UpdateMiningStatsAction
@@ -19,7 +21,7 @@ import { IGPUInfo } from '../../desktop/src/app/core/mining/gpu-info.model';
 import { of } from 'rxjs/observable/of';
 
 const borderColors: string[] = ['#00b0dd', '#2eb483'];
-const baseDataset: IMiningDataset = { } as IMiningDataset;
+const baseDataset: IMiningDataset = {} as IMiningDataset;
 
 function updateGpuDatasets(gpuInfo: IGPUInfo[], gpuTemp: IMiningDataset[], gpuUtil: IMiningDataset[]) {
   if (!gpuTemp.length) {
@@ -27,19 +29,19 @@ function updateGpuDatasets(gpuInfo: IGPUInfo[], gpuTemp: IMiningDataset[], gpuUt
       gpuTemp.push({
         ...baseDataset,
         series: [],
-        name: data.title,
+        name: data.title
       });
 
       gpuUtil.push(
         {
           ...baseDataset,
           series: [],
-          name: data.title + ' cores',
+          name: data.title + ' cores'
         },
         {
           ...baseDataset,
           series: [],
-          name: data.title + ' memory',
+          name: data.title + ' memory'
         }
       );
     });
@@ -128,59 +130,72 @@ export class MiningEffects {
   @Effect({dispatch: false})
   onStart$: Observable<any> = this.actions$.pipe(
     ofType(MiningActions.StartMining),
-    expand(() =>
-      this.store$.select(selectMiningDatasets)
+    switchMap(() =>
+      of(null)
         .pipe(
-          take(1),
-          tap(({gpuTemp, gpuUtil, cyclesAndShares, graphs}) => {
-            const connected = ElectronService.isConnectedToPool();
-            this.store$.dispatch(new UpdateMiningConnectionAction(connected));
-
-            if (!connected) {
-              return;
-            }
-
-            const stats = ElectronService.getMiningStats();
-
-            const gpuInfo = ElectronService.GPUDevicesInfo()
-              .map(info => pick(info, 'id', 'title', 'total_memory', 'temperature', 'gpu_util',
-                'memory_util', 'fan_speed'));
-
-            updateGpuDatasets(gpuInfo, gpuTemp, gpuUtil);
-            updateMiningStats(stats, cyclesAndShares, graphs);
-
-            this.store$.dispatch(new UpdateMiningDatasetsAction({gpuTemp, gpuUtil, cyclesAndShares, graphs}));
-            this.store$.dispatch(new UpdateMiningStatsAction(stats));
-            this.store$.dispatch(new UpdateGPUInfoAction(gpuInfo))
-
-          }),
-          switchMap(() =>
-            this.store$.select(selectIsMining)
+          expand(() =>
+            this.store$.select(selectMiningDatasets)
               .pipe(
-                take(1)
+                take(1),
+                tap(({gpuTemp, gpuUtil, cyclesAndShares, graphs}) => {
+                  const connected = ElectronService.isConnectedToPool();
+                  this.store$.dispatch(new UpdateMiningConnectionAction(connected));
+
+                  if (!connected) {
+                    return;
+                  }
+
+                  const stats = ElectronService.getMiningStats();
+                  const gpuInfo = ElectronService.GPUDevicesInfo()
+                    .map(info => pick(info, 'id', 'title', 'total_memory', 'temperature', 'gpu_util',
+                      'memory_util', 'fan_speed'));
+
+                  updateGpuDatasets(gpuInfo, gpuTemp, gpuUtil);
+                  updateMiningStats(stats, cyclesAndShares, graphs);
+
+                  this.store$.dispatch(new UpdateMiningDatasetsAction({gpuTemp, gpuUtil, cyclesAndShares, graphs}));
+                  this.store$.dispatch(new UpdateMiningStatsAction(stats));
+                  this.store$.dispatch(new UpdateGPUInfoAction(gpuInfo))
+
+                }),
+                switchMap(() =>
+                  this.store$.select(selectIsMining)
+                    .pipe(
+                      take(1)
+                    )
+                ),
+                tap(isMining => {
+                  if (this._isMining = isMining) {
+                    this._isStopping = true;
+                  }
+                }),
+                delay(5000)
               )
           ),
-          tap(isMining => {
-            if (this._isMining = isMining) {
-              this._isStopping = true;
-            }
-          }),
-          delay(5000)
+          takeWhile(() => this._isMining)
         )
-    ),
-    takeWhile(() => this._isMining)
+    )
   );
 
   @Effect()
   onStop$: Observable<SetMiningStoppedAction> = this.actions$.pipe(
     ofType(MiningActions.StopMining),
-    expand(() =>
-      of(this._isStopping = ElectronService.isStopping())
+    tap(() => {
+      console.log('Stopping the miner');
+      ElectronService.stopMining()
+    }),
+    switchMap(() =>
+      of(null)
         .pipe(
-          delay(500)
+          expand(() =>
+            of(this._isStopping = ElectronService.isStopping())
+              .pipe(
+                delay(1000)
+              )
+          ),
+          takeWhile(() => this._isStopping)
         )
     ),
-    takeWhile(() => this._isStopping),
     map(() => new SetMiningStoppedAction())
   );
 

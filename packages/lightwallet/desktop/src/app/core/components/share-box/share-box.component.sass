@@ -44,9 +44,9 @@
       top: 15px
       left: 0
     &:before
-      transform: rotate(45deg)
+      transform: rotate3d(0,0,1,45deg)
     &:after
-      transform: rotate(-45deg)
+      transform: rotate3d(0,0,1,-45deg)
   .shareDescription
     +font(300, 14px, 18px)
     margin-bottom: 15px
@@ -63,3 +63,25 @@
       align-items: center
       .cation
         margin-right: 10px
+  .share
+    display: flex
+    align-items: center
+    padding-top: 20px
+    span
+      opacity: .8
+      cursor: pointer
+      padding: 5px 7px
+      border-radius: 3px
+      display: flex
+      align-items: center
+      margin-right: 15px
+      color: $white
+      background: $blue
+      line-height: 13px
+      merit-icon
+        background: $white
+        margin-left: 5px
+        width: 15px
+        height: 15px
+      &:hover
+        opacity: 1

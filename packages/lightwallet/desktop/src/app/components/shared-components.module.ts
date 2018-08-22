@@ -31,7 +31,7 @@ import { ClipModule } from 'ng2-clip';
 import { WalletUnlockAlertComponent } from '@merit/desktop/app/components/wallet-unlock-alert/wallet-unlock-alert.component';
 import { MomentModule } from 'ngx-moment';
 import { ChartComponent } from '@merit/desktop/app/components/charts/chart.component';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { LineChartModule } from '@swimlane/ngx-charts';
 
 export function getComponents() {
   return [
@@ -67,7 +67,7 @@ export function getComponents() {
     SmsNotificationsPromptComponent,
     UpdateDialogComponent
   ],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule, CommonDirectivesModule, MomentModule, NgxChartsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule, CommonDirectivesModule, MomentModule, LineChartModule],
   declarations: getComponents(),
   exports: getComponents()
 })

@@ -24,7 +24,6 @@ export abstract class BaseGpuWidget{
 
   @Input() title: string = "Chart";
   @Input() slug: string = "slug-example";
-  @Input() legend: boolean = false; // do show the legend or not?
 
   // chart dataset (The data format is multi series)
   protected _datasets: IMiningDataset[] = [];

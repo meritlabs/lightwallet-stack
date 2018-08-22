@@ -3,8 +3,8 @@
   <div>
     <div>
       <p class="shareDescription">When you bring an active new member into the Merit community, your
-        <strong>growth score</strong> will increase. There is a growth lottery every minute, and a higher score earns you a higher
-        chance to win.</p>
+        <strong>growth score</strong> will increase. There is a growth lottery every minute, and a higher score earns you
+        a higher chance to win.</p>
       <task-confirm [taskSlug]="taskSlug" [arrow]="'bottom'" [isDone]="goalIsDone"></task-confirm>
       <div class="walletSelection">
         <ng-container *ngIf="(wallets$ | async)?.length > 1; else singleWallet">
@@ -22,23 +22,17 @@
         </ng-template>
       </div>
     </div>
-    <ul class="shareToolsList">
-      <li>
-        <ng-container>
-          <span class="cation">
-            <strong>1.</strong>
-          </span>
-          <button class="ui-button ui-button--xs ui-button--blue" [clip]="shareLink" (click)="onCopy()">copy invite link</button>
-        </ng-container>
-      </li>
-      <li>
-        <span class="cation">
-          <strong>2.</strong>
-          Share the link to grow your community.
-        </span>
-        <span id="pasteShareThis" class="shareBox addthis_share"></span>
-      </li>
-    </ul>
+    <div class="shareToolsList">
+      <div class="cation">
+        Share the invite link to grow your community.
+      </div>
+      <div class="share">
+        <span (click)="shareFacebook()" *ngIf="!isElectron">share <merit-icon name="facebook"></merit-icon></span>
+        <span (click)="shareTweeter()">tweet <merit-icon name="tweeter"></merit-icon></span>
+        <span (click)="mailTo()">send <merit-icon name="mail"></merit-icon></span>
+        <span [clip]="shareLink" (click)="onCopy()">copy <merit-icon name="copy"></merit-icon></span>
+      </div>
+    </div>
   </div>
 </div>
 <div class="overlay" (click)="closeWindow()"></div>

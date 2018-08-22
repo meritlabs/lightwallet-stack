@@ -22,11 +22,11 @@ $range-label-width: 60px !default
   width: 100%
   max-width: 100%
 
-.range-slider 
+.range-slider
   margin: 0px 20px
   width: $range-width
 
-.range-slider-range 
+.range-slider-range
   -webkit-appearance: none
   width: calc(98% - #{$range-label-width} - 13px)
   height: $range-track-height
@@ -36,7 +36,7 @@ $range-label-width: 60px !default
   padding: 0
   margin: 0
 
-  &::-webkit-slider-thumb 
+  &::-webkit-slider-thumb
     appearance: none
     width: $range-handle-size
     height: $range-handle-size
@@ -45,14 +45,14 @@ $range-label-width: 60px !default
     cursor: pointer
     transition: background .15s ease-in-out
 
-    &:hover 
+    &:hover
       background: $range-handle-color-hover
 
-  &:active::-webkit-slider-thumb 
+  &:active::-webkit-slider-thumb
     background: $range-handle-color-hover
-  
 
-  &::-moz-range-thumb 
+
+  &::-moz-range-thumb
     width: $range-handle-size
     height: $range-handle-size
     border: 0
@@ -61,18 +61,18 @@ $range-label-width: 60px !default
     cursor: pointer
     transition: background .15s ease-in-out
 
-    &:hover 
+    &:hover
       background: $range-handle-color-hover
 
-  &:active::-moz-range-thumb 
+  &:active::-moz-range-thumb
     background: $range-handle-color-hover
-  
-  
-  &:focus 
-    &::-webkit-slider-thumb 
+
+
+  &:focus
+    &::-webkit-slider-thumb
       box-shadow: 0 0 0 3px $shade-0 0 0 0 6px $teal
-  
-.range-slider-value 
+
+.range-slider-value
   display: inline-block
   position: relative
   width: $range-label-width
@@ -84,7 +84,7 @@ $range-label-width: 60px !default
   padding: 5px 10px
   margin-left: 8px
 
-  &:after 
+  &:after
     position: absolute
     top: 8px
     left: -7px
@@ -94,14 +94,14 @@ $range-label-width: 60px !default
     border-right: 7px solid $range-label-color
     border-bottom: 7px solid transparent
     content: ''
-  
+
 
 // Firefox Overrides
-::-moz-range-track 
+::-moz-range-track
     background: $range-track-color
     border: 0
 
-input::-moz-focus-inner, input::-moz-focus-outer  
+input::-moz-focus-inner, input::-moz-focus-outer
   border: 0
 
 .gpu-devices__group
@@ -120,7 +120,7 @@ input::-moz-focus-inner, input::-moz-focus-outer
   border-radius: 500rem
   background: #e9edf2
   border: 1px solid #b7bcc8
-  +transition(.15s, ease-out)
+  +transition(.15s)
 
   &:hover
     cursor: pointer
@@ -136,7 +136,7 @@ input::-moz-focus-inner, input::-moz-focus-outer
     border: 1px solid #b7bcc8
     left: -1px
     top: -4px
-    +transition(.15s, ease-out)
+    +transition(.15s)
 
 .switcher-container
   position: relative

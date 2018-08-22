@@ -133,7 +133,8 @@ export function miningReducer(state: IMiningState = DEFAULT_STATE, action: Minin
     case MiningActions.SetMiningStopped:
       return {
         ...state,
-        stopping: false
+        stopping: false,
+        mining: false,
       };
 
     case MiningActions.UpdateGPUInfo:
