@@ -146,7 +146,9 @@ export class CoreView implements OnInit, AfterViewInit {
       if (!smsPromptSetting) {
         const smsNotificationStatus = await this.smsNotificationsService.getSmsSubscriptionStatus();
 
-        if (!smsNotificationStatus.enabled) {
+        if (smsNotificationStatus.enabled) return;
+
+        if(this.recordPassphrase && !smsNotificationStatus.enabled) {
           this.smsNotificationsPromptCtrl.create();
         }
       }
@@ -166,7 +168,8 @@ export class CoreView implements OnInit, AfterViewInit {
   }
 
   onGuideDismiss() {
-    return this.persistenceService2.setUserSettings(UserSettingsKey.recordPassphrase, (this.recordPassphrase = true));
+    this.persistenceService2.setUserSettings(UserSettingsKey.recordPassphrase, (this.recordPassphrase = true));
+    this.smsNotificationsPromptCtrl.create();
   }
 
   shareActivate() {

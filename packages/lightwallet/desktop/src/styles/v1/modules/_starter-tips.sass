@@ -34,10 +34,10 @@
     position: absolute
     border-left: 2px solid $dark-grey-blue
     border-top: 2px solid $dark-grey-blue
-    transform: rotate(-135deg)
+    transform: rotate3d(0,0,1, -135deg)
     top: 4px
     left: 14px
-    +transition(.15s, ease-in-out)
+    +transition(.15s)
   &:before
       content: ""
       width: 8px
@@ -46,10 +46,10 @@
       position: absolute
       border-left: 2px solid $dark-grey-blue
       border-top: 2px solid $dark-grey-blue
-      transform: rotate(45deg)
+      transform: rotate3d(0,0,1, 45deg)
       top: 15px
       left: 14px
-      +transition(.15s, ease-in-out)
+      +transition(.15s)
 .StarterTips
   &_items
     display: flex
@@ -160,9 +160,9 @@
       top: 0
       left: 0
     &:before
-      transform: rotate(45deg)
+      transform: rotate3d(0,0,1, 45deg)
     &:after
-      transform: rotate(-45deg)
+      transform: rotate3d(0,0,1, -45deg)
   .copy
     text-align: center
   .ui-wysiwyg

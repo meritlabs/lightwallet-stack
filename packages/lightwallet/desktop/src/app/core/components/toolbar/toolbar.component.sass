@@ -40,9 +40,9 @@
 
 @keyframes spin
   from
-    transform: rotate(0deg)
+    transform: rotate3d(0,0,1,0deg)
   to
-    transform: rotate(360deg)
+    transform: rotate3d(0,0,1,360deg)
 
 .box
   position: absolute
@@ -59,7 +59,7 @@
     position: relative
     &.refreshing
       img
-        animation: spin 1s infinite ease-in-out
+        animation: spin 1s infinite cubic-bezier(0.445, 0.05, 0.55, 0.95)
     img
       width: 15px
       height: 15px
@@ -77,8 +77,8 @@
       height: 2px
       margin-bottom: 4px
       background: $gun-metal
-      +transition(.3s, linear)
-      transform: translateY(0%)
+      +transition(.3s)
+      transform: translate3d(0, 0, 0)
       &:nth-child(2)
         background: transparent
         position: relative
@@ -91,7 +91,7 @@
           background: $gun-metal
           position: absolute
           top: 0
-          +transition(.3s, linear)
+          +transition(.3s)
   .title
     +font(300, 12px, 12px, $gun-metal, $transform: uppercase)
     position: relative
@@ -134,7 +134,7 @@
   padding: 0 40px
   box-shadow: 0 2px 2px rgba(46,53,59, .05), inset -2px 2px 2px rgba(46,53,59, .05)
   z-index: 98
-  +transition(.3s, linear)
+  +transition(.3s)
   display: flex
   flex-flow: row wrap
   &.active

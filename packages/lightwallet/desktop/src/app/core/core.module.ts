@@ -42,6 +42,7 @@ import { WalletSetupListView } from './wallet-setup/wallet-setup-list/wallet-set
 import { RecordPassphraseComponent } from './dialog/record-passphrase/record-passphrase.component';
 import { WelcomeToSetupTrackerComponent } from './dialog/welcome-to-setup-tracker/welcome-to-setup-tracker.component';
 import { InviteRequestItemComponent } from './invites/invite-request-item/invite-request-item.component';
+import { BackupNewWallet } from '@merit/desktop/app/core/dialog/backup-new-wallet/backup-new-wallet.component';
 
 export function getPages() {
   return [
@@ -71,6 +72,7 @@ export function getPages() {
     SendInviteView,
     WalletSetupView,
     WalletSetupListView,
+    BackupNewWallet
   ];
 }
 

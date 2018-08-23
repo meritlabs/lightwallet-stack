@@ -8,77 +8,77 @@
   animation: sending 1.5s infinite
   animation-delay: .5s
   animation-direction: reverse
-  animation-timing-function: ease-out
+  animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1)
   opacity: 0
 .perspective-2
   animation: sending 2.5s infinite
   animation-delay: .1s
 .rotate
   animation: rotate1 50s infinite
-  animation-timing-function: ease-out
+  animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1)
 .jump
   animation: jump 20s infinite
-  animation-timing-function: ease-out
+  animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1)
 .jump-1
   animation-direction: reverse
   animation: jump-1 20s infinite
-  animation-timing-function: ease-in
+  animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715)
 .floating
   animation: floating 5s infinite
-  animation-timing-function: ease-in
+  animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715)
 @keyframes floating
   0%
-    transform: translateY(0)
+    transform: translate3d(0, 0, 0)
   50%
-    transform: translateY(2%)
+    transform: translate3d(0, 2%, 0)
   100%
-    transform: translateY(0%)
+    transform: translate3d(0, 0%, 0)
 @keyframes jump
   0%
-    transform: translate(0)
+    transform: translate3d(0,0,0)
     z-index: 2
   25%
-    transform: translate(5%)
+    transform: translate3d(5%, 5% ,0)
   50%
-    transform: translate(10%)
+    transform: translate3d(10%, 10%, 0)
   75%
-    transform: translate(5%)
+    transform: translate3d(5%, 5%, 0)
   100%
-    transform: translate(0%)
+    transform: translate3d(0%, 0%, 0%)
 @keyframes jump-1
   0%
-    transform: translate(0)
+    transform: translate3d(0, 0, 0)
     z-index: 1
   25%
-    transform: translate(-5%)
+    transform: translate3d(-5%, -5%, 0)
   50%
-    transform: translate(-10%)
+    transform: translate3d(-10%, -10%, 0)
   75%
-    transform: translate(-5%)
+    transform: translate3d(-5%, -5%, 0)
   100%
-    transform: translate(0%)
+    transform: translate3d(0, 0, 0)
 @keyframes rotate1
   0%
-    transform: rotate(0deg)
+    transform: rotate3d(0,0,1, 0deg)
     opacity: 1
   70%
-    transform: rotate(90deg)
+    transform: rotate3d(0,0,1,90deg)
     opacity: 0
   75%
-    transform: rotate(290deg)
+    transform: rotate3d(0,0,1,290deg)
     opacity: 1
   100%
-    transform: rotate(360deg)
+    transform: rotate3d(0,0,1,360deg)
     opacity: 1
 @keyframes sending
   0%
-    transform: scale(1) translate(0%, 0%)
+    transform: scale3d(1,1,1) translate3d(0%, 0%, 0)
     opacity: 1
   30%
-    transform: scale(1) translate(16%, -13%)
+    transform: scale3d(1,1,1) translate3d(16%, -13%, 0)
     opacity: 0
   100%
-    transform: scale(1) translate(0%, 0%)
+    transform: scale3d(1,1,1) translate3d(0%, 0%, 0)
     opacity: 1
 .cls-1
   opacity: 0.25

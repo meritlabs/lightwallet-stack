@@ -8,7 +8,6 @@ import { EasyReceiveService } from '@merit/common/services/easy-receive.service'
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
 import { FeeService } from '@merit/common/services/fee.service';
-import { LanguageService } from '@merit/common/services/language.service';
 import { LedgerService } from '@merit/common/services/ledger.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MnemonicService } from '@merit/common/services/mnemonic.service';
@@ -26,6 +25,7 @@ import { VaultsService } from '@merit/common/services/vaults.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { GoalsService } from '@merit/common/services/goals.service';
 import { InviteRequestsService } from '@merit/common/services/invite-request.service';
+import { SocialSharing } from '@merit/common/services/social-sharing.service';
 
 @NgModule()
 export class CommonProvidersModule {
@@ -41,7 +41,6 @@ export class CommonProvidersModule {
         EmailNotificationsService,
         SendService,
         FeeService,
-        // LanguageService,
         LedgerService,
         LoggerService,
         MnemonicService,
@@ -59,7 +58,8 @@ export class CommonProvidersModule {
         WalletService,
         AlertService,
         GoalsService,
-        SmsNotificationsService
+        SmsNotificationsService,
+        SocialSharing
       ]
     };
   }

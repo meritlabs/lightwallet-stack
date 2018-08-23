@@ -11,7 +11,7 @@ import { MnemonicService } from '@merit/common/services/mnemonic.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { TxFormatService } from '@merit/common/services/tx-format.service';
-import { PersistenceService2 } from '@merit/common/services/persistence2.service';
+import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { DerivationPath } from '@merit/common/utils/derivation-path';
 import { MnemonicValidator } from '@merit/common/validators/mnemonic.validator';
@@ -99,6 +99,7 @@ export class PhraseImportView {
         }));
 
         this.loadingCtrl.hide();
+        this.persistenceService2.setUserSettings(UserSettingsKey.recordPassphrase, true);
 
         return this.router.navigateByUrl('/wallets');
       }
