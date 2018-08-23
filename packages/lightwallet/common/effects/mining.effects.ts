@@ -68,10 +68,12 @@ function updateGpuDatasets(gpuInfo: IGPUInfo[], gpuTemp: IMiningDataset[], gpuUt
   });
 
   // keep only most recent 100 in memory
-  const cutOff = gpuTemp[0].series.length - 100;
-  if (cutOff > 0) {
-    gpuTemp.forEach(ds => ds.series.splice(0, cutOff));
-    gpuUtil.forEach(ds => ds.series.splice(0, cutOff));
+  if(gpuTemp.length > 0) {
+    const cutOff = gpuTemp[0].series.length - 100;
+    if (cutOff > 0) {
+      gpuTemp.forEach(ds => ds.series.splice(0, cutOff));
+      gpuUtil.forEach(ds => ds.series.splice(0, cutOff));
+    }
   }
 }
 
