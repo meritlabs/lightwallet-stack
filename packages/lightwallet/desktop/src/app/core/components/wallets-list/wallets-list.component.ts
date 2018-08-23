@@ -9,19 +9,18 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 export class WalletsListComponent {
   @Input() wallets: DisplayWallet[];
   @Input() loading: boolean;
-  @Input() limit: number
+  @Input() limit: number;
 
   trackByFn(wallet: DisplayWallet) {
     return wallet.id;
   }
 
-  ngOnInit() {
-    console.log(this.limit);
-    console.log(this.wallets);
-    
-    
-    // if(this.limit > 0) {
-    //   this.wallets.length = this.limit;
-    // }
+  isShowMore() {  
+    if(this.limit > 1 && this.limit < this.wallets.length) {
+      return true;
+    }else {
+      this.limit = this.wallets.length;
+      return false;
+    }
   }
 }
