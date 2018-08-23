@@ -1,4 +1,4 @@
-<div class="wallets__group container--inner">
+<div class="wallets__group">
   <div class="wallets__group__header">
     <div class="wallets__group__header__title title--primary">
       <p>Wallets</p>
@@ -12,40 +12,46 @@
       </button>
     </div>
   </div>
-  <div class="wallets__group__content">
-    <loading-spinner [hidden]="!loading"></loading-spinner>
-    <div class="wallets__group__wallet" *ngFor="let wallet of wallets; trackBy: trackByFn" [routerLink]="['/wallets', wallet.id]">
-      <div class="wallets__group__wallet__info">
-        <div class="wallets__group__wallet__icon">
-          <wallet-icon [strokeColor]=wallet.color></wallet-icon>
-        </div>
-        <div class="wallets__group__wallet__details">
-          <div>
-            <div class="wallet-name">
-              <p class="large-black-text">{{ wallet.name }}</p>
-              <div class="locked" *ngIf="!wallet.confirmed">
-                <merit-icon name="unlock-lock"></merit-icon>
-              </div>
-            </div>
-            <p class="alias" *ngIf="wallet.alias">{{ '@' + wallet.alias }}</p>
-            <p class="regular-blue-text" *ngIf="!wallet.balanceHidden; else balanceHidden">{{ wallet.totalBalanceMicros | toMRT }}
-              <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})
-              </small>
-            </p>
-            <ng-template #balanceHidden>
-              <p class="regular-blue-text">
-                [Balance hidden]
-              </p>
-            </ng-template>
+  <div *ngIf="!loading">
+    <div class="wallets__group__content">
+      <div class="wallets__group__wallet" *ngFor="let wallet of wallets | slice:0:limit; trackBy: trackByFn" [routerLink]="['/wallets', wallet.id]">
+        <div class="wallets__group__wallet__info">
+          <div class="wallets__group__wallet__icon">
+            <wallet-icon [strokeColor]=wallet.color></wallet-icon>
           </div>
-          <div class="inline-right">
-            <div class="controls">
-              <p class="invites regular-blue-text">{{ wallet?.availableInvites || 0 }} Invites <span *ngIf="wallet.pendingInvites">(+{{wallet.pendingInvites}} pending)</span></p>
+          <div class="wallets__group__wallet__details">
+            <div>
+              <div class="wallet-name">
+                <p class="large-black-text">{{ wallet.name }}</p>
+                <div class="locked" *ngIf="!wallet.confirmed">
+                  <merit-icon name="unlock-lock"></merit-icon>
+                </div>
+              </div>
+              <p class="alias" *ngIf="wallet.alias">{{ '@' + wallet.alias }}</p>
+              <p class="regular-blue-text" *ngIf="!wallet.balanceHidden; else balanceHidden">{{ wallet.totalBalanceMicros
+                | toMRT }}
+                <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})
+                </small>
+              </p>
+              <ng-template #balanceHidden>
+                <p class="regular-blue-text">
+                  [Balance hidden]
+                </p>
+              </ng-template>
             </div>
-            <merit-icon name="right-arrow"></merit-icon>
+            <div class="inline-right">
+              <div class="controls">
+                <p class="invites regular-blue-text">{{ wallet?.availableInvites || 0 }} Invites <span *ngIf="wallet.pendingInvites">(+{{wallet.pendingInvites}}
+                    pending)
+                  </span></p>
+              </div>
+              <merit-icon name="right-arrow"></merit-icon>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <button class="ui-button ui-button--sm ui-button--blue" [routerLink]="['/wallets']" *ngIf="isShowMore()">SHOW ALL WALLETS</button>
   </div>
+  <loading-spinner [hidden]="!loading"></loading-spinner>
 </div>
