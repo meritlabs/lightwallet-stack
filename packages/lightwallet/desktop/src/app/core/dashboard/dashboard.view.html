@@ -13,8 +13,8 @@
           id="sendMrt">SEND</button>
       </div>
     </div>
-    <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async" [showButton]=false></wallets-list>
-    <vaults-list [showButton]=false></vaults-list>
+    <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async"></wallets-list>
+    <vaults-list></vaults-list>
   </div>
   <div class="widget latest-transactions">
     <h2 class="main-header">
