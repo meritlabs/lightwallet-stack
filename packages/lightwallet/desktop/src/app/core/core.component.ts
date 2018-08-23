@@ -145,7 +145,9 @@ export class CoreView implements OnInit, AfterViewInit {
 
     if (smsNotificationStatus.enabled) return;
 
-    this.smsNotificationsPromptCtrl.create();
+    if(this.recordPassphrase) {
+      this.smsNotificationsPromptCtrl.create();
+    }
   }
 
   ngAfterViewInit() {
@@ -159,7 +161,8 @@ export class CoreView implements OnInit, AfterViewInit {
   }
 
   onGuideDismiss() {   
-    return this.persistenceService2.setUserSettings(UserSettingsKey.recordPassphrase, (this.recordPassphrase = true));
+    this.persistenceService2.setUserSettings(UserSettingsKey.recordPassphrase, (this.recordPassphrase = true));
+    this.smsNotificationsPromptCtrl.create();
   }
 
   shareActivate() {
