@@ -158,7 +158,7 @@ export class CoreView implements OnInit, AfterViewInit {
     );
   }
 
-  onGuideDismiss() {
+  onGuideDismiss() {   
     return this.persistenceService2.setUserSettings(UserSettingsKey.recordPassphrase, (this.recordPassphrase = true));
   }
 
