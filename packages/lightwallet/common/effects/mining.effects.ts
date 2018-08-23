@@ -187,7 +187,7 @@ export class MiningEffects {
     }),
     switchMap(() =>
       this._isStopping ?
-        interval(500)
+        interval(100)
           .pipe(
             takeWhile(() => this._isStopping = ElectronService.isStopping()),
             debounceTime(600),
