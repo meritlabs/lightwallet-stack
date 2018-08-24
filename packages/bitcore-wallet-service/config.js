@@ -53,14 +53,6 @@ var config = {
       // url: ['http://a.b.c', 'https://test-insight.bitpay.com:443'],
     },
   },
-  pushNotificationsOpts: {
-    templatePath: './packages/bitcore-wallet-service/lib/templates', // this must be relative to bitcore-node runner
-    defaultLanguage: 'en',
-    defaultUnit: 'mrt',
-    subjectPrefix: '',
-    pushServerUrl: 'https://fcm.googleapis.com/fcm',
-    authorizationKey: process.env.FCM_AUTH_KEY,
-  },
   // fiatRateServiceOpts: {
   //   defaultProvider: 'BitPay',
   //   fetchInterval: 60, // in minutes
@@ -83,20 +75,6 @@ var config = {
   mailer: sgTransport({ auth: {
     api_key: '',
   }}),
-  emailOpts: {
-    subjectPrefix: '[Merit]',
-    from: 'support@merit.me',
-    defaultLanguage: 'en',
-    defaultUnit: 'mrt',
-    publicTxUrlTemplate: {
-      livenet: 'https://insight.bitpay.com/tx/{{txid}}',
-      testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
-    }
-  },
-  meritMessagingUrl: process.env.MERIT_MESSAGING_URL || 'http://localhost:8300',
-  smsOpts: {
-    enabled: process.env.SMS_ENABLED
-  },
   services: {
     messaging: process.env.MERIT_MESSAGING_URL || 'http://localhost:8300',
     inviteRequests: process.env.INVITE_REQUESTS_URL || 'http://localhost:8301',

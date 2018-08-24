@@ -21,22 +21,16 @@ var collections = {
   INVITES: 'invites',
   REFERRALS: 'referrals',
   ADDRESSES: 'addresses',
-  NOTIFICATIONS: 'notifications',
   COPAYERS_LOOKUP: 'copayers_lookup',
   PREFERENCES: 'preferences',
-  EMAIL_QUEUE: 'email_queue',
   CACHE: 'cache',
   FIAT_RATES: 'fiat_rates',
   TX_NOTES: 'tx_notes',
   SESSIONS: 'sessions',
-  PUSH_NOTIFICATION_SUBS: 'push_notification_subs',
   TX_CONFIRMATION_SUBS: 'tx_confirmation_subs',
   REFERRAL_TX_CONFIRMATION_SUBS: 'referral_confirmation_subs',
   VAULTS: 'vaults',
-  SMS_NOTIFICATION_SUBS: 'sms_notification_subs',
-  GLOBALSENDS: 'global_sends',
   KNOWN_MESSAGES: 'known_messages',
-  LEADERBOARD: 'leaderboard',
 };
 
 var Storage = function (opts) {
@@ -67,19 +61,12 @@ Storage.prototype._createIndexes = function () {
   this.db.collection(collections.REFERRALS).createIndex({
     codeHash: 1,
   });
-  this.db.collection(collections.NOTIFICATIONS).createIndex({
-    walletId: 1,
-    id: 1,
-  });
   this.db.collection(collections.ADDRESSES).createIndex({
     walletId: 1,
     createdOn: 1,
   });
   this.db.collection(collections.ADDRESSES).createIndex({
     address: 1,
-  });
-  this.db.collection(collections.EMAIL_QUEUE).createIndex({
-    notificationId: 1,
   });
   this.db.collection(collections.CACHE).createIndex({
     walletId: 1,
@@ -89,9 +76,6 @@ Storage.prototype._createIndexes = function () {
   this.db.collection(collections.TX_NOTES).createIndex({
     walletId: 1,
     txid: 1,
-  });
-  this.db.collection(collections.PUSH_NOTIFICATION_SUBS).createIndex({
-    copayerId: 1,
   });
   this.db.collection(collections.TX_CONFIRMATION_SUBS).createIndex({
     copayerId: 1,
@@ -108,9 +92,6 @@ Storage.prototype._createIndexes = function () {
   });
   this.db.collection(collections.VAULTS).createIndex({
     initialTxId: 1,
-  });
-  this.db.collection(collections.SMS_NOTIFICATION_SUBS).createIndex({
-    walletId: 1
   });
   this.db.collection(collections.KNOWN_MESSAGES).createIndex({
     type: 1,
@@ -507,106 +488,6 @@ Storage.prototype.storeReferral = function (referral, cb) {
   }, cb);
 };
 
-/**
- * Retrieves notifications after a specific id or from a given ts (whichever is more recent).
- *
- * @param {String} notificationId
- * @param {Number} minTs
- * @returns {Notification[]} Notifications
- */
-Storage.prototype.fetchNotifications = function (walletId, notificationId, minTs, cb) {
-  function makeId(timestamp) {
-    return _.padStart(timestamp, 14, '0') + _.repeat('0', 4);
-  };
-
-  var self = this;
-
-  var minId = makeId(minTs);
-  if (notificationId) {
-    minId = notificationId > minId ? notificationId : minId;
-  }
-
-  this.db.collection(collections.NOTIFICATIONS)
-    .find({
-      walletId: walletId,
-      id: {
-        $gt: minId,
-      },
-    }, {
-      readPreference: mongodb.ReadPreference.PRIMARY,
-    }).sort({
-      id: 1
-    }).toArray(function (err, result) {
-      if (err) return cb(err);
-      if (!result) return cb();
-      var notifications = _.map(result, function (notification) {
-        return Model.Notification.fromObj(notification);
-      });
-      return cb(null, notifications);
-    });
-};
-
-Storage.prototype.storeNotification = function (notification, cb) {
-  this.db.collection(collections.NOTIFICATIONS).insert(notification, {
-    w: "majority",
-  }, function (err, result) {
-    cb(err, result);
-  });
-};
-
-Storage.prototype.fetchNotification = function (notification, cb) {
-  this.db.collection(collections.NOTIFICATIONS).find({
-    id: notification.id,
-    walletId: notification.walletId,
-  }, {
-    readPreference: mongodb.ReadPreference.PRIMARY,
-  }).toArray(function (err, result) {
-    if (err) return cb(err);
-    if (!result || _.isEmpty(result)) return cb();
-    cb(null, result[0]);
-  });
-};
-
-Storage.prototype.fetchAndLockNotificationForPushes = function (notification, cb) {
-  notification.lockForPushNotifications();
-  this.db.collection(collections.NOTIFICATIONS).findOneAndUpdate({
-    id: notification.id,
-    walletId: notification.walletId,
-    lockedForPushNotifications: false,
-  }, notification, {
-    readPreference: mongodb.ReadPreference.PRIMARY,
-    w: "majority",
-    writeConcern: {
-      w: "majority",
-      wtimeout: 5000
-    },
-    new: true,
-    returnOriginal: false,
-  }, function (err, result) {
-    cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
-  });
-};
-
-Storage.prototype.fetchAndLockNotificationForEmails = function (notification, cb) {
-  notification.lockForEmailNotifications();
-  this.db.collection(collections.NOTIFICATIONS).findOneAndUpdate({
-    id: notification.id,
-    walletId: notification.walletId,
-    lockedForEmailNotifications: false,
-  }, notification, {
-    readPreference: mongodb.ReadPreference.PRIMARY,
-    w: "majority",
-    writeConcern: {
-      w: "majority",
-      wtimeout: 5000
-    },
-    new: true,
-    returnOriginal: false,
-  }, function (err, result) {
-    cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
-  });
-};
-
 // TODO: remove walletId from signature
 Storage.prototype.storeTx = function (walletId, txp, cb) {
   this.db.collection(collections.TXS).update({
@@ -768,36 +649,6 @@ Storage.prototype.storePreferences = function (preferences, cb) {
   }, cb);
 };
 
-Storage.prototype.storeEmail = function (email, cb) {
-  this.db.collection(collections.EMAIL_QUEUE).update({
-    id: email.id,
-  }, email, {
-    w: 1,
-    upsert: true,
-  }, cb);
-};
-
-Storage.prototype.fetchUnsentEmails = function (cb) {
-  this.db.collection(collections.EMAIL_QUEUE).find({
-    status: 'pending',
-  }).toArray(function (err, result) {
-    if (err) return cb(err);
-    if (!result || _.isEmpty(result)) return cb(null, []);
-    return cb(null, Model.Email.fromObj(result));
-  });
-};
-
-Storage.prototype.fetchEmailByNotification = function (notificationId, cb) {
-  this.db.collection(collections.EMAIL_QUEUE).findOne({
-    notificationId: notificationId,
-  }, function (err, result) {
-    if (err) return cb(err);
-    if (!result) return cb();
-
-    return cb(null, Model.Email.fromObj(result));
-  });
-};
-
 Storage.prototype.cleanActiveAddresses = function (walletId, cb) {
   var self = this;
 
@@ -841,58 +692,6 @@ Storage.prototype.storeActiveAddresses = function (walletId, addresses, cb) {
       upsert: true,
     }, next);
   }, cb);
-};
-
-Storage.prototype.getReferralsHistoryCache = function (walletId, from, to, cb) {
-  var self = this;
-  $.checkArgument(from >= 0);
-  $.checkArgument(from <= to);
-
-  self.db.collection(collections.CACHE).findOne({
-    walletId: walletId,
-    type: 'referralsCacheStatus',
-    key: null
-  }, function (err, result) {
-    if (err) return cb(err);
-    if (!result) return cb();
-    if (!result.isUpdated) return cb();
-
-    // Reverse indexes
-    var fwdIndex = result.totalItems - to;
-
-    if (fwdIndex < 0) {
-      fwdIndex = 0;
-    }
-
-    var end = result.totalItems - from;
-
-    // nothing to return
-    if (end <= 0) return cb(null, []);
-
-    // Cache is OK.
-    self.db.collection(collections.CACHE).find({
-      walletId: walletId,
-      type: 'referralsCache',
-      key: {
-        $gte: fwdIndex,
-        $lt: end
-      }
-    }).sort({
-      key: -1
-    }).toArray(function (err, result) {
-      if (err) return cb(err);
-
-      if (!result) return cb();
-
-      if (result.length < end - fwdIndex) {
-        // some items are not yet defined.
-        return cb();
-      }
-
-      var referals = _.map(result, 'referral');
-      return cb(null, referals);
-    });
-  });
 };
 
 // --------         ---------------------------  Total
@@ -1177,63 +976,6 @@ Storage.prototype.storeSession = function (session, cb) {
   }, cb);
 };
 
-Storage.prototype.fetchPushNotificationSubs = function (copayerId, cb) {
-  this.db.collection(collections.PUSH_NOTIFICATION_SUBS).find({
-    copayerId: copayerId,
-  }).toArray(function (err, result) {
-    if (err) return cb(err);
-
-    if (!result) return cb();
-
-    var tokens = _.map([].concat(result), function (r) {
-      return Model.PushNotificationSub.fromObj(r);
-    });
-    return cb(null, tokens);
-  });
-};
-
-Storage.prototype.storePushNotificationSub = function (pushNotificationSub, cb) {
-  this.db.collection(collections.PUSH_NOTIFICATION_SUBS).update({
-    copayerId: pushNotificationSub.copayerId,
-    token: pushNotificationSub.token,
-  }, pushNotificationSub, {
-    w: 1,
-    upsert: true,
-  }, cb);
-};
-
-Storage.prototype.removePushNotificationSub = function (copayerId, token, cb) {
-  this.db.collection(collections.PUSH_NOTIFICATION_SUBS).remove({
-    copayerId: copayerId,
-    token: token,
-  }, {
-    w: 1
-  }, cb);
-};
-
-Storage.prototype.storeSmsNotificationSub = function(sub, cb) {
-  this.db.collection(collections.SMS_NOTIFICATION_SUBS)
-    .update({ walletId: sub.walletId }, sub, {
-      w: 1,
-      upsert: true
-    }, cb);
-};
-
-Storage.prototype.fetchSmsNotificationSub = function(walletId, cb) {
-  this.db.collection(collections.SMS_NOTIFICATION_SUBS)
-    .findOne({ walletId }, (err, result) => {
-      if (err) return cb(err);
-      if (!result) return cb();
-
-      return cb(null, Model.SmsNotificationSub.fromObj(result));
-    });
-};
-
-Storage.prototype.removeSmsNotificationSub = function(walletId, cb) {
-  this.db.collection(collections.SMS_NOTIFICATION_SUBS)
-    .remove({ walletId }, { w: 1 }, cb);
-};
-
 Storage.prototype.fetchActiveTxConfirmationSubs = function (copayerId, cb) {
   var filter = {
     isActive: true
@@ -1409,39 +1151,6 @@ Storage.prototype.setVaultConfirmed = function (tx, txId, cb) {
   }, cb);
 };
 
-Storage.prototype.registerGlobalSend = function (walletAddress, scriptAddress, globalsend, cb) {
-  this.db.collection(collections.GLOBALSENDS).insertOne({
-    walletAddress,
-    scriptAddress,
-    globalsend
-  }, {
-    w: 1
-  }, cb);
-};
-
-Storage.prototype.cancelGlobalSend = function (walletAddress, scriptAddress, cb) {
-
-  this.db.collection(collections.GLOBALSENDS).findOneAndUpdate({
-    walletAddress,
-    scriptAddress
-  }, {
-    $set: {
-      cancelled: true
-    }
-  }, {
-    w: 1,
-    upsert: false
-  }, cb);
-};
-
-Storage.prototype.getGlobalSends = function (walletAddress, cb) {
-  this.db.collection(collections.GLOBALSENDS).find({
-    walletAddress
-  }).toArray(function (err, result) {
-    if (err) return cb(err);
-    return cb(null, result);
-  });
-};
 
 Storage.prototype.checkKnownMessages = function (data, cb) {
   this.db.collection(collections.KNOWN_MESSAGES).findOneAndUpdate(data, data, {
@@ -1457,16 +1166,6 @@ Storage.prototype.checkKnownMessages = function (data, cb) {
   }, function (err, result) {
     if (err) return cb(err);
     return cb(null, result && result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
-  });
-};
-
-Storage.prototype.getLeaderboard = function (limit, cb) {
-  this.db.collection(collections.LEADERBOARD).findOne({
-    limit: parseInt(limit),
-  }, function (err, result) {
-    if (err) return cb(err);
-    if (!result) return cb();
-    return cb(null, result);
   });
 };
 

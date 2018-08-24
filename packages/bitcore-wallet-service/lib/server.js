@@ -21,14 +21,11 @@ var Errors = require('./errors/errordefinitions');
 
 var Lock = require('./lock');
 var Storage = require('./storage');
-var MessageBroker = require('./messagebroker');
 var BlockchainExplorer = require('./blockchainexplorer');
 var FiatRateService = require('./fiatrateservice');
 var LocalDaemon = require('./blockchainexplorers/localdaemon');
 
 var request = require('request');
-
-var Notification = require('./model/notification');
 
 var Model = require('./model');
 var Wallet = Model.Wallet;
@@ -39,7 +36,6 @@ var lock;
 var storage;
 var blockchainExplorer;
 var blockchainExplorerOpts;
-var messageBroker;
 var fiatRateService;
 var serviceVersion;
 var localMeritDaemon;
@@ -56,7 +52,6 @@ function WalletService() {
   this.storage = storage;
   this.blockchainExplorer = blockchainExplorer;
   this.blockchainExplorerOpts = blockchainExplorerOpts;
-  this.messageBroker = messageBroker;
   this.fiatRateService = fiatRateService;
   this.notifyTicker = 0;
   this.localMeritDaemon = localMeritDaemon;
@@ -110,15 +105,6 @@ WalletService.initialize = function(opts, cb) {
     }
   }
 
-  function initMessageBroker(cb) {
-    messageBroker = opts.messageBroker || new MessageBroker(opts.messageBrokerOpts);
-    if (messageBroker) {
-      messageBroker.onMessage(WalletService.handleIncomingNotification);
-    }
-
-    return cb();
-  }
-
   function initFiatRateService(cb) {
     if (opts.fiatRateService) {
       fiatRateService = opts.fiatRateService;
@@ -139,9 +125,6 @@ WalletService.initialize = function(opts, cb) {
     [
       function(next) {
         initStorage(next);
-      },
-      function(next) {
-        initMessageBroker(next);
       },
       function(next) {
         initFiatRateService(next);
@@ -805,11 +788,11 @@ WalletService.prototype.getStatus = function(opts, cb) {
           status.pendingTxps = [];
           next();
           /**
-           * Depecrating geting pending Txps in the get status call since 
+           * Depecrating geting pending Txps in the get status call since
            * the pendingTxps are literally  not used by the LW code yet.
            * In any case, if any code needs pendingTxps, they can get it
            * via the api call. The getStatus needs to be fast.
-            
+
           self.getPendingTxs({}, function(err, pendingTxps) {
             if (err) return next(err);
             status.pendingTxps = pendingTxps;
@@ -877,65 +860,6 @@ WalletService.prototype._getSigningKey = function(text, signature, pubKeys) {
   return _.find(pubKeys, function(item) {
     return self._verifySignature(text, signature, item.key);
   });
-};
-
-/**
- * _notify
- *
- * @param {String} type
- * @param {Object} data
- * @param {Object} opts
- * @param {Boolean} opts.isGlobal - If true, the notification is not issued on behalf of any particular copayer (defaults to false)
- */
-WalletService.prototype._notify = function(type, data, opts, cb) {
-  if (_.isFunction(opts)) {
-    cb = opts;
-    opts = {};
-  }
-  opts = opts || {};
-
-  log.debug('Notification', type, data);
-
-  cb = cb || function() {};
-
-  const walletId = this.walletId || data.walletId;
-  const copayerId = this.copayerId || data.copayerId;
-
-  $.checkState(walletId);
-
-  const notification = Model.Notification.create({
-    type: type,
-    data: data,
-    ticker: this.notifyTicker++,
-    creatorId: opts.isGlobal ? null : copayerId,
-    walletId: walletId,
-  });
-
-  this.storage.storeNotification(notification, () => {
-    this.messageBroker.send(notification);
-    return cb();
-  });
-};
-
-WalletService.prototype._notifyTxProposalAction = function(type, txp, extraArgs, cb) {
-  var self = this;
-
-  if (_.isFunction(extraArgs)) {
-    cb = extraArgs;
-    extraArgs = {};
-  }
-
-  var data = _.assign(
-    {
-      txProposalId: txp.id,
-      creatorId: txp.creatorId,
-      amount: txp.getTotalAmount(),
-      message: txp.message,
-    },
-    extraArgs
-  );
-
-  self._notify(type, data, {}, cb);
 };
 
 WalletService.prototype._addCopayerToWallet = function(wallet, opts, cb) {
@@ -1171,12 +1095,6 @@ WalletService.prototype.savePreferences = function(opts, cb) {
   opts = opts || {};
 
   var preferences = [
-    {
-      name: 'email',
-      isValid: function(value) {
-        return EmailValidator.validate(value);
-      },
-    },
     {
       name: 'language',
       isValid: function(value) {
@@ -3279,42 +3197,6 @@ WalletService.prototype.getTxs = function(opts, cb) {
   });
 };
 
-/**
- * Retrieves notifications after a specific id or from a given ts (whichever is more recent).
- *
- * @param {Object} opts
- * @param {Object} opts.notificationId (optional)
- * @param {Object} opts.minTs (optional) - default 0.
- * @returns {Notification[]} Notifications
- */
-WalletService.prototype.getNotifications = function(opts, cb) {
-  var self = this;
-  opts = opts || {};
-
-  self.getWallet({}, function(err, wallet) {
-    if (err) return cb(err);
-
-    async.map(
-      [wallet.network, self.walletId],
-      function(walletId, next) {
-        self.storage.fetchNotifications(walletId, opts.notificationId, opts.minTs || 0, next);
-      },
-      function(err, res) {
-        if (err) return cb(err);
-
-        var notifications = _.sortBy(
-          _.map(_.flatten(res), function(n) {
-            n.walletId = self.walletId;
-            return n;
-          }),
-          'id'
-        );
-
-        return cb(null, notifications);
-      }
-    );
-  });
-};
 
 WalletService.prototype._normalizeTxHistory = function(txs) {
   var now = Math.floor(Date.now() / 1000);
@@ -3996,151 +3878,6 @@ WalletService.prototype.validateAddress = function(address, cb) {
 };
 
 /**
- * Subscribe this copayer to the Push Notifications service using the specified token.
- * @param {Object} opts
- * @param {string} opts.token - The token representing the app/device.
- * @param {string} [opts.packageName] - The restricted_package_name option associated with this token.
- * @param {string} [opts.platform] - The platform associated with this token.
- */
-WalletService.prototype.pushNotificationsSubscribe = function(opts, cb) {
-  if (!checkRequired(opts, ['token'], cb)) return;
-
-  var self = this;
-
-  var sub = Model.PushNotificationSub.create({
-    copayerId: self.copayerId,
-    token: opts.token,
-    packageName: opts.packageName,
-    platform: opts.platform,
-  });
-
-  self.storage.storePushNotificationSub(sub, cb);
-};
-
-/**
- * Unsubscribe this copayer to the Push Notifications service using the specified token.
- * @param {Object} opts
- * @param {string} opts.token - The token representing the app/device.
- */
-WalletService.prototype.pushNotificationsUnsubscribe = function(opts, cb) {
-  if (!checkRequired(opts, ['token'], cb)) return;
-
-  var self = this;
-
-  self.storage.removePushNotificationSub(self.copayerId, opts.token, cb);
-};
-
-// *** Backwards compatibility start *** //
-// These are the default settings for SMS subscriptions
-const DEFAULT_SMS_SUB_SETTINGS = {
-  IncomingTx: true,
-  IncomingInvite: true,
-  IncomingInviteRequest: true,
-  WalletUnlocked: true,
-  MiningReward: true,
-  GrowthReward: true,
-};
-// *** Backwards compatibility end *** //
-
-WalletService.prototype.smsNotificationsSubscribe = function(opts, cb) {
-  if (!opts.phoneNumber) return cb('Phone number was not provided');
-
-  // *** Backwards compatibility start *** //
-  // This will ensure that we have notification settings to store in the DB
-  // Old clients will not send any settings & we should subscribe them to all events by default
-  opts.settings = opts.settings || DEFAULT_SMS_SUB_SETTINGS;
-  // *** Backwards compatibility end *** //
-
-  this.storage.storeSmsNotificationSub(
-    {
-      walletId: this.walletId,
-      phoneNumber: opts.phoneNumber,
-      platform: opts.platform,
-      settings: opts.settings,
-    },
-    cb
-  );
-};
-
-WalletService.prototype.smsNotificationsUnsubscribe = function(cb) {
-  this.storage.removeSmsNotificationSub(this.walletId, cb);
-};
-
-WalletService.prototype.getSmsNotificationSubscription = function(cb) {
-  this.storage.fetchSmsNotificationSub(this.walletId, (err, result) => {
-    // *** Backwards compatibility start *** //
-    if (err) {
-      return cb(err, null);
-    }
-
-    if (!result) {
-      return cb(null, null);
-    }
-
-    // Older subscriptions will not have a settings property,
-    // We should attach the default settings to the document &
-    // send the updated doc to the client side
-    if (!result.settings) {
-      result.settings = DEFAULT_SMS_SUB_SETTINGS;
-    }
-
-    // Send obj back to client
-    cb(null, result);
-
-    // Update the doc behind the scenes
-    this.smsNotificationsSubscribe(result, err => {
-      if (err) {
-        console.log('Error upgrading SMS subscription');
-      } else {
-        console.log('Upgraded SMS subscription!');
-      }
-    });
-    // *** Backwards compatibility end *** //
-  });
-};
-
-/**
- * Subscribe this copayer to the specified tx to get a notification when the tx confirms.
- * @param {Object} opts
- * @param {string} opts.txid - The txid of the tx to be notified of.
- */
-WalletService.prototype.txConfirmationSubscribe = function(opts, cb) {
-  if (!checkRequired(opts, ['txid'], cb)) return;
-
-  var self = this;
-
-  var sub = Model.TxConfirmationSub.create({
-    copayerId: self.copayerId,
-    walletId: self.walletId,
-    txid: opts.txid,
-  });
-
-  self.storage.storeTxConfirmationSub(sub, cb);
-};
-
-/**
- * Unsubscribe this copayer to the Push Notifications service using the specified token.
- * @param {Object} opts
- * @param {string} opts.txid - The txid of the tx to be notified of.
- */
-WalletService.prototype.txConfirmationUnsubscribe = function(opts, cb) {
-  if (!checkRequired(opts, ['txid'], cb)) return;
-
-  var self = this;
-
-  self.storage.removeTxConfirmationSub(self.copayerId, opts.txid, cb);
-};
-
-WalletService.prototype.getReferral = function(refid, cb) {
-  const bc = this._getBlockchainExplorer();
-
-  bc.getReferral(refid, function(err, referral) {
-    if (err) return cb(err);
-
-    cb(null, referral);
-  });
-};
-/**
  * Validate that an EasyScript is on the blockchain, and that it can be unlocked.
  */
 WalletService.prototype.validateEasyScript = function(scriptId, cb) {
@@ -4505,74 +4242,6 @@ WalletService.prototype.updateVaultInfo = function(opts, cb) {
       });
     });
   });
-};
-
-WalletService.prototype.registerGlobalSend = async function(opts, cb) {
-  const address = await promisify(this.getRootAddress.bind(this))();
-  this.storage.registerGlobalSend(address.toString(), opts.scriptAddress, opts.globalsend, err => {
-    if (err) return cb(err);
-    cb(null);
-  });
-};
-
-WalletService.prototype.cancelGlobalSend = async function(opts, cb) {
-  const address = await promisify(this.getRootAddress.bind(this))();
-  this.storage.cancelGlobalSend(address.toString(), opts.scriptAddress, err => {
-    if (err) return cb(err);
-    cb(null);
-  });
-};
-
-WalletService.prototype.getGlobalSends = async function(opts, cb) {
-  const address = await promisify(this.getRootAddress.bind(this))();
-  this.storage.getGlobalSends(address.toString(), (err, links) => {
-    if (err) return cb(err);
-    return cb(null, links);
-  });
-};
-
-WalletService.prototype.getCommunityRank = async function(cb) {
-  const wallet = await promisify(this.getWallet.bind(this))({});
-  const addresses = await promisify(this.storage.fetchAddresses.bind(this.storage))(wallet.id);
-  if (!addresses || addresses.length === 0) return cb(null, []);
-  const addressStrs = _.map(addresses, 'address');
-
-  try {
-    const result = await localMeritDaemon.getCommunityRank(addressStrs);
-    return cb(null, result);
-  } catch (e) {
-    if (typeof e === 'object' && e.code) {
-      delete e.code;
-    }
-    return cb(e);
-  }
-};
-
-WalletService.prototype.getCommunityRanks = async function(addresses, cb) {
-  try {
-    const result = await localMeritDaemon.getCommunityRank(addresses);
-    return cb(null, result);
-  } catch (e) {
-    if (typeof e === 'object' && e.code) {
-      delete e.code;
-    }
-    return cb(e);
-  }
-};
-
-WalletService.prototype.getCommunityLeaderboard = async function(limit, cb) {
-  try {
-    limit = limit || 100;
-    //pull directly from mongodb. How the data in mongodb is updated is 
-    //outside of MWS. Likely a cron job that runs every once in a while.
-    const result = await promisify(this.storage.getLeaderboard.bind(this.storage))(limit);
-    return cb(null, result);
-  } catch (e) {
-    if (typeof e === 'object' && e.code) {
-      delete e.code;
-    }
-    return cb(e);
-  }
 };
 
 module.exports = WalletService;
