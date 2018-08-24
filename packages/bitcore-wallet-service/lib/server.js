@@ -141,15 +141,6 @@ WalletService.initialize = function(opts, cb) {
   );
 };
 
-WalletService.handleIncomingNotification = function(notification, cb) {
-  cb = cb || function() {};
-
-  if (!notification || notification.type != 'NewBlock') return cb();
-
-  WalletService._clearBlockchainHeightCache(notification.data.network);
-  return cb();
-};
-
 WalletService.shutDown = function(cb) {
   if (!initialized) return cb();
   storage.disconnect(function(err) {
@@ -2644,10 +2635,6 @@ WalletService.prototype.publishTx = function(opts, cb) {
             txp.status = 'pending';
             self.storage.storeTx(self.walletId, txp, function(err) {
               if (err) return cb(err);
-
-              self._notifyTxProposalAction('NewTxProposal', txp, function() {
-                return cb(null, txp);
-              });
             });
           });
         }
