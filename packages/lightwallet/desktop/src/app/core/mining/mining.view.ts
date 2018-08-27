@@ -102,7 +102,7 @@ export class MiningView {
         this.selectWallet(wallets[0], false);
       }
 
-      if (this.miningSettings.cores) {
+      if (this.miningSettings.cores || this.miningSettings.cores === 0) {
         this.cores = this.miningSettings.cores;
       } else {
         this.cores = Math.max(this.minCores, this.maxCores / 2);
