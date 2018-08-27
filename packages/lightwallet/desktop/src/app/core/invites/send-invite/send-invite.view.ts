@@ -111,6 +111,7 @@ export class SendInviteView {
             await wallet.deliverGlobalSend(easySend, {
               type: SendMethodType.Easy,
               destination: destinationType,
+              message: 'TEST!',
               value: destination
             });
 
