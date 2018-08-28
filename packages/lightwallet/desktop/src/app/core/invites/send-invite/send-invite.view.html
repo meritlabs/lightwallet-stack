@@ -63,7 +63,7 @@
           </div>
         </div>
       </div>
-      <div class="sendMerit__form__group">
+      <div class="sendMerit__form__group" *ngIf="isEmailGlobalSendDestination(destination)">
         <label for="message" class="ui-label">Message &nbsp;<small>(optional)</small></label>
         <div class="ui-input__wrapper">
           <textarea id="message" type="text" class="ui-input ui-input--form ui-input--text" formControlName="message" placeholder="Message to the recipient">
