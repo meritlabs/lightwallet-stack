@@ -163,6 +163,6 @@ export class SendInviteView {
   }
 
   isEmailGlobalSendDestination(control) {   
-    return control.valid && SendValidator.isEmail(control.value)  
+    return control.valid && SendValidator.isEmail(control.value);
   }
 }

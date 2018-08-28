@@ -64,6 +64,6 @@ export class SendValidator {
   }
 
   static isEmail(value) {   
-    return validateEmail(value)  
+    return validateEmail(value);  
   }
 }
