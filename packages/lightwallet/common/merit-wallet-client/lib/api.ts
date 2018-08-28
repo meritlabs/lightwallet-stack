@@ -2731,7 +2731,8 @@ export class API {
       globalSend: _.pick(globalSend, ['secret', 'senderPubKey', 'senderName', 'blockTimeout', 'parentAddress', 'inviteOnly']),
       type: {
         method: type.destination,
-        destination: type.value
+        destination: type.value,
+        message: type.message
       }
     });
   }

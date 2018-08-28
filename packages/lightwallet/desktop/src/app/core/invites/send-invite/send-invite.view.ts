@@ -47,6 +47,7 @@ export class SendInviteView {
     password: [''],
     wallet: [null],
     destination: ['', SendValidator.validateGlobalSendDestination],
+    message: [''],
     amount: [1, [Validators.required, SendValidator.validateAmount, InviteValidator.InviteQuantityValidator]],
   });
 
@@ -61,6 +62,7 @@ export class SendInviteView {
   get type() { return this.formData.get('type'); }
   get destination() { return this.formData.get('destination'); }
   get amount() { return this.formData.get('amount'); }
+  get message() { return this.formData.get('message'); }
 
   constructor(private store: Store<IRootAppState>,
               private formBuilder: FormBuilder,
@@ -98,7 +100,7 @@ export class SendInviteView {
     this.loader.show();
 
     try {
-      let { address, type, password, destination, amount } = this.formData.getRawValue();
+      let { address, type, password, destination, message, amount } = this.formData.getRawValue();
 
       if (type === SendMethodType.Easy) {
         const easySend = await this.walletService.sendMeritInvite(wallet, amount, password);
@@ -111,6 +113,7 @@ export class SendInviteView {
             await wallet.deliverGlobalSend(easySend, {
               type: SendMethodType.Easy,
               destination: destinationType,
+              message: message,
               value: destination
             });
 
@@ -157,5 +160,9 @@ export class SendInviteView {
 
   onGlobalSendCopy() {
     this.toastCtrl.success('Copied to clipboard');
+  }
+
+  isEmailGlobalSendDestination(control) {   
+    return control.valid && SendValidator.isEmail(control.value);
   }
 }
