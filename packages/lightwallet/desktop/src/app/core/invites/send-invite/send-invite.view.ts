@@ -161,4 +161,12 @@ export class SendInviteView {
   onGlobalSendCopy() {
     this.toastCtrl.success('Copied to clipboard');
   }
+
+  isEmailGlobalSendDestination(control) {   
+    if(control.valid && SendValidator.isEmail(control.value)) {
+      return true
+    }else {
+      return false
+    }    
+  }
 }
