@@ -12,6 +12,7 @@ export enum SendMethodDestination {
 export interface ISendMethod {
   type: SendMethodType;
   destination: SendMethodDestination;
+  message?: string;
   value: string;
   alias?: string;
 }

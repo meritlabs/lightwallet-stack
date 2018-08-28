@@ -11,7 +11,8 @@
       Your MeritInvite Link is ready and was successfully delivered to your recipient!
     </ng-container>
     <ng-container *ngIf="easySendDelivered === false">
-      Your MeritInvite Link is ready, however, we were not able to deliver it to your recipient. You can copy the link and send it to them directly:
+      Your MeritInvite Link is ready, however, we were not able to deliver it to your recipient. You can copy the link and send
+      it to them directly:
     </ng-container>
     <div class="easysend-url-container" [clip]="easySendUrl" (click)="onGlobalSendCopy()">
       <small class="click_to_copy">Click to copy</small>
@@ -24,26 +25,24 @@
   <form [formGroup]="formData" (ngSubmit)="sendInvite(selectedWallet.client)">
     <div class="sendMerit__form__group">
       <label for="" class="ui-label">Send from</label>
-      <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async"
-                  cssClass="ui-input ui-input--select ui-input--form"></app-select>
-      {{ selectedWallet?.availableInvites || 0 }} invites available. {{ selectedWallet?.pendingInvites? '(' + selectedWallet.pendingInvites + ' pending)' : '' }}
+      <app-select (selectionEvent)="selectWallet($event)" [selected]="selectedWallet" [input]="wallets$ | async" cssClass="ui-input ui-input--select ui-input--form"></app-select>
+      {{ selectedWallet?.availableInvites || 0 }} invites available. {{ selectedWallet?.pendingInvites? '(' + selectedWallet.pendingInvites
+      + ' pending)' : '' }}
     </div>
 
     <send-method formControlName="type" [invite]="true"></send-method>
 
     <ng-container *ngIf="type.value === 'classic'; else easySend">
       <div class="ui-input__wrapper ui-input__wrapper">
-        <input type="text" name="" id="receiveAmount" placeholder="Enter recipient address or alias"
-               class="ui-input ui-input--form ui-input--text"
-               formControlName="address">
+        <input type="text" name="" id="receiveAmount" placeholder="Enter recipient address or alias" class="ui-input ui-input--form ui-input--text"
+          formControlName="address">
       </div>
       <div class="input-errors" [hidden]="!address.dirty || address.valid">
         <div [hidden]="!address.hasError('required')">Recipient address is required</div>
-        <div [hidden]="address.hasError('required') || !address.hasError('minlength')">Address must be at least 3
-          characters long
+        <div [hidden]="address.hasError('required') || !address.hasError('minlength')">Address must be at least 3 characters
+          long
         </div>
-        <div [hidden]="address.hasError('required') || !address.hasError('InvalidFormat')">Invalid address or alias
-          format
+        <div [hidden]="address.hasError('required') || !address.hasError('InvalidFormat')">Invalid address or alias format
         </div>
         <div [hidden]="address.hasError('required') || !address.hasError('AddressNotFound')">Address not found</div>
       </div>
@@ -56,12 +55,19 @@
         </div>
         <div class="input-errors" [hidden]="!destination.dirty || destination.valid">
           <div [hidden]="!destination.hasError('InvalidDestination')">
-                <span class="tooltip-error">
-                  <span>
-                    Invalid phone number or email
-                  </span>
-                </span>
+            <span class="tooltip-error">
+              <span>
+                Invalid phone number or email
+              </span>
+            </span>
           </div>
+        </div>
+      </div>
+      <div class="sendMerit__form__group" *ngIf="isEmailGlobalSendDestination(destination)">
+        <label for="message" class="ui-label">Message &nbsp;<small>(optional)</small></label>
+        <div class="ui-input__wrapper">
+          <textarea id="message" type="text" class="ui-input ui-input--form ui-input--text" formControlName="message" placeholder="Message to the recipient">
+          </textarea>
         </div>
       </div>
       <div class="sendMerit__form__group">
@@ -69,7 +75,7 @@
           <small>(optional)</small>
         </label>
         <input type="password" class="ui-input ui-input--form ui-input--text" formControlName="password" placeholder="Enter a password to protect your MeritInvite link"
-               *ngIf="selectedWallet?.availableInvites">
+          *ngIf="selectedWallet?.availableInvites">
         <div class="notification-info" *ngIf="selectedWallet?.availableInvites">
           <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
           <p>
@@ -92,24 +98,23 @@
     <div class="sendMerit__form__group">
       <label class="ui-label">Number of invites</label>
       <div class="ui-input__wrapper ui-input__wrapper--mrt">
-        <input type="number" formControlName="amount" placeholder="Enter the number of invites you would like to send"
-               class="ui-input ui-input--form ui-input--text">
+        <input type="number" formControlName="amount" placeholder="Enter the number of invites you would like to send" class="ui-input ui-input--form ui-input--text">
         <div class="ui-input__addon">INV</div>
       </div>
       <div class="input-errors" [hidden]="!amount.dirty || amount.valid">
         <div [hidden]="!amount.hasError('required')">
-              <span class="tooltip-error">
-                <span>
-                  Number of invites is required
-                </span>
-              </span>
+          <span class="tooltip-error">
+            <span>
+              Number of invites is required
+            </span>
+          </span>
         </div>
         <div [hidden]="amount.hasError('required') || !amount.hasError('InvalidAmount')">
-              <span class="tooltip-error">
-                <span>
-                  Invalid number of invites
-                </span>
-              </span>
+          <span class="tooltip-error">
+            <span>
+              Invalid number of invites
+            </span>
+          </span>
         </div>
         <div [hidden]="amount.hasError('required') || !amount.hasError('NotEnoughInvites')">
           <span class="tooltip-error">
@@ -121,8 +126,7 @@
       </div>
     </div>
 
-    <button class="ui-button ui-button--blue" type="submit" role="button"
-            [disabled]="formData.invalid || formData.pending || ((availableInvites$ | async) == 0)">SEND
+    <button class="ui-button ui-button--blue" type="submit" role="button" [disabled]="formData.invalid || formData.pending || ((availableInvites$ | async) == 0)">SEND
     </button>
   </form>
 </div>
