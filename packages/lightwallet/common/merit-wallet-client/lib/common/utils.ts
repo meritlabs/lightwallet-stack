@@ -207,7 +207,7 @@ export module Utils {
     }, 0);
 
     $.checkState(totalInputs - totalOutputs >= 0);
-    $.checkState(totalInputs - totalOutputs <= Defaults.MAX_TX_FEE);
+    $.checkState(totalInputs - totalOutputs <= adjustableMaxFee(totalOutputs));
 
     return t;
   };
