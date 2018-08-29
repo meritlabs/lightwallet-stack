@@ -6,6 +6,7 @@ Defaults.MIN_FEE_PER_KB = 0;
 Defaults.MAX_FEE_PER_KB = 1000000;
 Defaults.MIN_TX_FEE = 0;
 Defaults.MAX_TX_FEE = 0.1 * 1e8;
+Defaults.MAX_TX_FEE_PERCENT = 0.0001;
 Defaults.MAX_TX_SIZE_IN_KB = 6000;
 
 Defaults.MAX_KEYS = 100;
@@ -111,5 +112,9 @@ Defaults.RateLimit = {
   //   max: 1200 , // 1 post every 3 sec average, max.
   // },
 };
+
+Defaults.adjustableMaxFee = function(value) {
+  return value * Defaults.MAX_TX_FEE_PERCENT;
+}
 
 module.exports = Defaults;

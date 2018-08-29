@@ -192,7 +192,10 @@ TxProposal.prototype._buildTx = function() {
   var totalOutputs = _.sumBy(t.outputs, 'micros');
 
   $.checkState(totalInputs > 0 && totalOutputs > 0 && totalInputs >= totalOutputs);
-  $.checkState(totalInputs - totalOutputs <= Defaults.MAX_TX_FEE);
+  $.checkState(totalInputs - totalOutputs <= Defaults.adjustableMaxFee(totalOutputs));
+ 10000169160232
+ Max: 100000000
+Diff: 124018654
 
   return t;
 };
