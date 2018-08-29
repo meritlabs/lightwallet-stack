@@ -19,12 +19,21 @@ export class CoreModuleResolver implements Resolve<void> {
   // resolver here is a hack for lazy loaded CoreModule route
   // TODO: figure out if there is a better place to hook in in module initialization process
   async resolve() {
-    await this.appService.getInfo();
-    await this.ratesService.loadRates();
+    try {
+      await this.appService.getInfo();
+    } catch (err) {
+      console.log('Error loading app info', err);
+    }
+
+    try {
+      await this.ratesService.loadRates();
+    } catch (err) {
+      console.log('Error loading rates', err);
+    }
 
     this.store.select(selectAppState).pipe(
       filter((state: IAppState) => state.authorized),
-      tap((state: IAppState) => this.store.dispatch(new RefreshWalletsAction()))
+      tap(() => this.store.dispatch(new RefreshWalletsAction()))
     ).subscribe();
   }
 }
