@@ -1026,6 +1026,25 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
+  router.get('/v2/history', GetWallet, async (req, res) => {
+     try {
+       let { start, end } = req.query;
+       res.json(await req.wallet.getTxHistory2({ start, end }));
+     } catch (err) {
+       console.log("ERR IS ", err);
+       process.exit();
+       res.status(400).send(err);
+     }
+  });
+
+  router.get('/v2/history/mempool', GetWallet, async (req, res) => {
+    try {
+      res.json(await req.wallet.getMempoolHistory());
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  });
+
   this.app.use(opts.basePath || '/bws/api', router);
 
   // Pass bitcore node to th walletService to initialize it.

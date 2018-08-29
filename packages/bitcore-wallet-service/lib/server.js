@@ -41,6 +41,12 @@ var serviceVersion;
 var localMeritDaemon;
 var log;
 
+const getDataFromBCE = (path, qs) => request({
+  url: config.services.blockchainExplorer + path,
+  qs,
+  json: true,
+});
+
 /**
  * Creates an instance of the Bitcore Wallet Service.
  * @constructor
@@ -88,8 +94,6 @@ WalletService.initialize = function(opts, cb) {
   blockchainExplorer = opts.blockchainExplorer || blockchainExplorer || new BlockchainExplorer(blockchainExplorerOpts);
   localMeritDaemon = new LocalDaemon(opts.node);
   log = opts.node.log;
-
-  if (opts.request) request = opts.request;
 
   function initStorage(cb) {
     if (opts.storage) {
@@ -3395,7 +3399,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           index: item.index,
           // TODO: handle singleAddress and change addresses
           // isChange: address ? (address.isChange || wallet.singleAddress) : false,
-          isChange: address ? (address.isChange || wallet.singleAddress) && !isInvite : false,
+          isChange: address ? (address.isChange || wallet.singleAddress) : false,
           data: item.data,
         };
       });
@@ -3460,12 +3464,21 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       }
 
       if (opts.includeExtendedInfo) {
-        newTx.inputs = _.map(inputs, function(input) {
-          return _.pick(input, 'address', 'alias', 'amount', 'isMine', 'index');
-        });
-        newTx.outputs = _.map(outputs, function(output) {
-          return _.pick(output, 'address', 'alias', 'amount', 'isMine', 'index', 'data');
-        });
+        const myInput = inputs.find(input => input.isMine);
+
+        if (myInput) {
+          inputs = [myInput];
+          outputs = [outputs.find(output => !output.isMine && !output.isChange)];
+        } else {
+          inputs = [inputs[0]];
+          outputs = [outputs.find(output => output.isMine)];
+        }
+
+        console.log("Setting inputs and outputs", inputs.length, outputs.length);
+
+        newTx.inputs = inputs.map(input => _.pick(input, 'address', 'alias', 'amount', 'isMine', 'index'));
+
+        newTx.outputs = outputs.map(output => _.pick(output, 'address', 'alias', 'amount', 'isMine', 'index', 'data'));
       } else {
         // TODO: handle singleAddress and change addresses
         // outputs = _.filter(outputs, {
@@ -3702,6 +3715,39 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       );
     });
   });
+};
+
+WalletService.prototype.getTxHistory2 = async function(opts) {
+  opts = opts || {};
+  try {
+    const addresses = await promisify(this.storage.fetchAddresses.bind(this.storage))(this.walletId);
+    const histories = await Promise.all(
+      addresses.map(
+        ({address}) => getDataFromBCE('/history/' + address, { start: opts.start, end: opts.end })
+      )
+    );
+
+    return Array.prototype.concat.apply([], histories).sort((a, b) => b.timestamp - a.timestamp);
+  } catch (err) {
+    console.log("Unable to get wallet history --> ", err);
+    throw 'Unable to get wallet history';
+  }
+};
+
+WalletService.prototype.getMempoolHistory = async function() {
+  try {
+    const addresses = await promisify(this.storage.fetchAddresses.bind(this.storage))(this.walletId);
+    const histories = await Promise.all(
+      addresses.map(
+        ({address}) => getDataFromBCE('/mempool-history/' + address)
+      )
+    );
+
+    return Array.prototype.concat.apply([], histories).sort((a, b) => b.timestamp - a.timestamp);
+  } catch (err) {
+    console.log("Unable to get wallet history --> ", err);
+    throw 'Unable to get wallet history';
+  }
 };
 
 /**
