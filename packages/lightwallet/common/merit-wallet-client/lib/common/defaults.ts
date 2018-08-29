@@ -7,7 +7,8 @@ export module Defaults {
   export const MAX_TX_FEE_PERCENT = 0.00001;
 
   export const adjustableMaxFee = function(value: number): number {
-    return value * Defaults.MAX_TX_FEE_PERCENT;
+    const percents = value * Defaults.MAX_TX_FEE_PERCENT;
+    return percents > Defaults.MAX_TX_FEE ? percents : Defaults.MAX_TX_FEE;
   }
 
 };

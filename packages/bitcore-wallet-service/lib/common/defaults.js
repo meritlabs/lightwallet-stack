@@ -114,7 +114,8 @@ Defaults.RateLimit = {
 };
 
 Defaults.adjustableMaxFee = function(value) {
-  return value * Defaults.MAX_TX_FEE_PERCENT;
+  const percents = value * Defaults.MAX_TX_FEE_PERCENT;
+  return percents > Defaults.MAX_TX_FEE ? percents : Defaults.MAX_TX_FEE;
 }
 
 module.exports = Defaults;
