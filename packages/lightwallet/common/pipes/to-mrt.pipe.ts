@@ -1,15 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { RateService } from '@merit/common/services/rate.service';
+import { microsToMrt } from '@merit/common/utils/format';
 
 @Pipe({ name: 'toMRT' })
 export class ToMrtPipe implements PipeTransform {
-  constructor(private rateService: RateService) {}
-
   transform(micros: number, digitsLimit?: number, hideUnit?: boolean): string {
 
     const unitStr = (hideUnit? '' : ' MRT');
 
-    let mrt = this.rateService.microsToMrt(micros) || 0;
+    let mrt = microsToMrt(micros) || 0;
 
     if (!digitsLimit) return mrt+unitStr;
 
