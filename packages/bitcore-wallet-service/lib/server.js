@@ -25,7 +25,7 @@ var BlockchainExplorer = require('./blockchainexplorer');
 var FiatRateService = require('./fiatrateservice');
 var LocalDaemon = require('./blockchainexplorers/localdaemon');
 
-var request = require('request');
+var request = require('request-promise-native');
 
 var Model = require('./model');
 var Wallet = Model.Wallet;

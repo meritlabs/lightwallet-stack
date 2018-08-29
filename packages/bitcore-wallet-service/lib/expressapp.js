@@ -17,7 +17,7 @@ var Stats = require('./stats');
 
 var Bitcore = require('bitcore-lib');
 
-const request = require('request');
+const request = require('request-promise-native');
 
 log.debug = log.verbose;
 log.level = 'verbose';
@@ -210,7 +210,7 @@ ExpressApp.prototype.start = function(opts, cb) {
   function GatewayForward(url, method = 'GET') {
     const regex = /\/(:[a-zA-Z]+)[\/]?.*$/g;
 
-    return (req, res) => {
+    return async (req, res) => {
       let reqUrl = url;
       while (regex.test(reqUrl)) {
         reqUrl = reqUrl.replace(regex, a =>
@@ -218,20 +218,21 @@ ExpressApp.prototype.start = function(opts, cb) {
         );
       }
 
-      request({
-        url: reqUrl,
-        method,
-        headers: {
-          "x-wallet-id": req.walletId
-        },
-        json: req.body
-      }, (err, response) => {
-        if (!err && parseInt(response.statusCode) >= 200) {
-          res.status(response.statusCode).send(response.body || {});
-        } else {
-          res.status(400).send(err);
-        }
-      });
+      try {
+        const response = await request({
+          url: reqUrl,
+          method,
+          headers: {
+            "x-wallet-id": req.walletId
+          },
+          json: req.body,
+          resolveWithFullResponse: true
+        });
+
+        res.status(response.statusCode).send(response.body || {});
+      } catch (err) {
+        res.status(400).send(err);
+      }
     }
   }
 
@@ -347,29 +348,30 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   router.get('/v1/preferences/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
-      server.getPreferences({}, function(err, preferences) {
+      server.getPreferences({}, async function(err, preferences) {
         if (err) return returnError(err, res, req);
 
-        request({
-          url: opts.services.messaging + '/subscription/email',
-          headers: {'x-wallet-id': server.walletId}
-        }, (err, res2) => {
-          if (!err && res2) {
+        try {
+          const res2 = await request({
+            url: opts.services.messaging + '/subscription/email',
+            headers: {'x-wallet-id': server.walletId}
+          });
+
+          if (res2) {
             preferences.emailNotifications = {
               email: res2.email
             };
           }
+        } catch (err) {}
 
-          res.json(preferences);
-        });
-
+        res.json(preferences);
       });
     });
   });
 
   router.put('/v1/preferences', function(req, res) {
     getServerWithAuth(req, res, function(server) {
-      server.savePreferences(req.body, function(err, result) {
+      server.savePreferences(req.body, async function(err, result) {
         if (typeof req.body.email !== 'undefined') {
           request({
             url: opts.services.messaging + '/subscription/email',
@@ -959,18 +961,17 @@ ExpressApp.prototype.start = function(opts, cb) {
   router.get('/v1/globalsend/history', GetWallet, GatewayForward(opts.services.globalSend + '/globalsend'));
 
   // Deliver globalsend
-  router.post('/v1/globalsend', GetWallet, (req, res) => {
-    request({
-      method: 'POST',
-      uri: opts.meritMessagingUrl + '/notification/globalsend',
-      json: req.body
-    }, (err, response) => {
-      if (!err && parseInt(response.statusCode) === 200) {
-        res.status(200).send();
-      } else {
-        res.status(400).send();
-      }
-    });
+  router.post('/v1/globalsend', GetWallet, async (req, res) => {
+    try {
+      await request({
+        method: 'POST',
+        uri: opts.services.messaging + '/notification/globalsend',
+        json: req.body
+      });
+      res.status(200).send();
+    } catch (err) {
+      res.status(400).send();
+    }
   });
 
   router.get('/v1/rank-info/', GetWallet, GatewayForward(opts.services.communityInfo + '/info'));
