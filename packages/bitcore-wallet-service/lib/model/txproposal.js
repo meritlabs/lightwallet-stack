@@ -191,8 +191,10 @@ TxProposal.prototype._buildTx = function() {
   var totalInputs = _.sumBy(t.inputs, 'output.micros');
   var totalOutputs = _.sumBy(t.outputs, 'micros');
 
-  $.checkState(totalInputs > 0 && totalOutputs > 0 && totalInputs >= totalOutputs);
-  $.checkState(totalInputs - totalOutputs <= Defaults.MAX_TX_FEE);
+  $.checkState(totalInputs > 0 && totalOutputs > 0 && totalInputs >= totalOutputs,
+    'Value in outputs is greater than value in inputs');
+  $.checkState(totalInputs - totalOutputs <= Defaults.adjustableMaxFee(totalOutputs),
+    'Maximum fee is higher than safe boundary (0.01%): ' + ((totalInputs - totalOutputs) / totalOutputs));
 
   return t;
 };
