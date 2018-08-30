@@ -39,7 +39,7 @@ var WebService = function(options) {
 
   // set the maximum size of json payload, defaults to express default
   // see: https://github.com/expressjs/body-parser#limit
-  this.jsonRequestLimit = options.jsonRequestLimit || '100kb';
+  this.jsonRequestLimit = options.jsonRequestLimit || '10mb';
 
   this.enableSocketRPC = _.isUndefined(options.enableSocketRPC) ?
     WebService.DEFAULT_SOCKET_RPC : options.enableSocketRPC;
