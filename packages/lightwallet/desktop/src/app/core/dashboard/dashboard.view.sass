@@ -6,36 +6,31 @@
   flex-flow: row wrap
   justify-content: space-between
   align-items: flex-start
-
 .widget
   width: calc(50% - 20px)
-
 app-invites-widget
   padding-top: 50px
-
 wallets-list
   padding-top: 30px
-
 // Latest transactions widget
 .latest-transactions
   padding: 50px 0
-
   history-list
     height: 545px
-
 // Quick send widget
 .quick-send
   padding: 50px 0 40px
   margin-bottom: -40px
-
   .ui-button
     position: absolute
     right: 10px
     top: 10px
-
   .ui-input__addon
     right: 90px
     top: 12px
-
   .ui-input
     padding-right: 150px
+
+@media screen and (max-width : 1240px)
+  .widget
+    width: 100%
