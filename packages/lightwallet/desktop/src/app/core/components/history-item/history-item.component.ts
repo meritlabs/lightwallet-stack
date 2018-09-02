@@ -24,7 +24,7 @@ export class HistoryItemComponent implements OnInit {
 
   get isReward() {
     try {
-      return Boolean(this.tx.isCoinbase) && this.tx.outputs[0] && !isNaN(this.tx.outputs[0].index) && !this.tx.isInvite;
+      return Boolean(this.tx.isCoinbase) && this.tx.outputs[0] && !isNaN(this.tx.outputs[0].n) && !this.tx.isInvite;
     } catch (e) {
       return false;
     }
@@ -38,21 +38,31 @@ export class HistoryItemComponent implements OnInit {
   ngOnInit() {
     const { tx } = this;
 
-    this.isConfirmed = tx.isCoinbase ? tx.isMature : true;
-    this.isUnlockRequest = tx && tx.action === TransactionAction.UNLOCK;
-    this.isCredit = tx.isCoinbase || tx.action === TransactionAction.RECEIVED || tx.isPoolReward;
-    this.isInvite = tx.isInvite === true;
-    this.isMiningReward = this.isReward && tx.outputs[0].index === 0;
-    this.isEasySend = !this.isInvite && !this.isReward;
-    if (tx.isCoinbase && !tx.isMature) {
-      this.confirmationsExplanation = String(this.tx.confirmations) + ' block(s) confirmed from ' + COINBASE_CONFIRMATION_THRESHOLD;
-    }
+    this.isConfirmed = tx.isCoinbase ? tx.confirmations > 101 : true;
+    this.isUnlockRequest = tx.action === TransactionAction.UNLOCK;
+    this.isCredit = tx.type === 'credit';
 
-    if (tx.isGrowthReward) this.image = 'growth';
-    else if (tx.isMiningReward) this.image = 'mining';
-    else if (tx.isPoolReward) this.image = 'mining';
-    else if (tx.isInvite) this.image = 'invite';
-    else this.image = 'merit';
+    switch (tx.action) {
+      case TransactionAction.AMBASSADOR_REWARD:
+        this.image = 'growth';
+        tx.name = 'Growth Reward';
+        break;
+
+      case TransactionAction.INVITE:
+        this.image = 'invite';
+        tx.name = tx.isCoinbase? 'Mined invite' : tx.name;
+        break;
+
+      case TransactionAction.MINING_REWARD:
+        this.image = tx.isInvite? 'invite' : 'mining';
+        tx.name = tx.isInvite? 'Mined invite' : 'Mining reward';
+        break;
+
+      case TransactionAction.POOL_REWARD:
+        this.image = 'mining';
+        tx.name = 'Pool reward';
+        break;
+    }
   }
 
   showMeritMoneyLink() {
