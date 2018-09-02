@@ -2229,16 +2229,13 @@ export class API {
 
   /**
    * Broadcast raw transaction
-   *
-   * @param {Object} opts
-   * @param {String} opts.network
-   * @param {String} opts.rawTx
-   * @param {Callback} cb
-   * @return {Callback} cb - Return error or txid
    */
-  broadcastRawTx(opts?: any): Promise<any> {
+  broadcastRawTx(rawTx: string): Promise<any> {
     $.checkState(this.credentials);
-    opts = opts || {};
+    const opts = {
+      rawTx,
+      network: ENV.network,
+    };
 
     const url = '/v1/broadcast_raw/';
     return this._doPostRequest(url, opts);
