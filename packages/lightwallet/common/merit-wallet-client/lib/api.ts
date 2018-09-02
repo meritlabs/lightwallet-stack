@@ -607,8 +607,7 @@ export class API {
     try {
       return await this.openWallet();
     } catch (e) {
-
-      if (e.code != 'NOT_AUTHORIZED') {
+      if (e != MWCErrors.NOT_AUTHORIZED) {
         throw e;
       } else {
 
@@ -636,16 +635,21 @@ export class API {
           singleAddress: true, //daedalus wallets are single-addressed
         };
 
-        let res = await this._doPostRequest('/v1/recreate_wallet/', args);
+        try {
+          let res = await this._doPostRequest('/v1/recreate_wallet/', args);
 
-        if (res) {
-          let walletId = res.walletId;
-          let parentAddress = res.parentAddress;
-          this.credentials.addWalletInfo(walletId, defaultOpts.walletName, defaultOpts.m, defaultOpts.n, defaultOpts.copayerName, parentAddress);
+          if (res) {
+            let walletId = res.walletId;
+            let parentAddress = res.parentAddress;
+            this.credentials.addWalletInfo(walletId, defaultOpts.walletName, defaultOpts.m, defaultOpts.n, defaultOpts.copayerName, parentAddress);
 
-          return this.doJoinWallet(walletId, walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, defaultOpts.copayerName, {});
-        } else {
-          throw new Error('failed to recreate wallet');
+            return this.doJoinWallet(walletId, walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, defaultOpts.copayerName, {});
+          } else {
+            throw 'Failed to recreate wallet';
+          }
+        } catch (err) {
+          console.log('Failed to recreate wallet', err);
+          throw 'Failed to recreate wallet';
         }
       }
     }
@@ -664,7 +668,7 @@ export class API {
    * @param {String} opts.entropySourcePath - Only used if the wallet was created on a HW wallet, in which that private
    *   keys was not available for all the needed derivations
    */
-  importFromMnemonic(words: string, opts: any = {}): Promise<any> {
+  async importFromMnemonic(words: string, opts: any = {}): Promise<any> {
     this.log.debug('Importing from 12 Words');
 
     function derive(nonCompliantDerivation) {
@@ -678,13 +682,11 @@ export class API {
       this.credentials = derive(false);
     } catch (e) {
       this.log.error('Mnemonic error !:', e.Error);
-      return Promise.reject(MWCErrors.INVALID_BACKUP);
+      throw MWCErrors.INVALID_BACKUP;
     }
 
     return this._import().catch(err => {
-      if (err == MWCErrors.INVALID_BACKUP) return Promise.reject(err);
       if (err == MWCErrors.NOT_AUTHORIZED || err == MWCErrors.WALLET_DOES_NOT_EXIST) {
-
         let altCredentials = derive(true);
         if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return Promise.reject(err);
         this.credentials = altCredentials;
@@ -821,48 +823,46 @@ export class API {
   };
 
 
-  openWallet(): Promise<any> {
+  async openWallet(): Promise<any> {
     this.log.warn('Opening wallet');
-    return new Promise((resolve, reject) => {
+    $.checkState(this.credentials);
 
-      $.checkState(this.credentials);
-      if (this.credentials.isComplete() && this.credentials.hasWalletInfo()) {
-        this.log.warn('WALLET OPEN');
-        return resolve(true); // wallet is already open
+    if (this.credentials.isComplete() && this.credentials.hasWalletInfo()) {
+      this.log.warn('WALLET OPEN');
+      return true; // wallet is already open
+    }
+
+    try {
+      const ret = await this._doGetRequest('/v1/wallets/', { includeExtendedInfo: 1 });
+      const wallet = ret.wallet;
+      await this._processStatus(ret);
+
+      if (!this.credentials.hasWalletInfo()) {
+        const me: any = _.find(wallet.copayers, {
+          id: this.credentials.copayerId,
+        });
+        this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.parentAddress);
       }
 
-      return this._doGetRequest('/v1/wallets/', { includeExtendedInfo: 1 }).then((ret) => {
-        const wallet = ret.wallet;
+      if (wallet.status != 'complete')
+        return;
 
-        return this._processStatus(ret).then(() => {
+      if (this.credentials.walletPrivKey) {
+        if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
+          throw MWCErrors.SERVER_COMPROMISED;
+        }
+      } else {
+        // this should only happen in AIR-GAPPED flows
+        this.log.warn('Could not verify copayers key (missing wallet Private Key)');
+      }
 
-          if (!this.credentials.hasWalletInfo()) {
-            const me: any = _.find(wallet.copayers, {
-              id: this.credentials.copayerId,
-            });
-            this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.parentAddress);
-          }
+      this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
 
-          if (wallet.status != 'complete')
-            return resolve();
-
-          if (this.credentials.walletPrivKey) {
-            if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
-              return reject(MWCErrors.SERVER_COMPROMISED);
-            }
-          } else {
-            // this should only happen in AIR-GAPPED flows
-            this.log.warn('Could not verify copayers key (missing wallet Private Key)');
-          }
-
-          this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
-
-          return resolve(ret);
-        });
-      }).catch(err => {
-        return reject(err);
-      });
-    });
+      return ret;
+    } catch (err) {
+      console.log('Error opening wallet! ', err);
+      throw err;
+    }
   };
 
   _getHeaders(): Headers {
@@ -934,7 +934,7 @@ export class API {
     }
 
     if (!res.status) {
-      throw MWCErrors.CONNECTION_ERROR.text;
+      throw MWCErrors.CONNECTION_ERROR;
     }
 
     if (res.status >= 400) {
@@ -942,19 +942,24 @@ export class API {
 
       switch (res.status) {
         case 404:
-          throw MWCErrors.NOT_FOUND.text;
+          throw MWCErrors.NOT_FOUND;
 
         case 401:
           if (!secondRun) {
-            await this._doRequest('post', '/v1/login', null, null, false, true);
+            try {
+              await this._doRequest('post', '/v1/login', null, null, false, true);
+            } catch (err) {
+              console.log('Failed to login ', err);
+              throw MWCErrors.NOT_AUTHORIZED;
+            }
             return this._doRequest(method, url, qs, body, useSession, true);
           } else {
-            throw MWCErrors.AUTHENTICATION_ERROR.text;
+            throw MWCErrors.NOT_AUTHORIZED;
           }
 
         case 502:
         case 504:
-          throw MWCErrors.SERVER_UNAVAILABLE.text;
+          throw MWCErrors.SERVER_UNAVAILABLE;
 
         default:
           if (MWCErrors[res.status]) {
