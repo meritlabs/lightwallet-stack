@@ -226,7 +226,8 @@ ExpressApp.prototype.start = function(opts, cb) {
             "x-wallet-id": req.walletId
           },
           json: req.body,
-          resolveWithFullResponse: true
+          resolveWithFullResponse: true,
+          qs: req.query,
         });
 
         res.status(response.statusCode).send(response.body || {});
