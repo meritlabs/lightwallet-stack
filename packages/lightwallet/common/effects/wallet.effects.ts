@@ -6,13 +6,16 @@ import {
   DeleteWalletAction,
   DeleteWalletCompletedAction,
   IgnoreInviteRequestAction,
+  InitWalletsAction,
   IWalletTotals,
   RefreshOneWalletAction,
+  RefreshWalletsAction,
   selectInviteRequests,
   selectWalletById,
   selectWallets,
   UpdateInviteRequestsAction,
-  UpdateOneWalletAction, UpdateRankDataAction,
+  UpdateOneWalletAction,
+  UpdateRankDataAction,
   UpdateWalletsAction,
   UpdateWalletTotalsAction,
   WalletsActionType,
@@ -29,11 +32,29 @@ import { Store } from '@ngrx/store';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { distinctUntilChanged, map, mergeMap, skip, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  mergeMap,
+  skip,
+  switchMap,
+  take,
+  tap,
+  withLatestFrom,
+} from 'rxjs/operators';
 import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
 import { InviteRequest, InviteRequestsService } from '@merit/common/services/invite-request.service';
 import { IRankData, IRankInfo } from '@merit/common/models/rank';
+import { combineLatest } from 'rxjs/observable/combineLatest';
+import {
+  selectUtxos,
+  TransactionActionType, UpdateOneWalletTransactions,
+  UpdateTransactionsAction,
+} from '@merit/common/reducers/transactions.reducer';
+import { of } from 'rxjs/observable/of';
+import { defer } from 'rxjs/observable/defer';
 
 const REWARDS_PER_BLOCK: number = 5;
 
@@ -50,8 +71,15 @@ export class WalletEffects {
   @Effect()
   refresh$: Observable<UpdateWalletsAction> = this.actions$.pipe(
     ofType(WalletsActionType.Refresh),
-    switchMap(() => Observable.fromPromise(this.updateAllWallets())),
-    map((wallets: DisplayWallet[]) => new UpdateWalletsAction(wallets)),
+    withLatestFrom(this.store.select(selectWallets)),
+    switchMap(([action, wallets]) =>
+      Promise.all(
+        wallets.map(wallet =>
+          updateDisplayWallet(wallet, (action as RefreshWalletsAction).opts)
+        )
+      )
+    ),
+    map((wallets: DisplayWallet[]) => new UpdateWalletsAction(wallets))
   );
 
   @Effect()
@@ -80,7 +108,7 @@ export class WalletEffects {
     ofType(WalletsActionType.Update, WalletsActionType.UpdateOne, WalletsActionType.Add, WalletsActionType.DeleteWallet),
     withLatestFrom(this.store.select(selectWallets)),
     switchMap(([action, wallets]) =>
-      fromPromise(this.calculateRankData(wallets))
+      fromPromise(this.calculateRankData(wallets)),
     ),
     map(rankData => new UpdateRankDataAction(rankData)),
   );
@@ -90,12 +118,6 @@ export class WalletEffects {
     ofType(WalletsActionType.UpdateOne, WalletsActionType.Update, WalletsActionType.Add, WalletsActionType.DeleteWallet),
     withLatestFrom(this.store.select(selectWallets)),
     map(([action, wallets]) => wallets.reduce((requests, wallet) => requests.concat(wallet.inviteRequests), [])),
-    withLatestFrom(fromPromise(this.persistenceService.getHiddenUnlockRequestsAddresses())),
-    map(([inviteRequests, hiddenAddresses]) => {
-      const hiddenAddressesMap = {};
-      hiddenAddresses.forEach(address => hiddenAddressesMap[address] = true);
-      return inviteRequests.filter(request => !hiddenAddressesMap[request.address]);
-    }),
     map((inviteRequests: any[]) => new UpdateInviteRequestsAction(inviteRequests)),
   );
 
@@ -119,7 +141,7 @@ export class WalletEffects {
     switchMap((wallet: DisplayWallet) =>
       fromPromise(
         this.profileService.deleteWallet(wallet.client)
-          .then(() => this.profileService.isAuthorized()),
+          .then(() => this.profileService.isAuthorized())
       )
         .pipe(
           tap(this.onWalletDelete.bind(this)),
@@ -137,13 +159,49 @@ export class WalletEffects {
     switchMap((action: IgnoreInviteRequestAction) =>
       fromPromise(
         this.persistenceService.hideUnlockRequestAddress(action.address)
-          .then(() => action.address),
+          .then(() => action.address)
       ),
     ),
     withLatestFrom(this.store.select(selectInviteRequests)),
     map(([address, inviteRequests]) =>
       new UpdateInviteRequestsAction(inviteRequests.filter(req => req.address !== address)),
     ),
+  );
+
+
+  @Effect()
+  updateUtxos$: Observable<UpdateWalletsAction> = this.actions$.pipe(
+    ofType(TransactionActionType.Update),
+    withLatestFrom(this.store.select(selectWallets)),
+    filter(([action, wallets]) => wallets && wallets.length > 0),
+    map(([action, wallets]) => {
+      // wallets.forEach((wallet: DisplayWallet) => wallet.updateUtxos((action as UpdateTransactionsAction).utxosByWallet[wallet.id]));
+
+      return new UpdateWalletsAction(wallets);
+    })
+  );
+
+  @Effect()
+  updateOneWalletUtxos$: Observable<UpdateOneWalletAction> = this.actions$.pipe(
+    ofType(TransactionActionType.UpdateOne),
+    switchMap((action: UpdateOneWalletTransactions) =>
+      this.store.select(selectWalletById(action.walletId))
+        .pipe(
+          take(1),
+          map(wallet => {
+            wallet.updateUtxos(action.utxos);
+            return new UpdateOneWalletAction(wallet);
+          })
+        )
+    )
+  );
+
+  @Effect()
+  init$: Observable<InitWalletsAction> = defer(() =>
+    fromPromise(this.updateAllWallets())
+      .map(
+        (wallets: DisplayWallet[]) => new InitWalletsAction(wallets),
+      )
   );
 
   constructor(
@@ -219,12 +277,12 @@ export class WalletEffects {
       totals.totalNetworkValue += w.totalNetworkValueMicro;
       totals.totalMiningRewards += w.miningRewardsMicro;
       totals.totalGrowthRewards += w.growthRewardsMicro;
-      totals.invites += w.availableInvites;
+      totals.invites += w.balance.invites;
       totals.communitySize += w.rankInfo.communitySize;
 
       if (!w.balanceHidden) {
         allBalancesHidden = false;
-        totals.totalWalletsBalance += w.totalBalanceMicros;
+        totals.totalWalletsBalance += w.balance.amountMrt;
       }
     });
 
@@ -293,14 +351,14 @@ export class WalletEffects {
       const estimateMinutesPerReward = 1 / (rankData.totalProbability * REWARDS_PER_BLOCK);
 
       if (estimateMinutesPerReward < 120) {
-        rankData.estimateStr = `Every ${Math.ceil(estimateMinutesPerReward)}min`
+        rankData.estimateStr = `Every ${Math.ceil(estimateMinutesPerReward)}min`;
       } else if (estimateMinutesPerReward < 2880) {
-        rankData.estimateStr = `Every ${ Math.ceil(estimateMinutesPerReward/60)}hrs`
+        rankData.estimateStr = `Every ${ Math.ceil(estimateMinutesPerReward / 60)}hrs`;
       } else {
-        rankData.estimateStr = `Every ${ Math.ceil(estimateMinutesPerReward/1440)}days`
+        rankData.estimateStr = `Every ${ Math.ceil(estimateMinutesPerReward / 1440)}days`;
       }
     }
 
-    return rankData
+    return rankData;
   }
 }

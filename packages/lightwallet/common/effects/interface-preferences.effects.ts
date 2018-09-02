@@ -40,32 +40,12 @@ export class InterfacePreferencesEffects {
     );
 
   @Effect()
-  refreshPrimaryWallet: Observable<any> = this.actions$
-    .pipe(
-      ofType(InterfaceActionType.RefreshPrimaryWallet),
-      withLatestFrom(this.store.select(selectPrimaryWallet), this.store.select(selectWallets).pipe(filter(wallets => wallets.length > 0))),
-      map(([_, primaryWallet, wallets]) => {
-        if (!primaryWallet) {
-          const confirmedWallet: DisplayWallet = wallets.find(wallet => wallet.confirmed);
-
-          if (confirmedWallet) {
-            primaryWallet = confirmedWallet;
-          } else {
-            primaryWallet = wallets[0];
-          }
-        }
-
-        return new SetPrimaryWalletAction(primaryWallet);
-      })
-    );
-
-  @Effect()
   init$: Observable<any> = fromPromise(this.persistenceService.getUserSettings(UserSettingsKey.primaryWalletID))
     .pipe(
       switchMap((walletId: string) => {
         return this.store.select(selectWallets)
           .pipe(
-            filter(wallets => wallets.length > 0),
+            filter(wallets => wallets && wallets.length > 0),
             take(1),
             map((wallets: DisplayWallet[]) => {
               let wallet: DisplayWallet;
