@@ -44,6 +44,7 @@ const DEFAULT_STATE: IWalletsState = {
 };
 
 export enum WalletsActionType {
+  Init = '[Wallets] Init',
   Add = '[Wallets] Add',
   Update = '[Wallets] Update',
   UpdateOne = '[Wallets] Update one',
@@ -70,9 +71,14 @@ export class UpdateWalletsAction implements Action {
   totals: any;
   walletsMap: any = {};
 
-  constructor(public payload: DisplayWallet[]) {
-    payload.forEach(w => this.walletsMap[w.id] = w);
+  constructor(public wallets: DisplayWallet[]) {
+    wallets.forEach(w => this.walletsMap[w.id] = w);
   }
+}
+
+
+export class InitWalletsAction extends UpdateWalletsAction {
+  type = WalletsActionType.Init;
 }
 
 export class UpdateOneWalletAction implements Action {
@@ -83,6 +89,8 @@ export class UpdateOneWalletAction implements Action {
 
 export class RefreshWalletsAction implements Action {
   type = WalletsActionType.Refresh;
+
+  constructor(public init?: boolean, public opts: IDisplayWalletOptions = {}) {}
 }
 
 export class RefreshOneWalletAction implements Action {
@@ -160,12 +168,13 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
         loading: true
       };
 
+    case WalletsActionType.Init:
     case WalletsActionType.Update:
       return {
         ...state,
         loading: false,
-        wallets: action.payload,
-        walletsMap: action.walletsMap
+        wallets: [...action.wallets],
+        walletsMap: {...action.walletsMap}
       };
 
     case WalletsActionType.UpdateOne:
@@ -226,11 +235,12 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
 export const selectWalletsState = createFeatureSelector<IWalletsState>('wallets');
 export const selectWalletsLoading = createSelector(selectWalletsState, state => state.loading);
 export const selectWallets = createSelector(selectWalletsState, state => state.wallets);
-export const selectConfirmedWallets = createSelector(selectWallets, wallets => wallets.filter((w: DisplayWallet) => w.client.confirmed));
+export const selectConfirmedWallets = createSelector(selectWallets, wallets => wallets.filter((w: DisplayWallet) => w.confirmed));
+export const selectUnconfirmedWallets = createSelector(selectWallets, wallets => wallets.filter((w: DisplayWallet) => !w.confirmed));
 export const selectWalletTotals = createSelector(selectWalletsState, state => state.totals);
 export const selectWalletTotalsLoading = createSelector(selectWalletsState, state => state.totalsLoading);
 export const selectWalletById = (id: string) => createSelector(selectWalletsState, state => state.walletsMap[id]);
-export const selectWalletsWithInvites = createSelector(selectWallets, (wallets: DisplayWallet[]) => wallets.filter(wallet => wallet.availableInvites > 0));
+export const selectWalletsWithInvites = createSelector(selectWallets, (wallets: DisplayWallet[]) => wallets.filter(wallet => wallet.balance.spendableInvites > 0));
 export const selectInvites = createSelector(selectWalletTotals, totals => totals.invites);
 export const selectInviteRequests = createSelector(selectWalletsState, state => state.inviteRequests);
 export const selectNumberOfInviteRequests = createSelector(selectInviteRequests, inviteRequests => {

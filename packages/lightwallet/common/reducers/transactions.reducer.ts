@@ -1,9 +1,31 @@
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
-import { sortBy, uniqBy } from 'lodash';
+import { uniqBy } from 'lodash';
+import { WalletsAction, WalletsActionType } from '@merit/common/reducers/wallets.reducer';
+
+export interface IUTXO {
+  txid: string;
+  outputIndex: number;
+  amount?: number;
+  isInvite: number;
+  isPending?: boolean;
+  isCoinbase: number;
+  /**
+   * The script that must be resolved to release the funds
+   */
+  script?: string;
+  /**
+   * The address associated to the script.
+   */
+  address?: string;
+}
+export type TransactionsByWallet = {
+  [walletId: string]: IDisplayTransaction[];
+};
 
 export interface ITransactionsState {
   transactions: IDisplayTransaction[];
+  transactionsByWallet: TransactionsByWallet;
   loading: boolean;
 }
 
@@ -20,15 +42,13 @@ export class RefreshTransactionsAction implements Action {
 
 export class UpdateTransactionsAction implements Action {
   type = TransactionActionType.Update;
-  transactionsByWallet: any = {};
+  transactionsByWallet: { [walletId: string]: IDisplayTransaction[] } = {};
 
   constructor(public transactions: IDisplayTransaction[]) {
     let walletId: string;
 
-    this.transactions = sortBy(this.transactions, 'time').reverse();
-
     this.transactions.forEach((transaction: IDisplayTransaction) => {
-      walletId = transaction.wallet.id;
+      walletId = transaction.walletId;
 
       if (!this.transactionsByWallet[walletId])
         this.transactionsByWallet[walletId] = [];
@@ -41,7 +61,8 @@ export class UpdateTransactionsAction implements Action {
 export class UpdateOneWalletTransactions implements Action {
   type = TransactionActionType.UpdateOne;
 
-  constructor(public walletId: string, public transactions: IDisplayTransaction[]) { }
+  constructor(public walletId: string, public transactions: IDisplayTransaction[]) {
+  }
 }
 
 export class RefreshOneWalletTransactions implements Action {
@@ -59,27 +80,43 @@ export type TransactionsReducerAction =
 
 const DEFAULT_STATE: ITransactionsState = {
   transactions: [],
-  loading: true
+  loading: true,
+  transactionsByWallet: {},
 };
 
-export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, action: TransactionsReducerAction): ITransactionsState {
+export function transactionsReducer(state: ITransactionsState = DEFAULT_STATE, action: TransactionsReducerAction & WalletsAction): ITransactionsState {
   switch (action.type) {
     case TransactionActionType.Refresh:
       return {
         ...state,
-        loading: true
+        loading: true,
       };
 
     case TransactionActionType.Update:
       return {
         transactions: action.transactions,
-        loading: false
+        transactionsByWallet: action.transactionsByWallet,
+        loading: false,
       };
 
     case TransactionActionType.UpdateOne:
       return {
-        transactions: sortBy(uniqBy(action.transactions.concat(state.transactions), 'txid'), 'time').reverse(),
-        loading: false
+        transactions: uniqBy(action.transactions.concat(state.transactions), tx => tx.walletId + tx.txid),
+        transactionsByWallet: {
+          ...state.transactionsByWallet,
+          [action.walletId]: action.transactions,
+        },
+        loading: false,
+      };
+
+    case WalletsActionType.DeleteWallet:
+      return {
+        transactions: state.transactions.filter(tx => tx.walletId !== action.walletId),
+        transactionsByWallet: {
+          ...state.transactionsByWallet,
+          [action.walletId]: undefined,
+        },
+        loading: false,
       };
 
     default:
