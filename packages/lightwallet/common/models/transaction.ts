@@ -23,19 +23,24 @@ export enum UnlockRequestStatus {
 
 export interface ITransactionIO {
   amount: number;
+  amountMicros: number;
   address: string;
-  index: number;
+  n: number;
   alias: string;
-  isMine: boolean;
+  isChange: boolean;
   data?: string;
+  txid: string;
+  spentTxId?: string;
+  spentIndex?: number;
+  spentHeight?: number;
 }
 
 export interface ITransaction {
   txid: string;
-  name: string;
   action: TransactionAction;
   amount: number;
   amountStr: string;
+  amountMicros: number;
   alternativeAmountStr: string;
   status: UnlockRequestStatus;
   fees: number;
@@ -46,23 +51,22 @@ export interface ITransaction {
   lowFees: boolean;
   alias: string;
   parentAddress: string;
-  isCoinbase: boolean;
-  isInvite: boolean;
+  isCoinbase: number;
+  isInvite: number;
   isMature: boolean;
   isSpent: boolean;
+  height: number;
 }
 
 export interface IDisplayTransaction extends ITransaction {
   actionStr: string;
-  actions: any[];
   walletId: string;
-  isPendingEasySend: boolean;
+  name: string;
   addressFrom: string;
   addressTo: string;
   type: 'credit' | 'debit' | 'none' | 'meritmoney' | 'meritinvite';
   input: string;
   output: string;
-  safeConfirmed?: string;
   contact?: MeritContact;
   feeStr: string;
   to: { alias: string; address: string; };
@@ -83,6 +87,7 @@ export interface IDisplayTransaction extends ITransaction {
   cancelled?: boolean;
   isNew: boolean;
   isVault?: boolean;
+  isMempool?: boolean;
 }
 
 export interface IVisitedTransaction {
