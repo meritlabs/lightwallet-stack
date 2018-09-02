@@ -79,7 +79,6 @@ export class PollingNotificationsService {
         if (notification.walletId) {
           this.store.dispatch(new RefreshOneWalletAction(notification.walletId, {
             skipAlias: true,
-            skipShareCode: true
           }));
         }
       }
