@@ -3,7 +3,7 @@ import { Storage } from '@ionic/storage';
 import { EasySend } from '@merit/common/models/easy-send';
 import { INotification } from '@merit/common/reducers/notifications.reducer';
 import { isEmpty } from 'lodash';
-import { IVisitedTransaction } from '@merit/common/models/transaction';
+import { IDisplayTransaction, IVisitedTransaction } from '@merit/common/models/transaction';
 
 export enum StorageKey {
   WalletPreferencesPrefix = 'merit_wallet_preferences_',
@@ -13,6 +13,8 @@ export enum StorageKey {
   VisitedInvites = 'merit_visited_invites',
   ViewSettingsPrefix = 'app_view_settings_',
   LastIgnoredUpdate = 'last_ignored_update',
+  WalletHistory = 'wallet_history_',
+  PendingTransactions = 'pending_transactions_',
 }
 
 export enum UserSettingsKey {
@@ -43,7 +45,8 @@ const DEFAULT_NOTIFICATION_SETTINGS: INotificationSettings = {
  */
 @Injectable()
 export class PersistenceService2 {
-  constructor(private storage: Storage) { }
+  constructor(private storage: Storage) {
+  }
 
   /**
    * Use this method to set a generic value that doesn't require it's own function
@@ -123,5 +126,28 @@ export class PersistenceService2 {
 
   setVisitedInvites(invites: string[]) {
     return this.storage.set(StorageKey.VisitedInvites, invites);
+  }
+
+  setHistory(walletId: string, txs: IDisplayTransaction[]) {
+    return this.storage.set(StorageKey.WalletHistory + walletId, txs);
+  }
+
+  async getHistory(walletId: string): Promise<IDisplayTransaction[]> {
+    return (await this.storage.get(StorageKey.WalletHistory + walletId)) || [];
+  }
+
+  setPendingTransactions(walletId: string, txs: IDisplayTransaction[]) {
+    return this.storage.set(StorageKey.PendingTransactions + walletId, txs);
+  }
+
+  async getPendingTransactions(walletId: string): Promise<IDisplayTransaction[]> {
+    return (await this.storage.get(StorageKey.PendingTransactions + walletId)) || [];
+  }
+
+  async addPendingTransaction(walletId: string, tx: IDisplayTransaction) {
+    return this.setPendingTransactions(walletId, [
+      tx,
+      ...await this.getPendingTransactions(walletId),
+    ])
   }
 }
