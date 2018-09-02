@@ -4,7 +4,7 @@ import * as ora from 'ora';
 import * as shortid from 'shortid';
 import { couldBeAlias, isAlias } from '@merit/common/utils/addresses';
 import { DerivationPath } from '@merit/common/utils/derivation-path';
-import { ENV } from '@merit/common/environments/environment.example';
+import { ENV } from '@app/env';
 import { Address, HDPrivateKey, PrivateKey, Script } from 'bitcore-lib';
 import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
 
@@ -154,7 +154,7 @@ export class MeritSimulator {
       signPrivKey,
       address: easySendAddress,
       addressType: Address.PayToScriptHashType, // script address
-      network: ENV.network
+      network: this.opts.network
     };
 
     // easy send address is a mix of script_id pubkey_id
@@ -170,12 +170,12 @@ export class MeritSimulator {
   private bulidScript(wallet: MeritWalletClient, passphrase: string, timeout: number): EasySend {
     passphrase = passphrase || '';
     const pubKey = wallet.getRootAddressPubkey();
-    const rcvPair = PrivateKey.forNewEasySend(passphrase, ENV.network);
+    const rcvPair = PrivateKey.forNewEasySend(passphrase, this.opts.network);
     const pubKeys = [
       rcvPair.key.publicKey.toBuffer(),
       pubKey.toBuffer()
     ];
-    const script = Script.buildEasySendOut(pubKeys, timeout, ENV.network);
+    const script = Script.buildEasySendOut(pubKeys, timeout, this.opts.network);
 
     return {
       receiverPubKey: rcvPair.key.publicKey,
