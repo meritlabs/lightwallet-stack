@@ -676,22 +676,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.get('/v1/notifications/', function(req, res) {
-    getServerWithAuth(req, res, {
-      allowSession: true,
-    }, function(server) {
-      var timeSpan = req.query.timeSpan ? Math.min(+req.query.timeSpan || 0, Defaults.MAX_NOTIFICATIONS_TIMESPAN) : Defaults.NOTIFICATIONS_TIMESPAN;
-      var opts = {
-        minTs: +Date.now() - (timeSpan * 1000),
-        notificationId: req.query.notificationId,
-      };
-
-      server.getNotifications(opts, function(err, notifications) {
-        if (err) return returnError(err, res, req);
-        res.json(notifications);
-      });
-    });
-  });
+  router.get('/v1/notifications/', GetWallet, GatewayForward(opts.services.messaging + '/notifications'));
 
   router.get('/v1/txnotes/:txid', function(req, res) {
     getServerWithAuth(req, res, function(server) {
