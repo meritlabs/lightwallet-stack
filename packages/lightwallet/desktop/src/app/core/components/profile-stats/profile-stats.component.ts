@@ -21,7 +21,9 @@ export class ProfileStatsComponent {
   @Input()
   set wallets(val: DisplayWallet[]) {
     this._wallets = val;
-    this.updateRankData();
+    if (val && val.length) {
+      this.updateRankData();
+    }
   }
 
   get wallets(): DisplayWallet[] {
