@@ -1,10 +1,14 @@
 import { MeritClient } from './lib/index';
 import * as BwcError from './lib/errors';
+import { IUTXO } from '../reducers/transactions.reducer';
+import { DisplayWallet } from '../models/display-wallet';
 
 // Singleton to ensure that conserve and handle memory most effectively.
 export class MeritWalletClient extends MeritClient {
   private static _instance: MeritWalletClient;
   public errors;
+  utxos: IUTXO[] = [];
+  displayWallet: DisplayWallet;
 
   private constructor(opts:any = {}) {
     super(opts);
