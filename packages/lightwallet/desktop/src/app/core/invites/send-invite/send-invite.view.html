@@ -26,7 +26,7 @@
       <label for="" class="ui-label">Send from</label>
       <app-select (selectionEvent)="formCtrl.selectWallet($event)" [selected]="formCtrl.selectedWallet" [input]="formCtrl.wallets$ | async"
                   cssClass="ui-input ui-input--select ui-input--form"></app-select>
-      {{ formCtrl.selectedWallet?.availableInvites || 0 }} invites available. {{ formCtrl.selectedWallet?.pendingInvites? '(' + formCtrl.selectedWallet.pendingInvites + ' pending)' : '' }}
+      {{ formCtrl.selectedWallet?.balance.spendableInvites || 0 }} invites available. {{ formCtrl.selectedWallet?.balance.pendingInvites? '(' + formCtrl.selectedWallet.balance.pendingInvites + ' pending)' : '' }}
     </div>
 
     <send-method formControlName="type" [invite]="true"></send-method>
@@ -64,7 +64,7 @@
           </div>
         </div>
       </div>
-      <ng-container *ngIf="formCtrl.selectedWallet?.availableInvites">
+      <ng-container *ngIf="formCtrl.selectedWallet?.balance.spendableInvites">
         <div class="sendMerit__form__group">
           <label class="ui-label">Password &nbsp;
             <small>(optional)</small>

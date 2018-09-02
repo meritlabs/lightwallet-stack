@@ -11,7 +11,7 @@
           <div class="network__personal-wallet__toolbar">
             <div class="network__personal-wallet__toolbar__item
           network__personal-wallet__toolbar__item--mrt">
-              <p *ngIf="!wallet.balanceHidden">{{ wallet.totalBalanceMicros | toMRT:null:true }}
+              <p *ngIf="!wallet.balanceHidden">{{ wallet.balance.amountMrt | toMRT:null:true }}
                 <span>MRT</span>
               </p>
               <p *ngIf="wallet.balanceHidden">
@@ -20,7 +20,7 @@
             </div>
             <div class="network__personal-wallet__toolbar__item
           network__personal-wallet__toolbar__item--currency">
-              <p *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">{{ totalBalanceFiat }}</p>
+              <p *ngIf="wallet.balance.amountMrt | toFiat | async as totalBalanceFiat">{{ totalBalanceFiat }}</p>
             </div>
           </div>
           <div class="network__personal-wallet__panel__row invite-code" [clip]="wallet.shareCode">

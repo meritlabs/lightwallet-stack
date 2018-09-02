@@ -38,7 +38,7 @@
           <app-select (selectionEvent)="ctrl.selectWallet($event)" [selected]="wallet.value" [input]="ctrl.wallets$ | async"
                       cssClass="ui-input ui-input--select ui-input--form"></app-select>
           <label class="ui-label available-amount-label" *ngIf="ctrl.wallet.valid">
-            {{ wallet.value.balance.spendableAmount | toMRT }}, {{ wallet.value.availableInvites || 0 }} invites
+            {{ wallet.value.balance.amountMrt | toMRT }}, {{ wallet.value.balance.spendableInvites || 0 }} invites
             available
           </label>
         </div>
@@ -81,7 +81,7 @@
               </div>
             </div>
 
-            <ng-container *ngIf="wallet.value?.availableInvites">
+            <ng-container *ngIf="wallet.value?.balance.spendableInvites">
               <div class="sendMerit__form__group">
                 <label class="ui-label">Password &nbsp;
                   <small>(optional)</small>
@@ -97,12 +97,12 @@
               </div>
             </ng-container>
 
-            <div class="notification-info" [class.danger]="!wallet.value?.availableInvites">
+            <div class="notification-info" [class.danger]="!wallet.value?.balance.spendableInvites">
               <img src="/assets/v1/icons/ui/aside-navigation/info.svg" alt="">
-              <p *ngIf="wallet.value?.availableInvites">
+              <p *ngIf="wallet.value?.balance.spendableInvites">
                 You will see a link after confirming the transaction that you can share with your recipient.
               </p>
-              <p *ngIf="!wallet.value?.availableInvites">
+              <p *ngIf="!wallet.value?.balance.spendableInvites">
                 You don't have an available invite to use MeritMoney, please select another wallet or use ClassicSend.
               </p>
             </div>
@@ -110,7 +110,7 @@
           </ng-template>
         </ng-container>
         <div class="sendMerit__form__group"
-             [hidden]="!address.dirty && !address.valid && type.value === 'classic' || !wallet.value?.availableInvites && type.value !== 'classic'">
+             [hidden]="!address.dirty && !address.valid && type.value === 'classic' || !wallet.value?.balance.spendableInvites && type.value !== 'classic'">
           <div class="sendMerit__form__group__column sendMerit__form_group__column--70">
             <label for="feeIncluded" class="ui-label">Who pays fee?</label>
           </div>
