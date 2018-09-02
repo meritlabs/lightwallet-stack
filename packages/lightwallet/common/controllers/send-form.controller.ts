@@ -19,7 +19,7 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { isEqual, omit } from 'lodash';
+import { isEqual, omit, partition, orderBy } from 'lodash';
 import { of } from 'rxjs/observable/of';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { Subject } from 'rxjs/Subject';
@@ -33,6 +33,9 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
 import { RateService } from '@merit/common/services/rate.service';
+import { TxProposal } from '@merit/common/models/tx-proposal';
+import { Transaction, HDPrivateKey, HDPublicKey, crypto } from 'bitcore-lib';
+import { Utils } from '@merit/common/merit-wallet-client/lib/common/utils';
 
 export interface IReceipt {
   amount: number;
@@ -108,7 +111,7 @@ export class SendFormController {
   overMaximumAmount: boolean;
   success: boolean;
 
-  txData$: Observable<ISendTxData> = (this.formData.valueChanges as any).pipe(
+  txData$: Observable<any> = (this.formData.valueChanges as any).pipe(
     debounceTime(500),
     distinctUntilChanged((before: any, after: any) => {
       const b: any = omit(before, 'wallet');
@@ -142,7 +145,7 @@ export class SendFormController {
           .pipe(
             catchError((err: any) => {
               console.log(err);
-              this.error = err.message || 'Unknown error';
+              this.error = err.message || err || 'Unknown error';
               return of({} as ISendTxData);
             }),
           );
@@ -169,7 +172,7 @@ export class SendFormController {
         fromPromise(this.send(txData))
           .pipe(
             catchError(err => {
-              this.error = err.message;
+              this.error = err.message || err || 'Unknown error';
               return of(false);
             }),
           ),
@@ -196,7 +199,7 @@ export class SendFormController {
     .pipe(
       map(([txData, submitSuccess]) => {
         const { feeIncluded, wallet } = this.formData.value;
-        const { spendableAmount } = wallet ? wallet.balance : 0;
+        const spendableAmount = wallet ? wallet.balance.amountMrt : 0;
 
         if (!txData || this.success) {
           return {
@@ -321,13 +324,13 @@ export class SendFormController {
     ).toPromise();
 
     this.hasUnlockedWallet = wallets.length > 0;
-    this.hasAvailableInvites = wallets.some(w => w.availableInvites > 0);
+    this.hasAvailableInvites = wallets.some(w => w.balance.spendableInvites > 0);
 
     if (wallets && wallets[0]) {
       this.wallet.setValue(wallets[0], { emitEvent: false });
-      if (wallets[0].balance.spendableAmount <= 0) {
+      if (wallets[0].balance.amountMrt <= 0) {
         wallets.some((wallet) => {
-          if (wallet.balance.spendableAmount > 0) {
+          if (wallet.balance.amountMrt > 0) {
             this.wallet.setValue(wallet, { emitEvent: false });
             return true;
           }
@@ -369,7 +372,27 @@ export class SendFormController {
       this.feeIncluded.setValue(true, { emitEvent: false });
     }
 
-    const fee = await this.sendService.estimateFee(wallet.client, micros, type == SendMethodType.Easy, address);
+    const txp = TxProposal.create({
+      feeIncluded,
+      fromAddress: wallet.address,
+      toAddress: address,
+      utxos: wallet.utxos,
+      amount: micros,
+      wallet,
+    });
+
+    const fee = txp.getTxFee();
+
+    if (micros != txp.amount) {
+      micros = txp.amount;
+      amountMrt = microsToMrt(micros);
+      this.amountMrt.setValue(amountMrt, { emitEvent: false });
+    }
+
+    if (feeIncluded != txp.feeIncluded) {
+      feeIncluded = txp.feeIncluded;
+      this.feeIncluded.setValue(feeIncluded, { emitEvent: false });
+    }
 
     return {
       amount: micros,
@@ -378,18 +401,26 @@ export class SendFormController {
       wallet: wallet.client,
       feeIncluded,
       toAddress: this.address.value || 'MeritMoney link',
+      txp,
     };
   }
 
   async send(txData: ISendTxData) {
-    if (txData.easyFee) {
-      txData.txp.amount += txData.easyFee;
-    }
+    /**
+     * TODO(ibby):
+     * - Rebuild the tx, unless if we end up persisting the one created before
+     * - Sign it
+     * - Broadcast it
+     * - Add it to the pending tx list for the sender wallet (make sure to replace addresses with aliases where possible)
+     * - Refresh the history + list of UTXOs + balances right away
+     * - Make sure that once we get the tx from the actual history, we remove it from the pending TXs storage
+     */
+
 
     const wallet = txData.wallet;
 
     txData.sendMethod = { type: this.type.value } as ISendMethod;
-
+    debugger;
     await this.sendService.send(wallet, txData);
 
     if (txData.sendMethod.type === SendMethodType.Easy) {
@@ -412,11 +443,11 @@ export class SendFormController {
       }
     }
 
+
+    // TODO refresh balance and/or transactions only
     setTimeout(() => {
       this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
-        skipRewards: true,
         skipAlias: true,
-        skipShareCode: true,
       }));
     }, 1750);
 
