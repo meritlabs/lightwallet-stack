@@ -31,7 +31,6 @@ export function interfaceReducer(state: IInterfaceState = DEFAULT_STATE, action:
 export enum InterfaceActionType {
   SetShareDialog = '[Interface] Set share dialog',
   SetPrimaryWallet = '[Interface] Set primary wallet',
-  RefreshPrimaryWallet = '[Interface] Refresh primary wallet',
 }
 
 export class SetShareDialogAction implements Action {
