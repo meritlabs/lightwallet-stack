@@ -74,19 +74,24 @@ export class GoalsService {
   statusByTask: { [taskSlug: string]: ProgressStatus } = {};
 
   constructor(private profileService: ProfileService, private store: Store<IRootAppState>, private http: HttpClient) {
-    this.loadGoals();
+    this.store.select(selectPrimaryWallet)
+      .subscribe(async (primaryWallet: DisplayWallet) => {
+        this.token = undefined;
+        this.selectedWallet = primaryWallet;
 
-    this.store.select(selectPrimaryWallet).subscribe(async (primaryWallet: DisplayWallet) => {
-      this.token = undefined;
-      this.selectedWallet = primaryWallet;
+        if (primaryWallet && primaryWallet.confirmed) {
+          await this.getToken(primaryWallet);
+        }
 
-      if (primaryWallet && primaryWallet.confirmed) {
-        await this.getToken(primaryWallet);
-      }
+        if (this.client) {
+          await this.loadGoals();
 
-      this.store.dispatch(new RefreshGoalsProgressAction());
-      this.store.dispatch(new RefreshGoalSettingsAction());
-    });
+          this.store.dispatch(new RefreshGoalsProgressAction());
+          this.store.dispatch(new RefreshGoalSettingsAction());
+        } else {
+          console.log('Couldnt create a client for goals service');
+        }
+      });
   }
 
   async getToken(primaryWallet: DisplayWallet) {
@@ -112,6 +117,9 @@ export class GoalsService {
     let progress;
 
     try {
+      if (!this.client) {
+        return;
+      }
       progress = await this.client.getData('/progress/');
     } catch (err) {
       console.log('Error getting progress: ', err);
@@ -183,6 +191,10 @@ export class GoalsService {
   }
 
   async setTaskStatus(taskSlug: TaskSlug, status: ProgressStatus) {
+    if (!this.client) {
+      return;
+    }
+
     return this.client.setData('/progress/task/', {
       slug: taskSlug,
       status,
@@ -216,6 +228,9 @@ export class GoalsService {
 
   async getSettings(): Promise<IGoalSettings> {
     try {
+      if (!this.client) {
+        return;
+      }
       const settings: IGoalSettings = await this.client.getData('/settings/');
       return settings;
     } catch (err) {
@@ -226,6 +241,10 @@ export class GoalsService {
   }
 
   async setSettings(settings: IGoalSettings) {
+    if (!this.client) {
+      return;
+    }
+
     await this.client.setData('/settings/', settings);
     return settings;
   }
