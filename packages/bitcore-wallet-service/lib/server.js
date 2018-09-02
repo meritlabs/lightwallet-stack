@@ -886,33 +886,6 @@ WalletService.prototype._addCopayerToWallet = function(wallet, opts, cb) {
       async.series(
         [
           function(next) {
-            self._notify(
-              'NewCopayer',
-              {
-                walletId: opts.walletId,
-                copayerId: copayer.id,
-                copayerName: copayer.name,
-              },
-              next
-            );
-          },
-          function(next) {
-            if (wallet.isComplete() && wallet.isShared()) {
-              self._notify(
-                'WalletComplete',
-                {
-                  walletId: opts.walletId,
-                },
-                {
-                  isGlobal: true,
-                },
-                next
-              );
-            } else {
-              next();
-            }
-          },
-          function(next) {
             if (wallet.isComplete()) {
               var address = wallet.createAddress(false);
               address.signed = true;
@@ -2932,31 +2905,7 @@ WalletService.prototype.signTx = function(opts, cb) {
 
         self.storage.storeTx(self.walletId, txp, function(err) {
           if (err) return cb(err);
-
-          async.series(
-            [
-              function(next) {
-                self._notifyTxProposalAction(
-                  'TxProposalAcceptedBy',
-                  txp,
-                  {
-                    copayerId: self.copayerId,
-                  },
-                  next
-                );
-              },
-              function(next) {
-                if (txp.isAccepted()) {
-                  self._notifyTxProposalAction('TxProposalFinallyAccepted', txp, next);
-                } else {
-                  next();
-                }
-              },
-            ],
-            function() {
-              return cb(null, txp);
-            }
-          );
+          cb(null, txp);
         });
       }
     );
