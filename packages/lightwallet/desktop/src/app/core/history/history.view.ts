@@ -17,14 +17,14 @@ import { IHistoryFilters } from '@merit/desktop/app/core/components/history-filt
 })
 export class HistoryView {
   private filters: IHistoryFilters = {
-    growth_reward: false,
-    mining_reward: false,
-    sent: false,
-    received: false,
-    meritmoney: false,
-    meritinvite: false,
-    market: false,
-    pool_reward: false,
+    growth_reward: true,
+    mining_reward: true,
+    sent: true,
+    received: true,
+    meritmoney: true,
+    meritinvite: true,
+    market: true,
+    pool_reward: true,
     invite: true,
   };
 
