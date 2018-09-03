@@ -10,7 +10,7 @@ export const ENV = {
   easyUrl: 'http://merit.test-app.link/',
   discordBotApplication: 'https://test-merit-invite-discord-bot.herokuapp.com/get-invite/?source=dlw',
   fbSDK: {
-    appId: '2165982346808447',
+    appId: '335944163815670',
     status: true,
     version: 'v2.7'
   }
