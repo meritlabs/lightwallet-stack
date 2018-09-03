@@ -62,4 +62,8 @@ export class SendValidator {
 
     return null;
   }
+
+  static isEmail(value) {   
+    return validateEmail(value);  
+  }
 }

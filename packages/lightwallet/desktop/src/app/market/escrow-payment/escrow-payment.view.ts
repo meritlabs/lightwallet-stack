@@ -71,7 +71,11 @@ export class EscrowPaymentView implements OnInit {
     try {
       this.txp = await this.wallet.createTxProposal(opts);
     } catch (e) {
-      this.error = 'An error occured calculating fee. Try again later';
+      if (e.message) {
+        this.error = e.message;
+      } else {
+        this.error = 'An error occured calculating fee. Try again later';
+      }
       return;
     }
 

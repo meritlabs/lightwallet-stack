@@ -2,6 +2,10 @@
 <div class="wrap">
   <div class="widget">
     <app-invites-widget></app-invites-widget>
+    <wallets-list [limit]=3 [wallets]="wallets$ | async" [loading]="walletsLoading$ | async"></wallets-list>
+    <vaults-list></vaults-list>
+  </div>
+  <div class="widget latest-transactions">
     <div class="quick-send">
       <h2 class="main-header">
         Send Merit
@@ -13,10 +17,6 @@
           id="sendMrt">SEND</button>
       </div>
     </div>
-    <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async" [showButton]=false></wallets-list>
-    <vaults-list [showButton]=false></vaults-list>
-  </div>
-  <div class="widget latest-transactions">
     <h2 class="main-header">
       Latest transactions
     </h2>

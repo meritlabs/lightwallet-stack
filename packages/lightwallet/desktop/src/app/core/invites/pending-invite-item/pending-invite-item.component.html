@@ -3,14 +3,18 @@
     <img src="/assets/v1/icons/invite.svg" alt="">
   </div>
   <div class="history__item__info">
-    <div>
+    <div class="info__details">
       <div class="history__item__info__title">
-        <strong>{{ request.alias || request.address }}</strong>
-        <span *ngIf="request.isNew" class="badge-new">new</span>
+        <span class="details__title">{{ request.alias || request.address }}</span>
+        <span class="details__title--full" *ngIf="!request.alias">{{ request.alias || request.address }}</span>
+        <span class="badge-new" *ngIf="request.isNew">new</span>
       </div>
       <small class="date" *ngIf="request.timestamp">{{ request.timestamp | date:'medium' }}</small>
+      <div class="history__item__info__message" *ngIf="request.message">
+        {{ request.message }}
+      </div>
     </div>
-    <div>
+    <div class="info__navigation">
       <button type="button" name="button" class="ui-button ui-button--blue ui-button--sm" [disabled]="sending[request.referralId]"
         (click)="approveRequest(request)">
         {{ sending[request.referralId]? 'Sending...' : 'Send Invite Token' }}
