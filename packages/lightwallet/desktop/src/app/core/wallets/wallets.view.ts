@@ -21,7 +21,7 @@ export class WalletsView {
   constructor(private store: Store<IRootAppState>,
     private router: Router) {}
 
-  ngOnInit() {
+  ngOnInit() {    
     return this.wallets$.pipe(
       take(1),
       tap((wallets) => {

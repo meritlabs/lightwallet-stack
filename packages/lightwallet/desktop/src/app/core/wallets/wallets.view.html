@@ -1,4 +1,6 @@
 <div class="container--fluid wallets">
-  <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async"></wallets-list>
-  <vaults-list></vaults-list>
+  <div class="container--inner">
+    <wallets-list [wallets]="wallets$ | async" [loading]="walletsLoading$ | async"></wallets-list>
+    <vaults-list></vaults-list>
+  </div>
 </div>

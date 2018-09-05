@@ -1870,6 +1870,10 @@ export class API {
       throw MWCErrors.INSUFFICIENT_FUNDS;
     }
 
+    if (txp.code && txp.code == 'TX_MAX_SIZE_EXCEEDED') {
+      throw MWCErrors.TX_MAX_SIZE_EXCEEDED;
+    }
+
     await this._processTxps(txp);
 
     if (!Verifier.checkProposalCreation(args, txp, this.credentials.sharedEncryptingKey, opts.sendMax)) {
@@ -2590,6 +2594,7 @@ export class API {
       type: {
         method: type.destination,
         destination: type.value,
+        message: type.message
       },
     });
   }
