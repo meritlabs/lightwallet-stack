@@ -75,7 +75,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     next();
   });
 
-  var POST_LIMIT = 1024 * 1024 /* Max POST 1mb */ ;
+  var POST_LIMIT = 10 * 1024 * 1024 /* Max POST 10mb */ ;
 
   this.app.use(bodyParser.json({
     limit: POST_LIMIT
