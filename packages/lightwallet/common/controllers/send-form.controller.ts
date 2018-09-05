@@ -19,7 +19,7 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
-import { isEqual, omit, partition, orderBy } from 'lodash';
+import { isEqual, omit } from 'lodash';
 import { of } from 'rxjs/observable/of';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { Subject } from 'rxjs/Subject';
@@ -34,8 +34,10 @@ import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
 import { RateService } from '@merit/common/services/rate.service';
 import { TxProposal } from '@merit/common/models/tx-proposal';
-import { Transaction, HDPrivateKey, HDPublicKey, crypto } from 'bitcore-lib';
-import { Utils } from '@merit/common/merit-wallet-client/lib/common/utils';
+import { crypto, HDPrivateKey, HDPublicKey, Transaction } from 'bitcore-lib';
+import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
+import { IUTXO, RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
 export interface IReceipt {
   amount: number;
@@ -252,6 +254,7 @@ export class SendFormController {
     private loadingCtrl: LoadingControllerService,
     private toastCtrl: ToastControllerService,
     private rateService: RateService,
+    private persistenceService: PersistenceService2,
   ) {
   }
 
@@ -406,21 +409,9 @@ export class SendFormController {
   }
 
   async send(txData: ISendTxData) {
-    /**
-     * TODO(ibby):
-     * - Rebuild the tx, unless if we end up persisting the one created before
-     * - Sign it
-     * - Broadcast it
-     * - Add it to the pending tx list for the sender wallet (make sure to replace addresses with aliases where possible)
-     * - Refresh the history + list of UTXOs + balances right away
-     * - Make sure that once we get the tx from the actual history, we remove it from the pending TXs storage
-     */
-
-
     const wallet = txData.wallet;
 
     txData.sendMethod = { type: this.type.value } as ISendMethod;
-    debugger;
     await this.sendService.send(wallet, txData);
 
     if (txData.sendMethod.type === SendMethodType.Easy) {
@@ -443,14 +434,7 @@ export class SendFormController {
       }
     }
 
-
-    // TODO refresh balance and/or transactions only
-    setTimeout(() => {
-      this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
-        skipAlias: true,
-      }));
-    }, 1750);
-
+    this.store.dispatch(new RefreshOneWalletTransactions(wallet.id));
     return true;
   }
 

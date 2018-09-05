@@ -47,13 +47,7 @@ import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
 import { InviteRequest, InviteRequestsService } from '@merit/common/services/invite-request.service';
 import { IRankData, IRankInfo } from '@merit/common/models/rank';
-import { combineLatest } from 'rxjs/observable/combineLatest';
-import {
-  selectUtxos,
-  TransactionActionType, UpdateOneWalletTransactions,
-  UpdateTransactionsAction,
-} from '@merit/common/reducers/transactions.reducer';
-import { of } from 'rxjs/observable/of';
+import { TransactionActionType } from '@merit/common/reducers/transactions.reducer';
 import { defer } from 'rxjs/observable/defer';
 
 const REWARDS_PER_BLOCK: number = 5;
@@ -75,11 +69,11 @@ export class WalletEffects {
     switchMap(([action, wallets]) =>
       Promise.all(
         wallets.map(wallet =>
-          updateDisplayWallet(wallet, (action as RefreshWalletsAction).opts)
-        )
-      )
+          updateDisplayWallet(wallet, (action as RefreshWalletsAction).opts),
+        ),
+      ),
     ),
-    map((wallets: DisplayWallet[]) => new UpdateWalletsAction(wallets))
+    map((wallets: DisplayWallet[]) => new UpdateWalletsAction(wallets)),
   );
 
   @Effect()
@@ -141,7 +135,7 @@ export class WalletEffects {
     switchMap((wallet: DisplayWallet) =>
       fromPromise(
         this.profileService.deleteWallet(wallet.client)
-          .then(() => this.profileService.isAuthorized())
+          .then(() => this.profileService.isAuthorized()),
       )
         .pipe(
           tap(this.onWalletDelete.bind(this)),
@@ -159,7 +153,7 @@ export class WalletEffects {
     switchMap((action: IgnoreInviteRequestAction) =>
       fromPromise(
         this.persistenceService.hideUnlockRequestAddress(action.address)
-          .then(() => action.address)
+          .then(() => action.address),
       ),
     ),
     withLatestFrom(this.store.select(selectInviteRequests)),
@@ -178,22 +172,7 @@ export class WalletEffects {
       // wallets.forEach((wallet: DisplayWallet) => wallet.updateUtxos((action as UpdateTransactionsAction).utxosByWallet[wallet.id]));
 
       return new UpdateWalletsAction(wallets);
-    })
-  );
-
-  @Effect()
-  updateOneWalletUtxos$: Observable<UpdateOneWalletAction> = this.actions$.pipe(
-    ofType(TransactionActionType.UpdateOne),
-    switchMap((action: UpdateOneWalletTransactions) =>
-      this.store.select(selectWalletById(action.walletId))
-        .pipe(
-          take(1),
-          map(wallet => {
-            wallet.updateUtxos(action.utxos);
-            return new UpdateOneWalletAction(wallet);
-          })
-        )
-    )
+    }),
   );
 
   @Effect()
@@ -201,7 +180,7 @@ export class WalletEffects {
     fromPromise(this.updateAllWallets())
       .map(
         (wallets: DisplayWallet[]) => new InitWalletsAction(wallets),
-      )
+      ),
   );
 
   constructor(

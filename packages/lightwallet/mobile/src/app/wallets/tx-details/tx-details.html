@@ -19,10 +19,10 @@
     </div>
     <div *ngIf="!tx.isInvite">
       <h2 class="amount">
-        {{ isCredit? '' : '-' }}{{tx.amount | toMRT }}
+        {{ isCredit? '' : '-' }}{{ tx.amountMicros | toMRT }}
       </h2>
       <h3 class="detail-fiat" *ngIf="!tx.isCoinbase">
-        {{ isCredit? '' : tx.alternativeAmountStr? '-' : '' }}{{tx.alternativeAmountStr | toFiat : tx.amount | async}}
+        {{ isCredit? '' : tx.alternativeAmountStr? '-' : '' }}{{tx.alternativeAmountStr | toFiat : tx.amountMicros | async}}
       </h3>
       <p class="fee" *ngIf="!tx.isCoinbase">
         Fee {{ tx.fees | toMRT }}

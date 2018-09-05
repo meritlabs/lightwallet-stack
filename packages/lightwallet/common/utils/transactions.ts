@@ -1,11 +1,6 @@
 import { getEasySendURL } from '@merit/common/models/easy-send';
-import * as _ from 'lodash';
-import {
-  IDisplayTransaction,
-  ITransactionIO,
-  IVisitedTransaction,
-  TransactionAction,
-} from '@merit/common/models/transaction';
+import { isEmpty, orderBy } from 'lodash';
+import { IDisplayTransaction, ITransactionIO, IVisitedTransaction } from '@merit/common/models/transaction';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FeeService } from '@merit/common/services/fee.service';
@@ -18,7 +13,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[],
                                           feeService: FeeService,
                                           contactsProvider?: ContactsService,
                                           persistenceService?: PersistenceService2): Promise<IDisplayTransaction[]> {
-  if (_.isEmpty(walletHistory)) return [];
+  if (isEmpty(walletHistory)) return [];
 
   const easyReceiveFee = 20000;
 
@@ -37,18 +32,28 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[],
     visitedTxs = await persistenceService.getVisitedTransactions() || [];
   }
 
+  walletHistory = orderBy(walletHistory, 'time', 'asc');
+
+  let foundWalletUnlock = false;
+
   walletHistory = await Promise.all(walletHistory.map(async (tx: IDisplayTransaction, i: number) => {
     const received = tx.type === 'credit';
 
-    const { alias: inputAlias, address: inputAddress } = tx.inputs? tx.inputs[0] || <any>{} : <any>{};
+    const { alias: inputAlias, address: inputAddress } = tx.inputs ? tx.inputs[0] || <any>{} : <any>{};
     const { alias: outputAlias, address: outputAddress } = tx.outputs.find((output: ITransactionIO) => !!output.address && !output.isChange) || <any>{};
 
-    tx.input = inputAlias ? '@' + inputAlias : 'Anonymous';
-    tx.output = outputAlias ? '@' + outputAlias : 'Anonymous';
-    tx.name = tx.name || (received ? tx.input : tx.output);
+    const input = inputAlias ? '@' + inputAlias : 'Anonymous',
+      output = outputAlias ? '@' + outputAlias : 'Anonymous';
 
-    tx.addressFrom = inputAlias? '@' + inputAlias : inputAddress;
-    tx.addressTo = outputAlias? '@' + outputAlias :  outputAddress;
+    tx.name = tx.name || (received ? input : output);
+
+    if (tx.isInvite && !foundWalletUnlock) {
+      tx.isWalletUnlock = foundWalletUnlock = true;
+      tx.name = 'Wallet unlock';
+    }
+
+    tx.addressFrom = inputAlias ? '@' + inputAlias : inputAddress;
+    tx.addressTo = outputAlias ? '@' + outputAlias : outputAddress;
 
     if (globalSendsByAddress[tx.addressTo]) {
       const globalSend = globalSendsByAddress[tx.addressTo];
@@ -110,5 +115,6 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[],
       }
 
       return true;
-    });
+    })
+    .reverse();
 }

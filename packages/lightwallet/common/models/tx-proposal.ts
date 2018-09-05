@@ -133,10 +133,6 @@ export class TxProposal implements ITxProposalOptions {
       path: 'm/0/0'
     }));
 
-    console.log('Inputs are ', inputs);
-
-    console.log('T is ', t);
-
     // Add inputs to transaction
     t.from(inputs);
 
@@ -147,8 +143,6 @@ export class TxProposal implements ITxProposalOptions {
       const addressInfo = await getAddressInfo(toAddress);
       toAddress = addressInfo.address;
     }
-
-    console.log('This amount is ', this.amount);
 
     if (this.toScript) {
       t.addOutput(new Transaction.Output({
@@ -165,8 +159,6 @@ export class TxProposal implements ITxProposalOptions {
 
     // Specify change address
     t.change(this.fromAddress);
-
-    console.log('T is ', t);
 
     return t;
   }
@@ -240,12 +232,11 @@ export class TxProposal implements ITxProposalOptions {
       inputs = [];
 
       if (bigInputs.length) {
-        inputs = [inputs[0]];
+        inputs = [bigInputs[0]];
       }
     }
 
     if (!inputs.length) {
-      debugger;
       throw 'Insufficient funds for fee';
     }
 

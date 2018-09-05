@@ -6,28 +6,25 @@ import {
   IUTXO,
   RefreshOneWalletTransactions,
   RefreshTransactionsAction,
-  selectTransactionsByWalletId,
   TransactionActionType,
   UpdateOneWalletTransactions,
   UpdateTransactionsAction,
 } from '@merit/common/reducers/transactions.reducer';
 import {
-  AddWalletAction,
+  AddWalletAction, RefreshOneWalletAction,
   selectWalletById,
   selectWallets,
-  UpdateOneWalletAction, UpdateWalletsAction,
   WalletsActionType,
 } from '@merit/common/reducers/wallets.reducer';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { INIT, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { flatten, orderBy } from 'lodash';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
-import { distinctUntilKeyChanged, filter, map, switchMap, take, withLatestFrom, tap } from 'rxjs/operators';
-import { combineLatest } from 'rxjs/observable/combineLatest';
+import { filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { FeeService } from '@merit/common/services/fee.service';
 import { IGlobalSendHistory } from '@merit/common/models/globalsend-history.model';
@@ -44,7 +41,7 @@ export function getUtxos(transactions: IDisplayTransaction[]): IUTXO[] {
           .forEach(output => utxos.push({
             txid: tx.txid,
             outputIndex: output.n,
-            amount: tx.isInvite? output.amount : output.amountMicros,
+            amount: tx.isInvite ? output.amount : output.amountMicros,
             isInvite: tx.isInvite,
             isPending: tx.isMempool,
             isCoinbase: tx.isCoinbase,
@@ -55,7 +52,7 @@ export function getUtxos(transactions: IDisplayTransaction[]): IUTXO[] {
           .forEach(output => utxos.push({
             txid: tx.txid,
             outputIndex: output.n,
-            amount: tx.isInvite? output.amount : output.amountMicros,
+            amount: tx.isInvite ? output.amount : output.amountMicros,
             isInvite: tx.isInvite,
             isPending: tx.isMempool,
             isCoinbase: tx.isCoinbase,
@@ -116,7 +113,6 @@ export class TransactionEffects {
         .pipe(
           filter(wallets => wallets && wallets.length > 0),
           take(1),
-          tap((wallets) => console.log('Got ' + wallets.length + ' wallets ')),
         ),
     ),
     switchMap((wallets: DisplayWallet[]) =>
@@ -146,21 +142,40 @@ export class TransactionEffects {
       const lastTx: IDisplayTransaction = history[0];
       const lastBlockHeight: number = lastTx ? lastTx.height + 1 : 0;
 
+      let newHistory = await wallet.client.getHistory(lastBlockHeight);
+      let mempoolHistory = await await wallet.client.getMempoolHistory();
+
+      newHistory = orderBy(newHistory, 'time', 'desc');
+      mempoolHistory = orderBy(mempoolHistory, 'time', 'desc');
+
+      // Concat new + old history items
       history = [
-        ...await wallet.client.getHistory(lastBlockHeight),
+        ...newHistory,
         ...history,
       ];
 
       history = orderBy(history, 'time', 'desc');
-      await this.persistenceService.setHistory(wallet.id, []);
 
+      // Save transactions to db
+      await this.persistenceService.setHistory(wallet.id, history);
+
+
+      // Add mempool history to the real history
       history = [
-        ...await wallet.client.getMempoolHistory(),
+        ...mempoolHistory,
         ...history,
       ];
 
-      const utxos = getUtxos(history);
+      // Derive UTXOs from wallet history
+      let utxos = getUtxos(history);
+
+      // Update wallet UTXOs to calculate balances + build transactions
       wallet.updateUtxos(utxos);
+
+      // Concat pending TXs with history
+      history = [
+        ...history,
+      ];
 
       const globalSends: IGlobalSendHistory = await wallet.client.getGlobalSendHistory();
 
