@@ -8,7 +8,7 @@ import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
 import { selectGoalSettings } from '@merit/common/reducers/goals.reducer';
 import { selectShareDialogState, SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
-import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
+import { RefreshOneWalletTransactions, selectTransactionsLoading } from '@merit/common/reducers/transactions.reducer';
 import {
   RefreshOneWalletAction,
   selectNumberOfInviteRequests,
@@ -34,6 +34,7 @@ import { Observable } from 'rxjs/Observable';
 import { filter, map, tap } from 'rxjs/operators';
 import { IGoalSettings } from '@merit/common/models/goals';
 import { WalletSelectorController } from '@merit/desktop/app/components/wallet-selector/wallet-selector.controller';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 
 @Component({
   selector: 'view-core',
@@ -101,10 +102,11 @@ export class CoreView implements OnInit, AfterViewInit {
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
+  historyLoading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
   recordPassphrase: boolean = true;
-  lockedWallets$: Observable<DisplayWallet[]> = this.store.select(selectUnconfirmedWallets)
+  lockedWallets$: Observable<DisplayWallet[]> = combineLatest(this.store.select(selectUnconfirmedWallets), this.historyLoading$)
     .pipe(
-      map((wallets: DisplayWallet[]) => (wallets && wallets.length ? wallets : null)),
+      map(([wallets, loading]) => (!loading && wallets && wallets.length ? wallets : null)),
     );
   isWelcomeDialogEnabled$: Observable<boolean> = this.store
     .select(selectGoalSettings)
