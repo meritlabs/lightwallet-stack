@@ -676,7 +676,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.get('/v1/notifications/', GetWallet, GatewayForward(opts.services.messaging + '/notifications'));
+  router.get('/v1/notifications/', GetWallet, GatewayForward(opts.services.messaging + '/notification'));
 
   router.get('/v1/txnotes/:txid', function(req, res) {
     getServerWithAuth(req, res, function(server) {
