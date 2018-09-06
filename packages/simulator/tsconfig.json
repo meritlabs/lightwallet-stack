@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+      "moduleResolution": "node",
+      "experimentalDecorators": true,
+      "target": "es5",
+      "lib": ["es2017", "dom"],
+      "baseUrl": "./",
+      "paths": {
+        "@merit/common/*": ["../lightwallet/common/*"],
+        "@app/env": ["../lightwallet/common/environments/environment.staging"]
+      },
+      "module": "commonjs",
+      "outDir": "./",
+      "sourceMap": false,
+      "strict": false,
+      "typeRoots": [
+        "node_modules/@types"
+      ]
+    },
+    "include": [
+      "**/*.ts"
+    ],
+    "exclude": [
+      "node_modules"
+    ],
+    "compileOnSave": false
+  }

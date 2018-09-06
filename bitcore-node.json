@@ -9,9 +9,9 @@
   ],
   "servicesConfig": {
     "meritd": {
-        "spawn": {
-            "datadir": "./data-and-logs/data-1"
-        }
+      "spawn": {
+        "datadir": "./data-and-logs/data-1"
+      }
     }
   }
 }
