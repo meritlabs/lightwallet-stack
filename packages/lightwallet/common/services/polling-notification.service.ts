@@ -11,6 +11,8 @@ import { uniqBy } from 'lodash';
 import { debounceTime, filter, map } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
 import { ElectronService } from '../../desktop/src/services/electron.service';
+import { IDisplayWalletOptions } from '@merit/common/models/display-wallet';
+import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
 
 @Injectable()
 export class PollingNotificationsService {
@@ -48,8 +50,7 @@ export class PollingNotificationsService {
     } else {
       this.pollingNotificationsSubscriptions[walletClient.id] = walletClient.initNotifications()
         .pipe(
-          filter((notifications: any[]) => !!notifications),
-          map((notifications: any[]) => uniqBy(notifications, 'walletId')),
+          filter((notifications: any[]) => notifications && !!notifications.length),
           debounceTime(500)
         )
         .subscribe(this.onFetch.bind(this));
@@ -77,9 +78,15 @@ export class PollingNotificationsService {
         this.store.dispatch(new AddNotificationAction(notification));
 
         if (notification.walletId) {
-          this.store.dispatch(new RefreshOneWalletAction(notification.walletId, {
-            skipAlias: true,
-          }));
+          if (notification.type === 'incoming_invite_request') {
+            this.store.dispatch(new RefreshOneWalletAction(notification.walletId, {
+              skipAlias: true,
+              skipANV: true,
+              skipRankInfo: true,
+            }));
+          } else {
+            this.store.dispatch(new RefreshOneWalletTransactions(notification.walletId));
+          }
         }
       }
     });

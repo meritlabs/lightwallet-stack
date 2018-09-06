@@ -99,7 +99,9 @@ export class TransactionEffects {
         .pipe(
           take(1),
           switchMap((wallet) => fromPromise(this.refreshWalletHistory(wallet))),
-          map((transactions: IDisplayTransaction[]) => new UpdateOneWalletTransactions(action.walletId, orderBy(transactions, 'time', 'desc'))),
+          map((transactions: IDisplayTransaction[]) =>
+            new UpdateOneWalletTransactions(action.walletId, orderBy(transactions, 'time', 'desc'))
+          ),
         ),
     ),
   );
