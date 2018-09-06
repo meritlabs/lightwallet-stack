@@ -3,7 +3,7 @@
 \:host
   background: rgba(44, 49, 65, 0.95)
   display: block
-  width: 100vw
+  width: 100%
   height: 100vh
   display: flex
   justify-content: center
@@ -14,41 +14,61 @@
   left: 0
 
 .agreement_modal
-  top: 10%
+  top: 15%
   left: 0
-  right: 20%
-  margin: auto
+  right: 0
+  margin: 0 auto
   width: 100vw
   height: 100vh
-  max-width: 700px
-  max-height: 550px
+  max-width: 650px
+  max-height: 400px
   position: absolute
   background: $white
   border-radius: 20px
   overflow: hidden
   box-sizing: border-box
   box-shadow: 0 0 20px rgba(0,0,0, .15)
-  padding: 40px 20px
+  padding: 20px 20px
   .modal_title
-    +font(500, 28px, 30px, $ebony-clay)
+    +font(500, 20px, 26px, $ebony-clay)
     text-align: center
-    margin-bottom: 50px
+    margin-bottom: 30px
   .wallet_info
-    +font(400, 20px, 20px, $ebony-clay)
+    +font(400, 18px, 18px, $ebony-clay)
     display: flex
     justify-content: center
     align-items: center
-    margin-bottom: 45px
+    margin-bottom: 25px
     merit-icon
       background: $ebony-clay
       width: 40px
       height: 40px
       margin-right: 15px
+  .items
+    box-sizing: border-box
+    max-width: 500px
+    width: 100%
+    margin: 0px auto
+    .item
+      display: flex
+      margin-bottom: 15px
+      .title
+        +font(500, 16px, 22px)
+        width: calc(100% - 55px)
+      merit-icon
+        width: 25px
+        height: 25px
+        margin-right: 15px
+        background: $ebony-clay
+      &--danger
+        color: $cinnabar
+        merit-icon
+          background: $cinnabar
   .navigation
     position: absolute
     width: 100%
-    left: 0
-    bottom: 0
+    left: 0px
+    bottom: -15px
     display: flex
     justify-content: space-between
     .item
@@ -56,9 +76,9 @@
       justify-content: center
       align-items: center
       background: $blue
-      height: 80px
+      height: 55px
       width: 100%
-      +font(500, 18px, 18px, $white)
+      +font(500, 16px, 18px, $white)
       border: 0px
       +transition(.1s)
       &--prev
@@ -68,7 +88,7 @@
       &:hover
         box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.2)
         text-shadow: 0 0 5px rgba(0, 0, 0, 0.1)
- 
+
 .mnemonic
   &_button
     text-align: center
@@ -77,11 +97,11 @@
   .box
     border: 1px solid $blue
     font-weight: bold
-    padding: 40px 20px 20px
+    padding: 20px 20px 20px
     border-radius: 4px
     position: relative
     text-align: center
-    font-size: 28px
+    font-size: 20px
     line-height: 35px
     .clip
       position: absolute
