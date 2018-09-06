@@ -1,5 +1,40 @@
 <div class="agreement_wrap">
-  <div class="agreement_modal">
+  <div class="agreement_modal" *ngIf="!isLastStep">
+    <div class="modal_title">
+      <p> Record Your Passphrase!</p>
+    </div>
+    <div class="wallet_info">
+      <merit-icon name="unlock-wallet"></merit-icon>
+      <span class="info_name">{{wallet.shareCode}}</span>
+    </div>
+    <div class="items">
+      <div class="item">
+        <merit-icon name="unlock-clock"></merit-icon>
+        <span class="title">
+          A 12 word passphrase has been automatically generated for you.
+        </span>
+      </div>
+      <div class="item item--danger">
+        <merit-icon name="unlock-protected"></merit-icon>
+        <span class="title">
+          Storing your password is your responsibility. We cannot retrieve it for you. Ever.
+        </span>
+      </div>
+      <div class="item">
+        <merit-icon name="unlock-list"></merit-icon>
+        <span class="title">
+          Remember, if you lose your password, you lose your Merit. So please record and store your passphrase
+          somewhere safe.
+        </span>
+      </div>
+      <div class="navigation">
+        <button class="item item--full" (click)="isLastStep = !isLastStep">
+          Show My Passphrase
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="agreement_modal" *ngIf="isLastStep">
     <div class="modal_title">
       <p>Record Your Passphrase!</p>
     </div>
