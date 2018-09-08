@@ -28,7 +28,7 @@ export class TransactionHistoryComponent {
   }
 
   isInvite(transaction: IDisplayTransaction) {
-    return transaction.isInvite === true;
+    return transaction.isInvite;
   }
 
   isDebit(transaction: IDisplayTransaction) {
@@ -36,7 +36,7 @@ export class TransactionHistoryComponent {
   }
 
   isMiningReward(transaction: IDisplayTransaction) {
-    return this.isReward(transaction) && transaction.outputs[0].index === 0;
+    return this.isReward(transaction) && transaction.outputs[0].n === 0;
   }
 
   isPoolReward(transaction: IDisplayTransaction) {
@@ -57,7 +57,7 @@ export class TransactionHistoryComponent {
 
   private isReward(transaction: IDisplayTransaction) {
     try {
-      return Boolean(transaction.isCoinbase) && transaction.outputs[0] && !isNaN(transaction.outputs[0].index) && !transaction.isInvite;
+      return Boolean(transaction.isCoinbase) && transaction.outputs[0] && !isNaN(transaction.outputs[0].n) && !transaction.isInvite;
     } catch (e) {
       return false;
     }

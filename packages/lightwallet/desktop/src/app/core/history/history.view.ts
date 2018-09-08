@@ -16,7 +16,7 @@ import { IHistoryFilters } from '@merit/desktop/app/core/components/history-filt
   encapsulation: ViewEncapsulation.None,
 })
 export class HistoryView {
-  private filters: IHistoryFilters = {
+  filters: IHistoryFilters = {
     growth_reward: true,
     mining_reward: true,
     sent: true,
@@ -35,9 +35,9 @@ export class HistoryView {
       startWith(this.filters),
     );
 
-  private page: number = 1;
+  page: number = 1;
   private pageSubj: Subject<number> = new Subject<number>();
-  private page$: Observable<number> = this.pageSubj.asObservable()
+  page$: Observable<number> = this.pageSubj.asObservable()
     .pipe(
       startWith(this.page),
     );

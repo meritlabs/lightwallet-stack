@@ -22,7 +22,7 @@ export class WalletDetailHistoryView {
       map(params => params.id),
     );
 
-  private filters: IHistoryFilters = {
+  filters: IHistoryFilters = {
     growth_reward: true,
     mining_reward: true,
     sent: true,
@@ -41,9 +41,9 @@ export class WalletDetailHistoryView {
       startWith(this.filters),
     );
 
-  private page: number = 1;
+  page: number = 1;
   private pageSubj: Subject<number> = new Subject<number>();
-  private page$: Observable<number> = this.pageSubj.asObservable()
+  page$: Observable<number> = this.pageSubj.asObservable()
     .pipe(
       startWith(this.page),
     );

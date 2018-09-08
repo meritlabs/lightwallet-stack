@@ -27,7 +27,7 @@ export class TxDetailsView {
 
   get isReward() {
     try {
-      return Boolean(this.tx.isCoinbase) && this.tx.outputs[0] && !isNaN(this.tx.outputs[0].index) && !this.tx.isInvite;
+      return Boolean(this.tx.isCoinbase) && this.tx.outputs[0] && !isNaN(this.tx.outputs[0].n) && !this.tx.isInvite;
     } catch (e) {
       return false;
     }
@@ -61,7 +61,7 @@ export class TxDetailsView {
     this.isUnlockRequest = tx && tx.action === TransactionAction.UNLOCK;
     this.isCredit = tx.isCoinbase || tx.action === TransactionAction.RECEIVED;
     this.isInvite = tx.isInvite === true;
-    this.isMiningReward = this.isReward && tx.outputs[0].index === 0;
+    this.isMiningReward = this.isReward && tx.outputs[0].n === 0;
     this.isEasySend = !this.isInvite && !this.isReward;
     this.isCancelled = tx.cancelled;
     if (!tx.isConfirmed) {
