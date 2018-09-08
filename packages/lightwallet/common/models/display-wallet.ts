@@ -121,16 +121,17 @@ export class DisplayWallet {
     utxos = utxos || [];
     this.utxos = utxos;
     const balance = utxos.reduce((balance: IWalletBalance, utxo: IUTXO) => {
-      if (utxo.isInvite) {
-        balance.invites += utxo.amount;
-
-        if (utxo.isPending) {
-          balance.pendingInvites += utxo.amount;
-        } else {
-          balance.spendableInvites += utxo.amount;
-        }
-      } else {
+      if (!utxo.isInvite) {
         balance.amountMrt += utxo.amount;
+        return balance;
+      }
+
+      balance.invites += utxo.amount;
+
+      if (utxo.isPending) {
+        balance.pendingInvites += utxo.amount;
+      } else {
+        balance.spendableInvites += utxo.amount;
       }
 
       return balance;

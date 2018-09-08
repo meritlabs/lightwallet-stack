@@ -1017,8 +1017,7 @@ ExpressApp.prototype.start = function(opts, cb) {
        let { start, end } = req.query;
        res.json(await req.wallet.getTxHistory2({ start, end }));
      } catch (err) {
-       console.log("ERR IS ", err);
-       process.exit();
+       console.log("Error getting history for wallet ", err);
        res.status(400).send(err);
      }
   });

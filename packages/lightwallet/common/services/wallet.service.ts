@@ -190,14 +190,11 @@ export class WalletService {
     txp.toScript = script;
     txp.setOutputs();
 
-    console.log('TXP IS ', txp);
-
     if (wallet.displayWallet.balance.spendableInvites == 0) {
       throw new Error('You do not have free invites you can send');
     }
 
     const signedTx = await txp.getSignedRawTx();
-    debugger;
     return wallet.broadcastRawTx(signedTx);
   }
 

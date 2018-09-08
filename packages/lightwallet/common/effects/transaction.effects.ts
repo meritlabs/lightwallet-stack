@@ -35,10 +35,12 @@ export function getUtxos(transactions: IDisplayTransaction[]): IUTXO[] {
     .reverse() // arrays get here sorted by timestamp DESC
     .reduce((utxos: IUTXO[], tx: IDisplayTransaction) => {
 
+      let newUtxos = [];
+
       if (tx.type === 'credit') {
-        tx.outputs
+        newUtxos = tx.outputs
           .filter(output => !output.spentTxId)
-          .forEach(output => utxos.push({
+          .map(output => ({
             txid: tx.txid,
             outputIndex: output.n,
             amount: tx.isInvite ? output.amount : output.amountMicros,
@@ -47,9 +49,9 @@ export function getUtxos(transactions: IDisplayTransaction[]): IUTXO[] {
             isCoinbase: tx.isCoinbase,
           }));
       } else if (tx.type === 'debit') {
-        tx.outputs
+        newUtxos = tx.outputs
           .filter(output => output.isChange && !output.spentTxId)
-          .forEach(output => utxos.push({
+          .map(output => ({
             txid: tx.txid,
             outputIndex: output.n,
             amount: tx.isInvite ? output.amount : output.amountMicros,
@@ -59,7 +61,7 @@ export function getUtxos(transactions: IDisplayTransaction[]): IUTXO[] {
           }));
       }
 
-      return utxos;
+      return utxos.concat(newUtxos);
     }, []);
 }
 

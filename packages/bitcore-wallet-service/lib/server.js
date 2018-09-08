@@ -3678,7 +3678,6 @@ WalletService.prototype.getTxHistory2 = async function(opts) {
 
     return Array.prototype.concat.apply([], histories).sort((a, b) => b.timestamp - a.timestamp);
   } catch (err) {
-    console.log("Unable to get wallet history --> ", err);
     throw 'Unable to get wallet history';
   }
 };
@@ -3694,7 +3693,6 @@ WalletService.prototype.getMempoolHistory = async function() {
 
     return Array.prototype.concat.apply([], histories).sort((a, b) => b.timestamp - a.timestamp);
   } catch (err) {
-    console.log("Unable to get wallet history --> ", err);
     throw 'Unable to get wallet history';
   }
 };
