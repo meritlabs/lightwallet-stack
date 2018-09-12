@@ -443,35 +443,6 @@ WalletService.prototype.createWallet = function(opts, cb) {
           return acb(err);
         });
       },
-      function(acb) {
-        // parent address might be an alias, so let's fetch it from blockchain explorer first then get its wallet ID
-        self.blockchainExplorer.getReferral(opts.parentAddress, function(err, referral) {
-          if (err || !referral) {
-            log.debug('Unable to get referral for parent address: ' + opts.parentAddress);
-            log.debug(err);
-            return acb();
-          }
-
-          const { address } = referral;
-          self.storage.fetchAddress(address, (err, parentAddress) => {
-            if (err || !parentAddress) {
-              log.debug('Unable to fetch address: ' + address);
-              log.debug(err);
-              return acb();
-            }
-
-            self._notify(
-              'IncomingInviteRequest',
-              {
-                walletId: parentAddress.walletId,
-                creatorId: parentAddress.walletId,
-              },
-              null,
-              acb
-            );
-          });
-        });
-      },
     ],
     function(err) {
       var newWalletId = newWallet ? newWallet.id : null;
@@ -1186,19 +1157,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
   function createNewAddress(wallet, cb) {
     var address = wallet.createAddress(false);
 
-    self.storage.storeAddressAndWallet(wallet, address, function(err) {
-      if (err) return cb(err);
-
-      self._notify(
-        'NewAddress',
-        {
-          address: address.address,
-        },
-        function() {
-          return cb(null, address);
-        }
-      );
-    });
+    self.storage.storeAddressAndWallet(wallet, address, cb);
   }
 
   function getFirstAddress(wallet, cb) {
@@ -1599,22 +1558,7 @@ WalletService.prototype.getBalance = function(addresses, opts, cb) {
         return self._getBalanceOneStep(activeAddresses, opts, cb);
       } else {
         log.debug('Requesting partial balance for ' + activeAddresses.length + ' out of ' + nbAddresses + ' addresses');
-        self._getBalanceFromAddresses(activeAddresses, function(err, partialBalance) {
-          if (err) return cb(err);
-          cb(null, partialBalance);
-          setTimeout(function() {
-            self._getBalanceOneStep(activeAddresses, opts, function(err, fullBalance) {
-              if (err) return;
-              if (!_.isEqual(partialBalance, fullBalance)) {
-                log.info('Balance in active addresses differs from final balance');
-                self._notify('BalanceUpdated', fullBalance, {
-                  isGlobal: true,
-                });
-              }
-            });
-          }, 1);
-          return;
-        });
+        self._getBalanceFromAddresses(activeAddresses, cb);
       }
     });
   });
@@ -2811,9 +2755,7 @@ WalletService.prototype.removePendingTx = function(opts, cb) {
         var deleteLockTime = self.getRemainingDeleteLockTime(txp);
         if (deleteLockTime > 0) return cb(Errors.TX_CANNOT_REMOVE);
 
-        self.storage.removeTx(self.walletId, txp.id, function() {
-          self._notifyTxProposalAction('TxProposalRemoved', txp, cb);
-        });
+        self.storage.removeTx(self.walletId, txp.id, cb);
       }
     );
   });
@@ -2925,14 +2867,6 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
       txid: txp.txid,
     };
 
-    if (opts.byThirdParty && !txp.isInvite) {
-      self._notifyTxProposalAction('OutgoingTxByThirdParty', txp, extraArgs);
-    } else if (txp.isInvite) {
-      self._notifyTxProposalAction('OutgoingInviteTx', txp, extraArgs);
-    } else {
-      self._notifyTxProposalAction('OutgoingTx', txp, extraArgs);
-    }
-
     self.storage.softResetTxHistoryCache(self.walletId, function() {
       return cb(err, txp);
     });
@@ -3031,48 +2965,7 @@ WalletService.prototype.rejectTx = function(opts, cb) {
 
       txp.reject(self.copayerId, opts.reason);
 
-      self.storage.storeTx(self.walletId, txp, function(err) {
-        if (err) return cb(err);
-
-        async.series(
-          [
-            function(next) {
-              self._notifyTxProposalAction(
-                'TxProposalRejectedBy',
-                txp,
-                {
-                  copayerId: self.copayerId,
-                },
-                next
-              );
-            },
-            function(next) {
-              if (txp.status == 'rejected') {
-                var rejectedBy = _.map(
-                  _.filter(txp.actions, {
-                    type: 'reject',
-                  }),
-                  'copayerId'
-                );
-
-                self._notifyTxProposalAction(
-                  'TxProposalFinallyRejected',
-                  txp,
-                  {
-                    rejectedBy: rejectedBy,
-                  },
-                  next
-                );
-              } else {
-                next();
-              }
-            },
-          ],
-          function() {
-            return cb(null, txp);
-          }
-        );
-      });
+      self.storage.storeTx(self.walletId, txp, cb);
     }
   );
 };
@@ -3807,9 +3700,6 @@ WalletService.prototype.startScan = function(opts, cb) {
       result: err ? 'error' : 'success',
     };
     if (err) data.error = err;
-    self._notify('ScanFinished', data, {
-      isGlobal: true,
-    });
   }
 
   self.getWallet({}, function(err, wallet) {
