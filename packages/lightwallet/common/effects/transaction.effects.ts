@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
 import {
   IUTXO,
@@ -11,7 +11,7 @@ import {
   UpdateTransactionsAction,
 } from '@merit/common/reducers/transactions.reducer';
 import {
-  AddWalletAction, RefreshOneWalletAction,
+  AddWalletAction,
   selectWalletById,
   selectWallets,
   WalletsActionType,
@@ -24,7 +24,7 @@ import { Store } from '@ngrx/store';
 import { flatten, orderBy } from 'lodash';
 import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
-import { filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, switchMap, take, withLatestFrom } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { FeeService } from '@merit/common/services/fee.service';
 import { IGlobalSendHistory } from '@merit/common/models/globalsend-history.model';
@@ -172,14 +172,23 @@ export class TransactionEffects {
 
       // Derive UTXOs from wallet history
       let utxos = getUtxos(history);
+      let totalGrowthRewards: number = 0,
+        totalMiningRewards: number = 0;
+
+      history.forEach(tx => {
+        if (tx.action === TransactionAction.AMBASSADOR_REWARD) {
+          totalGrowthRewards += tx.amountMicros;
+        } else if (tx.action === TransactionAction.MINING_REWARD && !tx.isInvite) {
+          totalMiningRewards += tx.amountMicros;
+        }
+      });
 
       // Update wallet UTXOs to calculate balances + build transactions
       wallet.updateUtxos(utxos);
 
-      // Concat pending TXs with history
-      history = [
-        ...history,
-      ];
+      // Update Growth + Mining rewards
+      wallet.growthRewardsMicro = totalGrowthRewards;
+      wallet.miningRewardsMicro = totalMiningRewards;
 
       const globalSends: IGlobalSendHistory = await wallet.client.getGlobalSendHistory();
 

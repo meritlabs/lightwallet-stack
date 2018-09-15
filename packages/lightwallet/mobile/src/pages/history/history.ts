@@ -12,16 +12,16 @@ import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
 import { IonicPage, ModalController } from 'ionic-angular';
 import { Store } from '@ngrx/store';
-import { IRootAppState } from '../../../../common/reducers';
+import { IRootAppState } from '@merit/common/reducers';
 import { Observable } from 'rxjs';
-import { selectWalletsLoading } from '../../../../common/reducers/wallets.reducer';
-import { IDisplayTransaction } from '../../../../common/models/transaction';
+import { selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
+import { IDisplayTransaction } from '@merit/common/models/transaction';
 import {
   RefreshTransactionsAction,
   selectTransactions,
   selectTransactionsLoading,
-} from '../../../../common/reducers/transactions.reducer';
-import { getLatestValue } from '../../../../common/utils/observables';
+} from '@merit/common/reducers/transactions.reducer';
+import { getLatestValue } from '@merit/common/utils/observables';
 
 @IonicPage()
 @Component({

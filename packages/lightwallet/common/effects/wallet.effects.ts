@@ -92,7 +92,7 @@ export class WalletEffects {
   // TODO(ibby): update totals only if the numbers we depend on changed --> use distinct/distinctUntilChanged operators
   @Effect()
   updateTotals$: Observable<UpdateWalletTotalsAction> = this.actions$.pipe(
-    ofType(WalletsActionType.Update, WalletsActionType.UpdateOne, WalletsActionType.Add, WalletsActionType.DeleteWallet),
+    ofType(WalletsActionType.Update, WalletsActionType.UpdateOne, WalletsActionType.Add, WalletsActionType.DeleteWallet, TransactionActionType.Update),
     withLatestFrom(this.store.select(selectWallets)),
     map(([action, wallets]) => new UpdateWalletTotalsAction(this.calculateTotals(wallets))),
   );
@@ -256,7 +256,7 @@ export class WalletEffects {
       totals.totalNetworkValue += w.totalNetworkValueMicro;
       totals.totalMiningRewards += w.miningRewardsMicro;
       totals.totalGrowthRewards += w.growthRewardsMicro;
-      totals.invites += w.balance.invites;
+      totals.invites += w.balance.spendableInvites;
       totals.communitySize += w.rankInfo.communitySize;
 
       if (!w.balanceHidden) {

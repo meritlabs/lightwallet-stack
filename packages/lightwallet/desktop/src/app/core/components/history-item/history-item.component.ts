@@ -10,7 +10,7 @@ import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/glo
   styleUrls: ['./history-item.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HistoryItemComponent implements OnInit {
+export class HistoryItemComponent {
   @Input() tx: IDisplayTransaction;
 
   constructor(

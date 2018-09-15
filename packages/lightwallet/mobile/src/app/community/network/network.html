@@ -23,7 +23,7 @@
         <h2>Community</h2>
       </ion-label>
        <div item-end class="details">
-           {{ rankData?.communitySize || 0 }} people
+           {{ rankData?.totalCommunitySize || 0 }} people
            <ion-badge *ngIf="rankData.totalCommunitySizeChange > 0"> ▲ {{ rankData.totalCommunitySizeChange }}</ion-badge>
        </div>
     </button>
@@ -55,7 +55,7 @@
         <ion-label>
           <h2>Growth rewards</h2>
         </ion-label>
-        <div item-end class="details">{{ (totals$ | async).growthRewards | toMRT:8 }}</div>
+        <div item-end class="details">{{ (totals$ | async)?.totalGrowthRewards || 0}}MRT</div>
     </ion-item>
 
     <ion-item class="pending-unlock-requests" navPush="LeaderboardView">
@@ -134,7 +134,7 @@
           <ion-avatar item-start img-icon>
             <img src="assets/img/icons/invite.svg">
           </ion-avatar>
-          <ion-label [clip]="wallet.alias? '@'+wallet.alias : wallet.referralAddress" (click)="notifyCopy()">
+          <ion-label [clip]="wallet.alias? '@'+wallet.alias : wallet.address" (click)="notifyCopy()">
             <p>Invite Code (click to copy)</p>
             <h2>{{ wallet.alias? '@' + wallet.alias : wallet.address }}</h2>
           </ion-label>
@@ -159,13 +159,14 @@
           </ion-avatar>
           <ion-label>
             <p>Growth Rewards</p>
-            <h2>{{ wallet.growthRewardsMerit }}</h2>
+            <h2>{{ wallet.growthRewardsMicro | toMRT:null }}</h2>
           </ion-label>
-          <ion-note item-end class="balance">
-            <span class="fiat-amount">
-              {{ wallet.growthRewardsFiat }}
-            </span>
-          </ion-note>
+          <!-- TODO fix this when there's a proper fiat conversion implemented -->
+          <!--<ion-note item-end class="balance">-->
+            <!--<span class="fiat-amount">-->
+              <!--{{ wallet.growthRewardsFiat }}-->
+            <!--</span>-->
+          <!--</ion-note>-->
         </ion-item>
 
       </ion-list>

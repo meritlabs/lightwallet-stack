@@ -71,16 +71,8 @@ export class DisplayWallet {
   }
 
   totalNetworkValueMicro: number;
-  totalNetworkValueMerit: string;
-  totalNetworkValueFiat: string;
-
   miningRewardsMicro: number;
-  miningRewardsMerit: string;
-  miningRewardsFiat: string;
-
   growthRewardsMicro: number;
-  growthRewardsMerit: string;
-  growthRewardsFiat: string;
 
   communitySize: number;
 
@@ -204,24 +196,8 @@ export class DisplayWallet {
     try {
       this.totalNetworkValueMicro = await this.client.getANV();
     } catch (err) {
+      this.totalNetworkValueMicro = 0;
       console.log('Error updating ANV', err);
-    }
-  }
-
-  private formatNetworkInfo() {
-    if (!isNil(this.totalNetworkValueMicro)) {
-      this.totalNetworkValueMerit = this.txFormatService.parseAmount(this.totalNetworkValueMicro, 'micros').amountUnitStr;
-      this.totalNetworkValueFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.totalNetworkValueMicro)).amountStr;
-    }
-
-    if (!isNil(this.miningRewardsMicro)) {
-      this.miningRewardsMerit = this.txFormatService.parseAmount(this.miningRewardsMicro, 'micros').amountUnitStr;
-      this.miningRewardsFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.miningRewardsMicro)).amountStr;
-    }
-
-    if (!isNil(this.growthRewardsMicro)) {
-      this.growthRewardsMerit = this.txFormatService.parseAmount(this.growthRewardsMicro, 'micros').amountUnitStr;
-      this.growthRewardsFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.growthRewardsMicro)).amountStr;
     }
   }
 }

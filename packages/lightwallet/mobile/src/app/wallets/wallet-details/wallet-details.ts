@@ -8,27 +8,32 @@ import { PersistenceService2 } from '@merit/common/services/persistence2.service
 import { WalletService } from '@merit/common/services/wallet.service';
 import { formatWalletHistory } from '@merit/common/utils/transactions';
 import { App, Events, IonicPage, NavController, NavParams, Tab, Tabs } from 'ionic-angular';
-import { FeeService } from "@merit/common/services/fee.service";
+import { FeeService } from '@merit/common/services/fee.service';
 import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { IRootAppState } from '@merit/common/reducers';
+import {
+  RefreshTransactionsAction,
+  selectTransactionsByWalletId,
+  selectTransactionsLoading,
+} from '@merit/common/reducers/transactions.reducer';
+import { getLatestValue } from '@merit/common/utils/observables';
 
 @IonicPage({
   segment: 'wallet/:walletId',
-  defaultHistory: ['WalletsView']
+  defaultHistory: ['WalletsView'],
 })
 @Component({
   selector: 'wallet-details-view',
-  templateUrl: 'wallet-details.html'
+  templateUrl: 'wallet-details.html',
 })
 export class WalletDetailsView {
 
-  wallet: DisplayWallet;
-  loading: boolean;
+  wallet: DisplayWallet = this.navParams.get('wallet');
   refreshing: boolean;
-
-  offset: number = 0;
-  limit: number = 10;
-
-  txs: IDisplayTransaction[] = [];
+  transactions$: Observable<IDisplayTransaction[]> = this.store.select(selectTransactionsByWalletId(this.wallet.id));
+  loading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
 
   constructor(private navCtrl: NavController,
               private app: App,
@@ -40,7 +45,8 @@ export class WalletDetailsView {
               private contactsService: ContactsService,
               private persistenceService: PersistenceService2,
               private easyReceiveService: EasyReceiveService,
-              private feeService: FeeService
+              private feeService: FeeService,
+              private store: Store<IRootAppState>,
   ) {
     // We can assume that the wallet data has already been fetched and
     // passed in from the wallets (list) view.  This enables us to keep
@@ -49,14 +55,9 @@ export class WalletDetailsView {
   }
 
   async ngOnInit() {
-    this.loading = true;
-    this.wallet = this.navParams.get('wallet');
-    await this.getWalletHistory();
-    this.loading = false;
-
     this.easyReceiveService.cancelledEasySend$
       .subscribe(() => {
-        this.getWalletHistory();
+        this.refreshHistory();
       });
   }
 
@@ -85,38 +86,14 @@ export class WalletDetailsView {
   }
 
   async doRefresh(refresher) {
-    this.refreshing = true;
-    await this.getWalletHistory();
-    // this.wallet.getStatus();
-    // this.getCommunityInfo();
-    this.refreshing = false;
+    await this.refreshHistory();
     refresher.complete();
   }
 
-  private async getWalletHistory() {
-    try {
-      this.txs = await this.wallet.client.getTxHistory({ skip: 0, limit: this.limit, includeExtendedInfo: true });
-      await this.formatHistory();
-    } catch (e) {
-      this.logger.warn(e);
-    }
+  async refreshHistory() {
+    this.refreshing = true;
+    this.store.dispatch(new RefreshTransactionsAction());
+    await getLatestValue(this.loading$, loading => loading === false);
+    this.refreshing = false;
   }
-
-  private async formatHistory() {
-    const easySends = await this.wallet.client.getGlobalSendHistory();
-    this.wallet.client.completeHistory = await formatWalletHistory(this.txs, this.wallet.client, easySends, this.feeService, this.contactsService);
-  }
-
-  async loadMoreHistory(infiniter) {
-    this.offset += this.limit;
-    try {
-      const txs = await this.wallet.client.getTxHistory({ skip: this.offset, limit: this.limit, includeExtendedInfo: true });
-      this.txs = this.txs.concat(txs);
-      await this.formatHistory();
-    } catch (e) {
-      this.logger.warn(e);
-    }
-    infiniter.complete();
-  }
-
 }
