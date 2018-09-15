@@ -1,17 +1,6 @@
 import { Component, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
-export interface IHistoryFilters {
-  growth_reward: boolean;
-  mining_reward: boolean;
-  sent: boolean;
-  received: boolean;
-  meritmoney: boolean;
-  meritinvite: boolean;
-  market: boolean;
-  pool_reward: boolean;
-  invite: boolean;
-}
+import { IHistoryFilters } from '@merit/common/models/transaction';
 
 @Component({
   selector: 'history-filters',

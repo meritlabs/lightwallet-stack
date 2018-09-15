@@ -1,24 +1,17 @@
 <ion-list>
-  <button ion-item detail-none *ngFor="let tx of transactions; trackBy: tx?.txid" (click)="viewTxDetails(tx)">
-    <contact-avatar item-start *ngIf="tx.easySendUrl && !tx.isInvite"  [contact]="tx.contact"></contact-avatar>
-    <ion-avatar img-icon item-start *ngIf="!tx.easySendUrl || tx.isInvite">
-      <img *ngIf="isMiningReward(tx)" src="assets/img/icons/mining.svg" alt="" />
-      <img *ngIf="isPoolReward(tx)" src="assets/img/icons/mining.svg" alt="" />
-      <img *ngIf="isUnlockRequest(tx)" src="assets/img/icons/send_request.svg" alt="" />
-      <img *ngIf="isInvite(tx)" src="assets/img/icons/invite.svg" alt="" />
-      <img *ngIf="isGrowthReward(tx)" src="assets/img/icons/growth.svg" alt="" />
-      <img *ngIf="isRegularTx(tx)" src="assets/img/icons/merit.svg" alt="" />
-    </ion-avatar>
+  <button ion-item detail-none *ngFor="let tx of filteredTransactions; trackBy: trackByFn" (click)="viewTxDetails(tx)">
+    <contact-avatar item-start [contact]="tx.contact"
+                    [fallback]="'assets/img/icons/' + tx.image + '.svg'"></contact-avatar>
     <ion-label>
       <h2>
-          {{ tx.name }}
-          <ion-icon color="primary" *ngIf="tx.easySendUrl && !tx.cancelled" class="icon" name="link"></ion-icon>
-          <b class="cancelled" *ngIf="tx.easySendUrl && tx.cancelled">cancelled</b>
+        {{ tx.name }}
+        <ion-icon color="primary" *ngIf="tx.easySendUrl && !tx.cancelled" class="icon" name="link"></ion-icon>
+        <b class="cancelled" *ngIf="tx.easySendUrl && tx.cancelled">cancelled</b>
       </h2>
       <p>{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
     </ion-label>
     <ion-note item-end *ngIf="!tx.isWalletUnlock">
-      <span class="merit-amount" [class.credit]="isCredit(tx)">
+      <span class="merit-amount" [class.credit]="tx.isCredit">
         {{ tx.isInvite? (tx.amount + ' INV') : (tx.amountMicros | toMRT) }}
       </span>
       <span *ngIf="!tx.isInvite" class="fiat-amount">
@@ -27,7 +20,10 @@
     </ion-note>
 
     <button ion-button clear icon-only item-end>
-        <ion-icon name="ios-arrow-forward" class="arrow"></ion-icon>
+      <ion-icon name="ios-arrow-forward" class="arrow"></ion-icon>
     </button>
   </button>
 </ion-list>
+<ion-infinite-scroll (ionInfinite)="loadMore($event)">
+  <ion-infinite-scroll-content></ion-infinite-scroll-content>
+</ion-infinite-scroll>

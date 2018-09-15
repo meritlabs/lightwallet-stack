@@ -77,9 +77,35 @@ export interface IDisplayTransaction extends ITransaction {
   isNew?: boolean;
   isVault?: boolean;
   isMempool?: boolean;
+  image?: string;
+  isCredit?: boolean;
 }
 
 export interface IVisitedTransaction {
   txid: string;
   counter: number;
 }
+
+export interface IHistoryFilters {
+  growth_reward: boolean;
+  mining_reward: boolean;
+  sent: boolean;
+  received: boolean;
+  meritmoney: boolean;
+  meritinvite: boolean;
+  market: boolean;
+  pool_reward: boolean;
+  invite: boolean;
+}
+
+export const DEFAULT_HISTORY_FILTERS = {
+  growth_reward: true,
+  mining_reward: true,
+  sent: true,
+  received: true,
+  meritmoney: true,
+  meritinvite: true,
+  market: true,
+  pool_reward: true,
+  invite: true,
+};

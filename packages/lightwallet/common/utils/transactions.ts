@@ -1,6 +1,11 @@
 import { getEasySendURL } from '@merit/common/models/easy-send';
 import { isEmpty, orderBy } from 'lodash';
-import { IDisplayTransaction, ITransactionIO, IVisitedTransaction } from '@merit/common/models/transaction';
+import {
+  IDisplayTransaction,
+  ITransactionIO,
+  IVisitedTransaction,
+  TransactionAction,
+} from '@merit/common/models/transaction';
 import { ContactsService } from '@merit/common/services/contacts.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { FeeService } from '@merit/common/services/fee.service';
@@ -46,10 +51,12 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[],
       output = outputAlias ? '@' + outputAlias : 'Anonymous';
 
     tx.name = tx.name || (received ? input : output);
+    tx.image = 'merit';
 
     if (tx.isInvite && !foundWalletUnlock) {
       tx.isWalletUnlock = foundWalletUnlock = true;
       tx.name = 'Wallet unlock';
+      tx.action = TransactionAction.UNLOCK;
     }
 
     tx.addressFrom = inputAlias ? '@' + inputAlias : inputAddress;
@@ -76,7 +83,30 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[],
       }
     }
 
+    switch (tx.action) {
+      case TransactionAction.AMBASSADOR_REWARD:
+        tx.image = 'growth';
+        tx.name = 'Growth Reward';
+        break;
+
+      case TransactionAction.INVITE:
+        tx.image = 'invite';
+        tx.name = tx.isCoinbase? 'Mined invite' : tx.name;
+        break;
+
+      case TransactionAction.MINING_REWARD:
+        tx.image = tx.isInvite? 'invite' : 'mining';
+        tx.name = tx.isInvite? 'Mined invite' : 'Mining reward';
+        break;
+
+      case TransactionAction.POOL_REWARD:
+        tx.image = 'mining';
+        tx.name = 'Pool reward';
+        break;
+    }
+
     tx.walletId = wallet.id;
+    tx.isCredit = tx.type === 'credit';
     tx.isNew = false;
 
     if (persistenceService) {

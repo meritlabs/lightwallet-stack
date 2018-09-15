@@ -2,23 +2,9 @@
   <ion-navbar color="light">
     <ion-title>History</ion-title>
     <ion-buttons end *ngIf="refreshing">
-        <ion-spinner></ion-spinner>
+      <ion-spinner></ion-spinner>
     </ion-buttons>
   </ion-navbar>
-
-  <button ion-item text-left (click)="selectWallet()" detail-none class="send-from" *ngIf="wallets?.length" class="select-wallet">
-
-        <ion-avatar item-start img-icon [class.default]="!wallet.color"
-                    [style.box-shadow]="'0 0 0 2px ' + wallet.color">
-           <img src="assets/img/icons/wallet.svg">
-        </ion-avatar>
-        <h2>{{wallet?.name}}</h2>
-        <p *ngIf="wallet?.rootAlias">@{{wallet?.rootAlias}}</p>
-
-        <ion-icon name="ios-arrow-down" item-end [hidden]="wallets?.length == 1"></ion-icon>
-
-  </button>
-
 </ion-header>
 
 <ion-content>
@@ -26,20 +12,5 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-
-
-  <div class="no-transactions" *ngIf="!transactions?.length && !loading">
-    You do not have any transactions
-  </div>
-
-  <div class="no-transactions" *ngIf="loading">
-    Loading transactions history...
-  </div>
-
-  <transaction-history [transactions]="transactions"></transaction-history>
-
-  <ion-infinite-scroll (ionInfinite)="loadMoreHistory($event)">
-        <ion-infinite-scroll-content></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
-
+  <transaction-history [transactions]="transactions$ | async"></transaction-history>
 </ion-content>

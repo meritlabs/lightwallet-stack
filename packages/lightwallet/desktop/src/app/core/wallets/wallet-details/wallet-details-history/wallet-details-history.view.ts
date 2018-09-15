@@ -1,6 +1,6 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { DEFAULT_HISTORY_FILTERS, IDisplayTransaction, IHistoryFilters } from '@merit/common/models/transaction';
 import { IRootAppState } from '@merit/common/reducers';
 import { selectTransactionsByWalletId, selectTransactionsLoading } from '@merit/common/reducers/transactions.reducer';
 import { Store } from '@ngrx/store';
@@ -8,7 +8,6 @@ import { Observable } from 'rxjs/Observable';
 import { map, startWith, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { combineLatest } from 'rxjs/observable/combineLatest';
-import { IHistoryFilters } from '@merit/desktop/app/core/components/history-filters/history-filters.component';
 
 @Component({
   selector: 'view-wallet-details-history',
@@ -22,17 +21,7 @@ export class WalletDetailHistoryView {
       map(params => params.id),
     );
 
-  filters: IHistoryFilters = {
-    growth_reward: true,
-    mining_reward: true,
-    sent: true,
-    received: true,
-    meritmoney: true,
-    meritinvite: true,
-    market: true,
-    pool_reward: true,
-    invite: true,
-  };
+  filters: IHistoryFilters = { ...DEFAULT_HISTORY_FILTERS };
 
   private filtersSubj: Subject<IHistoryFilters> = new Subject<IHistoryFilters>();
 

@@ -14,24 +14,8 @@ import { EasyReceiveService } from '@merit/common/services/easy-receive.service'
 })
 export class TxDetailsView {
 
-  tx: IDisplayTransaction;
+  tx: IDisplayTransaction = this.navParams.get('tx');
   confirmationsExplanation: string;
-  isUnlockRequest: boolean;
-  isCredit: boolean;
-  isInvite: boolean;
-  isMiningReward: boolean;
-  isEasySend: boolean;
-  isCancelled: boolean;
-  isConfirmed: boolean;
-  image: string = 'merit';
-
-  get isReward() {
-    try {
-      return Boolean(this.tx.isCoinbase) && this.tx.outputs[0] && !isNaN(this.tx.outputs[0].n) && !this.tx.isInvite;
-    } catch (e) {
-      return false;
-    }
-  }
 
   constructor(private navParams: NavParams,
               private viewCtrl: ViewController,
@@ -49,30 +33,7 @@ export class TxDetailsView {
 
   cancelMeritMoney() {
     this.easyReceive.cancelEasySend(this.tx.easySendUrl);
-    this.tx.cancelled = true;
-    this.isCancelled = true;
+    this.tx.easySend.cancelled = true;
     return this.viewCtrl.dismiss();
-  }
-
-  async ngOnInit() {
-    const tx = this.navParams.get('tx');
-
-    this.isConfirmed = tx.isCoinbase ? tx.isMature : true;
-    this.isUnlockRequest = tx && tx.action === TransactionAction.UNLOCK;
-    this.isCredit = tx.isCoinbase || tx.action === TransactionAction.RECEIVED;
-    this.isInvite = tx.isInvite === true;
-    this.isMiningReward = this.isReward && tx.outputs[0].n === 0;
-    this.isEasySend = !this.isInvite && !this.isReward;
-    this.isCancelled = tx.cancelled;
-    if (!tx.isConfirmed) {
-      this.confirmationsExplanation = String(tx.confirmations) + ' block(s) confirmed from ' + COINBASE_CONFIRMATION_THRESHOLD;
-    }
-
-    if (tx.isGrowthReward) this.image = 'growth';
-    else if (tx.isMiningReward) this.image = 'mining';
-    else if (tx.isInvite) this.image = 'invite';
-    else this.image = 'merit';
-
-    this.tx = tx;
   }
 }

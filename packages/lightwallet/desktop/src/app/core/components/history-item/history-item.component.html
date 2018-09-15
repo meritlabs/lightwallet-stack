@@ -9,14 +9,14 @@
       <span *ngIf="tx.isNew" class="badge-new">new</span>
     </div>
     <div class="title">
-      {{ isCredit? 'Received to:' : 'Sent from:' }}
+      {{ tx.isCredit? 'Received to:' : 'Sent from:' }}
       <span class="source">{{ isCredit? tx.addressTo : tx.addressFrom }}</span>
     </div>
     <p class="cancelled" *ngIf="tx.cancelled">Cancelled</p>
     <p class="claimed" *ngIf="tx.claimed">Claimed by: {{ tx.claimedBy }}</p>
     <p class="date">{{ tx.time * 1000 | amDateFormat: 'Do MMM, YYYY hh:mma' }}</p>
 
-    <ng-container *ngIf="tx.easySendUrl && tx.type === 'meritmoney'">
+    <ng-container *ngIf="tx.easySendUrl && !tx.claimed && !tx.cancelled">
       <button (click)="showMeritMoneyLink()" class="ui-button ui-button--blue ui-button--sm">Show MeritMoney Link
       </button>
       <button *ngIf="!tx.easySend.cancelled" (click)="askCancelMeritMoney()" class="ui-button ui-button--red ui-button--sm">Cancel
@@ -24,11 +24,11 @@
     </ng-container>
   </div>
   <div class="details">
-    <div class="merit-amount" [class.credit]="isCredit">
+    <div class="merit-amount" [class.credit]="tx.isCredit">
       {{ tx.isInvite? tx.amount + ' INV' : (tx.amountMicros | toMRT) }}
       <small *ngIf="tx.alternativeAmountStr">({{ tx.alternativeAmountStr }})</small>
     </div>
-    <span class="ui-tooltip ui-tooltip--awaiting" *ngIf="!isConfirmed">
+    <span class="ui-tooltip ui-tooltip--awaiting" *ngIf="!tx.isConfirmed">
     </span>
   </div>
 </div>

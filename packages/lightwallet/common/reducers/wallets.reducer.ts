@@ -78,51 +78,51 @@ export class UpdateWalletsAction implements Action {
 
 
 export class InitWalletsAction extends UpdateWalletsAction {
-  type = WalletsActionType.Init;
+  readonly type = WalletsActionType.Init;
 }
 
 export class UpdateOneWalletAction implements Action {
-  type = WalletsActionType.UpdateOne;
+  readonly type = WalletsActionType.UpdateOne;
 
   constructor(public wallet: DisplayWallet, public opts: IDisplayWalletOptions = {}) {}
 }
 
 export class RefreshWalletsAction implements Action {
-  type = WalletsActionType.Refresh;
+  readonly type = WalletsActionType.Refresh;
 
   constructor(public init?: boolean, public opts: IDisplayWalletOptions = {}) {}
 }
 
 export class RefreshOneWalletAction implements Action {
-  type = WalletsActionType.RefreshOne;
+  readonly type = WalletsActionType.RefreshOne;
 
   constructor(public walletId: string, public opts: IDisplayWalletOptions = {}) {}
 }
 
 export class UpdateWalletTotalsAction implements Action {
-  type = WalletsActionType.UpdateTotals;
+  readonly type = WalletsActionType.UpdateTotals;
 
   constructor(public totals: IWalletTotals) {}
 }
 
 export class DeleteWalletAction implements Action {
-  type = WalletsActionType.DeleteWallet;
+  readonly type = WalletsActionType.DeleteWallet;
   constructor(public walletId: string) {}
 }
 
 export class DeleteWalletCompletedAction implements Action {
-  type = WalletsActionType.DeleteWalletCompleted;
+  readonly type = WalletsActionType.DeleteWalletCompleted;
   constructor(public walletId: string) {}
 }
 
 export class UpdateInviteRequestsAction implements Action {
-  type = WalletsActionType.UpdateInviteRequests;
+  readonly type = WalletsActionType.UpdateInviteRequests;
 
   constructor(public inviteRequests: InviteRequest[]) {}
 }
 
 export class IgnoreInviteRequestAction implements Action {
-  type = WalletsActionType.IgnoreInviteRequest;
+  readonly type = WalletsActionType.IgnoreInviteRequest;
   constructor(public address: string) {}
 }
 

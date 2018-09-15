@@ -3,11 +3,10 @@ import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { selectTransactions, selectTransactionsLoading } from '@merit/common/reducers/transactions.reducer';
-import { IDisplayTransaction } from '@merit/common/models/transaction';
+import { DEFAULT_HISTORY_FILTERS, IDisplayTransaction, IHistoryFilters } from '@merit/common/models/transaction';
 import { Subject } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { combineLatest } from 'rxjs/observable/combineLatest';
-import { IHistoryFilters } from '@merit/desktop/app/core/components/history-filters/history-filters.component';
 
 @Component({
   selector: 'view-history',
@@ -16,17 +15,7 @@ import { IHistoryFilters } from '@merit/desktop/app/core/components/history-filt
   encapsulation: ViewEncapsulation.None,
 })
 export class HistoryView {
-  filters: IHistoryFilters = {
-    growth_reward: true,
-    mining_reward: true,
-    sent: true,
-    received: true,
-    meritmoney: true,
-    meritinvite: true,
-    market: true,
-    pool_reward: true,
-    invite: true,
-  };
+  filters: IHistoryFilters = {...DEFAULT_HISTORY_FILTERS};
 
   private filtersSubj: Subject<IHistoryFilters> = new Subject<IHistoryFilters>();
 
