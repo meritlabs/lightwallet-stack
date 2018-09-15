@@ -13,6 +13,8 @@ export enum TransactionAction {
   AMBASSADOR_REWARD = 'growth_reward',
   POOL_REWARD = 'pool_reward',
   MARKET = 'market',
+  MERIT_MONEY = 'meritmoney',
+  MERIT_INVITE = 'meritinvite',
 }
 
 export enum UnlockRequestStatus {

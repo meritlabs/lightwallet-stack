@@ -65,6 +65,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[],
     if (globalSendsByAddress[tx.addressTo]) {
       const globalSend = globalSendsByAddress[tx.addressTo];
       tx.name = tx.isInvite ? 'MeritInvite' : 'MeritMoney';
+      tx.action = tx.isInvite ? TransactionAction.MERIT_INVITE : TransactionAction.MERIT_MONEY;
       tx.type = <any>tx.name.toLowerCase();
 
       if (tx.cancelled = globalSend.cancelled) {
