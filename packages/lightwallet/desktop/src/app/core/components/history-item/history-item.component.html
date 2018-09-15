@@ -8,9 +8,9 @@
       <strong>{{ tx.name }} </strong>
       <span *ngIf="tx.isNew" class="badge-new">new</span>
     </div>
-    <div class="title">
+    <div class="title" *ngIf="showWalletName">
       {{ tx.isCredit? 'Received to:' : 'Sent from:' }}
-      <span class="source">{{ isCredit? tx.addressTo : tx.addressFrom }}</span>
+      <span class="source">{{ tx.isCredit? tx.addressTo : tx.addressFrom }}</span>
     </div>
     <p class="cancelled" *ngIf="tx.cancelled">Cancelled</p>
     <p class="claimed" *ngIf="tx.claimed">Claimed by: {{ tx.claimedBy }}</p>

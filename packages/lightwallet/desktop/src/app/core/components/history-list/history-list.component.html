@@ -9,7 +9,7 @@
     </ng-template>
   </div>
   <ng-container *ngIf="transactions?.length; else noItems">
-    <history-item *ngFor="let tx of transactions" [tx]="tx"></history-item>
+    <history-item *ngFor="let tx of transactions" [tx]="tx" [showWalletName]="showWalletName"></history-item>
     <div [routerLink]='"/history"' *ngIf="widget" class="ui-button ui-button--sm ui-button--blue">SHOW FULL HISTORY</div>
   </ng-container>
   <ng-template #noItems>

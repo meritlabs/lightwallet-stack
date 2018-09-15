@@ -12,6 +12,7 @@ import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/glo
 })
 export class HistoryItemComponent {
   @Input() tx: IDisplayTransaction;
+  @Input() showWalletName: boolean;
 
   constructor(
     private globalSendLinkCtrl: GlobalsendLinkPopupController,

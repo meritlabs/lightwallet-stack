@@ -29,6 +29,9 @@ export class HistoryListComponent {
     return this._transactions;
   }
 
+  @Input()
+  showWalletName: boolean = true;
+
   @Input() loading: boolean;
   @Input() widget: boolean;
 
