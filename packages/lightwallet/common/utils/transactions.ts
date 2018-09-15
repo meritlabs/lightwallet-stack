@@ -107,6 +107,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[],
 
     tx.walletId = wallet.id;
     tx.isCredit = tx.type === 'credit';
+    tx.isConfirmed = !tx.isCoinbase || tx.confirmations > 101;
     tx.isNew = false;
 
     if (persistenceService) {
