@@ -182,7 +182,7 @@ export class DisplayWallet {
         communitySizeChangeDay: 0,
         communitySizeChangeWeek: 0,
         percentile: '0',
-        rank: null,
+        rank: 0,
         rankChange: 0,
         rankChangeDay: 0,
         rankChangeWeek: 0,

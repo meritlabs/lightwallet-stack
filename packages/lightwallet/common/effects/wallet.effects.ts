@@ -299,7 +299,7 @@ export class WalletEffects {
     let topRank: IRankInfo = ranks[0];
 
     for (let i = 1; i < ranks.length; i++) {
-      if (ranks[i].rank < topRank.rank) {
+      if (ranks[i].rank > 0 && ranks[i].rank < topRank.rank) {
         topRank = ranks[i];
       }
     }
