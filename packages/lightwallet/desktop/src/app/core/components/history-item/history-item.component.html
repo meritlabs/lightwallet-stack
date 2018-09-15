@@ -1,5 +1,5 @@
 <div class="icon">
-  <img [src]="'/assets/v1/icons/' + image + '.svg'" alt="">
+  <img [src]="'/assets/v1/icons/' + tx.image + '.svg'" alt="">
   <img *ngIf="tx.type === 'meritmoney'" [src]="'/assets/v1/icons/invite.svg'" alt="">
 </div>
 <div class="info" [ngClass]="{'info-new': tx.isNew}">
