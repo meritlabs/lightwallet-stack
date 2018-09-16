@@ -208,7 +208,7 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
     case WalletsActionType.UpdateInviteRequests:
       return {
         ...state,
-        inviteRequests: action.inviteRequests
+        inviteRequests: [...action.inviteRequests]
       };
 
     case WalletsActionType.DeleteWalletCompleted:
