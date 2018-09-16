@@ -38,7 +38,8 @@
         <p>Recipient (optional)</p>
       </ion-label>
       <ion-input placeholder="Address, Alias, Phone number or Email address" [(ngModel)]="customDestination"
-                 (ngModelChange)="onDestinationChange()"></ion-input>
+                 (ngModelChange)="onDestinationChange()" (ionFocus)="amountFocused = true"
+                 (ionBlur)="amountFocused = false"></ion-input>
     </ion-item>
     <div class="input-errors" [hidden]="(destination.dirty && destination.invalid) || (address.dirty && address.invalid)">
       <div [hidden]="!destination.hasError('InvalidDestination')">
