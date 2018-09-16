@@ -12,13 +12,14 @@
     <div class="big-header">
       <div class="amount-area" (click)="focusInput()">
         <div class="currency-bar">
-          <div *ngIf="availableUnits?.length > 1">
-            <div *ngFor="let currency of availableUnits" (click)="selectCurrency(currency)"
-                 class="currency" [class.selected]="currency?.type == selectedCurrency?.type">
-              {{currency.name}}
-              <span class="selected-mark" [hidden]="currency?.type != selectedCurrency?.type"></span>
-            </div>
-          </div>
+          <!-- TODO restore this when there's a proper way to handle fiat currencies -->
+          <!--<div *ngIf="availableUnits?.length > 1">-->
+            <!--<div *ngFor="let currency of availableUnits" (click)="selectCurrency(currency)"-->
+                 <!--class="currency" [class.selected]="currency?.type == selectedCurrency?.type">-->
+              <!--{{currency.name}}-->
+              <!--<span class="selected-mark" [hidden]="currency?.type != selectedCurrency?.type"></span>-->
+            <!--</div>-->
+          <!--</div>-->
         </div>
         <div class="main-amount" enter-to-next>
           <!--<div class="amount-sm amount-converted" *ngIf="formData.amount">-->
@@ -80,9 +81,9 @@
         <ion-label *ngIf="wallet.value">
           <p>From</p>
           <h2>{{wallet.value.name}}</h2>
-          <p *ngIf="wallet.value.alias">@{{wallet.alias}}</p>
-          <p>{{wallet.value.balance?.spendableAmount | toMRT}}</p>
-          <p *ngIf="sendMethod?.type =='easy'">Invites: {{wallet.value.availableInvites}}</p>
+          <p *ngIf="wallet.value.alias">@{{wallet.value.alias}}</p>
+          <p>{{wallet.value.balance.amountMrt | toMRT}}</p>
+          <p *ngIf="sendMethod?.type =='easy'">Invites: {{wallet.value.balance.spendableInvites}} {{ wallet.value.balance.pendingInvites? '(+' + wallet.value.balance.pendingInvites + ' pending)' : null }}</p>
         </ion-label>
         <ion-icon name="ios-arrow-down" item-end></ion-icon>
       </button>

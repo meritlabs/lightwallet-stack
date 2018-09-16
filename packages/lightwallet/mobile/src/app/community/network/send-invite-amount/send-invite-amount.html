@@ -55,7 +55,7 @@
       <p>From</p>
       <h2>{{wallet.value.name}}</h2>
       <p *ngIf="wallet.value.alias">@{{wallet.value.alias}}</p>
-      <p>Invites: {{wallet.value.availableInvites}}</p>
+      <p>Invites: {{wallet.value.balance.spendableInvites}} {{ wallet.value.balance.pendingInvites? '(+' + wallet.value.balance.pendingInvites + ' pending)' : null }}</p>
       <ion-icon name="ios-arrow-down" item-end></ion-icon>
     </button>
   </ion-list>
@@ -103,7 +103,6 @@
 
 
   <ion-footer [hidden]="ctrl.easySendUrl || amountFocused">
-    <p [hidden]="!error" class="error">{{ error }}</p>
     <slide-to-action [text]="'Slide to create link'" (confirm)="send()" [disabled]="!isSendAllowed()"></slide-to-action>
   </ion-footer>
 

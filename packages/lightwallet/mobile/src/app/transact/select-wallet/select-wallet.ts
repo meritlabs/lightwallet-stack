@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
-import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { Observable } from 'rxjs/Observable';
 import { Store } from '@ngrx/store';

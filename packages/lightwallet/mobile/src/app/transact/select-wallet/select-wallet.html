@@ -22,19 +22,15 @@
           <span *ngIf="!wallet.confirmed">Not unlocked</span>
           <span *ngIf="wallet.confirmed">
             <span *ngIf="!wallet.balanceHidden">
-                {{wallet.balance.totalAmount | toMRT}}
-                <small *ngIf="wallet.balance.totalAmount != wallet.balance.spendableAmount">({{wallet.balance.spendableAmount | toMRT}} available)</small>
+                {{wallet.balance.amountMrt | toMRT}}
             </span>
             <span *ngIf="wallet.balanceHidden" translate>
             [Balance Hidden]
             </span>
-            <ion-icon
-              *ngIf="!wallet.balanceHidden && (wallet.balance.totalAmount != wallet.balance.spendableAmount)"
-              name="timer-outline"></ion-icon>
           </span>
         </p>
         <p *ngIf="showInvites">
-          Invites: {{wallet.availableInvites}}
+          Invites: {{wallet.balance.spendableInvites}} {{ wallet.balance.pendingInvites? '(+' + wallet.balance.pendingInvites + ' pending)' : null }}
         </p>
       </ion-label>
       <ion-note class="wallet-color-indicator" item-end>
