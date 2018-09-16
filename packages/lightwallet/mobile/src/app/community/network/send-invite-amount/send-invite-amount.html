@@ -14,7 +14,6 @@
             <ion-input
               #amount
               type="number"
-              pattern="[0-9]"
               formControlName="amount"
               placeholder="Enter amount to send"
               (keypress)="amountKeypress($event.keyCode)"
@@ -23,7 +22,31 @@
             >
             </ion-input>
           </ion-item>
-          <div class="amount-sm">Invite token<span *ngIf="amount.value >1">s</span></div>
+          <div class="amount-sm">Invite token<span *ngIf="amountInv.value >1">s</span></div>
+        </div>
+      </div>
+
+      <div class="input-errors" [hidden]="!amountInv.dirty || amountInv.valid">
+        <div [hidden]="!amountInv.hasError('required')">
+              <span class="tooltip-error">
+                <span>
+                  Amount is required
+                </span>
+              </span>
+        </div>
+        <div [hidden]="amountInv.hasError('required') || !amountInv.hasError('InvalidAmount')">
+              <span class="tooltip-error">
+                <span>
+                  Invalid amount
+                </span>
+              </span>
+        </div>
+        <div [hidden]="!amountInv.hasError('NotEnoughInvites')">
+          <span class="tooltip-error">
+            <span>
+              You don't have enough invites
+            </span>
+          </span>
         </div>
       </div>
     </div>

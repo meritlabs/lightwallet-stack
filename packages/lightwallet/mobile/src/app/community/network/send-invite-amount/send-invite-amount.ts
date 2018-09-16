@@ -1,13 +1,9 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { SocialSharing } from '@ionic-native/social-sharing';
-import { MeritWalletClient } from '@merit/common/merit-wallet-client';
-import { getEasySendURL } from '@merit/common/models/easy-send';
-import { EasySendService } from '@merit/common/services/easy-send.service';
-import { ProfileService } from '@merit/common/services/profile.service';
-import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { SendMethodType } from '@merit/common/models/send-method';
 import { LoggerService } from '@merit/common/services/logger.service';
-import { getSendMethodDestinationType } from '@merit/common/utils/destination';
+import { validateEmail, validatePhoneNumber } from '@merit/common/utils/destination';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { IonicPage, ModalController, NavController, NavParams, Platform } from 'ionic-angular';
@@ -18,9 +14,7 @@ import { FormBuilder } from '@angular/forms';
 import { AlertService } from '@merit/common/services/alert.service';
 import { LoadingControllerService } from '@merit/common/services/loading-controller.service';
 import { couldBeAlias, isAddress } from '@merit/common/utils/addresses';
-import { getLatestValue } from '@merit/common/utils/observables';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
-import { validateEmail, validatePhoneNumber } from '@merit/common/utils/destination';
 
 @IonicPage()
 @Component({
@@ -49,7 +43,7 @@ export class SendInviteAmountView {
     return this.ctrl.destination;
   }
 
-  get amount() {
+  get amountInv() {
     return this.ctrl.amount;
   }
 
@@ -64,7 +58,6 @@ export class SendInviteAmountView {
   get confirmPassword() {
     return this.ctrl.confirmPassword;
   }
-
 
   constructor(
     store: Store<IRootAppState>,
@@ -99,8 +92,6 @@ export class SendInviteAmountView {
     } else if (!value || !value.length) {
       this.type.setValue(SendMethodType.Easy);
     }
-
-    console.log('Type is now ', this.type.value);
   }
 
   async send() {

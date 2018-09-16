@@ -9,8 +9,8 @@ export class InviteValidator {
       if (control.value > wallet.balance.spendableInvites) {
         return { NotEnoughInvites: true };
       }
-    } catch (e) {
-      return null;
-    }
+    } catch (e) {}
+
+    return null;
   }
 }
