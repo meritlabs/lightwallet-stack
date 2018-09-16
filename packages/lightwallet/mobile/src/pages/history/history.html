@@ -1,8 +1,11 @@
 <ion-header no-border>
   <ion-navbar color="light">
     <ion-title>History</ion-title>
-    <ion-buttons end *ngIf="refreshing">
-      <ion-spinner></ion-spinner>
+    <ion-buttons end>
+      <ion-spinner class="header-spinner" *ngIf="(loading$ | async) || refreshing"></ion-spinner>
+      <button ion-button clear icon-only (click)="showFilters()">
+        <ion-icon name="funnel"></ion-icon>
+      </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
@@ -12,5 +15,5 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <transaction-history [transactions]="transactions$ | async"></transaction-history>
+  <transaction-history [transactions]="transactions$ | async" [filters]="filters"></transaction-history>
 </ion-content>

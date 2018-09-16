@@ -22,6 +22,7 @@ import {
   selectTransactionsLoading,
 } from '@merit/common/reducers/transactions.reducer';
 import { getLatestValue } from '@merit/common/utils/observables';
+import { DEFAULT_HISTORY_FILTERS, IHistoryFilters } from '../../../../common/models/transaction';
 
 @IonicPage()
 @Component({
@@ -32,6 +33,7 @@ export class HistoryView {
   loading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
   refreshing: boolean;
   transactions$: Observable<IDisplayTransaction[]> = this.store.select(selectTransactions);
+  filters: IHistoryFilters = { ...DEFAULT_HISTORY_FILTERS };
 
   constructor(private profileService: ProfileService,
               private contactsService: ContactsService,
@@ -40,6 +42,14 @@ export class HistoryView {
               private feeService: FeeService,
               private store: Store<IRootAppState>,
   ) {
+  }
+
+  showFilters() {
+    const modal = this.modalCtrl.create('HistoryFiltersModal', { filters: this.filters }, MERIT_MODAL_OPTS);
+    modal.present();
+    modal.onDidDismiss(() => {
+      this.filters = { ...this.filters };
+    });
   }
 
   async ionViewDidLoad() {

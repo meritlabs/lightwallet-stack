@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ModalController } from 'ionic-angular';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { IDisplayTransaction, TransactionAction } from '@merit/common/models/transaction';
-import { DEFAULT_HISTORY_FILTERS, IHistoryFilters } from '../../../../common/models/transaction';
+import { IHistoryFilters } from '@merit/common/models/transaction';
 
 const LIMIT_STEP = 25;
 
@@ -13,7 +13,9 @@ const LIMIT_STEP = 25;
 export class TransactionHistoryComponent implements OnChanges {
   limit: number = LIMIT_STEP;
   filteredTransactions: IDisplayTransaction[] = [];
-  filters: IHistoryFilters = { ...DEFAULT_HISTORY_FILTERS };
+
+  @Input()
+  filters: IHistoryFilters;
 
   @Input()
   transactions: IDisplayTransaction[] = [];
@@ -24,10 +26,9 @@ export class TransactionHistoryComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes.hasOwnProperty('filters')) {
       this.limit = LIMIT_STEP;
-      return;
     }
 
-    if (changes.hasOwnProperty('limit') || changes.hasOwnProperty('transactions')) {
+    if (changes.hasOwnProperty('filters') || changes.hasOwnProperty('limit') || changes.hasOwnProperty('transactions')) {
       this.updateTransactions();
     }
   }

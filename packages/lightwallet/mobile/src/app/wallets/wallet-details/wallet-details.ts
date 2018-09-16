@@ -19,6 +19,7 @@ import {
   selectTransactionsLoading,
 } from '@merit/common/reducers/transactions.reducer';
 import { getLatestValue } from '@merit/common/utils/observables';
+import { DEFAULT_HISTORY_FILTERS, IHistoryFilters } from '../../../../../common/models/transaction';
 
 @IonicPage({
   segment: 'wallet/:walletId',
@@ -34,6 +35,7 @@ export class WalletDetailsView {
   refreshing: boolean;
   transactions$: Observable<IDisplayTransaction[]> = this.store.select(selectTransactionsByWalletId(this.wallet.id));
   loading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
+  filters: IHistoryFilters = { ...DEFAULT_HISTORY_FILTERS };
 
   constructor(private navCtrl: NavController,
               private app: App,
