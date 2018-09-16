@@ -8,10 +8,11 @@ import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
 import { selectGoalSettings } from '@merit/common/reducers/goals.reducer';
 import { selectShareDialogState, SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
-import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
+import { RefreshOneWalletTransactions, selectTransactionsLoading } from '@merit/common/reducers/transactions.reducer';
 import {
   RefreshOneWalletAction,
   selectNumberOfInviteRequests,
+  selectUnconfirmedWallets,
   selectWallets,
   selectWalletsLoading,
 } from '@merit/common/reducers/wallets.reducer';
@@ -30,9 +31,10 @@ import { ToastControllerService } from '@merit/desktop/app/components/toast-noti
 import { Store } from '@ngrx/store';
 import { Address, PublicKey } from 'bitcore-lib';
 import { Observable } from 'rxjs/Observable';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 import { IGoalSettings } from '@merit/common/models/goals';
 import { WalletSelectorController } from '@merit/desktop/app/components/wallet-selector/wallet-selector.controller';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 
 @Component({
   selector: 'view-core',
@@ -100,11 +102,12 @@ export class CoreView implements OnInit, AfterViewInit {
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
+  historyLoading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
   recordPassphrase: boolean = true;
-  lockedWallets$: Observable<DisplayWallet[]> = this.wallets$.pipe(
-    map((wallets: DisplayWallet[]) => wallets.filter((wallet: DisplayWallet) => !wallet.confirmed)),
-    map((wallets: DisplayWallet[]) => (wallets && wallets.length ? wallets : null)),
-  );
+  lockedWallets$: Observable<DisplayWallet[]> = combineLatest(this.store.select(selectUnconfirmedWallets), this.historyLoading$)
+    .pipe(
+      map(([wallets, loading]) => (!loading && wallets && wallets.length ? wallets : null)),
+    );
   isWelcomeDialogEnabled$: Observable<boolean> = this.store
     .select(selectGoalSettings)
     .pipe(
@@ -148,7 +151,7 @@ export class CoreView implements OnInit, AfterViewInit {
 
         if (smsNotificationStatus.enabled) return;
 
-        if(this.recordPassphrase && !smsNotificationStatus.enabled) {
+        if (this.recordPassphrase && !smsNotificationStatus.enabled) {
           this.smsNotificationsPromptCtrl.create();
         }
       }
@@ -294,8 +297,6 @@ export class CoreView implements OnInit, AfterViewInit {
       this.logger.info('Cancelled easy send', acceptanceTx);
       this.store.dispatch(
         new RefreshOneWalletAction(wallet.id, {
-          skipShareCode: true,
-          skipRewards: true,
           skipAlias: true,
         }),
       );
@@ -316,8 +317,6 @@ export class CoreView implements OnInit, AfterViewInit {
       this.logger.info('accepted easy send', acceptanceTx);
       this.store.dispatch(
         new RefreshOneWalletAction(wallet.id, {
-          skipShareCode: true,
-          skipRewards: true,
           skipAlias: true,
         }),
       );

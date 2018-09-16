@@ -88,7 +88,7 @@ export class SendView implements OnInit {
     private toastCtrl: ToastControllerService,
     private loadingCtrl: LoadingControllerService,
   ) {
-    this.ctrl = new SendFormController(store, formBuilder, sendService, logger, loadingCtrl, toastCtrl, rateService);
+    this.ctrl = new SendFormController(store, formBuilder, sendService, logger, loadingCtrl, toastCtrl, rateService, persistenceService);
   }
 
   async ngOnInit() {

@@ -10,8 +10,8 @@
       </div>
     </div>
     <p class="alias" *ngIf="wallet.alias">{{ '@' + wallet.alias }}</p>
-    <p class="regular-blue-text" *ngIf="!wallet.balanceHidden; else balanceHidden">{{ wallet.totalBalanceMicros | toMRT }}
-      <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})
+    <p class="regular-blue-text" *ngIf="!wallet.balanceHidden; else balanceHidden">{{ wallet.balance.amountMrt | toMRT }}
+      <small *ngIf="wallet.balance.amountMrt | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})
       </small>
     </p>
     <ng-template #balanceHidden>
@@ -22,7 +22,7 @@
   </div>
   <div class="inline-right">
     <div class="controls">
-      <p class="invites regular-blue-text">{{ wallet?.availableInvites || 0 }} Invites <span *ngIf="wallet.pendingInvites">(+{{wallet.pendingInvites}} pending)</span></p>
+      <p class="invites regular-blue-text">{{ wallet?.balance.spendableInvites || 0 }} Invites <span *ngIf="wallet.balance.pendingInvites">(+{{wallet.balance.pendingInvites}} pending)</span></p>
     </div>
     <merit-icon name="right-arrow"></merit-icon>
   </div>

@@ -24,6 +24,7 @@ import { IGlobalSendHistory } from '../../models/globalsend-history.model';
 import { IInviteRequest } from '../../services/invite-request.service';
 import { IRankInfo } from '../../models/rank';
 import * as queryString from 'querystring';
+import { IDisplayTransaction } from '../../models/transaction';
 
 const $ = preconditions.singleton();
 
@@ -58,74 +59,75 @@ export interface ISendReferralOptions {
 }
 
 export class API {
-  public baseUrl: string;
-  public payProHttp: string;
-  public doNotVerifyPayPro: boolean;
-  public timeout: number;
-  public logLevel: string;
-  public privateKeyEncryptionOpts: any = {
+  baseUrl: string;
+  payProHttp: string;
+  doNotVerifyPayPro: boolean;
+  timeout: number;
+  logLevel: string;
+  privateKeyEncryptionOpts: any = {
     iter: 10000,
   };
-  public credentials: Credentials; // TODO: Make public with getters/setters
-  public notificationIncludeOwn: boolean;
-  public log: any;
-  public lastNotificationId: string;
-  public notificationsIntervalId: any;
-  public keyDerivationOk: boolean;
-  public session: any;
-  public DEBUG_MODE: boolean = false;
+  credentials: Credentials; // TODO: Make with getters/setters
+  notificationIncludeOwn: boolean;
+  log: any;
+  lastNotificationId: string;
+  lastNotificationsTimestamp: number = Date.now();
+  notificationsIntervalId: any;
+  keyDerivationOk: boolean;
+  session: any;
+  DEBUG_MODE: boolean = false;
 
   // Mutated from other services (namely wallet.service and profile.service)
-  public id: string; // TODO: Re-evaluate where this belongs.
-  public completeHistory: any; // This is mutated from Wallet.Service.ts; for now.
-  public cachedStatus: any;
-  public cachedActivity: any;
-  public cachedTxps: any;
-  public pendingTxps: any;
-  public totalBalanceMicros: number;
-  public scanning: boolean;
-  public hasUnsafeConfirmed: boolean;
-  public network: string;
-  public n: number;
-  public m: number;
-  public notAuthorized: boolean;
-  public needsBackup: boolean;
-  public name: string;
-  public color: string;
-  public started: boolean;
-  public copayerId: string;
-  public unlocked: boolean;
-  public confirmed: boolean;
-  public parentAddress: string;
-  public balanceHidden: boolean;
-  public status: any;
-  public secret: string;
-  public email: string;
-  public cachedBalance: string;
-  public cachedBalanceUpdatedOn: string;
-  public totalNetworkValue: string;
-  public displayAddress: string;
-  public miningRewards: string;
-  public growthRewards: string;
-  public onConnectionError: any;
-  public onAuthenticationError: any;
-  public onConnectionRestored: any;
-  public vaults: Array<any> = [];
+  id: string; // TODO: Re-evaluate where this belongs.
+  completeHistory: any; // This is mutated from Wallet.Service.ts; for now.
+  cachedStatus: any;
+  cachedActivity: any;
+  cachedTxps: any;
+  pendingTxps: any;
+  totalBalanceMicros: number;
+  scanning: boolean;
+  hasUnsafeConfirmed: boolean;
+  network: string;
+  n: number;
+  m: number;
+  notAuthorized: boolean;
+  needsBackup: boolean;
+  name: string;
+  color: string;
+  started: boolean;
+  copayerId: string;
+  unlocked: boolean;
+  confirmed: boolean;
+  parentAddress: string;
+  balanceHidden: boolean;
+  status: any;
+  secret: string;
+  email: string;
+  cachedBalance: string;
+  cachedBalanceUpdatedOn: string;
+  totalNetworkValue: string;
+  displayAddress: string;
+  miningRewards: string;
+  growthRewards: string;
+  onConnectionError: any;
+  onAuthenticationError: any;
+  onConnectionRestored: any;
+  vaults: Array<any> = [];
   locked: boolean;
 
-  public rootAddress: any;
-  public rootAlias: string;
-  public communitySize: number;
+  rootAddress: any;
+  rootAlias: string;
+  communitySize: number;
 
-  public balance: any;
-  public invitesBalance: any;
-  public availableInvites: number = 0; // total invites I have 
-  public pendingInvites: number = 0; // invites that are currently pending confirmation
-  public sendableInvites: number = 0; // invites I can send right now
+  balance: any;
+  invitesBalance: any;
+  availableInvites: number = 0; // total invites I have 
+  pendingInvites: number = 0; // invites that are currently pending confirmation
+  sendableInvites: number = 0; // invites I can send right now
 
 
   /** is disabled when wallet is temporary decrypted */
-  public credentialsSaveAllowed: boolean = true;
+  credentialsSaveAllowed: boolean = true;
 
   constructor(opts: InitOptions) {
     this.baseUrl = opts.baseUrl || ENV.mwsUrl;
@@ -155,20 +157,12 @@ export class API {
     this.onConnectionRestored = cb;
   }
 
-  async _fetchLatestNotifications(interval: number): Promise<any[]> {
-    let opts: any = {
-      lastNotificationId: this.lastNotificationId,
-      includeOwn: this.notificationIncludeOwn,
-    };
+  async _fetchLatestNotifications(): Promise<any[]> {
+    const notifications = await this.getNotifications({
+      ts: Math.floor(this.lastNotificationsTimestamp / 1000)
+    });
 
-    if (!this.lastNotificationId)
-      opts.timeSpan = interval + 1;
-
-    const notifications = await this.getNotifications(opts);
-
-    if (notifications && notifications.length > 0)
-      this.lastNotificationId = notifications[notifications.length - 1].id;
-
+    this.lastNotificationsTimestamp = Date.now();
 
     return notifications;
   }
@@ -176,7 +170,7 @@ export class API {
   initNotifications(int: number = 10): Observable<any[]> {
     return interval(int * 1000)
       .pipe(
-        switchMap(() => fromPromise(this._fetchLatestNotifications(int))),
+        switchMap(() => fromPromise(this._fetchLatestNotifications())),
         retryWhen(err =>
           err.pipe(
             map((err) => !err || err !== MWCErrors.NOT_FOUND && err !== MWCErrors.NOT_AUTHORIZED),
@@ -488,7 +482,7 @@ export class API {
   }
 
   /**
-   * Seed from external wallet public key
+   * Seed from external wallet key
    *
    * @param {String} xPubKey
    * @param {String} source - A name identifying the source of the xPrivKey (e.g. ledger, TREZOR, ...)
@@ -606,8 +600,7 @@ export class API {
     try {
       return await this.openWallet();
     } catch (e) {
-
-      if (e.code != 'NOT_AUTHORIZED') {
+      if (e != MWCErrors.NOT_AUTHORIZED) {
         throw e;
       } else {
 
@@ -635,16 +628,21 @@ export class API {
           singleAddress: true, //daedalus wallets are single-addressed
         };
 
-        let res = await this._doPostRequest('/v1/recreate_wallet/', args);
+        try {
+          let res = await this._doPostRequest('/v1/recreate_wallet/', args);
 
-        if (res) {
-          let walletId = res.walletId;
-          let parentAddress = res.parentAddress;
-          this.credentials.addWalletInfo(walletId, defaultOpts.walletName, defaultOpts.m, defaultOpts.n, defaultOpts.copayerName, parentAddress);
+          if (res) {
+            let walletId = res.walletId;
+            let parentAddress = res.parentAddress;
+            this.credentials.addWalletInfo(walletId, defaultOpts.walletName, defaultOpts.m, defaultOpts.n, defaultOpts.copayerName, parentAddress);
 
-          return this.doJoinWallet(walletId, walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, defaultOpts.copayerName, {});
-        } else {
-          throw new Error('failed to recreate wallet');
+            return this.doJoinWallet(walletId, walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, defaultOpts.copayerName, {});
+          } else {
+            throw 'Failed to recreate wallet';
+          }
+        } catch (err) {
+          console.log('Failed to recreate wallet', err);
+          throw 'Failed to recreate wallet';
         }
       }
     }
@@ -663,7 +661,7 @@ export class API {
    * @param {String} opts.entropySourcePath - Only used if the wallet was created on a HW wallet, in which that private
    *   keys was not available for all the needed derivations
    */
-  importFromMnemonic(words: string, opts: any = {}): Promise<any> {
+  async importFromMnemonic(words: string, opts: any = {}): Promise<any> {
     this.log.debug('Importing from 12 Words');
 
     function derive(nonCompliantDerivation) {
@@ -677,13 +675,11 @@ export class API {
       this.credentials = derive(false);
     } catch (e) {
       this.log.error('Mnemonic error !:', e.Error);
-      return Promise.reject(MWCErrors.INVALID_BACKUP);
+      throw MWCErrors.INVALID_BACKUP;
     }
 
     return this._import().catch(err => {
-      if (err == MWCErrors.INVALID_BACKUP) return Promise.reject(err);
       if (err == MWCErrors.NOT_AUTHORIZED || err == MWCErrors.WALLET_DOES_NOT_EXIST) {
-
         let altCredentials = derive(true);
         if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return Promise.reject(err);
         this.credentials = altCredentials;
@@ -718,7 +714,7 @@ export class API {
   }
 
   /**
-   * Import from Extended Public Key
+   * Import from Extended Key
    *
    * @param {String} xPubKey
    * @param {String} source - A name identifying the source of the xPrivKey
@@ -820,48 +816,46 @@ export class API {
   };
 
 
-  openWallet(): Promise<any> {
+  async openWallet(): Promise<any> {
     this.log.warn('Opening wallet');
-    return new Promise((resolve, reject) => {
+    $.checkState(this.credentials);
 
-      $.checkState(this.credentials);
-      if (this.credentials.isComplete() && this.credentials.hasWalletInfo()) {
-        this.log.warn('WALLET OPEN');
-        return resolve(true); // wallet is already open
+    if (this.credentials.isComplete() && this.credentials.hasWalletInfo()) {
+      this.log.warn('WALLET OPEN');
+      return true; // wallet is already open
+    }
+
+    try {
+      const ret = await this._doGetRequest('/v1/wallets/', { includeExtendedInfo: 1 });
+      const wallet = ret.wallet;
+      await this._processStatus(ret);
+
+      if (!this.credentials.hasWalletInfo()) {
+        const me: any = _.find(wallet.copayers, {
+          id: this.credentials.copayerId,
+        });
+        this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.parentAddress);
       }
 
-      return this._doGetRequest('/v1/wallets/', { includeExtendedInfo: 1 }).then((ret) => {
-        const wallet = ret.wallet;
+      if (wallet.status != 'complete')
+        return;
 
-        return this._processStatus(ret).then(() => {
+      if (this.credentials.walletPrivKey) {
+        if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
+          throw MWCErrors.SERVER_COMPROMISED;
+        }
+      } else {
+        // this should only happen in AIR-GAPPED flows
+        this.log.warn('Could not verify copayers key (missing wallet Private Key)');
+      }
 
-          if (!this.credentials.hasWalletInfo()) {
-            const me: any = _.find(wallet.copayers, {
-              id: this.credentials.copayerId,
-            });
-            this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.parentAddress);
-          }
+      this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
 
-          if (wallet.status != 'complete')
-            return resolve();
-
-          if (this.credentials.walletPrivKey) {
-            if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
-              return reject(MWCErrors.SERVER_COMPROMISED);
-            }
-          } else {
-            // this should only happen in AIR-GAPPED flows
-            this.log.warn('Could not verify copayers key (missing wallet Private Key)');
-          }
-
-          this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
-
-          return resolve(ret);
-        });
-      }).catch(err => {
-        return reject(err);
-      });
-    });
+      return ret;
+    } catch (err) {
+      console.log('Error opening wallet! ', err);
+      throw err;
+    }
   };
 
   _getHeaders(): Headers {
@@ -872,7 +866,7 @@ export class API {
   };
 
 
-  protected async _doRequest(method: string, url: string, qs?: any, body?: any, useSession?: boolean, secondRun?: boolean) {
+  protected async _doRequest(method: string, url: string, qs?: any, body?: any, useSession?: boolean, secondRun?: boolean, bodyEncoding: 'json' | 'blob' | 'text' = 'json') {
     body = body || {};
 
     if (qs) {
@@ -925,7 +919,7 @@ export class API {
     let respBody: any;
 
     try {
-      respBody = await res.json();
+      respBody = await res[bodyEncoding]();
     } catch (err) {
       // Can't parse body
       console.log(err);
@@ -933,7 +927,7 @@ export class API {
     }
 
     if (!res.status) {
-      throw MWCErrors.CONNECTION_ERROR.text;
+      throw MWCErrors.CONNECTION_ERROR;
     }
 
     if (res.status >= 400) {
@@ -941,19 +935,24 @@ export class API {
 
       switch (res.status) {
         case 404:
-          throw MWCErrors.NOT_FOUND.text;
+          throw MWCErrors.NOT_FOUND;
 
         case 401:
           if (!secondRun) {
-            await this._doRequest('post', '/v1/login', null, null, false, true);
+            try {
+              await this._doRequest('post', '/v1/login', null, null, false, true);
+            } catch (err) {
+              console.log('Failed to login ', err);
+              throw MWCErrors.NOT_AUTHORIZED;
+            }
             return this._doRequest(method, url, qs, body, useSession, true);
           } else {
-            throw MWCErrors.AUTHENTICATION_ERROR.text;
+            throw MWCErrors.NOT_AUTHORIZED;
           }
 
         case 502:
         case 504:
-          throw MWCErrors.SERVER_UNAVAILABLE.text;
+          throw MWCErrors.SERVER_UNAVAILABLE;
 
         default:
           if (MWCErrors[res.status]) {
@@ -1158,7 +1157,7 @@ export class API {
    * @param {String} opts.customData
    * @param {Callback} cb
    */
-  public doJoinWallet(walletId: any, walletPrivKey: any, xPubKey: any, requestPubKey: any, copayerName: string, opts: any = {}): Promise<any> {
+  doJoinWallet(walletId: any, walletPrivKey: any, xPubKey: any, requestPubKey: any, copayerName: string, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
 
       // Adds encrypted walletPrivateKey to CustomData
@@ -1669,25 +1668,8 @@ export class API {
 
   /**
    * Get latest notifications
-   *
-   * @param {object} opts
-   * @param {String} opts.lastNotificationId (optional) - The ID of the last received notification
-   * @param {String} opts.timeSpan (optional) - A time window on which to look for notifications (in seconds)
-   * @param {String} opts.includeOwn[=false] (optional) - Do not ignore notifications generated by the current copayer
-   * @returns {Callback} cb - Returns error or an array of notifications
    */
-  // TODO: Make this return a promise of []Notifications
-  getNotifications(opts: any = {}): Promise<any> {
-    $.checkState(this.credentials);
-
-    const qs: any = {};
-
-    if (opts.lastNotificationId) {
-      qs.notificationId = opts.lastNotificationId;
-    } else if (opts.timeSpan) {
-      qs.timeSpan = opts.timeSpan;
-    }
-
+  getNotifications(qs: any = {}): Promise<any> {
     return this._doGetRequest('/v1/notifications/', qs);
   };
 
@@ -2186,11 +2168,11 @@ export class API {
     try {
       publicKeyRing = JSON.parse(Utils.decryptMessage(encryptedPkr, this.credentials.personalEncryptingKey));
     } catch (ex) {
-      throw new Error('Could not decrypt public key ring');
+      throw new Error('Could not decrypt key ring');
     }
 
     if (!_.isArray(publicKeyRing) || publicKeyRing.length != n) {
-      throw new Error('Invalid public key ring');
+      throw new Error('Invalid key ring');
     }
 
     this.credentials.m = m;
@@ -2227,16 +2209,13 @@ export class API {
 
   /**
    * Broadcast raw transaction
-   *
-   * @param {Object} opts
-   * @param {String} opts.network
-   * @param {String} opts.rawTx
-   * @param {Callback} cb
-   * @return {Callback} cb - Return error or txid
    */
-  broadcastRawTx(opts?: any): Promise<any> {
+  broadcastRawTx(rawTx: string): Promise<any> {
     $.checkState(this.credentials);
-    opts = opts || {};
+    const opts = {
+      rawTx,
+      network: ENV.network,
+    };
 
     const url = '/v1/broadcast_raw/';
     return this._doPostRequest(url, opts);
@@ -2649,6 +2628,14 @@ export class API {
 
   deleteInviteRequest(id: string): Promise<void> {
     return this._doDeleteRequest('/v1/invite-requests/' + id);
+  }
+
+  async getHistory(start?: number, end?: number): Promise<IDisplayTransaction[]> {
+    return this._doGetRequest('/v2/history', { start, end });
+  }
+
+  async getMempoolHistory(): Promise<IDisplayTransaction[]> {
+    return this._doGetRequest('/v2/history/mempool');
   }
 
 }

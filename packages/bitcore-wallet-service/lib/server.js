@@ -25,7 +25,7 @@ var BlockchainExplorer = require('./blockchainexplorer');
 var FiatRateService = require('./fiatrateservice');
 var LocalDaemon = require('./blockchainexplorers/localdaemon');
 
-var request = require('request');
+var request = require('request-promise-native');
 
 var Model = require('./model');
 var Wallet = Model.Wallet;
@@ -40,6 +40,12 @@ var fiatRateService;
 var serviceVersion;
 var localMeritDaemon;
 var log;
+
+const getDataFromBCE = (path, qs) => request({
+  url: config.services.blockchainExplorer + path,
+  qs,
+  json: true,
+});
 
 /**
  * Creates an instance of the Bitcore Wallet Service.
@@ -88,8 +94,6 @@ WalletService.initialize = function(opts, cb) {
   blockchainExplorer = opts.blockchainExplorer || blockchainExplorer || new BlockchainExplorer(blockchainExplorerOpts);
   localMeritDaemon = new LocalDaemon(opts.node);
   log = opts.node.log;
-
-  if (opts.request) request = opts.request;
 
   function initStorage(cb) {
     if (opts.storage) {
@@ -437,35 +441,6 @@ WalletService.prototype.createWallet = function(opts, cb) {
           log.debug('Wallet created', wallet.id, opts.network);
           newWallet = wallet;
           return acb(err);
-        });
-      },
-      function(acb) {
-        // parent address might be an alias, so let's fetch it from blockchain explorer first then get its wallet ID
-        self.blockchainExplorer.getReferral(opts.parentAddress, function(err, referral) {
-          if (err || !referral) {
-            log.debug('Unable to get referral for parent address: ' + opts.parentAddress);
-            log.debug(err);
-            return acb();
-          }
-
-          const { address } = referral;
-          self.storage.fetchAddress(address, (err, parentAddress) => {
-            if (err || !parentAddress) {
-              log.debug('Unable to fetch address: ' + address);
-              log.debug(err);
-              return acb();
-            }
-
-            self._notify(
-              'IncomingInviteRequest',
-              {
-                walletId: parentAddress.walletId,
-                creatorId: parentAddress.walletId,
-              },
-              null,
-              acb
-            );
-          });
         });
       },
     ],
@@ -882,33 +857,6 @@ WalletService.prototype._addCopayerToWallet = function(wallet, opts, cb) {
       async.series(
         [
           function(next) {
-            self._notify(
-              'NewCopayer',
-              {
-                walletId: opts.walletId,
-                copayerId: copayer.id,
-                copayerName: copayer.name,
-              },
-              next
-            );
-          },
-          function(next) {
-            if (wallet.isComplete() && wallet.isShared()) {
-              self._notify(
-                'WalletComplete',
-                {
-                  walletId: opts.walletId,
-                },
-                {
-                  isGlobal: true,
-                },
-                next
-              );
-            } else {
-              next();
-            }
-          },
-          function(next) {
             if (wallet.isComplete()) {
               var address = wallet.createAddress(false);
               address.signed = true;
@@ -1209,19 +1157,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
   function createNewAddress(wallet, cb) {
     var address = wallet.createAddress(false);
 
-    self.storage.storeAddressAndWallet(wallet, address, function(err) {
-      if (err) return cb(err);
-
-      self._notify(
-        'NewAddress',
-        {
-          address: address.address,
-        },
-        function() {
-          return cb(null, address);
-        }
-      );
-    });
+    self.storage.storeAddressAndWallet(wallet, address, cb);
   }
 
   function getFirstAddress(wallet, cb) {
@@ -1622,22 +1558,7 @@ WalletService.prototype.getBalance = function(addresses, opts, cb) {
         return self._getBalanceOneStep(activeAddresses, opts, cb);
       } else {
         log.debug('Requesting partial balance for ' + activeAddresses.length + ' out of ' + nbAddresses + ' addresses');
-        self._getBalanceFromAddresses(activeAddresses, function(err, partialBalance) {
-          if (err) return cb(err);
-          cb(null, partialBalance);
-          setTimeout(function() {
-            self._getBalanceOneStep(activeAddresses, opts, function(err, fullBalance) {
-              if (err) return;
-              if (!_.isEqual(partialBalance, fullBalance)) {
-                log.info('Balance in active addresses differs from final balance');
-                self._notify('BalanceUpdated', fullBalance, {
-                  isGlobal: true,
-                });
-              }
-            });
-          }, 1);
-          return;
-        });
+        self._getBalanceFromAddresses(activeAddresses, cb);
       }
     });
   });
@@ -2834,9 +2755,7 @@ WalletService.prototype.removePendingTx = function(opts, cb) {
         var deleteLockTime = self.getRemainingDeleteLockTime(txp);
         if (deleteLockTime > 0) return cb(Errors.TX_CANNOT_REMOVE);
 
-        self.storage.removeTx(self.walletId, txp.id, function() {
-          self._notifyTxProposalAction('TxProposalRemoved', txp, cb);
-        });
+        self.storage.removeTx(self.walletId, txp.id, cb);
       }
     );
   });
@@ -2928,31 +2847,7 @@ WalletService.prototype.signTx = function(opts, cb) {
 
         self.storage.storeTx(self.walletId, txp, function(err) {
           if (err) return cb(err);
-
-          async.series(
-            [
-              function(next) {
-                self._notifyTxProposalAction(
-                  'TxProposalAcceptedBy',
-                  txp,
-                  {
-                    copayerId: self.copayerId,
-                  },
-                  next
-                );
-              },
-              function(next) {
-                if (txp.isAccepted()) {
-                  self._notifyTxProposalAction('TxProposalFinallyAccepted', txp, next);
-                } else {
-                  next();
-                }
-              },
-            ],
-            function() {
-              return cb(null, txp);
-            }
-          );
+          cb(null, txp);
         });
       }
     );
@@ -2971,14 +2866,6 @@ WalletService.prototype._processBroadcast = function(txp, opts, cb) {
     var extraArgs = {
       txid: txp.txid,
     };
-
-    if (opts.byThirdParty && !txp.isInvite) {
-      self._notifyTxProposalAction('OutgoingTxByThirdParty', txp, extraArgs);
-    } else if (txp.isInvite) {
-      self._notifyTxProposalAction('OutgoingInviteTx', txp, extraArgs);
-    } else {
-      self._notifyTxProposalAction('OutgoingTx', txp, extraArgs);
-    }
 
     self.storage.softResetTxHistoryCache(self.walletId, function() {
       return cb(err, txp);
@@ -3078,48 +2965,7 @@ WalletService.prototype.rejectTx = function(opts, cb) {
 
       txp.reject(self.copayerId, opts.reason);
 
-      self.storage.storeTx(self.walletId, txp, function(err) {
-        if (err) return cb(err);
-
-        async.series(
-          [
-            function(next) {
-              self._notifyTxProposalAction(
-                'TxProposalRejectedBy',
-                txp,
-                {
-                  copayerId: self.copayerId,
-                },
-                next
-              );
-            },
-            function(next) {
-              if (txp.status == 'rejected') {
-                var rejectedBy = _.map(
-                  _.filter(txp.actions, {
-                    type: 'reject',
-                  }),
-                  'copayerId'
-                );
-
-                self._notifyTxProposalAction(
-                  'TxProposalFinallyRejected',
-                  txp,
-                  {
-                    rejectedBy: rejectedBy,
-                  },
-                  next
-                );
-              } else {
-                next();
-              }
-            },
-          ],
-          function() {
-            return cb(null, txp);
-          }
-        );
-      });
+      self.storage.storeTx(self.walletId, txp, cb);
     }
   );
 };
@@ -3395,7 +3241,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           index: item.index,
           // TODO: handle singleAddress and change addresses
           // isChange: address ? (address.isChange || wallet.singleAddress) : false,
-          isChange: address ? (address.isChange || wallet.singleAddress) && !isInvite : false,
+          isChange: address ? (address.isChange || wallet.singleAddress) : false,
           data: item.data,
         };
       });
@@ -3460,12 +3306,21 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       }
 
       if (opts.includeExtendedInfo) {
-        newTx.inputs = _.map(inputs, function(input) {
-          return _.pick(input, 'address', 'alias', 'amount', 'isMine', 'index');
-        });
-        newTx.outputs = _.map(outputs, function(output) {
-          return _.pick(output, 'address', 'alias', 'amount', 'isMine', 'index', 'data');
-        });
+        const myInput = inputs.find(input => input.isMine);
+
+        if (myInput) {
+          inputs = [myInput];
+          outputs = [outputs.find(output => !output.isMine && !output.isChange)];
+        } else {
+          inputs = [inputs[0]];
+          outputs = [outputs.find(output => output.isMine)];
+        }
+
+        console.log("Setting inputs and outputs", inputs.length, outputs.length);
+
+        newTx.inputs = inputs.map(input => _.pick(input, 'address', 'alias', 'amount', 'isMine', 'index'));
+
+        newTx.outputs = outputs.map(output => _.pick(output, 'address', 'alias', 'amount', 'isMine', 'index', 'data'));
       } else {
         // TODO: handle singleAddress and change addresses
         // outputs = _.filter(outputs, {
@@ -3704,6 +3559,37 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
   });
 };
 
+WalletService.prototype.getTxHistory2 = async function(opts) {
+  opts = opts || {};
+  try {
+    const addresses = await promisify(this.storage.fetchAddresses.bind(this.storage))(this.walletId);
+    const histories = await Promise.all(
+      addresses.map(
+        ({address}) => getDataFromBCE('/history/' + address, { start: opts.start, end: opts.end })
+      )
+    );
+
+    return Array.prototype.concat.apply([], histories).sort((a, b) => b.timestamp - a.timestamp);
+  } catch (err) {
+    throw 'Unable to get wallet history';
+  }
+};
+
+WalletService.prototype.getMempoolHistory = async function() {
+  try {
+    const addresses = await promisify(this.storage.fetchAddresses.bind(this.storage))(this.walletId);
+    const histories = await Promise.all(
+      addresses.map(
+        ({address}) => getDataFromBCE('/mempool-history/' + address)
+      )
+    );
+
+    return Array.prototype.concat.apply([], histories).sort((a, b) => b.timestamp - a.timestamp);
+  } catch (err) {
+    throw 'Unable to get wallet history';
+  }
+};
+
 /**
  * Scan the blockchain looking for addresses having some activity
  *
@@ -3814,9 +3700,6 @@ WalletService.prototype.startScan = function(opts, cb) {
       result: err ? 'error' : 'success',
     };
     if (err) data.error = err;
-    self._notify('ScanFinished', data, {
-      isGlobal: true,
-    });
   }
 
   self.getWallet({}, function(err, wallet) {
@@ -3862,6 +3745,16 @@ WalletService.prototype.validateAddress = function(address, cb) {
   } catch (e) {
     return cb(new ClientError(`Invalid network: ${e.message}`));
   }
+};
+
+WalletService.prototype.getReferral = function(refid, cb) {
+  const bc = this._getBlockchainExplorer();
+
+  bc.getReferral(refid, function(err, referral) {
+    if (err) return cb(err);
+
+    cb(null, referral);
+  });
 };
 
 /**

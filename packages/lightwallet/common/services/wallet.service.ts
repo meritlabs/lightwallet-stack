@@ -12,7 +12,10 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { Events } from 'ionic-angular/util/events';
 import * as _ from 'lodash';
 import { AlertService } from "@merit/common/services/alert.service";
-
+import { TxProposal } from '@merit/common/models/tx-proposal';
+import { Utils } from '@merit/common/merit-wallet-client/lib/common';
+import { Transaction, HDPrivateKey, HDPublicKey, crypto } from 'bitcore-lib';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
 export function accessWallet(target, key: string, descriptor: any) {
 
@@ -56,13 +59,12 @@ export function accessWallet(target, key: string, descriptor: any) {
 
 @Injectable()
 export class WalletService {
-
-
   constructor(private logger: LoggerService,
               private mwcService: MWCService,
               private configService: ConfigService,
               private profileService: ProfileService,
               private persistenceService: PersistenceService,
+              private persistenceService2: PersistenceService2,
               private mnemonicService: MnemonicService,
               private easySendService: EasySendService,
               private events: Events,
@@ -110,6 +112,12 @@ export class WalletService {
       throw new Error('TX_NOT_ACCEPTED');
 
     return wallet.broadcastTxProposal(txp);
+  }
+
+  @accessWallet
+  async sendTransaction(wallet: MeritWalletClient, txp: TxProposal) {
+    const signedTx = await txp.getSignedRawTx();
+    return wallet.broadcastRawTx(signedTx)
   }
 
   @accessWallet
@@ -165,31 +173,29 @@ export class WalletService {
    * @param {number=1} [amount] - number of invites to send. defaults to 1
    * @param {string} [script]
    * @param {string} [message] - message to send to a receiver
-   *
    */
   @accessWallet
   async sendInvite(wallet: MeritWalletClient, toAddress: string, amount: number = 1, script = null, message: string = ''): Promise<any> {
     amount = parseInt(amount as any);
-    const opts = {
-      invite: true,
-      outputs: [_.pickBy({
-        amount,
-        toAddress,
-        message,
-        script
-      })]
-    };
 
-    let txp = await wallet.createTxProposal(opts);
-    txp = await wallet.publishTxProposal({ txp });
-    txp = await wallet.signTxProposal(txp);
+    const txp = TxProposal.create({
+      fromAddress: wallet.displayWallet.address,
+      toAddress,
+      amount,
+      utxos: wallet.displayWallet.utxos,
+      isInvite: true,
+      wallet: wallet.displayWallet,
+    });
 
-    await wallet.getStatus();
-    if (wallet.availableInvites == 0) throw new Error('You do not have free invites you can send');
+    txp.toScript = script;
+    txp.setOutputs();
 
-    txp = await wallet.broadcastTxProposal(txp);
+    if (wallet.displayWallet.balance.spendableInvites == 0) {
+      throw new Error('You do not have free invites you can send');
+    }
 
-    return txp;
+    const signedTx = await txp.getSignedRawTx();
+    return wallet.broadcastRawTx(signedTx);
   }
 
   @accessWallet

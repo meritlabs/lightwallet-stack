@@ -18,9 +18,9 @@
           <div class="wallet__balance">
             <merit-icon name="coins"></merit-icon>
             <ng-container *ngIf="!wallet.balanceHidden; else balanceHidden">
-              <span>{{ wallet.totalBalanceMicros | toMRT:null:true }}
+              <span>{{ wallet.balance.amountMrt | toMRT:null:true }}
                 <small>MRT</small>
-                <small *ngIf="wallet.totalBalanceMicros | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})</small>
+                <small *ngIf="wallet.balance.amountMrt | toFiat | async as totalBalanceFiat">({{ totalBalanceFiat }})</small>
               </span>
             </ng-container>
             <ng-template #balanceHidden>
@@ -28,7 +28,7 @@
             </ng-template>
           </div>
           <div class="wallet__invites">
-            <merit-icon name="invite"></merit-icon> Available invites: {{ wallet.availableInvites }}&nbsp;<span *ngIf="wallet.pendingInvites">&nbsp;(+{{wallet.pendingInvites}} pending)</span>
+            <merit-icon name="invite"></merit-icon> Available invites: {{ wallet.balance.spendableInvites }}&nbsp;<span *ngIf="wallet.balance.pendingInvites">&nbsp;(+{{wallet.balance.pendingInvites}} pending)</span>
           </div>
           <div class="wallet__navigation">
             <div class="wallet__button wallet__button--send" [routerLink]="'/send'">

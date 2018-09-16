@@ -17,7 +17,6 @@ import { WalletEffects } from '@merit/common/effects/wallet.effects';
 import { IRootAppState, reducer } from '@merit/common/reducers';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
 import { AlertService } from '@merit/common/services/alert.service';
-import { GoalsService } from '@merit/common/services/goals.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
@@ -38,23 +37,38 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoadingControllerService } from '@merit/common/services/loading-controller.service';
 import { DesktopLoadingControllerService } from '@merit/desktop/services/desktop-loading-controller.service';
+import { getLatestValue } from '@merit/common/utils/observables';
+import { selectWalletsLoading } from '@merit/common/reducers/wallets.reducer';
+import { AppSettingsService } from '@merit/common/services/app-settings.service';
+import { RateService } from '@merit/common/services/rate.service';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n');
 }
 
-export function loadConfigs(profileService: ProfileService, store: Store<IRootAppState>, goalsService: GoalsService) {
+export function loadConfigs(profileService: ProfileService, store: Store<IRootAppState>, appService: AppSettingsService, ratesService: RateService) {
   return async () => {
+    await getLatestValue(store.select(selectWalletsLoading), loading => !loading);
     const authorized = Boolean(await profileService.isAuthorized());
+
+    try {
+      await appService.getInfo();
+    } catch (err) {
+      console.log('Error loading app info', err);
+    }
+
+    try {
+      await ratesService.loadRates();
+    } catch (err) {
+      console.log('Error loading rates', err);
+    }
 
     store.dispatch(
       new UpdateAppAction({
         loading: false,
         authorized,
-      })
+      }),
     );
-
-    await goalsService.loadGoals();
   };
 }
 
@@ -108,7 +122,7 @@ export function getProviders() {
     {
       provide: APP_INITIALIZER,
       useFactory: loadConfigs,
-      deps: [ProfileService, Store, GoalsService],
+      deps: [ProfileService, Store, AppSettingsService, RateService],
       multi: true,
     },
     {
@@ -118,4 +132,5 @@ export function getProviders() {
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+}

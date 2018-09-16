@@ -13,16 +13,16 @@
   <div class="big-header" *ngIf="tx">
     <div class="date">{{ tx.time * 1000 | amDateFormat: 'DD MMM, hh:mma' }}</div>
     <div class="contact-info">
-      <contact-avatar [contact]="isEasySend? tx.contact : null"
-                      [fallback]="'assets/img/icons/' + image + '.svg'"></contact-avatar>
+      <contact-avatar [contact]="tx.contact"
+                      [fallback]="'assets/img/icons/' + tx.image + '.svg'"></contact-avatar>
       <h2 class="name">{{ tx.name }}</h2>
     </div>
     <div *ngIf="!tx.isInvite">
       <h2 class="amount">
-        {{ isCredit? '' : '-' }}{{tx.amount | toMRT }}
+        {{ tx.isCredit? '' : '-' }}{{ tx.amountMicros | toMRT }}
       </h2>
       <h3 class="detail-fiat" *ngIf="!tx.isCoinbase">
-        {{ isCredit? '' : tx.alternativeAmountStr? '-' : '' }}{{tx.alternativeAmountStr | toFiat : tx.amount | async}}
+        {{ tx.isCredit? '' : tx.alternativeAmountStr? '-' : '' }}{{tx.alternativeAmountStr | toFiat : tx.amountMicros | async}}
       </h3>
       <p class="fee" *ngIf="!tx.isCoinbase">
         Fee {{ tx.fees | toMRT }}
@@ -30,7 +30,7 @@
     </div>
     <div *ngIf="tx.isInvite && !tx.isWalletUnlock">
       <h2 class="amount">
-        {{ isCredit? '' : '-' }}{{ tx.amount + ' INV' }}
+        {{ tx.isCredit? '' : '-' }}{{ tx.amount + ' INV' }}
       </h2>
     </div>
   </div>
@@ -41,45 +41,47 @@
         <img src="assets/img/icons/wallet.svg" alt="">
       </ion-avatar>
       <ion-label>
-        <p>{{ isCredit? 'Received to' : 'Sent from' }}</p>
+        <p>{{ tx.isCredit? 'Received to' : 'Sent from' }}</p>
         <h2>{{ tx.displayWallet.name }}</h2>
       </ion-label>
     </ion-item>
-    <ng-container *ngIf="tx.easySendUrl && (tx.type === 'meritmoney' || tx.type === 'meritinvite')">
-      <button ion-item *ngIf="tx.easySendUrl && !isCancelled" [clip]="tx.easySendUrl" (click)="onMeritMoneyCopy()">
+    <ng-container *ngIf="tx.easySendUrl && !tx.cancelled && !tx.claimed">
+      <button ion-item [clip]="tx.easySendUrl" (click)="onMeritMoneyCopy()">
         <ion-icon item-start name="copy" color="primary" merit-icon></ion-icon>
         <ion-label>
           <h2 *ngIf="tx.type == 'meritmoney'">Copy MeritMoney Link</h2>
           <h2 *ngIf="tx.type == 'meritinvite'">Copy MeritInvite Link</h2>
         </ion-label>
       </button>
-      <button ion-item *ngIf="!isCancelled" (click)="cancelMeritMoney()">
+      <button ion-item (click)="cancelMeritMoney()">
         <ion-icon item-start name="md-close-circle" color="danger"></ion-icon>
         <ion-label>
           <h2>Cancel transaction</h2>
         </ion-label>
       </button>
     </ng-container>
-    <ion-item class="confirmation-status" [class.confirmed]="isConfirmed" text-wrap no-lines *ngIf="!tx.easySendUrl">
+
+    <ion-item class="confirmation-status" [class.confirmed]="tx.isConfirmed" text-wrap no-lines *ngIf="!tx.easySendUrl">
       <ion-avatar img-icon item-start>
-        <img [src]="'assets/img/icons/' + (isConfirmed? 'done' : 'timeout') + '.svg'" alt="">
+        <img [src]="'assets/img/icons/' + (tx.isConfirmed? 'done' : 'timeout') + '.svg'" alt="">
       </ion-avatar>
       <ion-label>
-        <h2>{{ isConfirmed? 'Complete' : 'Awaiting confirmation' }}</h2>
-        <p *ngIf="!isConfirmed">{{ confirmationsExplanation }}</p>
+        <h2>{{ tx.isConfirmed? 'Complete' : 'Awaiting confirmation' }}</h2>
+        <p *ngIf="!tx.isConfirmed">{{ confirmationsExplanation }}</p>
       </ion-label>
     </ion-item>
 
-    <ion-item  class="cancelled-status" text-wrap no-lines *ngIf="isEasySend && isCancelled">
+    <ion-item  class="cancelled-status" text-wrap no-lines *ngIf="tx.cancelled">
       <ion-avatar img-icon item-start>
-          <ion-icon item-start name="md-close-circle" color="danger"></ion-icon>
+        <ion-icon item-start name="md-close-circle" color="danger"></ion-icon>
       </ion-avatar>
       <ion-label>
-          <h2>Cancelled</h2>
+        <h2>Cancelled</h2>
       </ion-label>
     </ion-item>
+    <ion-item *ngIf="tx.claimed">Claimed by: {{ tx.claimedBy }}</ion-item>
 
-    <div class="info-box" *ngIf="!isConfirmed">
+    <div class="info-box" *ngIf="!tx.isConfirmed">
       You have money available, but it cannot be spent until it confirms on the blockchain.
       Wait some time. Usually 5-10 mins.
     </div>

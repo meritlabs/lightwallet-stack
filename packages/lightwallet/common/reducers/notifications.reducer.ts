@@ -63,7 +63,7 @@ export class AddNotificationAction implements Action {
 
   constructor(public notification: INotification) {
     if (!notification.id) {
-      this.notification.id = notification.txid || String(random(0, 1000000000));
+      this.notification.id = notification.id || notification.txid || String(random(0, 1000000000));
     }
   }
 }
@@ -124,32 +124,32 @@ export function processNotifications(notifications: INotification[]): INotificat
 export function formatNotification(notification: INotification): INotification {
   if (!notification.formatted) {
     switch (notification.type) {
-      case 'IncomingTx':
+      case 'incoming_tx':
         notification.title = 'New payment received';
-        notification.message = `A payment of ${ formatAmount(notification.amount, 'mrt') }MRT has been received into your wallet.`;
+        notification.message = `A payment of ${ notification.amount } has been received into your wallet.`;
         break;
 
-      case 'IncomingInvite':
+      case 'incoming_invite':
         notification.title = 'New invite received';
         notification.message = 'An invite has been received into your wallet.';
         break;
 
-      case 'WalletUnlocked':
+      case 'wallet_unlocked':
         notification.title = 'Wallet unlocked';
         notification.message = 'Your wallet was unlocked by incoming invite.';
         break;
 
-      case 'IncomingCoinbase':
+      case 'incoming_coinbase':
         notification.title = 'Mining reward received';
-        notification.message = `Congratulations! You received a mining reward of ${ formatAmount(notification.amount, 'mrt') }MRT.`;
+        notification.message = `Congratulations! You received a mining reward of ${ notification.amount }.`;
         break;
 
-      case 'IncomingInviteRequest':
+      case 'incoming_invite_request':
         notification.title = 'New invite request received';
         notification.text = 'An invite has been requested from your wallet.';
         break;
 
-      case 'MinedInvite':
+      case 'mined_invite':
         notification.title = 'Invite mined';
         notification.text = 'Congratulations! You have mined an invite token.';
         break;

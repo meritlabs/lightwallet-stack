@@ -13,7 +13,7 @@
           </div>
           <p class="alias" *ngIf="wallet.rootAlias">{{ '@' + wallet.rootAlias }}</p>
           <p class="regular-blue-text" *ngIf="!wallet.balanceHidden; else balanceHidden">
-            {{ wallet.balance.totalConfirmedAmount | toMRT }}
+            {{ wallet.amountMrt | toMRT }}
           </p>
           <ng-template #balanceHidden>
             <p class="regular-blue-text">

@@ -7,6 +7,9 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { Store } from '@ngrx/store';
+import { IRootAppState } from '../../../../../common/reducers';
+import { DeleteWalletAction } from '../../../../../common/reducers/wallets.reducer';
 
 @IonicPage()
 @Component({
@@ -28,7 +31,8 @@ export class EditWalletView {
     private toastCtrl: ToastControllerService,
     private configService: ConfigService,
     private walletService: WalletService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private store: Store<IRootAppState>,
   ) {
     this.wallet = this.navParams.get('wallet');
     this.logger.info(this.wallet);
@@ -129,19 +133,15 @@ export class EditWalletView {
   }
 
   private doDeleteWallet() {
-
-    this.profileService.deleteWallet(this.wallet.client).then(() => {
-      this.profileService.isAuthorized().then((authorized) => {
-        if (authorized) {
-          this.navCtrl.popToRoot();
-        } else {
-          const nav = this.app.getRootNavs()[0];
-          nav.setRoot('OnboardingView');
-          nav.popToRoot();
-        }
-      })
-    }).catch((err) => {
-      this.toastCtrl.error(JSON.stringify(err));
+    this.store.dispatch(new DeleteWalletAction(this.wallet.id));
+    this.profileService.isAuthorized().then((authorized) => {
+      if (authorized) {
+        this.navCtrl.popToRoot();
+      } else {
+        const nav = this.app.getRootNavs()[0];
+        nav.setRoot('OnboardingView');
+        nav.popToRoot();
+      }
     });
   }
 }

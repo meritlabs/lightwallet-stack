@@ -146,10 +146,7 @@ export class SendInviteFormController {
       this.success = true;
 
       this.store.dispatch(new RefreshOneWalletAction(this.selectedWallet.id, {
-        skipRewards: true,
-        skipAnv: true,
         skipAlias: true,
-        skipShareCode: true,
       }));
 
       this.store.dispatch(new RefreshOneWalletTransactions(this.selectedWallet.id));

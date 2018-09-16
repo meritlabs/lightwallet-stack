@@ -8,14 +8,20 @@ import { DEFAULT_WALLET_COLOR } from '../utils/constants';
 import { InviteRequest, InviteRequestsService } from '@merit/common/services/invite-request.service';
 import { IRankInfo } from '@merit/common/models/rank';
 import { getAddressInfo } from '@merit/common/utils/addresses';
+import { IUTXO } from '@merit/common/reducers/transactions.reducer';
 
 export interface IDisplayWalletOptions {
-  skipStatus?: boolean;
-  skipRewards?: boolean;
-  skipAnv?: boolean;
+  skipANV?: boolean;
   skipAlias?: boolean;
-  skipShareCode?: boolean;
   skipRankInfo?: boolean;
+  skipInviteRequests?: boolean;
+}
+
+export interface IWalletBalance {
+  amountMrt: number;
+  invites: number;
+  pendingInvites: number;
+  spendableInvites: number;
 }
 
 export function ClientProperty(target: DisplayWallet, key: keyof MeritWalletClient) {
@@ -38,13 +44,8 @@ export class DisplayWallet {
   @ClientProperty totalNetworkValue: number;
   @ClientProperty credentials: any;
   @ClientProperty network: string;
-  @ClientProperty status: any;
   @ClientProperty balanceHidden: boolean;
-  @ClientProperty balance: any;
-  @ClientProperty availableInvites: number;
-  @ClientProperty pendingInvites: number;
-  @ClientProperty sendableInvites: number;
-  @ClientProperty confirmed: boolean;
+  @ClientProperty utxos: IUTXO[];
 
   address: string;
 
@@ -54,21 +55,24 @@ export class DisplayWallet {
   // We will only have one icon type to start.
   iconUrl: string = '/assets/v1/icons/ui/wallets/wallet-ico-grey.svg';
 
+  balance: IWalletBalance = {
+    amountMrt: 0,
+    invites: 0,
+    pendingInvites: 0,
+    spendableInvites: 0,
+  };
+
+  get confirmed() {
+    return this.balance.invites > 0;
+  }
+
   get totalBalanceMicros() {
-    return this.balance.spendableAmount;
+    return this.balance.amountMrt;
   }
 
   totalNetworkValueMicro: number;
-  totalNetworkValueMerit: string;
-  totalNetworkValueFiat: string;
-
   miningRewardsMicro: number;
-  miningRewardsMerit: string;
-  miningRewardsFiat: string;
-
   growthRewardsMicro: number;
-  growthRewardsMerit: string;
-  growthRewardsFiat: string;
 
   communitySize: number;
 
@@ -80,7 +84,9 @@ export class DisplayWallet {
               private inviteRequestsService: InviteRequestsService,
               private txFormatService?: TxFormatService,
               private persistenceService2?: PersistenceService2) {
+    client.displayWallet = this;
     this.referrerAddress = this.address = this.client.getRootAddress().toString();
+    this.shareCode = this.address;
 
     if (!this.client.color) {
       this.client.color = DEFAULT_WALLET_COLOR;
@@ -103,25 +109,50 @@ export class DisplayWallet {
     this.balanceHidden = Boolean(preferences.balanceHidden);
   }
 
+  updateUtxos(utxos: IUTXO[]) {
+    utxos = utxos || [];
+    this.utxos = utxos;
+    const balance = utxos.reduce((balance: IWalletBalance, utxo: IUTXO) => {
+      if (!utxo.isInvite) {
+        balance.amountMrt += utxo.amount;
+        return balance;
+      }
+
+      balance.invites += utxo.amount;
+
+      if (utxo.isPending) {
+        balance.pendingInvites += utxo.amount;
+      } else {
+        balance.spendableInvites += utxo.amount;
+      }
+
+      return balance;
+    }, {
+      amountMrt: 0,
+      invites: 0,
+      pendingInvites: 0,
+      spendableInvites: 0,
+    });
+
+    balance.spendableInvites = Math.max(--balance.spendableInvites, 0);
+
+    this.balance = balance;
+  }
+
   async updateAlias() {
     try {
       const { alias } = await getAddressInfo(this.referrerAddress);
       if (alias) {
         this.alias = alias;
+        this.shareCode = '@' + this.alias;
       }
     } catch (err) {
       console.log('Error updating alias', err);
     }
   }
 
-  // Alias if you have one; otherwise address.
-  updateShareCode() {
-    this.shareCode = this.alias? '@' + this.alias : this.address;
-  }
-
-  async updateStatus() {
+  async updateInviteRequests() {
     try {
-      this.client.status = await this.client.getStatus();
       const visitedInvites = await this.persistenceService2.getVisitedInvites() || [];
       this.inviteRequests = (await this.inviteRequestsService.getInviteRequests(this.client))
         .map(request => {
@@ -129,19 +160,14 @@ export class DisplayWallet {
           return request;
         });
     } catch (err) {
-      console.log('Error updating status', err);
+      console.log('Error updating invite requests', err);
     }
   }
 
   async updateRankInfo() {
     try {
-      if (!this.confirmed) {
-        throw 'Wallet not confirmed';
-      }
-
       this.rankInfo = await this.client.getRankInfo();
     } catch (err) {
-      console.log('Unable to get rank info', err);
       this.rankInfo = {
         address: this.address,
         alias: this.alias,
@@ -156,7 +182,7 @@ export class DisplayWallet {
         communitySizeChangeDay: 0,
         communitySizeChangeWeek: 0,
         percentile: '0',
-        rank: null,
+        rank: 0,
         rankChange: 0,
         rankChangeDay: 0,
         rankChangeWeek: 0,
@@ -166,36 +192,12 @@ export class DisplayWallet {
     this.communitySize = this.rankInfo.communitySize || 0;
   }
 
-  async updateRewards() {
+  async updateANV() {
     try {
       this.totalNetworkValueMicro = await this.client.getANV();
-
-      const rewardsData = await this.client.getRewards();
-      // If we cannot properly fetch data, let's return wallets as-is.
-      if (rewardsData && rewardsData.length > 0) {
-        this.miningRewardsMicro = sumBy(rewardsData, 'rewards.mining');
-        this.growthRewardsMicro = sumBy(rewardsData, 'rewards.ambassador');
-        this.formatNetworkInfo();
-      }
     } catch (err) {
-      console.log('Error updating rewards', err);
-    }
-  }
-
-  private formatNetworkInfo() {
-    if (!isNil(this.totalNetworkValueMicro)) {
-      this.totalNetworkValueMerit = this.txFormatService.parseAmount(this.totalNetworkValueMicro, 'micros').amountUnitStr;
-      this.totalNetworkValueFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.totalNetworkValueMicro)).amountStr;
-    }
-
-    if (!isNil(this.miningRewardsMicro)) {
-      this.miningRewardsMerit = this.txFormatService.parseAmount(this.miningRewardsMicro, 'micros').amountUnitStr;
-      this.miningRewardsFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.miningRewardsMicro)).amountStr;
-    }
-
-    if (!isNil(this.growthRewardsMicro)) {
-      this.growthRewardsMerit = this.txFormatService.parseAmount(this.growthRewardsMicro, 'micros').amountUnitStr;
-      this.growthRewardsFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.growthRewardsMicro)).amountStr;
+      this.totalNetworkValueMicro = 0;
+      console.log('Error updating ANV', err);
     }
   }
 }
@@ -214,17 +216,14 @@ export async function updateDisplayWallet(displayWallet: DisplayWallet, options:
   if (!options.skipAlias)
     await displayWallet.updateAlias();
 
-  if (!options.skipStatus)
-    await displayWallet.updateStatus();
-
-  if (!options.skipRewards)
-    await displayWallet.updateRewards();
-
-  if (!options.skipShareCode)
-    displayWallet.updateShareCode();
+  if (!options.skipANV)
+    await displayWallet.updateANV();
 
   if (!options.skipRankInfo)
     await displayWallet.updateRankInfo();
+
+  if (!options.skipInviteRequests)
+    await displayWallet.updateInviteRequests();
 
   return displayWallet;
 }

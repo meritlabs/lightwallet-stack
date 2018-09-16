@@ -14,6 +14,7 @@ import {
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
+import { RefreshTransactionsAction } from '@merit/common/reducers/transactions.reducer';
 
 @Component({
   selector: 'app-toolbar',
@@ -49,7 +50,10 @@ export class ToolbarComponent {
   }
 
   refresh() {
-    this.store.dispatch(new RefreshWalletsAction());
+    this.store.dispatch(new RefreshTransactionsAction());
+    this.store.dispatch(new RefreshWalletsAction(false, {
+      skipAlias: true,
+    }))
   }
 
   shareNow() {

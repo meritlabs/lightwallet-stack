@@ -1,0 +1,36 @@
+\:host
+  display: flex
+  flex-flow: row wrap
+  align-items: flex-start
+  margin: 25px 0
+
+  .filter-option
+    display: block
+    background: white
+    cursor: pointer
+    font-size: 14px
+    padding: 3px 15px
+    transform: translate3d(0,0,0)
+    transition: all .15s cubic-bezier(.17,.67,.86,.62)
+
+    $filters-border-radius: 5px
+
+    &:first-of-type
+      border-top-left-radius: $filters-border-radius
+      border-bottom-left-radius: $filters-border-radius
+
+    &:last-of-type
+      border-top-right-radius: $filters-border-radius
+      border-bottom-right-radius: $filters-border-radius
+
+    &:not(:last-of-type)
+      border-right: 1px solid #f7f7f7
+
+    &:hover
+      background: #f6f7fa
+
+    &.active
+      background: #02afdc
+      color: white
+      &:hover
+        background: lighten(#02afdc, 5)

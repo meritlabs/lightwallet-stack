@@ -23,6 +23,8 @@ import { HistoryListComponent } from './history-list/history-list.component';
 import { ShareBoxComponent } from './share-box/share-box.component';
 import { TaskConfirmComponent } from '@merit/desktop/app/core/dialog/task-confirm/task-confirm.component';
 import { CommunityRankComponent } from './profile-stats/community-rank/community-rank.component';
+import { PaginationModule } from '@merit/desktop/app/core/components/pagination/pagination.module';
+import { HistoryFiltersModule } from '@merit/desktop/app/core/components/history-filters/history-filters.module';
 
 export function getComponents() {
   return [
@@ -56,6 +58,11 @@ export function getComponents() {
     CommonDirectivesModule,
   ],
   declarations: getComponents(),
-  exports: getComponents(),
+  exports: [
+    ...getComponents(),
+    PaginationModule,
+    HistoryFiltersModule,
+  ],
 })
-export class CoreComponentsModule {}
+export class CoreComponentsModule {
+}

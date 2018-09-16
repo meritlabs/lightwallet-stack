@@ -66,7 +66,7 @@ export class CreateWalletView {
 
   async ngOnInit() {
     const wallets = await this.store.select(selectWallets).pipe(take(1)).toPromise();
-    let wallet = wallets.find(w => w.availableInvites > 0);
+    let wallet = wallets.find(w => w.balance.spendableInvites > 0);
     wallet = wallet || wallets[0];
 
     if (wallet) {

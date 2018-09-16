@@ -44,6 +44,7 @@ const DEFAULT_STATE: IWalletsState = {
 };
 
 export enum WalletsActionType {
+  Init = '[Wallets] Init',
   Add = '[Wallets] Add',
   Update = '[Wallets] Update',
   UpdateOne = '[Wallets] Update one',
@@ -70,51 +71,58 @@ export class UpdateWalletsAction implements Action {
   totals: any;
   walletsMap: any = {};
 
-  constructor(public payload: DisplayWallet[]) {
-    payload.forEach(w => this.walletsMap[w.id] = w);
+  constructor(public wallets: DisplayWallet[]) {
+    wallets.forEach(w => this.walletsMap[w.id] = w);
   }
 }
 
+
+export class InitWalletsAction extends UpdateWalletsAction {
+  readonly type = WalletsActionType.Init;
+}
+
 export class UpdateOneWalletAction implements Action {
-  type = WalletsActionType.UpdateOne;
+  readonly type = WalletsActionType.UpdateOne;
 
   constructor(public wallet: DisplayWallet, public opts: IDisplayWalletOptions = {}) {}
 }
 
 export class RefreshWalletsAction implements Action {
-  type = WalletsActionType.Refresh;
+  readonly type = WalletsActionType.Refresh;
+
+  constructor(public init?: boolean, public opts: IDisplayWalletOptions = {}) {}
 }
 
 export class RefreshOneWalletAction implements Action {
-  type = WalletsActionType.RefreshOne;
+  readonly type = WalletsActionType.RefreshOne;
 
   constructor(public walletId: string, public opts: IDisplayWalletOptions = {}) {}
 }
 
 export class UpdateWalletTotalsAction implements Action {
-  type = WalletsActionType.UpdateTotals;
+  readonly type = WalletsActionType.UpdateTotals;
 
   constructor(public totals: IWalletTotals) {}
 }
 
 export class DeleteWalletAction implements Action {
-  type = WalletsActionType.DeleteWallet;
+  readonly type = WalletsActionType.DeleteWallet;
   constructor(public walletId: string) {}
 }
 
 export class DeleteWalletCompletedAction implements Action {
-  type = WalletsActionType.DeleteWalletCompleted;
+  readonly type = WalletsActionType.DeleteWalletCompleted;
   constructor(public walletId: string) {}
 }
 
 export class UpdateInviteRequestsAction implements Action {
-  type = WalletsActionType.UpdateInviteRequests;
+  readonly type = WalletsActionType.UpdateInviteRequests;
 
   constructor(public inviteRequests: InviteRequest[]) {}
 }
 
 export class IgnoreInviteRequestAction implements Action {
-  type = WalletsActionType.IgnoreInviteRequest;
+  readonly type = WalletsActionType.IgnoreInviteRequest;
   constructor(public address: string) {}
 }
 
@@ -160,12 +168,13 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
         loading: true
       };
 
+    case WalletsActionType.Init:
     case WalletsActionType.Update:
       return {
         ...state,
         loading: false,
-        wallets: action.payload,
-        walletsMap: action.walletsMap
+        wallets: [...action.wallets],
+        walletsMap: {...action.walletsMap}
       };
 
     case WalletsActionType.UpdateOne:
@@ -226,11 +235,12 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
 export const selectWalletsState = createFeatureSelector<IWalletsState>('wallets');
 export const selectWalletsLoading = createSelector(selectWalletsState, state => state.loading);
 export const selectWallets = createSelector(selectWalletsState, state => state.wallets);
-export const selectConfirmedWallets = createSelector(selectWallets, wallets => wallets.filter((w: DisplayWallet) => w.client.confirmed));
+export const selectConfirmedWallets = createSelector(selectWallets, wallets => wallets.filter((w: DisplayWallet) => w.confirmed));
+export const selectUnconfirmedWallets = createSelector(selectWallets, wallets => wallets.filter((w: DisplayWallet) => !w.confirmed));
 export const selectWalletTotals = createSelector(selectWalletsState, state => state.totals);
 export const selectWalletTotalsLoading = createSelector(selectWalletsState, state => state.totalsLoading);
 export const selectWalletById = (id: string) => createSelector(selectWalletsState, state => state.walletsMap[id]);
-export const selectWalletsWithInvites = createSelector(selectWallets, (wallets: DisplayWallet[]) => wallets.filter(wallet => wallet.availableInvites > 0));
+export const selectWalletsWithInvites = createSelector(selectWallets, (wallets: DisplayWallet[]) => wallets.filter(wallet => wallet.balance.spendableInvites > 0));
 export const selectInvites = createSelector(selectWalletTotals, totals => totals.invites);
 export const selectInviteRequests = createSelector(selectWalletsState, state => state.inviteRequests);
 export const selectNumberOfInviteRequests = createSelector(selectInviteRequests, inviteRequests => {

@@ -12,16 +12,13 @@ import { ReceiveViewController } from '@merit/common/controllers/receive-view.co
   styleUrls: ['./receive.view.sass'],
   encapsulation: ViewEncapsulation.None,
 })
-export class ReceiveView implements OnInit {
+export class ReceiveView {
   ctrl: ReceiveViewController;
 
   constructor(configService: ConfigService,
               store: Store<IRootAppState>,
               toastCtrl: ToastControllerService) {
     this.ctrl = new ReceiveViewController(configService, store, toastCtrl);
-  }
-
-  async ngOnInit() {
-    await this.ctrl.init();
+    this.ctrl.init();
   }
 }
