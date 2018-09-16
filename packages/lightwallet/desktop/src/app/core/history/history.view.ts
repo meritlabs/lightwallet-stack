@@ -7,6 +7,8 @@ import { DEFAULT_HISTORY_FILTERS, IDisplayTransaction, IHistoryFilters } from '@
 import { Subject } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { combineLatest } from 'rxjs/observable/combineLatest';
+import { selectWallets } from '@merit/common/reducers/wallets.reducer';
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @Component({
   selector: 'view-history',
@@ -39,11 +41,17 @@ export class HistoryView {
       map(([transactions, filters]) => transactions.filter(tx => filters[tx.action])),
       startWith([]),
     );
+  totalTransactions$: Observable<number> = this.filteredTransactions$.pipe(
+    map(txs => txs? txs.length : 0)
+  );
 
   paginatedTransactions$: Observable<IDisplayTransaction[]> = combineLatest(this.filteredTransactions$, this.page$)
     .pipe(
       map(([transactions, page]) => [...transactions].splice((page - 1) * this.limit, this.limit)),
     );
+
+  showWalletName$: Observable<boolean> = this.store.select(selectWallets)
+    .map((wallets: DisplayWallet[]) => wallets && wallets.length > 1);
 
   constructor(private store: Store<IRootAppState>) {
 

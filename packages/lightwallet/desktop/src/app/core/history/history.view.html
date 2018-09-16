@@ -4,8 +4,8 @@
   </h2>
   <history-filters [(ngModel)]="filters" (ngModelChange)="onFilterChange()"></history-filters>
 
-  <merit-pagination [limit]="limit" [total]="(filteredTransactions$ | async).length" [(ngModel)]="page" (ngModelChange)="onPageChange()"></merit-pagination>
-  <history-list [transactions]="paginatedTransactions$ | async" [loading]="loading$ | async"></history-list>
-  <merit-pagination [limit]="limit" [total]="(filteredTransactions$ | async).length" [(ngModel)]="page" (ngModelChange)="onPageChange()"></merit-pagination>
+  <merit-pagination [limit]="limit" [total]="totalTransactions$ | async" [(ngModel)]="page" (ngModelChange)="onPageChange()"></merit-pagination>
+  <history-list [transactions]="paginatedTransactions$ | async" [loading]="loading$ | async" [showWalletName]="showWalletName$ | async"></history-list>
+  <merit-pagination [limit]="limit" [total]="totalTransactions$ | async" [(ngModel)]="page" (ngModelChange)="onPageChange()"></merit-pagination>
 
 </div>
