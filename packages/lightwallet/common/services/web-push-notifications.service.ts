@@ -41,21 +41,11 @@ export class WebPushNotificationsService extends PushNotificationsService {
               logger: LoggerService,
               private pollingNotificationService: PollingNotificationsService,
               private persistenceService: PersistenceService2,
-              private store: Store<IRootAppState>) {
-    super(http, logger);
+              store: Store<IRootAppState>) {
+    super(http, logger, store);
     this.logger.info('Web PushNotifications service is alive!');
     this.platform = 'web';
     this.packageName = location.origin;
-  }
-
-  getWallets() {
-    return this.store.select(selectWallets)
-      .pipe(
-        filter((wallets: DisplayWallet[]) => wallets && wallets.length > 0),
-        take(1),
-        map((wallets: DisplayWallet[]) => wallets.map(wallet => wallet.client))
-      )
-      .toPromise();
   }
 
   enablePolling() {

@@ -2,7 +2,7 @@ import { Injectable, Optional } from '@angular/core';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { IRootAppState } from '@merit/common/reducers';
 import { AddNotificationAction } from '@merit/common/reducers/notifications.reducer';
-import { RefreshOneWalletAction } from '@merit/common/reducers/wallets.reducer';
+import { RefreshOneWalletAction, selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
@@ -11,16 +11,16 @@ import { uniqBy } from 'lodash';
 import { debounceTime, filter, map } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
 import { ElectronService } from '../../desktop/src/services/electron.service';
-import { IDisplayWalletOptions } from '@merit/common/models/display-wallet';
+import { DisplayWallet, IDisplayWalletOptions } from '@merit/common/models/display-wallet';
 import { RefreshOneWalletTransactions } from '@merit/common/reducers/transactions.reducer';
+import { getLatestValue } from '@merit/common/utils/observables';
 
 @Injectable()
 export class PollingNotificationsService {
   private pollingNotificationsSubscriptions: { [walletId: string]: Subscription } = {};
 
-  constructor(protected profileService: ProfileService,
-              protected logger: LoggerService,
-              @Optional() private store: Store<IRootAppState>,
+  constructor(protected logger: LoggerService,
+              private store: Store<IRootAppState>,
               @Optional() private persistenceService: PersistenceService2) {
     this.logger.info('Hello PollingNotification Service');
   }
@@ -31,7 +31,8 @@ export class PollingNotificationsService {
       return;
     }
 
-    (await this.profileService.getWallets()).forEach(w => this.enablePolling(w));
+    const wallets = await getLatestValue(this.store.select(selectWallets), wallets => wallets && wallets.length > 0);
+    wallets.forEach((w: DisplayWallet) => this.enablePolling(w.client));
   };
 
   disable() {

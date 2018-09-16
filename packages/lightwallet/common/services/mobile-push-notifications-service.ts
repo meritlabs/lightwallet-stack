@@ -12,6 +12,8 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { App, Platform } from 'ionic-angular';
 import * as _ from 'lodash';
+import { IRootAppState } from '@merit/common/reducers';
+import { Store } from '@ngrx/store';
 
 @Injectable()
 export class MobilePushNotificationsService extends PushNotificationsService {
@@ -35,8 +37,9 @@ export class MobilePushNotificationsService extends PushNotificationsService {
               platform: Platform,
               private FCM: FCM,
               private ngZone: NgZone,
-              private pollingNotifications: PollingNotificationsService) {
-    super(http, logger);
+              private pollingNotifications: PollingNotificationsService,
+              store: Store<IRootAppState>) {
+    super(http, logger, store);
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
     this.isAndroid = this.platformService.isAndroid;
@@ -50,8 +53,7 @@ export class MobilePushNotificationsService extends PushNotificationsService {
       });
     } else {
       this.logger.info('Push notifications are disabled, enabling long polling.');
-      // TODO: enable this when we're making use of it on mobile side
-      // this.pollingNotificationService.enable();
+      this.pollingNotifications.enable();
     }
   }
 
@@ -61,10 +63,6 @@ export class MobilePushNotificationsService extends PushNotificationsService {
   }
   protected disablePolling() {
     this.pollingNotifications.disable();
-  }
-
-  getWallets() {
-    return this.profileService.getWallets();
   }
 
   async init() {
