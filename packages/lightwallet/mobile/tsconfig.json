@@ -1,3 +1,16 @@
 {
-  "extends": "../tsconfig.mobile.json"
+  "extends": "../tsconfig.mobile.json",
+  "baseUrl": ".",
+  "paths": {
+    "@merit/mobile/*": ["../mobile/src/*"],
+    "@merit/common/*": ["../common/*"],
+    "@app/env": ["../common/environments/environment.example"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "../common/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
