@@ -33,6 +33,7 @@ import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import {
+  debounceTime,
   distinctUntilChanged,
   filter,
   map,
@@ -162,17 +163,13 @@ export class WalletEffects {
     ),
   );
 
-
   @Effect()
   updateUtxos$: Observable<UpdateWalletsAction> = this.actions$.pipe(
-    ofType(TransactionActionType.Update),
+    ofType(TransactionActionType.Update, TransactionActionType.UpdateOne),
+    debounceTime(500),
     withLatestFrom(this.store.select(selectWallets)),
     filter(([action, wallets]) => wallets && wallets.length > 0),
-    map(([action, wallets]) => {
-      // wallets.forEach((wallet: DisplayWallet) => wallet.updateUtxos((action as UpdateTransactionsAction).utxosByWallet[wallet.id]));
-
-      return new UpdateWalletsAction(wallets);
-    }),
+    map(([action, wallets]) => new UpdateWalletsAction(wallets)),
   );
 
   @Effect()
