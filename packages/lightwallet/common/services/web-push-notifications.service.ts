@@ -118,7 +118,7 @@ export class WebPushNotificationsService extends PushNotificationsService {
   async getToken() {
     if (!this.hasPermission) return;
     this.token = await this.firebaseMessaging.getToken();
-    this.logger.info('Token is ', this.token);
+    this.logger.info('FCM Token is ', this.token);
     return this.token;
   }
 
@@ -134,7 +134,6 @@ export class WebPushNotificationsService extends PushNotificationsService {
         if (data.data.walletId) {
           this.store.dispatch(new RefreshOneWalletAction(data.data.walletId, {
             skipAlias: true,
-            skipShareCode: true
           }));
         }
       }

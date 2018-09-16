@@ -80,6 +80,7 @@ var config = {
     inviteRequests: process.env.INVITE_REQUESTS_URL || 'http://localhost:8301',
     communityInfo: process.env.COMMUNITY_INFO_URL || 'http://localhost:8302',
     globalSend: process.env.GLOBALSEND_URL || 'http://localhost:8303',
+    blockchainExplorer: process.env.BLOCKCHAIN_EXPLORER_URL || 'http://localhost:8200',
   }
 };
 module.exports = config;

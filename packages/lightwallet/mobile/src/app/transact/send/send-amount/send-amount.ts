@@ -20,6 +20,7 @@ import { FormBuilder } from '@angular/forms';
 import { LoadingControllerService } from '@merit/common/services/loading-controller.service';
 import { getLatestValue } from '@merit/common/utils/observables';
 import { DisplayWallet } from '@merit/common/models/display-wallet';
+import { PersistenceService2 } from '../../../../../../common/services/persistence2.service';
 
 @IonicPage()
 @Component({
@@ -101,8 +102,9 @@ export class SendAmountView {
     private formBuilder: FormBuilder,
     private loadingCtrl: LoadingControllerService,
     private toastCtrl: ToastControllerService,
+    private persistenceService: PersistenceService2,
   ) {
-    this.ctrl = new SendFormController(store, formBuilder, sendService, logger, loadingCtrl, toastCtrl, rateService);
+    this.ctrl = new SendFormController(store, formBuilder, sendService, logger, loadingCtrl, toastCtrl, rateService, persistenceService);
   }
 
   async ngOnInit() {

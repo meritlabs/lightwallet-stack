@@ -11,7 +11,7 @@ import { ElectronService, IUpdateInfo } from '@merit/desktop/services/electron.s
   selector: 'merit-lw',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.sass'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent {
   constructor(private domCtrl: DOMController,
@@ -19,7 +19,7 @@ export class AppComponent {
               private easyReceiveService: EasyReceiveService,
               private logger: LoggerService,
               private updateDialogCtrl: UpdateDialogController,
-              private perstitenceService: PersistenceService2) {
+              private persistenceService: PersistenceService2) {
     // Services can't inject Renderer, so this is a workaround.
     domCtrl.rnd = renderer2;
   }
@@ -36,7 +36,7 @@ export class AppComponent {
       return;
     }
 
-    const lastIgnoredVersion: string = await this.perstitenceService.getValue(StorageKey.LastIgnoredUpdate);
+    const lastIgnoredVersion: string = await this.persistenceService.getValue(StorageKey.LastIgnoredUpdate);
 
     if (lastIgnoredVersion === updateInfo.version) {
       // We ignored this version in the past; let's not remind the user about it again.
@@ -58,7 +58,8 @@ export class AppComponent {
           window.history.replaceState({}, document.title, document.location.pathname);
         }
         this.logger.info('Returned from validate with: ', easyReceipt);
-      } catch (e) {}
+      } catch (e) {
+      }
     }
   }
 }

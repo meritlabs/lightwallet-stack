@@ -1,5 +1,5 @@
 import { getEasySendURL } from '@merit/common/models/easy-send';
-import * as _ from 'lodash';
+import { isEmpty, orderBy } from 'lodash';
 import {
   IDisplayTransaction,
   ITransactionIO,
@@ -18,11 +18,9 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[],
                                           feeService: FeeService,
                                           contactsProvider?: ContactsService,
                                           persistenceService?: PersistenceService2): Promise<IDisplayTransaction[]> {
-  if (_.isEmpty(walletHistory)) return [];
+  if (isEmpty(walletHistory)) return [];
 
   const easyReceiveFee = 20000;
-
-  walletHistory = _.sortBy(walletHistory, 'time');
 
   const globalSendsByAddress = {};
 
@@ -34,120 +32,40 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[],
 
   let meritMoneyAddresses = []; // registering merit money transactions so we can hide bound invite transactions
 
-  let pendingString;
-
   let visitedTxs: IVisitedTransaction[];
   if (persistenceService) {
     visitedTxs = await persistenceService.getVisitedTransactions() || [];
   }
 
+  walletHistory = orderBy(walletHistory, 'time', 'asc');
+
+  let foundWalletUnlock = false;
+
   walletHistory = await Promise.all(walletHistory.map(async (tx: IDisplayTransaction, i: number) => {
-    if (!_.isNil(tx) && !_.isNil(tx.action)) {
-      pendingString = tx.isPendingEasySend ? '(pending) ' : '';
+    const received = tx.type === 'credit';
 
-      let received: boolean = false,
-        isEasySend: boolean;
+    const { alias: inputAlias, address: inputAddress } = tx.inputs ? tx.inputs[0] || <any>{} : <any>{};
+    const { alias: outputAlias, address: outputAddress } = tx.outputs.find((output: ITransactionIO) => !!output.address && !output.isChange) || <any>{};
 
-      switch (tx.action) {
-        case TransactionAction.SENT:
-          tx.type = 'debit';
-          isEasySend = true;
-          break;
+    const input = inputAlias ? '@' + inputAlias : 'Anonymous',
+      output = outputAlias ? '@' + outputAlias : 'Anonymous';
 
-        case TransactionAction.RECEIVED:
-          tx.type = 'credit';
+    tx.name = tx.name || (received ? input : output);
+    tx.image = 'merit';
 
-          if (tx.isInvite) {
-            if (i === 0) {
-              tx.isWalletUnlock = true;
-              tx.name = 'Wallet Unlocked';
-            }
-          } else {
-            isEasySend = true;
-          }
-
-          received = true;
-          break;
-
-        case TransactionAction.MOVED:
-          tx.name = tx.actionStr = tx.isInvite ? 'Moved Invite' : 'Moved Merit';
-          break;
-      }
-
-      const { alias: inputAlias, address: inputAddress } = tx.inputs.find((input: ITransactionIO) => input.isMine === !received) || <any>{};
-      const { alias: outputAlias, address: outputAddress } = tx.outputs.find((output: ITransactionIO) => output.isMine === received) || <any>{};
-
-      tx.input = inputAlias ? '@' + inputAlias : 'Anonymous';
-      tx.output = outputAlias ? '@' + outputAlias : 'Anonymous';
-
-      tx.name = tx.name || (received ? tx.input : tx.output);
-
-      tx.addressFrom = inputAlias || inputAddress;
-      tx.addressTo = outputAlias || outputAddress;
-
-      tx.from = {
-        alias: inputAlias,
-        address: inputAddress,
-      };
-
-      tx.to = {
-        alias: outputAlias,
-        address: outputAddress,
-      };
-
-      if (!tx.isCoinbase && !tx.isWalletUnlock && contactsProvider) {
-        const contactAddress = received ? inputAddress || inputAlias : outputAddress || outputAlias;
-
-        try {
-          tx.contact = contactsProvider.get(contactAddress);
-          tx.name = tx.contact ? tx.contact.name.formatted : tx.name;
-        } catch (e) {
-        }
-      }
-
-      tx.actionStr = pendingString + tx.actionStr;
-
-      if (wallet && !tx.walletId) {
-        tx.walletId = wallet.id;
-        tx.wallet = wallet;
-      }
-
-      if (tx.isCoinbase) {
-        if (tx.isInvite) {
-          tx.name = 'Mined Invite';
-          tx.action = TransactionAction.INVITE;
-          tx.type = 'credit';
-        } else {
-          const output = tx.outputs.find(o => o.isMine);
-
-          if (output && output.index !== 0) {
-            // Ambassador reward
-            tx.name = 'Growth Reward';
-            tx.action = TransactionAction.AMBASSADOR_REWARD;
-            tx.isGrowthReward = true;
-          } else {
-            tx.name = 'Mining Reward';
-            tx.action = TransactionAction.MINING_REWARD;
-            tx.isMiningReward = true;
-          }
-        }
-      } else {
-        if (tx.outputs.some(o => o.amount == 0 && _.get(o, 'data', '').toLowerCase().indexOf('pool') > -1)) {
-          tx.name = 'Pool Reward';
-          tx.action = TransactionAction.POOL_REWARD;
-          tx.isPoolReward = true;
-        } else {
-          if (tx.outputs.some(o => o.amount == 0 && _.get(o, 'data', '').toLowerCase().indexOf('market') > -1)) {
-            tx.name = 'Market Escrow';
-            tx.isMarketPayment = true;
-          }
-        }
-      }
+    if (tx.isInvite && !foundWalletUnlock) {
+      tx.isWalletUnlock = foundWalletUnlock = true;
+      tx.name = 'Wallet unlock';
+      tx.action = TransactionAction.UNLOCK;
     }
+
+    tx.addressFrom = inputAlias ? '@' + inputAlias : inputAddress;
+    tx.addressTo = outputAlias ? '@' + outputAlias : outputAddress;
 
     if (globalSendsByAddress[tx.addressTo]) {
       const globalSend = globalSendsByAddress[tx.addressTo];
       tx.name = tx.isInvite ? 'MeritInvite' : 'MeritMoney';
+      tx.action = tx.isInvite ? TransactionAction.MERIT_INVITE : TransactionAction.MERIT_MONEY;
       tx.type = <any>tx.name.toLowerCase();
 
       if (tx.cancelled = globalSend.cancelled) {
@@ -166,6 +84,31 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[],
       }
     }
 
+    switch (tx.action) {
+      case TransactionAction.AMBASSADOR_REWARD:
+        tx.image = 'growth';
+        tx.name = 'Growth Reward';
+        break;
+
+      case TransactionAction.INVITE:
+        tx.image = 'invite';
+        tx.name = tx.isCoinbase? 'Mined invite' : tx.name;
+        break;
+
+      case TransactionAction.MINING_REWARD:
+        tx.image = tx.isInvite? 'invite' : 'mining';
+        tx.name = tx.isInvite? 'Mined invite' : 'Mining reward';
+        break;
+
+      case TransactionAction.POOL_REWARD:
+        tx.image = 'mining';
+        tx.name = 'Pool reward';
+        break;
+    }
+
+    tx.walletId = wallet.id;
+    tx.isCredit = tx.type === 'credit';
+    tx.isConfirmed = !tx.isCoinbase || tx.confirmations > 101;
     tx.isNew = false;
 
     if (persistenceService) {

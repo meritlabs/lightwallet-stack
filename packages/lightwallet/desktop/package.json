@@ -27,8 +27,8 @@
   "devDependencies": {
     "@angular-devkit/core": "0.3.2",
     "@angular/cli": "~1.7.1",
-    "@angular/compiler-cli": "5.0.3",
-    "@angular/language-service": "5.0.3",
+    "@angular/compiler-cli": "5.2.11",
+    "@angular/language-service": "5.2.11",
     "@ngtools/webpack": "1.10.1",
     "angular2-virtual-scroll": "^0.3.2",
     "autoprefixer": "^7.2.3",

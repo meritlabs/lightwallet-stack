@@ -1,0 +1,29 @@
+\:host
+  display: inline-block
+  margin: 25px 0
+  .main-container
+    display: flex
+    flex-flow: row nowrap
+    border: 1px solid rgba(0,0,0,0.2)
+    border-radius: 5px
+    overflow: hidden
+    .item
+      background: white
+      padding: 5px 10px
+
+      &:first-of-type, &:last-of-type
+        padding: 5px 15px
+
+      &:not(.disabled):not(.active)
+        cursor: pointer
+        &:hover
+          background: #f6f7fa
+
+      &.disabled
+        background: #d4d4d4
+        color: #5d5d5d
+
+      &.active
+        background: #02afdc
+        color: white
+

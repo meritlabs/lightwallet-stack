@@ -5,17 +5,8 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 
 export interface IAppConfig {
-  limits: {
-    totalCopayers: number;
-    mPlusN: number;
-  };
-
   wallet: {
-    requiredCopayers: number;
-    totalCopayers: number;
-    reconnectDelay: number;
     spendUnconfirmed: boolean;
-    idleDurationMin: number;
     settings: {
       unitName: string;
       unitToMicro: number;
@@ -26,28 +17,6 @@ export interface IAppConfig {
       defaultLanguage: string;
       feeLevel?: string;
     };
-  };
-
-  download: {
-    bitpay: {
-      url: string;
-    };
-    copay: {
-      url: string;
-    }
-  };
-
-  rateApp: {
-    lightwallet: {
-      ios: string;
-      android: string;
-      wp: string;
-    };
-  };
-
-
-  recentTransactions: {
-    enabled: boolean;
   };
 
   hideNextSteps: {
@@ -88,19 +57,9 @@ export interface IAppConfig {
 }
 
 const configDefault: IAppConfig = {
-  // wallet limits
-  limits: {
-    totalCopayers: 6,
-    mPlusN: 100
-  },
-
   // wallet default config
   wallet: {
-    requiredCopayers: 2,
-    totalCopayers: 3,
     spendUnconfirmed: true,
-    reconnectDelay: 5000,
-    idleDurationMin: 4,
     settings: {
       unitName: 'MRT',
       unitToMicro: 100000000,
@@ -111,28 +70,6 @@ const configDefault: IAppConfig = {
       defaultLanguage: '',
       feeLevel: 'normal'
     }
-  },
-
-  download: {
-    bitpay: {
-      url: 'https://merit.me/wallet'
-    },
-    copay: {
-      url: 'https://merit.me/#download'
-    }
-  },
-
-  rateApp: {
-    lightwallet: {
-      ios: 'http://coming.soon',
-      android: 'http://coming.soon',
-      wp: ''
-    }
-  },
-
-  // External services
-  recentTransactions: {
-    enabled: true
   },
 
   hideNextSteps: {

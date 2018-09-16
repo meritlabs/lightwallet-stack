@@ -63,7 +63,7 @@ export class EscrowPaymentView implements OnInit {
       validateOutputs: false,
     };
 
-    if (this.wallet.balance.spendableAmount < this.amount) {
+    if (this.wallet.balance.amountMrt < this.amount) {
       this.error = 'Insufficient funds';
       return;
     }

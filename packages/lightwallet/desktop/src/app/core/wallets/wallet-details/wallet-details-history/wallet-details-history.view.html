@@ -1,1 +1,5 @@
-<history-list [transactions]="transactions$ | async" [loading]="loading$ | async"></history-list>
+<history-filters [(ngModel)]="filters" (ngModelChange)="onFilterChange()"></history-filters>
+
+<merit-pagination [limit]="limit" [total]="(filteredTransactions$ | async).length" [(ngModel)]="page" (ngModelChange)="onPageChange()"></merit-pagination>
+<history-list [transactions]="paginatedTransactions$ | async" [loading]="loading$ | async" [showWalletName]="false"></history-list>
+<merit-pagination [limit]="limit" [total]="(filteredTransactions$ | async).length" [(ngModel)]="page" (ngModelChange)="onPageChange()"></merit-pagination>

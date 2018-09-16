@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-navbar color="light">
+    <ion-title>
+      History filters
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button clear (click)="dismiss()">
+        Done
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content>
+  <ion-list *ngIf="filters">
+    <ion-item>
+      <ion-label>Mining Rewards</ion-label>
+      <ion-checkbox [(ngModel)]="filters.mining_reward"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>Growth Rewards</ion-label>
+      <ion-checkbox [(ngModel)]="filters.growth_reward"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>Pool Rewards</ion-label>
+      <ion-checkbox [(ngModel)]="filters.pool_reward"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>Market</ion-label>
+      <ion-checkbox [(ngModel)]="filters.market"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>Invites</ion-label>
+      <ion-checkbox [(ngModel)]="filters.invite"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>MRT Sent</ion-label>
+      <ion-checkbox [(ngModel)]="filters.sent"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>MRT Received</ion-label>
+      <ion-checkbox [(ngModel)]="filters.received"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>MeritMoney</ion-label>
+      <ion-checkbox [(ngModel)]="filters.meritmoney"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>MeritInvite</ion-label>
+      <ion-checkbox [(ngModel)]="filters.meritinvite"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+</ion-content>

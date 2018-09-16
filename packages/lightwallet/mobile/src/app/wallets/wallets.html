@@ -95,24 +95,25 @@
                         @{{ wallet.rootAlias}}
                     </p>
                     <p class="invites">
-                        Invites: {{ wallet.availableInvites || 0}} <span *ngIf="wallet.pendingInvites">(+{{wallet.pendingInvites}} pending)</span>
+                        Invites: {{ wallet.balance.spendableInvites || 0 }} <span *ngIf="wallet.balance.pendingInvites">(+{{wallet.balance.pendingInvites}} pending)</span>
                     </p>
                     <p *ngIf="wallet.balanceHidden; else notHidden">
                         [Balance Hidden]
                     </p>
                     <ng-template #notHidden>
                         <p class="merit-amount">
-                            {{ wallet.client.balance.spendableAmount | toMRT}}
+                            {{ wallet.balance.amountMrt | toMRT}}
                         </p>
                     </ng-template>
                 </ion-label>
 
                 <ng-template #isComplete>
-                    <ion-note class="balance" item-end>
-                        <div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.client.alternativeBalanceAvailable">
-                            {{ wallet.client.balance.spendableAmount | toFiat }}
-                        </div>
-                    </ion-note>
+                  <!-- TODO: fix this after implementing fiat value conversion -->
+                  <!--<ion-note class="balance" item-end>-->
+                        <!--<div class="fiat-amount" *ngIf="!wallet.balanceHidden && wallet.client.alternativeBalanceAvailable">-->
+                            <!--{{ wallet.client.balance.spendableAmount | toFiat }}-->
+                        <!--</div>-->
+                  <!--</ion-note>-->
                 </ng-template>
 
             </button>
@@ -154,12 +155,12 @@
         </button>
     </ion-list>
 
-    <ion-list class="vaults-section">
+    <ion-list class="vaults-section" *ngIf="totals$ | async as totals">
         <ion-item-divider>
             Vaults
             <button ion-button item-end round add-button icon-only
                     navPush="VaultCreateView" [navParams]="{wallets: wallets$ | async}"
-                    [disabled]="totalInvites == 0">
+                    [disabled]="totals.invites === 0">
                 <ion-icon name="add"></ion-icon>
             </button>
         </ion-item-divider>

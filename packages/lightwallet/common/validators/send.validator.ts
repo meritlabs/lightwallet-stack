@@ -46,7 +46,7 @@ export class SendValidator {
     const wallet: DisplayWallet = control.parent.get('wallet').value;
 
     try {
-      if (control.value > wallet.balance.spendableAmount) {
+      if (control.value > wallet.balance.amountMrt) {
         return { NotEnoughMRT: true };
       }
     } catch (e) {

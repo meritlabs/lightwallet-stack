@@ -35,6 +35,7 @@ export class WalletsView {
 
   showCommunityPopup: boolean;
   communitySize: number;
+  vaultsMoreInfoMode: boolean;
 
   constructor(
     private navCtrl: NavController,
@@ -69,7 +70,7 @@ export class WalletsView {
     const wallets = await getLatestValue(this.wallets$, wallets => wallets.length > 0);
     let referralAddress = '';
     wallets.some((w: DisplayWallet) => {
-      if (w.availableInvites) {
+      if (w.balance.spendableInvites) {
         referralAddress = w.client.rootAddress.toString();
         return true;
       }

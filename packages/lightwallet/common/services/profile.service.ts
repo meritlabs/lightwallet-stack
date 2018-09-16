@@ -51,24 +51,11 @@ export class ProfileService {
   public propogateBwsEvent(n: any, wallet: MeritWalletClient): void {
     let eventName: string;
     switch (n.type) {
-      case 'NewBlock':
-        eventName = 'Remote:NewBlock';
-        break;
       case 'IncomingTx':
         eventName = 'Remote:IncomingTx';
         break;
-      case 'IncomingCoinbase':
-        eventName = 'Remote:IncomingCoinbase';
-        break;
-      case 'IncomingEasySend':
-        eventName = 'Remote:IncomingEasySend';
-        break;
-      case 'IncomingTxProposal':
-        eventName = 'Remote:IncomingTxProposal';
-        break;
       default:
-        eventName = 'Remote:GenericBwsEvent';
-        break;
+        return;
     }
     this.logger.info('Publishing an event with this name: ' + eventName);
     this.events.publish(eventName, wallet.id, n.type, n);
