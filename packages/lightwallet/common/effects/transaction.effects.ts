@@ -31,6 +31,7 @@ import { IGlobalSendHistory } from '@merit/common/models/globalsend-history.mode
 
 
 export function getUtxos(transactions: IDisplayTransaction[]): IUTXO[] {
+  let spentInputs: any = {};
   return transactions
     .reverse() // arrays get here sorted by timestamp DESC
     .reduce((utxos: IUTXO[], tx: IDisplayTransaction) => {
@@ -49,6 +50,8 @@ export function getUtxos(transactions: IDisplayTransaction[]): IUTXO[] {
             isCoinbase: tx.isCoinbase,
           }));
       } else if (tx.type === 'debit') {
+        tx.inputs.forEach(input => spentInputs[input.txid + ',' + input.vout] = true);
+
         newUtxos = tx.outputs
           .filter(output => output.isChange && !output.spentTxId)
           .map(output => ({
@@ -62,7 +65,8 @@ export function getUtxos(transactions: IDisplayTransaction[]): IUTXO[] {
       }
 
       return utxos.concat(newUtxos);
-    }, []);
+    }, [])
+    .filter((utxo: IUTXO) => !spentInputs[utxo.txid + ',' + utxo.outputIndex]);
 }
 
 @Injectable()
