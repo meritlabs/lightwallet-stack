@@ -12,11 +12,11 @@
       <small class="date" *ngIf="request.timestamp">{{ request.timestamp | date:'medium' }}</small>
     </div>
     <div class="info__navigation">
-      <button type="button" name="button" class="ui-button ui-button--blue ui-button--sm" [disabled]="sending"
+      <button type="button" name="button" class="ui-button ui-button--blue ui-button--sm" blurOnClick [disabled]="sending"
         (click)="approveRequest()">
         {{ sending? 'Sending...' : 'Send Invite Token' }}
       </button>
-      <button type="button" class="ui-button ui-button--sm ui-button--red" (click)="ignoreRequest()">Ignore</button>
+      <button type="button" class="ui-button ui-button--sm ui-button--red" blurOnClick (click)="ignoreRequest()">Ignore</button>
     </div>
   </div>
 </div>
