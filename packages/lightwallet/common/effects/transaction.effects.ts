@@ -180,6 +180,10 @@ export class TransactionEffects {
         totalMiningRewards: number = 0;
 
       history.forEach(tx => {
+        if (typeof tx.amountMicros !== 'number') {
+          return;
+        }
+
         if (tx.action === TransactionAction.AMBASSADOR_REWARD) {
           totalGrowthRewards += tx.amountMicros;
         } else if (tx.action === TransactionAction.MINING_REWARD && !tx.isInvite) {
