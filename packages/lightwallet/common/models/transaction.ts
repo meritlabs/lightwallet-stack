@@ -35,6 +35,7 @@ export interface ITransactionIO {
   spentTxId?: string;
   spentIndex?: number;
   spentHeight?: number;
+  vout?: number;
 }
 
 export interface ITransaction {
