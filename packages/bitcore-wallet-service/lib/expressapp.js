@@ -521,15 +521,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.post('/v1/broadcast_raw/', function(req, res) {
-    getServerWithAuth(req, res, function(server) {
-      server.broadcastRawTx(req.body, function(err, txid) {
-        if (err) return returnError(err, res, req);
-        res.json(txid);
-        res.end();
-      });
-    });
-  });
+  router.post('/v1/broadcast_raw/', GetWallet, GatewayForward(opts.services.blockchainExplorer + '/rawtx', 'POST'));
 
   router.post('/v1/txproposals/:id/signatures/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
