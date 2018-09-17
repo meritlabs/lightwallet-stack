@@ -956,18 +956,7 @@ ExpressApp.prototype.start = function(opts, cb) {
   router.get('/v1/globalsend/history', GetWallet, GatewayForward(opts.services.globalSend + '/globalsend'));
 
   // Deliver globalsend
-  router.post('/v1/globalsend', GetWallet, async (req, res) => {
-    try {
-      await request({
-        method: 'POST',
-        uri: opts.services.messaging + '/notification/globalsend',
-        json: req.body
-      });
-      res.status(200).send();
-    } catch (err) {
-      res.status(400).send();
-    }
-  });
+  router.post('/v1/globalsend', GetWallet, GatewayForward(opts.services.messaging + '/notification/globalsend', 'POST'));
 
   router.get('/v1/rank-info/', GetWallet, GatewayForward(opts.services.communityInfo + '/info'));
   router.get('/v1/leaderboard', GatewayForward(opts.services.communityInfo + '/leaderboard'));
