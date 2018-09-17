@@ -68,7 +68,7 @@
           formControlName="recoveryPhrase"></textarea>
       </div>
     </div>
-    <button role="button" type="submit" name="button" class="ui-button ui-button--blue ui-button--lg" [disabled]="formData.pending || formData.invalid">
+    <button role="button" type="submit" name="button" class="ui-button ui-button--blue ui-button--lg" [disabled]="creating || formData.pending || formData.invalid">
       Create wallet
     </button>
   </form>

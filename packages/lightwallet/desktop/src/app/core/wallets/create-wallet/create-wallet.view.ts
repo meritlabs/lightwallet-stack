@@ -49,6 +49,7 @@ export class CreateWalletView {
   availableColors: any = WalletSettingsColors;
   backUpWallet: boolean;
   createdWallet;
+  creating: boolean;
 
   constructor(private formBuilder: FormBuilder,
               private walletService: WalletService,
@@ -76,6 +77,10 @@ export class CreateWalletView {
   }
 
   async create() {
+    if (this.creating) {
+      return;
+    }
+    this.creating = true;
     this.loader.show();
 
     let {
@@ -148,6 +153,7 @@ export class CreateWalletView {
       // TODO: display error to user
     } finally {
       this.loader.hide();
+      this.creating = false;
     }
   }
 
