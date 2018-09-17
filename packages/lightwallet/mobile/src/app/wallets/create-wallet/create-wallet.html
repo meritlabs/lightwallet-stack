@@ -88,7 +88,7 @@
 
     </ion-list>
 
-    <button ion-button type="submit" [disabled]="formData.pending || formData.invalid || formData.pristine" class="action-button">
+    <button ion-button type="submit" [disabled]="creating || formData.pending || formData.invalid || formData.pristine" class="action-button">
       Create new wallet
     </button>
   </form>

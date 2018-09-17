@@ -156,6 +156,8 @@ export class CreateWalletView {
     },
   ];
 
+  creating: boolean;
+
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -210,6 +212,11 @@ export class CreateWalletView {
   }
 
   async createWallet() {
+    if (this.creating) {
+      return;
+    }
+
+    this.creating = true;
 
     const loader = this.loadCtrl.create({
       content: 'Creating wallet',
@@ -287,6 +294,7 @@ export class CreateWalletView {
       // TODO: display error to user
     } finally {
       loader.dismiss();
+      this.creating = false;
     }
   }
 }
