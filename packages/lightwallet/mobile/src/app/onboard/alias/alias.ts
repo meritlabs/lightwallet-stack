@@ -6,15 +6,17 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { ConfigService } from '@merit/common/services/config.service';
 import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
-import { IMeritToastConfig, ToastControllerService } from '@merit/common/services/toast-controller.service';
+import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
 import { IRootAppState } from '@merit/common/reducers';
 import { Store } from '@ngrx/store';
-import { RefreshWalletsAction } from '@merit/common/reducers/wallets.reducer';
+import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
+import { createDisplayWallet } from '@merit/common/models/display-wallet';
+import { InviteRequestsService } from '@merit/common/services/invite-request.service';
 
 @IonicPage({
   segment: 'alias/:parentAddress',
@@ -49,6 +51,7 @@ export class AliasView {
     private emailNotificationService: EmailNotificationsService,
     private addressService: AddressService,
     private store: Store<IRootAppState>,
+    private inviteRequestsService: InviteRequestsService,
   ) {
   }
 
@@ -117,7 +120,10 @@ export class AliasView {
     await loader.present();
 
     try {
-      const wallet = await this.walletService.createDefaultWallet(this.parentAddress, alias);
+      const wallet = await this.walletService.createWallet({
+        parentAddress: this.parentAddress,
+        alias,
+      });
       this.logger.info('Created a new default wallet!');
 
       if (this.config.get().pushNotificationsEnabled) {
@@ -130,15 +136,17 @@ export class AliasView {
 
       await this.emailNotificationService.init();
 
+      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService);
+
       // update state to include our new wallet
-      this.store.dispatch(new RefreshWalletsAction());
+      this.store.dispatch(new AddWalletAction(displayWallet));
 
       // update state so we're allowed to access the dashboard
       this.store.dispatch(
         new UpdateAppAction({
           loading: false,
           authorized: true,
-        })
+        }),
       );
 
       await this.navCtrl.setRoot('BackupView', { mnemonic: wallet.getMnemonic() });

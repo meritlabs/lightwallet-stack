@@ -58,7 +58,6 @@ export class ImportView {
     private walletService: WalletService,
     private store: Store<IRootAppState>,
     private inviteRequestsService: InviteRequestsService,
-    private txFormatService: TxFormatService,
     private persistenceService2: PersistenceService2,
   ) {
     this.formData.network = ENV.network;
@@ -196,7 +195,7 @@ export class ImportView {
 
       this.store.dispatch(
         new AddWalletAction(
-          await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService, this.txFormatService, this.persistenceService2),
+          await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService, this.persistenceService2),
         ),
       );
 

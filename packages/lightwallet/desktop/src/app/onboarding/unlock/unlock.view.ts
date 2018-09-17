@@ -7,18 +7,20 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
-import { RefreshWalletsAction } from '@merit/common/reducers/wallets.reducer';
+import { AddWalletAction } from '@merit/common/reducers/wallets.reducer';
 import { AppSettingsService } from '@merit/common/services/app-settings.service';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { cleanAddress } from '@merit/common/utils/addresses';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { getQueryParam } from '@merit/common/utils/url';
 import { AddressService } from '@merit/common/services/address.service';
+import { createDisplayWallet } from '@merit/common/models/display-wallet';
+import { InviteRequestsService } from '@merit/common/services/invite-request.service';
 
 @Component({
   selector: 'view-unlock',
@@ -53,6 +55,7 @@ export class UnlockComponent {
   get inviteCode() {
     return this.formData.get('inviteCode');
   }
+
   get alias() {
     return this.formData.get('alias');
   }
@@ -69,8 +72,10 @@ export class UnlockComponent {
     private easyReceiveService: EasyReceiveService,
     private addressService: AddressService,
     private loadingCtrl: Ng4LoadingSpinnerService,
-    private toastCtrl: ToastControllerService
-  ) {}
+    private toastCtrl: ToastControllerService,
+    private inviteRequestsService: InviteRequestsService,
+  ) {
+  }
 
   async ngOnInit() {
     const receipts = await this.easyReceiveService.getPendingReceipts();
@@ -105,25 +110,26 @@ export class UnlockComponent {
 
     this.loadingCtrl.show();
     this.creatingWallet = true;
-    let { inviteCode, alias } = this.formData.getRawValue();
+    let { inviteCode: parentAddress, alias } = this.formData.getRawValue();
 
     alias = cleanAddress(alias);
-    inviteCode = cleanAddress(inviteCode);
+    parentAddress = cleanAddress(parentAddress);
 
     try {
-      const wallet = await this.walletService.createDefaultWallet(inviteCode, alias);
+      const wallet = await this.walletService.createWallet({ parentAddress, alias });
       this.logger.info('Created a new default wallet!');
-      await this.pushNotificationsService.subscribe(wallet);
+      this.pushNotificationsService.subscribe(wallet);
 
       // update state to include our new wallet
-      this.store.dispatch(new RefreshWalletsAction());
+      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService);
+      this.store.dispatch(new AddWalletAction(displayWallet));
 
       // update state so we're allowed to access the dashboard
       this.store.dispatch(
         new UpdateAppAction({
           loading: false,
           authorized: true,
-        })
+        }),
       );
 
       // good to go
@@ -146,6 +152,7 @@ export class UnlockComponent {
       this.loadingCtrl.hide();
     });
   }
+
   unlockStep(val) {
     if (val === 'next') {
       this.currentUnlockDialogStep++;

@@ -172,7 +172,6 @@ export class CreateWalletView {
     private formBuilder: FormBuilder,
     private store: Store<IRootAppState>,
     private inviteRequestsService: InviteRequestsService,
-    private txFormatService: TxFormatService,
     private persistenceService2: PersistenceService2,
   ) {
   }
@@ -279,7 +278,7 @@ export class CreateWalletView {
         this.toastCtrl.error(e.message || e);
       }
 
-      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService, this.txFormatService, this.persistenceService2);
+      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService, this.persistenceService2);
       this.store.dispatch(new AddWalletAction(displayWallet));
       this.navCtrl.pop();
     } catch (err) {

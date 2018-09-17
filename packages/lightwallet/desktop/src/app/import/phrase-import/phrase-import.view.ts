@@ -44,7 +44,6 @@ export class PhraseImportView {
               private store: Store<IRootAppState>,
               private walletService: WalletService,
               private addressService: AddressService,
-              private txFormatService: TxFormatService,
               private router: Router,
               private pushNotificationsService: PushNotificationsService,
               private toastCtrl: ToastControllerService,
@@ -88,7 +87,7 @@ export class PhraseImportView {
 
         this.store.dispatch(
           new AddWalletAction(
-            await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService, this.txFormatService, this.persistenceService2),
+            await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService, this.persistenceService2),
           ),
         );
 

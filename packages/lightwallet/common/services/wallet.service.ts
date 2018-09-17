@@ -215,11 +215,6 @@ export class WalletService {
 
 
   /** =================== CREATE WALLET METHODS ================ */
-
-  createDefaultWallet(parentAddress: string, alias: string) {
-    return this.createWallet({ parentAddress, alias });
-  }
-
   // TODO add typings for `opts`
   async createWallet(opts: any) {
     const showOpts = _.clone(opts);

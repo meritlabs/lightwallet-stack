@@ -208,7 +208,7 @@ export class WalletEffects {
     const wallets = await this.profileService.getWallets();
     return Promise.all<DisplayWallet>(
       wallets.map(async w => {
-        const displayWallet = await createDisplayWallet(w, this.walletService, this.inviteRequestsService, this.txFormatService, this.persistenceService2);
+        const displayWallet = await createDisplayWallet(w, this.walletService, this.inviteRequestsService, this.persistenceService2);
         displayWallet.importPreferences(await this.persistenceService2.getWalletPreferences(displayWallet.id));
         await this.updateVisitedInviteRequests(displayWallet.inviteRequests);
         return displayWallet;

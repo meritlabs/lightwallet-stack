@@ -82,7 +82,6 @@ export class DisplayWallet {
   constructor(public client: MeritWalletClient,
               private walletService: WalletService,
               private inviteRequestsService: InviteRequestsService,
-              private txFormatService?: TxFormatService,
               private persistenceService2?: PersistenceService2) {
     client.displayWallet = this;
     this.referrerAddress = this.address = this.client.getRootAddress().toString();
@@ -153,7 +152,12 @@ export class DisplayWallet {
 
   async updateInviteRequests() {
     try {
-      const visitedInvites = await this.persistenceService2.getVisitedInvites() || [];
+      let visitedInvites = [];
+
+      if (this.persistenceService2) {
+        visitedInvites = await this.persistenceService2.getVisitedInvites()
+      }
+
       this.inviteRequests = (await this.inviteRequestsService.getInviteRequests(this.client))
         .map(request => {
           request.isNew = visitedInvites.findIndex(id => id === request.id) === -1;
@@ -205,10 +209,9 @@ export class DisplayWallet {
 export async function createDisplayWallet(wallet: MeritWalletClient,
                                           walletService: WalletService,
                                           inviteRequestsService: InviteRequestsService,
-                                          txFormatService?: TxFormatService,
                                           persistenceService2?: PersistenceService2,
                                           options: IDisplayWalletOptions = {}): Promise<DisplayWallet> {
-  const displayWallet = new DisplayWallet(wallet, walletService, inviteRequestsService, txFormatService, persistenceService2);
+  const displayWallet = new DisplayWallet(wallet, walletService, inviteRequestsService, persistenceService2);
   return updateDisplayWallet(displayWallet, options);
 }
 

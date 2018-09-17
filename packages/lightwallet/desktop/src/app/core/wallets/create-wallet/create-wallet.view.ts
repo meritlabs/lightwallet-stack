@@ -57,7 +57,6 @@ export class CreateWalletView {
               private router: Router,
               private store: Store<IRootAppState>,
               private addressService: AddressService,
-              private txFormatService: TxFormatService,
               private loader: Ng4LoadingSpinnerService,
               private mwcService: MWCService,
               private persistenceService2: PersistenceService2,
@@ -140,7 +139,7 @@ export class CreateWalletView {
         this.logger.error(e);
       }
 
-      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService, this.txFormatService, this.persistenceService2);
+      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.inviteRequestsService, this.persistenceService2);
       this.store.dispatch(new AddWalletAction(displayWallet));
       this.backUpWallet = true;
       this.createdWallet = displayWallet;

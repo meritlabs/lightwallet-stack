@@ -1,5 +1,5 @@
 <div class="agreement_wrap">
-  <div class="agreement_modal" *ngIf="wallets[0]">
+  <div class="agreement_modal" *ngIf="wallets?.length">
     <div class="modal_title">
       <p>Record Your Passphrase!</p>
     </div>
@@ -37,5 +37,5 @@
       </div>
     </div>
   </div>
-  <loading-spinner-small *ngIf="!wallets[0]"></loading-spinner-small>
+  <loading-spinner-small *ngIf="!wallets?.length"></loading-spinner-small>
 </div>
