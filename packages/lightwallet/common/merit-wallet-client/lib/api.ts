@@ -58,6 +58,8 @@ export interface ISendReferralOptions {
   alias?: string;
 }
 
+type ResponseBodyEncoding = 'json' | 'blob' | 'text';
+
 export class API {
   baseUrl: string;
   payProHttp: string;
@@ -866,7 +868,7 @@ export class API {
   };
 
 
-  protected async _doRequest(method: string, url: string, qs?: any, body?: any, useSession?: boolean, secondRun?: boolean, bodyEncoding: 'json' | 'blob' | 'text' = 'json') {
+  protected async _doRequest(method: string, url: string, qs?: any, body?: any, useSession?: boolean, secondRun?: boolean, bodyEncoding: ResponseBodyEncoding = 'json') {
     body = body || {};
 
     if (qs) {
@@ -985,8 +987,8 @@ export class API {
     return this._doRequest(method, url, qs, body, true);
   };
 
-  _doPostRequest(url: string, body?: any): Promise<any> {
-    return this._doRequest('post', url, null, body, false);
+  _doPostRequest(url: string, body?: any, encoding: ResponseBodyEncoding = 'json'): Promise<any> {
+    return this._doRequest('post', url, null, body, false, false, encoding);
   };
 
   _doPutRequest(url: string, body: any): Promise<any> {
@@ -2210,15 +2212,9 @@ export class API {
   /**
    * Broadcast raw transaction
    */
-  broadcastRawTx(rawTx: string): Promise<any> {
+  broadcastRawTx(rawTx: string): Promise<string> {
     $.checkState(this.credentials);
-    const opts = {
-      rawTx,
-      network: ENV.network,
-    };
-
-    const url = '/v1/broadcast_raw/';
-    return this._doPostRequest(url, opts);
+    return this._doPostRequest('/v1/broadcast_raw/', { rawTx }, 'text');
   };
 
   private async _doBroadcast(txp: any): Promise<any> {
