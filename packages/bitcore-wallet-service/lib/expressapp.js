@@ -207,6 +207,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     createWalletLimiter = new RateLimit(Defaults.RateLimit.createWallet);
     // router.use(/\/v\d+\/wallets\/$/, createWalletLimiter)
   } else {
+    log.info('', 'Running without wallet creation rate limiting');
     createWalletLimiter = function(req, res, next) {
       next()
     };
