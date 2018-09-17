@@ -232,7 +232,7 @@ ExpressApp.prototype.start = function(opts, cb) {
 
         res.status(response.statusCode).send(response.body || {});
       } catch (err) {
-        console.log("Gateway forward error: ", err);
+        console.log("Gateway forward error: ", err.error || err.message || err);
         try {
           res.status(400).send({
             message: err.error.error,
