@@ -113,7 +113,6 @@ export class SendAmountView {
     const { contact, suggestedMethod, amount } = this.navParams.data;
 
     if (suggestedMethod) {
-      console.log('Suggested method is ', suggestedMethod);
       this.sendMethod = suggestedMethod;
 
       this.type.setValue(suggestedMethod.type);
@@ -134,9 +133,6 @@ export class SendAmountView {
     // todo add smart common amounts receive
     this.suggestedAmounts[this.CURRENCY_TYPE_MRT] = ['5', '10', '100'];
     this.suggestedAmounts[this.CURRENCY_TYPE_FIAT] = ['5', '10', '100'];
-
-    this.ctrl.receipt$.subscribe(receipt => console.log(receipt, { ...this.ctrl.formData.getRawValue() }));
-    this.ctrl.formData.valueChanges.subscribe(val => console.log({...val}))
   }
 
   async selectWallet() {
