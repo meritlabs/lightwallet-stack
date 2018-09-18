@@ -68,7 +68,7 @@ members of the project's leadership.
 ## Contacts
 
 You may send reports to [our support email](mailto:support@merit.me).
-Or you can contact us directly using our public [slack](https://slackin.merit.me/) or [discord](https://discordapp.com/invite/X3v3n3b)
+Or you can contact us directly using our public [slack](https://slackin.merit.me/), [discord](https://discordapp.com/invite/X3v3n3b), or [Telegram](https://t.me/meritocracy).
 
 ## Attribution
 
