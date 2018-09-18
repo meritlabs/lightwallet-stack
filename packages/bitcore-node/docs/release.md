@@ -1,6 +1,6 @@
 # Release Process
 
-Binaries for bitcoind are distributed for convenience and built deterministically with Gitian, signatures for bitcoind are located at the [gitian.sigs](https://github.com/bitpay/gitian.sigs) respository.
+Binaries for meritd are distributed for convenience from the [Official Site](https://merit.me) or GitHub and built by the core team .
 
 ## How to Release
 
