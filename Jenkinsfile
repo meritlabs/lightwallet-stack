@@ -27,9 +27,14 @@ pipeline {
     }
     stage('E2E Tests') {
       steps {
-        sh 'cd packages/lightwallet/desktop && npm start &'
-        sh 'wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888'
-        sh 'cd packages/lightwallet && BROWSERSTACK_USER=ibbyhadeed2 BROWSERSTACK_KEY=Zy44zxSyZVeqKmWa1pvJ npm run test:e2e'
+        withCredentials([
+          string(credentialsId: 'browserstack-user', variable: 'browserstackUser'),
+          string(credentialsId: 'browserstack-key', variable: 'browserstackKey')
+        ]) {
+          sh 'cd packages/lightwallet/desktop && npm start &'
+          sh 'wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888'
+          sh "cd packages/lightwallet && BROWSERSTACK_USER=${browserstackUser} BROWSERSTACK_KEY=${browserstackKey} npm run test:e2e"
+        }
       }
     }
     stage('Build Wallets [Dev]') {
