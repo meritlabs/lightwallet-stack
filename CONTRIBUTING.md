@@ -6,7 +6,7 @@ The following is a set of guidelines for contributing to Merit Lightwallet Stack
 
 # Code of Conduct
 
-This project and everyone participating in it is governed by the [Merit Lightwallet Stack Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to support@merit.me or our public [slack](https://slackin.merit.me/) and [discord](https://discordapp.com/invite/X3v3n3b).
+This project and everyone participating in it is governed by the [Merit Lightwallet Stack Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to support@merit.me or our public [slack](https://slackin.merit.me/), [discord](https://discordapp.com/invite/X3v3n3b), and [Telegram](https://t.me/meritocracy).
 
 # How to contribute?
 
