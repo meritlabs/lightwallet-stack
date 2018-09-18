@@ -23,7 +23,7 @@ This project and everyone participating in it is governed by the [Merit Lightwal
 
 ## Do you have questions about the source code?
 
-* Contact us directly using our public [slack](https://slackin.merit.me/) and [discord](https://discordapp.com/invite/X3v3n3b).
+* Contact us directly using our public [slack](https://slackin.merit.me/), [discord](https://discordapp.com/invite/X3v3n3b), or [Telegram](https://t.me/meritocracy).
 * Or open an issue and add the `question` label.
 
 # What do I need to know to help?
@@ -51,4 +51,4 @@ Never made an open source contribution before? Wondering how contributions work 
 
 ## Where can I go for help?
 
-If you need help, you can ask questions on our mailing list, [slack](https://slackin.merit.me/) and [discord](https://discordapp.com/invite/X3v3n3b).
+If you need help, you can ask questions on our mailing list, [slack](https://slackin.merit.me/), [discord](https://discordapp.com/invite/X3v3n3b), or [Telegram](https://t.me/meritocracy).
