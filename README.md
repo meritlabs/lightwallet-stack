@@ -8,6 +8,7 @@ The lightwallet development environment consists of:
 * Bitcore-Node
 * Insight-api
 * (Optionally) Insight-ui
+* Lightwallet for mobile, desktop and web
 
 ## Prerequisites
 
@@ -144,3 +145,14 @@ For beautifying and improving semantic value of the branches, we decided to use 
 -  `chore/name-of-the-job`
 
 *All new prefixes should be discussed with the community before being added to the ecosystem.*
+
+## Contributing
+
+Please, check out our [Contribution guide](https://github.com/meritlabs/lightwallet-stack/blob/master/CONTRIBUTING.md) and [Code of Conduct](https://github.com/meritlabs/lightwallet-stack/blob/master/CODE_OF_CONDUCT.md).
+
+## License
+
+**Code released under [the MIT license](https://github.com/meritlabs/lightwallet-stack/blob/master/LICENSE).**
+
+Copyright (C) 2013 - 2017 BitPay, Inc.
+Copyright (C) 2017 - 2018 The Merit Foundation.
