@@ -37,6 +37,10 @@ gulp test
 You can also run just the Node.js tests with `gulp test:node`, just the browser tests with `gulp test:browser`
 or create a test coverage report (you can open `coverage/lcov-report/index.html` to visualize it) with `gulp coverage`.
 
+## Contributing
+
+Please, check out our [Contribution guide](https://github.com/meritlabs/lightwallet-stack/blob/master/CONTRIBUTING.md) and [Code of Conduct](https://github.com/meritlabs/lightwallet-stack/blob/master/CODE_OF_CONDUCT.md).
+
 ## License
 
 **Code released under [the MIT license](https://github.com/meritlabs/lightwallet-stack/blob/master/LICENSE).**
