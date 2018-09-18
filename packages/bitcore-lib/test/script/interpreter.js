@@ -230,7 +230,7 @@ describe('Interpreter', function() {
     var verified = interp.verify(scriptSig, scriptPubkey, spendtx, 0, flags);
     verified.should.equal(expected);
   };
-  describe('bitcoind script evaluation fixtures', function() {
+  describe('meritd script evaluation fixtures', function() {
     var testAllFixtures = function(set, expected) {
       var c = 0;
       set.forEach(function(vector) {

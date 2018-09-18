@@ -46,3 +46,6 @@ packages/lightwallet/www/
 desktop.dist.tar.gz
 dist.tar.gz
 mobile.dist.tar.gz
+
+# Firebase
+.firebase

@@ -10,7 +10,7 @@ The `bitcore-node.json` file describes which services will load for a node:
 ```json
 {
   "services": [
-    "bitcoind", "web"
+    "meritd", "web"
   ]
 }
 ```
@@ -37,19 +37,19 @@ If, instead, you would like to run a custom node, you can include services by in
 var bitcore = require('bitcore-node');
 
 //Services
-var Bitcoin = bitcore.services.Bitcoin;
+var Merit = bitcore.services.Merit;
 var Web = bitcore.services.Web;
 
 var myNode = new bitcore.Node({
   network: 'regtest'
   services: [
     {
-      name: 'bitcoind',
-      module: Bitcoin,
+      name: 'meritd',
+      module: Merit,
       config: {
         spawn: {
-          datadir: '/home/<username>/.bitcoin',
-          exec: '/home/<username>/bitcore-node/bin/bitcoind'
+          datadir: '/home/<username>/.merit',
+          exec: '/home/<username>/bitcore-node/bin/meritd'
         }
       }
     },
@@ -67,7 +67,7 @@ var myNode = new bitcore.Node({
 Now that you've loaded your services you can access them via `myNode.services.<service-name>.<method-name>`. For example if you wanted to check the balance of an address, you could access the address service like so.
 
 ```js
-myNode.services.bitcoind.getAddressBalance('1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v', false, function(err, total) {
+myNode.services.meritd.getAddressBalance('1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v', false, function(err, total) {
   console.log(total.balance); //Micro amount of this address
 });
 ```
