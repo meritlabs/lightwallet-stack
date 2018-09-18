@@ -44,6 +44,10 @@ This will create a directory with configuration files for your node and install 
 - [Bus](docs/bus.md) - Overview of the event bus constructor
 - [Release Process](docs/release.md) - Information about verifying a release and the release process.
 
+## Contributing
+
+Please, check out our [Contribution guide](https://github.com/meritlabs/lightwallet-stack/blob/master/CONTRIBUTING.md) and [Code of Conduct](https://github.com/meritlabs/lightwallet-stack/blob/master/CODE_OF_CONDUCT.md).
+
 ## License
 
 **Code released under [the MIT license](https://github.com/meritlabs/lightwallet-stack/blob/master/LICENSE).**
