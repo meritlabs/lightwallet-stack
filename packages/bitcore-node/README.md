@@ -46,8 +46,7 @@ This will create a directory with configuration files for your node and install 
 
 ## License
 
-Code released under [the MIT license](https://github.com/bitpay/bitcore-node/blob/master/LICENSE).
+**Code released under [the MIT license](https://github.com/meritlabs/lightwallet-stack/blob/master/LICENSE).**
 
-Copyright 2013-2015 BitPay, Inc.
-
-- bitcoin: Copyright (c) 2009-2015 Bitcoin Core Developers (MIT License)
+Copyright (C) 2013 - 2017 BitPay, Inc.
+Copyright (C) 2017 - 2018 The Merit Foundation.

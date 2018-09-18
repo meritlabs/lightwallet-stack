@@ -66,5 +66,5 @@ var run = function() {
 
 **Code released under [the MIT license](https://github.com/meritlabs/lightwallet-stack/blob/master/LICENSE).**
 
-Copyright 2013-2015 BitPay, Inc.
-Copyright 2017 the Merit Foundation.
+Copyright (C) 2013 - 2017 BitPay, Inc.
+Copyright (C) 2017 - 2018 The Merit Foundation.
