@@ -1,26 +1,29 @@
 # Merit Development Bootstrap
 
-[![Build Status](https://jenkins.merit.me/buildStatus/icon?job=lightwallet-stack/master)](https://jenkins.merit.me/job/lightwallet-stack)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 ## Getting started
+
 The lightwallet development environment consists of:
-* Bitcore Wallet Service
-* Bitcore-Node
-* Insight-api
-* (Optionally) Insight-ui
-* Lightwallet for mobile, desktop and web
+
+- Bitcore Wallet Service
+- Bitcore-Node
+- Insight-api
+- (Optionally) Insight-ui
+- Lightwallet for mobile, desktop and web
 
 ## Prerequisites
 
 Make sure the following conditions are met
 
-- GNU/Linux x86_32/x86_64, or OSX 64bit *(for meritd distributed binaries)*
-- ZeroMQ *(libzmq3-dev for Ubuntu/Debian or zeromq on OSX)*
+- GNU/Linux x86_32/x86_64, or OSX 64bit _(for meritd distributed binaries)_
+- ZeroMQ _(libzmq3-dev for Ubuntu/Debian or zeromq on OSX)_
 - GNU Make version 4.2.1
 - The lightwallet-stack stably tested on Node.js >= v4.8.4
 
 ### MacOS Users
-* MacOS USERS WILL NEED INSTALL THE LATEST XCODE AND ALL UPDATES
+
+- MacOS USERS WILL NEED INSTALL THE LATEST XCODE AND ALL UPDATES
 
 Read [https://github.com/meritlabs/merit/blob/master/doc/build-osx.md](https://github.com/meritlabs/merit/blob/master/doc/build-osx.md)
 
@@ -39,18 +42,21 @@ alias make='/usr/local/Cellar/make/4.2.1_1/bin/gmake'
 ```
 
 ### Deploying
+
 When deploying to staging, add a LW_STAGING=true environment variable before running deploy
 
 To deploy either lightwallet (web), run `./deploy.sh`
-* It will prompt you for if you want to deploy mobile or desktop lightwallet.
-* It will also ask if you want to deploy to production.
+
+- It will prompt you for if you want to deploy mobile or desktop lightwallet.
+- It will also ask if you want to deploy to production.
 
 To deploy in unattended mode, run `./deploy.sh -e <environment> -t <target>`
-* Environment can be either `staging` or `production`
-* Target can either be `mobile` or `desktop`
 
+- Environment can be either `staging` or `production`
+- Target can either be `mobile` or `desktop`
 
 ### Ubuntu Users
+
 ```
 # install ZeroMQ
 sudo apt install -y libzmq3-dev
@@ -65,12 +71,12 @@ sudo apt install -y build-essential g++
 ### Install Lerna
 
 You need Lerna to manage cross dependencies while still allowing us to publish packages.
-* Ubuntu USERS NEED TO RUN THIS COMMAND AS ROOT
+
+- Ubuntu USERS NEED TO RUN THIS COMMAND AS ROOT
 
 ```bash
 make prepare-prereqs
 ```
-
 
 ### Install MongoDB
 
@@ -135,16 +141,17 @@ make start-bitcore-node
 cd merit-labs/lightwallet-stack/
 ./bitcore-node/bitcore-node/bin/bitcore-node call {bitcore-node/lib/services/meritd.js rpc_command_here}
 ```
+
 ## GIT Flow
 
 For beautifying and improving semantic value of the branches, we decided to use the following list of the branch prefixes:
 
--  `feature/name-of-the-feature`
--  `fix/name-of-the-fix`
--  `hotfix/name-of-the-hotfix`
--  `chore/name-of-the-job`
+- `feature/name-of-the-feature`
+- `fix/name-of-the-fix`
+- `hotfix/name-of-the-hotfix`
+- `chore/name-of-the-job`
 
-*All new prefixes should be discussed with the community before being added to the ecosystem.*
+_All new prefixes should be discussed with the community before being added to the ecosystem._
 
 ## Contributing
 
