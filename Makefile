@@ -219,6 +219,6 @@ test-all: test-bitcoin-rpc \
 
 .PHONY: fmt
 fmt:
-	node_modules/.bin/prettier --parser typescript --write "packages/**/*.{ts,js}"
-	node_modules/.bin/prettier --parser scss --write "packages/**/*.{scss,sass}"
-	node_modules/.bin/prettier --parser markdown --write "**/*.md"
+	node_modules/.bin/prettier --parser typescript --write "packages/**/*.{ts,js}" || true
+	node_modules/.bin/prettier --parser scss --write "packages/**/*.{scss,sass}" || true
+	node_modules/.bin/prettier --parser markdown --write "**/*.md" || true
