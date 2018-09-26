@@ -588,7 +588,7 @@ describe('Transaction', function() {
             .change(changeAddress);
         }, 'disableIsFullySigned', errors.Transaction.MissingSignatures
       ));
-      it('can skip the check that avoids spending more bitcoins than the inputs for a transaction', buildSkipTest(
+      it('can skip the check that avoids spending more MRT than the inputs for a transaction', buildSkipTest(
         function(transaction) {
           return transaction
             .to(toAddress, 10000000000000)
@@ -1089,7 +1089,7 @@ describe('Transaction', function() {
       tx.outputs[2].script.toString().should.equal('0x01');
     });
 
-    describe('bitcoinjs fixtures', function() {
+    describe('meritjs fixtures', function() {
 
       var fixture = require('../data/bip69.json');
 

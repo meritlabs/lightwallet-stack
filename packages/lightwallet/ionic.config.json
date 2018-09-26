@@ -1,8 +1,8 @@
 {
   "name": "Merit Lightwallet",
-  "app_id": "me.merit.LightWallet",
-  "type": "ionic-angular",
   "integrations": {
     "cordova": {}
-  }
+  },
+  "type": "ionic-angular",
+  "pro_id": "me.merit.LightWallet"
 }
