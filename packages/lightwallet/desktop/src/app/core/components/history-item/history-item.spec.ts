@@ -78,7 +78,7 @@ describe('History item component', () => {
       instance.detectChanges();
     });
 
-    it('should show merit icon', () => {
+    it('should show Merit icon', () => {
       expect(de.nativeElement.querySelector('img[src*=merit]')).toBeDefined();
     });
 

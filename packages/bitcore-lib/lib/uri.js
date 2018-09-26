@@ -9,8 +9,8 @@ var Unit = require('./unit');
 /**
  * Bitcore URI
  *
- * Instantiate an URI from a merit URI String or an Object. An URI instance
- * can be created with a merit uri string or an object. All instances of
+ * Instantiate an URI from a Merit URI String or an Object. An URI instance
+ * can be created with a Merit uri string or an object. All instances of
  * URI are valid, the static method isValid allows checking before instantiation.
  *
  * All standard parameters can be found as members of the class, the address
@@ -24,9 +24,9 @@ var Unit = require('./unit');
  * console.log(uri.address, uri.amount);
  * ```
  *
- * @param {string|Object} data - A merit URI string or an Object
+ * @param {string|Object} data - A Merit URI string or an Object
  * @param {Array.<string>=} knownParams - Required non-standard params
- * @throws {TypeError} Invalid merit address
+ * @throws {TypeError} Invalid Merit address
  * @throws {TypeError} Invalid amount
  * @throws {Error} Unknown required argument
  * @returns {URI} A new valid and frozen instance of URI
@@ -78,7 +78,7 @@ URI.fromObject = function fromObject(json) {
 };
 
 /**
- * Check if an merit URI string is valid
+ * Check if an Merit URI string is valid
  *
  * @example
  * ```javascript
@@ -87,7 +87,7 @@ URI.fromObject = function fromObject(json) {
  * // true
  * ```
  *
- * @param {string|Object} data - A merit URI string or an Object
+ * @param {string|Object} data - A Merit URI string or an Object
  * @param {Array.<string>=} knownParams - Required non-standard params
  * @returns {boolean} Result of uri validation
  */
@@ -101,10 +101,10 @@ URI.isValid = function(arg, knownParams) {
 };
 
 /**
- * Convert a merit URI string into a simple object.
+ * Convert a Merit URI string into a simple object.
  *
- * @param {string} uri - A merit URI string
- * @throws {TypeError} Invalid merit URI
+ * @param {string} uri - A Merit URI string
+ * @throws {TypeError} Invalid Merit URI
  * @returns {Object} An object with the parsed params
  */
 URI.parse = function(uri) {
@@ -127,7 +127,7 @@ URI.Members = ['address', 'amount', 'message', 'label', 'r'];
  * Internal function to load the URI instance with an object.
  *
  * @param {Object} obj - Object with the information
- * @throws {TypeError} Invalid merit address
+ * @throws {TypeError} Invalid Merit address
  * @throws {TypeError} Invalid amount
  * @throws {Error} Unknown required argument
  */

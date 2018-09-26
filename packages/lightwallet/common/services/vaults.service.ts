@@ -131,7 +131,7 @@ export class VaultsService {
     createdVault.walletClient = data.wallet;
     createdVault = await this.getVaultInfo(createdVault);
     await this.profileService.addVault(createdVault);
-    return createdVault; 
+    return createdVault;
   }
 
   /**
@@ -147,7 +147,7 @@ export class VaultsService {
     await vault.walletClient.updateVaultInfo({_id: vault._id, name: vault.name});
     vault = await this.getVaultInfo(vault);
     await this.profileService.updateVault(vault);
-    return vault; 
+    return vault;
   }
 
   /**
@@ -308,7 +308,7 @@ export class VaultsService {
         'amount': vault.amount
       }],
       addressType: 'PP2SH',
-      inputs: null, //Let merit wallet service figure out the inputs based
+      inputs: null, //Let Merit wallet service figure out the inputs based
                     //on the selected wallet.
       feeLevel: feeLevel,
       excludeUnconfirmedUtxos: true,
@@ -331,7 +331,7 @@ export class VaultsService {
   }
 
   /**
-  * create vautl object before transfering merit
+  * create vautl object before transfering Merit
   */
   private prepareVault(type: number, opts: any = {}) {
 

@@ -23,7 +23,7 @@ function main(servicesPath, additionalServices) {
   program
     .command('create <directory>')
     .description('Create a new node')
-    .option('-d, --datadir <dir>', 'Specify the merit database directory')
+    .option('-d, --datadir <dir>', 'Specify the Merit database directory')
     .option('-t, --testnet', 'Enable testnet as the network')
     .action(function(dirname, cmd){
       if (cmd.datadir) {

@@ -26,7 +26,7 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
     }
   });
 
-  let meritMoneyAddresses = []; // registering merit money transactions so we can hide bound invite transactions
+  let meritMoneyAddresses = []; // registering Merit money transactions so we can hide bound invite transactions
 
   let pendingString;
 

@@ -1,6 +1,6 @@
 # Merit Address
 
-Represents a merit address. Addresses are the most popular way to make merit transactions.
+Represents a Merit address. Addresses are the most popular way to make Merit transactions.
 
 ## Instantiate an Address
 

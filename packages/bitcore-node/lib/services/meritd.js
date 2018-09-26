@@ -918,11 +918,11 @@ Merit.prototype._stopSpawnedMerit = function(callback) {
         return callback(null);
       }
       try {
-        log.warn('Stopping existing spawned merit process with pid: ' + pid);
+        log.warn('Stopping existing spawned Merit process with pid: ' + pid);
         self._process.kill(pid, 'SIGINT');
       } catch(err) {
         if (err && err.code === 'ESRCH') {
-          log.warn('Unclean merit process shutdown, process not found with pid: ' + pid);
+          log.warn('Unclean Merit process shutdown, process not found with pid: ' + pid);
           return callback(null);
         } else if(err) {
           return callback(err);
@@ -1458,7 +1458,7 @@ Merit.prototype._getAddressDetailsForTransaction = function(transaction, address
 
 /**
  * Will expand into a detailed transaction from a txid
- * @param {Object} txid - A merit transaction id
+ * @param {Object} txid - A Merit transaction id
  * @param {Function} callback
  */
 Merit.prototype._getAddressDetailedTransaction = function(txid, options, next) {

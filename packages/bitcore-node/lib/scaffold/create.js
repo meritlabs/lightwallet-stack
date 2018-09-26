@@ -45,7 +45,7 @@ function createMeritDirectory(datadir, done) {
  * Will create a base Bitcore Node configuration directory and files.
  * @param {Object} options
  * @param {String} options.network - "testnet" or "livenet"
- * @param {String} options.datadir - The merit database directory
+ * @param {String} options.datadir - The Merit database directory
  * @param {String} configDir - The absolute path
  * @param {Boolean} isGlobal - If the configuration depends on globally installed node services.
  * @param {Function} done - The callback function called when finished
@@ -75,12 +75,12 @@ function createConfigDirectory(options, configDir, isGlobal, done) {
 
 /**
  * Will setup a directory with a Bitcore Node directory, configuration file,
- * merit configuration, and will install all necessary dependencies.
+ * Merit configuration, and will install all necessary dependencies.
  *
  * @param {Object} options
  * @param {String} options.cwd - The current working directory
  * @param {String} options.dirname - The name of the bitcore node configuration directory
- * @param {String} options.datadir - The path to the merit datadir
+ * @param {String} options.datadir - The path to the Merit datadir
  * @param {Function} done - A callback function called when finished
  */
 function create(options, done) {
@@ -115,7 +115,7 @@ function create(options, done) {
       }
     },
     function(next) {
-      // Setup the merit directory and configuration
+      // Setup the Merit directory and configuration
       if (!fs.existsSync(absDataDir)) {
         createMeritDirectory(absDataDir, next);
       } else {
