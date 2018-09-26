@@ -1,17 +1,17 @@
 # Script
 
-All merit transactions have scripts embedded into its inputs and outputs.  The scripts use a very simple programming language, which is evaluated from left to right using a stack. The language is designed such that it guarantees all scripts will execute in a limited amount of time (it is not Turing-Complete).
+All Merit transactions have scripts embedded into its inputs and outputs.  The scripts use a very simple programming language, which is evaluated from left to right using a stack. The language is designed such that it guarantees all scripts will execute in a limited amount of time (it is not Turing-Complete).
 
 When a transaction is validated, the input scripts are concatenated with the output scripts and evaluated. To be valid, all transaction scripts must evaluate to true.  A good analogy for how this works is that the output scripts are puzzles that specify in which conditions can those MRT be spent. The input scripts provide the correct data to make those output scripts evaluate to true.
 
-The `Script` object provides an interface to construct, parse, and identify merit scripts. It also gives simple interfaces to create most common script types. This class is useful if you want to create custom input or output scripts. In other case, you should probably use `Transaction`.
+The `Script` object provides an interface to construct, parse, and identify Merit scripts. It also gives simple interfaces to create most common script types. This class is useful if you want to create custom input or output scripts. In other case, you should probably use `Transaction`.
 
 ## Script creation
 Here's how to use `Script` to create the five most common script types:
 
 ### Pay to Public Key Hash (p2pkh)
 
-This is the most commonly used transaction output script. It's used to pay to a merit address (a merit address is a public key hash encoded in base58check)
+This is the most commonly used transaction output script. It's used to pay to a Merit address (a Merit address is a public key hash encoded in base58check)
 
 ```javascript
 // create a new p2pkh paying to a specific address
@@ -105,7 +105,7 @@ s.isMultisigOut() // true
 
 ## Script Interpreting and Validation
 
-To validate a transaction, the merit network validates all of its inputs and outputs. To validate an input, the input's script is concatenated with the referenced output script, and the result is executed. If at the end of execution the stack contains a 'true' value, then the transaction is valid. You can do this in `bitcore` by using the `Interpreter` class. The entry point (and probably the only interface you'll need for most applications) is the method `Interpreter#verify()`.
+To validate a transaction, the Merit network validates all of its inputs and outputs. To validate an input, the input's script is concatenated with the referenced output script, and the result is executed. If at the end of execution the stack contains a 'true' value, then the transaction is valid. You can do this in `bitcore` by using the `Interpreter` class. The entry point (and probably the only interface you'll need for most applications) is the method `Interpreter#verify()`.
 
 You can use it like this:
 

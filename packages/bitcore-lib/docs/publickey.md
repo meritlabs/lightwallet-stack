@@ -1,6 +1,6 @@
 # Public Key
 
-Represents a merit public key and is needed to be able to receive MRT, as is usually represented as a merit [Address](address.md).
+Represents a Merit public key and is needed to be able to receive MRT, as is usually represented as a Merit [Address](address.md).
 
 A PublicKey in Bitcore is an immutable object and can be instantiated from a [Point](crypto.md), string, [PrivateKey](privatekey.md), Buffer or a [BN](crypto.md).
 
@@ -29,7 +29,7 @@ if (PublicKey.isValid('02a1633cafcc01ebfb6d78e39f687a1f0995c62fc95f51ead10a02ee0
 ```
 
 ## Compressed vs Uncompressed
-It's important to note that there are two possible ways to represent a public key. The standard is _compressed_ and includes the X value and parity (as represented above in the documentation). There is also a longer version that is _uncompressed_ which includes both X and Y values. Using this encoding will generate a different merit address, so be careful when selecting the encoding.
+It's important to note that there are two possible ways to represent a public key. The standard is _compressed_ and includes the X value and parity (as represented above in the documentation). There is also a longer version that is _uncompressed_ which includes both X and Y values. Using this encoding will generate a different Merit address, so be careful when selecting the encoding.
 
 Example:
 

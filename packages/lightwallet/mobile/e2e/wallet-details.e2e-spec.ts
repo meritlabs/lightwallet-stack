@@ -41,13 +41,13 @@ describe('[Mobile] Wallet details', () => {
       expect(bigHeaderEl.element(by.css('.amount')).getText()).toContain('MRT');
     });
 
-    it('should have a button to deposit merit', () => {
+    it('should have a button to deposit Merit', () => {
       const el = bigHeaderEl.element(by.css('.action-buttons .button-cell:first-child'));
       expect(el.isDisplayed()).toBeTruthy();
       expect(el.getText()).toContain('DEPOSIT');
     });
 
-    it('should have a button to send merit', () => {
+    it('should have a button to send Merit', () => {
       const el = bigHeaderEl.element(by.css('.action-buttons .button-cell:last-child'));
       expect(el.isDisplayed()).toBeTruthy();
       expect(el.getText()).toContain('SEND');

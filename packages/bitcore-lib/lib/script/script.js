@@ -17,7 +17,7 @@ var BufferUtil = require('../util/buffer');
 var JSUtil = require('../util/js');
 
 /**
- * A merit transaction script. Each transaction's inputs and outputs
+ * A Merit transaction script. Each transaction's inputs and outputs
  * has a script that is evaluated to validate it's spending.
  *
  * @constructor

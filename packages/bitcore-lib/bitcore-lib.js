@@ -179,7 +179,7 @@ Address._classifyFromVersion = function(buffer) {
 };
 
 /**
- * Internal function to transform a merit address buffer
+ * Internal function to transform a Merit address buffer
  *
  * @param {Buffer} buffer - An instance of a hex encoded address Buffer
  * @param {string=} network - The network: 'livenet' or 'testnet'
@@ -250,7 +250,7 @@ Address._transformScript = function(script, network) {
 /**
  * Creates a P2SH address from a set of public keys and a threshold.
  *
- * The addresses will be sorted lexicographically, as that is the trend in merit.
+ * The addresses will be sorted lexicographically, as that is the trend in Merit.
  * To create an address from unsorted public keys, use the {@link Script#buildMultisigOut}
  * interface.
  *
@@ -265,7 +265,7 @@ Address.createMultisig = function(publicKeys, threshold, network) {
 };
 
 /**
- * Internal function to transform a merit address string
+ * Internal function to transform a Merit address string
  *
  * @param {string} data
  * @param {String|Network=} network - either a Network instance, 'livenet', or 'testnet'
@@ -372,7 +372,7 @@ Address.fromBuffer = function(buffer, network, type) {
 /**
  * Instantiate an address from an address string
  *
- * @param {string} str - An string of the merit address
+ * @param {string} str - An string of the Merit address
  * @param {String|Network=} network - either a Network instance, 'livenet', or 'testnet'
  * @param {string=} type - The type of address: 'script' or 'pubkey'
  * @returns {Address} A new valid and frozen instance of an Address
@@ -4497,7 +4497,7 @@ var networkMaps = {};
 
 /**
  * A network is merely a map containing values that correspond to version
- * numbers for each merit network. Currently only supporting "livenet"
+ * numbers for each Merit network. Currently only supporting "livenet"
  * (a.k.a. "mainnet") and "testnet".
  * @constructor
  */
@@ -4615,7 +4615,7 @@ function removeNetwork(network) {
   }
 }
 
-// ToDo: change seeds to merit
+// ToDo: change seeds to Merit
 addNetwork({
   name: 'livenet',
   alias: 'mainnet',
@@ -4653,7 +4653,7 @@ var testnet = get('testnet');
 
 // Add configurable values for testnet/regtest
 
-// ToDo: change seeds to merit
+// ToDo: change seeds to Merit
 var TESTNET = {
   PORT: 18333,
   NETWORK_MAGIC: BufferUtil.integerAsBuffer(0x0b110907),
@@ -6132,7 +6132,7 @@ Interpreter.prototype.evaluate = function() {
  * There are two times of nLockTime: lock-by-blockheight and lock-by-blocktime,
  * distinguished by whether nLockTime < LOCKTIME_THRESHOLD = 500000000
  *
- * See the corresponding code on merit core:
+ * See the corresponding code on Merit core:
  * https://github.com/bitcoin/bitcoin/blob/ffd75adce01a78b3461b3ff05bcc2b530a9ce994/src/script/interpreter.cpp#L1129
  *
  * @param {BN} nLockTime the locktime read from the script
@@ -6174,7 +6174,7 @@ Interpreter.prototype.checkLockTime = function(nLockTime) {
   return true;
 }
 
-/** 
+/**
  * Based on the inner loop of bitcoind's EvalScript function
  * bitcoind commit: b5d1b1092998bc95313856d535c632ea5a8f9104
  */
@@ -7095,7 +7095,7 @@ var BufferUtil = require('../util/buffer');
 var JSUtil = require('../util/js');
 
 /**
- * A merit transaction script. Each transaction's inputs and outputs
+ * A Merit transaction script. Each transaction's inputs and outputs
  * has a script that is evaluated to validate it's spending.
  *
  * See https://en.bitcoin.it/wiki/Script
@@ -10483,7 +10483,7 @@ Transaction.prototype.verifySignature = function(sig, pubkey, nin, subscript) {
 /**
  * Check that a transaction passes basic sanity tests. If not, return a string
  * describing the error. This function contains the same logic as
- * CheckTransaction in merit core.
+ * CheckTransaction in Merit core.
  */
 Transaction.prototype.verify = function() {
   // Basic checks that don't depend on any context
@@ -10939,8 +10939,8 @@ var Unit = require('./unit');
 /**
  * Bitcore URI
  *
- * Instantiate an URI from a merit URI String or an Object. An URI instance
- * can be created with a merit uri string or an object. All instances of
+ * Instantiate an URI from a Merit URI String or an Object. An URI instance
+ * can be created with a Merit uri string or an object. All instances of
  * URI are valid, the static method isValid allows checking before instantiation.
  *
  * All standard parameters can be found as members of the class, the address
@@ -10954,9 +10954,9 @@ var Unit = require('./unit');
  * console.log(uri.address, uri.amount);
  * ```
  *
- * @param {string|Object} data - A merit URI string or an Object
+ * @param {string|Object} data - A Merit URI string or an Object
  * @param {Array.<string>=} knownParams - Required non-standard params
- * @throws {TypeError} Invalid merit address
+ * @throws {TypeError} Invalid Merit address
  * @throws {TypeError} Invalid amount
  * @throws {Error} Unknown required argument
  * @returns {URI} A new valid and frozen instance of URI
@@ -11008,7 +11008,7 @@ URI.fromObject = function fromObject(json) {
 };
 
 /**
- * Check if an merit URI string is valid
+ * Check if an Merit URI string is valid
  *
  * @example
  * ```javascript
@@ -11017,7 +11017,7 @@ URI.fromObject = function fromObject(json) {
  * // true
  * ```
  *
- * @param {string|Object} data - A merit URI string or an Object
+ * @param {string|Object} data - A Merit URI string or an Object
  * @param {Array.<string>=} knownParams - Required non-standard params
  * @returns {boolean} Result of uri validation
  */
@@ -11031,17 +11031,17 @@ URI.isValid = function(arg, knownParams) {
 };
 
 /**
- * Convert a merit URI string into a simple object.
+ * Convert a Merit URI string into a simple object.
  *
- * @param {string} uri - A merit URI string
- * @throws {TypeError} Invalid merit URI
+ * @param {string} uri - A Merit URI string
+ * @throws {TypeError} Invalid Merit URI
  * @returns {Object} An object with the parsed params
  */
 URI.parse = function(uri) {
   var info = URL.parse(uri, true);
 
   if (info.protocol !== 'merit:') {
-    throw new TypeError('Invalid merit URI');
+    throw new TypeError('Invalid Merit URI');
   }
 
   // workaround to host insensitiveness
@@ -11057,7 +11057,7 @@ URI.Members = ['address', 'amount', 'message', 'label', 'r'];
  * Internal function to load the URI instance with an object.
  *
  * @param {Object} obj - Object with the information
- * @throws {TypeError} Invalid merit address
+ * @throws {TypeError} Invalid Merit address
  * @throws {TypeError} Invalid amount
  * @throws {Error} Unknown required argument
  */
@@ -11065,7 +11065,7 @@ URI.prototype._fromObject = function(obj) {
   /* jshint maxcomplexity: 10 */
 
   if (!Address.isValid(obj.address)) {
-    throw new TypeError('Invalid merit address');
+    throw new TypeError('Invalid Merit address');
   }
 
   this.address = new Address(obj.address);
@@ -11144,7 +11144,7 @@ URI.prototype.toString = function() {
 /**
  * Will return a string formatted for the console
  *
- * @returns {string} merit URI
+ * @returns {string} Merit URI
  */
 URI.prototype.inspect = function() {
   return '<URI: ' + this.toString() + '>';
@@ -25649,7 +25649,7 @@ module.exports = function(cmp,to){
   var c = 0;
   for(var i=0;i<cmp.length;++i){
     if(i == to.length) break;
-    c = cmp[i] < to[i]?-1:cmp[i] > to[i]?1:0;    
+    c = cmp[i] < to[i]?-1:cmp[i] > to[i]?1:0;
     if(c != 0) break;
   }
   if(c == 0){
@@ -47673,7 +47673,7 @@ module.exports = function privateDecrypt(private_key, enc, reverse) {
   } else {
     padding = 4;
   }
-  
+
   var key = parseKeys(private_key);
   var k = key.modulus.byteLength();
   if (enc.length > k || new bn(enc).cmp(key.modulus) >= 0) {
@@ -53925,13 +53925,13 @@ Script.prototype.runInContext = function (context) {
     if (!(context instanceof Context)) {
         throw new TypeError("needs a 'context' argument.");
     }
-    
+
     var iframe = document.createElement('iframe');
     if (!iframe.style) iframe.style = {};
     iframe.style.display = 'none';
-    
+
     document.body.appendChild(iframe);
-    
+
     var win = iframe.contentWindow;
     var wEval = win.eval, wExecScript = win.execScript;
 
@@ -53940,7 +53940,7 @@ Script.prototype.runInContext = function (context) {
         wExecScript.call(win, 'null');
         wEval = win.eval;
     }
-    
+
     forEach(Object_keys(context), function (key) {
         win[key] = context[key];
     });
@@ -53949,11 +53949,11 @@ Script.prototype.runInContext = function (context) {
             win[key] = context[key];
         }
     });
-    
+
     var winKeys = Object_keys(win);
 
     var res = wEval.call(win, this.code);
-    
+
     forEach(Object_keys(win), function (key) {
         // Avoid copying circular objects like `top` and `window` by only
         // updating existing context properties or new properties in the `win`
@@ -53968,9 +53968,9 @@ Script.prototype.runInContext = function (context) {
             defineProp(context, key, win[key]);
         }
     });
-    
+
     document.body.removeChild(iframe);
-    
+
     return res;
 };
 
@@ -54155,7 +54155,7 @@ bitcore.util.preconditions = require('./lib/util/preconditions');
 // errors thrown by the library
 bitcore.errors = require('./lib/errors');
 
-// main merit library
+// main Merit library
 bitcore.Address = require('./lib/address');
 bitcore.Block = require('./lib/block');
 bitcore.MerkleBlock = require('./lib/block/merkleblock');

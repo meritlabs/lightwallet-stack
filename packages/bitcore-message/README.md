@@ -1,6 +1,6 @@
 # Merit Message Verification and Signing
 
-bitcore-message adds support for verifying and signing merit messages in [Node.js](http://nodejs.org/) and web browsers.
+bitcore-message adds support for verifying and signing Merit messages in [Node.js](http://nodejs.org/) and web browsers.
 
 ## Getting Started
 
