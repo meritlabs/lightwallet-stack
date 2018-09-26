@@ -164,6 +164,12 @@ clean-stack: clean-bitcore-lib \
 	clean-bitcore-payment-protocol \
 	clean-lightwallet
 
+.PHONY: clean-build
+clean-build:
+	rm -rf packages/lightwallet/desktop/dist/*
+	rm -rf packages/lightwallet/mobile/www/*
+	rm -rf ./output.log
+
 .PHONY: test-bitcoin-rpc
 test-bitcoin-rpc:
 	cd packages/bitcoin-rpc && npm test
@@ -213,5 +219,6 @@ test-all: test-bitcoin-rpc \
 
 .PHONY: fmt
 fmt:
-	node_modules/.bin/prettier typescript --write "packages/lw-2/src/**/*.ts"
-	node_modules/.bin/prettier es5 --write "packages/{bitcore-*,insight-*,merit-rpc}/**/*.js"
+	node_modules/.bin/prettier --parser typescript --write "packages/**/*.{ts,js}"
+	node_modules/.bin/prettier --parser scss --write "packages/**/*.{scss,sass}"
+	node_modules/.bin/prettier --parser markdown --write "**/*.md"
