@@ -1,5 +1,6 @@
 # Public Key
-Represents a bitcoin public key and is needed to be able to receive bitcoin, as is usually represented as a bitcoin [Address](address.md). See the official [Bitcoin Wiki](https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses).
+
+Represents a Merit public key and is needed to be able to receive MRT, as is usually represented as a Merit [Address](address.md).
 
 A PublicKey in Bitcore is an immutable object and can be instantiated from a [Point](crypto.md), string, [PrivateKey](privatekey.md), Buffer or a [BN](crypto.md).
 
@@ -18,6 +19,7 @@ var publicKey2 = new PublicKey('02a1633cafcc01ebfb6d78e39f687a1f0995c62fc95f51ea
 ```
 
 ## Validating a Public Key
+
 A public key point should be on the [secp256k1](https://en.bitcoin.it/wiki/Secp256k1) curve, instantiating a new PublicKey will validate this and will throw an error if it's invalid. To check that a public key is valid:
 
 ```javascript
@@ -27,7 +29,7 @@ if (PublicKey.isValid('02a1633cafcc01ebfb6d78e39f687a1f0995c62fc95f51ead10a02ee0
 ```
 
 ## Compressed vs Uncompressed
-It's important to note that there are two possible ways to represent a public key. The standard is _compressed_ and includes the X value and parity (as represented above in the documentation). There is also a longer version that is _uncompressed_ which includes both X and Y values. Using this encoding will generate a different bitcoin address, so be careful when selecting the encoding. Uncompressed public keys start with 0x04; compressed public keys begin with 0x03 or 0x02 depending on whether they're greater or less than the midpoint of the curve. These prefix bytes are all used in official secp256k1 documentation.
+It's important to note that there are two possible ways to represent a public key. The standard is _compressed_ and includes the X value and parity (as represented above in the documentation). There is also a longer version that is _uncompressed_ which includes both X and Y values. Using this encoding will generate a different Merit address, so be careful when selecting the encoding.
 
 Example:
 
@@ -40,14 +42,14 @@ Example:
 > compressedPK.compressed;
 true
 > compressedPK.toAddress().toString();
-'1KbUJ4x8epz6QqxkmZbTc4f79JbWWz6g37'
+'MKbUJ4x8epz6QqxkmZbTc4f79JbWWz6g37'
 // compressed public key starting with 0x02 (smaller than midpoint of curve)
 > var compressedPK2 = new bitcore.PublicKey('02a1633cafcc01ebfb6d78e39f687a1f'+
     '0995c62fc95f51ead10a02ee0be551b5dc');
 > compressedPK2.compressed;
 true
 > compressedPK.toAddress().toString();
-'1KbUJ4x8epz6QqxkmZbTc4f79JbWWz6g37'
+'MKbUJ4x8epz6QqxkmZbTc4f79JbWWz6g37'
 // uncompressed public key, starting with 0x04. Contains both X and Y encoded
 > var uncompressed = bitcore.PublicKey('0479BE667EF9DCBBAC55A06295CE870B07029'+
     'BFCDB2DCE28D959F2815B16F81798483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68'+
@@ -55,5 +57,5 @@ true
 > uncompressed.compressed
 false
 > uncompressed.toAddress().toString()
-'1EHNa6Q4Jz2uvNExL497mE43ikXhwF6kZm'
+'MEHNa6Q4Jz2uvNExL497mE43ikXhwF6kZm'
 ```

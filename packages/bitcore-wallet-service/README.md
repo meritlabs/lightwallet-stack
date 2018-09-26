@@ -144,7 +144,7 @@ Returns:
 `/v1/txproposals/`: Add a new transaction proposal
 
 Required Arguments:
- * toAddress: RCPT Bitcoin address.
+ * toAddress: RCPT Merit address.
  * amount: amount (in micros) of the mount proposed to be transfered
  * proposalsSignature: Signature of the proposal by the creator peer, using prososalSigningKey.
  * (opt) message: Encrypted private message to peers.
@@ -215,7 +215,13 @@ Required Arguments:
 ## DELETE Endopints
 `/v2/pushnotifications/subscriptions/`: Remove subscriptions for push notifications service from database.
 
+## Contributing
 
+Please, check out our [Contribution guide](https://github.com/meritlabs/lightwallet-stack/blob/master/CONTRIBUTING.md) and [Code of Conduct](https://github.com/meritlabs/lightwallet-stack/blob/master/CODE_OF_CONDUCT.md).
 
+## License
 
+**Code released under [the MIT license](https://github.com/meritlabs/lightwallet-stack/blob/master/LICENSE).**
 
+Copyright (C) 2013 - 2017 BitPay, Inc.
+Copyright (C) 2017 - 2018 The Merit Foundation.

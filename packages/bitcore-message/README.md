@@ -1,24 +1,8 @@
-<img src="http://bitcore.io/css/images/module-message.png" alt="bitcore message" height="35">
-# Bitcoin Message Verification and Signing for Bitcore
+# Merit Message Verification and Signing
 
-
-[![NPM Package](https://img.shields.io/npm/v/bitcore-message.svg?style=flat-square)](https://www.npmjs.org/package/bitcore-message)
-[![Build Status](https://img.shields.io/travis/bitpay/bitcore-message.svg?branch=master&style=flat-square)](https://travis-ci.org/bitpay/bitcore-message)
-[![Coverage Status](https://img.shields.io/coveralls/bitpay/bitcore-message.svg?style=flat-square)](https://coveralls.io/r/bitpay/bitcore-message?branch=master)
-
-bitcore-message adds support for verifying and signing bitcoin messages in [Node.js](http://nodejs.org/) and web browsers.
-
-See [the main bitcore repo](https://github.com/bitpay/bitcore) for more information.
+bitcore-message adds support for verifying and signing Merit messages in [Node.js](http://nodejs.org/) and web browsers.
 
 ## Getting Started
-
-```sh
-npm install bitcore-message
-```
-
-```sh
-bower install bitcore-message
-```
 
 To sign a message:
 
@@ -40,11 +24,12 @@ var verified = Message('hello, world').verify(address, signature);
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/bitpay/bitcore/blob/master/CONTRIBUTING.md) on the main bitcore repo for information about how to contribute.
+Please, check out our [Contribution guide](https://github.com/meritlabs/lightwallet-stack/blob/master/CONTRIBUTING.md) and [Code of Conduct](https://github.com/meritlabs/lightwallet-stack/blob/master/CODE_OF_CONDUCT.md).
 
 ## License
 
-Code released under [the MIT license](https://github.com/bitpay/bitcore/blob/master/LICENSE).
+**Code released under [the MIT license](https://github.com/meritlabs/lightwallet-stack/blob/master/LICENSE).**
 
-Copyright 2013-2015 BitPay, Inc. Bitcore is a trademark maintained by BitPay, Inc.
+Copyright (C) 2013 - 2017 BitPay, Inc.
+Copyright (C) 2017 - 2018 The Merit Foundation.
 

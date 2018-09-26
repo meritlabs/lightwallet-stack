@@ -20,7 +20,7 @@ var Unit = require('../unit');
  * @param {number=} data.outputIndex alias for `vout`
  * @param {string|Script} data.scriptPubKey the script that must be resolved to release the funds
  * @param {string|Script=} data.script alias for `scriptPubKey`
- * @param {number} data.amount amount of bitcoins associated
+ * @param {number} data.amount amount of MRT associated
  * @param {number=} data.micros alias for `amount`, but expressed in micros (1 MRT = 1e8 micros)
  * @param {string|Address=} data.address the associated address to the script, if provided
  */

@@ -52,7 +52,7 @@ Message.prototype._sign = function _sign(privateKey) {
 };
 
 /**
- * Will sign a message with a given merit private key.
+ * Will sign a message with a given Merit private key.
  *
  * @param {PrivateKey} privateKey - An instance of PrivateKey
  * @returns {String} A base64 encoded compact signature
@@ -74,10 +74,10 @@ Message.prototype._verify = function _verify(publicKey, signature) {
 };
 
 /**
- * Will return a boolean of the signature is valid for a given merit address.
+ * Will return a boolean of the signature is valid for a given Merit address.
  * If it isn't the specific reason is accessible via the "error" member.
  *
- * @param {Address|String} meritAddress - A merit address
+ * @param {Address|String} meritAddress - A Merit address
  * @param {String} signatureString - A base64 encoded compact signature
  * @returns {Boolean}
  */

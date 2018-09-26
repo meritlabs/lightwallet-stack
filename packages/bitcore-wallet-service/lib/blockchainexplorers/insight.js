@@ -66,7 +66,7 @@ Insight.prototype.getUtxos = function(addresses, invites, cb) {
 };
 
 /**
- * Broadcast a transaction to the merit network
+ * Broadcast a transaction to the Merit network
  */
 Insight.prototype.broadcast = function(rawTx, cb) {
   var args = {
