@@ -4,11 +4,11 @@ The *official* client library for.
 
 ## Description
 
-This package communicates with MWS using the REST API. All REST endpoints are wrapped as simple async methods. All relevant responses from BWS are checked independently by the peers, thus the importance of using this library when talking to a third party BWS instance.
+This package communicates with MWS using the REST API. All REST endpoints are wrapped as simple async methods. All relevant responses from MWS are checked independently by the peers, thus the importance of using this library when talking to a third party MWS instance.
 
 ## Example
 
-Start your own local [Bitcore wallet service](https://github.com/bitpay/bitcore-wallet-service) instance. In this example we assume you have `bitcore-wallet-service` running on your `localhost:3232`.
+Start your own local [Bitcore wallet service](https://github.com/meritlabs/lightwallet-stack/tree/master/packages/bitcore-wallet-service) instance. In this example we assume you have `bitcore-wallet-service` running on your `localhost:3232`.
 
 Then create two files `irene.js` and `tomas.js` with the content below:
 
@@ -19,7 +19,7 @@ var Client = require('bitcore-wallet-client');
 
 
 var fs = require('fs');
-var BWS_INSTANCE_URL = 'https://bws.bitpay.com/bws/api'
+var BWS_INSTANCE_URL = 'https://testnet.mws.merit.me/bws/api'
 
 var client = new Client({
   baseUrl: BWS_INSTANCE_URL,
@@ -45,7 +45,7 @@ var Client = require('bitcore-wallet-client');
 
 
 var fs = require('fs');
-var BWS_INSTANCE_URL = 'https://bws.bitpay.com/bws/api'
+var BWS_INSTANCE_URL = 'https://testnet.mws.merit.me/bws/api'
 
 var secret = process.argv[2];
 if (!secret) {

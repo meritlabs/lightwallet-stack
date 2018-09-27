@@ -1,4 +1,4 @@
-# Bitcore examples
+# Merit library examples
 
 ## Generate a random address
 ```javascript
@@ -73,7 +73,7 @@ var utxo = {
 
 var transaction = new bitcore.Transaction()
     .from(utxo)
-    .addData('bitcore rocks') // Add OP_RETURN data
+    .addData('Merit library rocks') // Add OP_RETURN data
     .sign(privateKey);
 ```
 

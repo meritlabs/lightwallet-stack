@@ -9852,7 +9852,7 @@ Transaction.prototype._newTransaction = function() {
  * to add an input, for more control, use @{link Transaction#addInput}.
  *
  * Can receive, as output information, the output of bitcoind's `listunspent` command,
- * and a slightly fancier format recognized by bitcore:
+ * and a slightly fancier format recognized by Merit library:
  *
  * ```
  * {
@@ -9863,8 +9863,8 @@ Transaction.prototype._newTransaction = function() {
  *  micros: 1020000
  * }
  * ```
- * Where `address` can be either a string or a bitcore Address object. The
- * same is true for `script`, which can be a string or a bitcore Script.
+ * Where `address` can be either a string or a Merit Address object. The
+ * same is true for `script`, which can be a string or a Merit Script.
  *
  * Beware that this resets all the signatures for inputs (in further versions,
  * SIGHASH_SINGLE or SIGHASH_NONE signatures will not be reset).
@@ -10937,7 +10937,7 @@ var Address = require('./address');
 var Unit = require('./unit');
 
 /**
- * Bitcore URI
+ * Merit URI
  *
  * Instantiate an URI from a Merit URI String or an Object. An URI instance
  * can be created with a Merit uri string or an object. All instances of

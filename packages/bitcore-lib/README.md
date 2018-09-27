@@ -1,4 +1,4 @@
-Bitcore Library
+Merit Library
 =======
 
 A pure and powerful JavaScript Merit library.
@@ -12,13 +12,13 @@ To get community assistance and ask for help with implementation questions, plea
 
 ## Security
 
-We're using Bitcore in production, but please use common sense when doing anything related to finances! We take no responsibility for your implementation decisions.
+We're using Merit library in production, but please use common sense when doing anything related to finances! We take no responsibility for your implementation decisions.
 
 If you find a security issue, please email security@bitpay.com.
 
 ## Contributing
 
-Please send pull requests for bug fixes, code optimization, and ideas for improvement. For more information on how to contribute, please refer to our [CONTRIBUTING](https://github.com/bitpay/bitcore-lib/blob/master/CONTRIBUTING.md) file.
+Please send pull requests for bug fixes, code optimization, and ideas for improvement. For more information on how to contribute, please refer to our [CONTRIBUTING](https://github.com/meritlabs/lightwallet-stack/blob/master/CONTRIBUTING.md) file.
 
 ## Development & Tests
 

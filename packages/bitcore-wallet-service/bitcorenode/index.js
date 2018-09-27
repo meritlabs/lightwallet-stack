@@ -26,8 +26,8 @@ var baseConfig = require('../config');
  * @param {Node} options.node - A reference to the Bitcore Node instance
 -* @param {Boolean} options.https - Enable https for this module, defaults to node settings.
  * @param {Number} options.bwsPort - Port for Bitcore Wallet Service API
- * @param {Number} options.messageBrokerPort - Port for BWS message broker
- * @param {Number} options.lockerPort - Port for BWS locker port
+ * @param {Number} options.messageBrokerPort - Port for MWS message broker
+ * @param {Number} options.lockerPort - Port for MWS locker port
  */
 var Service = function(options) {
   EventEmitter.call(this);

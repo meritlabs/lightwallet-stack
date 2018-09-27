@@ -21,8 +21,8 @@ log.debug = log.verbose;
 log.level = 'verbose';
 
 var ExpressApp = function(node) {
-  // BWS now relies on bitcore-node in order to have direct access to meritd.
-  // If bitcore node isn't here, then you probably didn't run BWS from bitcore-node.
+  // MWS now relies on bitcore-node in order to have direct access to meritd.
+  // If bitcore-node isn't here, then you probably didn't run MWS from bitcore-node.
 
   if (!node) {
     throw new Error("Bitcore node not detected; shutting down...");
@@ -168,7 +168,7 @@ ExpressApp.prototype.start = function(opts, cb) {
 
     var credentials = getCredentials(req);
     if (!credentials) {
-      log.debug("NO CREDENTIALS SUPPLIED TO BWS");
+      log.debug("NO CREDENTIALS SUPPLIED TO MWS");
       return returnError(new WalletService.ClientError({
         code: 'NOT_AUTHORIZED'
       }), res, req);
@@ -765,7 +765,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     var server = getServer(req, res);
     server.validateEasyScript(scriptId, function(err, response) {
       if (err) {
-        log.debug("Called Validate EasyReceipt in BWS: ", err);
+        log.debug("Called Validate EasyReceipt in MWS: ", err);
         return returnError(err, res, req);
       }
       res.json(response);
@@ -1009,7 +1009,7 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   this.app.use(opts.basePath || '/bws/api', router);
 
-  // Pass bitcore node to th walletService to initialize it.
+  // Pass bitcore-node to th walletService to initialize it.
   // This allows us to access Meritd directly from MWS.
   opts.node = this.node;
   WalletService.initialize(opts, cb);

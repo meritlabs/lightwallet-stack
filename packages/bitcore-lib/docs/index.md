@@ -2,9 +2,9 @@
 
 ## Principles
 
-Merit is a powerful new peer-to-peer platform for the next generation of financial technology. The decentralized nature of the Merit network allows for highly resilient Merit infrastructure, and the developer community needs reliable, open-source tools to implement Merit apps and services. Bitcore provides a reliable API for JavaScript apps that need to interface with Merit.
+Merit is a powerful new peer-to-peer platform for the next generation of financial technology. The decentralized nature of the Merit network allows for highly resilient Merit infrastructure, and the developer community needs reliable, open-source tools to implement Merit apps and services. Merit library provides a reliable API for JavaScript apps that need to interface with Merit.
 
-To get started, just `npm install bitcore` or `bower install bitcore`.
+To get started, just `npm install bitcore`.
 
 # Documentation Index
 
