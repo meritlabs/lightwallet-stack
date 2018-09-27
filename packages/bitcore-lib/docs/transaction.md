@@ -1,6 +1,6 @@
 # Transaction
 
-Bitcore provides a very simple API for creating transactions. We expect this API to be accessible for developers without knowing the working internals of Merit in deep detail. What follows is a small introduction to transactions with some basic knowledge required to use this API.
+Merit library provides a very simple API for creating transactions. We expect this API to be accessible for developers without knowing the working internals of Merit in deep detail. What follows is a small introduction to transactions with some basic knowledge required to use this API.
 
 A Transaction contains a set of inputs and a set of outputs. Each input contains a reference to another transaction's output, and a signature that allows the value referenced in that output to be used in this transaction.
 
@@ -78,7 +78,7 @@ transaction.applySignature(receivedSig);
 ## Adding inputs
 Transaction inputs are instances of either inputs or its subclasses. `Input` has some abstract methods, as there is no actual concept of a "signed input" in the Merit scripting system (just valid signatures for <tt>OP_CHECKSIG</tt> and similar opcodes). They are stored in the `input` property of `Transaction` instances.
 
-Bitcore contains two implementations of `Input`, one for spending _Pay to Public Key Hash_ outputs (called `PublicKeyHashInput`) and another to spend _Pay to Script Hash_ outputs for which the redeem script is a Multisig script (called `MultisigScriptHashInput`).
+Merit library contains two implementations of `Input`, one for spending _Pay to Public Key Hash_ outputs (called `PublicKeyHashInput`) and another to spend _Pay to Script Hash_ outputs for which the redeem script is a Multisig script (called `MultisigScriptHashInput`).
 
 All inputs have the following five properties:
 - `prevTxId`: a `Buffer` with the id of the transaction with the output this input is spending.
@@ -110,7 +110,7 @@ This input contains a set of signatures in a `signatures` property, and each tim
 
 The following methods are used to manage signatures for a transaction:
 - `getSignatures`: takes an array of `PrivateKey` or strings from which a `PrivateKey` can be instantiated; the transaction to be signed; the kind of signature hash to use. Returns an array of objects with the following properties:
-  - `signature`: an instance of [Signature](https://github.com/bitpay/bitcore/blob/master/lib/crypto/signature.js)
+  - `signature`: an instance of [Signature](https://github.com/meritlabs/lightwallet-stack/blob/master/packages/bitcore-lib/lib/crypto/signature.js)
   - `prevTxId`: this input's `prevTxId`,
   - `outputIndex`: this input's `outputIndex`,
   - `inputIndex`: this input's index in the transaction
@@ -143,14 +143,14 @@ There are a series of methods used for serialization:
 
 ## Serialization Checks
 
-When serializing, the bitcore library performs a series of checks. These can be disabled by providing an object to the `serialize` method with the checks that you'll like to skip.
+When serializing, the Merit library performs a series of checks. These can be disabled by providing an object to the `serialize` method with the checks that you'll like to skip.
 - `disableLargeFees` avoids checking that the fee is no more than `Transaction.FEE_PER_KB * Transaction.FEE_SECURITY_MARGIN * size_in_kb`.
 - `disableSmallFees` avoids checking that the fee is less than `Transaction.FEE_PER_KB * size_in_kb / Transaction.FEE_SECURITY_MARGIN`.
 - `disableIsFullySigned` does not check if all inputs are fully signed
 - `disableDustOutputs` does not check for dust outputs being generated
 - `disableMoreOutputThanInput` avoids checking that the sum of the output amounts is less than or equal to the sum of the amounts for the outputs being spent in the transaction
 
-These are the current default values in the bitcore library involved on these checks:
+These are the current default values in the Merit library involved on these checks:
 - `Transaction.FEE_PER_KB`: `10000` (micros per kilobyte)
 - `Transaction.FEE_SECURITY_MARGIN`: `15`
 - `Transaction.DUST_AMOUNT`: `546` (micros)
@@ -169,7 +169,7 @@ Internally, a `_changeIndex` property stores the index of the change output (so 
 ## Time-Locking transaction
 All MRT transactions contain a locktime field. The locktime indicates the earliest time a transaction can be added to the blockchain. Locktime allows signers to create time-locked transactions which will only become valid in the future, giving the signers a chance to change their minds. Locktime can be set in the form of a Merit block height (the transaction can only be included in a block with a higher height than specified) or a linux timestamp (transaction can only be confirmed after that time).
 
-In bitcore, you can set a `Transaction`'s locktime by using the methods `Transaction#lockUntilDate` and `Transaction#lockUntilBlockHeight`. You can also get a friendly version of the locktime field via `Transaction#getLockTime`;
+In Merit library, you can set a `Transaction`'s locktime by using the methods `Transaction#lockUntilDate` and `Transaction#lockUntilBlockHeight`. You can also get a friendly version of the locktime field via `Transaction#getLockTime`;
 
 For example:
 
@@ -180,6 +180,3 @@ var transaction = new Transaction()
 console.log(transaction.getLockTime());
 // output similar to: Sun Nov 30 2025 00:00:00 GMT-0300 (ART)
 ```
-
-## Upcoming changes
-We're debating an API for Merge Avoidance, CoinJoin, Smart contracts, CoinSwap, and Stealth Addresses. We're expecting to have all of them by some time in 2015. Payment channel creation is available in the [bitcore-channel](https://github.com/bitpay/bitcore-channel) module.

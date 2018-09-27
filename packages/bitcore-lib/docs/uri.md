@@ -10,7 +10,7 @@ merit:M12A1MyfXbW6RhdRAZEqofac5jCQQjwEPB?amount=1.2&message=Payment&label=Micro&
 ```
 
 ## URI Validation
-The main use that we expect you'll have for the `URI` class in bitcore is validating and parsing Merit URIs. A `URI` instance exposes the address as a bitcore `Address` object and the amount in Micros, if present.
+The main use that we expect you'll have for the `URI` class in Merit library is validating and parsing Merit URIs. A `URI` instance exposes the address as a Merit library `Address` object and the amount in Micros, if present.
 
 The code for validating URIs looks like this:
 

@@ -21,8 +21,8 @@ log.debug = log.verbose;
 log.level = 'verbose';
 
 var ExpressApp = function(node) {
-  // BWS now relies on bitcore-node in order to have direct access to meritd.
-  // If bitcore node isn't here, then you probably didn't run BWS from bitcore-node.
+  // MWS now relies on bitcore-node in order to have direct access to meritd.
+  // If bitcore-node isn't here, then you probably didn't run BWS from bitcore-node.
 
   if (!node) {
     throw new Error("Bitcore node not detected; shutting down...");
@@ -1009,7 +1009,7 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   this.app.use(opts.basePath || '/bws/api', router);
 
-  // Pass bitcore node to th walletService to initialize it.
+  // Pass bitcore-node to th walletService to initialize it.
   // This allows us to access Meritd directly from MWS.
   opts.node = this.node;
   WalletService.initialize(opts, cb);
