@@ -944,11 +944,11 @@ export class API {
       return Promise.resolve(r).then((res) => {
 
         /**
-         * Universal MWC Logger.  It will log all output returned from BWS
+         * Universal MWC Logger.  It will log all output returned from MWS
          * if the private static DEBUG_MODE is set to true above.
          */
         if (res.body && this.DEBUG_MODE) {
-          this.log.info('BWS Response: ');
+          this.log.info('MWS Response: ');
           this.log.info(util.inspect(res.body, {
             depth: 10
           }));
@@ -2678,7 +2678,7 @@ export class API {
    *
    * Checks the blockChain for a valid EasySend transaction that can be unlocked.
    * @param {String} scriptId The script of the easySend, generated client side
-   * @param cb Callback or handler to manage response from BWS
+   * @param cb Callback or handler to manage response from MWS
    */
   validateEasyScript(scriptId: string): Promise<EasyReceiptResult> {
     this.log.warn('Validating: ' + scriptId);

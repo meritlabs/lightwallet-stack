@@ -6,7 +6,7 @@
 
 The lightwallet development environment consists of:
 
-- Bitcore Wallet Service
+- Merit Wallet Service
 - Bitcore-Node
 - Insight-api
 - (Optionally) Insight-ui
@@ -80,7 +80,7 @@ make prepare-prereqs
 
 ### Install MongoDB
 
-Bitcore Wallet Service uses MongoDB
+Merit Wallet Service uses MongoDB
 
 ```bash
 $ brew install mongodb

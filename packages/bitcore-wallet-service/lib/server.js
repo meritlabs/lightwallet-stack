@@ -70,7 +70,7 @@ function checkRequired(obj, args, cb) {
 }
 
 /**
- * Gets the current version of BWS
+ * Gets the current version of MWS
  */
 WalletService.getServiceVersion = function() {
   if (!serviceVersion) serviceVersion = 'bws-' + require('../package').version;
@@ -805,11 +805,11 @@ WalletService.prototype.getStatus = function(opts, cb) {
           status.pendingTxps = [];
           next();
           /**
-           * Depecrating geting pending Txps in the get status call since 
+           * Depecrating geting pending Txps in the get status call since
            * the pendingTxps are literally  not used by the LW code yet.
            * In any case, if any code needs pendingTxps, they can get it
            * via the api call. The getStatus needs to be fast.
-            
+
           self.getPendingTxs({}, function(err, pendingTxps) {
             if (err) return next(err);
             status.pendingTxps = pendingTxps;
@@ -4563,7 +4563,7 @@ WalletService.prototype.getCommunityRanks = async function(addresses, cb) {
 WalletService.prototype.getCommunityLeaderboard = async function(limit, cb) {
   try {
     limit = limit || 100;
-    //pull directly from mongodb. How the data in mongodb is updated is 
+    //pull directly from mongodb. How the data in mongodb is updated is
     //outside of MWS. Likely a cron job that runs every once in a while.
     const result = await promisify(this.storage.getLeaderboard.bind(this.storage))(limit);
     return cb(null, result);

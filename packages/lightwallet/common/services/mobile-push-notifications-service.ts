@@ -113,7 +113,7 @@ export class MobilePushNotificationsService extends PushNotificationsService {
           if (data.walletId) {
             const wallet = (await this.profileService.getWallets()).find(w => w.id == data.walletId);
             if (!_.isEmpty(wallet)) {
-              // Let's re-shape the event to match the notificatons stored in BWS
+              // Let's re-shape the event to match the notificatons stored in MWS
               this.profileService.propogateBwsEvent({
                 data: _.pick(data, ['amount', 'address', 'txid']),
                 type: data.type,
