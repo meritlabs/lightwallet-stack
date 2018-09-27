@@ -7,7 +7,7 @@ var Address = require('./address');
 var Unit = require('./unit');
 
 /**
- * Bitcore URI
+ * Merit URI
  *
  * Instantiate an URI from a Merit URI String or an Object. An URI instance
  * can be created with a Merit uri string or an object. All instances of

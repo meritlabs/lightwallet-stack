@@ -1165,7 +1165,7 @@ Merit.prototype._normalizeAddressArg = function(addressArg) {
 
 /**
  * Will get the balance for an address or multiple addresses
- * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
+ * @param {String|Address|Array} addressArg - An address string, Merit address, or array of addresses
  * @param {Object} options
  * @param {Function} callback
  */
@@ -1193,7 +1193,7 @@ Merit.prototype.getAddressBalance = function(addressArg, options, callback) {
 
 /**
  * Will get the unspent outputs for an address or multiple addresses
- * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
+ * @param {String|Address|Array} addressArg - An address string, Merit address, or array of addresses
  * @param {Object} options
  * @param {Function} callback
  */
@@ -1303,7 +1303,7 @@ Merit.prototype._getHeightRangeQuery = function(options, clone) {
       throw new TypeError('"end" is expected to be less than or equal to "start"');
     }
     if (clone) {
-      // reverse start and end as the order in bitcore is most recent to less recent
+      // reverse start and end as the order in Merit is most recent to less recent
       clone.start = options.end;
       clone.end = options.start;
     }
@@ -1314,7 +1314,7 @@ Merit.prototype._getHeightRangeQuery = function(options, clone) {
 
 /**
  * Will get the txids for an address or multiple addresses
- * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
+ * @param {String|Address|Array} addressArg - An address string, Merit address, or array of addresses
  * @param {Object} options
  * @param {Function} callback
  */
@@ -1509,7 +1509,7 @@ Merit.prototype._paginateTxids = function(fullTxids, fromArg, toArg) {
 
 /**
  * Will detailed transaction history for an address or multiple addresses
- * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
+ * @param {String|Address|Array} addressArg - An address string, Merit address, or array of addresses
  * @param {Object} options
  * @param {Function} callback
  */
@@ -1568,7 +1568,7 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
 };
 
 /**
- * Will get a referral as a Bitcore Referral. Results include the mempool.
+ * Will get a referral as a Merit Referral. Results include the mempool.
  * @param {String} refid - Referral hash, address or alias
  * @param {Function} callback
  */
@@ -1596,7 +1596,7 @@ Merit.prototype.getReferral = function(refid, callback) {
 
 /**
  * Will detailed referrals history for an address or multiple addresses
- * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
+ * @param {String|Address|Array} addressArg - An address string, Merit address, or array of addresses
  * @param {Object} options
  * @param {Function} callback
  */
@@ -1666,7 +1666,7 @@ Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
 
 /**
  * Will get the summary including txids and balance for an address or multiple addresses
- * @param {String|Address|Array} addressArg - An address string, bitcore address, or array of addresses
+ * @param {String|Address|Array} addressArg - An address string, Merit address, or array of addresses
  * @param {Object} options
  * @param {Function} callback
  */
@@ -1817,7 +1817,7 @@ Merit.prototype.getRawBlock = function(blockArg, callback) {
 };
 
 /**
- * Will retrieve a block as a Bitcore object
+ * Will retrieve a block as a Merit object
  * @param {String|Number} block - A block hash or block height number
  * @param {Function} callback
  */
@@ -2046,7 +2046,7 @@ Merit.prototype.getRawTransaction = function(txid, callback) {
 };
 
 /**
- * Will get a transaction as a Bitcore Transaction. Results include the mempool.
+ * Will get a transaction as a Merit Transaction. Results include the mempool.
  * @param {String} txid - The transaction hash
  * @param {Boolean} queryMempool - Include the mempool
  * @param {Function} callback
