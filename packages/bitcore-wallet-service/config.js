@@ -6,7 +6,7 @@ var config = {
   port: 3232,
   ignoreRateLimiter: true,
 
-  // Uncomment to make BWS a forking server
+  // Uncomment to make MWS a forking server
   // cluster: true,
 
   // Uncomment to set the number or process (will use the nr of availalbe CPUs by default)

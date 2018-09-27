@@ -4,9 +4,9 @@ The *official* client library for [merit-wallet-service](https://github.com/meri
 
 ## Description
 
-This package communicates with BWS [Bitcore wallet service](https://github.com/meritlabs/lightwallet-stack/tree/master/packages/bitcore-wallet-service) using the REST API. All REST endpoints are wrapped as simple async methods. All relevant responses from BWS are checked independently by the peers, thus the importance of using this library when talking to a third party BWS instance.
+This package communicates with MWS [Bitcore wallet service](https://github.com/meritlabs/lightwallet-stack/tree/master/packages/bitcore-wallet-service) using the REST API. All REST endpoints are wrapped as simple async methods. All relevant responses from MWS are checked independently by the peers, thus the importance of using this library when talking to a third party MWS instance.
 
-See [Bitcore-wallet] () for a simple CLI wallet implementation that relays on BWS and uses bitcore-wallet-client.
+See [Lightwallet](https://github.com/meritlabs/lightwallet-stack/tree/master/packages/lightwallet) for a simple CLI wallet implementation that relays on MWS and uses bitcore-wallet-client.
 
 MWC is a part of lightwallet distribution.
 
@@ -23,7 +23,7 @@ var Client = require('bitcore-wallet-client');
 
 
 var fs = require('fs');
-var BWS_INSTANCE_URL = 'https://bws.bitpay.com/bws/api'
+var BWS_INSTANCE_URL = 'https://testnet.mws.merit.me/bws/api'
 
 var client = new Client({
   baseUrl: BWS_INSTANCE_URL,
@@ -49,7 +49,7 @@ var Client = require('bitcore-wallet-client');
 
 
 var fs = require('fs');
-var BWS_INSTANCE_URL = 'https://bws.bitpay.com/bws/api'
+var BWS_INSTANCE_URL = 'https://testnet.mws.merit.me/bws/api'
 
 var secret = process.argv[2];
 if (!secret) {

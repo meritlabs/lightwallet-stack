@@ -56,14 +56,14 @@ function startInstance(cb) {
 
   expressApp.start(config, function(err) {
     if (err) {
-      log.error('Could not start BWS instance', err);
+      log.error('Could not start MWS instance', err);
       return;
     }
 
     server.listen(port);
 
     var instanceInfo = cluster.worker ? ' [Instance:' + cluster.worker.id + ']' : '';
-    log.info('BWS running ' + instanceInfo);
+    log.info('MWS running ' + instanceInfo);
     log.debug("We have a bitcore node: ", this.node);
     return;
   });
