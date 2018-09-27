@@ -1383,7 +1383,7 @@ describe('client API', function() {
       });
     });
 
-    it('should set walletPrivKey from BWS', function(done) {
+    it('should set walletPrivKey from MWS', function(done) {
       clients[0].createWallet('mywallet', 'creator', 1, 1, {
         network: 'testnet',
         beacon: 'code'
@@ -1583,14 +1583,14 @@ describe('client API', function() {
   });
 
   describe('Version', function() {
-    it('should get version of bws', function(done) {
+    it('should get version of MWS', function(done) {
       clients[0].credentials = {};
       clients[0].getVersion(function(err, version) {
         if (err) {
-          // if bws is older version without getVersion support
+          // if MWS is older version without getVersion support
           err.should.be.an.instanceOf(Errors.NOT_FOUND);
         } else {
-          // if bws is up-to-date
+          // if MWS is up-to-date
           should.exist(version);
           should.exist(version.serviceVersion);
           version.serviceVersion.should.contain('bws-');
@@ -3684,7 +3684,7 @@ describe('client API', function() {
           should.exist(err);
         });
 
-        it('should export & import with mnemonics + BWS', function(done) {
+        it('should export & import with mnemonics + MWS', function(done) {
           var c = clients[0].credentials;
           var walletId = c.walletId;
           var walletName = c.walletName;
@@ -3706,7 +3706,7 @@ describe('client API', function() {
           });
         });
 
-        it('should export & import with xprivkey + BWS', function(done) {
+        it('should export & import with xprivkey + MWSs', function(done) {
           var c = clients[0].credentials;
           var walletId = c.walletId;
           var walletName = c.walletName;
@@ -3756,7 +3756,7 @@ describe('client API', function() {
             done();
           });
         });
-        it('should export & import with mnemonics + BWS', function(done) {
+        it('should export & import with mnemonics + MWS', function(done) {
           clients[0].seedFromMnemonic('pink net pet stove boy receive task nephew book spawn pull regret', {
             network: 'livenet',
             nonCompliantDerivation: true,
@@ -3776,7 +3776,7 @@ describe('client API', function() {
           });
         });
 
-        it('should check BWS once if specific derivation is not problematic', function(done) {
+        it('should check MWS once if specific derivation is not problematic', function(done) {
           clients[0].seedFromMnemonic('relax about label gentle insect cross summer helmet come price elephant seek', {
             network: 'livenet',
           });
@@ -3792,7 +3792,7 @@ describe('client API', function() {
             done();
           });
         });
-        it('should export & import with xprivkey + BWS', function(done) {
+        it('should export & import with xprivkey + MWS', function(done) {
           clients[0].seedFromMnemonic('relax about label gentle insect cross summer helmet come price elephant seek', {
             network: 'livenet',
           });
@@ -3871,7 +3871,7 @@ describe('client API', function() {
         });
       });
       // Generated with https://dcpos.github.io/bip39/
-      it('should fail to import from words if not at BWS', function(done) {
+      it('should fail to import from words if not at MWS', function(done) {
         var exported = 'bounce tonight little spy earn void nominee ankle walk ten type update';
         importedClient = helpers.newClient(app);
         importedClient.importFromMnemonic(exported, {
@@ -3883,7 +3883,7 @@ describe('client API', function() {
           done();
         });
       });
-      it('should fail to import from words if not at BWS, with passphrase', function(done) {
+      it('should fail to import from words if not at MWS, with passphrase', function(done) {
         var exported = 'bounce tonight little spy earn void nominee ankle walk ten type update';
         importedClient = helpers.newClient(app);
         importedClient.importFromMnemonic(exported, {
@@ -4654,7 +4654,7 @@ describe('client API', function() {
         c2.createWalletFromOldCopay(t2.username, t2.password, t2.ls[w], function(err) {
           should.not.exist(err);
 
-          // New BWS server...
+          // New MWS server...
           var storage = new Storage({
             db: helpers.newDb(),
           });
