@@ -5,7 +5,7 @@
     "meritd",
     "insight-api",
     "web",
-    "bitcore-wallet-service"
+    "merit-wallet-service"
   ],
   "servicesConfig": {
     "meritd": {

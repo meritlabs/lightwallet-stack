@@ -55,7 +55,7 @@ var config = {
     },
   },
   pushNotificationsOpts: {
-    templatePath: './packages/bitcore-wallet-service/lib/templates', // this must be relative to bitcore-node runner
+    templatePath: './packages/merit-wallet-service/lib/templates', // this must be relative to bitcore-node runner
     defaultLanguage: 'en',
     defaultUnit: 'mrt',
     subjectPrefix: '',
