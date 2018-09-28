@@ -135,17 +135,13 @@ clean-merit-wallet-service:
 clean-bitcore-wallet-client:
 	rm -rf ./packages/bitcore-wallet-client/node_modules
 
-.PHONY: clean-bitcore-p2p
-clean-bitcore-p2p:
-	rm -rf ./packages/bitcore-p2p/node_modules
+.PHONY: clean-merit-p2p
+clean-merit-p2p:
+	rm -rf ./packages/merit-p2p/node_modules
 
 .PHONY: clean-bitcore-node
 clean-bitcore-node:
 	rm -rf ./packages/bitcore-node/node_modules
-
-.PHONY: clean-bitcore-message
-clean-bitcore-message:
-	rm -rf ./packages/bitcore-message/node_modules
 
 .PHONY: clean-bitcore-payment-protocol
 clean-bitcore-payment-protocol:
@@ -158,9 +154,8 @@ clean-stack: clean-bitcore-lib \
 	clean-insight-ui \
 	clean-merit-wallet-service \
 	clean-bitcore-wallet-client \
-	clean-bitcore-p2p \
+	clean-merit-p2p \
 	clean-bitcore-node \
-	clean-bitcore-message \
 	clean-bitcore-payment-protocol \
 	clean-lightwallet
 
@@ -178,17 +173,13 @@ test-bitcoin-rpc:
 test-bitcore-lib:
 	cd packages/bitcore-lib && npm test
 
-.PHONY: test-bitcore-message
-test-bitcore-message:
-	cd packages/bitcore-message && npm test
-
 .PHONY: test-bitcore-node
 test-bitcore-node:
 	cd packages/bitcore-node && npm test
 
-.PHONY: test-bitcore-p2p
-test-bitcore-p2p:
-	cd packages/bitcore-p2p && npm test
+.PHONY: test-merit-p2p
+test-merit-p2p:
+	cd packages/merit-p2p && npm test
 
 .PHONY: test-bitcore-payment-protocol
 test-bitcore-payment-protocol:
@@ -209,9 +200,8 @@ test-insight-api:
 .PHONY: test-all
 test-all: test-bitcoin-rpc \
 	test-bitcore-lib \
-	test-bitcore-message \
 	test-bitcore-node \
-	test-bitcore-p2p \
+	test-merit-p2p \
 	test-bitcore-payment-protocol \
 	test-merit-wallet-service \
 	test-bitcore-wallet-client \

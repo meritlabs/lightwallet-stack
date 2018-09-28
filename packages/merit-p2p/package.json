@@ -1,5 +1,5 @@
 {
-  "name": "bitcore-p2p",
+  "name": "merit-p2p",
   "version": "1.1.2",
   "description": "Interface to the merit P2P network for Merit Lightwallet Stack",
   "authors": [

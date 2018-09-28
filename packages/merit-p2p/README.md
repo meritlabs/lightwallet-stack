@@ -6,12 +6,12 @@ Merit P2P prottocol library.
 ## Getting Started
 
 ```sh
-npm install bitcore-p2p
+npm install merit-p2p
 ```
 In order to connect to the Merit network, you'll need to know the IP address of at least one node of the network, or use pool to discover peers using a DNS seed.
 
 ```javascript
-var Peer = require('bitcore-p2p').Peer;
+var Peer = require('merit-p2p').Peer;
 
 var peer = new Peer({host: '127.0.0.1'});
 
