@@ -1,5 +1,5 @@
 {
-  "name": "bitcore-wallet-service",
+  "name": "merit-wallet-service",
   "description": "A service for Mutisig HD Merit Wallets",
   "authors": [
     "Merit Foundation",

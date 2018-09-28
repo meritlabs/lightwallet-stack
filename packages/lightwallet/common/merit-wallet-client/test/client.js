@@ -18,7 +18,7 @@ var log = require('../lib/log');
 var Bitcore = require('bitcore-lib');
 var BitcorePayPro = require('bitcore-payment-protocol');
 
-var BWS = require('bitcore-wallet-service');
+var BWS = require('merit-wallet-service');
 
 var Common = require('../lib/common');
 var Constants = Common.Constants;

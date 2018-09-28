@@ -8,7 +8,7 @@ This package communicates with MWS using the REST API. All REST endpoints are wr
 
 ## Example
 
-Start your own local [Bitcore wallet service](https://github.com/meritlabs/lightwallet-stack/tree/master/packages/bitcore-wallet-service) instance. In this example we assume you have `bitcore-wallet-service` running on your `localhost:3232`.
+Start your own local [Merit wallet service](https://github.com/meritlabs/lightwallet-stack/tree/master/packages/merit-wallet-service) instance. In this example we assume you have `merit-wallet-service` running on your `localhost:3232`.
 
 Then create two files `irene.js` and `tomas.js` with the content below:
 

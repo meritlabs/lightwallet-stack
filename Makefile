@@ -73,19 +73,19 @@ symlink-bitcore-node:
 start-bitcore-node:
 	./packages/bitcore-node/bin/bitcore-node start
 
-.PHONY: start-bitcore-wallet-service
-start-bitcore-wallet-service:
-	cd ./packages/bitcore-wallet-service/ && node locker/locker.js & \
-	cd ./packages/bitcore-wallet-service/ && node messagebroker/messagebroker.js & \
-	cd ./packages/bitcore-wallet-service/ && node bcmonitor/bcmonitor.js & \
-	cd ./packages/bitcore-wallet-service/ && node fiatrateservice/fiatrateservice.js & \
-	cd ./packages/bitcore-wallet-service/ && node bws.js & \
-	cd ./packages/bitcore-wallet-service/ && node pushnotificationsservice/pushnotificationsservice.js & \
-	cd ./packages/bitcore-wallet-service/ && node emailservice/emailservice.js
+.PHONY: start-merit-wallet-service
+start-merit-wallet-service:
+	cd ./packages/merit-wallet-service/ && node locker/locker.js & \
+	cd ./packages/merit-wallet-service/ && node messagebroker/messagebroker.js & \
+	cd ./packages/merit-wallet-service/ && node bcmonitor/bcmonitor.js & \
+	cd ./packages/merit-wallet-service/ && node fiatrateservice/fiatrateservice.js & \
+	cd ./packages/merit-wallet-service/ && node bws.js & \
+	cd ./packages/merit-wallet-service/ && node pushnotificationsservice/pushnotificationsservice.js & \
+	cd ./packages/merit-wallet-service/ && node emailservice/emailservice.js
 
-.PHONY: stop-bitcore-wallet-service
-stop-bitcore-wallet-service:
-	cd ./packages/bitcore-wallet-service/ && sh stop.sh
+.PHONY: stop-merit-wallet-service
+stop-merit-wallet-service:
+	cd ./packages/merit-wallet-service/ && sh stop.sh
 
 .PHONY: clean-npm
 clean-npm:
@@ -127,9 +127,9 @@ clean-insight-api:
 clean-insight-ui:
 	rm -rf ./packages/insight-ui/node_modules
 
-.PHONY: clean-bitcore-wallet-service
-clean-bitcore-wallet-service:
-	rm -rf ./packages/bitcore-wallet-service/node_modules
+.PHONY: clean-merit-wallet-service
+clean-merit-wallet-service:
+	rm -rf ./packages/merit-wallet-service/node_modules
 
 .PHONY: clean-bitcore-wallet-client
 clean-bitcore-wallet-client:
@@ -156,7 +156,7 @@ clean-stack: clean-bitcore-lib \
 	clean-bitcoin-rpc \
 	clean-insight-api \
 	clean-insight-ui \
-	clean-bitcore-wallet-service \
+	clean-merit-wallet-service \
 	clean-bitcore-wallet-client \
 	clean-bitcore-p2p \
 	clean-bitcore-node \
@@ -194,9 +194,9 @@ test-bitcore-p2p:
 test-bitcore-payment-protocol:
 	cd packages/bitcore-payment-protocol && npm test
 
-.PHONY: test-bitcore-wallet-service
-test-bitcore-wallet-service:
-	cd packages/bitcore-wallet-service && npm test
+.PHONY: test-merit-wallet-service
+test-merit-wallet-service:
+	cd packages/merit-wallet-service && npm test
 
 .PHONY: test-bitcore-wallet-client
 test-bitcore-wallet-client:
@@ -213,7 +213,7 @@ test-all: test-bitcoin-rpc \
 	test-bitcore-node \
 	test-bitcore-p2p \
 	test-bitcore-payment-protocol \
-	test-bitcore-wallet-service \
+	test-merit-wallet-service \
 	test-bitcore-wallet-client \
 	test-insight-api
 
