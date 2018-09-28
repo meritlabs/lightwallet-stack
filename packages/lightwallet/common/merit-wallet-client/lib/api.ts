@@ -131,6 +131,7 @@ export class API {
   public pendingInvites: number = 0; // invites that are currently pending confirmation
   public sendableInvites: number = 0; // invites I can send right now
 
+  private noticitationPollingInterval = 60;
 
   /** is disabled when wallet is temporary decrypted */
   public credentialsSaveAllowed: boolean = true;
@@ -185,13 +186,15 @@ export class API {
     return notifications;
   }
 
-  initNotifications(int: number = 10): Observable<any[]> {
-    return interval(int * 1000)
+  initNotifications(): Observable<any[]> {
+    return interval(this.noticitationPollingInterval * 1000)
       .pipe(
-        switchMap(() => fromPromise(this._fetchLatestNotifications(int))),
+        switchMap(() => fromPromise(this._fetchLatestNotifications(this.noticitationPollingInterval))),
         retryWhen(err =>
           err.pipe(
-            map((err) => !err || err !== MWCErrors.NOT_FOUND && err !== MWCErrors.NOT_AUTHORIZED)
+            map((err) => {
+              return !err || (err !== MWCErrors.NOT_FOUND && err !== MWCErrors.NOT_AUTHORIZED);
+            })
           )
         )
       );
