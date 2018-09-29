@@ -8,21 +8,21 @@ For node projects:
 
 ```
 npm install bitcore-lib --save
-npm install bitcore-payment-protocol --save
+npm install merit-payment-protocol --save
 ```
 
 For client-side projects:
 
 ```
 bower install bitcore-lib --save
-bower install bitcore-payment-protocol --save
+bower install merit-payment-protocol --save
 ```
 
 ## Make Payment Details
 Here the merchant's server will construct the payment details message:
 
 ```javascript
-var PaymentProtocol = require('bitcore-payment-protocol');
+var PaymentProtocol = require('merit-payment-protocol');
 var now = Date.now() / 1000 | 0;
 
 // construct the payment details
