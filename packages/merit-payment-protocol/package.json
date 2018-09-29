@@ -1,5 +1,5 @@
 {
-  "name": "bitcore-payment-protocol",
+  "name": "merit-payment-protocol",
   "version": "1.2.2",
   "description": "Payment Protocol (BIP70 and related) support for Merti Lightwallet Stack",
   "authors": [
