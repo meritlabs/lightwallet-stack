@@ -48,7 +48,7 @@
     "merit",
     "front-end"
   ],
-  "bitcoreNode": "bitcore-node",
+  "bitcoreNode": "merit-node",
   "insightConfig": {
     "apiPrefix": "insight-api",
     "routePrefix": "insight"

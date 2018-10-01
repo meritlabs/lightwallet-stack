@@ -163,7 +163,7 @@ TxController.prototype.transformOutput = function(options, output, index) {
   if (output.address) {
     transformed.scriptPubKey.addresses = [output.address];
     transformed.scriptPubKey.aliases = [output.alias];
-    var address = bitcore.Address(output.address); //TODO return type from bitcore-node
+    var address = bitcore.Address(output.address); //TODO return type from merit-node
     transformed.scriptPubKey.type = address.type;
   }
   return transformed;

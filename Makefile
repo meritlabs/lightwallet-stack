@@ -63,15 +63,15 @@ stop-mongo:
 	kill `pgrep mongo`
 
 # Symlink the Merit meritd
-# See https://github.com/meritlabs/lightwallet-stack/blob/master/bitcore-node/docs/development.md
-.PHONY: symlink-bitcore-node
-symlink-bitcore-node:
-	cd ./packages/bitcore-node/bin && ln -sf ../../../merit/src/meritd
+# See https://github.com/meritlabs/lightwallet-stack/blob/master/merit-node/docs/development.md
+.PHONY: symlink-merit-node
+symlink-merit-node:
+	cd ./packages/merit-node/bin && ln -sf ../../../merit/src/meritd
 
 # Within the devnode directory with the configuration file, start the node:
-.PHONY: start-bitcore-node
-start-bitcore-node:
-	./packages/bitcore-node/bin/bitcore-node start
+.PHONY: start-merit-node
+start-merit-node:
+	./packages/merit-node/bin/merit-node start
 
 .PHONY: start-merit-wallet-service
 start-merit-wallet-service:
@@ -106,7 +106,7 @@ use-lerna-production:
 	lerna bootstrap -- --production --no-optional
 
 .PHONY: start-stack
-start-stack: symlink-bitcore-node start-bitcore-node
+start-stack: symlink-merit-node start-merit-node
 
 
 # Clean
@@ -139,9 +139,9 @@ clean-bitcore-wallet-client:
 clean-merit-p2p:
 	rm -rf ./packages/merit-p2p/node_modules
 
-.PHONY: clean-bitcore-node
-clean-bitcore-node:
-	rm -rf ./packages/bitcore-node/node_modules
+.PHONY: clean-merit-node
+clean-merit-node:
+	rm -rf ./packages/merit-node/node_modules
 
 .PHONY: clean-merit-payment-protocol
 clean-merit-payment-protocol:
@@ -155,7 +155,7 @@ clean-stack: clean-bitcore-lib \
 	clean-merit-wallet-service \
 	clean-bitcore-wallet-client \
 	clean-merit-p2p \
-	clean-bitcore-node \
+	clean-merit-node \
 	clean-merit-payment-protocol \
 	clean-lightwallet
 
@@ -173,9 +173,9 @@ test-bitcoin-rpc:
 test-bitcore-lib:
 	cd packages/bitcore-lib && npm test
 
-.PHONY: test-bitcore-node
-test-bitcore-node:
-	cd packages/bitcore-node && npm test
+.PHONY: test-merit-node
+test-merit-node:
+	cd packages/merit-node && npm test
 
 .PHONY: test-merit-p2p
 test-merit-p2p:
@@ -200,7 +200,7 @@ test-insight-api:
 .PHONY: test-all
 test-all: test-bitcoin-rpc \
 	test-bitcore-lib \
-	test-bitcore-node \
+	test-merit-node \
 	test-merit-p2p \
 	test-merit-payment-protocol \
 	test-merit-wallet-service \
