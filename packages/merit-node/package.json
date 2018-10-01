@@ -43,8 +43,7 @@
   "scripts": {
     "test": "mocha -R spec --recursive",
     "regtest": "./scripts/regtest",
-    "jshint": "jshint --reporter=node_modules/jshint-stylish ./lib",
-    "coverage": "istanbul cover _mocha -- --recursive"
+    "jshint": "jshint --reporter=node_modules/jshint-stylish ./lib"
   },
   "tags": [
     "merit",
@@ -76,7 +75,6 @@
     "benchmark": "1.0.0",
     "merit-p2p": "^1.1.2",
     "chai": "^3.5.0",
-    "istanbul": "^0.4.3",
     "jshint": "^2.9.2",
     "jshint-stylish": "^2.1.0",
     "mocha": "^2.4.5",
