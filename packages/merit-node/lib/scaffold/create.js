@@ -14,7 +14,7 @@ var defaultBaseConfig = require('./default-base-config');
 var version = '^' + packageFile.version;
 
 var BASE_PACKAGE = {
-  description: 'A full Merit node build with Bitcore',
+  description: 'A full Merit node build with Merit Node',
   repository: 'https://github.com/meritlabs/lightwallet-stack',
   license: 'MIT',
   readme: 'README.md',
@@ -42,7 +42,7 @@ function createMeritDirectory(datadir, done) {
 }
 
 /**
- * Will create a base Bitcore Node configuration directory and files.
+ * Will create a base Merit Node configuration directory and files.
  * @param {Object} options
  * @param {String} options.network - "testnet" or "livenet"
  * @param {String} options.datadir - The Merit database directory
@@ -74,12 +74,12 @@ function createConfigDirectory(options, configDir, isGlobal, done) {
 }
 
 /**
- * Will setup a directory with a Bitcore Node directory, configuration file,
+ * Will setup a directory with a Merit Node directory, configuration file,
  * Merit configuration, and will install all necessary dependencies.
  *
  * @param {Object} options
  * @param {String} options.cwd - The current working directory
- * @param {String} options.dirname - The name of the bitcore node configuration directory
+ * @param {String} options.dirname - The name of the Merit Node configuration directory
  * @param {String} options.datadir - The path to the Merit datadir
  * @param {Function} done - A callback function called when finished
  */

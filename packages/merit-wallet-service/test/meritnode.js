@@ -6,7 +6,7 @@ var bitcore = require('bitcore-lib');
 var sinon = require('sinon');
 var Service = require('../meritnode');
 
-describe('Bitcore Node Service', function() {
+describe('Merit Node Service', function() {
   describe('#constructor', function() {
     it('https settings from node', function() {
       var node = {

@@ -118,7 +118,7 @@ StatusController.prototype.sync = function(req, res) {
         syncPercentage: Math.round(percentage),
         height: self.node.services.meritd.height,
         error: null,
-        type: 'bitcore node'
+        type: 'Merit Node'
       };
 
       res.jsonp(info);

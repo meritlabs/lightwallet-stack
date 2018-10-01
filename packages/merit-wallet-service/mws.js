@@ -64,7 +64,7 @@ function startInstance(cb) {
 
     var instanceInfo = cluster.worker ? ' [Instance:' + cluster.worker.id + ']' : '';
     log.info('MWS running ' + instanceInfo);
-    log.debug("We have a bitcore node: ", this.node);
+    log.debug("We have a Merit Node: ", this.node);
     return;
   });
 };

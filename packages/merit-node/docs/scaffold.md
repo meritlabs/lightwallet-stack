@@ -1,5 +1,5 @@
 # Scaffold
-A collection of functions for creating, managing, starting, stopping and interacting with a Bitcore node.
+A collection of functions for creating, managing, starting, stopping and interacting with a Merit node.
 
 ## Install
 This function will add a service to a node by installing the necessary dependencies and modifying the `merit-node.json` configuration.

@@ -49,7 +49,7 @@ function main(servicesPath, additionalServices) {
   program
     .command('start')
     .description('Start the current node')
-    .option('-c, --config <dir>', 'Specify the directory with Bitcore Node configuration')
+    .option('-c, --config <dir>', 'Specify the directory with Merit Node configuration')
     .action(function(cmd){
       if (cmd.config) {
         cmd.config = path.resolve(process.cwd(), cmd.config);
