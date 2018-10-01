@@ -4,7 +4,7 @@ var should = require('chai').should();
 var proxyquire = require('proxyquire');
 var bitcore = require('bitcore-lib');
 var sinon = require('sinon');
-var Service = require('../bitcorenode');
+var Service = require('../meritnode');
 
 describe('Bitcore Node Service', function() {
   describe('#constructor', function() {
@@ -65,7 +65,7 @@ describe('Bitcore Node Service', function() {
     });
   });
   describe('#readHttpsOptions', function() {
-    var TestService = proxyquire('../bitcorenode', {
+    var TestService = proxyquire('../meritnode', {
       fs: {
         readFileSync: function(arg) {
           return arg;
@@ -144,7 +144,7 @@ describe('Bitcore Node Service', function() {
       function TestWSApp() {}
       TestWSApp.prototype.start = sinon.stub().callsArg(2);
       var listen = sinon.stub().callsArg(1);
-      var TestService = proxyquire('../bitcorenode', {
+      var TestService = proxyquire('../meritnode', {
         '../lib/expressapp': TestExpressApp,
         '../lib/wsapp': TestWSApp,
         'http': {
@@ -174,7 +174,7 @@ describe('Bitcore Node Service', function() {
       function TestWSApp() {}
       TestWSApp.prototype.start = sinon.stub().callsArg(2);
       var listen = sinon.stub().callsArgWith(1, new Error('test'));
-      var TestService = proxyquire('../bitcorenode', {
+      var TestService = proxyquire('../meritnode', {
         '../lib/expressapp': TestExpressApp,
         '../lib/wsapp': TestWSApp,
         'http': {
@@ -215,7 +215,7 @@ describe('Bitcore Node Service', function() {
           listen: listen
         };
       };
-      var TestService = proxyquire('../bitcorenode', {
+      var TestService = proxyquire('../meritnode', {
         '../lib/expressapp': TestExpressApp,
         '../lib/wsapp': TestWSApp,
         'https': {
@@ -260,7 +260,7 @@ describe('Bitcore Node Service', function() {
       TestLocker.prototype.listen = sinon.stub();
       function TestEmailService() {}
       TestEmailService.prototype.start = sinon.stub();
-      var TestService = proxyquire('../bitcorenode', {
+      var TestService = proxyquire('../meritnode', {
         '../lib/blockchainmonitor': TestBlockchainMonitor,
         '../lib/emailservice': TestEmailService,
         'socket.io': sinon.stub().returns({
@@ -288,7 +288,7 @@ describe('Bitcore Node Service', function() {
       TestLocker.prototype.listen = sinon.stub();
       function TestEmailService() {}
       TestEmailService.prototype.start = sinon.stub().callsArgWith(1, new Error('test'));
-      var TestService = proxyquire('../bitcorenode', {
+      var TestService = proxyquire('../meritnode', {
         '../lib/blockchainmonitor': TestBlockchainMonitor,
         '../lib/emailservice': TestEmailService,
         'socket.io': sinon.stub().returns({

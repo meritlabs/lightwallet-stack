@@ -12,7 +12,7 @@ log.disableColor();
 
 
 
-var port = process.env.BWS_PORT || config.port || 3232;
+var port = process.env.MWS_PORT || config.port || 3232;
 
 var cluster = require('cluster');
 var http = require('http');
