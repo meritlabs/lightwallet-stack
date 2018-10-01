@@ -25295,7 +25295,6 @@ module.exports={
   "description": "EC cryptography",
   "devDependencies": {
     "brfs": "^1.4.3",
-    "coveralls": "^2.11.3",
     "grunt": "^0.4.5",
     "grunt-browserify": "^5.0.0",
     "grunt-cli": "^1.2.0",
@@ -27886,7 +27885,6 @@ module.exports={
   "description": "EC cryptography",
   "devDependencies": {
     "brfs": "^1.4.3",
-    "coveralls": "^2.11.3",
     "grunt": "^0.4.5",
     "grunt-browserify": "^5.0.0",
     "grunt-cli": "^1.2.0",
