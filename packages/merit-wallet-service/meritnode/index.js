@@ -25,17 +25,17 @@ var baseConfig = require('../config');
  * @param {Object} options
  * @param {Node} options.node - A reference to the Bitcore Node instance
 -* @param {Boolean} options.https - Enable https for this module, defaults to node settings.
- * @param {Number} options.bwsPort - Port for Bitcore Wallet Service API
+ * @param {Number} options.mwsPort - Port for Bitcore Wallet Service API
  * @param {Number} options.messageBrokerPort - Port for MWS message broker
  * @param {Number} options.lockerPort - Port for MWS locker port
  */
-var Service = function(options) {
+function Service(options) {
   EventEmitter.call(this);
 
   this.node = options.node;
   this.https = options.https || this.node.https;
   this.httpsOptions = options.httpsOptions || this.node.httpsOptions;
-  this.bwsPort = options.bwsPort || baseConfig.port;
+  this.mwsPort = options.mwsPort || baseConfig.port;
   this.messageBrokerPort = options.messageBrokerPort || 3380;
   if (baseConfig.lockOpts) {
     this.lockerPort = baseConfig.lockOpts.lockerServer.port;
@@ -123,7 +123,7 @@ Service.prototype._startWalletService = function(config, next) {
     if (err) {
       return next(err);
     }
-    self.server.listen(self.bwsPort, next);
+    self.server.listen(self.mwsPort, next);
   });
 };
 
