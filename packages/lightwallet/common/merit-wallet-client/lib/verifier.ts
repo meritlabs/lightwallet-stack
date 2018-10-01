@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as preconditions from 'preconditions';
 const $ = preconditions.singleton();
-import * as Bitcore from 'bitcore-lib';
+import * as Bitcore from 'merit-lib';
 import { Common } from './common';
 let Utils = Common.Utils;
 import { Logger } from "./log";

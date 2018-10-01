@@ -1,5 +1,5 @@
 import { IContactField, IContactName, IContactProperties } from '@ionic-native/contacts';
-import { Address } from 'bitcore-lib';
+import { Address } from 'merit-lib';
 
 export interface IAddressBook {
   [key: string]: MeritContact;

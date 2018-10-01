@@ -71,8 +71,7 @@
   "meritNode": "lib",
   "dependencies": {
     "async": "2.6.0",
-    "bitcore-lib": "^0.9.9",
-    "bitcore-message": "^1.0.4",
+    "merit-lib": "^0.9.9",
     "body-parser": "^1.13.3",
     "compression": "^1.6.1",
     "lodash": "^4.17.4",

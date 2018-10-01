@@ -111,13 +111,13 @@ start-stack: symlink-merit-node start-merit-node
 
 # Clean
 ## Preperation Order is based on dependencies ##
-.PHONY: clean-bitcore-lib
-clean-bitcore-lib:
-	rm -rf ./packages/bitcore-lib/node_modules
+.PHONY: clean-merit-lib
+clean-merit-lib:
+	rm -rf ./packages/merit-lib/node_modules
 
-.PHONY: clean-bitcoin-rpc
-clean-bitcoin-rpc:
-	rm -rf ./packages/bitcoin-rpc/node_modules
+.PHONY: clean-merit-rpc
+clean-merit-rpc:
+	rm -rf ./packages/merit-rpc/node_modules
 
 .PHONY: clean-insight-api
 clean-insight-api:
@@ -130,10 +130,6 @@ clean-insight-ui:
 .PHONY: clean-merit-wallet-service
 clean-merit-wallet-service:
 	rm -rf ./packages/merit-wallet-service/node_modules
-
-.PHONY: clean-bitcore-wallet-client
-clean-bitcore-wallet-client:
-	rm -rf ./packages/bitcore-wallet-client/node_modules
 
 .PHONY: clean-merit-p2p
 clean-merit-p2p:
@@ -148,12 +144,11 @@ clean-merit-payment-protocol:
 	rm -rf ./packages/merit-payment-protocol/node_modules
 
 .PHONY: clean-stack
-clean-stack: clean-bitcore-lib \
-	clean-bitcoin-rpc \
+clean-stack: clean-merit-lib \
+	clean-merit-rpc \
 	clean-insight-api \
 	clean-insight-ui \
 	clean-merit-wallet-service \
-	clean-bitcore-wallet-client \
 	clean-merit-p2p \
 	clean-merit-node \
 	clean-merit-payment-protocol \
@@ -165,13 +160,13 @@ clean-build:
 	rm -rf packages/lightwallet/mobile/www/*
 	rm -rf ./output.log
 
-.PHONY: test-bitcoin-rpc
-test-bitcoin-rpc:
-	cd packages/bitcoin-rpc && npm test
+.PHONY: test-merit-rpc
+test-merit-rpc:
+	cd packages/merit-rpc && npm test
 
-.PHONY: test-bitcore-lib
-test-bitcore-lib:
-	cd packages/bitcore-lib && npm test
+.PHONY: test-merit-lib
+test-merit-lib:
+	cd packages/merit-lib && npm test
 
 .PHONY: test-merit-node
 test-merit-node:
@@ -189,22 +184,17 @@ test-merit-payment-protocol:
 test-merit-wallet-service:
 	cd packages/merit-wallet-service && npm test
 
-.PHONY: test-bitcore-wallet-client
-test-bitcore-wallet-client:
-	cd packages/bitcore-wallet-client && npm test
-
 .PHONY: test-insight-api
 test-insight-api:
 	cd packages/insight-api && npm test
 
 .PHONY: test-all
-test-all: test-bitcoin-rpc \
-	test-bitcore-lib \
+test-all: test-merit-rpc \
+	test-merit-lib \
 	test-merit-node \
 	test-merit-p2p \
 	test-merit-payment-protocol \
 	test-merit-wallet-service \
-	test-bitcore-wallet-client \
 	test-insight-api
 
 .PHONY: fmt

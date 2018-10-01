@@ -1,7 +1,7 @@
 var _ = require('lodash');
 var $ = require('preconditions').singleton();
 
-var Bitcore = require('bitcore-lib');
+var Bitcore = require('merit-lib');
 var Constants = require('../common/constants');
 
 function AddressManager() {};

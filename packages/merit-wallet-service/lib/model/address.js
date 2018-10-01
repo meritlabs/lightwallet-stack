@@ -3,7 +3,7 @@
 var $ = require('preconditions').singleton();
 var _ = require('lodash');
 
-var Bitcore = require('bitcore-lib');
+var Bitcore = require('merit-lib');
 var Constants = require('../common/constants');
 
 function Address() {};

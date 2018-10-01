@@ -5,4 +5,4 @@ var spec = {
   message: 'Internal Error on merit-payment-protocol Module: {0}'
 };
 
-module.exports = require('bitcore-lib').errors.extend(spec);
+module.exports = require('merit-lib').errors.extend(spec);

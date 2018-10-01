@@ -9,7 +9,7 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { Constants } from '@merit/common/merit-wallet-client/lib/common/constants';
 import { FeeService } from '@merit/common/services/fee.service';
 import { ENV } from '@app/env';
-import { HDPrivateKey, Address, Script, Transaction, PublicKey, Opcode, crypto } from 'bitcore-lib';
+import { HDPrivateKey, Address, Script, Transaction, PublicKey, Opcode, crypto } from 'merit-lib';
 
 export interface IVaultCreateData {
   vaultName: string,
