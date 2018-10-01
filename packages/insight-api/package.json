@@ -68,7 +68,7 @@
     "test": "NODE_ENV=test mocha -R spec --recursive"
   },
   "main": "lib",
-  "bitcoreNode": "lib",
+  "meritNode": "lib",
   "dependencies": {
     "async": "2.6.0",
     "bitcore-lib": "^0.9.9",

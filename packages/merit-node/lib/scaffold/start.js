@@ -141,8 +141,8 @@ function loadModule(req, service) {
     // check if the package.json specifies a specific file to use
     var servicePackage = req(service.name + '/package.json');
     var serviceModule = service.name;
-    if (servicePackage.bitcoreNode) {
-      serviceModule = service.name + '/' + servicePackage.bitcoreNode;
+    if (servicePackage.meritNode) {
+      serviceModule = service.name + '/' + servicePackage.meritNode;
     }
     service.module = req(serviceModule);
   }
