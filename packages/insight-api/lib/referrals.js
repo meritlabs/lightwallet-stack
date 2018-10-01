@@ -1,6 +1,6 @@
 'use strict';
 
-const bitcore = require('bitcore-lib');
+const bitcore = require('merit-lib');
 const _ = bitcore.deps._;
 const $ = bitcore.util.preconditions;
 const Common = require('./common');

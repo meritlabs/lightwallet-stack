@@ -10,7 +10,7 @@ import { PersistenceService } from '@merit/common/services/persistence.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { RateService } from '@merit/common/services/rate.service';
 import { accessWallet, WalletService } from '@merit/common/services/wallet.service';
-import { Address, crypto, HDPrivateKey, HDPublicKey, PrivateKey, PublicKey, Script, Transaction } from 'bitcore-lib';
+import { Address, crypto, HDPrivateKey, HDPublicKey, PrivateKey, PublicKey, Script, Transaction } from 'merit-lib';
 import { Subject } from 'rxjs/Subject';
 import { AlertService } from "@merit/common/services/alert.service";
 

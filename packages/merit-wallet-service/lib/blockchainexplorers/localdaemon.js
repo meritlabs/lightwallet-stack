@@ -8,7 +8,7 @@
  */
 'use strict';
 
-var bitcore = require('bitcore-lib');
+var bitcore = require('merit-lib');
 var _ = bitcore.deps._;
 var $ = bitcore.util.preconditions;
 var async = require('async');

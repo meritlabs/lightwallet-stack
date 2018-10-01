@@ -1,6 +1,6 @@
 'use strict';
 
-var bitcore = require('bitcore-lib');
+var bitcore = require('merit-lib');
 var $ = bitcore.util.preconditions;
 var _ = bitcore.deps._;
 var path = require('path');

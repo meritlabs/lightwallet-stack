@@ -54,7 +54,7 @@
   "dependencies": {
     "async": "^2.6.0",
     "meritd-rpc": "^0.7.0",
-    "bitcore-lib": "^0.9.9",
+    "merit-lib": "^0.9.9",
     "body-parser": "^1.13.3",
     "colors": "^1.1.2",
     "commander": "^2.8.1",

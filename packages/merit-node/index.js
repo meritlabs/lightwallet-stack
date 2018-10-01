@@ -24,4 +24,4 @@ module.exports.cli.daemon = require('./lib/cli/daemon');
 module.exports.cli.merit = require('./lib/cli/merit-node');
 module.exports.cli.meritnoded = require('./lib/cli/merit-noded');
 
-module.exports.lib = require('bitcore-lib');
+module.exports.lib = require('merit-lib');

@@ -1,7 +1,7 @@
 'use strict';
 
 var async = require('async');
-var bitcore = require('bitcore-lib');
+var bitcore = require('merit-lib');
 var _ = bitcore.deps._;
 var pools = require('../pools.json');
 var BN = bitcore.crypto.BN;
