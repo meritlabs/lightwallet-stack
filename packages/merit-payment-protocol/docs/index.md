@@ -11,13 +11,6 @@ npm install meritcore-lib --save
 npm install merit-payment-protocol --save
 ```
 
-For client-side projects:
-
-```
-bower install meritcore-lib --save
-bower install merit-payment-protocol --save
-```
-
 ## Make Payment Details
 Here the merchant's server will construct the payment details message:
 
