@@ -189,7 +189,7 @@ BlockController.prototype._getBlockSummary = function(hash, moreTimestamp, next)
       // Old code parsed all transactions in every block _and_ then encoded
       // them all back together to get the binary size of the block.
       // FIXME: This code might still read the whole block. Fixing that
-      // would require changes in bitcore-node.
+      // would require changes in merit-node.
       var header = bitcore.BlockHeader.fromBufferReader(br);
       var info = {};
       var txlength = br.readVarintNum();

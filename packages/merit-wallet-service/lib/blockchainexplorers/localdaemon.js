@@ -18,7 +18,7 @@ const { promisify } = require('util');
 
 function LocalDaemon(node) {
   this.node = node;
-  log = this.node.log; //This daemon requires MWS to be run through bitcore-node, which is a requirement going forward.
+  log = this.node.log; //This daemon requires MWS to be run through merit-node, which is a requirement going forward.
 }
 
 var _parseMeritdErr = function(err, res) {
