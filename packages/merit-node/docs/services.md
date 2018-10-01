@@ -1,5 +1,5 @@
 # Services
-Bitcore Node has a service module system that can start up additional services that can include additional:
+Merit Node has a service module system that can start up additional services that can include additional:
 - Blockchain indexes (e.g. querying balances for addresses)
 - API methods
 - HTTP routes

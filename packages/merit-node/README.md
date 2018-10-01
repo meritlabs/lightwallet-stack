@@ -17,7 +17,7 @@ Merit Node is a part of Merit Lightwallet Stack and is distributed as a source c
 
 ## Configuration
 
-Merit Node includes a Command Line Interface (CLI) for managing, configuring and interfacing with your Bitcore Node.
+Merit Node includes a Command Line Interface (CLI) for managing, configuring and interfacing with your Merit Node.
 
 ```bash
 merit-node create -d <merit-data-dir> mynode

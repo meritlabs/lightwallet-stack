@@ -15,7 +15,7 @@ function main(servicesPath, additionalServices) {
   program
     .version(version)
     .description('Start the current node')
-    .option('-c, --config <dir>', 'Specify the directory with Bitcore Node configuration');
+    .option('-c, --config <dir>', 'Specify the directory with Merit Node configuration');
 
   program.parse(process.argv);
 

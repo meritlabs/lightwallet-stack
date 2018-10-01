@@ -89,7 +89,7 @@ function start(options) {
   start.registerExitHandlers(process, node);
 
   node.on('ready', function() {
-    log.info('Bitcore Node ready');
+    log.info('Merit Node ready');
   });
 
   node.on('error', function(err) {
@@ -189,7 +189,7 @@ function setupServices(req, servicesPath, config) {
 /**
  * Will shutdown a node and then the process
  * @param {Object} _process - The Node.js process object
- * @param {Node} node - The Bitcore Node instance
+ * @param {Node} node - The Merit Node instance
  */
 function cleanShutdown(_process, node) {
   node.stop(function(err) {

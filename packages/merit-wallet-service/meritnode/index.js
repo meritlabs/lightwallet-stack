@@ -21,11 +21,11 @@ var EventEmitter = require('events').EventEmitter;
 var baseConfig = require('../config');
 
 /**
- * A Bitcore Node Service module
+ * A Merit Node Service module
  * @param {Object} options
- * @param {Node} options.node - A reference to the Bitcore Node instance
+ * @param {Node} options.node - A reference to the Merit Node instance
 -* @param {Boolean} options.https - Enable https for this module, defaults to node settings.
- * @param {Number} options.mwsPort - Port for Bitcore Wallet Service API
+ * @param {Number} options.mwsPort - Port for Merit Wallet Service API
  * @param {Number} options.messageBrokerPort - Port for MWS message broker
  * @param {Number} options.lockerPort - Port for MWS locker port
  */

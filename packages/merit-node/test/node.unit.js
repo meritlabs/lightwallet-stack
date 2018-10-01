@@ -10,7 +10,7 @@ var BaseService = require('../lib/service');
 var index = require('../lib');
 var log = index.log;
 
-describe('Bitcore Node', function() {
+describe('Merit Node', function() {
 
   var baseConfig = {};
 

@@ -25,7 +25,7 @@ var ExpressApp = function(node) {
   // If merit-node isn't here, then you probably didn't run MWS from merit-node.
 
   if (!node) {
-    throw new Error("Bitcore node not detected; shutting down...");
+    throw new Error("Merit node not detected; shutting down...");
   }
 
   this.node = node;
