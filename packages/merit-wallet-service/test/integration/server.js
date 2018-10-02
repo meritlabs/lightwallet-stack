@@ -3138,10 +3138,10 @@ describe('Wallet service', function() {
           });
         });
       });
-      it('should fail gracefully when bitcore throws exception on raw tx creation', function(done) {
+      it('should fail gracefully when meritcore throws exception on raw tx creation', function(done) {
         helpers.stubUtxos(server, wallet, 1, function() {
-          var bitcoreStub = sinon.stub(Bitcore, 'Transaction');
-          bitcoreStub.throws({
+          var meritcoreStub = sinon.stub(Bitcore, 'Transaction');
+          meritcoreStub.throws({
             name: 'dummy',
             message: 'dummy exception'
           });
@@ -3155,7 +3155,7 @@ describe('Wallet service', function() {
           server.createTx(txOpts, function(err, tx) {
             should.exist(err);
             err.message.should.equal('dummy exception');
-            bitcoreStub.restore();
+            meritcoreStub.restore();
             done();
           });
         });
@@ -3236,9 +3236,9 @@ describe('Wallet service', function() {
           server.createTx(txOpts, function(err, tx) {
             should.not.exist(err);
             should.exist(tx);
-            var bitcoreTx = tx.getBitcoreTx();
-            bitcoreTx.outputs.length.should.equal(1);
-            bitcoreTx.outputs[0].micros.should.equal(tx.amount);
+            var meritcoreTx = tx.getBitcoreTx();
+            meritcoreTx.outputs.length.should.equal(1);
+            meritcoreTx.outputs[0].micros.should.equal(tx.amount);
             done();
           });
         });

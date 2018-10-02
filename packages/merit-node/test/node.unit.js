@@ -2,8 +2,8 @@
 
 var should = require('chai').should();
 var sinon = require('sinon');
-var bitcore = require('meritcore-lib');
-var Networks = bitcore.Networks;
+var meritcore = require('meritcore-lib');
+var Networks = meritcore.Networks;
 var proxyquire = require('proxyquire');
 var util = require('util');
 var BaseService = require('../lib/service');
@@ -425,7 +425,7 @@ describe('Merit Node', function() {
 
   describe('#getNetworkName', function() {
     afterEach(function() {
-      bitcore.Networks.disableRegtest();
+      meritcore.Networks.disableRegtest();
     });
     it('it will return the network name for livenet', function() {
       var node = new Node(baseConfig);

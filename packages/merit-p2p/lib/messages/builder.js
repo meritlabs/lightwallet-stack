@@ -1,6 +1,6 @@
 'use strict';
 
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var Inventory = require('../inventory');
 
 function builder(options) {
@@ -12,13 +12,13 @@ function builder(options) {
   }
 
   if (!options.network) {
-    options.network = bitcore.Networks.defaultNetwork;
+    options.network = meritcore.Networks.defaultNetwork;
   }
 
-  options.Block = options.Block || bitcore.Block;
-  options.BlockHeader = options.BlockHeader || bitcore.BlockHeader;
-  options.Transaction = options.Transaction || bitcore.Transaction;
-  options.MerkleBlock = options.MerkleBlock || bitcore.MerkleBlock;
+  options.Block = options.Block || meritcore.Block;
+  options.BlockHeader = options.BlockHeader || meritcore.BlockHeader;
+  options.Transaction = options.Transaction || meritcore.Transaction;
+  options.MerkleBlock = options.MerkleBlock || meritcore.MerkleBlock;
   options.protocolVersion = options.protocolVersion || 70001;
 
   var exported = {

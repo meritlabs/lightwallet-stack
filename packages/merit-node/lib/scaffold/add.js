@@ -4,10 +4,10 @@ var async = require('async');
 var fs = require('fs');
 var path = require('path');
 var spawn = require('child_process').spawn;
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var utils = require('../utils');
-var $ = bitcore.util.preconditions;
-var _ = bitcore.deps._;
+var $ = meritcore.util.preconditions;
+var _ = meritcore.deps._;
 
 /**
  * @param {String} configFilePath - The absolute path to the configuration file
@@ -78,10 +78,10 @@ function add(options, done) {
   var configPath = options.path;
   var services = options.services;
 
-  var bitcoreConfigPath = path.resolve(configPath, 'merit-node.json');
+  var meritcoreConfigPath = path.resolve(configPath, 'merit-node.json');
   var packagePath = path.resolve(configPath, 'package.json');
 
-  if (!fs.existsSync(bitcoreConfigPath) || !fs.existsSync(packagePath)) {
+  if (!fs.existsSync(meritcoreConfigPath) || !fs.existsSync(packagePath)) {
     return done(
       new Error('Directory does not have a merit-node.json and/or package.json file.')
     );
@@ -109,7 +109,7 @@ function add(options, done) {
         var serviceName = newDependencies[0];
 
         // add service to merit-node.json
-        addConfig(bitcoreConfigPath, serviceName, next);
+        addConfig(meritcoreConfigPath, serviceName, next);
       });
     }, done
   );

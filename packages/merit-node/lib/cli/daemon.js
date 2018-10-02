@@ -2,15 +2,15 @@
 
 var program = require('commander');
 var path = require('path');
-var bitcore = require('..');
+var meritcore = require('..');
 
 function main(servicesPath, additionalServices) {
   /* jshint maxstatements: 100 */
 
-  var version = bitcore.version;
-  var start = bitcore.scaffold.start;
-  var findConfig = bitcore.scaffold.findConfig;
-  var defaultConfig = bitcore.scaffold.defaultConfig;
+  var version = meritcore.version;
+  var start = meritcore.scaffold.start;
+  var findConfig = meritcore.scaffold.findConfig;
+  var defaultConfig = meritcore.scaffold.defaultConfig;
 
   program
     .version(version)

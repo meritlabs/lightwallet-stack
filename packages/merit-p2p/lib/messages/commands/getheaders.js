@@ -2,11 +2,11 @@
 
 var Message = require('../message');
 var inherits = require('util').inherits;
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var utils = require('../utils');
-var BufferReader = bitcore.encoding.BufferReader;
-var BufferWriter = bitcore.encoding.BufferWriter;
-var $ = bitcore.util.preconditions;
+var BufferReader = meritcore.encoding.BufferReader;
+var BufferWriter = meritcore.encoding.BufferWriter;
+var $ = meritcore.util.preconditions;
 
 /**
  * Query another peer about block headers. It can query for multiple block hashes,

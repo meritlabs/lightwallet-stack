@@ -1,9 +1,9 @@
 'use strict';
 
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var BloomFilter = require('bloom-filter');
-var BufferReader = bitcore.encoding.BufferReader;
-var BufferWriter = bitcore.encoding.BufferWriter;
+var BufferReader = meritcore.encoding.BufferReader;
+var BufferWriter = meritcore.encoding.BufferWriter;
 
 /**
  * A constructor for Bloom Filters

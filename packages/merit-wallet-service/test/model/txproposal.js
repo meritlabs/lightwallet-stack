@@ -27,7 +27,7 @@ describe('TxProposal', function() {
   });
 
   describe('#getBitcoreTx', function() {
-    it('should create a valid bitcore TX', function() {
+    it('should create a valid meritcore TX', function() {
       var txp = TxProposal.fromObj(aTXP());
       var t = txp.getBitcoreTx();
       should.exist(t);

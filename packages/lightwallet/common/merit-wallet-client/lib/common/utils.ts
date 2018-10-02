@@ -103,14 +103,14 @@ export module Utils {
       return xpub.deriveChild(path).publicKey;
     });
 
-    let bitcoreAddress;
+    let meritcoreAddress;
     switch (scriptType) {
       case Constants.SCRIPT_TYPES.P2SH:
-        bitcoreAddress = Address.createMultisig(publicKeys, m, network);
+        meritcoreAddress = Address.createMultisig(publicKeys, m, network);
         break;
       case Constants.SCRIPT_TYPES.P2PKH:
         $.checkState(_.isArray(publicKeys) && publicKeys.length == 1);
-        bitcoreAddress = Address.fromPublicKey(publicKeys[0], network);
+        meritcoreAddress = Address.fromPublicKey(publicKeys[0], network);
         break;
       case Constants.SCRIPT_TYPES.PP2SH:
         //TODO Does it even make sense to call this function with PP2SH address type?
@@ -119,7 +119,7 @@ export module Utils {
     }
 
     return {
-      address: bitcoreAddress.toString(),
+      address: meritcoreAddress.toString(),
       path: path,
       publicKeys: _.invokeMap(publicKeys, 'toString'),
     };
@@ -198,7 +198,7 @@ export module Utils {
       });
     }
 
-    // Validate inputs vs outputs independently of Bitcore
+    // Validate inputs vs outputs independently of meritcore
     let totalInputs = _.reduce(txp.inputs, function(memo: any, i: any) {
       return +i.micros + memo;
     }, 0);

@@ -2,12 +2,12 @@
 
 var Message = require('../message');
 var inherits = require('util').inherits;
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var utils = require('../utils');
-var $ = bitcore.util.preconditions;
-var _ = bitcore.deps._;
-var BufferUtil = bitcore.util.buffer;
-var BufferReader = bitcore.encoding.BufferReader;
+var $ = meritcore.util.preconditions;
+var _ = meritcore.deps._;
+var BufferUtil = meritcore.util.buffer;
+var BufferReader = meritcore.encoding.BufferReader;
 
 /**
  * A message in response to a ping message.

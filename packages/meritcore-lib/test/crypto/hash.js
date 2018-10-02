@@ -1,8 +1,8 @@
 'use strict';
 
 require('chai').should();
-var bitcore = require('../..');
-var Hash = bitcore.crypto.Hash;
+var meritcore = require('../..');
+var Hash = meritcore.crypto.Hash;
 
 describe('Hash', function() {
   var buf = new Buffer([0, 1, 2, 3, 253, 254, 255]);

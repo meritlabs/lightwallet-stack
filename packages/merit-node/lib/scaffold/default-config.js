@@ -6,7 +6,7 @@ var fs = require('fs');
 
 /**
  * Will return the path and default merit-node configuration. It will search for the
- * configuration file in the "~/.bitcore" directory, and if it doesn't exist, it will create one
+ * configuration file in the "~/.meritcore" directory, and if it doesn't exist, it will create one
  * based on default settings.
  * @param {Object} [options]
  * @param {Array} [options.additionalServices] - An optional array of services.
@@ -17,7 +17,7 @@ function getDefaultConfig(options) {
     options = {};
   }
 
-  var defaultPath = path.resolve(process.env.HOME, './.bitcore');
+  var defaultPath = path.resolve(process.env.HOME, './.meritcore');
   var defaultConfigFile = path.resolve(defaultPath, './merit-node.json');
 
   if (!fs.existsSync(defaultPath)) {
