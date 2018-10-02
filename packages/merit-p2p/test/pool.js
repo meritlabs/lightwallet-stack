@@ -6,7 +6,7 @@ var chai = require('chai');
 var should = chai.should();
 var expect = chai.expect;
 
-var bitcore = require('merit-lib');
+var bitcore = require('meritcore-lib');
 var P2P = require('../');
 var Peer = P2P.Peer;
 var MessagesData = require('./data/messages');

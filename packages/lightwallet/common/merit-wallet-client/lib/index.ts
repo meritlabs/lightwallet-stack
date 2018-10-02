@@ -12,7 +12,7 @@ import { API as Client } from './api';
 import { Verifier } from './verifier';
 import { Utils } from './common/utils';
 import * as sjcl from 'sjcl';
-import * as Bitcore from 'merit-lib'; //Yuckity Yuck
+import * as Bitcore from 'meritcore-lib'; //Yuckity Yuck
 
 export class MeritClient extends Client {
   // I'm not sure that there is any benefit to doing this in the constructor

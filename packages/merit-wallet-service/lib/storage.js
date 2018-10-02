@@ -12,7 +12,7 @@ var mongodb = require('mongodb');
 
 var Model = require('./model');
 
-var Bitcore = require('merit-lib');
+var Bitcore = require('meritcore-lib');
 var ObjectID = mongodb.ObjectID;
 
 var collections = {

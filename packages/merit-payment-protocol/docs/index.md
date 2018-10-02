@@ -7,14 +7,14 @@ Payment protocol is implemented as a separate module and you must add it to your
 For node projects:
 
 ```
-npm install merit-lib --save
+npm install meritcore-lib --save
 npm install merit-payment-protocol --save
 ```
 
 For client-side projects:
 
 ```
-bower install merit-lib --save
+bower install meritcore-lib --save
 bower install merit-payment-protocol --save
 ```
 

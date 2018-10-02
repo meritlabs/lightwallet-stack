@@ -7,7 +7,7 @@ var log = require('npmlog');
 log.debug = log.verbose;
 log.disableColor();
 
-var Bitcore = require('merit-lib');
+var Bitcore = require('meritcore-lib');
 
 var Common = require('../common');
 var Constants = Common.Constants;

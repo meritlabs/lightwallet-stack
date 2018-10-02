@@ -1,6 +1,6 @@
 {
-  "name": "merit-lib-benchmarks",
-  "description": "Benchmarks for merit-lib functions",
+  "name": "meritcore-lib-benchmarks",
+  "description": "Benchmarks for meritcore-lib functions",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
   "license": "MIT",
   "authors": [

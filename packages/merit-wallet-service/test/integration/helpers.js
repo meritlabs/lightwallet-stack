@@ -12,7 +12,7 @@ var tingodb = require('tingodb')({
   memStore: true
 });
 
-var Bitcore = require('merit-lib');
+var Bitcore = require('meritcore-lib');
 
 var Common = require('../../lib/common');
 var Utils = Common.Utils;

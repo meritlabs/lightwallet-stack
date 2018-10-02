@@ -1,5 +1,5 @@
 import { MWCService } from '@merit/common/services/mwc.service';
-import { Address, Referral } from 'merit-lib';
+import { Address, Referral } from 'meritcore-lib';
 
 export function cleanAddress(address: string) {
   address = address || '';

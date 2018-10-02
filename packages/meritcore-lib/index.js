@@ -6,9 +6,9 @@ var bitcore = module.exports;
 bitcore.version = 'v' + require('./package.json').version;
 bitcore.versionGuard = function (version) {
   if (version !== undefined) {
-    var message = 'More than one instance of merit-lib found. ' +
-      'Please make sure to require merit-lib and check that submodules do' +
-      ' not also include their own merit-lib dependency.';
+    var message = 'More than one instance of meritcore-lib found. ' +
+      'Please make sure to require meritcore-lib and check that submodules do' +
+      ' not also include their own meritcore-lib dependency.';
     throw new Error(message);
   }
 };

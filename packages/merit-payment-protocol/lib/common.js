@@ -1,6 +1,6 @@
 'use strict';
 
-var bitcore = require('merit-lib');
+var bitcore = require('meritcore-lib');
 var protobufjs = require('protobufjs/dist/protobuf');
 var RootCerts = require('./rootcerts');
 var rfc5280 = require('asn1.js/rfc/5280');

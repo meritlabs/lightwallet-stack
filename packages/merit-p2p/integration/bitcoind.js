@@ -6,7 +6,7 @@ var chai = require('chai');
 var should = chai.should();
 var sinon = require('sinon');
 
-var bitcore = require('merit-lib');
+var bitcore = require('meritcore-lib');
 var _ = bitcore.deps._;
 var Random = bitcore.crypto.Random;
 var BN = bitcore.crypto.BN;

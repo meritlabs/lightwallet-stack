@@ -26,7 +26,7 @@ Most projects will only need to work with one of the networks. The value of `Net
 ## Network constants
 The functionality of testnet and livenet is mostly similar (except for some relaxed block validation rules on testnet). They differ in the constants being used for human representation of base58 encoded strings. These are sometimes referred to as "version" constants.
 
-Take a look at this modified snippet from [networks.js](https://github.com/meritlabs/lightwallet-stack/blob/master/packages/merit-lib/lib/networks.js)
+Take a look at this modified snippet from [networks.js](https://github.com/meritlabs/lightwallet-stack/blob/master/packages/meritcore-lib/lib/networks.js)
 
 ```javascript
 var livenet = new Network();

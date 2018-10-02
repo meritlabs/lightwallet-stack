@@ -110,7 +110,7 @@ This input contains a set of signatures in a `signatures` property, and each tim
 
 The following methods are used to manage signatures for a transaction:
 - `getSignatures`: takes an array of `PrivateKey` or strings from which a `PrivateKey` can be instantiated; the transaction to be signed; the kind of signature hash to use. Returns an array of objects with the following properties:
-  - `signature`: an instance of [Signature](https://github.com/meritlabs/lightwallet-stack/blob/master/packages/merit-lib/lib/crypto/signature.js)
+  - `signature`: an instance of [Signature](https://github.com/meritlabs/lightwallet-stack/blob/master/packages/meritcore-lib/lib/crypto/signature.js)
   - `prevTxId`: this input's `prevTxId`,
   - `outputIndex`: this input's `outputIndex`,
   - `inputIndex`: this input's index in the transaction

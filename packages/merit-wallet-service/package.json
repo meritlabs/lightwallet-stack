@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "async": "^2.6.0",
-    "merit-lib": "^0.9.9",
+    "meritcore-lib": "^0.9.9",
     "body-parser": "^1.11.0",
     "compression": "^1.6.2",
     "coveralls": "^2.11.2",

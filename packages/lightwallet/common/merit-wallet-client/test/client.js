@@ -15,7 +15,7 @@ var tingodb = require('tingodb')({
 
 var log = require('../lib/log');
 
-var Bitcore = require('merit-lib');
+var Bitcore = require('meritcore-lib');
 var BitcorePayPro = require('merit-payment-protocol');
 
 var BWS = require('merit-wallet-service');

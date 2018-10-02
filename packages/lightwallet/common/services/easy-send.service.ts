@@ -7,7 +7,7 @@ import { AddressService } from '@merit/common/services/address.service';
 import { FeeService } from '@merit/common/services/fee.service';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 import { accessWallet } from '@merit/common/services/wallet.service';
-import { Address, HDPrivateKey, PrivateKey, Script } from 'merit-lib';
+import { Address, HDPrivateKey, PrivateKey, Script } from 'meritcore-lib';
 import { AlertService } from '@merit/common/services/alert.service';
 
 @Injectable()

@@ -1,6 +1,6 @@
 'use strict';
 
-var bitcore = require('merit-lib');
+var bitcore = require('meritcore-lib');
 var $ = bitcore.util.preconditions;
 var BufferWriter = bitcore.encoding.BufferWriter;
 var Hash = bitcore.crypto.Hash;

@@ -6,7 +6,7 @@ var spawn = require('child_process').spawn;
 
 var MeritRPC = require('meritd-rpc');
 var rimraf = require('rimraf');
-var bitcore = require('merit-lib');
+var bitcore = require('meritcore-lib');
 var chai = require('chai');
 var should = chai.should();
 
