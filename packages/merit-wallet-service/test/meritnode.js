@@ -2,7 +2,7 @@
 
 var should = require('chai').should();
 var proxyquire = require('proxyquire');
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var sinon = require('sinon');
 var Service = require('../meritnode');
 
@@ -109,7 +109,7 @@ describe('Merit Node Service', function() {
     it('livenet local insight', function() {
       var options = {
         node: {
-          network: bitcore.Networks.livenet,
+          network: meritcore.Networks.livenet,
           port: 3001
         }
       };
@@ -124,7 +124,7 @@ describe('Merit Node Service', function() {
     it('testnet local insight', function() {
       var options = {
         node: {
-          network: bitcore.Networks.testnet,
+          network: meritcore.Networks.testnet,
           port: 3001
         }
       };

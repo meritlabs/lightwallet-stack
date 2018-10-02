@@ -4,9 +4,9 @@ var chai = require('chai');
 var sinon = require('sinon');
 var should = chai.should();
 var expect = chai.expect;
-var bitcore = require('meritcore-lib');
-var PrivateKey = bitcore.PrivateKey;
-var PublicKey = bitcore.PublicKey;
+var meritcore = require('meritcore-lib');
+var PrivateKey = meritcore.PrivateKey;
+var PublicKey = meritcore.PublicKey;
 
 var is_browser = process.browser;
 

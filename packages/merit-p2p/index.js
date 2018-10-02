@@ -1,4 +1,4 @@
-var bitcore = require('meritcore-lib');
-bitcore.P2P = require('./lib');
+var meritcore = require('meritcore-lib');
+meritcore.P2P = require('./lib');
 
-module.exports = bitcore.P2P;
+module.exports = meritcore.P2P;

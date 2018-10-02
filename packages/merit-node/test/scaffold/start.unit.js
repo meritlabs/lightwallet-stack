@@ -18,7 +18,7 @@ describe('#start', function() {
     });
     it('will give true with "datadir" at root', function() {
       var checkConfigVersion2 = proxyquire('../../lib/scaffold/start', {}).checkConfigVersion2;
-      var v2 = checkConfigVersion2({datadir: '/home/user/.bitcore/data', services: []});
+      var v2 = checkConfigVersion2({datadir: '/home/user/.meritcore/data', services: []});
       v2.should.equal(true);
     });
     it('will give true with "address" service enabled', function() {
@@ -87,7 +87,7 @@ describe('#start', function() {
       services[0].name.should.equal('local');
       services[0].module.should.equal(LocalService);
     });
-    it('will require a local module with "bitcoreNode" in package.json', function() {
+    it('will require a local module with "meritcoreNode" in package.json', function() {
       function LocalService() {}
       LocalService.dependencies = [];
       LocalService.prototype.start = sinon.stub();
@@ -99,9 +99,9 @@ describe('#start', function() {
         } else if (p === 'local/package.json') {
           return {
             name: 'local',
-            bitcoreNode: 'lib/bitcoreNode.js'
+            meritcoreNode: 'lib/meritcoreNode.js'
           };
-        } else if (p === 'local/lib/bitcoreNode.js') {
+        } else if (p === 'local/lib/meritcoreNode.js') {
           return LocalService;
         }
       };

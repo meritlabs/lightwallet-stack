@@ -1,10 +1,10 @@
 'use strict';
 
 var async = require('async');
-var bitcore = require('meritcore-lib');
-var _ = bitcore.deps._;
+var meritcore = require('meritcore-lib');
+var _ = meritcore.deps._;
 var pools = require('../pools.json');
-var BN = bitcore.crypto.BN;
+var BN = meritcore.crypto.BN;
 var LRU = require('lru-cache');
 var Common = require('./common');
 
@@ -88,7 +88,7 @@ BlockController.prototype.block = function(req, res, next) {
 };
 
 BlockController.prototype._normalizePrevHash = function(hash) {
-  // TODO fix bitcore to give back null instead of null hash
+  // TODO fix meritcore to give back null instead of null hash
   if (hash !== '0000000000000000000000000000000000000000000000000000000000000000') {
     return hash;
   } else {
@@ -182,7 +182,7 @@ BlockController.prototype._getBlockSummary = function(hash, moreTimestamp, next)
         return next(err);
       }
 
-      var br = new bitcore.encoding.BufferReader(blockBuffer);
+      var br = new meritcore.encoding.BufferReader(blockBuffer);
 
       // take a shortcut to get number of transactions and the blocksize.
       // Also reads the coinbase transaction and only that.
@@ -190,10 +190,10 @@ BlockController.prototype._getBlockSummary = function(hash, moreTimestamp, next)
       // them all back together to get the binary size of the block.
       // FIXME: This code might still read the whole block. Fixing that
       // would require changes in merit-node.
-      var header = bitcore.BlockHeader.fromBufferReader(br);
+      var header = meritcore.BlockHeader.fromBufferReader(br);
       var info = {};
       var txlength = br.readVarintNum();
-      info.transactions = [bitcore.Transaction().fromBufferReader(br)];
+      info.transactions = [meritcore.Transaction().fromBufferReader(br)];
 
       self.node.services.meritd.getBlockHeader(hash, function(err, blockHeader) {
         if (err) {

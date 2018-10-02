@@ -4,7 +4,7 @@ var chai = require('chai');
 var should = chai.should();
 
 var assert = require('assert');
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var Data = require('./data/messages');
 var P2P = require('../');
 var BloomFilter = P2P.BloomFilter;
@@ -36,12 +36,12 @@ describe('BloomFilter', function() {
 
   it('serialize filter with public keys added', function() {
 
-    var privateKey = bitcore.PrivateKey.fromWIF('5Kg1gnAjaLfKiwhhPpGS3QfRg2m6awQvaj98JCZBZQ5SuS2F15C');
+    var privateKey = meritcore.PrivateKey.fromWIF('5Kg1gnAjaLfKiwhhPpGS3QfRg2m6awQvaj98JCZBZQ5SuS2F15C');
     var publicKey = privateKey.toPublicKey();
 
     var filter = BloomFilter.create(2, 0.001, 0, BloomFilter.BLOOM_UPDATE_ALL);
     filter.insert(publicKey.toBuffer());
-    filter.insert(bitcore.crypto.Hash.sha256ripemd160(publicKey.toBuffer()));
+    filter.insert(meritcore.crypto.Hash.sha256ripemd160(publicKey.toBuffer()));
 
     var expectedFilter = BloomFilter.fromBuffer(ParseHex('038fc16b080000000000000001'));
 

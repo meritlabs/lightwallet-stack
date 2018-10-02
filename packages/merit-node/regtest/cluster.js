@@ -6,14 +6,14 @@ var spawn = require('child_process').spawn;
 
 var MeritRPC = require('meritd-rpc');
 var rimraf = require('rimraf');
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var chai = require('chai');
 var should = chai.should();
 
 var index = require('..');
 var log = index.log;
 log.debug = function() {};
-var BitcoreNode = index.Node;
+var meritcoreNode = index.Node;
 var MeritService = index.services.Merit;
 
 describe('Merit Cluster', function() {
@@ -133,10 +133,10 @@ describe('Merit Cluster', function() {
       ]
     };
 
-    var regtest = bitcore.Networks.get('regtest');
+    var regtest = meritcore.Networks.get('regtest');
     should.exist(regtest);
 
-    node = new BitcoreNode(configuration);
+    node = new meritcoreNode(configuration);
 
     node.on('error', function(err) {
       log.error(err);

@@ -2,9 +2,9 @@
 
 var Message = require('../message');
 var inherits = require('util').inherits;
-var bitcore = require('meritcore-lib');
-var $ = bitcore.util.preconditions;
-var _ = bitcore.deps._;
+var meritcore = require('meritcore-lib');
+var $ = meritcore.util.preconditions;
+var _ = meritcore.deps._;
 
 /**
  * @param {Transaction=} arg - An instance of Transaction

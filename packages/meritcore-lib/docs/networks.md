@@ -9,14 +9,14 @@ The regtest network is useful for development as it's possible to programmatical
 
 ```js
 // Standard testnet
-> bitcore.Networks.testnet.networkMagic;
+> meritcore.Networks.testnet.networkMagic;
 <Buffer 0b 11 09 07>
 ```
 
 ```js
 // Enabling testnet to use the regtest port and magicNumber
-> bitcore.Networks.enableRegtest();
-> bitcore.Networks.testnet.networkMagic;
+> meritcore.Networks.enableRegtest();
+> meritcore.Networks.testnet.networkMagic;
 <Buffer fa bf b5 da>
 ```
 

@@ -7,8 +7,8 @@ var index = require('..');
 var log = index.log;
 
 var chai = require('chai');
-var bitcore = require('meritcore-lib');
-var BN = bitcore.crypto.BN;
+var meritcore = require('meritcore-lib');
+var BN = meritcore.crypto.BN;
 var async = require('async');
 var rimraf = require('rimraf');
 var meritd;
@@ -23,8 +23,8 @@ var blockHashes = [];
 var utxos;
 var client;
 var coinbasePrivateKey;
-var privateKey = bitcore.PrivateKey();
-var destKey = bitcore.PrivateKey();
+var privateKey = meritcore.PrivateKey();
+var destKey = meritcore.PrivateKey();
 
 describe('Meritd Functionality', function() {
 
@@ -32,8 +32,8 @@ describe('Meritd Functionality', function() {
     this.timeout(60000);
 
     // Add the regtest network
-    bitcore.Networks.enableRegtest();
-    var regtestNetwork = bitcore.Networks.get('regtest');
+    meritcore.Networks.enableRegtest();
+    var regtestNetwork = meritcore.Networks.get('regtest');
 
     var datadir = __dirname + '/data';
 
@@ -212,7 +212,7 @@ describe('Meritd Functionality', function() {
     [0,1,2,3,4,5,6,7,8,9].forEach(function(i) {
       it('for tx ' + i, function(done) {
         var txhex = transactionData[i];
-        var tx = new bitcore.Transaction();
+        var tx = new meritcore.Transaction();
         tx.fromString(txhex);
         meritd.getTransaction(tx.hash, function(err, response) {
           if (err) {
@@ -237,7 +237,7 @@ describe('Meritd Functionality', function() {
     [0,1,2,3,4,5,6,7,8,9].forEach(function(i) {
       it('for tx ' + i, function(done) {
         var txhex = transactionData[i];
-        var tx = new bitcore.Transaction();
+        var tx = new meritcore.Transaction();
         tx.fromString(txhex);
         meritd.getRawTransaction(tx.hash, function(err, response) {
           if (err) {
@@ -328,11 +328,11 @@ describe('Meritd Functionality', function() {
     it('will not error and return the transaction hash', function(done) {
 
       // create and sign the transaction
-      var tx = bitcore.Transaction();
+      var tx = meritcore.Transaction();
       tx.from(utxos[0]);
       tx.change(privateKey.toAddress());
       tx.to(destKey.toAddress(), utxos[0].amount * 1e8 - 1000);
-      tx.sign(bitcore.PrivateKey.fromWIF(utxos[0].privateKeyWIF));
+      tx.sign(meritcore.PrivateKey.fromWIF(utxos[0].privateKeyWIF));
 
       // test sending the transaction
       meritd.sendTransaction(tx.serialize(), function(err, hash) {
@@ -346,7 +346,7 @@ describe('Meritd Functionality', function() {
     });
 
     it('will throw an error if an unsigned transaction is sent', function(done) {
-      var tx = bitcore.Transaction();
+      var tx = meritcore.Transaction();
       tx.from(utxos[1]);
       tx.change(privateKey.toAddress());
       tx.to(destKey.toAddress(), utxos[1].amount * 1e8 - 1000);
@@ -374,11 +374,11 @@ describe('Meritd Functionality', function() {
     });
 
     it('will emit "tx" events', function(done) {
-      var tx = bitcore.Transaction();
+      var tx = meritcore.Transaction();
       tx.from(utxos[2]);
       tx.change(privateKey.toAddress());
       tx.to(destKey.toAddress(), utxos[2].amount * 1e8 - 1000);
-      tx.sign(bitcore.PrivateKey.fromWIF(utxos[2].privateKeyWIF));
+      tx.sign(meritcore.PrivateKey.fromWIF(utxos[2].privateKeyWIF));
 
       var serialized = tx.serialize();
 
