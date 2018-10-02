@@ -4,7 +4,7 @@
 
 var should = require('chai').should();
 
-var bitcore = require('merit-lib');
+var bitcore = require('meritcore-lib');
 var P2P = require('../');
 var Inventory = P2P.Inventory;
 var BufferUtils = bitcore.util.buffer;

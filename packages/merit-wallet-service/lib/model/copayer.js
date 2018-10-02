@@ -8,7 +8,7 @@ var sjcl = require('sjcl');
 
 var Address = require('./address');
 var AddressManager = require('./addressmanager');
-var Bitcore = require('merit-lib');
+var Bitcore = require('meritcore-lib');
 
 var Constants = require('../common/constants');
 

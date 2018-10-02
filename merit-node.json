@@ -10,7 +10,7 @@
   "servicesConfig": {
     "meritd": {
         "spawn": {
-            "datadir": "/Users/eugene/.merit"
+            "datadir": "./data-and-logs/data-1"
         }
     },
     "insight-api": {

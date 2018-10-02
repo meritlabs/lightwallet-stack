@@ -1,6 +1,6 @@
 'use strict';
 
-var bitcore = require('merit-lib');
+var bitcore = require('meritcore-lib');
 var _ = bitcore.deps._;
 var Message = bitcore.Message;
 var Common = require('./common');

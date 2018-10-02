@@ -2,7 +2,7 @@
 
 var should = require('chai').should();
 var proxyquire = require('proxyquire');
-var bitcore = require('merit-lib');
+var bitcore = require('meritcore-lib');
 var sinon = require('sinon');
 var Service = require('../meritnode');
 

@@ -2,7 +2,7 @@ import { ENV } from '@app/env';
 import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
 import { generateMnemonic, mnemonicToHDPrivateKey, validateImportMnemonic } from '@merit/common/utils/mnemonic';
 import * as Bip38 from 'bip38';
-import * as Bitcore from 'merit-lib';
+import * as Bitcore from 'meritcore-lib';
 import * as EventEmitter from 'eventemitter3';
 import * as _ from 'lodash';
 import * as preconditions from 'preconditions';

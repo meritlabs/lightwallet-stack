@@ -1,6 +1,6 @@
 import * as preconditions from 'preconditions';
 import * as _ from 'lodash';
-import * as Bitcore from 'merit-lib';
+import * as Bitcore from 'meritcore-lib';
 import * as sjcl from 'sjcl';
 import { mnemonicToHDPrivateKey, validateImportMnemonic, generateMnemonic } from '@merit/common/utils/mnemonic';
 

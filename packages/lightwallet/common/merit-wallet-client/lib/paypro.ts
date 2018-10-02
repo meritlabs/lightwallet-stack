@@ -2,7 +2,7 @@ import * as request from 'superagent';
 import * as _ from 'lodash';
 import { Logger } from "./log";
 import * as preconditions from 'preconditions';
-import * as Bitcore from 'merit-lib';
+import * as Bitcore from 'meritcore-lib';
 import * as BitcorePayPro from 'merit-payment-protocol';
 const $ = preconditions.singleton();
 

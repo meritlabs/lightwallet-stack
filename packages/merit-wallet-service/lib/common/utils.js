@@ -1,7 +1,7 @@
 var $ = require('preconditions').singleton();
 var _ = require('lodash');
 
-var bitcore = require('merit-lib');
+var bitcore = require('meritcore-lib');
 var crypto = bitcore.crypto;
 var encoding = bitcore.encoding;
 var secp256k1 = require('secp256k1');

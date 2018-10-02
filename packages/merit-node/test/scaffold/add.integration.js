@@ -94,7 +94,7 @@ describe('#add', function() {
       var callCount = 0;
       var oldPackage = {
         dependencies: {
-          'merit-lib': '^v0.13.7',
+          'meritcore-lib': '^v0.13.7',
           'merit-node': '^v0.2.0'
         }
       };

@@ -9,7 +9,7 @@ const { promisify } = require('util');
 var EmailValidator = require('email-validator');
 var Stringify = require('json-stable-stringify');
 
-var Bitcore = require('merit-lib');
+var Bitcore = require('meritcore-lib');
 
 var Common = require('./common');
 var Utils = Common.Utils;

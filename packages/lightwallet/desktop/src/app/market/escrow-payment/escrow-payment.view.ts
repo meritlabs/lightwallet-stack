@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Script } from 'merit-lib';
+import { Script } from 'meritcore-lib';
 
 import { ENV } from '@app/env';
 import { ProfileService } from '@merit/common/services/profile.service';

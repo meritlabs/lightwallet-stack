@@ -6,7 +6,7 @@ The quickest way to get connected is to run the following:
 ```javascript
 
 var Pool = require('merit-p2p').Pool;
-var Networks = require('merit-lib').Networks;
+var Networks = require('meritcore-lib').Networks;
 
 var pool = new Pool({network: Networks.livenet});
 

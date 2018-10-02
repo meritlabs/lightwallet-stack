@@ -5,7 +5,7 @@ import * as preconditions from 'preconditions';
 const $ = preconditions.singleton();
 import * as sjcl from 'sjcl';
 import * as Stringify from 'json-stable-stringify';
-import { Transaction, HDPublicKey, HDPrivateKey, Address, PrivateKey, PublicKey, crypto, encoding } from 'merit-lib';
+import { Transaction, HDPublicKey, HDPrivateKey, Address, PrivateKey, PublicKey, crypto, encoding } from 'meritcore-lib';
 
 import { Constants } from './constants';
 import { Defaults } from './defaults';

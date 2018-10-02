@@ -2,7 +2,7 @@ import { ENV } from '@app/env';
 import * as request from 'superagent';
 import { each, isString } from 'lodash';
 
-import * as Bitcore from 'merit-lib';
+import * as Bitcore from 'meritcore-lib';
 import { Credentials } from '@merit/common/merit-wallet-client/lib/credentials';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { Logger } from '@merit/common/merit-wallet-client/lib/log';

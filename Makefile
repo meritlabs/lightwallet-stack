@@ -79,7 +79,7 @@ start-merit-wallet-service:
 	cd ./packages/merit-wallet-service/ && node messagebroker/messagebroker.js & \
 	cd ./packages/merit-wallet-service/ && node bcmonitor/bcmonitor.js & \
 	cd ./packages/merit-wallet-service/ && node fiatrateservice/fiatrateservice.js & \
-	cd ./packages/merit-wallet-service/ && node bws.js & \
+	cd ./packages/merit-wallet-service/ && node mws.js & \
 	cd ./packages/merit-wallet-service/ && node pushnotificationsservice/pushnotificationsservice.js & \
 	cd ./packages/merit-wallet-service/ && node emailservice/emailservice.js
 
@@ -111,9 +111,9 @@ start-stack: symlink-merit-node start-merit-node
 
 # Clean
 ## Preperation Order is based on dependencies ##
-.PHONY: clean-merit-lib
-clean-merit-lib:
-	rm -rf ./packages/merit-lib/node_modules
+.PHONY: clean-meritcore-lib
+clean-meritcore-lib:
+	rm -rf ./packages/meritcore-lib/node_modules
 
 .PHONY: clean-merit-rpc
 clean-merit-rpc:
@@ -144,7 +144,7 @@ clean-merit-payment-protocol:
 	rm -rf ./packages/merit-payment-protocol/node_modules
 
 .PHONY: clean-stack
-clean-stack: clean-merit-lib \
+clean-stack: clean-meritcore-lib \
 	clean-merit-rpc \
 	clean-insight-api \
 	clean-insight-ui \
@@ -164,9 +164,9 @@ clean-build:
 test-merit-rpc:
 	cd packages/merit-rpc && npm test
 
-.PHONY: test-merit-lib
-test-merit-lib:
-	cd packages/merit-lib && npm test
+.PHONY: test-meritcore-lib
+test-meritcore-lib:
+	cd packages/meritcore-lib && npm test
 
 .PHONY: test-merit-node
 test-merit-node:
@@ -190,7 +190,7 @@ test-insight-api:
 
 .PHONY: test-all
 test-all: test-merit-rpc \
-	test-merit-lib \
+	test-meritcore-lib \
 	test-merit-node \
 	test-merit-p2p \
 	test-merit-payment-protocol \

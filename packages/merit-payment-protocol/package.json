@@ -51,7 +51,7 @@
   "browser": "lib/browser.js",
   "dependencies": {
     "asn1.js": "=4.5.2",
-    "merit-lib": "^0.9.9",
+    "meritcore-lib": "^0.9.9",
     "jsrsasign": "=5.0.10",
     "protobufjs": "=5.0.1"
   },

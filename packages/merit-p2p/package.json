@@ -63,7 +63,7 @@
     "url": "https://github.com/meritlabs/lightwallet-stack"
   },
   "dependencies": {
-    "merit-lib": "^0.9.9",
+    "meritcore-lib": "^0.9.9",
     "bloom-filter": "^0.2.0",
     "buffers": "bitpay/node-buffers#v0.1.2-bitpay",
     "socks5-client": "^0.3.6"

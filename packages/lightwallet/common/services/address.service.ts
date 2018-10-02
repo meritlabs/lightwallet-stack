@@ -7,7 +7,7 @@ import { PersistenceService } from '@merit/common/services/persistence.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { isAddress, isAlias } from '@merit/common/utils/addresses';
 import { ISendMethod } from '@merit/common/models/send-method';
-import { Address, Referral } from 'merit-lib';
+import { Address, Referral } from 'meritcore-lib';
 
 @Injectable()
 export class AddressService {
