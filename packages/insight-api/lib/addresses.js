@@ -1,12 +1,12 @@
 'use strict';
 
-const bitcore = require('meritcore-lib');
+const meritcore = require('meritcore-lib');
 const async = require('async');
 const TxController = require('./transactions');
 const Common = require('./common');
 const _ = require('lodash');
 
-const COINBASE_MATURITY = bitcore.Block.COINBASE_MATURITY;
+const COINBASE_MATURITY = meritcore.Block.COINBASE_MATURITY;
 
 function AddressController(node) {
   this.node = node;
@@ -141,7 +141,7 @@ AddressController.prototype.check = function(req, res, next, addresses) {
 
   for(var i = 0; i < addresses.length; i++) {
     try {
-       new bitcore.Address(addresses[i]);
+       new meritcore.Address(addresses[i]);
     } catch(e) {
       return false;
     }
@@ -158,7 +158,7 @@ AddressController.prototype.checkAlias = function(req, res, next, aliases) {
 
   aliases = _.reject(aliases, _.isEmpty);
 
-  return aliases.every(bitcore.Referral.validateAlias);
+  return aliases.every(meritcore.Referral.validateAlias);
 };
 
 AddressController.prototype.validateAddress = function(req, res) {

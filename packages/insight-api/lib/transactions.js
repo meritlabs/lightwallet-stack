@@ -1,12 +1,12 @@
 'use strict';
 
-const bitcore = require('meritcore-lib');
-const _ = bitcore.deps._;
-const $ = bitcore.util.preconditions;
+const meritcore = require('meritcore-lib');
+const _ = meritcore.deps._;
+const $ = meritcore.util.preconditions;
 const Common = require('./common');
 const async = require('async');
 
-const COINBASE_MATURITY = bitcore.Block.COINBASE_MATURITY;
+const COINBASE_MATURITY = meritcore.Block.COINBASE_MATURITY;
 
 const MAXINT = 0xffffffff; // Math.pow(2, 32) - 1;
 
@@ -163,7 +163,7 @@ TxController.prototype.transformOutput = function(options, output, index) {
   if (output.address) {
     transformed.scriptPubKey.addresses = [output.address];
     transformed.scriptPubKey.aliases = [output.alias];
-    var address = bitcore.Address(output.address); //TODO return type from merit-node
+    var address = meritcore.Address(output.address); //TODO return type from merit-node
     transformed.scriptPubKey.type = address.type;
   }
   return transformed;

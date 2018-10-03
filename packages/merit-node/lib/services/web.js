@@ -9,8 +9,8 @@ var socketio = require('socket.io');
 var inherits = require('util').inherits;
 
 var BaseService = require('../service');
-var bitcore = require('meritcore-lib');
-var _ = bitcore.deps._;
+var meritcore = require('meritcore-lib');
+var _ = meritcore.deps._;
 var index = require('../');
 var log = index.log;
 

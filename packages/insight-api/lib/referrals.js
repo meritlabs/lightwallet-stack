@@ -1,8 +1,8 @@
 'use strict';
 
-const bitcore = require('meritcore-lib');
-const _ = bitcore.deps._;
-const $ = bitcore.util.preconditions;
+const meritcore = require('meritcore-lib');
+const _ = meritcore.deps._;
+const $ = meritcore.util.preconditions;
 const Common = require('./common');
 const async = require('async');
 

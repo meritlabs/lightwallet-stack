@@ -6,8 +6,8 @@ var path = require('path');
 var EventEmitter = require('events').EventEmitter;
 var should = require('chai').should();
 var crypto = require('crypto');
-var bitcore = require('meritcore-lib');
-var _ = bitcore.deps._;
+var meritcore = require('meritcore-lib');
+var _ = meritcore.deps._;
 var sinon = require('sinon');
 var proxyquire = require('proxyquire');
 var fs = require('fs');
@@ -17,7 +17,7 @@ var index = require('../../lib');
 var log = index.log;
 var errors = index.errors;
 
-var Transaction = bitcore.Transaction;
+var Transaction = meritcore.Transaction;
 var readFileSync = sinon.stub().returns(fs.readFileSync(path.resolve(__dirname, '../data/merit.conf')));
 var MeritService = proxyquire('../../lib/services/meritd', {
   fs: {
@@ -31,7 +31,7 @@ describe('Merit Service', function() {
 
   var baseConfig = {
     node: {
-      network: bitcore.Networks.testnet
+      network: meritcore.Networks.testnet
     },
     spawn: {
       datadir: 'testdir',
@@ -408,8 +408,8 @@ describe('Merit Service', function() {
       });
       var config = {
         node: {
-          network: bitcore.Networks.testnet,
-          configPath: '/tmp/.bitcore/merit-node.json'
+          network: meritcore.Networks.testnet,
+          configPath: '/tmp/.meritcore/merit-node.json'
         },
         spawn: {
           datadir: './data',
@@ -420,7 +420,7 @@ describe('Merit Service', function() {
       meritd.options.spawn.datadir = './data';
       var node = {};
       meritd._loadSpawnConfiguration(node);
-      meritd.options.spawn.datadir.should.equal('/tmp/.bitcore/data');
+      meritd.options.spawn.datadir.should.equal('/tmp/.meritcore/data');
     });
     it('should throw an exception if txindex isn\'t enabled in the configuration', function() {
       var TestMerit = proxyquire('../../lib/services/meritd', {
@@ -435,7 +435,7 @@ describe('Merit Service', function() {
       var meritd = new TestMerit(baseConfig);
       (function() {
         meritd._loadSpawnConfiguration({datadir: './test'});
-      }).should.throw(bitcore.errors.InvalidState);
+      }).should.throw(meritcore.errors.InvalidState);
     });
     it('should NOT set https options if node https options are set', function() {
       var writeFileSync = function(path, config) {
@@ -759,13 +759,13 @@ describe('Merit Service', function() {
 
   describe('#_getDefaultConf', function() {
     afterEach(function() {
-      bitcore.Networks.disableRegtest();
-      baseConfig.node.network = bitcore.Networks.testnet;
+      meritcore.Networks.disableRegtest();
+      baseConfig.node.network = meritcore.Networks.testnet;
     });
     it('will get default rpc port for livenet', function() {
       var config = {
         node: {
-          network: bitcore.Networks.livenet
+          network: meritcore.Networks.livenet
         },
         spawn: {
           datadir: 'testdir',
@@ -778,7 +778,7 @@ describe('Merit Service', function() {
     it('will get default rpc port for testnet', function() {
       var config = {
         node: {
-          network: bitcore.Networks.testnet
+          network: meritcore.Networks.testnet
         },
         spawn: {
           datadir: 'testdir',
@@ -789,10 +789,10 @@ describe('Merit Service', function() {
       meritd._getDefaultConf().rpcport.should.equal(18445);
     });
     it('will get default rpc port for regtest', function() {
-      bitcore.Networks.enableRegtest();
+      meritcore.Networks.enableRegtest();
       var config = {
         node: {
-          network: bitcore.Networks.testnet
+          network: meritcore.Networks.testnet
         },
         spawn: {
           datadir: 'testdir',
@@ -806,13 +806,13 @@ describe('Merit Service', function() {
 
   describe('#_getNetworkConfigPath', function() {
     afterEach(function() {
-      bitcore.Networks.disableRegtest();
-      baseConfig.node.network = bitcore.Networks.testnet;
+      meritcore.Networks.disableRegtest();
+      baseConfig.node.network = meritcore.Networks.testnet;
     });
     it('will get default config path for livenet', function() {
       var config = {
         node: {
-          network: bitcore.Networks.livenet
+          network: meritcore.Networks.livenet
         },
         spawn: {
           datadir: 'testdir',
@@ -825,7 +825,7 @@ describe('Merit Service', function() {
     it('will get default rpc port for testnet', function() {
       var config = {
         node: {
-          network: bitcore.Networks.testnet
+          network: meritcore.Networks.testnet
         },
         spawn: {
           datadir: 'testdir',
@@ -836,10 +836,10 @@ describe('Merit Service', function() {
       meritd._getNetworkConfigPath().should.equal('testnet3/merit.com');
     });
     it('will get default rpc port for regtest', function() {
-      bitcore.Networks.enableRegtest();
+      meritcore.Networks.enableRegtest();
       var config = {
         node: {
-          network: bitcore.Networks.testnet
+          network: meritcore.Networks.testnet
         },
         spawn: {
           datadir: 'testdir',
@@ -853,24 +853,24 @@ describe('Merit Service', function() {
 
   describe('#_getNetworkOption', function() {
     afterEach(function() {
-      bitcore.Networks.disableRegtest();
-      baseConfig.node.network = bitcore.Networks.testnet;
+      meritcore.Networks.disableRegtest();
+      baseConfig.node.network = meritcore.Networks.testnet;
     });
     it('return --testnet for testnet', function() {
       var meritd = new MeritService(baseConfig);
-      meritd.node.network = bitcore.Networks.testnet;
+      meritd.node.network = meritcore.Networks.testnet;
       meritd._getNetworkOption().should.equal('--testnet');
     });
     it('return --regtest for testnet', function() {
       var meritd = new MeritService(baseConfig);
-      meritd.node.network = bitcore.Networks.testnet;
+      meritd.node.network = meritcore.Networks.testnet;
       meritd.Networks.enableRegtest();
       meritd._getNetworkOption().should.equal('--regtest');
     });
     it('return undefined for livenet', function() {
       var meritd = new MeritService(baseConfig);
-      meritd.node.network = bitcore.Networks.livenet;
-      bitcore.Networks.enableRegtest();
+      meritd.node.network = meritcore.Networks.livenet;
+      meritcore.Networks.enableRegtest();
       should.equal(meritd._getNetworkOption(), undefined);
     });
   });
@@ -1061,7 +1061,7 @@ describe('Merit Service', function() {
     it('will not call syncPercentage if node is stopping', function(done) {
       var config = {
         node: {
-          network: bitcore.Networks.testnet
+          network: meritcore.Networks.testnet
         },
         spawn: {
           datadir: 'testdir',
@@ -1090,17 +1090,17 @@ describe('Merit Service', function() {
   });
 
   describe('#_getAddressesFromTransaction', function() {
-    it('will get results using bitcore.Transaction', function() {
+    it('will get results using meritcore.Transaction', function() {
       var meritd = new MeritService(baseConfig);
       var wif = 'L2Gkw3kKJ6N24QcDuH4XDqt9cTqsKTVNDGz1CRZhk9cq4auDUbJy';
-      var privkey = bitcore.PrivateKey.fromWIF(wif);
-      var inputAddress = privkey.toAddress(bitcore.Networks.testnet);
-      var outputAddress = bitcore.Address('2N2JD6wb56AfK4tfmM6PwdVmoYk2dCKf4Br');
-      var tx = bitcore.Transaction();
+      var privkey = meritcore.PrivateKey.fromWIF(wif);
+      var inputAddress = privkey.toAddress(meritcore.Networks.testnet);
+      var outputAddress = meritcore.Address('2N2JD6wb56AfK4tfmM6PwdVmoYk2dCKf4Br');
+      var tx = meritcore.Transaction();
       tx.from({
         txid: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
         outputIndex: 0,
-        script: bitcore.Script(inputAddress),
+        script: meritcore.Script(inputAddress),
         address: inputAddress.toString(),
         micros: 5000000000
       });
@@ -1113,18 +1113,18 @@ describe('Merit Service', function() {
     });
     it('will handle non-standard script types', function() {
       var meritd = new MeritService(baseConfig);
-      var tx = bitcore.Transaction();
-      tx.addInput(bitcore.Transaction.Input({
+      var tx = meritcore.Transaction();
+      tx.addInput(meritcore.Transaction.Input({
         prevTxId: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
-        script: bitcore.Script('OP_TRUE'),
+        script: meritcore.Script('OP_TRUE'),
         outputIndex: 1,
         output: {
-          script: bitcore.Script('OP_TRUE'),
+          script: meritcore.Script('OP_TRUE'),
           micros: 5000000000
         }
       }));
-      tx.addOutput(bitcore.Transaction.Output({
-        script: bitcore.Script('OP_TRUE'),
+      tx.addOutput(meritcore.Transaction.Output({
+        script: meritcore.Script('OP_TRUE'),
         micros: 5000000000
       }));
       var addresses = meritd._getAddressesFromTransaction(tx);
@@ -1132,8 +1132,8 @@ describe('Merit Service', function() {
     });
     it('will handle unparsable script types or missing input script', function() {
       var meritd = new MeritService(baseConfig);
-      var tx = bitcore.Transaction();
-      tx.addOutput(bitcore.Transaction.Output({
+      var tx = meritcore.Transaction();
+      tx.addOutput(meritcore.Transaction.Output({
         script: new Buffer('4c', 'hex'),
         micros: 5000000000
       }));
@@ -1142,14 +1142,14 @@ describe('Merit Service', function() {
     });
     it('will return unique values', function() {
       var meritd = new MeritService(baseConfig);
-      var tx = bitcore.Transaction();
-      var address = bitcore.Address('2N2JD6wb56AfK4tfmM6PwdVmoYk2dCKf4Br');
-      tx.addOutput(bitcore.Transaction.Output({
-        script: bitcore.Script(address),
+      var tx = meritcore.Transaction();
+      var address = meritcore.Address('2N2JD6wb56AfK4tfmM6PwdVmoYk2dCKf4Br');
+      tx.addOutput(meritcore.Transaction.Output({
+        script: meritcore.Script(address),
         micros: 5000000000
       }));
-      tx.addOutput(bitcore.Transaction.Output({
-        script: bitcore.Script(address),
+      tx.addOutput(meritcore.Transaction.Output({
+        script: meritcore.Script(address),
         micros: 5000000000
       }));
       var addresses = meritd._getAddressesFromTransaction(tx);
@@ -1293,7 +1293,7 @@ describe('Merit Service', function() {
     it('it will clear interval if node is stopping', function(done) {
       var config = {
         node: {
-          network: bitcore.Networks.testnet
+          network: meritcore.Networks.testnet
         },
         spawn: {
           datadir: 'testdir',
@@ -1710,7 +1710,7 @@ describe('Merit Service', function() {
     it('will exit spawn if shutdown', function() {
       var config = {
         node: {
-          network: bitcore.Networks.testnet
+          network: meritcore.Networks.testnet
         },
         spawn: {
           datadir: 'testdir',
@@ -1877,7 +1877,7 @@ describe('Merit Service', function() {
       });
       var config = {
         node: {
-          network: bitcore.Networks.testnet
+          network: meritcore.Networks.testnet
         },
         spawn: {
           datadir: 'testdir',
@@ -1982,7 +1982,7 @@ describe('Merit Service', function() {
     it('will give error if connecting while shutting down', function(done) {
       var config = {
         node: {
-          network: bitcore.Networks.testnet
+          network: meritcore.Networks.testnet
         },
         spawn: {
           datadir: 'testdir',
@@ -3319,10 +3319,10 @@ describe('Merit Service', function() {
   });
 
   describe('#_getAddressStrings', function() {
-    it('will get address strings from bitcore addresses', function() {
+    it('will get address strings from meritcore addresses', function() {
       var addresses = [
-        bitcore.Address('1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'),
-        bitcore.Address('3CMNFxN1oHBc4R1EpboAL5yzHGgE611Xou'),
+        meritcore.Address('1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'),
+        meritcore.Address('3CMNFxN1oHBc4R1EpboAL5yzHGgE611Xou'),
       ];
       var meritd = new MeritService(baseConfig);
       var strings = meritd._getAddressStrings(addresses);
@@ -3341,7 +3341,7 @@ describe('Merit Service', function() {
     });
     it('will get address strings from mixture of types', function() {
       var addresses = [
-        bitcore.Address('1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'),
+        meritcore.Address('1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'),
         '3CMNFxN1oHBc4R1EpboAL5yzHGgE611Xou',
       ];
       var meritd = new MeritService(baseConfig);
@@ -3351,7 +3351,7 @@ describe('Merit Service', function() {
     });
     it('will give error with unknown', function() {
       var addresses = [
-        bitcore.Address('1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'),
+        meritcore.Address('1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'),
         0,
       ];
       var meritd = new MeritService(baseConfig);
@@ -3856,7 +3856,7 @@ describe('Merit Service', function() {
         done();
       });
     });
-    it('will getblock as bitcore object from height', function(done) {
+    it('will getblock as meritcore object from height', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBlock = sinon.stub().callsArgWith(2, null, {
         result: blockhex
@@ -3874,11 +3874,11 @@ describe('Merit Service', function() {
         should.not.exist(err);
         getBlock.args[0][0].should.equal('00000000050a6d07f583beba2d803296eb1e9d4980c4a20f206c584e89a4f02b');
         getBlock.args[0][1].should.equal(false);
-        block.should.be.instanceof(bitcore.Block);
+        block.should.be.instanceof(meritcore.Block);
         done();
       });
     });
-    it('will getblock as bitcore object', function(done) {
+    it('will getblock as meritcore object', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBlock = sinon.stub().callsArgWith(2, null, {
         result: blockhex
@@ -3896,7 +3896,7 @@ describe('Merit Service', function() {
         getBlock.callCount.should.equal(1);
         getBlock.args[0][0].should.equal('00000000050a6d07f583beba2d803296eb1e9d4980c4a20f206c584e89a4f02b');
         getBlock.args[0][1].should.equal(false);
-        block.should.be.instanceof(bitcore.Block);
+        block.should.be.instanceof(meritcore.Block);
         done();
       });
     });
@@ -3917,12 +3917,12 @@ describe('Merit Service', function() {
         should.not.exist(err);
         getBlockHash.callCount.should.equal(0);
         getBlock.callCount.should.equal(1);
-        block.should.be.instanceof(bitcore.Block);
+        block.should.be.instanceof(meritcore.Block);
         meritd.getBlock(hash, function(err, block) {
           should.not.exist(err);
           getBlockHash.callCount.should.equal(0);
           getBlock.callCount.should.equal(1);
-          block.should.be.instanceof(bitcore.Block);
+          block.should.be.instanceof(meritcore.Block);
           done();
         });
       });
@@ -3945,12 +3945,12 @@ describe('Merit Service', function() {
         should.not.exist(err);
         getBlockHash.callCount.should.equal(1);
         getBlock.callCount.should.equal(1);
-        block.should.be.instanceof(bitcore.Block);
+        block.should.be.instanceof(meritcore.Block);
         meritd.getBlock(0, function(err, block) {
           should.not.exist(err);
           getBlockHash.callCount.should.equal(2);
           getBlock.callCount.should.equal(1);
-          block.should.be.instanceof(bitcore.Block);
+          block.should.be.instanceof(meritcore.Block);
           done();
         });
       });
@@ -4367,7 +4367,7 @@ describe('Merit Service', function() {
   });
 
   describe('#sendTransaction', function(done) {
-    var tx = bitcore.Transaction(txhex);
+    var tx = meritcore.Transaction(txhex);
     it('will give rpc error', function() {
       var meritd = new MeritService(baseConfig);
       var sendRawTransaction = sinon.stub().callsArgWith(2, {message: 'error', code: -1});
@@ -4425,7 +4425,7 @@ describe('Merit Service', function() {
           sendRawTransaction: sendRawTransaction
         }
       });
-      var transaction = bitcore.Transaction();
+      var transaction = meritcore.Transaction();
       (function() {
         meritd.sendTransaction(transaction);
       }).should.throw(Error);
@@ -4547,7 +4547,7 @@ describe('Merit Service', function() {
           return done(err);
         }
         should.exist(tx);
-        tx.should.be.an.instanceof(bitcore.Transaction);
+        tx.should.be.an.instanceof(meritcore.Transaction);
         done();
       });
     });
@@ -4566,11 +4566,11 @@ describe('Merit Service', function() {
           return done(err);
         }
         should.exist(tx);
-        tx.should.be.an.instanceof(bitcore.Transaction);
+        tx.should.be.an.instanceof(meritcore.Transaction);
 
         meritd.getTransaction('txid', function(err, tx) {
           should.exist(tx);
-          tx.should.be.an.instanceof(bitcore.Transaction);
+          tx.should.be.an.instanceof(meritcore.Transaction);
           getRawTransaction.callCount.should.equal(1);
           done();
         });

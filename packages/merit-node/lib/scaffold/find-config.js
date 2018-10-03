@@ -1,8 +1,8 @@
 'use strict';
 
-var bitcore = require('meritcore-lib');
-var $ = bitcore.util.preconditions;
-var _ = bitcore.deps._;
+var meritcore = require('meritcore-lib');
+var $ = meritcore.util.preconditions;
+var _ = meritcore.deps._;
 var path = require('path');
 var fs = require('fs');
 var utils = require('../utils');

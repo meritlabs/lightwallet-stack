@@ -1,9 +1,9 @@
  'use strict';
 
-var bitcore = require('meritcore-lib');
-var BufferUtil = bitcore.util.buffer;
-var Hash = bitcore.crypto.Hash;
-var $ = bitcore.util.preconditions;
+var meritcore = require('meritcore-lib');
+var BufferUtil = meritcore.util.buffer;
+var Hash = meritcore.crypto.Hash;
+var $ = meritcore.util.preconditions;
 
 /**
  * A factory to build Merit protocol messages.
@@ -27,7 +27,7 @@ function Messages(options) {
   if (!options) {
     options = {};
   }
-  this.network = options.network || bitcore.Networks.defaultNetwork;
+  this.network = options.network || meritcore.Networks.defaultNetwork;
 }
 
 Messages.MINIMUM_LENGTH = 20;

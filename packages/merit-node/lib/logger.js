@@ -1,7 +1,7 @@
 'use strict';
 
-var bitcore = require('meritcore-lib');
-var _ = bitcore.deps._;
+var meritcore = require('meritcore-lib');
+var _ = meritcore.deps._;
 var colors = require('colors/safe');
 
 /**

@@ -3,7 +3,7 @@
 var should = require('chai').should();
 var P2P = require('../../');
 var builder = P2P.Messages.builder;
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 
 describe('Messages Builder', function() {
 
@@ -18,9 +18,9 @@ describe('Messages Builder', function() {
     it('should return commands with customizations', function() {
       // instantiate
       var b = builder({
-        network: bitcore.Networks.testnet,
-        Block: bitcore.Block,
-        Transaction: bitcore.Transaction
+        network: meritcore.Networks.testnet,
+        Block: meritcore.Block,
+        Transaction: meritcore.Transaction
       });
       should.exist(b);
     });

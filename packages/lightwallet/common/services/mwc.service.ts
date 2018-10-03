@@ -17,8 +17,8 @@ export class MWCService {
   constructor(private events: Events) {
   }
 
-  public getBitcore() {
-    return this.MWC.Bitcore;
+  public getMeritcore() {
+    return this.MWC.Meritcore;
   }
 
   public getErrors() {

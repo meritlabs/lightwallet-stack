@@ -1,9 +1,9 @@
 var $ = require('preconditions').singleton();
 var _ = require('lodash');
 
-var bitcore = require('meritcore-lib');
-var crypto = bitcore.crypto;
-var encoding = bitcore.encoding;
+var meritcore = require('meritcore-lib');
+var crypto = meritcore.crypto;
+var encoding = meritcore.encoding;
 var secp256k1 = require('secp256k1');
 
 var Utils = {};
@@ -34,7 +34,7 @@ Utils.hashMessage = function(text, noReverse) {
   var buf = new Buffer(text);
   var ret = crypto.Hash.sha256sha256(buf);
   if (!noReverse) {
-    ret = new bitcore.encoding.BufferReader(ret).readReverse();
+    ret = new meritcore.encoding.BufferReader(ret).readReverse();
   }
   return ret;
 };

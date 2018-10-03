@@ -1,6 +1,6 @@
 import * as preconditions from 'preconditions';
 import * as _ from 'lodash';
-import * as Bitcore from 'meritcore-lib';
+import * as Meritcore from 'meritcore-lib';
 import * as sjcl from 'sjcl';
 import { mnemonicToHDPrivateKey, validateImportMnemonic, generateMnemonic } from '@merit/common/utils/mnemonic';
 
@@ -91,7 +91,7 @@ export class Credentials {
     let x = new Credentials();
 
     x.network = network;
-    x.xPrivKey = (new Bitcore.HDPrivateKey(network)).toString();
+    x.xPrivKey = (new Meritcore.HDPrivateKey(network)).toString();
     x.compliantDerivation = true;
     x._expand();
     return x;
@@ -176,7 +176,7 @@ export class Credentials {
 
     let x = new Credentials();
     x.xPubKey = xPubKey;
-    x.entropySource = Bitcore.crypto.Hash.sha256sha256(entropyBuffer).toString('hex');
+    x.entropySource = Meritcore.crypto.Hash.sha256sha256(entropyBuffer).toString('hex');
     x.account = account;
     x.derivationStrategy = derivationStrategy;
     x.externalSource = source;
@@ -212,7 +212,7 @@ export class Credentials {
 
   constructor() {
     this.network = ENV.network;
-    this.xPrivKey = (new Bitcore.HDPrivateKey(ENV.network)).toString();
+    this.xPrivKey = (new Meritcore.HDPrivateKey(ENV.network)).toString();
     this.compliantDerivation = true;
     this.version = '1.0.0';
     this.derivationStrategy = Constants.DERIVATION_STRATEGIES.BIP44;
@@ -292,7 +292,7 @@ export class Credentials {
 
     let x = new Credentials();
     x.xPubKey = xPubKey;
-    x.entropySource = Bitcore.crypto.Hash.sha256sha256(entropyBuffer).toString('hex');
+    x.entropySource = Meritcore.crypto.Hash.sha256sha256(entropyBuffer).toString('hex');
     x.account = account;
     x.derivationStrategy = derivationStrategy;
     x.externalSource = source;
@@ -315,7 +315,7 @@ export class Credentials {
   public _hashFromEntropy = function(prefix, length) {
     $.checkState(prefix);
     let b = new Buffer(this.entropySource, 'hex');
-    let b2 = Bitcore.crypto.Hash.sha256hmac(b, new Buffer(prefix));
+    let b2 = Meritcore.crypto.Hash.sha256hmac(b, new Buffer(prefix));
     return b2.slice(0, length);
   };
 
@@ -332,7 +332,7 @@ export class Credentials {
     }
 
     if (this.xPrivKey) {
-      let xPrivKey = new Bitcore.HDPrivateKey.fromString(this.xPrivKey);
+      let xPrivKey = new Meritcore.HDPrivateKey.fromString(this.xPrivKey);
 
       deriveFn = this.compliantDerivation ? _.bind(xPrivKey.deriveChild, xPrivKey) : _.bind(xPrivKey.deriveNonCompliantChild, xPrivKey);
 
@@ -348,13 +348,13 @@ export class Credentials {
     // the wallet was created.
     if (this.entropySourcePath) {
       let seed = deriveFn(this.entropySourcePath).publicKey.toBuffer();
-      this.entropySource = Bitcore.crypto.Hash.sha256sha256(seed).toString('hex');
+      this.entropySource = Meritcore.crypto.Hash.sha256sha256(seed).toString('hex');
     }
 
     if (this.entropySource) {
       // request keys from entropy (hw wallets)
       let seed = this._hashFromEntropy('reqPrivKey', 32);
-      let privKey = new Bitcore.PrivateKey(seed.toString('hex'), network);
+      let privKey = new Meritcore.PrivateKey(seed.toString('hex'), network);
       this.requestPrivKey = privKey.toString();
       this.requestPubKey = privKey.toPublicKey().toString();
     } else {
@@ -365,7 +365,7 @@ export class Credentials {
       const pubKey: any = requestDerivation.publicKey;
       this.requestPubKey = pubKey.toString();
 
-      this.entropySource = Bitcore.crypto.Hash.sha256(requestDerivation.privateKey.toBuffer()).toString('hex');
+      this.entropySource = Meritcore.crypto.Hash.sha256(requestDerivation.privateKey.toBuffer()).toString('hex');
     }
 
     this.personalEncryptingKey = this._hashFromEntropy('personalKey', 16).toString('base64');
@@ -423,7 +423,7 @@ export class Credentials {
 
   public getDerivedXPrivKey = function(password) {
     let path = this.getBaseAddressDerivationPath();
-    let xPrivKey = new Bitcore.HDPrivateKey(this.getKeys(password).xPrivKey, this.network);
+    let xPrivKey = new Meritcore.HDPrivateKey(this.getKeys(password).xPrivKey, this.network);
     let deriveFn = !!this.compliantDerivation ? _.bind(xPrivKey.deriveChild, xPrivKey) : _.bind(xPrivKey.deriveNonCompliantChild, xPrivKey);
     return deriveFn(path);
   };

@@ -4,9 +4,9 @@ var async = require('async');
 var fs = require('fs');
 var path = require('path');
 var spawn = require('child_process').spawn;
-var bitcore = require('meritcore-lib');
-var $ = bitcore.util.preconditions;
-var _ = bitcore.deps._;
+var meritcore = require('meritcore-lib');
+var $ = meritcore.util.preconditions;
+var _ = meritcore.deps._;
 var utils = require('../utils');
 
 /**
@@ -100,10 +100,10 @@ function remove(options, done) {
   var configPath = options.path;
   var services = options.services;
 
-  var bitcoreConfigPath = path.resolve(configPath, 'merit-node.json');
+  var meritcoreConfigPath = path.resolve(configPath, 'merit-node.json');
   var packagePath = path.resolve(configPath, 'package.json');
 
-  if (!fs.existsSync(bitcoreConfigPath) || !fs.existsSync(packagePath)) {
+  if (!fs.existsSync(meritcoreConfigPath) || !fs.existsSync(packagePath)) {
     return done(
       new Error('Directory does not have a merit-node.json and/or package.json file.')
     );
@@ -118,7 +118,7 @@ function remove(options, done) {
           return next(err);
         }
         // remove service to merit-node.json
-        removeConfig(bitcoreConfigPath, service, next);
+        removeConfig(meritcoreConfigPath, service, next);
       });
     }, done
   );

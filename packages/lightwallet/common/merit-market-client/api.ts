@@ -2,7 +2,7 @@ import { ENV } from '@app/env';
 import * as request from 'superagent';
 import { each, isString } from 'lodash';
 
-import * as Bitcore from 'meritcore-lib';
+import * as Meritcore from 'meritcore-lib';
 import { Credentials } from '@merit/common/merit-wallet-client/lib/credentials';
 import { MWCErrors } from '@merit/common/merit-wallet-client/lib/errors';
 import { Logger } from '@merit/common/merit-wallet-client/lib/log';
@@ -251,7 +251,7 @@ export class MeritMarketClient {
    * Sign an HTTP request
    *
    * @param {String} path - The URL for the request
-   * @param {Bitcore.PrivateKey} privkey - Private key to sign the request
+   * @param {Meritcore.PrivateKey} privkey - Private key to sign the request
    * @param {boolean} debug - debug mode
    */
   private _signRequest = function(path, privkey, debug): [string, number] {
@@ -262,7 +262,7 @@ export class MeritMarketClient {
       message += timestamp;
     }
 
-    const signature = Bitcore.Message(message).sign(privkey);
+    const signature = Meritcore.Message(message).sign(privkey);
 
     return [signature, timestamp];
   };

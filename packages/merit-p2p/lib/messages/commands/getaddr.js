@@ -2,8 +2,8 @@
 
 var Message = require('../message');
 var inherits = require('util').inherits;
-var bitcore = require('meritcore-lib');
-var BufferUtil = bitcore.util.buffer;
+var meritcore = require('meritcore-lib');
+var BufferUtil = meritcore.util.buffer;
 
 /**
  * Request information about active peers

@@ -15,8 +15,8 @@ var tingodb = require('tingodb')({
 
 var log = require('../lib/log');
 
-var Bitcore = require('meritcore-lib');
-var BitcorePayPro = require('merit-payment-protocol');
+var Meritcore = require('meritcore-lib');
+var MeritcorePayPro = require('merit-payment-protocol');
 
 var BWS = require('merit-wallet-service');
 
@@ -82,16 +82,16 @@ helpers.generateUtxos = function(scriptType, publicKeyRing, path, requiredSignat
     var scriptPubKey;
     switch (scriptType) {
       case Constants.SCRIPT_TYPES.P2SH:
-        scriptPubKey = Bitcore.Script.buildMultisigOut(address.publicKeys, requiredSignatures).toScriptHashOut();
+        scriptPubKey = Meritcore.Script.buildMultisigOut(address.publicKeys, requiredSignatures).toScriptHashOut();
         break;
       case Constants.SCRIPT_TYPES.P2PKH:
-        scriptPubKey = Bitcore.Script.buildPublicKeyHashOut(address.address);
+        scriptPubKey = Meritcore.Script.buildPublicKeyHashOut(address.address);
         break;
     }
     should.exist(scriptPubKey);
 
     var obj = {
-      txid: Bitcore.crypto.Hash.sha256(new Buffer(i)).toString('hex'),
+      txid: Meritcore.crypto.Hash.sha256(new Buffer(i)).toString('hex'),
       vout: 100,
       micros: helpers.toMicro(amount),
       scriptPubKey: scriptPubKey.toBuffer().toString('hex'),
@@ -195,15 +195,15 @@ blockchainExplorerMock.setUtxo = function(address, amount, m, confirmations) {
   var scriptPubKey;
   switch (address.type) {
     case Constants.SCRIPT_TYPES.P2SH:
-      scriptPubKey = address.publicKeys ? Bitcore.Script.buildMultisigOut(address.publicKeys, m).toScriptHashOut() : '';
+      scriptPubKey = address.publicKeys ? Meritcore.Script.buildMultisigOut(address.publicKeys, m).toScriptHashOut() : '';
       break;
     case Constants.SCRIPT_TYPES.P2PKH:
-      scriptPubKey = Bitcore.Script.buildPublicKeyHashOut(address.address);
+      scriptPubKey = Meritcore.Script.buildPublicKeyHashOut(address.address);
       break;
   }
   should.exist(scriptPubKey);
   blockchainExplorerMock.utxos.push({
-    txid: Bitcore.crypto.Hash.sha256(new Buffer(Math.random() * 100000)).toString('hex'),
+    txid: Meritcore.crypto.Hash.sha256(new Buffer(Math.random() * 100000)).toString('hex'),
     vout: Math.floor((Math.random() * 10) + 1),
     amount: amount,
     address: address.address,
@@ -214,7 +214,7 @@ blockchainExplorerMock.setUtxo = function(address, amount, m, confirmations) {
 
 blockchainExplorerMock.broadcast = function(raw, cb) {
   blockchainExplorerMock.lastBroadcasted = raw;
-  return cb(null, (new Bitcore.Transaction(raw)).id);
+  return cb(null, (new Meritcore.Transaction(raw)).id);
 };
 
 blockchainExplorerMock.setHistory = function(txs) {
@@ -327,8 +327,8 @@ describe('client API', function() {
 
   describe('Client Internals', function() {
     it('should expose bitcore', function() {
-      should.exist(Client.Bitcore);
-      should.exist(Client.Bitcore.HDPublicKey);
+      should.exist(Client.Meritcore);
+      should.exist(Client.Meritcore.HDPublicKey);
     });
   });
 
@@ -478,9 +478,9 @@ describe('client API', function() {
   describe('Build & sign txs', function() {
     var masterPrivateKey = 'tprv8ZgxMBicQKsPd8U9aBBJ5J2v8XMwKwZvf8qcu2gLK5FRrsrPeSgkEcNHqKx4zwv6cP536m68q2UD7wVM24zdSCpaJRmpowaeJTeVMXL5v5k';
     var derivedPrivateKey = {
-      'BIP44': new Bitcore.HDPrivateKey(masterPrivateKey).deriveChild("m/44'/1'/0'").toString(),
-      'BIP45': new Bitcore.HDPrivateKey(masterPrivateKey).deriveChild("m/45'").toString(),
-      'BIP48': new Bitcore.HDPrivateKey(masterPrivateKey).deriveChild("m/48'/1'/0'").toString(),
+      'BIP44': new Meritcore.HDPrivateKey(masterPrivateKey).deriveChild("m/44'/1'/0'").toString(),
+      'BIP45': new Meritcore.HDPrivateKey(masterPrivateKey).deriveChild("m/45'").toString(),
+      'BIP48': new Meritcore.HDPrivateKey(masterPrivateKey).deriveChild("m/48'/1'/0'").toString(),
     };
 
     describe('#buildTx', function() {
@@ -489,7 +489,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -512,7 +512,7 @@ describe('client API', function() {
         _.isString(t).should.be.true;
         /^[\da-f]+$/.test(t).should.be.true;
 
-        var t2 = new Bitcore.Transaction(t);
+        var t2 = new Meritcore.Transaction(t);
         t2.inputs.length.should.equal(2);
         t2.outputs.length.should.equal(2);
         t2.outputs[0].micros.should.equal(1200);
@@ -522,7 +522,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -555,7 +555,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP48']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP48']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -588,7 +588,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1, 2]);
@@ -606,9 +606,9 @@ describe('client API', function() {
           addressType: 'P2PKH',
         };
 
-        var x = Utils.newBitcoreTransaction;
+        var x = Utils.newMeritcoreTransaction;
 
-        Utils.newBitcoreTransaction = function() {
+        Utils.newMeritcoreTransaction = function() {
           return {
             from: sinon.stub(),
             to: sinon.stub(),
@@ -624,14 +624,14 @@ describe('client API', function() {
           var t = Utils.buildTx(txp);
         }).should.throw('Illegal State');
 
-        Utils.newBitcoreTransaction = x;
+        Utils.newMeritcoreTransaction = x;
       });
       it('should build a tx with multiple outputs', function() {
         var toAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -666,7 +666,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [0.001]);
@@ -705,7 +705,7 @@ describe('client API', function() {
         t.outputs[1].micros.should.equal(txp.outputs[1].amount);
         t.outputs[2].script.toHex().should.equal(txp.outputs[2].script);
         t.outputs[2].micros.should.equal(txp.outputs[2].amount);
-        var changeScript = Bitcore.Script.fromAddress(txp.changeAddress.address).toHex();
+        var changeScript = Meritcore.Script.fromAddress(txp.changeAddress.address).toHex();
         t.outputs[3].script.toHex().should.equal(changeScript);
       });
       it('should fail if provided output has no either toAddress or script', function() {
@@ -713,7 +713,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [0.001]);
@@ -762,7 +762,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -801,7 +801,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP45']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP45']),
         }];
 
         var utxos = helpers.generateUtxos('P2SH', publicKeyRing, 'm/2147483647/0/0', 1, [1000, 2000]);
@@ -826,7 +826,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -851,7 +851,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -883,7 +883,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [0.001]);
@@ -917,7 +917,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Meritcore.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -953,7 +953,7 @@ describe('client API', function() {
       var i = 0;
       while (i++ < 100) {
         var walletId = Uuid.v4();
-        var walletPrivKey = new Bitcore.PrivateKey();
+        var walletPrivKey = new Meritcore.PrivateKey();
         var network = i % 2 == 0 ? 'testnet' : 'livenet';
         var secret = Client._buildSecret(walletId, walletPrivKey, network);
         var result = Client.parseSecret(secret);
@@ -970,7 +970,7 @@ describe('client API', function() {
 
     it('should create secret and parse secret from string ', function() {
       var walletId = Uuid.v4();
-      var walletPrivKey = new Bitcore.PrivateKey();
+      var walletPrivKey = new Meritcore.PrivateKey();
       var network = 'testnet';
       var secret = Client._buildSecret(walletId, walletPrivKey.toString(), network);
       var result = Client.parseSecret(secret);
@@ -1071,7 +1071,7 @@ describe('client API', function() {
     });
     it('should be able to access wallet name in non-encrypted wallet (legacy)', function(done) {
       clients[0].seedFromRandomWithMnemonic();
-      var wpk = new Bitcore.PrivateKey();
+      var wpk = new Meritcore.PrivateKey();
       var args = {
         name: 'mywallet',
         m: 1,
@@ -1282,7 +1282,7 @@ describe('client API', function() {
       helpers.createAndJoinWallet(clients, 2, 3, function() {
         helpers.tamperResponse([clients[0], clients[1]], 'get', '/v1/wallets/', {}, function(status) {
           // Replace caller's pubkey
-          status.wallet.copayers[1].xPubKey = (new Bitcore.HDPrivateKey()).publicKey;
+          status.wallet.copayers[1].xPubKey = (new Meritcore.HDPrivateKey()).publicKey;
           // Add a correct signature
           status.wallet.copayers[1].xPubKeySignature = Utils.signMessage(
             status.wallet.copayers[1].xPubKey.toString(),
@@ -2700,8 +2700,8 @@ describe('client API', function() {
               clients[1].broadcastTxProposal(yy, function(err, zz, memo) {
                 should.not.exist(err);
                 var args = http.lastCall.args[0];
-                var data = BitcorePayPro.Payment.decode(args.body);
-                var pay = new BitcorePayPro();
+                var data = MeritcorePayPro.Payment.decode(args.body);
+                var pay = new MeritcorePayPro();
                 var p = pay.makePayment(data);
                 var refund_to = p.get('refund_to');
                 refund_to.length.should.equal(1);
@@ -2712,8 +2712,8 @@ describe('client API', function() {
                 amount.low.should.equal(404500);
                 amount.high.should.equal(0);
                 var s = refund_to.get('script');
-                s = new Bitcore.Script(s.buffer.slice(s.offset, s.limit));
-                var addr = new Bitcore.Address.fromScript(s, 'testnet');
+                s = new Meritcore.Script(s.buffer.slice(s.offset, s.limit));
+                var addr = new Meritcore.Address.fromScript(s, 'testnet');
                 addr.toString().should.equal(changeAddress);
                 done();
               });
@@ -2737,11 +2737,11 @@ describe('client API', function() {
 
                 should.not.exist(err);
                 var args = http.lastCall.args[0];
-                var data = BitcorePayPro.Payment.decode(args.body);
-                var pay = new BitcorePayPro();
+                var data = MeritcorePayPro.Payment.decode(args.body);
+                var pay = new MeritcorePayPro();
                 var p = pay.makePayment(data);
                 var rawTx = p.get('transactions')[0].toBuffer();
-                var tx = new Bitcore.Transaction(rawTx);
+                var tx = new Meritcore.Transaction(rawTx);
                 var script = tx.inputs[0].script;
                 script.isScriptHashIn().should.equal(true);
                 done();
@@ -2794,8 +2794,8 @@ describe('client API', function() {
             clients[0].broadcastTxProposal(xx, function(err, zz, memo) {
               should.not.exist(err);
               var args = http.lastCall.args[0];
-              var data = BitcorePayPro.Payment.decode(args.body);
-              var pay = new BitcorePayPro();
+              var data = MeritcorePayPro.Payment.decode(args.body);
+              var pay = new MeritcorePayPro();
               var p = pay.makePayment(data);
               var refund_to = p.get('refund_to');
               refund_to.length.should.equal(1);
@@ -2806,8 +2806,8 @@ describe('client API', function() {
               amount.low.should.equal(404500);
               amount.high.should.equal(0);
               var s = refund_to.get('script');
-              s = new Bitcore.Script(s.buffer.slice(s.offset, s.limit));
-              var addr = new Bitcore.Address.fromScript(s, 'testnet');
+              s = new Meritcore.Script(s.buffer.slice(s.offset, s.limit));
+              var addr = new Meritcore.Address.fromScript(s, 'testnet');
               addr.toString().should.equal(changeAddress);
               done();
             });
@@ -2827,11 +2827,11 @@ describe('client API', function() {
             clients[0].broadcastTxProposal(xx, function(err, zz, memo) {
               should.not.exist(err);
               var args = http.lastCall.args[0];
-              var data = BitcorePayPro.Payment.decode(args.body);
-              var pay = new BitcorePayPro();
+              var data = MeritcorePayPro.Payment.decode(args.body);
+              var pay = new MeritcorePayPro();
               var p = pay.makePayment(data);
               var rawTx = p.get('transactions')[0].toBuffer();
-              var tx = new Bitcore.Transaction(rawTx);
+              var tx = new Meritcore.Transaction(rawTx);
               var script = tx.inputs[0].script;
               script.isPublicKeyHashIn().should.equal(true);
               done();
@@ -2980,7 +2980,7 @@ describe('client API', function() {
               clients[0].broadcastTxProposal(txp, function(err, txp) {
                 should.not.exist(err);
                 txp.status.should.equal('broadcasted');
-                txp.txid.should.equal((new Bitcore.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
+                txp.txid.should.equal((new Meritcore.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
                 done();
               });
             } else {
@@ -3046,7 +3046,7 @@ describe('client API', function() {
               clients[0].broadcastTxProposal(txp, function(err, txp) {
                 should.not.exist(err);
                 txp.status.should.equal('broadcasted');
-                txp.txid.should.equal((new Bitcore.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
+                txp.txid.should.equal((new Meritcore.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
                 txp.outputs[0].message.should.equal('output 0');
                 txp.message.should.equal('hello');
                 done();
@@ -3119,7 +3119,7 @@ describe('client API', function() {
                   txp.status.should.equal('accepted');
                   clients[1].broadcastTxProposal(txp, function(err, txp) {
                     txp.status.should.equal('broadcasted');
-                    txp.txid.should.equal((new Bitcore.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
+                    txp.txid.should.equal((new Meritcore.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
                     done();
                   });
                 });
@@ -3182,7 +3182,7 @@ describe('client API', function() {
                   txp.status.should.equal('accepted');
                   clients[2].broadcastTxProposal(txp, function(err, txp) {
                     txp.status.should.equal('broadcasted');
-                    txp.txid.should.equal((new Bitcore.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
+                    txp.txid.should.equal((new Meritcore.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
                     done();
                   });
                 });
@@ -4875,7 +4875,7 @@ describe('client API', function() {
             var c = clients[0].credentials;
 
             // Ggenerate a new priv key, not registered
-            var k = new Bitcore.PrivateKey();
+            var k = new Meritcore.PrivateKey();
             c.requestPrivKey = k.toString();
             c.requestPubKey = k.toPublicKey().toString();
             done();
@@ -4910,7 +4910,7 @@ describe('client API', function() {
           url.should.contain('/copayers');
           body.should.not.contain('pepe');
 
-          var k = new Bitcore.PrivateKey(key);
+          var k = new Meritcore.PrivateKey(key);
           var c = clients[0].credentials;
           c.requestPrivKey = k.toString();
           c.requestPubKey = k.toPublicKey().toString();
@@ -4947,7 +4947,7 @@ describe('client API', function() {
         clients[0].addAccess({
           generateNewKey: true
         }, function(err, x, key) {
-          var k = new Bitcore.PrivateKey(key);
+          var k = new Meritcore.PrivateKey(key);
           var c = clients[0].credentials;
           c.requestPrivKey = k.toString();
           c.requestPubKey = k.toPublicKey().toString();
@@ -5066,7 +5066,7 @@ describe('client API', function() {
           tx.outputs.length.should.equal(1);
           var output = tx.outputs[0];
           output.micros.should.equal(123 * 1e8 - 10000);
-          var script = new Bitcore.Script.buildPublicKeyHashOut(Bitcore.Address.fromString('1GG3JQikGC7wxstyavUBDoCJ66bWLLENZC'));
+          var script = new Meritcore.Script.buildPublicKeyHashOut(Meritcore.Address.fromString('1GG3JQikGC7wxstyavUBDoCJ66bWLLENZC'));
           output.script.toString('hex').should.equal(script.toString('hex'));
           done();
         });
@@ -5076,7 +5076,7 @@ describe('client API', function() {
     it('should handle tx serialization error when building tx', function(done) {
       var sandbox = sinon.sandbox.create();
 
-      var se = sandbox.stub(Bitcore.Transaction.prototype, 'serialize', function() {
+      var se = sandbox.stub(Meritcore.Transaction.prototype, 'serialize', function() {
         throw new Error('this is an error');
       });
 

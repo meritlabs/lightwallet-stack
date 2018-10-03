@@ -5,15 +5,15 @@ var path = require('path');
 var spawn = require('child_process').spawn;
 var util = require('util');
 var mkdirp = require('mkdirp');
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var zmq = require('zmq');
 var async = require('async');
 var LRU = require('lru-cache');
 var MeritRPC = require('meritd-rpc');
-var $ = bitcore.util.preconditions;
-var _  = bitcore.deps._;
-var Transaction = bitcore.Transaction;
-var Referral = bitcore.Referral;
+var $ = meritcore.util.preconditions;
+var _  = meritcore.deps._;
+var Transaction = meritcore.Transaction;
+var Referral = meritcore.Referral;
 
 var index = require('../');
 var errors = index.errors;
@@ -93,7 +93,7 @@ Merit.DEFAULT_CONFIG_SETTINGS = {
   rpcallowip: '127.0.0.1',
   rpcuser: 'merit',
   rpcpassword: 'local321',
-  uacomment: 'bitcore'
+  uacomment: 'meritcore'
 };
 
 Merit.prototype._initDefaults = function(options) {
@@ -282,7 +282,7 @@ Merit.prototype.subscribeAddress = function(emitter, addresses) {
   }
 
   for(var i = 0; i < addresses.length; i++) {
-    if (bitcore.Address.isValid(addresses[i], this.node.network)) {
+    if (meritcore.Address.isValid(addresses[i], this.node.network)) {
       addAddress(addresses[i]);
     }
   }
@@ -439,7 +439,7 @@ Merit.prototype._checkConfigIndexes = function(spawnConfig, node) {
 
   $.checkState(
     spawnConfig.server && spawnConfig.server === 1,
-    '"server" option is required to communicate to meritd from bitcore. ' +
+    '"server" option is required to communicate to meritd from meritcore. ' +
       'Please add "server=1" to your configuration and restart'
   );
 
@@ -544,7 +544,7 @@ Merit.prototype._getDefaultConf = function() {
   var networkOptions = {
     rpcport: 8332,
   };
-  if (this.node.network === bitcore.Networks.testnet) {
+  if (this.node.network === meritcore.Networks.testnet) {
     networkOptions.rpcport = 18332;
   }
   return networkOptions;
@@ -552,7 +552,7 @@ Merit.prototype._getDefaultConf = function() {
 
 Merit.prototype._getNetworkConfigPath = function() {
   var networkPath;
-  if (this.node.network === bitcore.Networks.testnet) {
+  if (this.node.network === meritcore.Networks.testnet) {
     networkPath = 'testnet3/merit.conf';
     if (this.node.network.regtestEnabled) {
       networkPath = 'regtest/merit.conf';
@@ -563,7 +563,7 @@ Merit.prototype._getNetworkConfigPath = function() {
 
 Merit.prototype._getNetworkOption = function() {
   var networkOption;
-  if (this.node.network === bitcore.Networks.testnet) {
+  if (this.node.network === meritcore.Networks.testnet) {
     networkOption = '--testnet';
     if (this.node.network.regtestEnabled) {
       networkOption = '--regtest';
@@ -689,7 +689,7 @@ Merit.prototype._notifyAddressTxidSubscribers = function(txid, transaction) {
 
 Merit.prototype._zmqTransactionHandler = function(node, message) {
   var self = this;
-  var hash = bitcore.crypto.Hash.sha256sha256(message);
+  var hash = meritcore.crypto.Hash.sha256sha256(message);
   var id = hash.toString('binary');
   if (!self.zmqKnownTransactions.get(id)) {
     self.zmqKnownTransactions.set(id, true);
@@ -700,9 +700,9 @@ Merit.prototype._zmqTransactionHandler = function(node, message) {
       this.subscriptions.rawtransaction[i].emit('meritd/rawtransaction', message.toString('hex'));
     }
 
-    var tx = bitcore.Transaction();
+    var tx = meritcore.Transaction();
     tx.fromString(message);
-    var txid = bitcore.util.buffer.reverse(hash).toString('hex');
+    var txid = meritcore.util.buffer.reverse(hash).toString('hex');
     self._notifyAddressTxidSubscribers(txid, tx);
 
   }
@@ -710,7 +710,7 @@ Merit.prototype._zmqTransactionHandler = function(node, message) {
 
 Merit.prototype._zmqRawReferralsHandler = function(node, message) {
   const self = this;
-  const hash = bitcore.crypto.Hash.sha256sha256(message);
+  const hash = meritcore.crypto.Hash.sha256sha256(message);
   const id = hash.toString('binary');
   if (!self.zmqKnownRawReferrals.get(id)) {
     self.zmqKnownRawReferrals.set(id, true);
@@ -727,7 +727,7 @@ Merit.prototype._zmqRawReferralsHandler = function(node, message) {
 
 Merit.prototype._zmqHashReferralsHandler = function(node, message) {
   const self = this;
-  const hash = bitcore.crypto.Hash.sha256sha256(message);
+  const hash = meritcore.crypto.Hash.sha256sha256(message);
   const id = hash.toString('binary');
   if (!self.zmqKnownHashReferrals.get(id)) {
     self.zmqKnownHashReferrals.set(id, true);
@@ -1487,7 +1487,7 @@ Merit.prototype._getAddressStrings = function(addresses) {
   var addressStrings = [];
   for (var i = 0; i < addresses.length; i++) {
     var address = addresses[i];
-    if (address instanceof bitcore.Address) {
+    if (address instanceof meritcore.Address) {
       addressStrings.push(address.toString());
     } else if (_.isString(address)) {
       addressStrings.push(address);
@@ -1835,7 +1835,7 @@ Merit.prototype.getBlock = function(blockArg, callback) {
         if (err) {
           return done(self._wrapRPCError(err));
         }
-        var blockObj = bitcore.Block.fromString(response.result, self.node.getNetworkName());
+        var blockObj = meritcore.Block.fromString(response.result, self.node.getNetworkName());
         self.blockCache.set(blockhash, blockObj);
         done(null, blockObj);
       });
@@ -2208,7 +2208,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
           version: result.version,
           hash: txid,
           locktime: result.locktime,
-          isInvite: result.version === bitcore.Transaction.INVITE_VERSION,
+          isInvite: result.version === meritcore.Transaction.INVITE_VERSION,
         };
 
         if (result.vin[0] && result.vin[0].coinbase) {

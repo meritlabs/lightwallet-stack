@@ -2,10 +2,10 @@
 
 var dns = require('dns');
 var EventEmitter = require('events').EventEmitter;
-var bitcore = require('meritcore-lib');
-var sha256 = bitcore.crypto.Hash.sha256;
+var meritcore = require('meritcore-lib');
+var sha256 = meritcore.crypto.Hash.sha256;
 var Peer = require('./peer');
-var Networks = bitcore.Networks;
+var Networks = meritcore.Networks;
 var util = require('util');
 var net = require('net');
 

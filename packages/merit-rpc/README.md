@@ -11,7 +11,7 @@ meritd-rpc.js runs on [node](http://nodejs.org/) and is installed with Lightwall
 
 ```javascript
 var run = function() {
-  var bitcore = require('bitcore');
+  var meritcore = require('meritcore-lib');
   var RpcClient = require('meritd-rpc');
 
   var config = {
@@ -48,7 +48,7 @@ var run = function() {
         }
 
         rawtxs.map(function (rawtx) {
-          var tx = new bitcore.Transaction(rawtx.result);
+          var tx = new meritcore.Transaction(rawtx.result);
           console.log('\n\n\n' + tx.id + ':', tx.toObject());
         });
 

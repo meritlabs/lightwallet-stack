@@ -3,13 +3,13 @@
 var should = require('chai').should();
 var expect = require('chai').expect;
 
-var bitcore = require('..');
-var Point = bitcore.crypto.Point;
-var BN = bitcore.crypto.BN;
-var PublicKey = bitcore.PublicKey;
-var PrivateKey = bitcore.PrivateKey;
-var Address = bitcore.Address;
-var Networks = bitcore.Networks;
+var meritcore = require('..');
+var Point = meritcore.crypto.Point;
+var BN = meritcore.crypto.BN;
+var PublicKey = meritcore.PublicKey;
+var PrivateKey = meritcore.PrivateKey;
+var Address = meritcore.Address;
+var Networks = meritcore.Networks;
 
 /* jshint maxlen: 200 */
 
@@ -358,13 +358,13 @@ describe('PublicKey', function() {
       ['Kwr371tjA9u2rFSMZjTNun2PXXP3WPZu2afRHTcta6KxEUdm1vEw', '1NoJrossxPBKfCHuJXT4HadJrXRE9Fxiqs'],
       ['L3Hq7a8FEQwJkW1M2GNKDW28546Vp5miewcCzSqUD9kCAXrJdS3g', '1CRj2HyM1CXWzHAXLQtiGLyggNT9WQqsDs']
     ];
-    
+
     data.forEach(function(d){
       var publicKey = PrivateKey.fromWIF(d[0]).toPublicKey();
       var address = Address.fromString(d[1]);
       address.hashBuffer.should.deep.equal(publicKey._getID());
     });
-    
+
   });
 
   describe('#toString', function() {

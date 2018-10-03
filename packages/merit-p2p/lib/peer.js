@@ -4,10 +4,10 @@ var Buffers = require('./buffers');
 var EventEmitter = require('events').EventEmitter;
 var Net = require('net');
 var Socks5Client = require('socks5-client');
-var bitcore = require('meritcore-lib');
-var Networks = bitcore.Networks;
+var meritcore = require('meritcore-lib');
+var Networks = meritcore.Networks;
 var Messages = require('./messages');
-var $ = bitcore.util.preconditions;
+var $ = meritcore.util.preconditions;
 var util = require('util');
 
 /**
@@ -65,8 +65,8 @@ function Peer(options) {
 
   this.messages = options.messages || new Messages({
     network: this.network,
-    Block: bitcore.Block,
-    Transaction: bitcore.Transaction
+    Block: meritcore.Block,
+    Transaction: meritcore.Transaction
   });
 
   this.dataBuffer = new Buffers();

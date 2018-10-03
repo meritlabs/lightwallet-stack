@@ -3,7 +3,7 @@
 var $ = require('preconditions').singleton();
 var _ = require('lodash');
 
-var Bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var Constants = require('../common/constants');
 
 function Address() {};
@@ -20,7 +20,7 @@ Address.create = function(opts) {
   x.isChange = opts.isChange;
   x.path = opts.path;
   x.publicKeys = opts.publicKeys;
-  x.network = Bitcore.Address(x.address).toObject().network;
+  x.network = meritcore.Address(x.address).toObject().network;
   x.type = opts.type || Constants.SCRIPT_TYPES.P2SH;
   x.hasActivity = undefined;
   x.parentAddress = opts.parentAddress;
@@ -53,18 +53,18 @@ Address._deriveAddress = function(scriptType, publicKeyRing, path, m, network) {
   $.checkArgument(_.includes(_.values(Constants.SCRIPT_TYPES), scriptType));
 
   var publicKeys = _.map(publicKeyRing, function(item) {
-    var xpub = new Bitcore.HDPublicKey(item.xPubKey);
+    var xpub = new meritcore.HDPublicKey(item.xPubKey);
     return xpub.deriveChild(path).publicKey;
   });
 
-  var bitcoreAddress;
+  var meritcoreAddress;
   switch (scriptType) {
     case Constants.SCRIPT_TYPES.P2SH:
-      bitcoreAddress = Bitcore.Address.createMultisig(publicKeys, m, network);
+      meritcoreAddress = meritcore.Address.createMultisig(publicKeys, m, network);
       break;
     case Constants.SCRIPT_TYPES.P2PKH:
       $.checkState(_.isArray(publicKeys) && publicKeys.length == 1);
-      bitcoreAddress = Bitcore.Address.fromPublicKey(publicKeys[0], network);
+      meritcoreAddress = meritcore.Address.fromPublicKey(publicKeys[0], network);
       break;
     case Constants.SCRIPT_TYPES.PP2SH:
       //TODO: Does it make sense to call this function with PP2SH address type?
@@ -73,7 +73,7 @@ Address._deriveAddress = function(scriptType, publicKeyRing, path, m, network) {
   }
 
   return {
-    address: bitcoreAddress.toString(),
+    address: meritcoreAddress.toString(),
     path: path,
     publicKeys: _.invokeMap(publicKeys, 'toString'),
   };

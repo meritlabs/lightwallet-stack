@@ -19,7 +19,7 @@ describe('#defaultConfig', function() {
       servicesConfig: {
         meritd: {
           spawn: {
-            datadir: process.env.HOME + '/.bitcore/data',
+            datadir: process.env.HOME + '/.meritcore/data',
             exec: expectedExecPath
           }
         }
@@ -29,7 +29,7 @@ describe('#defaultConfig', function() {
       fs: {
         existsSync: sinon.stub().returns(false),
         writeFileSync: function(path, data) {
-          path.should.equal(process.env.HOME + '/.bitcore/merit-node.json');
+          path.should.equal(process.env.HOME + '/.meritcore/merit-node.json');
           data.should.equal(config);
         },
         readFileSync: function() {
@@ -42,13 +42,13 @@ describe('#defaultConfig', function() {
     });
     var home = process.env.HOME;
     var info = defaultConfig();
-    info.path.should.equal(home + '/.bitcore');
+    info.path.should.equal(home + '/.meritcore');
     info.config.network.should.equal('livenet');
     info.config.port.should.equal(3001);
     info.config.services.should.deep.equal(['meritd', 'web']);
     var meritd = info.config.servicesConfig.meritd;
     should.exist(meritd);
-    meritd.spawn.datadir.should.equal(home + '/.bitcore/data');
+    meritd.spawn.datadir.should.equal(home + '/.meritcore/data');
     meritd.spawn.exec.should.equal(expectedExecPath);
   });
   it('will include additional services', function() {
@@ -64,7 +64,7 @@ describe('#defaultConfig', function() {
       servicesConfig: {
         meritd: {
           spawn: {
-            datadir: process.env.HOME + '/.bitcore/data',
+            datadir: process.env.HOME + '/.meritcore/data',
             exec: expectedExecPath
           }
         }
@@ -74,7 +74,7 @@ describe('#defaultConfig', function() {
       fs: {
         existsSync: sinon.stub().returns(false),
         writeFileSync: function(path, data) {
-          path.should.equal(process.env.HOME + '/.bitcore/merit-node.json');
+          path.should.equal(process.env.HOME + '/.meritcore/merit-node.json');
           data.should.equal(config);
         },
         readFileSync: function() {
@@ -89,7 +89,7 @@ describe('#defaultConfig', function() {
     var info = defaultConfig({
       additionalServices: ['insight-api', 'insight-ui']
     });
-    info.path.should.equal(home + '/.bitcore');
+    info.path.should.equal(home + '/.meritcore');
     info.config.network.should.equal('livenet');
     info.config.port.should.equal(3001);
     info.config.services.should.deep.equal([
@@ -100,7 +100,7 @@ describe('#defaultConfig', function() {
     ]);
     var meritd = info.config.servicesConfig.meritd;
     should.exist(meritd);
-    meritd.spawn.datadir.should.equal(home + '/.bitcore/data');
+    meritd.spawn.datadir.should.equal(home + '/.meritcore/data');
     meritd.spawn.exec.should.equal(expectedExecPath);
   });
 });
