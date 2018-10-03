@@ -12,7 +12,7 @@ var mongodb = require('mongodb');
 
 var Model = require('./model');
 
-var Bitcore = require('meritcore-lib');
+var Meritcore = require('meritcore-lib');
 var ObjectID = mongodb.ObjectID;
 
 var collections = {
@@ -1400,7 +1400,7 @@ Storage.prototype.fetchVaultByCopayerId = function (copayerId, id, cb) {
 };
 
 Storage.prototype.setVaultConfirmed = function (tx, txId, cb) {
-  tx.status = Bitcore.Vault.Vault.VaultStates.APPROVED;
+  tx.status = Meritcore.Vault.Vault.VaultStates.APPROVED;
   this.db.collection(collections.VAULTS).update({
     initialTxId: tx.initialTxId,
   }, tx, {

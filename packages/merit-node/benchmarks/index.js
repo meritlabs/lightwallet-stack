@@ -8,7 +8,7 @@ var maxTime = 20;
 console.log('Merit Service native interface vs. Merit JSON RPC interface');
 console.log('----------------------------------------------------------------------');
 
-// To run the benchmarks a fully synced Bitcore Core directory is needed. The RPC comands
+// To run the benchmarks a fully synced Meritcore Core directory is needed. The RPC comands
 // can be modified to match the settings in merit.conf.
 
 var fixtureData = {

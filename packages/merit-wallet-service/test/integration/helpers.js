@@ -12,7 +12,7 @@ var tingodb = require('tingodb')({
   memStore: true
 });
 
-var Bitcore = require('meritcore-lib');
+var Meritcore = require('meritcore-lib');
 
 var Common = require('../../lib/common');
 var Utils = Common.Utils;
@@ -84,13 +84,13 @@ helpers.getStorage = function() {
 };
 
 helpers.signMessage = function(text, privKey) {
-  var priv = new Bitcore.PrivateKey(privKey);
+  var priv = new Meritcore.PrivateKey(privKey);
   var hash = Utils.hashMessage(text);
-  return Bitcore.crypto.ECDSA.sign(hash, priv, 'little').toString();
+  return Meritcore.crypto.ECDSA.sign(hash, priv, 'little').toString();
 };
 
 helpers.signRequestPubKey = function(requestPubKey, xPrivKey) {
-  var priv = new Bitcore.HDPrivateKey(xPrivKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).privateKey;
+  var priv = new Meritcore.HDPrivateKey(xPrivKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).privateKey;
   return helpers.signMessage(requestPubKey, priv);
 };
 
@@ -112,19 +112,19 @@ helpers.getAuthServer = function(copayerId, cb) {
 helpers._generateCopayersTestData = function(n) {
   console.log('var copayers = [');
   _.each(_.range(n), function(c) {
-    var xpriv = new Bitcore.HDPrivateKey();
-    var xpub = Bitcore.HDPublicKey(xpriv);
+    var xpriv = new Meritcore.HDPrivateKey();
+    var xpub = Meritcore.HDPublicKey(xpriv);
 
     var xpriv_45H = xpriv.deriveChild(45, true);
-    var xpub_45H = Bitcore.HDPublicKey(xpriv_45H);
+    var xpub_45H = Meritcore.HDPublicKey(xpriv_45H);
     var id45 = Copayer._xPubToCopayerId(xpub_45H.toString());
 
     var xpriv_44H_0H_0H = xpriv.deriveChild(44, true).deriveChild(0, true).deriveChild(0, true);
-    var xpub_44H_0H_0H = Bitcore.HDPublicKey(xpriv_44H_0H_0H);
+    var xpub_44H_0H_0H = Meritcore.HDPublicKey(xpriv_44H_0H_0H);
     var id44 = Copayer._xPubToCopayerId(xpub_44H_0H_0H.toString());
 
     var xpriv_1H = xpriv.deriveChild(1, true);
-    var xpub_1H = Bitcore.HDPublicKey(xpriv_1H);
+    var xpub_1H = Meritcore.HDPublicKey(xpriv_1H);
     var priv = xpriv_1H.deriveChild(0).privateKey;
     var pub = xpub_1H.deriveChild(0).publicKey;
 
@@ -205,7 +205,7 @@ helpers.createAndJoinWallet = function(m, n, opts, cb) {
 
 
 helpers.randomTXID = function() {
-  return Bitcore.crypto.Hash.sha256(new Buffer(Math.random() * 100000)).toString('hex');;
+  return Meritcore.crypto.Hash.sha256(new Buffer(Math.random() * 100000)).toString('hex');;
 };
 
 helpers.toMicro = function(mrt) {
@@ -280,10 +280,10 @@ helpers.stubUtxos = function(server, wallet, amounts, opts, cb) {
         var scriptPubKey;
         switch (wallet.addressType) {
           case Constants.SCRIPT_TYPES.P2SH:
-            scriptPubKey = Bitcore.Script.buildMultisigOut(address.publicKeys, wallet.m).toScriptHashOut();
+            scriptPubKey = Meritcore.Script.buildMultisigOut(address.publicKeys, wallet.m).toScriptHashOut();
             break;
           case Constants.SCRIPT_TYPES.P2PKH:
-            scriptPubKey = Bitcore.Script.buildPublicKeyHashOut(address.address);
+            scriptPubKey = Meritcore.Script.buildPublicKeyHashOut(address.address);
             break;
         }
         should.exist(scriptPubKey);
@@ -373,7 +373,7 @@ helpers.clientSign = function(txp, derivedXPrivKey) {
   var privs = [];
   var derived = {};
 
-  var xpriv = new Bitcore.HDPrivateKey(derivedXPrivKey, txp.network);
+  var xpriv = new Meritcore.HDPrivateKey(derivedXPrivKey, txp.network);
 
   _.each(txp.inputs, function(i) {
     if (!derived[i.path]) {
@@ -382,7 +382,7 @@ helpers.clientSign = function(txp, derivedXPrivKey) {
     }
   });
 
-  var t = txp.getBitcoreTx();
+  var t = txp.getMeritcoreTx();
 
   var signatures = _.map(privs, function(priv, i) {
     return t.getSignatures(priv);

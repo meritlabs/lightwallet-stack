@@ -2,8 +2,8 @@ import * as request from 'superagent';
 import * as _ from 'lodash';
 import { Logger } from "./log";
 import * as preconditions from 'preconditions';
-import * as Bitcore from 'meritcore-lib';
-import * as BitcorePayPro from 'merit-payment-protocol';
+import * as Meritcore from 'meritcore-lib';
+import * as MeritcorePayPro from 'merit-payment-protocol';
 const $ = preconditions.singleton();
 
 export module PayPro {
@@ -45,15 +45,15 @@ export module PayPro {
     $.checkArgument(opts && opts.url);
 
     opts.headers = opts.headers || {
-      'Accept': BitcorePayPro.PAYMENT_REQUEST_CONTENT_TYPE,
+      'Accept': MeritcorePayPro.PAYMENT_REQUEST_CONTENT_TYPE,
       'Content-Type': 'application/octet-stream',
     };
 
     return _request(opts).then((res) => {
       let request, verified, signature, serializedDetails;
       try {
-        let body = BitcorePayPro.PaymentRequest.decode(res.body);
-        request = (new BitcorePayPro()).makePaymentRequest(body);
+        let body = MeritcorePayPro.PaymentRequest.decode(res.body);
+        request = (new MeritcorePayPro()).makePaymentRequest(body);
         signature = request.get('signature');
         serializedDetails = request.get('serialized_payment_details');
         // Verify the signature
@@ -63,8 +63,8 @@ export module PayPro {
       }
 
       // Get the payment details
-      let decodedDetails = BitcorePayPro.PaymentDetails.decode(serializedDetails);
-      let pd = new BitcorePayPro();
+      let decodedDetails = MeritcorePayPro.PaymentDetails.decode(serializedDetails);
+      let pd = new MeritcorePayPro();
       pd = pd.makePaymentDetails(decodedDetails);
 
       let outputs = pd.get('outputs');
@@ -84,7 +84,7 @@ export module PayPro {
       // is only an ArrayBuffer
       let buffer = new Buffer(new Uint8Array(output.get('script').buffer));
       let scriptBuf = buffer.slice(offset, limit);
-      let addr = new Bitcore.Address.fromScript(new Bitcore.Script(scriptBuf), network);
+      let addr = new Meritcore.Address.fromScript(new Meritcore.Script(scriptBuf), network);
 
       let md = pd.get('merchant_data');
 
@@ -121,14 +121,14 @@ export module PayPro {
   let _getPayProRefundOutputs = (addrStr, amount) => {
     amount = amount.toString(10);
 
-    let output = new BitcorePayPro.Output();
-    let addr = new Bitcore.Address(addrStr);
+    let output = new MeritcorePayPro.Output();
+    let addr = new Meritcore.Address(addrStr);
 
     let s;
     if (addr.isPayToPublicKeyHash()) {
-      s = Bitcore.Script.buildPublicKeyHashOut(addr);
+      s = Meritcore.Script.buildPublicKeyHashOut(addr);
     } else if (addr.isPayToScriptHash()) {
-      s = Bitcore.Script.buildScriptHashOut(addr);
+      s = Meritcore.Script.buildScriptHashOut(addr);
     } else {
       throw new Error('Unrecognized address type ' + addr.type);
     }
@@ -141,7 +141,7 @@ export module PayPro {
 
 
   let _createPayment = (merchant_data, rawTx, refundAddr, amountMicros) => {
-    let pay = new BitcorePayPro();
+    let pay = new MeritcorePayPro();
     pay = pay.makePayment();
 
     if (merchant_data) {
@@ -182,8 +182,8 @@ export module PayPro {
 
       opts.method = 'POST';
       opts.headers = opts.headers || {
-        'Accept': BitcorePayPro.PAYMENT_ACK_CONTENT_TYPE,
-        'Content-Type': BitcorePayPro.PAYMENT_CONTENT_TYPE,
+        'Accept': MeritcorePayPro.PAYMENT_ACK_CONTENT_TYPE,
+        'Content-Type': MeritcorePayPro.PAYMENT_CONTENT_TYPE,
         // 'Content-Type': 'application/octet-stream',
       };
       opts.body = payment;
@@ -192,8 +192,8 @@ export module PayPro {
         if (!rawData) return reject(new Error("No RawData from PayPro sending event."));
         let memo;
           try {
-            let data = BitcorePayPro.PaymentACK.decode(rawData);
-            let pp = new BitcorePayPro();
+            let data = MeritcorePayPro.PaymentACK.decode(rawData);
+            let pp = new MeritcorePayPro();
             let ack = pp.makePaymentACK(data);
             memo = ack.get('memo');
           } catch (e) {

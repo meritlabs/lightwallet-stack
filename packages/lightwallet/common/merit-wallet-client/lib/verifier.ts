@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as preconditions from 'preconditions';
 const $ = preconditions.singleton();
-import * as Bitcore from 'meritcore-lib';
+import * as Meritcore from 'meritcore-lib';
 import { Common } from './common';
 let Utils = Common.Utils;
 import { Logger } from "./log";
@@ -41,7 +41,7 @@ export module Verifier {
    */
   export let checkCopayers = function(credentials, copayers): boolean {
     $.checkState(credentials.walletPrivKey);
-    var walletPubKey = Bitcore.PrivateKey.fromString(credentials.walletPrivKey).toPublicKey().toString();
+    var walletPubKey = Meritcore.PrivateKey.fromString(credentials.walletPrivKey).toPublicKey().toString();
 
     if (copayers.length != credentials.n) {
       log.error('Missing public keys in server response');
@@ -151,7 +151,7 @@ export module Verifier {
     if (!creatorSigningPubKey) return false;
 
     var hash;
-    if (parseInt(txp.version) >= Bitcore.Transaction.CURRENT_VERSION) {
+    if (parseInt(txp.version) >= Meritcore.Transaction.CURRENT_VERSION) {
       var t = Utils.buildTx(txp);
       hash = t.uncheckedSerialize();
     } else {
@@ -172,7 +172,7 @@ export module Verifier {
   export let checkPaypro = function(txp, payproOpts): boolean {
     var toAddress, amount;
 
-    if (parseInt(txp.version) >= Bitcore.Transaction.CURRENT_VERSION) {
+    if (parseInt(txp.version) >= Meritcore.Transaction.CURRENT_VERSION) {
       toAddress = txp.outputs[0].toAddress;
       amount = txp.amount;
     } else {

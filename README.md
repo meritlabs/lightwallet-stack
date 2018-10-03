@@ -126,7 +126,7 @@ make prepare-stack
 make start-desktop-lightwallet
 ```
 
-### Start Bitcore Individually
+### Start Meritcore Individually
 
 ```sh
 make start-merit-node

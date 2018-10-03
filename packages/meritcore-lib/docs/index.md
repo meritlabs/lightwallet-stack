@@ -1,4 +1,4 @@
-# Bitcore v0.99
+# Meritcore v0.99
 
 ## Principles
 
