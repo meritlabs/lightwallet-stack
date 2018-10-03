@@ -40,7 +40,6 @@
     "file-loader": "^1.1.5",
     "hammerjs": "^2.0.8",
     "html-webpack-plugin": "^2.29.0",
-    "istanbul-instrumenter-loader": "^3.0.0",
     "ngx-carousel": "^1.3.5",
     "normalize-scss": "^7.0.1",
     "postcss-import": "^11.0.0",

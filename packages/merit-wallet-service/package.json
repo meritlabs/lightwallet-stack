@@ -26,7 +26,6 @@
     "meritcore-lib": "^0.9.9",
     "body-parser": "^1.11.0",
     "compression": "^1.6.2",
-    "coveralls": "^2.11.2",
     "email-validator": "^1.0.1",
     "express": "^4.16.2",
     "express-rate-limit": "^2.6.0",
@@ -55,7 +54,6 @@
   },
   "devDependencies": {
     "chai": "^1.9.1",
-    "istanbul": "*",
     "jsdoc": "^3.3.0-beta1",
     "memdown": "^1.0.0",
     "mocha": "^1.18.2",
@@ -67,9 +65,7 @@
   "scripts": {
     "start": "./start.sh",
     "stop": "./stop.sh",
-    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --reporter spec test",
-    "test": "./node_modules/.bin/mocha",
-    "coveralls": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+    "test": "./node_modules/.bin/mocha"
   },
   "meritNode": "./meritnode",
   "contributors": [
