@@ -11,7 +11,7 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { isAddress } from '@merit/common/utils/addresses';
 import { clone } from 'lodash';
 import { EasySendService } from '@merit/common/services/easy-send.service';
-import { Address } from 'bitcore-lib';
+import { Address } from 'meritcore-lib';
 import { accessWallet } from "./wallet.service";
 import { getEasySendURL } from '@merit/common/models/easy-send';
 import { AlertService } from "@merit/common/services/alert.service";

@@ -7,7 +7,7 @@
 The lightwallet development environment consists of:
 
 - Merit Wallet Service
-- Bitcore-Node
+- Merit-Node
 - Insight-api
 - (Optionally) Insight-ui
 - Lightwallet for mobile, desktop and web
@@ -129,17 +129,17 @@ make start-desktop-lightwallet
 ### Start Bitcore Individually
 
 ```sh
-make start-bitcore-node
+make start-merit-node
 ```
 
-## Send an RPC call to the Lightwallet bitcore-node
+## Send an RPC call to the Lightwallet merit-node
 
-- `make start-bitcore-node` should be running
-- `make symlink-bitcore-node` should be symlinked
+- `make start-merit-node` should be running
+- `make symlink-merit-node` should be symlinked
 
 ```sh
 cd merit-labs/lightwallet-stack/
-./bitcore-node/bitcore-node/bin/bitcore-node call {bitcore-node/lib/services/meritd.js rpc_command_here}
+./merit-node/merit-node/bin/merit-node call {merit-node/lib/services/meritd.js rpc_command_here}
 ```
 
 ## GIT Flow

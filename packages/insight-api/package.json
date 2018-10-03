@@ -1,6 +1,6 @@
 {
   "name": "insight-api",
-  "description": "A Merit blockchain REST and web socket API service for Bitcore Node.",
+  "description": "A Merit blockchain REST and web socket API service for Merit Node.",
   "version": "0.4.3",
   "authors": [
     "Merit Foundation",
@@ -68,11 +68,10 @@
     "test": "NODE_ENV=test mocha -R spec --recursive"
   },
   "main": "lib",
-  "bitcoreNode": "lib",
+  "meritNode": "lib",
   "dependencies": {
     "async": "2.6.0",
-    "bitcore-lib": "^0.9.9",
-    "bitcore-message": "^1.0.4",
+    "meritcore-lib": "^0.9.9",
     "body-parser": "^1.13.3",
     "compression": "^1.6.1",
     "lodash": "^4.17.4",

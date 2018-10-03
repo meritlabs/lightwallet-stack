@@ -1,8 +1,8 @@
 'use strict';
 
-var bitcore = require('bitcore-lib');
+var bitcore = require('meritcore-lib');
 var _ = bitcore.deps._;
-var Message = require('bitcore-message');
+var Message = bitcore.Message;
 var Common = require('./common');
 
 function MessagesController(node) {

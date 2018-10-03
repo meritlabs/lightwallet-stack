@@ -1,0 +1,66 @@
+{
+  "name": "merit-payment-protocol",
+  "version": "1.2.2",
+  "description": "Payment Protocol (BIP70 and related) support for Merti Lightwallet Stack",
+  "authors": [
+    "Merit Foundation",
+    "BitPay"
+  ],
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
+  "main": "index.js",
+  "scripts": {
+    "lint": "gulp lint",
+    "test": "gulp test",
+    "coverage": "gulp coverage",
+    "build": "gulp",
+    "rootcerts": "node ./update-rootcerts.js"
+  },
+  "contributors": [
+    {
+      "name": "MeritLabs Team",
+      "email": "support@merit.me"
+    },
+    {
+      "name": "Christopher Jeffrey",
+      "email": "chjeffrey@gmail.com"
+    },
+    {
+      "name": "Manuel Araoz",
+      "email": "manuelaraoz@gmail.com"
+    },
+    {
+      "name": "Ryan X. Charles",
+      "email": "ryan@bitpay.com"
+    },
+    {
+      "name": "Linus Unnebäck",
+      "email": "linus@folkdatorn.se"
+    },
+    {
+      "name": "Esteban Ordano",
+      "email": "eordano@gmail.com"
+    }
+  ],
+  "keywords": [
+    "merit"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meritlabs/lightwallet-stack"
+  },
+  "browser": "lib/browser.js",
+  "dependencies": {
+    "asn1.js": "=4.5.2",
+    "meritcore-lib": "^0.9.9",
+    "jsrsasign": "=5.0.10",
+    "protobufjs": "=5.0.1"
+  },
+  "devDependencies": {
+    "bitcore-build": "git://github.com/bitpay/bitcore-build.git",
+    "brfs": "^1.2.0",
+    "chai": "~1.10.0",
+    "gulp": "^3.8.10",
+    "sinon": "^1.17.3"
+  },
+  "license": "MIT"
+}

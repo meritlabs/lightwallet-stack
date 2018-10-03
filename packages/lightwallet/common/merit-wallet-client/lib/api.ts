@@ -2,7 +2,7 @@ import { ENV } from '@app/env';
 import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
 import { generateMnemonic, mnemonicToHDPrivateKey, validateImportMnemonic } from '@merit/common/utils/mnemonic';
 import * as Bip38 from 'bip38';
-import * as Bitcore from 'bitcore-lib';
+import * as Bitcore from 'meritcore-lib';
 import * as EventEmitter from 'eventemitter3';
 import * as _ from 'lodash';
 import * as preconditions from 'preconditions';
@@ -127,7 +127,7 @@ export class API {
 
   public balance: any;
   public invitesBalance: any;
-  public availableInvites: number = 0; // total invites I have 
+  public availableInvites: number = 0; // total invites I have
   public pendingInvites: number = 0; // invites that are currently pending confirmation
   public sendableInvites: number = 0; // invites I can send right now
 
@@ -1602,8 +1602,8 @@ export class API {
 
     const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
 
-    // The referral constructor requires that the parentAddress is in 
-    // full address form (ripe160); it should not be an alias here. 
+    // The referral constructor requires that the parentAddress is in
+    // full address form (ripe160); it should not be an alias here.
     const referral = new Bitcore.Referral({
       parentAddress,
       address: opts.address,

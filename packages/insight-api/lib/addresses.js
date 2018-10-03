@@ -1,6 +1,6 @@
 'use strict';
 
-const bitcore = require('bitcore-lib');
+const bitcore = require('meritcore-lib');
 const async = require('async');
 const TxController = require('./transactions');
 const Common = require('./common');

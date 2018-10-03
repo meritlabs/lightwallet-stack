@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+var bitcore = require('../lib/cli/merit-node');
+bitcore();

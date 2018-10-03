@@ -1,6 +1,6 @@
 # Insight API
 
-A Merit blockchain REST and web socket API service for [Bitcore Node](https://github.com/meritlabs/lightwallet-stack/tree/master/packages/bitcore-node).
+A Merit blockchain REST and web socket API service for [Merit Node](https://github.com/meritlabs/lightwallet-stack/tree/master/packages/merit-node).
 
 This is a backend-only service. If you're looking for the web frontend application, take a look at https://github.com/meritlabs/lightwallet-stack/tree/master/packages/insight-ui.
 

@@ -7,7 +7,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
-import { Address, PublicKey } from 'bitcore-lib';
+import { Address, PublicKey } from 'meritcore-lib';
 import {
   AlertController,
   Events,

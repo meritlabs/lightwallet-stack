@@ -1,5 +1,5 @@
 import { BigNumber } from 'bignumber.js';
-import { crypto, HDPrivateKey } from 'bitcore-lib';
+import { crypto, HDPrivateKey } from 'meritcore-lib';
 import { createHash, pbkdf2Sync } from 'crypto';
 import EnglishWordlist from './wordlists/english';
 

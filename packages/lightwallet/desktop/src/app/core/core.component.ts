@@ -28,7 +28,7 @@ import { PasswordPromptController } from '@merit/desktop/app/components/password
 import { SmsNotificationsPromptController } from '@merit/desktop/app/components/sms-notifications-prompt/sms-notifications-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { Store } from '@ngrx/store';
-import { Address, PublicKey } from 'bitcore-lib';
+import { Address, PublicKey } from 'meritcore-lib';
 import { Observable } from 'rxjs/Observable';
 import { filter, map } from 'rxjs/operators';
 import { IGoalSettings } from '@merit/common/models/goals';
@@ -160,7 +160,7 @@ export class CoreView implements OnInit, AfterViewInit {
     );
   }
 
-  onGuideDismiss() {   
+  onGuideDismiss() {
     this.persistenceService2.setUserSettings(UserSettingsKey.recordPassphrase, (this.recordPassphrase = true));
     this.smsNotificationsPromptCtrl.create();
   }

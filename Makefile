@@ -63,29 +63,29 @@ stop-mongo:
 	kill `pgrep mongo`
 
 # Symlink the Merit meritd
-# See https://github.com/meritlabs/lightwallet-stack/blob/master/bitcore-node/docs/development.md
-.PHONY: symlink-bitcore-node
-symlink-bitcore-node:
-	cd ./packages/bitcore-node/bin && ln -sf ../../../merit/src/meritd
+# See https://github.com/meritlabs/lightwallet-stack/blob/master/merit-node/docs/development.md
+.PHONY: symlink-merit-node
+symlink-merit-node:
+	cd ./packages/merit-node/bin && ln -sf ../../../merit/src/meritd
 
 # Within the devnode directory with the configuration file, start the node:
-.PHONY: start-bitcore-node
-start-bitcore-node:
-	./packages/bitcore-node/bin/bitcore-node start
+.PHONY: start-merit-node
+start-merit-node:
+	./packages/merit-node/bin/merit-node start
 
-.PHONY: start-bitcore-wallet-service
-start-bitcore-wallet-service:
-	cd ./packages/bitcore-wallet-service/ && node locker/locker.js & \
-	cd ./packages/bitcore-wallet-service/ && node messagebroker/messagebroker.js & \
-	cd ./packages/bitcore-wallet-service/ && node bcmonitor/bcmonitor.js & \
-	cd ./packages/bitcore-wallet-service/ && node fiatrateservice/fiatrateservice.js & \
-	cd ./packages/bitcore-wallet-service/ && node bws.js & \
-	cd ./packages/bitcore-wallet-service/ && node pushnotificationsservice/pushnotificationsservice.js & \
-	cd ./packages/bitcore-wallet-service/ && node emailservice/emailservice.js
+.PHONY: start-merit-wallet-service
+start-merit-wallet-service:
+	cd ./packages/merit-wallet-service/ && node locker/locker.js & \
+	cd ./packages/merit-wallet-service/ && node messagebroker/messagebroker.js & \
+	cd ./packages/merit-wallet-service/ && node bcmonitor/bcmonitor.js & \
+	cd ./packages/merit-wallet-service/ && node fiatrateservice/fiatrateservice.js & \
+	cd ./packages/merit-wallet-service/ && node mws.js & \
+	cd ./packages/merit-wallet-service/ && node pushnotificationsservice/pushnotificationsservice.js & \
+	cd ./packages/merit-wallet-service/ && node emailservice/emailservice.js
 
-.PHONY: stop-bitcore-wallet-service
-stop-bitcore-wallet-service:
-	cd ./packages/bitcore-wallet-service/ && sh stop.sh
+.PHONY: stop-merit-wallet-service
+stop-merit-wallet-service:
+	cd ./packages/merit-wallet-service/ && sh stop.sh
 
 .PHONY: clean-npm
 clean-npm:
@@ -106,18 +106,18 @@ use-lerna-production:
 	lerna bootstrap -- --production --no-optional
 
 .PHONY: start-stack
-start-stack: symlink-bitcore-node start-bitcore-node
+start-stack: symlink-merit-node start-merit-node
 
 
 # Clean
 ## Preperation Order is based on dependencies ##
-.PHONY: clean-bitcore-lib
-clean-bitcore-lib:
-	rm -rf ./packages/bitcore-lib/node_modules
+.PHONY: clean-meritcore-lib
+clean-meritcore-lib:
+	rm -rf ./packages/meritcore-lib/node_modules
 
-.PHONY: clean-bitcoin-rpc
-clean-bitcoin-rpc:
-	rm -rf ./packages/bitcoin-rpc/node_modules
+.PHONY: clean-merit-rpc
+clean-merit-rpc:
+	rm -rf ./packages/merit-rpc/node_modules
 
 .PHONY: clean-insight-api
 clean-insight-api:
@@ -127,41 +127,31 @@ clean-insight-api:
 clean-insight-ui:
 	rm -rf ./packages/insight-ui/node_modules
 
-.PHONY: clean-bitcore-wallet-service
-clean-bitcore-wallet-service:
-	rm -rf ./packages/bitcore-wallet-service/node_modules
+.PHONY: clean-merit-wallet-service
+clean-merit-wallet-service:
+	rm -rf ./packages/merit-wallet-service/node_modules
 
-.PHONY: clean-bitcore-wallet-client
-clean-bitcore-wallet-client:
-	rm -rf ./packages/bitcore-wallet-client/node_modules
+.PHONY: clean-merit-p2p
+clean-merit-p2p:
+	rm -rf ./packages/merit-p2p/node_modules
 
-.PHONY: clean-bitcore-p2p
-clean-bitcore-p2p:
-	rm -rf ./packages/bitcore-p2p/node_modules
+.PHONY: clean-merit-node
+clean-merit-node:
+	rm -rf ./packages/merit-node/node_modules
 
-.PHONY: clean-bitcore-node
-clean-bitcore-node:
-	rm -rf ./packages/bitcore-node/node_modules
-
-.PHONY: clean-bitcore-message
-clean-bitcore-message:
-	rm -rf ./packages/bitcore-message/node_modules
-
-.PHONY: clean-bitcore-payment-protocol
-clean-bitcore-payment-protocol:
-	rm -rf ./packages/bitcore-payment-protocol/node_modules
+.PHONY: clean-merit-payment-protocol
+clean-merit-payment-protocol:
+	rm -rf ./packages/merit-payment-protocol/node_modules
 
 .PHONY: clean-stack
-clean-stack: clean-bitcore-lib \
-	clean-bitcoin-rpc \
+clean-stack: clean-meritcore-lib \
+	clean-merit-rpc \
 	clean-insight-api \
 	clean-insight-ui \
-	clean-bitcore-wallet-service \
-	clean-bitcore-wallet-client \
-	clean-bitcore-p2p \
-	clean-bitcore-node \
-	clean-bitcore-message \
-	clean-bitcore-payment-protocol \
+	clean-merit-wallet-service \
+	clean-merit-p2p \
+	clean-merit-node \
+	clean-merit-payment-protocol \
 	clean-lightwallet
 
 .PHONY: clean-build
@@ -170,51 +160,41 @@ clean-build:
 	rm -rf packages/lightwallet/mobile/www/*
 	rm -rf ./output.log
 
-.PHONY: test-bitcoin-rpc
-test-bitcoin-rpc:
-	cd packages/bitcoin-rpc && npm test
+.PHONY: test-merit-rpc
+test-merit-rpc:
+	cd packages/merit-rpc && npm test
 
-.PHONY: test-bitcore-lib
-test-bitcore-lib:
-	cd packages/bitcore-lib && npm test
+.PHONY: test-meritcore-lib
+test-meritcore-lib:
+	cd packages/meritcore-lib && npm test
 
-.PHONY: test-bitcore-message
-test-bitcore-message:
-	cd packages/bitcore-message && npm test
+.PHONY: test-merit-node
+test-merit-node:
+	cd packages/merit-node && npm test
 
-.PHONY: test-bitcore-node
-test-bitcore-node:
-	cd packages/bitcore-node && npm test
+.PHONY: test-merit-p2p
+test-merit-p2p:
+	cd packages/merit-p2p && npm test
 
-.PHONY: test-bitcore-p2p
-test-bitcore-p2p:
-	cd packages/bitcore-p2p && npm test
+.PHONY: test-merit-payment-protocol
+test-merit-payment-protocol:
+	cd packages/merit-payment-protocol && npm test
 
-.PHONY: test-bitcore-payment-protocol
-test-bitcore-payment-protocol:
-	cd packages/bitcore-payment-protocol && npm test
-
-.PHONY: test-bitcore-wallet-service
-test-bitcore-wallet-service:
-	cd packages/bitcore-wallet-service && npm test
-
-.PHONY: test-bitcore-wallet-client
-test-bitcore-wallet-client:
-	cd packages/bitcore-wallet-client && npm test
+.PHONY: test-merit-wallet-service
+test-merit-wallet-service:
+	cd packages/merit-wallet-service && npm test
 
 .PHONY: test-insight-api
 test-insight-api:
 	cd packages/insight-api && npm test
 
 .PHONY: test-all
-test-all: test-bitcoin-rpc \
-	test-bitcore-lib \
-	test-bitcore-message \
-	test-bitcore-node \
-	test-bitcore-p2p \
-	test-bitcore-payment-protocol \
-	test-bitcore-wallet-service \
-	test-bitcore-wallet-client \
+test-all: test-merit-rpc \
+	test-meritcore-lib \
+	test-merit-node \
+	test-merit-p2p \
+	test-merit-payment-protocol \
+	test-merit-wallet-service \
 	test-insight-api
 
 .PHONY: fmt
