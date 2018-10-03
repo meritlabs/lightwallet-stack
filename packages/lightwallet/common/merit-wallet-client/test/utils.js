@@ -4,7 +4,7 @@ var _ = require('lodash');
 var chai = require('chai');
 var sinon = require('sinon');
 var should = chai.should();
-var Bitcore = require('bitcore-lib');
+var Bitcore = require('meritcore-lib');
 
 var Utils = require('../lib/common/utils');
 

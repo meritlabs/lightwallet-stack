@@ -64,7 +64,7 @@ export class MeritLightWallet {
 
     const readySource = await this.platform.ready();
 
-    this.keyboard.hideKeyboardAccessoryBar(false);
+    this.keyboard.hideFormAccessoryBar(false);
 
     const appInfo: any = await this.appService.getInfo();
     this.logger.info(`

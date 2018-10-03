@@ -1,0 +1,65 @@
+{
+  "name": "meritcore-lib",
+  "version": "0.9.9",
+  "description": "A pure and powerful JavaScript Merit library.",
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
+  "authors": [
+    "Merit Foundation",
+    "BitPay"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "lint": "gulp lint",
+    "test": "gulp test",
+    "coverage": "gulp coverage",
+    "build": "gulp"
+  },
+  "keywords": [
+    "merit",
+    "transaction",
+    "address",
+    "p2p",
+    "ecies",
+    "cryptocurrency",
+    "blockchain",
+    "payment",
+    "bip21",
+    "bip32",
+    "bip37",
+    "bip69",
+    "bip70",
+    "multisig"
+  ],
+  "contributors": [
+    {
+      "name": "MeritLabs Team",
+      "email": "support@merit.me"
+    },
+    {
+      "name": "Bitpay Team"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meritlabs/lightwallet-stack"
+  },
+  "browser": {
+    "request": "browser-request"
+  },
+  "dependencies": {
+    "bn.js": "=4.11.8",
+    "bs58": "=4.0.1",
+    "buffer-compare": "=1.1.1",
+    "elliptic": "=6.4.0",
+    "inherits": "=2.0.1",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "bitcore-build": "bitpay/bitcore-build",
+    "brfs": "^1.2.0",
+    "chai": "^1.10.0",
+    "gulp": "^3.8.10",
+    "sinon": "^1.13.0"
+  },
+  "license": "MIT"
+}

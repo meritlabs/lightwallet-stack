@@ -1,0 +1,20 @@
+{
+  "network": "testnet",
+  "port": 3001,
+  "services": [
+    "meritd",
+    "insight-api",
+    "web",
+    "merit-wallet-service"
+  ],
+  "servicesConfig": {
+    "meritd": {
+        "spawn": {
+            "datadir": "./data-and-logs/data-1"
+        }
+    },
+    "insight-api": {
+      "disableRateLimiter": true
+    }
+  }
+}
