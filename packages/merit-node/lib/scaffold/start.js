@@ -1,10 +1,10 @@
 'use strict';
 
 var path = require('path');
-var BitcoreNode = require('../node');
+var meritcoreNode = require('../node');
 var index = require('../');
-var bitcore = require('meritcore-lib');
-var _ = bitcore.deps._;
+var meritcore = require('meritcore-lib');
+var _ = meritcore.deps._;
 var log = index.log;
 var shuttingDown = false;
 
@@ -83,7 +83,7 @@ function start(options) {
 
   fullConfig.services = start.setupServices(require, servicesPath, options.config);
 
-  var node = new BitcoreNode(fullConfig);
+  var node = new meritcoreNode(fullConfig);
 
   // setup handlers for uncaught exceptions and ctrl+c
   start.registerExitHandlers(process, node);

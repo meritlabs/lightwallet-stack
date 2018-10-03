@@ -12,9 +12,9 @@ var Network = require('./networks');
 var Point = require('./crypto/point');
 var PublicKey = require('./publickey');
 
-var bitcoreErrors = require('./errors');
-var errors = bitcoreErrors;
-var hdErrors = bitcoreErrors.HDPublicKey;
+var meritcoreErrors = require('./errors');
+var errors = meritcoreErrors;
+var hdErrors = meritcoreErrors.HDPublicKey;
 var assert = require('assert');
 
 var JSUtil = require('./util/js');

@@ -2,8 +2,8 @@
 
 var Message = require('../message');
 var inherits = require('util').inherits;
-var bitcore = require('meritcore-lib');
-var BufferUtil = bitcore.util.buffer;
+var meritcore = require('meritcore-lib');
+var BufferUtil = meritcore.util.buffer;
 
 /**
  * The mempool message sends a request to a node asking for information about

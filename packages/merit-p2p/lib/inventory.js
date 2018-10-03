@@ -1,11 +1,11 @@
 'use strict';
 
-var bitcore = require('meritcore-lib');
-var $ = bitcore.util.preconditions;
-var BufferUtil = bitcore.util.buffer;
-var BufferReader = bitcore.encoding.BufferReader;
-var BufferWriter = bitcore.encoding.BufferWriter;
-var _ = bitcore.deps._;
+var meritcore = require('meritcore-lib');
+var $ = meritcore.util.preconditions;
+var BufferUtil = meritcore.util.buffer;
+var BufferReader = meritcore.encoding.BufferReader;
+var BufferWriter = meritcore.encoding.BufferWriter;
+var _ = meritcore.deps._;
 
 /**
  * A constructor for inventory related Merit messages such as

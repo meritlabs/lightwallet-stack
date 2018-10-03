@@ -10,9 +10,9 @@ var p2p = require('merit-p2p');
 var Peer = p2p.Peer;
 var Messages = p2p.Messages;
 var chai = require('chai');
-var bitcore = require('meritcore-lib');
-var Transaction = bitcore.Transaction;
-var BN = bitcore.crypto.BN;
+var meritcore = require('meritcore-lib');
+var Transaction = meritcore.Transaction;
+var BN = meritcore.crypto.BN;
 var async = require('async');
 var rimraf = require('rimraf');
 var meritd;
@@ -29,9 +29,9 @@ var client;
 var messages;
 var peer;
 var coinbasePrivateKey;
-var privateKey = bitcore.PrivateKey();
-var destKey = bitcore.PrivateKey();
-var BufferUtil = bitcore.util.buffer;
+var privateKey = meritcore.PrivateKey();
+var destKey = meritcore.PrivateKey();
+var BufferUtil = meritcore.util.buffer;
 var blocks;
 
 describe('P2P Functionality', function() {
@@ -40,8 +40,8 @@ describe('P2P Functionality', function() {
     this.timeout(100000);
 
     // enable regtest
-    bitcore.Networks.enableRegtest();
-    var regtestNetwork = bitcore.Networks.get('regtest');
+    meritcore.Networks.enableRegtest();
+    var regtestNetwork = meritcore.Networks.get('regtest');
     var datadir = __dirname + '/data';
 
     rimraf(datadir + '/regtest', function(err) {
@@ -55,7 +55,7 @@ describe('P2P Functionality', function() {
           exec: path.resolve(__dirname, '../bin/meritd')
         },
         node: {
-          network: bitcore.Networks.testnet
+          network: meritcore.Networks.testnet
         }
       });
 
@@ -130,11 +130,11 @@ describe('P2P Functionality', function() {
                         throw err;
                       }
                       utxo.privateKeyWIF = privresponse.result;
-                      var tx = bitcore.Transaction();
+                      var tx = meritcore.Transaction();
                       tx.from(utxo);
                       tx.change(privateKey.toAddress());
                       tx.to(destKey.toAddress(), utxo.amount * 1e8 - 1000);
-                      tx.sign(bitcore.PrivateKey.fromWIF(utxo.privateKeyWIF));
+                      tx.sign(meritcore.PrivateKey.fromWIF(utxo.privateKeyWIF));
                       txs.push(tx);
                       finished();
                     });

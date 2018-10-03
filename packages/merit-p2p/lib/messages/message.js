@@ -1,9 +1,9 @@
 'use strict';
 
-var bitcore = require('meritcore-lib');
-var $ = bitcore.util.preconditions;
-var BufferWriter = bitcore.encoding.BufferWriter;
-var Hash = bitcore.crypto.Hash;
+var meritcore = require('meritcore-lib');
+var $ = meritcore.util.preconditions;
+var BufferWriter = meritcore.encoding.BufferWriter;
+var Hash = meritcore.crypto.Hash;
 
 /**
  * Base message that can be inherited to add an additional

@@ -2,11 +2,11 @@
 
 var _ = require('lodash');
 var should = require('chai').should();
-var bitcore = require('../..');
-var BN = bitcore.crypto.BN;
-var Signature = bitcore.crypto.Signature;
-var JSUtil = bitcore.util.js;
-var Interpreter = bitcore.Script.Interpreter;
+var meritcore = require('../..');
+var BN = meritcore.crypto.BN;
+var Signature = meritcore.crypto.Signature;
+var JSUtil = meritcore.util.js;
+var Interpreter = meritcore.Script.Interpreter;
 
 var sig_canonical = require('../data/meritd/sig_canonical');
 var sig_noncanonical = require('../data/meritd/sig_noncanonical');
@@ -282,22 +282,22 @@ describe('Signature', function() {
       var sig = new Signature({
         r: r,
         s: new BN('7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A1', 'hex')
-      });            
+      });
       sig.hasLowS().should.equal(false);
 
       var sig2 = new Signature({
         r: r,
         s: new BN('7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0', 'hex')
-      });      
+      });
       sig2.hasLowS().should.equal(true);
 
       var sig3 = new Signature({
         r: r,
         s: new BN(1)
-      });      
+      });
       sig3.hasLowS().should.equal(true);
 
-      var sig4 = new Signature({        
+      var sig4 = new Signature({
         r: r,
         s: new BN(0)
       });

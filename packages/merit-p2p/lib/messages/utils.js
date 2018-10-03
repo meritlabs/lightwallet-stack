@@ -1,9 +1,9 @@
 'use strict';
 
-var bitcore = require('merits-lib');
-var BufferUtil = bitcore.util.buffer;
-var $ = bitcore.util.preconditions;
-var _ = bitcore.deps._;
+var meritcore = require('merits-lib');
+var BufferUtil = meritcore.util.buffer;
+var $ = meritcore.util.preconditions;
+var _ = meritcore.deps._;
 var utils;
 
 module.exports = utils = {
@@ -21,7 +21,7 @@ module.exports = utils = {
     }
   },
   getNonce: function getNonce() {
-    return bitcore.crypto.Random.getRandomBuffer(8);
+    return meritcore.crypto.Random.getRandomBuffer(8);
   },
   writeIP: function writeIP(ip, bw) {
     var words = ip.v6.split(':').map(function(s) {

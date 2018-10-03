@@ -8,9 +8,9 @@
  */
 'use strict';
 
-var bitcore = require('meritcore-lib');
-var _ = bitcore.deps._;
-var $ = bitcore.util.preconditions;
+var meritcore = require('meritcore-lib');
+var _ = meritcore.deps._;
+var $ = meritcore.util.preconditions;
 var async = require('async');
 var _ = require('lodash');
 var log;

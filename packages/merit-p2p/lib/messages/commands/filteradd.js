@@ -2,13 +2,13 @@
 
 var Message = require('../message');
 var inherits = require('util').inherits;
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var utils = require('../utils');
-var BufferUtil = bitcore.util.buffer;
-var BufferWriter = bitcore.encoding.BufferWriter;
-var BufferReader = bitcore.encoding.BufferReader;
-var $ = bitcore.util.preconditions;
-var _ = bitcore.deps._;
+var BufferUtil = meritcore.util.buffer;
+var BufferWriter = meritcore.encoding.BufferWriter;
+var BufferReader = meritcore.encoding.BufferReader;
+var $ = meritcore.util.preconditions;
+var _ = meritcore.deps._;
 
 /**
  * Request peer to add data to a bloom filter already set by 'filterload'

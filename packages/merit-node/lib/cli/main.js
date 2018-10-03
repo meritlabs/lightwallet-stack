@@ -2,20 +2,20 @@
 
 var program = require('commander');
 var path = require('path');
-var bitcorenode = require('..');
+var meritcorenode = require('..');
 var utils = require('../utils');
 
 function main(servicesPath, additionalServices) {
   /* jshint maxstatements: 100 */
 
-  var version = bitcorenode.version;
-  var create = bitcorenode.scaffold.create;
-  var add = bitcorenode.scaffold.add;
-  var start = bitcorenode.scaffold.start;
-  var remove = bitcorenode.scaffold.remove;
-  var callMethod = bitcorenode.scaffold.callMethod;
-  var findConfig = bitcorenode.scaffold.findConfig;
-  var defaultConfig = bitcorenode.scaffold.defaultConfig;
+  var version = meritcorenode.version;
+  var create = meritcorenode.scaffold.create;
+  var add = meritcorenode.scaffold.add;
+  var start = meritcorenode.scaffold.start;
+  var remove = meritcorenode.scaffold.remove;
+  var callMethod = meritcorenode.scaffold.callMethod;
+  var findConfig = meritcorenode.scaffold.findConfig;
+  var defaultConfig = meritcorenode.scaffold.defaultConfig;
 
   program
     .version(version);

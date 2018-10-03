@@ -1,10 +1,10 @@
 'use strict';
 
 var spawn = require('child_process').spawn;
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var async = require('async');
-var $ = bitcore.util.preconditions;
-var _ = bitcore.deps._;
+var $ = meritcore.util.preconditions;
+var _ = meritcore.deps._;
 var path = require('path');
 var packageFile = require('../../package.json');
 var mkdirp = require('mkdirp');
@@ -19,7 +19,7 @@ var BASE_PACKAGE = {
   license: 'MIT',
   readme: 'README.md',
   dependencies: {
-    'meritcore-lib': '^' + bitcore.version,
+    'meritcore-lib': '^' + meritcore.version,
     'merit-node': version
   }
 };

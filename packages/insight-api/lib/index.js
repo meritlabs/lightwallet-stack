@@ -16,15 +16,15 @@ const CurrencyController = require('./currency');
 const WalletController = require('./wallet');
 const RateLimiter = require('./ratelimiter');
 const morgan = require('morgan');
-const bitcore = require('meritcore-lib');
-const _ = bitcore.deps._;
-const $ = bitcore.util.preconditions;
-const Transaction = bitcore.Transaction;
-const Referral = bitcore.Referral;
+const meritcore = require('meritcore-lib');
+const _ = meritcore.deps._;
+const $ = meritcore.util.preconditions;
+const Transaction = meritcore.Transaction;
+const Referral = meritcore.Referral;
 const EventEmitter = require('events').EventEmitter;
 
 /**
- * A service for Bitcore to enable HTTP routes to query information about the blockchain.
+ * A service for meritcore to enable HTTP routes to query information about the blockchain.
  *
  * @param {Object} options
  * @param {Boolean} options.enableCache - This will enable cache-control headers

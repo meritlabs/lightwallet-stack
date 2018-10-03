@@ -2,12 +2,12 @@
 
 var Message = require('../message');
 var inherits = require('util').inherits;
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var utils = require('../utils');
-var $ = bitcore.util.preconditions;
-var _ = bitcore.deps._;
-var BufferReader = bitcore.encoding.BufferReader;
-var BufferWriter = bitcore.encoding.BufferWriter;
+var $ = meritcore.util.preconditions;
+var _ = meritcore.deps._;
+var BufferReader = meritcore.encoding.BufferReader;
+var BufferWriter = meritcore.encoding.BufferWriter;
 
 /**
  * @param {Array=} arg - An array of addrs

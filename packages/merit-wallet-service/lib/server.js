@@ -9,7 +9,7 @@ const { promisify } = require('util');
 var EmailValidator = require('email-validator');
 var Stringify = require('json-stable-stringify');
 
-var Bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 
 var Common = require('./common');
 var Utils = Common.Utils;
@@ -46,7 +46,7 @@ var localMeritDaemon;
 var log;
 
 /**
- * Creates an instance of the Bitcore Wallet Service.
+ * Creates an instance of the meritcore Wallet Service.
  * @constructor
  */
 function WalletService() {
@@ -347,7 +347,7 @@ WalletService.prototype.recreateWallet = function(opts, cb) {
   let newWallet;
   let parentAddress = '';
   try {
-    pubKey = new Bitcore.PublicKey.fromString(opts.pubKey, opts.network);
+    pubKey = new meritcore.PublicKey.fromString(opts.pubKey, opts.network);
   } catch (ex) {
     return cb(new ClientError('Invalid public key'));
   }
@@ -361,7 +361,7 @@ WalletService.prototype.recreateWallet = function(opts, cb) {
           }
           parentAddress = referrals.reduce((res, referralObj) => {
             if (res) return res;
-            const referral = Bitcore.Referral(referralObj.raw, opts.network);
+            const referral = meritcore.Referral(referralObj.raw, opts.network);
             return (res = referral.address.toString() == opts.rootAddress ? referral.parentAddress.toString() : null);
           }, null);
 
@@ -427,7 +427,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
     opts.n == 1 && opts.supportBIP44AndP2PKH ? Constants.SCRIPT_TYPES.P2PKH : Constants.SCRIPT_TYPES.P2SH;
 
   try {
-    pubKey = new Bitcore.PublicKey.fromString(opts.pubKey);
+    pubKey = new meritcore.PublicKey.fromString(opts.pubKey);
   } catch (ex) {
     return cb(new ClientError('Invalid public key'));
   }
@@ -548,7 +548,7 @@ WalletService.prototype.getRewards = function(opts, cb) {
     return cb(null, {});
   }
 
-  var networkName = Bitcore.Address(addresses[0]).toObject().network;
+  var networkName = meritcore.Address(addresses[0]).toObject().network;
   var bc = this._getBlockchainExplorer(networkName);
 
   bc.getRewards(addresses, function(err, result) {
@@ -739,8 +739,8 @@ WalletService.prototype.getRootAddress = function(cb) {
   this.getWallet({}, (err, wallet) => {
     if (err) return cb(err);
     if (!wallet.copayers || !wallet.copayers[0]) return cb('Wallet is not completed');
-    const xpub = new Bitcore.HDPublicKey(wallet.copayers[0].xPubKey);
-    let address = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, wallet.network);
+    const xpub = new meritcore.HDPublicKey(wallet.copayers[0].xPubKey);
+    let address = meritcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, wallet.network);
     return cb(null, address);
   });
 };
@@ -862,7 +862,7 @@ WalletService.prototype._verifySignature = function(text, signature, pubkey) {
  * @param xPubKey
  */
 WalletService.prototype._verifyRequestPubKey = function(requestPubKey, signature, xPubKey) {
-  var pub = new Bitcore.HDPublicKey(xPubKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
+  var pub = new meritcore.HDPublicKey(xPubKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
   return Utils.verifyMessage(requestPubKey, signature, pub.toString());
 };
 
@@ -1110,7 +1110,7 @@ WalletService.prototype.joinWallet = function(opts, cb) {
   if (_.isEmpty(opts.name)) return cb(new ClientError('Invalid copayer name'));
 
   try {
-    Bitcore.HDPublicKey(opts.xPubKey);
+    meritcore.HDPublicKey(opts.xPubKey);
   } catch (ex) {
     return cb(new ClientError('Invalid extended public key'));
   }
@@ -1409,7 +1409,7 @@ WalletService.prototype._getUtxos = function(addresses, invites, cb) {
   }
 
   if (addresses.length == 0) return cb(null, []);
-  var networkName = Bitcore.Address(addresses[0]).toObject().network;
+  var networkName = meritcore.Address(addresses[0]).toObject().network;
 
   var bc = self._getBlockchainExplorer(networkName);
   bc.getUtxos(addresses, invites, function(err, utxos) {
@@ -1974,7 +1974,7 @@ WalletService.prototype._estimateFee = function(txp) {
 };
 
 WalletService.prototype._checkTx = function(txp) {
-  var bitcoreError;
+  var meritcoreError;
 
   var serializationOpts = {
     disableIsFullySigned: true,
@@ -1985,20 +1985,20 @@ WalletService.prototype._checkTx = function(txp) {
   if (txp.getEstimatedSize() / 1000 > Defaults.MAX_TX_SIZE_IN_KB) return Errors.TX_MAX_SIZE_EXCEEDED;
 
   try {
-    var bitcoreTx = txp.getBitcoreTx();
-    bitcoreError = bitcoreTx.getSerializationError(serializationOpts);
-    if (!bitcoreError) {
-      txp.fee = bitcoreTx.getFee();
+    var meritcoreTx = txp.getmeritcoreTx();
+    meritcoreError = meritcoreTx.getSerializationError(serializationOpts);
+    if (!meritcoreError) {
+      txp.fee = meritcoreTx.getFee();
     }
   } catch (ex) {
-    log.error('Error building Bitcore transaction', ex);
+    log.error('Error building meritcore transaction', ex);
     return ex;
   }
 
-  if (bitcoreError instanceof Bitcore.errors.Transaction.FeeError) return Errors.INSUFFICIENT_FUNDS_FOR_FEE;
+  if (meritcoreError instanceof meritcore.errors.Transaction.FeeError) return Errors.INSUFFICIENT_FUNDS_FOR_FEE;
 
-  if (bitcoreError instanceof Bitcore.errors.Transaction.DustOutputs) return Errors.DUST_AMOUNT;
-  return bitcoreError;
+  if (meritcoreError instanceof meritcore.errors.Transaction.DustOutputs) return Errors.DUST_AMOUNT;
+  return meritcoreError;
 };
 
 WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
@@ -2177,7 +2177,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
         var changeAmount = Math.round(total - txpAmount - fee);
         log.debug('Tx change: ', Utils.formatAmountInMrt(changeAmount));
 
-        var dustThreshold = Math.max(Defaults.MIN_OUTPUT_AMOUNT, Bitcore.Transaction.DUST_AMOUNT);
+        var dustThreshold = Math.max(Defaults.MIN_OUTPUT_AMOUNT, meritcore.Transaction.DUST_AMOUNT);
         if (changeAmount > 0 && changeAmount <= dustThreshold) {
           log.debug(
             'Change below dust threshold (' +
@@ -2353,7 +2353,7 @@ WalletService.prototype._canCreateTx = function(cb) {
 };
 
 WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
-  var dustThreshold = Math.max(Defaults.MIN_OUTPUT_AMOUNT, Bitcore.Transaction.DUST_AMOUNT);
+  var dustThreshold = Math.max(Defaults.MIN_OUTPUT_AMOUNT, meritcore.Transaction.DUST_AMOUNT);
 
   if (_.isEmpty(opts.outputs)) return new ClientError('No outputs were specified');
 
@@ -2368,7 +2368,7 @@ WalletService.prototype._validateOutputs = function(opts, wallet, cb) {
     var toAddress = {};
     try {
       if (checkRequired(output, ['toAddress', 'amount'])) {
-        toAddress = new Bitcore.Address(output.toAddress);
+        toAddress = new meritcore.Address(output.toAddress);
       } else {
         return new ClientError('Argument missing in output #' + (i + 1) + '.');
       }
@@ -2653,7 +2653,7 @@ WalletService.prototype.createTx = function(opts, cb) {
 };
 
 WalletService.prototype._verifyRequestPubKey = function(requestPubKey, signature, xPubKey) {
-  var pub = new Bitcore.HDPublicKey(xPubKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
+  var pub = new meritcore.HDPublicKey(xPubKey).deriveChild(Constants.PATHS.REQUEST_KEY_AUTH).publicKey;
   return Utils.verifyMessage(requestPubKey, signature, pub.toString());
 };
 
@@ -3013,7 +3013,7 @@ WalletService.prototype.signTx = function(opts, cb) {
 
         try {
           if (!txp.sign(self.copayerId, opts.signatures, copayer.xPubKey)) {
-            var raw = txp.getBitcoreTx().uncheckedSerialize();
+            var raw = txp.getmeritcoreTx().uncheckedSerialize();
             return cb(Errors.BAD_SIGNATURES);
           }
         } catch (ex) {
@@ -3337,7 +3337,7 @@ WalletService.prototype._normalizeTxHistory = function(txs) {
         itemAlias = item.scriptPubKey.aliases[0];
       }
 
-      const script = Bitcore.Script.fromHex(item.scriptPubKey.hex);
+      const script = meritcore.Script.fromHex(item.scriptPubKey.hex);
 
       return {
         address: itemAddr,
@@ -3434,7 +3434,7 @@ WalletService.prototype.getUnlockRequests = async function(opts, cb) {
 
     const mapAndFilterReferrals = referralObjs => {
       const referrals = _.map(referralObjs.reverse(), r => {
-        let referral = Bitcore.Referral(r.raw, wallet.network);
+        let referral = meritcore.Referral(r.raw, wallet.network);
         referral.timestamp = r.timestamp;
         return referral;
       });
@@ -3646,7 +3646,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
   function getNormalizedTxs(addresses, from, to, cb) {
     var txs, fromCache, totalItems;
     var useCache = addresses.length >= Defaults.HISTORY_CACHE_ADDRESS_THRESOLD;
-    var network = Bitcore.Address(addresses[0].address).toObject().network;
+    var network = meritcore.Address(addresses[0].address).toObject().network;
 
     fromCache = false;
 
@@ -4212,12 +4212,12 @@ WalletService.prototype.getVault = function(vaultId, cb) {
 WalletService.prototype.createVault = function(opts, cb) {
   const self = this;
 
-  opts.status = Bitcore.Vault.Vault.VaultStates.PENDING;
+  opts.status = meritcore.Vault.Vault.VaultStates.PENDING;
 
   let vaultId = '';
 
   const readableWhitelist = _.map(opts.whitelist, wl => {
-    return Bitcore.Address.fromBuffer(new Buffer(wl.data)).toString();
+    return meritcore.Address.fromBuffer(new Buffer(wl.data)).toString();
   });
   const toStore = _.cloneDeep(opts);
   toStore.whitelist = readableWhitelist;
@@ -4290,7 +4290,7 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
         return {
           ...txData,
           amount: output.amount,
-          type: output.address == new Bitcore.Address(vault.address).toString() ? 'stored' : 'sent',
+          type: output.address == new meritcore.Address(vault.address).toString() ? 'stored' : 'sent',
           address: output.address,
           alias: output.alias,
         };
@@ -4406,7 +4406,7 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
   }
 
   this.storage.fetchVaultByCopayerId(self.copayerId, opts.id, function(err, vault) {
-    var address = new Bitcore.Address(vault.address).toString();
+    var address = new meritcore.Address(vault.address).toString();
     var addresses = [address];
     if (err) return cb(err);
     if (addresses.length == 0) return cb(null, []);
@@ -4491,7 +4491,7 @@ WalletService.prototype.updateVaultInfo = function(opts, cb) {
     if (!vault) return cb(Errors.INVALID_PARAMETERS);
 
     vault = Object.assign(vault, opts);
-    this.getUtxos({ addresses: [new Bitcore.Address(vault.address).toString()] }, (err, coins) => {
+    this.getUtxos({ addresses: [new meritcore.Address(vault.address).toString()] }, (err, coins) => {
       if (err) return cb(err);
       vault.coins = coins;
       vault.amount =

@@ -4,12 +4,12 @@
 
 var should = require('chai').should();
 
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var P2P = require('../');
 var Inventory = P2P.Inventory;
-var BufferUtils = bitcore.util.buffer;
-var BufferWriter = bitcore.encoding.BufferWriter;
-var BufferReader = bitcore.encoding.BufferReader;
+var BufferUtils = meritcore.util.buffer;
+var BufferWriter = meritcore.encoding.BufferWriter;
+var BufferReader = meritcore.encoding.BufferReader;
 
 describe('Inventory', function() {
 

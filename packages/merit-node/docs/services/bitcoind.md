@@ -110,7 +110,7 @@ node.services.bitcoind.generateBlock(numberOfBlocks, function(err, blockHashes) 
 
 **Getting Block Information**
 
-It's possible to query blocks by both block hash and by height. Blocks are given as Node.js Buffers and can be parsed via Bitcore:
+It's possible to query blocks by both block hash and by height. Blocks are given as Node.js Buffers and can be parsed via Meritcore:
 
 ```js
 var blockHeight = 0;

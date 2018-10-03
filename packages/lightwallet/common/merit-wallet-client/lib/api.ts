@@ -2,7 +2,7 @@ import { ENV } from '@app/env';
 import { EasySend, getEasySendURL } from '@merit/common/models/easy-send';
 import { generateMnemonic, mnemonicToHDPrivateKey, validateImportMnemonic } from '@merit/common/utils/mnemonic';
 import * as Bip38 from 'bip38';
-import * as Bitcore from 'meritcore-lib';
+import * as Meritcore from 'meritcore-lib';
 import * as EventEmitter from 'eventemitter3';
 import * as _ from 'lodash';
 import * as preconditions from 'preconditions';
@@ -383,7 +383,7 @@ export class API {
         xpriv = xpriv.deriveChild('m/44\'/0\'/0\'');
         if (xpriv.toString() != 'xprv9ynVfpDwjVTeyQALCLp4EVHwonHHoE37DoUkjsj6A5vxXK1Wh6YEQVPdgdGdtvqWttM4nqgxK8kgmmRD5yfKhWGbD75JGdsDb9yMtozdVc6') return false;
 
-        let xpub = Bitcore.HDPublicKey.fromString('xpub6Cmr5KkqZs1xBtEoJNM4bdEgMp7nCgkxb2QMYG8hiRTwQ7LfEdrUxHi7XrjNxkeuRrNSqHLXHAuwZvqoeASrp5jxjnpMa4d8PFpA9TRxVCd');
+        let xpub = Meritcore.HDPublicKey.fromString('xpub6Cmr5KkqZs1xBtEoJNM4bdEgMp7nCgkxb2QMYG8hiRTwQ7LfEdrUxHi7XrjNxkeuRrNSqHLXHAuwZvqoeASrp5jxjnpMa4d8PFpA9TRxVCd');
         return testMessageSigning(xpriv, xpub);
       }
 
@@ -400,10 +400,10 @@ export class API {
           xpriv = mnemonicToHDPrivateKey(m, opts.passphrase, c.network).toString();
         }
         if (!xpriv) {
-          xpriv = new Bitcore.HDPrivateKey(c.xPrivKey);
+          xpriv = new Meritcore.HDPrivateKey(c.xPrivKey);
         }
         xpriv = xpriv.deriveChild(c.getBaseAddressDerivationPath());
-        let xpub = new Bitcore.HDPublicKey(c.xPubKey);
+        let xpub = new Meritcore.HDPublicKey(c.xPubKey);
 
         return testMessageSigning(xpriv, xpub);
       }
@@ -461,18 +461,18 @@ export class API {
    */
   getRootAddress() {
     if (this.rootAddress) return this.rootAddress;
-    const xpub = new Bitcore.HDPublicKey(this.credentials.xPubKey);
-    return this.rootAddress = Bitcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, this.credentials.network);
+    const xpub = new Meritcore.HDPublicKey(this.credentials.xPubKey);
+    return this.rootAddress = Meritcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, this.credentials.network);
   }
 
   getRootAddressPubkey() {
-    const xpub = new Bitcore.HDPublicKey(this.credentials.xPubKey);
+    const xpub = new Meritcore.HDPublicKey(this.credentials.xPubKey);
     return xpub.deriveChild('m/0/0').publicKey;
   }
 
   getRootPrivateKey(password: string) {
     const derivedKey = this.credentials.getDerivedXPrivKey(password);
-    const xprv = new Bitcore.HDPrivateKey(derivedKey);
+    const xprv = new Meritcore.HDPrivateKey(derivedKey);
     return xprv.deriveChild('m/0/0').privateKey;
   }
 
@@ -533,9 +533,9 @@ export class API {
     wallet.availableInvites = obj.availableInvites || 0;
     wallet.pendingInvites = obj.pendingInvites || 0;
     wallet.network = obj.network || ENV.network;
-    wallet.rootAddress = Bitcore.Address.fromString(obj.rootAddress, wallet.network);
+    wallet.rootAddress = Meritcore.Address.fromString(obj.rootAddress, wallet.network);
     wallet.rootAlias = obj.rootAlias || '';
-    wallet.parentAddress = Bitcore.Address.fromString(obj.rootAddress, wallet.network);
+    wallet.parentAddress = Meritcore.Address.fromString(obj.rootAddress, wallet.network);
     wallet.vaults = obj.vaults || [];
     wallet.communitySize = obj.communitySize || 0;
     return wallet;
@@ -626,7 +626,7 @@ export class API {
         throw e;
       } else {
 
-        const walletPrivKey = new Bitcore.PrivateKey(void 0, this.credentials.network);
+        const walletPrivKey = new Meritcore.PrivateKey(void 0, this.credentials.network);
         const pubkey = walletPrivKey.toPublicKey();
         this.credentials.addWalletPrivateKey(walletPrivKey.toString());
         let rootAddress = this.getRootAddress();
@@ -771,11 +771,11 @@ export class API {
         return reject(new Error('Could not decrypt BIP38 private key: ' + ex));
       }
 
-      let privateKey = new Bitcore.PrivateKey(privateKeyWif, 'livenet');
+      let privateKey = new Meritcore.PrivateKey(privateKeyWif, 'livenet');
       let address = privateKey.publicKey.toAddress().toString();
       let addrBuff = new Buffer(address, 'ascii');
-      let actualChecksum = Bitcore.crypto.Hash.sha256sha256(addrBuff).toString('hex').substring(0, 8);
-      let expectedChecksum = Bitcore.encoding.Base58Check.decode(encryptedPrivateKeyBase58).toString('hex').substring(6, 14);
+      let actualChecksum = Meritcore.crypto.Hash.sha256sha256(addrBuff).toString('hex').substring(0, 8);
+      let expectedChecksum = Meritcore.encoding.Base58Check.decode(encryptedPrivateKeyBase58).toString('hex').substring(6, 14);
 
       if (actualChecksum != expectedChecksum)
         return reject(new Error('Incorrect passphrase'));
@@ -788,7 +788,7 @@ export class API {
   getBalanceFromPrivateKey(_privateKey: string): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      let privateKey = new Bitcore.PrivateKey(_privateKey);
+      let privateKey = new Meritcore.PrivateKey(_privateKey);
       let address = privateKey.publicKey.toAddress();
       return this.getUtxos({
         addresses: address.toString()
@@ -800,7 +800,7 @@ export class API {
 
   buildTxFromPrivateKey(_privateKey: any, destinationAddress: any, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      let privateKey = new Bitcore.PrivateKey(_privateKey);
+      let privateKey = new Meritcore.PrivateKey(_privateKey);
       let address = privateKey.publicKey.toAddress();
 
       return this.getUtxos({
@@ -814,9 +814,9 @@ export class API {
 
         let tx;
         try {
-          let toAddress = Bitcore.Address.fromString(destinationAddress);
+          let toAddress = Meritcore.Address.fromString(destinationAddress);
 
-          tx = new Bitcore.Transaction()
+          tx = new Meritcore.Transaction()
             .from(utxos)
             .to(toAddress, amount)
             .fee(fee)
@@ -1132,10 +1132,10 @@ export class API {
 
   private _buildSecret = function (walletId, walletPrivKey, network) {
     if (_.isString(walletPrivKey)) {
-      walletPrivKey = Bitcore.PrivateKey.fromString(walletPrivKey);
+      walletPrivKey = Meritcore.PrivateKey.fromString(walletPrivKey);
     }
     let widHex = new Buffer(walletId.replace(/-/g, ''), 'hex');
-    let widBase58 = new Bitcore.encoding.Base58(widHex).toString();
+    let widBase58 = new Meritcore.encoding.Base58(widHex).toString();
     return _.padEnd(widBase58, 22, '0') + walletPrivKey.toWIF() + (network == 'testnet' ? 'T' : 'L');
   };
 
@@ -1157,10 +1157,10 @@ export class API {
     try {
       let secretSplit = split(secret, [22, 74]);
       let widBase58 = secretSplit[0].replace(/0/g, '');
-      let widHex = Bitcore.encoding.Base58.decode(widBase58).toString('hex');
+      let widHex = Meritcore.encoding.Base58.decode(widBase58).toString('hex');
       let walletId = split(widHex, [8, 12, 16, 20]).join('-');
 
-      let walletPrivKey = Bitcore.PrivateKey.fromString(secretSplit[1]);
+      let walletPrivKey = Meritcore.PrivateKey.fromString(secretSplit[1]);
       let networkChar = secretSplit[2];
 
       return {
@@ -1188,7 +1188,7 @@ export class API {
     let privs = [];
     let derived = {};
 
-    let xpriv = new Bitcore.HDPrivateKey(derivedXPrivKey);
+    let xpriv = new Meritcore.HDPrivateKey(derivedXPrivKey);
 
     _.each(txp.inputs, function (i) {
       $.checkState(i.path, 'Input derivation path not available (signing transaction)');
@@ -1229,22 +1229,22 @@ export class API {
     });
   };
 
-  _addSignaturesToBitcoreTx(txp: any, t: any, signatures: any, xpub: any): any {
+  _addSignaturesToMeritcoreTx(txp: any, t: any, signatures: any, xpub: any): any {
     if (signatures.length != txp.inputs.length)
       throw new Error('Number of signatures does not match number of inputs');
 
     let i = 0,
-      x = new Bitcore.HDPublicKey(xpub);
+      x = new Meritcore.HDPublicKey(xpub);
 
     _.each(signatures, function (signatureHex) {
       let input = txp.inputs[i];
       try {
-        let signature = Bitcore.crypto.Signature.fromString(signatureHex);
+        let signature = Meritcore.crypto.Signature.fromString(signatureHex);
         let pub = x.deriveChild(txp.inputPaths[i]).publicKey;
         let s = {
           inputIndex: i,
           signature: signature,
-          sigtype: Bitcore.crypto.Signature.SIGHASH_ALL,
+          sigtype: Meritcore.crypto.Signature.SIGHASH_ALL,
           publicKey: pub
         };
         t.inputs[i].addSignature(t, s);
@@ -1265,7 +1265,7 @@ export class API {
 
     let sigs = this._getCurrentSignatures(txp);
     _.each(sigs, function (x) {
-      this._addSignaturesToBitcoreTx(txp, t, x.signatures, x.xpub);
+      this._addSignaturesToMeritcoreTx(txp, t, x.signatures, x.xpub);
     });
   };
 
@@ -1494,7 +1494,7 @@ export class API {
         return reject(new Error('Existing keys were created for a different network'));
       }
 
-      const walletPrivKey = opts.walletPrivKey || new Bitcore.PrivateKey(void 0, network);
+      const walletPrivKey = opts.walletPrivKey || new Meritcore.PrivateKey(void 0, network);
       const pubkey = walletPrivKey.toPublicKey();
       this.credentials.addWalletPrivateKey(walletPrivKey.toString());
       let address = this.getRootAddress();
@@ -1503,7 +1503,7 @@ export class API {
         parentAddress: opts.parentAddress,
         address: address.toString(),
         pubkey: pubkey.toString(),
-        addressType: Bitcore.Address.PayToPublicKeyHashType,
+        addressType: Meritcore.Address.PayToPublicKeyHashType,
         signPrivKey: walletPrivKey,
         network: network,
         alias: opts.alias
@@ -1583,10 +1583,10 @@ export class API {
 
     try {
       // Checking if the parent is address (it could be an alias)
-      Bitcore.encoding.Base58Check.decode(parentAddress);
+      Meritcore.encoding.Base58Check.decode(parentAddress);
     } catch (e) {
       // It's not an address, so let's check if it's a valid alias.
-      if (!Bitcore.Referral.validateAlias(parentAddress)) {
+      if (!Meritcore.Referral.validateAlias(parentAddress)) {
         throw Error('Invalid invite code or alias');
       }
 
@@ -1595,16 +1595,16 @@ export class API {
       parentAddress = parentReferral.address;
     }
 
-    const hash = Bitcore.crypto.Hash.sha256sha256(Buffer.concat([
-      Bitcore.Address.fromString(parentAddress, opts.network).toBufferLean(),
-      Bitcore.Address.fromString(opts.address, opts.network).toBufferLean()
+    const hash = Meritcore.crypto.Hash.sha256sha256(Buffer.concat([
+      Meritcore.Address.fromString(parentAddress, opts.network).toBufferLean(),
+      Meritcore.Address.fromString(opts.address, opts.network).toBufferLean()
     ]));
 
-    const signature = Bitcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
+    const signature = Meritcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
 
     // The referral constructor requires that the parentAddress is in
     // full address form (ripe160); it should not be an alias here.
-    const referral = new Bitcore.Referral({
+    const referral = new Meritcore.Referral({
       parentAddress,
       address: opts.address,
       addressType: opts.addressType,
@@ -1666,7 +1666,7 @@ export class API {
     });
 
     let c = this.credentials;
-    let walletPrivKey = Bitcore.PrivateKey.fromString(c.walletPrivKey);
+    let walletPrivKey = Meritcore.PrivateKey.fromString(c.walletPrivKey);
     let walletId = c.walletId;
     let supportBIP44AndP2PKH = c.derivationStrategy != Constants.DERIVATION_STRATEGIES.BIP45;
     let encWalletName = Utils.encryptMessage(c.walletName || 'recovered wallet', c.sharedEncryptingKey);
@@ -2002,7 +2002,7 @@ export class API {
     $.checkState(this.credentials && this.credentials.isComplete(), 'no authorization data');
     $.checkArgument(opts);
     $.checkArgument(opts.txp, 'txp is required');
-    $.checkState(parseInt(opts.txp.version) >= Bitcore.Transaction.CURRENT_VERSION);
+    $.checkState(parseInt(opts.txp.version) >= Meritcore.Transaction.CURRENT_VERSION);
 
     const hash = Utils.buildTx(opts.txp).uncheckedSerialize();
     const args = {
@@ -2045,7 +2045,7 @@ export class API {
     const unlockOpts = {
       // privKey.toPublicKey().toAddress() and privKey.toAddress() gives two different strings, but daemon treats them
       // as same string ???
-      parentAddress: Bitcore.PrivateKey(this.credentials.walletPrivKey, this.credentials.network).toPublicKey().toAddress().toString(),
+      parentAddress: Meritcore.PrivateKey(this.credentials.walletPrivKey, this.credentials.network).toPublicKey().toAddress().toString(),
       address: address.address,
       pubkey: address.publicKeys[0],
       addressType: 1,
@@ -2097,10 +2097,10 @@ export class API {
   addAccess(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.canSign());
 
-    let reqPrivKey = new Bitcore.PrivateKey(opts.generateNewKey ? null : this.credentials.requestPrivKey);
+    let reqPrivKey = new Meritcore.PrivateKey(opts.generateNewKey ? null : this.credentials.requestPrivKey);
     let requestPubKey = reqPrivKey.toPublicKey().toString();
 
-    let xPriv = new Bitcore.HDPrivateKey(this.credentials.xPrivKey)
+    let xPriv = new Meritcore.HDPrivateKey(this.credentials.xPrivKey)
       .deriveChild(this.credentials.getBaseAddressDerivationPath());
     let sig = Utils.signRequestPubKey(requestPubKey, xPriv);
     let copayerId = this.credentials.copayerId;

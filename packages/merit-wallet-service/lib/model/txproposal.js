@@ -7,7 +7,7 @@ var log = require('npmlog');
 log.debug = log.verbose;
 log.disableColor();
 
-var Bitcore = require('meritcore-lib');
+var Meritcore = require('meritcore-lib');
 
 var Common = require('../common');
 var Constants = Common.Constants;
@@ -22,7 +22,7 @@ TxProposal.create = function(opts) {
 
   var x = new TxProposal();
 
-  x.version = opts.isInvite ? Bitcore.Transaction.INVITE_VERSION : Bitcore.Transaction.CURRENT_VERSION;
+  x.version = opts.isInvite ? Meritcore.Transaction.INVITE_VERSION : Meritcore.Transaction.CURRENT_VERSION;
 
   var now = Date.now();
   x.createdOn = Math.floor(now / 1000);
@@ -30,7 +30,7 @@ TxProposal.create = function(opts) {
   x.walletId = opts.walletId;
   x.creatorId = opts.creatorId;
   x.message = opts.message;
-  x.isInvite = !_.isUndefined(opts.isInvite) ? opts.isInvite : x.version === Bitcore.Transaction.INVITE_VERSION;
+  x.isInvite = !_.isUndefined(opts.isInvite) ? opts.isInvite : x.version === Meritcore.Transaction.INVITE_VERSION;
   x.payProUrl = opts.payProUrl;
   x.changeAddress = opts.changeAddress;
   x.outputs = _.map(opts.outputs, function(output) {
@@ -57,7 +57,7 @@ TxProposal.create = function(opts) {
 
   x.amount = x.getTotalAmount();
   try {
-    x.network = opts.network || Bitcore.Address(x.outputs[0].toAddress).toObject().network;
+    x.network = opts.network || Meritcore.Address(x.outputs[0].toAddress).toObject().network;
   } catch (ex) {}
   $.checkState(_.includes(_.values(Constants.NETWORKS), x.network));
 
@@ -133,7 +133,7 @@ TxProposal.prototype._updateStatus = function() {
 TxProposal.prototype._buildTx = function() {
   var self = this;
 
-  var t = new Bitcore.Transaction();
+  var t = new Meritcore.Transaction();
   $.checkState(_.includes(_.values(Constants.SCRIPT_TYPES), self.addressType));
 
   t.version = this.version;
@@ -159,7 +159,7 @@ TxProposal.prototype._buildTx = function() {
   _.each(self.outputs, function(o) {
     $.checkState(o.script || o.toAddress, 'Output should have either toAddress or script specified');
     if (o.script) {
-      t.addOutput(new Bitcore.Transaction.Output({
+      t.addOutput(new Meritcore.Transaction.Output({
         script: o.script,
         micros: o.amount
       }));
@@ -187,7 +187,7 @@ TxProposal.prototype._buildTx = function() {
     });
   }
 
-  // Validate actual inputs vs outputs independently of Bitcore
+  // Validate actual inputs vs outputs independently of Meritcore
   var totalInputs = _.sumBy(t.inputs, 'output.micros');
   var totalOutputs = _.sumBy(t.outputs, 'micros');
 
@@ -213,14 +213,14 @@ TxProposal.prototype._getCurrentSignatures = function() {
   });
 };
 
-TxProposal.prototype.getBitcoreTx = function() {
+TxProposal.prototype.getMeritcoreTx = function() {
   var self = this;
 
   var t = this._buildTx();
 
   var sigs = this._getCurrentSignatures();
   _.each(sigs, function(x) {
-    self._addSignaturesToBitcoreTx(t, x.signatures, x.xpub);
+    self._addSignaturesToMeritcoreTx(t, x.signatures, x.xpub);
   });
 
   return t;
@@ -231,7 +231,7 @@ TxProposal.prototype.getNetworkName = function() {
 };
 
 TxProposal.prototype.getRawTx = function() {
-  var t = this.getBitcoreTx();
+  var t = this.getMeritcoreTx();
 
   return t.uncheckedSerialize();
 };
@@ -332,24 +332,24 @@ TxProposal.prototype.addAction = function(copayerId, type, comment, signatures, 
   this._updateStatus();
 };
 
-TxProposal.prototype._addSignaturesToBitcoreTx = function(tx, signatures, xpub) {
+TxProposal.prototype._addSignaturesToMeritcoreTx = function(tx, signatures, xpub) {
   var self = this;
 
   if (signatures.length != this.inputs.length)
     throw new Error('Number of signatures does not match number of inputs');
 
   var i = 0,
-    x = new Bitcore.HDPublicKey(xpub);
+    x = new Meritcore.HDPublicKey(xpub);
 
   _.each(signatures, function(signatureHex) {
     var input = self.inputs[i];
     try {
-      var signature = Bitcore.crypto.Signature.fromString(signatureHex);
+      var signature = Meritcore.crypto.Signature.fromString(signatureHex);
       var pub = x.deriveChild(self.inputPaths[i]).publicKey;
       var s = {
         inputIndex: i,
         signature: signature,
-        sigtype: Bitcore.crypto.Signature.SIGHASH_ALL,
+        sigtype: Meritcore.crypto.Signature.SIGHASH_ALL,
         publicKey: pub,
       };
       tx.inputs[i].addSignature(tx, s);
@@ -365,8 +365,8 @@ TxProposal.prototype._addSignaturesToBitcoreTx = function(tx, signatures, xpub) 
 TxProposal.prototype.sign = function(copayerId, signatures, xpub) {
   try {
     // Tests signatures are OK
-    var tx = this.getBitcoreTx();
-    this._addSignaturesToBitcoreTx(tx, signatures, xpub);
+    var tx = this.getMeritcoreTx();
+    this._addSignaturesToMeritcoreTx(tx, signatures, xpub);
 
     this.addAction(copayerId, 'accept', null, signatures, xpub);
 

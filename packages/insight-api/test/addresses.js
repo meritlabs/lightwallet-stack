@@ -3,7 +3,7 @@ var sinon = require('sinon');
 var should = require('should');
 var AddressController = require('../lib/addresses');
 var _ = require('lodash');
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 
 var txinfos = {
   totalCount: 2,

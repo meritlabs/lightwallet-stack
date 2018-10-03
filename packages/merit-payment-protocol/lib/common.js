@@ -1,16 +1,16 @@
 'use strict';
 
-var bitcore = require('meritcore-lib');
+var meritcore = require('meritcore-lib');
 var protobufjs = require('protobufjs/dist/protobuf');
 var RootCerts = require('./rootcerts');
 var rfc5280 = require('asn1.js/rfc/5280');
 
-var PublicKey = bitcore.PublicKey;
-var PrivateKey = bitcore.PrivateKey;
-var Signature = bitcore.crypto.Signature;
-var ECDSA = bitcore.crypto.ECDSA;
-var sha256sha256 = bitcore.crypto.Hash.sha256sha256;
-var varintBufNum = bitcore.encoding.BufferWriter.varintBufNum;
+var PublicKey = meritcore.PublicKey;
+var PrivateKey = meritcore.PrivateKey;
+var Signature = meritcore.crypto.Signature;
+var ECDSA = meritcore.crypto.ECDSA;
+var sha256sha256 = meritcore.crypto.Hash.sha256sha256;
+var varintBufNum = meritcore.encoding.BufferWriter.varintBufNum;
 
 // BIP 70 - payment protocol
 function PaymentProtocol() {
