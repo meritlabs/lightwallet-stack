@@ -12,7 +12,7 @@ import { API as Client } from './api';
 import { Verifier } from './verifier';
 import { Utils } from './common/utils';
 import * as sjcl from 'sjcl';
-import * as Bitcore from 'meritcore-lib'; //Yuckity Yuck
+import * as Meritcore from 'meritcore-lib'; //Yuckity Yuck
 
 export class MeritClient extends Client {
   // I'm not sure that there is any benefit to doing this in the constructor
@@ -21,7 +21,7 @@ export class MeritClient extends Client {
   public Verifier: any = Verifier;
   public Utils: any = Utils;
   public sjcl: any = sjcl;
-  public Bitcore: Bitcore = Bitcore;
+  public Meritcore: Meritcore = Meritcore;
   public sdsa:any;
 
   constructor(opts:any = {}) {

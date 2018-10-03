@@ -2,11 +2,11 @@
 
 var createError = require('errno').create;
 
-var BitcoreNodeError = createError('BitcoreNodeError');
+var MeritcoreNodeError = createError('MeritcoreNodeError');
 
-var RPCError = createError('RPCError', BitcoreNodeError);
+var RPCError = createError('RPCError', MeritcoreNodeError);
 
 module.exports = {
-  Error: BitcoreNodeError,
+  Error: MeritcoreNodeError,
   RPCError: RPCError
 };

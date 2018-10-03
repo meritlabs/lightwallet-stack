@@ -6,7 +6,7 @@ var async = require('async');
 var log = require('npmlog');
 log.debug = log.verbose;
 
-var Bitcore = require('meritcore-lib');
+var Meritcore = require('meritcore-lib');
 var BlockchainExplorer = require('./blockchainexplorer');
 var Storage = require('./storage');
 var MessageBroker = require('./messagebroker');

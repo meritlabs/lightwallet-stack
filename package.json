@@ -1,6 +1,6 @@
 {
-  "name": "merit-lighttwallet-stack",
-  "description": "A full Merit node build with Bitcore",
+  "name": "merit-lightwallet-stack",
+  "description": "Merit Lightwallet Stack",
   "license": "MIT",
   "readme": "README.md",
   "authors": [

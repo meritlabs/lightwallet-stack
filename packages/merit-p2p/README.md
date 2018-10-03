@@ -1,4 +1,4 @@
-Bitcore P2P
+Meritcore P2P
 =======
 
 Merit P2P prottocol library.

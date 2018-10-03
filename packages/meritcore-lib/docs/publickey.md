@@ -2,7 +2,7 @@
 
 Represents a Merit public key and is needed to be able to receive MRT, as is usually represented as a Merit [Address](address.md).
 
-A PublicKey in Bitcore is an immutable object and can be instantiated from a [Point](crypto.md), string, [PrivateKey](privatekey.md), Buffer or a [BN](crypto.md).
+A PublicKey in Meritcore is an immutable object and can be instantiated from a [Point](crypto.md), string, [PrivateKey](privatekey.md), Buffer or a [BN](crypto.md).
 
 ## Instantiate a Public Key
 Here is how to instantiate a public key:

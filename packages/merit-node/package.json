@@ -1,6 +1,6 @@
 {
   "name": "merit-node",
-  "description": "Full node with extended capabilities using Bitcore and Merit Core",
+  "description": "Full node with extended capabilities using Merit Core",
   "authors": [
     "Merit Foundation",
     "BitPay"
