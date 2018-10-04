@@ -52,7 +52,7 @@ export class VaultSpendView {
       await this.vaultsService.sendFromVault(this.vault, amount, address);
       this.navCtrl.pop();
     } catch (e) {
-      console.log(e);
+      console.error(e);
       this.toastCtrl.error(e.message || 'Send failed');
     } finally {
       loader.dismiss();

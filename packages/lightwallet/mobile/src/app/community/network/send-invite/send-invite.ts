@@ -160,7 +160,6 @@ export class SendInviteView {
   }
 
   private toSendAmount(address) {
-    console.log(address);
     this.navCtrl.push('SendInviteAmountView', { address: address });
   }
 

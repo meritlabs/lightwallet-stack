@@ -78,8 +78,8 @@ export class ReceiveView implements OnInit {
         this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
       ];
     } catch (err) {
-      console.log('Error reading the config service.');
-      console.log(err);
+      console.error('Error reading the config service.');
+      console.error(err);
     }
   }
 
@@ -90,7 +90,7 @@ export class ReceiveView implements OnInit {
       this.selectWallet(wallets[0]);
     } catch (err) {
       if (err.text)
-        console.log('Could not initialize: ', err.text);
+        console.error('Could not initialize: ', err.text);
     }
   }
 

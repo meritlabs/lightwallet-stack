@@ -100,7 +100,6 @@ export class ReceiveView {
     } else {
       this.isFooterCollapsed = true;
       const value = -1 * this.footerHeight + this.footerBottom + 40;
-      console.log('Value is ', value);
       this.rnd.setStyle(el, 'bottom', value + 'px');
     }
   }

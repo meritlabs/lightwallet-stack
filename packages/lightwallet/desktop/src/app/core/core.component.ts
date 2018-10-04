@@ -293,7 +293,7 @@ export class CoreView implements OnInit, AfterViewInit {
         })
       );
     } catch (err) {
-      console.log(err);
+      console.error(err);
       this.toastCtrl.error('There was an error cancelling your transaction.');
     }
   }
@@ -315,7 +315,7 @@ export class CoreView implements OnInit, AfterViewInit {
         })
       );
     } catch (err) {
-      console.log(err);
+      console.error(err);
       this.toastCtrl.error('There was an error retrieving your incoming payment.');
     }
   }

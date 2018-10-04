@@ -50,7 +50,7 @@ export class VaultCreateConfirmView {
       await this.vaultsService.createVault(this.vaultData);
       this.navCtrl.popToRoot();
     } catch (e) {
-      console.log(e);
+      console.error(e);
       this.toastCtrl.error(e.message || 'Failed to create vault');
     } finally  {
       loader.dismiss();

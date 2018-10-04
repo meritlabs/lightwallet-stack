@@ -58,7 +58,6 @@ export class HistoryListComponent {
       !tx.isWalletUnlock &&
       tx.walletId === primaryWallet.id
     )) {
-      console.log('~~~ Got a mined invite');
       this.store.dispatch(new SetTaskStatus(this.mineInviteTaskSlug, ProgressStatus.Complete));
     }
   }
