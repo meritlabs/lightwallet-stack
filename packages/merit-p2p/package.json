@@ -69,7 +69,7 @@
     "socks5-client": "^0.3.6"
   },
   "devDependencies": {
-    "bitcore-build": "git://github.com/bitpay/bitcore-build.git",
+    "merit-build": "^0.99.0",
     "brfs": "^1.2.0",
     "chai": "~1.10.0",
     "gulp": "^3.9.1",
