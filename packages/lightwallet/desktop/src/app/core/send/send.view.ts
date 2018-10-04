@@ -153,7 +153,7 @@ export class SendView implements OnInit, AfterViewInit {
         return fromPromise(this.createTx(formData))
           .pipe(
             catchError((err: any) => {
-              console.log(err);
+              console.error(err);
               this.error = err.message || 'Unknown error';
               return of({} as ISendTxData);
             }),

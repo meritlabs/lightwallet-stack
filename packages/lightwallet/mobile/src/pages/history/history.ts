@@ -90,7 +90,7 @@ export class HistoryView {
       this.txs = this.txs.concat(txs);
       await this.formatHistory();
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
     infiniter.complete();
   }

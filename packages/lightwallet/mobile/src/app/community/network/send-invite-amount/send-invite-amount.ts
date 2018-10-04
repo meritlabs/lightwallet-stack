@@ -110,7 +110,7 @@ export class SendInviteAmountView {
       this.wallet.availableInvites -= this.formData.amount;
 
     } catch (e) {
-      console.log(e);
+      console.error(e);
       this.toastCtrl.error('Failed to send invite');
     } finally {
       loader.dismiss();

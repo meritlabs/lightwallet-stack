@@ -145,7 +145,7 @@ export class SendInviteView {
       this.formData.markAsPristine();
       this.toastCtrl.success('Invite has been sent!');
     } catch (e) {
-      console.log(e);
+      console.error(e);
       this.toastCtrl.error(e.message || 'Failed to send invite');
     } finally {
       this.loader.hide();
@@ -162,7 +162,7 @@ export class SendInviteView {
     this.toastCtrl.success('Copied to clipboard');
   }
 
-  isEmailGlobalSendDestination(control) {   
+  isEmailGlobalSendDestination(control) {
     return control.valid && SendValidator.isEmail(control.value);
   }
 }

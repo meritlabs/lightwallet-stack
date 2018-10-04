@@ -19,7 +19,7 @@ export class AliasErrorMessagePipe {
     if (value.AliasInUse)
       return 'Alias is already in use';
 
-    console.log('Unhandled alias error: ', value);
+    console.error('Unhandled alias error: ', value);
     return 'Unknown error';
   }
 }

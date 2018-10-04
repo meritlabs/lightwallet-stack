@@ -79,59 +79,6 @@ describe('[Mobile] Send flow', () => {
       const el = confirmViewEl.element(by.css('.big-header'));
       expect(el.getText()).toContain('0.01 MRT');
     });
-
-    // it('should confirm transaction after sliding slider', async() => {
-    //   const sliderEl = confirmViewEl.element(by.css('slide-to-action .slider'));
-    //   const getLocation = async () => {
-    //     const location = await sliderEl.getLocation();
-    //     return {
-    //       x: parseInt(location.x),
-    //       y: parseInt(location.y)
-    //     };
-    //   };
-    //   //
-    //   // browser.touchActions()
-    //   //   .tapAndHold(await getLocation())
-    //   //   .move({
-    //   //     x: 311,
-    //   //     y: (await getLocation()).y
-    //   //   })
-    //   //   .release(await getLocation())
-    //   //   .perform();
-    //
-    //   // browser.actions()
-    //   //   .mouseDown(sliderEl)
-    //   //   .mouseMove(sliderEl, { x: 311, y: 0 }) // pixel 2
-    //   //   .mouseUp()
-    //   //   .perform();
-    // });
-    //
-    // it('should show an alert dialog to confirm again', () => {
-    //   const el = element(by.css('ion-alert'));
-    //   browser.wait(EC.visibilityOf(el), 3000, 'Element was not visible within 3s');
-    //   expect(el.isDisplayed()).toBeTruthy();
-    //   expect(el.element(by.css('.alert-title')).getText()).toContain('Confirm Send');
-    //
-    //   const okEl = el.element(by.css('.alert-button-group .alert-button:last-child'));
-    //   expect(okEl.isDisplayed()).toBeTruthy();
-    //   expect(okEl.isEnabled()).toBeTruthy();
-    //   okEl.click();
-    // });
-    //
-    // it('should show a view to copy Global Send link', async () => {
-    //   const el = element(by.css('view-easy-send-share'));
-    //   browser.wait(EC.visibilityOf(el));
-    //   expect(el.isDisplayed()).toBeTruthy('View easy send share is not visible');
-    //
-    //   const linkEl = el.element(by.css('ion-card-content a'));
-    //   expect(linkEl.isDisplayed()).toBeTruthy('Global send link is not displayed');
-    //   const link = await linkEl.getText();
-    //   console.log('GLOBAL LINK IS: ', link);
-    //
-    //   const backButton = el.element(by.css('.action-button'));
-    //   expect(backButton.isDisplayed()).toBeTruthy('Back button is not found');
-    //   expect(backButton.isEnabled()).toBeTruthy('Back button is not enabled');
-    // });
   });
 
   describe('> Classic send', () => {
