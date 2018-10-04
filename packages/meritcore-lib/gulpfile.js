@@ -1,5 +1,3 @@
+var meritTasks = require('merit-build');
 
-
-var bitcoreTasks = require('bitcore-build');
-
-bitcoreTasks('lib');
+meritTasks('lib');

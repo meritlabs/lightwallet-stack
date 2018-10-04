@@ -1,0 +1,72 @@
+{
+  "name": "merit-build",
+  "version": "0.99.0",
+  "description": "A helper for common tasks to build Merit Lightwallet Stack modules'",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meritlabs/lightwallet-stack"
+  },
+  "keywords": [
+    "merit",
+    "lws",
+    "bitcore"
+  ],
+  "contributors": [
+    {
+      "name": "MeritLabs Team",
+      "email": "support@merit.me"
+    },
+    {
+      "name": "Esteban Ordano",
+      "email": "esteban@bitpay.com"
+    },
+    {
+      "name": "Manuel Araoz",
+      "email": "maraoz@bitpay.com"
+    },
+    {
+      "name": "Braydon Fuller",
+      "email": "braydon@bitpay.com"
+    },
+    {
+      "name": "Yemel Jardi",
+      "email": "yemel@bitpay.com"
+    },
+    {
+      "name": "Matias Alejo Garcia",
+      "email": "ematiu@gmail.com"
+    }
+  ],
+  "license": "MIT",
+  "authors": [
+    "Merit Foundation",
+    "BitPay"
+  ],
+  "homepage": "https://github.com/meritlabs/lightwallet-stack",
+  "dependencies": {
+    "brfs": "^2.0.1",
+    "browserify": "^16.2.3",
+    "chai": "^4.2.0",
+    "fancy-log": "^1.3.2",
+    "gulp": "^3.9.1",
+    "gulp-bump": "^3.1.1",
+    "gulp-git": "^2.8.0",
+    "gulp-jshint": "^2.1.0",
+    "gulp-mocha": "^6.0.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-shell": "^0.6.5",
+    "gulp-uglify": "^3.0.1",
+    "karma": "^3.0.0",
+    "karma-detect-browsers": "^2.3.3",
+    "karma-mocha": "^1.3.0",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "lodash": "^4.17.4",
+    "mocha": "^5.2.0",
+    "plato": "^1.7.0",
+    "run-sequence": "^2.2.1"
+  }
+}
