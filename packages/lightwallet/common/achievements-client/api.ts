@@ -74,7 +74,7 @@ export class MeritAchivementClient {
 
       this.credentials = Credentials.fromObj(obj);
     } catch (ex) {
-      console.log('Invalid backup: ', ex);
+      console.error('Invalid backup: ', ex);
       throw MWCErrors.INVALID_BACKUP;
     }
 
@@ -254,10 +254,6 @@ export class MeritAchivementClient {
     if (!debug) {
       message += timestamp;
     }
-
-    console.log('========');
-    console.log(`MSG: ${message}`);
-    console.log('========');
 
     const signature = Meritcore.Message(message).sign(privkey);
 

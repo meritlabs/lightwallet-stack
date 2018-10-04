@@ -112,7 +112,7 @@ export class PersistenceService2 {
       await this.setEasySends(easySends);
       return true;
     } else {
-      console.log('Couldn\'t find EasySend to cancel', scriptAddress);
+      console.error('Couldn\'t find EasySend to cancel', scriptAddress);
       return false;
     }
   }

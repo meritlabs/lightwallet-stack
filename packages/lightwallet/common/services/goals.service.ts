@@ -104,7 +104,7 @@ export class GoalsService {
 
       return token;
     } catch (err) {
-      console.log('Error getting token for Goals API', err);
+      console.error('Error getting token for Goals API', err);
     }
   }
 
@@ -114,7 +114,7 @@ export class GoalsService {
     try {
       progress = await this.client.getData('/progress/');
     } catch (err) {
-      console.log('Error getting progress: ', err);
+      console.error('Error getting progress: ', err);
     }
 
     if (!progress) {
@@ -219,7 +219,7 @@ export class GoalsService {
       const settings: IGoalSettings = await this.client.getData('/settings/');
       return settings;
     } catch (err) {
-      console.log('Unable to get settings', err);
+      console.error('Unable to get settings', err);
     }
 
     return DEFAULT_SETTINGS;
@@ -249,7 +249,7 @@ export class GoalsService {
         });
       });
     } catch (err) {
-      console.log('Error fetching goals', err);
+      console.error('Error fetching goals', err);
     }
   }
 
