@@ -19,7 +19,7 @@ export class AddressErrorMessagePipe {
     if (value.AddressNotFound)
       return 'Address or alias not found';
 
-    console.log('Unhandled address error: ', value);
+    console.error('Unhandled address error: ', value);
     return 'Unknown error';
   }
 }

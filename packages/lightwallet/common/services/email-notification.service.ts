@@ -9,9 +9,7 @@ export class EmailNotificationsService {
 
   constructor(private configService: ConfigService,
               private profileService: ProfileService,
-              private walletService: WalletService) {
-    console.log('Hello EmailNotificationsService Service');
-  }
+              private walletService: WalletService) {}
 
   async updateEmail(opts: any) {
     opts = opts || {};
