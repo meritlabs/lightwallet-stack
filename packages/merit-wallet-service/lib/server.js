@@ -1985,7 +1985,7 @@ WalletService.prototype._checkTx = function(txp) {
   if (txp.getEstimatedSize() / 1000 > Defaults.MAX_TX_SIZE_IN_KB) return Errors.TX_MAX_SIZE_EXCEEDED;
 
   try {
-    var meritcoreTx = txp.getmeritcoreTx();
+    var meritcoreTx = txp.getMeritcoreTx();
     meritcoreError = meritcoreTx.getSerializationError(serializationOpts);
     if (!meritcoreError) {
       txp.fee = meritcoreTx.getFee();
@@ -3013,7 +3013,7 @@ WalletService.prototype.signTx = function(opts, cb) {
 
         try {
           if (!txp.sign(self.copayerId, opts.signatures, copayer.xPubKey)) {
-            var raw = txp.getmeritcoreTx().uncheckedSerialize();
+            var raw = txp.getMeritcoreTx().uncheckedSerialize();
             return cb(Errors.BAD_SIGNATURES);
           }
         } catch (ex) {
