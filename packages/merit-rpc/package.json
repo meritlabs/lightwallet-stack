@@ -46,8 +46,10 @@
   "scripts": {
     "test": "node_modules/.bin/mocha test -R spec"
   },
+  "dependencies": {
+    "async": "^2.6.0"
+  },
   "devDependencies": {
-    "async": "^2.6.0",
     "chai": "^1.10.0",
     "mocha": "^2.1.0",
     "sinon": "^1.12.2"
