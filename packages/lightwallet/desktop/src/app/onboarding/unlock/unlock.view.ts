@@ -49,6 +49,7 @@ export class UnlockComponent {
   };
   invite = '';
   currentUnlockDialogStep: number = 0;
+  gbsUnlock = false;
 
   get inviteCode() {
     return this.formData.get('inviteCode');
@@ -77,6 +78,8 @@ export class UnlockComponent {
     this.easyReceipt = receipts.pop();
 
     let inviteCode;
+
+    this.gbsUnlock = getQueryParam('source') === 'gbs';
 
     if (this.easyReceipt) {
       inviteCode = this.easyReceipt.parentAddress;
@@ -146,15 +149,17 @@ export class UnlockComponent {
       this.loadingCtrl.hide();
     });
   }
-  unlockStep(val) {
-    if (val === 'next') {
-      this.currentUnlockDialogStep++;
-    } else if (val === 'prev') {
-      this.currentUnlockDialogStep--;
-      if (this.currentUnlockDialogStep < 0) {
-        this.showAgreement = false;
-        this.currentUnlockDialogStep = 0;
-      }
+  unlockStep(dir) {
+    let inc = dir === 'next' ? 1 : -1;
+    this.currentUnlockDialogStep += inc;
+
+    if (this.gbsUnlock && this.currentUnlockDialogStep === 1) {
+      this.currentUnlockDialogStep += inc;
+    }
+
+    if (this.currentUnlockDialogStep < 0) {
+      this.showAgreement = false;
+      this.currentUnlockDialogStep = 0;
     }
   }
 }
