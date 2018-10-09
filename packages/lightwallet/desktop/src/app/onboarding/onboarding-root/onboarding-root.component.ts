@@ -1,6 +1,7 @@
 import { Component, ViewEncapsulation, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
+import { getQueryParam } from '@merit/common/utils/url';
 
 @Component({
   selector: 'view-onboarding-root',
@@ -18,7 +19,12 @@ export class OnboardingRootComponent implements OnInit {
   async ngOnInit() {
     const receipts = await this.easyReceiveService.getPendingReceipts();
     if (receipts && receipts[0]) {
-      this.router.navigateByUrl('onboarding/unlock');
+      const source = getQueryParam('source');
+      let query = '';
+      if (source) {
+        query = '?source=' + source;
+      }
+      this.router.navigateByUrl(`onboarding/unlock${query}`);
     } 
   }
 

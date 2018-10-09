@@ -9,6 +9,7 @@ export const ENV = {
   feeLevel: 'superEconomy',
   easyUrl: 'http://merit.test-app.link/',
   discordBotApplication: 'https://test-merit-invite-discord-bot.herokuapp.com/get-invite/?source=dlw',
+  gbsUrl: 'https://testnet.gbs.merit.me',
   fbSDK: {
     appId: '335944163815670',
     status: true,
