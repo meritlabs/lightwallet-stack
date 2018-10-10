@@ -132,7 +132,7 @@ export class UnlockComponent {
         })
       );
 
-      win.location.href = `${ENV.gbsUrl}?unlock=${alias}`;
+      win.location.href = `${ENV.gbsUrl}/unlock?alias=${wallet.rootAlias}&address=${wallet.rootAddress.toString()}`;
 
       // good to go
       this.loadingCtrl.hide();
