@@ -13,6 +13,7 @@ import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 @IonicPage({
   segment: 'alias/:parentAddress',
@@ -44,7 +45,8 @@ export class AliasView {
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
               private emailNotificationService: EmailNotificationsService,
-              private addressService: AddressService) {
+              private addressService: AddressService,
+              private inAppBrowser: InAppBrowser ) {
   }
 
   async ionViewDidLoad() {
@@ -104,15 +106,6 @@ export class AliasView {
       return false;
     }
 
-    const isGbs = this.navParams.get('source') === 'gbs';
-
-    let win;
-    
-    if (isGbs) {
-       win = window.open('', 'UnlockGBS', 'width=580,height=340,0,status=0,');
-       win.blur();
-    }
-
     let { alias } = this.formData;
 
     alias = (alias && isAlias(alias))? alias.slice(1) : alias;
@@ -131,14 +124,15 @@ export class AliasView {
         this.logger.info('Subscribing to long polling for default wallet');
         await this.emailNotificationService.init();
         this.pollingNotificationService.enablePolling(wallet);
+      }      
+
+      let unlockUrl:string;
+
+      if (this.navParams.get('gbs')) {
+        unlockUrl = `${ENV.gbsUrl}/unlock?alias=${wallet.rootAlias}&address=${wallet.rootAddress.toString()}&mlw=true`;
       }
 
-      if (isGbs) {
-        win.location.href = `${ENV.gbsUrl}/unlock?alias=${wallet.rootAlias}&address=${wallet.rootAddress.toString()}`;
-        win.focus();
-      }
-
-      await this.navCtrl.setRoot('BackupView', { mnemonic: wallet.getMnemonic() });
+      await this.navCtrl.setRoot('BackupView', { mnemonic: wallet.getMnemonic(), unlockUrl: unlockUrl });
       await this.navCtrl.popToRoot();
     } catch (err) {
       if (err == MWCErrors.INVALID_REFERRAL) this.unlockState = 'fail';

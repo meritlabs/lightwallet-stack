@@ -160,7 +160,8 @@ export class MeritLightWallet {
     const source = getQueryParam('source', search);
 
     if (invitation && !this.authorized) {
-      await this.nav.setRoot('UnlockView', { ...invitation, source });
+     
+      await this.nav.setRoot('UnlockView', { ...invitation });
     } else {
 
       await this.nav.setRoot(this.authorized ? 'TransactView' : 'OnboardingView');
@@ -169,8 +170,12 @@ export class MeritLightWallet {
       this.splashScreen.hide();
 
       const receipt = await this.loadEasySend();
-      if (receipt && !this.authorized) {
-        await this.nav.setRoot('UnlockView', { source });
+      if (receipt && !this.authorized) {   
+        let isGBS:boolean;
+
+        if(source === 'gbs') isGBS = true;
+
+        await this.nav.setRoot('UnlockView', {gbs: isGBS});
       }
     }
   }

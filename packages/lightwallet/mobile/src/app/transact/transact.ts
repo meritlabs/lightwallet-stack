@@ -58,6 +58,11 @@ export class TransactView {
   }
 
   async ngOnInit() {
+
+    if(this.navParams.get('unlockUrl')) {
+      window.location.href = this.navParams.get('unlockUrl');
+    }
+
     this.subs.push(
       this.easyReceiveService.easyReceipts$
         .pipe(
