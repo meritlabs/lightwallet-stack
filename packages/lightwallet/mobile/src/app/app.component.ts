@@ -16,6 +16,7 @@ import { DeepLinkService } from '@merit/mobile/app/core/deep-link.service';
 import { OnboardingView } from '@merit/mobile/app/onboard/onboarding.view';
 import { TransactView } from '@merit/mobile/app/transact/transact';
 import { Events, ModalController, Nav, Platform } from 'ionic-angular';
+import { getQueryParam } from '@merit/common/utils/url';
 
 @Component({
   templateUrl: 'app.html'
@@ -77,18 +78,21 @@ export class MeritLightWallet {
   }
 
   private parseInviteParams() {
-    let search = window.location.search;
+    let search = window.location.search || window.location.hash;
 
-    if (search && search.indexOf('invite') !== -1) {
-      let address = cleanAddress(search.split('?invite=')[1]);
+    const invite = getQueryParam('invite', search);
+
+    if (invite) {
+      let address = cleanAddress(invite);
       window.history.replaceState({}, document.title, document.location.pathname);
-
 
       if (!this.addressService.couldBeAlias(address) && !this.addressService.isAddress(address)) return;
 
       const name = this.addressService.couldBeAlias(address) ? '@' + address : 'Someone';
       return { address, name };
     }
+
+    return null;
   }
 
   private async loadEasySendInBrowser() {
@@ -150,9 +154,13 @@ export class MeritLightWallet {
 
     this.authorized = await this.profileService.isAuthorized();
 
+    const search = window.location.search || window.location.hash;
+
     const invitation = this.parseInviteParams();
+    const source = getQueryParam('source', search);
+
     if (invitation && !this.authorized) {
-      await this.nav.setRoot('UnlockView', { invitation });
+      await this.nav.setRoot('UnlockView', { ...invitation, source });
     } else {
 
       await this.nav.setRoot(this.authorized ? 'TransactView' : 'OnboardingView');
@@ -162,7 +170,7 @@ export class MeritLightWallet {
 
       const receipt = await this.loadEasySend();
       if (receipt && !this.authorized) {
-        await this.nav.setRoot('UnlockView');
+        await this.nav.setRoot('UnlockView', { source });
       }
     }
   }

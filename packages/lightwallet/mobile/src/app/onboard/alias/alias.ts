@@ -1,6 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { Content, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
+
+import { ENV } from '@app/env';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ConfigService } from '@merit/common/services/config.service';
@@ -102,6 +104,15 @@ export class AliasView {
       return false;
     }
 
+    const isGbs = this.navParams.get('source') === 'gbs';
+
+    let win;
+    
+    if (isGbs) {
+       win = window.open('', 'UnlockGBS', 'width=580,height=340,0,status=0,');
+       win.blur();
+    }
+
     let { alias } = this.formData;
 
     alias = (alias && isAlias(alias))? alias.slice(1) : alias;
@@ -120,6 +131,11 @@ export class AliasView {
         this.logger.info('Subscribing to long polling for default wallet');
         await this.emailNotificationService.init();
         this.pollingNotificationService.enablePolling(wallet);
+      }
+
+      if (isGbs) {
+        win.location.href = `${ENV.gbsUrl}/unlock?alias=${wallet.rootAlias}&address=${wallet.rootAddress.toString()}`;
+        win.focus();
       }
 
       await this.navCtrl.setRoot('BackupView', { mnemonic: wallet.getMnemonic() });
