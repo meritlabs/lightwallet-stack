@@ -1,7 +1,7 @@
 import { ENV } from '@app/env';
 
-export function parseQuery(): object {
-  const query = location.search.substr(1);
+export function parseQuery(query: string): object {
+  query = query.substr(query.indexOf('?') + 1);
 
   return query
     .split('&')
@@ -11,8 +11,8 @@ export function parseQuery(): object {
     }, {});
 }
 
-export function getQueryParam(key: string): string {
-  return parseQuery()[key] || '';
+export function getQueryParam(key: string, query: string = window.location.search): string {
+  return parseQuery(query)[key] || '';
 }
 
 export function getWalletUrl() {
