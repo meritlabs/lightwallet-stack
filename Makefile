@@ -13,6 +13,7 @@ prepare-lightwallet:
 	lerna bootstrap
 	cd ./packages/lightwallet/mobile/ && mkdir -p www && cordova platform add android && cordova prepare android
 	cd ./packages/lightwallet/mobile/ && cordova platform add ios && cordova prepare ios
+	cp -f ./packages/lightwallet/mobile/GoogleService-Info.plist ./packages/lightwallet/mobile/platforms/ios/Merit/Resources/Resources/GoogleService-Info.plist
 
 .PHONY: start-lightwallet
 start-lightwallet:
