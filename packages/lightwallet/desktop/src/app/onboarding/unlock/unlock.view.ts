@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
+import { ENV } from '@app/env';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { IRootAppState } from '@merit/common/reducers';
 import { UpdateAppAction } from '@merit/common/reducers/app.reducer';
@@ -14,7 +15,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { WalletService } from '@merit/common/services/wallet.service';
-import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
+import { cleanAddress } from '@merit/common/utils/addresses';
 import { AddressValidator } from '@merit/common/validators/address.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { getQueryParam } from '@merit/common/utils/url';
@@ -49,6 +50,7 @@ export class UnlockComponent {
   };
   invite = '';
   currentUnlockDialogStep: number = 0;
+  gbsUnlock = false;
 
   get inviteCode() {
     return this.formData.get('inviteCode');
@@ -77,6 +79,8 @@ export class UnlockComponent {
     this.easyReceipt = receipts.pop();
 
     let inviteCode;
+
+    this.gbsUnlock = getQueryParam('source') === 'gbs';
 
     if (this.easyReceipt) {
       inviteCode = this.easyReceipt.parentAddress;
@@ -111,6 +115,8 @@ export class UnlockComponent {
     inviteCode = cleanAddress(inviteCode);
 
     try {
+      const win = window.open('', 'UnlockGBS', 'width=580,height=340,0,status=0,');
+
       const wallet = await this.walletService.createDefaultWallet(inviteCode, alias);
       this.logger.info('Created a new default wallet!');
       await this.pushNotificationsService.subscribe(wallet);
@@ -125,6 +131,8 @@ export class UnlockComponent {
           authorized: true,
         })
       );
+
+      win.location.href = `${ENV.gbsUrl}/unlock?alias=${wallet.rootAlias}&address=${wallet.rootAddress.toString()}`;
 
       // good to go
       this.loadingCtrl.hide();
@@ -146,15 +154,17 @@ export class UnlockComponent {
       this.loadingCtrl.hide();
     });
   }
-  unlockStep(val) {
-    if (val === 'next') {
-      this.currentUnlockDialogStep++;
-    } else if (val === 'prev') {
-      this.currentUnlockDialogStep--;
-      if (this.currentUnlockDialogStep < 0) {
-        this.showAgreement = false;
-        this.currentUnlockDialogStep = 0;
-      }
+  unlockStep(dir) {
+    let inc = dir === 'next' ? 1 : -1;
+    this.currentUnlockDialogStep += inc;
+
+    if (this.gbsUnlock && this.currentUnlockDialogStep === 1) {
+      this.currentUnlockDialogStep += inc;
+    }
+
+    if (this.currentUnlockDialogStep < 0) {
+      this.showAgreement = false;
+      this.currentUnlockDialogStep = 0;
     }
   }
 }
