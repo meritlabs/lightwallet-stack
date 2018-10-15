@@ -21,7 +21,9 @@ export class BackupView {
   async toTransactView() {
     // Now that we are unlocked, we no longer need these other views in the stack,
     // so we shall destroy them.
-    await this.navCtrl.setRoot('TransactView');
+
+
+    await this.navCtrl.setRoot('TransactView', { unlockUrl: this.navParams.get('unlockUrl') });
     return this.navCtrl.popToRoot();
   }
 

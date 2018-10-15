@@ -1,6 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { Content, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
+
+import { ENV } from '@app/env';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ConfigService } from '@merit/common/services/config.service';
@@ -11,6 +13,7 @@ import { AddressService } from '@merit/common/services/address.service';
 import { PollingNotificationsService } from '@merit/common/services/polling-notification.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 @IonicPage({
   segment: 'alias/:parentAddress',
@@ -42,7 +45,8 @@ export class AliasView {
               private pushNotificationService: PushNotificationsService,
               private pollingNotificationService: PollingNotificationsService,
               private emailNotificationService: EmailNotificationsService,
-              private addressService: AddressService) {
+              private addressService: AddressService,
+              private inAppBrowser: InAppBrowser ) {
   }
 
   async ionViewDidLoad() {
@@ -120,9 +124,15 @@ export class AliasView {
         this.logger.info('Subscribing to long polling for default wallet');
         await this.emailNotificationService.init();
         this.pollingNotificationService.enablePolling(wallet);
+      }      
+
+      let unlockUrl: string;
+
+      if (this.navParams.get('gbs')) {
+        unlockUrl = `${ENV.gbsUrl}/unlock?alias=${wallet.rootAlias}&address=${wallet.rootAddress.toString()}&mlw=true`;
       }
 
-      await this.navCtrl.setRoot('BackupView', { mnemonic: wallet.getMnemonic() });
+      await this.navCtrl.setRoot('BackupView', { mnemonic: wallet.getMnemonic(), unlockUrl: unlockUrl });
       await this.navCtrl.popToRoot();
     } catch (err) {
       if (err == MWCErrors.INVALID_REFERRAL) this.unlockState = 'fail';

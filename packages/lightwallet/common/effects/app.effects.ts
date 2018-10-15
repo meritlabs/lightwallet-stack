@@ -14,11 +14,10 @@ export class AppEffects {
     filter((action: UpdateAppAction) => !action.payload.authorized),
     tap(() => {
       // working with window.location as router may not be initialized here
-      // lookup invite=aliasoraddress in querystring
-      const invite = getQueryParam('invite');
+      const query = location.search;
 
-      if (invite) {
-        this.router.navigateByUrl(`/onboarding/unlock?invite=${invite}`);
+      if (query) {
+        this.router.navigateByUrl(`/onboarding/unlock${query}`);
       } else if (window.location.pathname.indexOf('/onboarding') !== 0) {
         this.router.navigateByUrl('/onboarding');
       }

@@ -49,3 +49,6 @@ mobile.dist.tar.gz
 
 # Firebase
 .firebase
+
+# System
+.DS_Store

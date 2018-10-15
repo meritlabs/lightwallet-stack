@@ -16,6 +16,7 @@ import { DeepLinkService } from '@merit/mobile/app/core/deep-link.service';
 import { OnboardingView } from '@merit/mobile/app/onboard/onboarding.view';
 import { TransactView } from '@merit/mobile/app/transact/transact';
 import { Events, ModalController, Nav, Platform } from 'ionic-angular';
+import { getQueryParam } from '@merit/common/utils/url';
 
 @Component({
   templateUrl: 'app.html'
@@ -38,7 +39,7 @@ export class MeritLightWallet {
               private events: Events,
               private keyboard: Keyboard,
               private addressService: AddressService,
-              pushNotificationService: PushNotificationsService) {
+              ) {
   }
 
   async ngOnInit() {
@@ -77,22 +78,25 @@ export class MeritLightWallet {
   }
 
   private parseInviteParams() {
-    let search = window.location.search;
+    let search = window.location.search || window.location.hash;
 
-    if (search && search.indexOf('invite') !== -1) {
-      let address = cleanAddress(search.split('?invite=')[1]);
+    const invite = getQueryParam('invite', search);
+
+    if (invite) {
+      let address = cleanAddress(invite);
       window.history.replaceState({}, document.title, document.location.pathname);
-
 
       if (!this.addressService.couldBeAlias(address) && !this.addressService.isAddress(address)) return;
 
       const name = this.addressService.couldBeAlias(address) ? '@' + address : 'Someone';
       return { address, name };
     }
+
+    return null;
   }
 
   private async loadEasySendInBrowser() {
-    let search = window.location.search;
+    let search = window.location.search || window.location.hash;
     if (search && search.length > 2) {
       try {
         const params = this.easyReceiveService.parseEasySendUrl(search);
@@ -150,20 +154,23 @@ export class MeritLightWallet {
 
     this.authorized = await this.profileService.isAuthorized();
 
-    const invitation = this.parseInviteParams();
-    if (invitation && !this.authorized) {
-      await this.nav.setRoot('UnlockView', { invitation });
-    } else {
+    const search = window.location.search || window.location.hash;
 
-      await this.nav.setRoot(this.authorized ? 'TransactView' : 'OnboardingView');
+    const invitation = this.parseInviteParams();
+
+    if (invitation && !this.authorized) {
+     
+      await this.nav.setRoot('UnlockView', { ...invitation });
+    } else {
+      const receipt = await this.loadEasySend();
+      if (receipt && !this.authorized) {   
+        await this.nav.setRoot('UnlockView', { gbs: getQueryParam('source', search).toLowerCase() === 'gbs' });
+      } else {
+        await this.nav.setRoot(this.authorized ? 'TransactView' : 'OnboardingView');
+      }
 
       // wait until we have a root view before hiding splash screen
       this.splashScreen.hide();
-
-      const receipt = await this.loadEasySend();
-      if (receipt && !this.authorized) {
-        await this.nav.setRoot('UnlockView');
-      }
     }
   }
 
