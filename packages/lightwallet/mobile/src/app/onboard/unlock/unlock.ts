@@ -71,8 +71,9 @@ export class UnlockView {
   toAliasView() {   
     if (this.formData.parentAddress && !this.formData.addressCheckInProgress && !this.formData.addressCheckError) {
       const inv = this.navParams.get('invitation');
-      const isGBS:boolean = this.navParams.get('gbs');
-      this.navCtrl.push('AliasView', { parentAddress: this.parsedAddress, source: inv && inv.source, gbs: isGBS });
+      const gbs = !!this.navParams.get('gbs');
+
+      this.navCtrl.push('AliasView', { parentAddress: this.parsedAddress, gbs });
     }
   }
 

@@ -1,16 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
-import { ENV } from '@app/env';
 import { Keyboard } from '@ionic-native/keyboard';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
-import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
-import { Address, PublicKey } from 'meritcore-lib';
 import {
   AlertController,
-  Events,
   IonicPage,
   ModalController,
   NavController,
@@ -22,7 +18,6 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
-import { SmsNotificationsModal } from '../../modals/sms-notifications/sms-notifications';
 
 
 @IonicPage({
@@ -50,8 +45,6 @@ export class TransactView {
               private unlockRequestService: UnlockRequestService,
               private easyReceiveService: EasyReceiveService,
               private alertCtrl: AlertController,
-              private toastCtrl: ToastControllerService,
-              private events: Events,
               private modalCtrl: ModalController,
               private persistenceService2: PersistenceService2,
               private smsNotificationsService: SmsNotificationsService) {
@@ -59,7 +52,7 @@ export class TransactView {
 
   async ngOnInit() {
 
-    if(this.navParams.get('unlockUrl')) {
+    if (this.navParams.get('unlockUrl')) {
       window.location.href = this.navParams.get('unlockUrl');
     }
 

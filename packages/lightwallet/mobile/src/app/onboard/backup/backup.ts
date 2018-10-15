@@ -23,7 +23,7 @@ export class BackupView {
     // so we shall destroy them.
 
 
-    await this.navCtrl.setRoot('TransactView', {unlockUrl: this.navParams.get('unlockUrl')});
+    await this.navCtrl.setRoot('TransactView', { unlockUrl: this.navParams.get('unlockUrl') });
     return this.navCtrl.popToRoot();
   }
 
