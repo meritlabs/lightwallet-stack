@@ -126,7 +126,7 @@ export class AliasView {
         this.pollingNotificationService.enablePolling(wallet);
       }      
 
-      let unlockUrl:string;
+      let unlockUrl: string;
 
       if (this.navParams.get('gbs')) {
         unlockUrl = `${ENV.gbsUrl}/unlock?alias=${wallet.rootAlias}&address=${wallet.rootAddress.toString()}&mlw=true`;

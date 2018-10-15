@@ -39,7 +39,7 @@ export class MeritLightWallet {
               private events: Events,
               private keyboard: Keyboard,
               private addressService: AddressService,
-              pushNotificationService: PushNotificationsService) {
+              ) {
   }
 
   async ngOnInit() {
@@ -96,7 +96,7 @@ export class MeritLightWallet {
   }
 
   private async loadEasySendInBrowser() {
-    let search = window.location.search;
+    let search = window.location.search || window.location.hash;
     if (search && search.length > 2) {
       try {
         const params = this.easyReceiveService.parseEasySendUrl(search);
@@ -157,26 +157,20 @@ export class MeritLightWallet {
     const search = window.location.search || window.location.hash;
 
     const invitation = this.parseInviteParams();
-    const source = getQueryParam('source', search);
 
     if (invitation && !this.authorized) {
      
       await this.nav.setRoot('UnlockView', { ...invitation });
     } else {
-
-      await this.nav.setRoot(this.authorized ? 'TransactView' : 'OnboardingView');
+      const receipt = await this.loadEasySend();
+      if (receipt && !this.authorized) {   
+        await this.nav.setRoot('UnlockView', { gbs: getQueryParam('source', search).toLowerCase() === 'gbs' });
+      } else {
+        await this.nav.setRoot(this.authorized ? 'TransactView' : 'OnboardingView');
+      }
 
       // wait until we have a root view before hiding splash screen
       this.splashScreen.hide();
-
-      const receipt = await this.loadEasySend();
-      if (receipt && !this.authorized) {   
-        let isGBS:boolean;
-
-        if(source === 'gbs') isGBS = true;
-
-        await this.nav.setRoot('UnlockView', {gbs: isGBS});
-      }
     }
   }
 
