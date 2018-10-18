@@ -2941,7 +2941,6 @@ WalletService.prototype._broadcastRawTx = function(network, raw, cb) {
   var bc = this._getBlockchainExplorer(network);
   if (!bc) return cb(new Error('Could not get blockchain explorer instance'));
   bc.broadcast(raw, function(err, txid) {
-    console.log(err, txid);
     if (err) return cb(err.message);
     return cb(null, txid);
   });
