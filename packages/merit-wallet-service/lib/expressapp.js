@@ -488,6 +488,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     getServerWithAuth(req, res, function(server) {
       req.body.txProposalId = req.params['id'];
       server.broadcastTx(req.body, function(err, txp) {
+        console.log(err, txp);
         if (err) return returnError(err, res, req);
         res.json(txp);
         res.end();
