@@ -2941,7 +2941,8 @@ WalletService.prototype._broadcastRawTx = function(network, raw, cb) {
   var bc = this._getBlockchainExplorer(network);
   if (!bc) return cb(new Error('Could not get blockchain explorer instance'));
   bc.broadcast(raw, function(err, txid) {
-    if (err) return cb(err);
+    console.log(err, txid);
+    if (err) return cb(err.message);
     return cb(null, txid);
   });
 };
@@ -4242,7 +4243,7 @@ WalletService.prototype.createVault = function(opts, cb) {
 
       const rawTx = txp.getRawTx();
       bc.broadcast(rawTx, function(err, txid) {
-        if (err) return cb(err);
+        if (err) return cb(new Error(err.message));
 
         txp.txid = txid;
         toStore.coins[0] = txp;
