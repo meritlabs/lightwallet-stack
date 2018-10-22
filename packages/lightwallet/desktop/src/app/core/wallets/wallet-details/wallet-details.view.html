@@ -56,6 +56,10 @@
         </div>
       </div>
     </div>
+    <div class="wallet-details__stake-message" *ngIf="wallet.confirmed && !wallet.canReceiveGrowthReward()">
+      Not enough funds to receive Growth Rewards. Invite friends, mine more or buy some Merit on the
+      <a class="stake-message__market-link" target="_blank" rel="noopener noreferrer" href="/market/gate">Market</a>.
+    </div>
     <div class="wallet-details__content">
       <div class="wallet-details__content__navigation">
         <ul>
