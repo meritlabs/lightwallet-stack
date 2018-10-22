@@ -49,6 +49,10 @@
             </div>
           </div>
         </div>
+        <div class="wallets__group__wallet__stake-message" *ngIf="wallet.confirmed && !wallet.canReceiveGrowthReward()">
+          Not enough funds to receive Growth Rewards. Invite friends, mine more or buy some Merit on the
+          <a class="stake-message__market-link" target="_blank" rel="noopener noreferrer" href="/market/gate">Market</a>
+        </div>
       </div>
     </div>
     <button class="ui-button ui-button--sm ui-button--blue" [routerLink]="['/wallets']" *ngIf="isShowMore()">SHOW ALL WALLETS</button>

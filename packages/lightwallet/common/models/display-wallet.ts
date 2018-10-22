@@ -28,6 +28,8 @@ export function ClientProperty(target: DisplayWallet, key: keyof MeritWalletClie
   });
 }
 
+const MINIMAL_STAKE = 20 * 100000000;
+
 export class DisplayWallet {
   @ClientProperty readonly id: string;
   @ClientProperty readonly locked: boolean;
@@ -130,8 +132,12 @@ export class DisplayWallet {
         request.walletClient = this.client;
         request.isNew = visitedInvites.findIndex(rId => rId === request.rId) === -1;
 
-        return request;
+        return request;margin-left: -20px;
       });
+  }
+
+  canReceiveGrowthReward() {
+    return this.confirmed && this.totalNetworkValueMicro > MINIMAL_STAKE;
   }
 
   async updateRewards() {
