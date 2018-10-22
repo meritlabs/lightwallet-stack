@@ -132,7 +132,7 @@ export class DisplayWallet {
         request.walletClient = this.client;
         request.isNew = visitedInvites.findIndex(rId => rId === request.rId) === -1;
 
-        return request;margin-left: -20px;
+        return request;
       });
   }
 
