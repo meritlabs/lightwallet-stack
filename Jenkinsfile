@@ -20,23 +20,23 @@ pipeline {
         sh 'cp packages/lightwallet/common/environments/environment.example.ts packages/lightwallet/common/environments/environment.dev.ts'
       }
     }
-    stage('Unit Tests') {
-      steps {
-        sh 'cd packages/lightwallet && npm test'
-      }
-    }
-    stage('E2E Tests') {
-      steps {
-        withCredentials([
-          string(credentialsId: 'browserstack-user', variable: 'browserstackUser'),
-          string(credentialsId: 'browserstack-key', variable: 'browserstackKey')
-        ]) {
-          sh 'cd packages/lightwallet/desktop && npm start &'
-          sh 'wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888'
-          sh "cd packages/lightwallet && BROWSERSTACK_USER=${browserstackUser} BROWSERSTACK_KEY=${browserstackKey} npm run test:e2e"
-        }
-      }
-    }
+    // stage('Unit Tests') {
+    //   steps {
+    //     sh 'cd packages/lightwallet && npm test'
+    //   }
+    // }
+    // stage('E2E Tests') {
+    //   steps {
+    //     withCredentials([
+    //       string(credentialsId: 'browserstack-user', variable: 'browserstackUser'),
+    //       string(credentialsId: 'browserstack-key', variable: 'browserstackKey')
+    //     ]) {
+    //       sh 'cd packages/lightwallet/desktop && npm start &'
+    //       sh 'wget --retry-connrefused --no-check-certificate -T 30 http://localhost:8888'
+    //       sh "cd packages/lightwallet && BROWSERSTACK_USER=${browserstackUser} BROWSERSTACK_KEY=${browserstackKey} npm run test:e2e"
+    //     }
+    //   }
+    // }
     stage('Build Wallets [Dev]') {
       parallel {
         stage('Build MLW') {
@@ -65,20 +65,20 @@ pipeline {
         }
       }
     }
-    stage('Test Wallets') {
-      parallel {
-        stage('Test MLW') {
-          steps {
-            sh 'cd packages/lightwallet && npm run test'
-          }
-        }
-        stage('Test DLW') {
-          steps {
-            sh 'cd packages/lightwallet/desktop && npm run test'
-          }
-        }
-      }
-    }
+    // stage('Test Wallets') {
+    //   parallel {
+    //     stage('Test MLW') {
+    //       steps {
+    //         sh 'cd packages/lightwallet && npm run test'
+    //       }
+    //     }
+    //     stage('Test DLW') {
+    //       steps {
+    //         sh 'cd packages/lightwallet/desktop && npm run test'
+    //       }
+    //     }
+    //   }
+    // }
   }
   post {
     always {
