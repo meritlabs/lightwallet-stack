@@ -22,13 +22,14 @@ function Insight(opts) {
 var _parseErr = function(err, res) {
   // The 'err' can be misleading because it's not really the error returned from insight.
   // Instead, it is an error in communicating with insight.
+  const errMessage = res.body;
   if (err) {
     log.warn('Network error connecting to blockchain explorer: ', err);
-    return "Error connecting to the blockchain explorer.";
+    return { localMessage: "Error connecting to the blockchain explorer.", ...errMessage };
   }
-  log.warn("Insight " + res.request.href + " Returned Status: " + res.statusCode);
+  log.warn("Insight " + res.request.href + " Returned Status: " + res.statusCode + ". Error message: " + errMessage.message);
 
-  return "Error querying the blockchain";
+  return { localMessage: "Error querying the blockchain", ...errMessage };
 };
 
 Insight.prototype._doRequest = function(args, cb) {
