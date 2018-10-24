@@ -28,7 +28,7 @@ export function ClientProperty(target: DisplayWallet, key: keyof MeritWalletClie
   });
 }
 
-const MINIMAL_STAKE = 20 * 100000000;
+const MINIMAL_STAKE = 2000000000;
 
 export class DisplayWallet {
   @ClientProperty readonly id: string;
