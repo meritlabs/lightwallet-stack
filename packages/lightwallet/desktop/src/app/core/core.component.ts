@@ -84,11 +84,11 @@ export class CoreView implements OnInit, AfterViewInit {
     },
   ];
   bottomMenuItems: any[] = [
-    // {
-    //   name: 'Market Beta',
-    //   icon: '/assets/v1/icons/ui/aside-navigation/market.svg',
-    //   link: '/market/gate'
-    // },
+    {
+      name: 'Market Beta',
+      icon: '/assets/v1/icons/ui/aside-navigation/market.svg',
+      link: '/market/gate'
+    },
     {
       name: 'Help & Support',
       icon: '/assets/v1/icons/ui/aside-navigation/info.svg',
