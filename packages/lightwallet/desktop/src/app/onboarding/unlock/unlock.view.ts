@@ -115,7 +115,11 @@ export class UnlockComponent {
     inviteCode = cleanAddress(inviteCode);
 
     try {
-      const win = window.open('', 'UnlockGBS', 'width=580,height=340,0,status=0,');
+      let win;
+
+      if (this.gbsUnlock) {
+        win = window.open('', 'UnlockGBS', 'width=580,height=340,0,status=0,');
+      }
 
       const wallet = await this.walletService.createDefaultWallet(inviteCode, alias);
       this.logger.info('Created a new default wallet!');
@@ -132,7 +136,9 @@ export class UnlockComponent {
         })
       );
 
-      win.location.href = `${ENV.gbsUrl}/unlock?alias=${wallet.rootAlias}&address=${wallet.rootAddress.toString()}`;
+      if (this.gbsUnlock && !!win) {
+        win.location.href = `${ENV.gbsUrl}/unlock?alias=${wallet.rootAlias}&address=${wallet.rootAddress.toString()}`;
+      }
 
       // good to go
       this.loadingCtrl.hide();
