@@ -57,7 +57,6 @@ export class AppComponent {
           // EasyReceipt every time they re-open the app or the browser.
           window.history.replaceState({}, document.title, document.location.pathname);
         }
-        this.logger.info('Returned from validate with: ', easyReceipt);
       } catch (e) {}
     }
   }
