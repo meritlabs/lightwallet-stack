@@ -17,7 +17,7 @@ export class AppEffects {
       const query = location.search;
 
       if (query) {
-        this.router.navigateByUrl(`/onboarding/unlock${query}`);
+        this.router.navigateByUrl(`/onboarding/${query}`);
       } else if (window.location.pathname.indexOf('/onboarding') !== 0) {
         this.router.navigateByUrl('/onboarding');
       }
