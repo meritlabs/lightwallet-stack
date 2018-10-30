@@ -4,6 +4,7 @@ import { IInterfaceState, interfaceReducer } from '@merit/common/reducers/interf
 import { INotificationsState, notificationsReducer } from '@merit/common/reducers/notifications.reducer';
 import { ITransactionsState, transactionsReducer } from '@merit/common/reducers/transactions.reducer';
 import { IWalletsState, walletsReducer } from '@merit/common/reducers/wallets.reducer';
+import { IMiningState, miningReducer } from '@merit/common/reducers/mining.reducer';
 
 export interface IRootAppState {
   app: IAppState;
@@ -12,6 +13,7 @@ export interface IRootAppState {
   notifications: INotificationsState;
   interface: IInterfaceState;
   goals: IGoalsState;
+  mining: IMiningState;
 }
 
 export const reducer = {
@@ -21,4 +23,5 @@ export const reducer = {
   notifications: notificationsReducer,
   interface: interfaceReducer,
   goals: goalsReducer,
+  mining: miningReducer
 };

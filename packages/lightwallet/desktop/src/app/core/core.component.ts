@@ -27,6 +27,7 @@ import { ConfirmDialogControllerService } from '@merit/desktop/app/components/co
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
 import { SmsNotificationsPromptController } from '@merit/desktop/app/components/sms-notifications-prompt/sms-notifications-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
+import { ElectronService } from '@merit/desktop/services/electron.service';
 import { Store } from '@ngrx/store';
 import { Address, PublicKey } from 'meritcore-lib';
 import { Observable } from 'rxjs/Observable';
@@ -136,6 +137,15 @@ export class CoreView implements OnInit, AfterViewInit {
     this.easyReceiveService.cancelEasySendObservable$.subscribe(receipt => {
       this.processEasyReceipt(receipt, null, false, null, true);
     });
+
+    if (ElectronService.isElectronAvailable) {
+      this.topMenuItems.splice(this.topMenuItems.length-1, 0,
+        {
+          name: 'Mining',
+          icon: '/assets/v1/icons/ui/aside-navigation/mine.svg',
+          link: '/mining'
+        });
+    }
 
     const smsPromptSetting = await this.persistenceService2.getUserSettings(UserSettingsKey.SmsNotificationsPrompt);
 

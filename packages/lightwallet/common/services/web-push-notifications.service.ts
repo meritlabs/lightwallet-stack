@@ -13,6 +13,7 @@ import { PollingNotificationsService } from '@merit/common/services/polling-noti
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 import { Store } from '@ngrx/store';
 import { filter, map, take } from 'rxjs/operators';
+import { ElectronService } from '../../desktop/src/services/electron.service';
 
 const FirebaseAppConfig = {
   apiKey: 'AIzaSyDsHxVE243LOlN05qBiElm_P65uCMQr-r8',
@@ -79,6 +80,10 @@ export class WebPushNotificationsService extends PushNotificationsService {
   async init() {
     const settings: INotificationSettings = await this.persistenceService.getNotificationSettings();
     this._pushNotificationsEnabled = Boolean(settings.pushNotifications);
+
+    if (ElectronService.isElectronAvailable) {
+      this._pushNotificationsEnabled = false;
+    }
 
     if (this.pushNotificationsEnabled) {
       if (!this.token) {

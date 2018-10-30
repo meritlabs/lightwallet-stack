@@ -18,6 +18,7 @@ import { WalletPasswordGuard } from '@merit/desktop/app/guards/wallet-password.g
 import { BackupView } from './backup/backup.view';
 import { MnemonicPhraseView } from './backup/mnemonic-phrase/mnemonic-phrase.view';
 import { CommunityView } from './community/community.view';
+import { MiningView } from './mining/mining.view';
 import { CoreView } from './core.component';
 import { DashboardView } from './dashboard/dashboard.view';
 import { HistoryView } from './history/history.view';
@@ -69,6 +70,7 @@ const routes: Routes = [
       },
       { path: 'history', component: HistoryView },
       { path: 'community', component: CommunityView },
+      { path: 'mining', component: MiningView },
       {
         path: 'settings',
         component: GlobalSettingsView,

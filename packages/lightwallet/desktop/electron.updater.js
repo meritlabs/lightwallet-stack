@@ -2,10 +2,15 @@ const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 const { app } = require('electron');
 const appVersion = app.getVersion();
-
+const DISABLE_AUTO_UPDATES = true;
 log.info('Current app version is ', appVersion);
 
 const checkForUpdates = async () => {
+  if (DISABLE_AUTO_UPDATES) {
+    // Temporarly disable auto-update feature
+    return;
+  }
+
   if (process.platform === 'linux') {
     // Auto update is not available
     return;

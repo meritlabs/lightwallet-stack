@@ -1,0 +1,165 @@
+@import '~styles/v1/common/import-sass'
+// Base Colors
+$shade-10: #2c3e50 !default
+$shade-1: #d7dcdf !default
+$shade-0: #fff !default
+$teal: #00b0dd !default
+
+// Range Slider
+$range-width: 100% !default
+
+$range-handle-color: $shade-10 !default
+$range-handle-color-hover: $teal !default
+$range-handle-size: 20px !default
+
+$range-track-color: $shade-1 !default
+$range-track-height: 10px !default
+
+$range-label-color: $shade-10 !default
+$range-label-width: 60px !default
+
+.full-width-for-chart
+  width: 100%
+  max-width: 100%
+
+.range-slider
+  margin: 0px 20px
+  width: $range-width
+
+.range-slider-range
+  -webkit-appearance: none
+  width: calc(98% - #{$range-label-width} - 13px)
+  height: $range-track-height
+  border-radius: 5px
+  background: $range-track-color
+  outline: none
+  padding: 0
+  margin: 0
+
+  &::-webkit-slider-thumb
+    appearance: none
+    width: $range-handle-size
+    height: $range-handle-size
+    border-radius: 50%
+    background: $range-handle-color
+    cursor: pointer
+    transition: background .15s ease-in-out
+
+    &:hover
+      background: $range-handle-color-hover
+
+  &:active::-webkit-slider-thumb
+    background: $range-handle-color-hover
+
+
+  &::-moz-range-thumb
+    width: $range-handle-size
+    height: $range-handle-size
+    border: 0
+    border-radius: 50%
+    background: $range-handle-color
+    cursor: pointer
+    transition: background .15s ease-in-out
+
+    &:hover
+      background: $range-handle-color-hover
+
+  &:active::-moz-range-thumb
+    background: $range-handle-color-hover
+
+
+  &:focus
+    &::-webkit-slider-thumb
+      box-shadow: 0 0 0 3px $shade-0 0 0 0 6px $teal
+
+.range-slider-value
+  display: inline-block
+  position: relative
+  width: $range-label-width
+  color: $shade-0
+  line-height: 20px
+  text-align: center
+  border-radius: 3px
+  background: $range-label-color
+  padding: 5px 10px
+  margin-left: 8px
+
+  &:after
+    position: absolute
+    top: 8px
+    left: -7px
+    width: 0
+    height: 0
+    border-top: 7px solid transparent
+    border-right: 7px solid $range-label-color
+    border-bottom: 7px solid transparent
+    content: ''
+
+
+// Firefox Overrides
+::-moz-range-track
+    background: $range-track-color
+    border: 0
+
+input::-moz-focus-inner, input::-moz-focus-outer
+  border: 0
+
+.gpu-devices__group
+  padding: 15px 20px 15px
+
+.gpu-devices__group .global-settings__group__item__title
+  color: #484d5e
+
+
+.switcher
+  position: relative
+  z-index: 1
+  display: inline-block
+  height: 14px
+  width: 34px
+  border-radius: 500rem
+  background: #e9edf2
+  border: 1px solid #b7bcc8
+  +transition(.15s)
+
+  &:hover
+    cursor: pointer
+
+  &::after
+    content: ""
+    display: block
+    position: absolute
+    width: 18px
+    height: 18px
+    border-radius: 25px
+    background: white
+    border: 1px solid #b7bcc8
+    left: -1px
+    top: -4px
+    +transition(.15s)
+
+.switcher-container
+  position: relative
+  cursor: pointer
+  display: inline-block
+  &.checked
+    .switcher
+      background: $blue
+      &:after
+        left: 14px
+
+.gpu-stats-container
+  position: relative
+  display: block
+
+  &:after, &::after
+    content: ""
+    display: table
+    clear: both
+
+  .gpu-chart
+    position: relative
+    display: block
+    height: 400px
+    width: 50%
+    float: left

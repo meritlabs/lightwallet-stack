@@ -32,15 +32,15 @@ clean-lightwallet:
 	rm -rf ./packages/lightwallet/node_modules
 
 .PHONY: build-electron-win
-build-electron-win:
-  cd ./packages/lightwallet/desktop && npm run electron:build -- --win --x64
+build-electron-win: build-release-dlw
+	cd ./packages/lightwallet/desktop && npm run electron:build -- --win --x64
 
 .PHONY: build-electron-mac
-build-electron-mac:
+build-electron-mac: build-release-dlw
 	cd ./packages/lightwallet/desktop && npm run electron:build -- --mac --x64
 
 .PHONE: build-electron-deb
-build-electron-deb:
+build-electron-deb: build-release-dlw
 	cd ./packages/lightwallet/desktop && npm run electron:build -- --linux deb --x64
 
 ### lightwallet-stack ###
@@ -50,10 +50,27 @@ test-build: clean-stack \
 	prepare-stack \
 	build-lw-ww
 
-.PHONY: build-lw-ww
-build-lw-ww:
+.PHONY: build-relese-mlw
+build-release-mlw:
+	cd ./packages/lightwallet && npm run build -- --prod
+
+.PHONY: build-relese-dlw
+build-release-dlw:
+	cd ./packages/lightwallet/desktop && npm run build:prod
+	
+.PHONY: build-release-lw
+build-release-lw: build-release-mlw build-release-dlw
+
+.PHONY: build-debug-mlw
+build-debug-mlw:
 	cd ./packages/lightwallet && npm run build
+
+.PHONY: build-debug-dlw
+build-debug-dlw:
 	cd ./packages/lightwallet/desktop && npm run build
+	
+.PHONY: build-lw-ww
+build-lw-ww: build-debug-mlw build-debug-dlw
 
 .PHONY: start-mongo
 start-mongo:

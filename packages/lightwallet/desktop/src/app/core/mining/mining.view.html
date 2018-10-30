@@ -1,0 +1,237 @@
+<div class="global-settings container--inner" [ngClass]="{'full-width-for-chart': mining && activeGpuDevices.length}">
+  <message-box error [hidden]="!error">{{ error }}</message-box>
+  <div class="global-settings__title title--primary">
+    <p>Mining</p>
+  </div>
+  <div [hidden]="mining$ | async">
+    <div class="ui-label">Select Wallet</div>
+    <app-select (selectionEvent)="selectWallet($event, true)" [selected]="selectedWallet" [input]="wallets$ | async"
+                cssClass="ui-input ui-input--select ui-input--form"></app-select>
+
+    <div class="ui-label">Select Mining Pool</div>
+    <app-select-pool (selectionEvent)="selectPool($event)" [selected]="selectedPool"
+                     cssClass="ui-input ui-input--select ui-input--form"></app-select-pool>
+
+    <div class="ui-label">CPU Threads</div>
+
+    <div class="ui-label range-slider">
+      <input class="range-slider-range" type="range" min="{{minCores}}" max="{{maxCores}}" value="{{cores}}"
+             (input)="setCores($event)" (change)="setCores($event)" step="1"/>
+      <output class="range-slider-value" (input)="cores">{{cores}}</output>
+    </div>
+    <br>
+
+    <div class="ui-label">GPU devices</div>
+
+    <div class="global-settings__group gpu-devices__group">
+      <form class="details_settings" *ngIf="maxGPUs != 0">
+        <div class="global-settings__group__item" *ngFor="let item of gpusInfo; let i = index">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">{{ item.title }}</label>
+          </div>
+
+          <div class="global-settings__group__item__column global-settings__group__item__column--30"
+               *ngIf="item.free_memory >= 2147483648">
+                <span class="switcher-container" [ngClass]="{'checked': item.value}" (click)="chooseGPU(i)">
+                    <span class="switcher"></span>
+                </span>
+          </div>
+
+
+          <p class="global-settings__group__item__column" *ngIf="item.free_memory < 2147483648 ">You do not have enough
+            free video memory available. Please close some applications and try again. You need 2GB free but only have
+            {{(item.free_memory / (1024*1024*1024)).toFixed(2)}}GB free.</p>
+
+        </div>
+      </form>
+
+      <p *ngIf="maxGPUs == 0"> You do not have any GPU device yet</p>
+    </div>
+
+  </div>
+  <div *ngIf="mining$ | async">
+    <div class="global-settings__group">
+      <div class="gpu-stats-container container--fluid">
+        <div class="gpu-chart">
+          <chart title="Number of graphs(total)" [datasets]="graphDatasets$ | async"></chart>
+        </div>
+        <div class="gpu-chart">
+          <chart title="Number of found cycles and shares(total)" [datasets]="cycleAndShareDatasets$ | async"></chart>
+        </div>
+      </div>
+      <div class="gpu-stats-container container--fluid" *ngIf="activeGpuDevices?.length">
+        <div class="gpu-chart">
+          <chart title="GPU Temperature(degrees Celsius)" [datasets]="gpuTempDatasets$ | async"></chart>
+        </div>
+        <div class="gpu-chart">
+          <chart title="GPU cores and memory utilization(%)" [datasets]="gpuUtilDatasets$ | async"></chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="global-settings__group">
+      <label class="ui-label global-settings__group__title">Summary</label>
+      <div class="global-settings__group__item">
+        <div class="global-settings__group__item__column global-settings__group__item__column--70">
+          <label class="ui-label global-settings__group__item__title">Wallet</label>
+        </div>
+        <div class="global-settings__group__item__column global-settings__group__item__column--30">
+          <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{selectedWallet ? selectedWallet.name : ''}}</label>
+        </div>
+      </div>
+      <div class="global-settings__group__item">
+        <div class="global-settings__group__item__column global-settings__group__item__column--70">
+          <label class="ui-label global-settings__group__item__title">Pool Name</label>
+        </div>
+        <div class="global-settings__group__item__column global-settings__group__item__column--30">
+          <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{selectedPool ? selectedPool.name : ''}}</label>
+        </div>
+      </div>
+      <div class="global-settings__group__item">
+        <div class="global-settings__group__item__column global-settings__group__item__column--70">
+          <label class="ui-label global-settings__group__item__title">Pool Website</label>
+        </div>
+        <div class="global-settings__group__item__column global-settings__group__item__column--30">
+          <a href="{{selectedPool ? selectedPool.website : ''}}" target="_blank" class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{selectedPool ? selectedPool.website : ''}}</a>
+        </div>
+      </div>
+      <div class="global-settings__group__item">
+        <div class="global-settings__group__item__column global-settings__group__item__column--70">
+          <label class="ui-label global-settings__group__item__title">Pool Url</label>
+        </div>
+        <div class="global-settings__group__item__column global-settings__group__item__column--30">
+          <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{selectedPool? selectedPool.url : ''}}</label>
+        </div>
+      </div>
+      <div class="global-settings__group__item">
+        <div class="global-settings__group__item__column global-settings__group__item__column--70">
+          <label class="ui-label global-settings__group__item__title">CPU Threads</label>
+        </div>
+        <div class="global-settings__group__item__column global-settings__group__item__column--30">
+          <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{cores}}</label>
+        </div>
+      </div>
+      <div class="global-settings__group__item">
+        <div class="global-settings__group__item__column global-settings__group__item__column--70">
+          <label class="ui-label global-settings__group__item__title">GPU devices</label>
+        </div>
+        <div class="global-settings__group__item__column global-settings__group__item__column--30">
+          <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ activeGpuDevices ? activeGpuDevices.length :
+            '0'}}</label>
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="gpuInfo$ | async as gpuInfo">
+      <div class="global-settings__group" *ngFor="let info of gpuInfo">
+        <label class="ui-label global-settings__group__title">{{ info.title }}</label>
+
+        <div class="global-settings__group__item">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">Memory usage</label>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ info.memory_util + '%' + ' (' + (info.total_memory * info.memory_util / 100 / 1024 / 1024 / 1024) + ' / ' + (info.total_memory / 1024 / 1024 / 1024 ) + 'GB)' }}</label>
+          </div>
+        </div>
+
+        <div class="global-settings__group__item">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">Utilization</label>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ info.gpu_util + '%' }}</label>
+          </div>
+        </div>
+
+        <div class="global-settings__group__item">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">Temperature</label>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ info.temperature + 'C' }}</label>
+          </div>
+        </div>
+
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="stats$ | async as stats">
+      <div class="global-settings__group">
+        <label class="ui-label global-settings__group__title">Total Counts</label>
+        <div class="global-settings__group__item">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">Total Graphs</label>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ stats.total.attempts + stats.current.attempts }}</label>
+          </div>
+        </div>
+        <div class="global-settings__group__item">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">Total Cycles Found</label>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ stats.total.cycles + stats.current.cycles }}</label>
+          </div>
+        </div>
+        <div class="global-settings__group__item">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">Total Shares Submitted</label>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ stats.total.shares + stats.current.shares }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="global-settings__group">
+        <label class="ui-label global-settings__group__title">Mining Rates</label>
+        <div class="global-settings__group__item">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">Graphs/s</label>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ stats.total.attempts_per_second || 'Calculating...' }}</label>
+          </div>
+        </div>
+        <div class="global-settings__group__item">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">Cycles Found/s</label>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ stats.total.cycles_per_second || 'Calculating...' }}</label>
+          </div>
+        </div>
+        <div class="global-settings__group__item">
+          <div class="global-settings__group__item__column global-settings__group__item__column--70">
+            <label class="ui-label global-settings__group__item__title">Shares Submitted/s</label>
+          </div>
+          <div class="global-settings__group__item__column global-settings__group__item__column--30">
+            <label class="ui-label global-settings__group__item__title
+                  global-settings__group__item__title--dark">{{ stats.total.shares_per_second || 'Calculating...' }}</label>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <br/>
+  <div class="ui-label">
+    <button class="ui-button ui-button--blue" (click)="toggleMining()">
+      {{ miningLabel$ | async }}
+    </button>
+  </div>
+</div>

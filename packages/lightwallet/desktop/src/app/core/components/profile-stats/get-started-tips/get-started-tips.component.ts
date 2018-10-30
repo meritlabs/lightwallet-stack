@@ -5,6 +5,7 @@ import { PersistenceService2, UserSettingsKey } from '@merit/common/services/per
 import { Store } from '@ngrx/store';
 import { IRootAppState } from '@merit/common/reducers';
 import { SetShareDialogAction } from '@merit/common/reducers/interface-preferences.reducer';
+import { ElectronService } from '@merit/desktop/services/electron.service';
 
 declare global {
   interface Window {
@@ -26,13 +27,11 @@ declare global {
   ]
 })
 export class GetStartedTipsComponent implements OnInit {
-  constructor(private persistenceService: PersistenceService2, private store: Store<IRootAppState>) {
-  }
-
   active: boolean;
   getArticle: boolean;
   syncWallet: boolean;
   copy: string = 'COPY';
+  isElectron: boolean = ElectronService.isElectronAvailable;
 
   private _wallets: DisplayWallet[];
 
@@ -46,6 +45,8 @@ export class GetStartedTipsComponent implements OnInit {
   }
 
   setTipType: string = 'all';
+
+  constructor(private persistenceService: PersistenceService2, private store: Store<IRootAppState>) {}
 
   async ngOnInit() {
     const getActiveState = Boolean(await this.persistenceService.getUserSettings(UserSettingsKey.GetStartedTips));

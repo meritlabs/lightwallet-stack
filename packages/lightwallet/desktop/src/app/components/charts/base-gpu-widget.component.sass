@@ -1,0 +1,23 @@
+\:host
+  display: block
+  width: 100%
+  height: inherit
+
+div
+  position: relative
+
+div[class^="chartjs"]
+  visibility: visible
+
+canvas
+  visibility: visible
+  &::after
+    content: ''
+    background: rgba(0, 0, 0, .0)
+    position: absolute
+    left: 0
+    right: 0
+    top: 30px
+    bottom: 0
+    transition: background .3s
+    pointer-events: none

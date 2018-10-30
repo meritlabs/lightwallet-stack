@@ -3,6 +3,7 @@ const nn = require('node-notifier');
 const path = require('path');
 const icon = path.join(__dirname, 'build/1024x1024.png');
 const isWin = process.platform === 'win32';
+const { MeritMiner } = require('merit-miner-node');
 const updater = remote.require('./electron.updater');
 
 const showNotification = (title, message = ' ') => {
@@ -31,5 +32,6 @@ window['electron'] = {
   showNotification: isWin? showWindowsNotification : showNotification,
   checkForUpdates: updater.checkForUpdates,
   downloadUpdate: updater.downloadUpdate,
-  installUpdate: updater.installUpdate
+  installUpdate: updater.installUpdate,
+  MeritMiner
 };

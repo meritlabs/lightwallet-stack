@@ -1,6 +1,6 @@
 {
   "name": "lightwallet-desktop",
-  "version": "1.9.6",
+  "version": "1.9.7",
   "main": "electron.main.js",
   "description": "Lightwallet implementation for desktops",
   "homepage": "https://github.com/meritlabs/lightwallet-stack",
@@ -20,8 +20,11 @@
     "url": "https://github.com/meritlabs/lightwallet-stack"
   },
   "dependencies": {
+    "@swimlane/ngx-charts": "^7.3.0",
+    "chart.js": "^2.7.2",
     "electron-log": "^2.2.15",
-    "electron-updater": "^3.0.3",
+    "electron-updater": "^2.21.10",
+    "merit-miner-node": "../../../../merit-miner-node",
     "node-notifier": "^5.2.1"
   },
   "devDependencies": {
