@@ -1,7 +1,6 @@
 import { Component, Renderer2, ViewEncapsulation } from '@angular/core';
 import { EasyReceipt } from '@merit/common/models/easy-receipt';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
-import { LoggerService } from '@merit/common/services/logger.service';
 import { PersistenceService2, StorageKey } from '@merit/common/services/persistence2.service';
 import { DOMController } from '@merit/desktop/app/components/dom.controller';
 import { UpdateDialogController } from '@merit/desktop/app/components/update-dialog/update-dialog.controller';
@@ -17,7 +16,6 @@ export class AppComponent {
   constructor(private domCtrl: DOMController,
               private renderer2: Renderer2,
               private easyReceiveService: EasyReceiveService,
-              private logger: LoggerService,
               private updateDialogCtrl: UpdateDialogController,
               private perstitenceService: PersistenceService2) {
     // Services can't inject Renderer, so this is a workaround.
