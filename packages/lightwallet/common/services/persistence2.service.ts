@@ -14,6 +14,7 @@ export enum StorageKey {
   VisitedInvites = 'merit_visited_invites',
   ViewSettingsPrefix = 'app_view_settings_',
   LastIgnoredUpdate = 'last_ignored_update',
+  WalletCreationSource = 'wallet_creation_source',
 }
 
 export enum UserSettingsKey {
@@ -131,6 +132,14 @@ export class PersistenceService2 {
 
   getUserSettings(key: UserSettingsKey) {
     return this.storage.get(StorageKey.ViewSettingsPrefix + key);
+  }
+
+  setSource(source: string) {
+    return this.storage.set(StorageKey.WalletCreationSource, source);
+  }
+
+  async getSource() {
+    return this.storage.get(StorageKey.WalletCreationSource);
   }
 
   async resetUserSettings() {

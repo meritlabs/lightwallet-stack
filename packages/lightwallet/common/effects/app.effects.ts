@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { AppReducerActionType, UpdateAppAction } from '@merit/common/reducers/app.reducer';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { filter, tap } from 'rxjs/operators';
-
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { getQueryParam } from '@merit/common/utils/url';
 
 @Injectable()
@@ -13,6 +13,11 @@ export class AppEffects {
     ofType(AppReducerActionType.UPDATE),
     filter((action: UpdateAppAction) => !action.payload.authorized),
     tap(() => {
+      const source = getQueryParam('source');
+      if (source.length) {
+        this.persistence.setSource(source);
+      }
+
       // working with window.location as router may not be initialized here
       const query = location.search;
 
@@ -24,6 +29,6 @@ export class AppEffects {
     })
   );
 
-  constructor(private actions$: Actions, private router: Router) {
+  constructor(private actions$: Actions, private router: Router, private persistence: PersistenceService2) {
   }
 }
