@@ -6,6 +6,7 @@ import { ProfileService } from '@merit/common/services/profile.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
+import { getQueryParam } from '@merit/common/utils/url';
 
 @Injectable()
 export class DashboardGuard implements CanActivate {
@@ -21,7 +22,10 @@ export class DashboardGuard implements CanActivate {
           if (state.authorized) {
             return true;
           } else {
-            this.router.navigateByUrl('/onboarding/unlock');
+            const source = getQueryParam('source');
+            const query = source.length ? `?source=${source}` : '';
+
+            this.router.navigateByUrl(`/onboarding/unlock${query}`);
             return false;
           }
         })
