@@ -20,6 +20,7 @@ import { AddressValidator } from '@merit/common/validators/address.validator';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { getQueryParam } from '@merit/common/utils/url';
 import { AddressService } from '@merit/common/services/address.service';
+import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
 @Component({
   selector: 'view-unlock',
@@ -70,6 +71,7 @@ export class UnlockComponent {
     private store: Store<IRootAppState>,
     private easyReceiveService: EasyReceiveService,
     private addressService: AddressService,
+    private persistence: PersistenceService2,
     private loadingCtrl: Ng4LoadingSpinnerService,
     private toastCtrl: ToastControllerService
   ) {}
@@ -80,7 +82,7 @@ export class UnlockComponent {
 
     let inviteCode;  
 
-    this.gbsUnlock = getQueryParam('source') === 'gbs';
+    this.gbsUnlock = (await this.persistence.getSource()) === 'gbs';
 
     if (this.easyReceipt) {
       inviteCode = this.easyReceipt.parentAddress;
