@@ -13,6 +13,7 @@ export class BackupNewWallet {
   copy: string = 'COPY';
   showPhrase: boolean = false;
   showNextBtn: boolean = false;
+  isLastStep: boolean = false;
 
   copyState() {
     this.copy = 'COPIED';
