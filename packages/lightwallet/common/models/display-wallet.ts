@@ -137,7 +137,7 @@ export class DisplayWallet {
   }
 
   canReceiveGrowthReward() {
-    return this.confirmed && this.totalNetworkValueMicro > MINIMAL_STAKE;
+    return this.confirmed && this.totalBalanceMicros > MINIMAL_STAKE;
   }
 
   async updateRewards() {
