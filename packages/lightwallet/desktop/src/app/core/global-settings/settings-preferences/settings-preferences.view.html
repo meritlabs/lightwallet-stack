@@ -28,39 +28,6 @@
         </div>
       </div>
     </div>
-
-    <div class="global-settings__group__item">
-      <div class="global-settings__group__item__column global-settings__group__item__column--70">
-        <label class="ui-label global-settings__group__item__title">Enable SMS notifications</label>
-      </div>
-      <div class="global-settings__group__item__column global-settings__group__item__column--30">
-        <ui-checkbox formControlName="smsNotifications"></ui-checkbox>
-      </div>
-    </div>
-    <div class="global-settings__group__item sendMerit__form__group phone-number" *ngIf="nsc.smsNotificationsEnabled">
-      <div class="global-settings__group__item__column ui-input-group">
-        <label class="ui-label global-settings__group__item__title" for="email">Phone number</label>
-        <input type="tel" name="phoneNumber" id="phoneNumber"
-               class="ui-input ui-input--form ui-input--text"
-               formControlName="phoneNumber"
-               placeholder="Enter your phone number to receive SMS notifications">
-        <div *ngIf="nsc.smsStatus$ | async as smsStatus">
-          <div *ngIf="smsStatus == 'saving'">Saving...</div>
-          <div *ngIf="smsStatus == 'saved'">Saved</div>
-        </div>
-      </div>
-    </div>
-    <div class="sms-settings" *ngIf="nsc.smsNotificationsEnabled">
-      <div class="global-settings__group__item" *ngFor="let s of nsc.smsNotificationSettings">
-        <div class="global-settings__group__item__column global-settings__group__item__column--70">
-          <label class="ui-label global-settings__group__item__title">{{ s.label }}</label>
-        </div>
-        <div class="global-settings__group__item__column global-settings__group__item__column--30">
-          <ui-checkbox [formControlName]="s.name"></ui-checkbox>
-        </div>
-      </div>
-    </div>
-
   </div>
 </form>
 <div class="global-settings__group">

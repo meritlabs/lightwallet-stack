@@ -41,34 +41,6 @@
         </ion-item>
       </ion-item-group>
 
-      <ion-item text-wrap>
-        <ion-label>
-          <h2 translate>
-            Enable SMS notifications
-          </h2>
-        </ion-label>
-        <ion-toggle formControlName="smsNotifications"></ion-toggle>
-      </ion-item>
-
-      <ion-item-group *ngIf="nsc.smsNotificationsEnabled" enter-to-next>
-        <ion-item>
-          <ion-label stacked>
-            Phone number
-          </ion-label>
-          <ion-input formControlName="phoneNumber" type="tel" placeholder="Enter your phone number"></ion-input>
-          <div item-end *ngIf="nsc.smsStatus$ | async as smsStatus">
-            <ion-spinner item-end *ngIf="smsStatus == 'saving'"></ion-spinner>
-            <ion-icon item-end name="checkmark-circle" *ngIf="smsStatus == 'saved'" class="saved-status-icon"></ion-icon>
-          </div>
-        </ion-item>
-
-
-        <ion-item *ngFor="let s of nsc.smsNotificationSettings">
-          <ion-label>{{ s.label }}</ion-label>
-          <ion-toggle [formControlName]="s.name"></ion-toggle>
-        </ion-item>
-      </ion-item-group>
-
     </ion-list>
   </form>
 
