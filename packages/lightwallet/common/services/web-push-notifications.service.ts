@@ -17,13 +17,11 @@ import { filter, map, take } from 'rxjs/operators';
 const FirebaseAppConfig = {
   apiKey: 'APIKEY',
   projectId: 'prime-service-181121',
-  messagingSenderId: '1091326413792'
+  messagingSenderId: '1091326413792',
 };
-
 
 @Injectable()
 export class WebPushNotificationsService extends PushNotificationsService {
-
   protected get pushNotificationsEnabled(): boolean {
     return this._pushNotificationsEnabled;
   }
@@ -37,11 +35,13 @@ export class WebPushNotificationsService extends PushNotificationsService {
   private firebaseApp;
   private firebaseMessaging;
 
-  constructor(http: HttpClient,
-              logger: LoggerService,
-              private pollingNotificationService: PollingNotificationsService,
-              private persistenceService: PersistenceService2,
-              private store: Store<IRootAppState>) {
+  constructor(
+    http: HttpClient,
+    logger: LoggerService,
+    private pollingNotificationService: PollingNotificationsService,
+    private persistenceService: PersistenceService2,
+    private store: Store<IRootAppState>,
+  ) {
     super(http, logger);
     this.logger.info('Web PushNotifications service is alive!');
     this.platform = 'web';
@@ -49,11 +49,12 @@ export class WebPushNotificationsService extends PushNotificationsService {
   }
 
   getWallets() {
-    return this.store.select(selectWallets)
+    return this.store
+      .select(selectWallets)
       .pipe(
         filter((wallets: DisplayWallet[]) => wallets && wallets.length > 0),
         take(1),
-        map((wallets: DisplayWallet[]) => wallets.map(wallet => wallet.client))
+        map((wallets: DisplayWallet[]) => wallets.map(wallet => wallet.client)),
       )
       .toPromise();
   }
@@ -82,7 +83,7 @@ export class WebPushNotificationsService extends PushNotificationsService {
 
     if (this.pushNotificationsEnabled) {
       if (!this.token) {
-        this.firebaseApp = firebase.apps.length? firebase.app() : firebase.initializeApp(FirebaseAppConfig);
+        this.firebaseApp = firebase.apps.length ? firebase.app() : firebase.initializeApp(FirebaseAppConfig);
         this.firebaseMessaging = firebase.messaging(this.firebaseApp);
         await this.registerSW();
         try {
@@ -94,7 +95,7 @@ export class WebPushNotificationsService extends PushNotificationsService {
           this._hasPermission = false;
           await this.persistenceService.setNotificationSettings({
             ...settings,
-            pushNotifications: false
+            pushNotifications: false,
           });
           this.enablePolling();
           return;
@@ -125,17 +126,21 @@ export class WebPushNotificationsService extends PushNotificationsService {
   async subscribeToEvents() {
     this.firebaseMessaging.onMessage((data: NotificationData) => {
       if (data.data) {
-        this.store.dispatch(new AddNotificationAction({
-          ...data.data,
-          timestamp: Date.now(),
-          read: false
-        }));
+        this.store.dispatch(
+          new AddNotificationAction({
+            ...data.data,
+            timestamp: Date.now(),
+            read: false,
+          }),
+        );
 
         if (data.data.walletId) {
-          this.store.dispatch(new RefreshOneWalletAction(data.data.walletId, {
-            skipAlias: true,
-            skipShareCode: true
-          }));
+          this.store.dispatch(
+            new RefreshOneWalletAction(data.data.walletId, {
+              skipAlias: true,
+              skipShareCode: true,
+            }),
+          );
         }
       }
     });

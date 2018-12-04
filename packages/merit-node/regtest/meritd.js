@@ -27,7 +27,6 @@ var privateKey = meritcore.PrivateKey();
 var destKey = meritcore.PrivateKey();
 
 describe('Meritd Functionality', function() {
-
   before(function(done) {
     this.timeout(60000);
 
@@ -38,7 +37,6 @@ describe('Meritd Functionality', function() {
     var datadir = __dirname + '/data';
 
     rimraf(datadir + '/regtest', function(err) {
-
       if (err) {
         throw err;
       }
@@ -46,14 +44,14 @@ describe('Meritd Functionality', function() {
       meritd = require('../').services.Merit({
         spawn: {
           datadir: datadir,
-          exec: path.resolve(__dirname, '../bin/meritd')
+          exec: path.resolve(__dirname, '../bin/meritd'),
         },
         node: {
           network: regtestNetwork,
           getNetworkName: function() {
             return 'regtest';
-          }
-        }
+          },
+        },
       });
 
       meritd.on('error', function(err) {
@@ -71,7 +69,7 @@ describe('Meritd Functionality', function() {
           port: 30331,
           user: 'merit',
           pass: 'local321',
-          rejectUnauthorized: false
+          rejectUnauthorized: false,
         });
 
         log.info('Generating 100 blocks...');
@@ -92,36 +90,43 @@ describe('Meritd Functionality', function() {
             client.listUnspent(0, 150, function(err, response) {
               utxos = response.result;
 
-              async.mapSeries(utxos, function(utxo, next) {
-                async.series([
-                  function(finished) {
-                    // Load all of the transactions for later testing
-                    client.getTransaction(utxo.txid, function(err, txresponse) {
-                      if (err) {
-                        throw err;
-                      }
-                      // add to the list of transactions for testing later
-                      transactionData.push(txresponse.result.hex);
-                      finished();
-                    });
-                  },
-                  function(finished) {
-                    // Get the private key for each utxo
-                    client.dumpPrivKey(utxo.address, function(err, privresponse) {
-                      if (err) {
-                        throw err;
-                      }
-                      utxo.privateKeyWIF = privresponse.result;
-                      finished();
-                    });
+              async.mapSeries(
+                utxos,
+                function(utxo, next) {
+                  async.series(
+                    [
+                      function(finished) {
+                        // Load all of the transactions for later testing
+                        client.getTransaction(utxo.txid, function(err, txresponse) {
+                          if (err) {
+                            throw err;
+                          }
+                          // add to the list of transactions for testing later
+                          transactionData.push(txresponse.result.hex);
+                          finished();
+                        });
+                      },
+                      function(finished) {
+                        // Get the private key for each utxo
+                        client.dumpPrivKey(utxo.address, function(err, privresponse) {
+                          if (err) {
+                            throw err;
+                          }
+                          utxo.privateKeyWIF = privresponse.result;
+                          finished();
+                        });
+                      },
+                    ],
+                    next,
+                  );
+                },
+                function(err) {
+                  if (err) {
+                    throw err;
                   }
-                ], next);
-              }, function(err) {
-                if (err) {
-                  throw err;
-                }
-                done();
-              });
+                  done();
+                },
+              );
             });
           });
         });
@@ -138,8 +143,7 @@ describe('Meritd Functionality', function() {
   });
 
   describe('get blocks by hash', function() {
-
-    [0,1,2,3,5,6,7,8,9].forEach(function(i) {
+    [0, 1, 2, 3, 5, 6, 7, 8, 9].forEach(function(i) {
       it('generated block ' + i, function(done) {
         meritd.getBlock(blockHashes[i], function(err, block) {
           if (err) {
@@ -154,7 +158,7 @@ describe('Meritd Functionality', function() {
   });
 
   describe('get blocks as buffers', function() {
-    [0,1,2,3,5,6,7,8,9].forEach(function(i) {
+    [0, 1, 2, 3, 5, 6, 7, 8, 9].forEach(function(i) {
       it('generated block ' + i, function(done) {
         meritd.getRawBlock(blockHashes[i], function(err, block) {
           if (err) {
@@ -182,8 +186,7 @@ describe('Meritd Functionality', function() {
   });
 
   describe('get blocks by height', function() {
-
-    [0,1,2,3,4,5,6,7,8,9].forEach(function(i) {
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(function(i) {
       it('generated block ' + i, function(done) {
         // add the genesis block
         var height = i + 1;
@@ -205,11 +208,10 @@ describe('Meritd Functionality', function() {
         done();
       });
     });
-
   });
 
   describe('get transactions by hash', function() {
-    [0,1,2,3,4,5,6,7,8,9].forEach(function(i) {
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(function(i) {
       it('for tx ' + i, function(done) {
         var txhex = transactionData[i];
         var tx = new meritcore.Transaction();
@@ -234,7 +236,7 @@ describe('Meritd Functionality', function() {
   });
 
   describe('get transactions as buffers', function() {
-    [0,1,2,3,4,5,6,7,8,9].forEach(function(i) {
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(function(i) {
       it('for tx ' + i, function(done) {
         var txhex = transactionData[i];
         var tx = new meritcore.Transaction();
@@ -261,7 +263,7 @@ describe('Meritd Functionality', function() {
 
   describe('get block header', function() {
     var expectedWork = new BN(6);
-    [1,2,3,4,5,6,7,8,9].forEach(function(i) {
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(function(i) {
       it('generate block ' + i, function(done) {
         meritd.getBlockHeader(blockHashes[i], function(err, blockIndex) {
           if (err) {
@@ -300,7 +302,7 @@ describe('Meritd Functionality', function() {
 
   describe('get block index by height', function() {
     var expectedWork = new BN(6);
-    [2,3,4,5,6,7,8,9].forEach(function(i) {
+    [2, 3, 4, 5, 6, 7, 8, 9].forEach(function(i) {
       it('generate block ' + i, function() {
         meritd.getBlockHeader(i, function(err, header) {
           should.exist(header);
@@ -324,9 +326,7 @@ describe('Meritd Functionality', function() {
   });
 
   describe('send transaction functionality', function() {
-
     it('will not error and return the transaction hash', function(done) {
-
       // create and sign the transaction
       var tx = meritcore.Transaction();
       tx.from(utxos[0]);
@@ -342,7 +342,6 @@ describe('Meritd Functionality', function() {
         hash.should.equal(tx.hash);
         done();
       });
-
     });
 
     it('will throw an error if an unsigned transaction is sent', function(done) {
@@ -393,7 +392,6 @@ describe('Meritd Functionality', function() {
         should.exist(hash);
       });
     });
-
   });
 
   describe('fee estimation', function() {
@@ -481,5 +479,4 @@ describe('Meritd Functionality', function() {
       });
     });
   });
-
 });

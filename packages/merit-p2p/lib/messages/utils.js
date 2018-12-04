@@ -12,11 +12,11 @@ module.exports = utils = {
       _.isUndefined(arg) ||
         (Array.isArray(arg) && arg.length === 0) ||
         (Array.isArray(arg) && !_.isUndefined(arg[0].type) && !_.isUndefined(arg[0].hash)),
-      'Argument is expected to be an array of inventory objects'
+      'Argument is expected to be an array of inventory objects',
     );
   },
   checkFinished: function checkFinished(parser) {
-    if(!parser.finished()) {
+    if (!parser.finished()) {
       throw new Error('Data still available after parsing');
     }
   },
@@ -65,7 +65,7 @@ module.exports = utils = {
     ipv4 = ipv4.join('.');
     return {
       v6: ipv6,
-      v4: ipv4
+      v4: ipv4,
     };
   },
   parseAddr: function parseAddr(parser) {
@@ -75,7 +75,7 @@ module.exports = utils = {
     return {
       services: services,
       ip: ip,
-      port: port
+      port: port,
     };
   },
   sanitizeStartStop: function sanitizeStartStop(obj) {
@@ -113,5 +113,5 @@ module.exports = utils = {
     obj.stop = stop;
 
     return obj;
-  }
+  },
 };

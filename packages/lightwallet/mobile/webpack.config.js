@@ -13,26 +13,25 @@ if (env !== 'prod' && env !== 'dev') {
   webpackConfig[env] = webpackConfig.dev;
 }
 
-
 if (env === 'prod') {
   webpackConfig.prod.resolve = {
     alias: {
       '@app/env': path.resolve(environmentPath('prod')),
       '@merit/mobile': path.resolve(__dirname, './src'),
-      '@merit/common': path.resolve(__dirname, '../common')
+      '@merit/common': path.resolve(__dirname, '../common'),
     },
     extensions: ['.ts', '.js', '.json'],
-    modules: [path.resolve('node_modules')]
+    modules: [path.resolve('node_modules')],
   };
 } else {
   webpackConfig.dev.resolve = {
     alias: {
       '@app/env': path.resolve(environmentPath('dev')),
       '@merit/mobile': path.resolve(__dirname, './src'),
-      '@merit/common': path.resolve(__dirname, '../common')
+      '@merit/common': path.resolve(__dirname, '../common'),
     },
     extensions: ['.ts', '.js', '.json'],
-    modules: [path.resolve('node_modules')]
+    modules: [path.resolve('node_modules')],
   };
 }
 
@@ -50,14 +49,18 @@ function environmentPath(env) {
 
 const DEFINE_PLUGIN = new webpack.DefinePlugin({
   WEBPACK_CONFIG: {
-    COMMIT_HASH: JSON.stringify(execSync('git rev-parse --short HEAD').toString().trim()),
-    VERSION: JSON.stringify(require('./package.json').version)
-  }
+    COMMIT_HASH: JSON.stringify(
+      execSync('git rev-parse --short HEAD')
+        .toString()
+        .trim(),
+    ),
+    VERSION: JSON.stringify(require('./package.json').version),
+  },
 });
 
 webpackConfig.dev.plugins.push(DEFINE_PLUGIN);
 webpackConfig.prod.plugins.push(DEFINE_PLUGIN);
 
-module.exports = function () {
+module.exports = function() {
   return webpackConfig;
 };

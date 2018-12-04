@@ -7,5 +7,5 @@ module.exports = {
   BloomFilter: require('./bloomfilter'),
   Messages: require('./messages'),
   Peer: require('./peer'),
-  Pool: require('./pool')
+  Pool: require('./pool'),
 };

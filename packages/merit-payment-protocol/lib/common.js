@@ -38,7 +38,7 @@ PaymentProtocol.X509_ALGORITHM = {
 
   '1.2.840.10045.4.3.2': 'ECDSA_SHA256',
   '1.2.840.10045.4.3.3': 'ECDSA_SHA384',
-  '1.2.840.10045.4.3.4': 'ECDSA_SHA512'
+  '1.2.840.10045.4.3.4': 'ECDSA_SHA512',
 };
 
 PaymentProtocol.getAlgorithm = function(value, index) {
@@ -46,12 +46,12 @@ PaymentProtocol.getAlgorithm = function(value, index) {
     value = value.join('.');
   }
   value = PaymentProtocol.X509_ALGORITHM[value];
-  if (typeof(index) !== 'undefined') {
+  if (typeof index !== 'undefined') {
     value = value.split('_');
     if (index === true) {
       return {
         cipher: value[0],
-        hash: value[1]
+        hash: value[1],
       };
     }
     return value[index];
@@ -122,20 +122,22 @@ PaymentProtocol.validateCertTime = function(c, nc) {
 PaymentProtocol.validateCertIssuer = function(c, nc) {
   var issuer = c.tbsCertificate.issuer;
   var subject = nc.tbsCertificate.subject;
-  var issuerVerified = issuer.type === subject.type && issuer.value.every(function(issuerArray, i) {
-    var subjectArray = subject.value[i];
-    return issuerArray.every(function(issuerObject, i) {
-      var subjectObject = subjectArray[i];
+  var issuerVerified =
+    issuer.type === subject.type &&
+    issuer.value.every(function(issuerArray, i) {
+      var subjectArray = subject.value[i];
+      return issuerArray.every(function(issuerObject, i) {
+        var subjectObject = subjectArray[i];
 
-      var issuerObjectType = issuerObject.type.join('.');
-      var subjectObjectType = subjectObject.type.join('.');
+        var issuerObjectType = issuerObject.type.join('.');
+        var subjectObjectType = subjectObject.type.join('.');
 
-      var issuerObjectValue = issuerObject.value.toString('hex');
-      var subjectObjectValue = subjectObject.value.toString('hex');
+        var issuerObjectValue = issuerObject.value.toString('hex');
+        var subjectObjectValue = subjectObject.value.toString('hex');
 
-      return issuerObjectType === subjectObjectType && issuerObjectValue === subjectObjectValue;
+        return issuerObjectType === subjectObjectType && issuerObjectValue === subjectObjectValue;
+      });
     });
-  });
   return issuerVerified;
 };
 
@@ -143,13 +145,15 @@ PaymentProtocol.RootCerts = RootCerts;
 
 PaymentProtocol.proto = {};
 
-PaymentProtocol.proto.Output = 'message Output {\
+PaymentProtocol.proto.Output =
+  'message Output {\
   optional uint64 amount = 1 [default = 0];\
   optional bytes script = 2;\
 }\n';
 
-PaymentProtocol.proto.PaymentDetails = 'message PaymentDetails {\
-  optional string network = 1 [default = \"main\"];\
+PaymentProtocol.proto.PaymentDetails =
+  'message PaymentDetails {\
+  optional string network = 1 [default = "main"];\
   repeated Output outputs = 2;\
   required uint64 time = 3;\
   optional uint64 expires = 4;\
@@ -158,22 +162,25 @@ PaymentProtocol.proto.PaymentDetails = 'message PaymentDetails {\
   optional bytes merchant_data = 7;\
 }\n';
 
-PaymentProtocol.proto.PaymentRequest = 'message PaymentRequest {\
+PaymentProtocol.proto.PaymentRequest =
+  'message PaymentRequest {\
   optional uint32 payment_details_version = 1 [default = 1];\
-  optional string pki_type = 2 [default = \"none\"];\
+  optional string pki_type = 2 [default = "none"];\
   optional bytes pki_data = 3;\
   required bytes serialized_payment_details = 4;\
   optional bytes signature = 5;\
 }\n';
 
-PaymentProtocol.proto.Payment = 'message Payment {\
+PaymentProtocol.proto.Payment =
+  'message Payment {\
   optional bytes merchant_data = 1;\
   repeated bytes transactions = 2;\
   repeated Output refund_to = 3;\
   optional string memo = 4;\
 }\n';
 
-PaymentProtocol.proto.PaymentACK = 'message PaymentACK {\
+PaymentProtocol.proto.PaymentACK =
+  'message PaymentACK {\
   required Payment payment = 1;\
   optional string memo = 2;\
 }\n';
@@ -323,7 +330,7 @@ PaymentProtocol.prototype.serialize = function() {
   //protobufjs returns either a Buffer or an ArrayBuffer
   //but we always want a Buffer (which browserify understands, browser or no)
   var maybebuf = this.message.toBuffer();
-  var buf = (Buffer.isBuffer(maybebuf)) ? maybebuf : new Buffer(new Uint8Array(maybebuf));
+  var buf = Buffer.isBuffer(maybebuf) ? maybebuf : new Buffer(new Uint8Array(maybebuf));
   return buf;
 };
 
@@ -413,21 +420,20 @@ PaymentProtocol.prototype.sinVerify = function() {
 };
 
 // Helpers
-PaymentProtocol.PEMtoDER =
-  PaymentProtocol.prototype._PEMtoDER = function(pem) {
-    return this.PEMtoDERParam(pem, 'CERTIFICATE');
-  };
+PaymentProtocol.PEMtoDER = PaymentProtocol.prototype._PEMtoDER = function(pem) {
+  return this.PEMtoDERParam(pem, 'CERTIFICATE');
+};
 
-PaymentProtocol.PEMtoDERParam =
-  PaymentProtocol.prototype._PEMtoDERParam = function(pem, param) {
-    if (Buffer.isBuffer(pem)) {
-      pem = pem.toString();
-    }
-    var start = new RegExp('(?=-----BEGIN ' + (param || '[^-]+') + '-----)', 'i');
-    var end = new RegExp('^-----END ' + (param || '[^-]+') + '-----$', 'gmi');
-    pem = pem.replace(end, '');
-    var parts = pem.split(start);
-    return parts.map(function(part) {
+PaymentProtocol.PEMtoDERParam = PaymentProtocol.prototype._PEMtoDERParam = function(pem, param) {
+  if (Buffer.isBuffer(pem)) {
+    pem = pem.toString();
+  }
+  var start = new RegExp('(?=-----BEGIN ' + (param || '[^-]+') + '-----)', 'i');
+  var end = new RegExp('^-----END ' + (param || '[^-]+') + '-----$', 'gmi');
+  pem = pem.replace(end, '');
+  var parts = pem.split(start);
+  return parts
+    .map(function(part) {
       var type = /-----BEGIN ([^-]+)-----/.exec(part)[1];
       part = part.replace(/-----BEGIN ([^-]+)-----/g, '');
       part = part.replace(/\s+/g, '');
@@ -435,54 +441,47 @@ PaymentProtocol.PEMtoDERParam =
         return;
       }
       return new Buffer(part, 'base64');
-    }).filter(Boolean);
-  };
+    })
+    .filter(Boolean);
+};
 
-PaymentProtocol.DERtoPEM =
-  PaymentProtocol.prototype._DERtoPEM = function(der, type) {
-    if (typeof der === 'string') {
-      der = new Buffer(der, 'hex');
+PaymentProtocol.DERtoPEM = PaymentProtocol.prototype._DERtoPEM = function(der, type) {
+  if (typeof der === 'string') {
+    der = new Buffer(der, 'hex');
+  }
+  type = type || 'PRIVACY-ENHANCED MESSAGE';
+  der = der.toString('base64');
+  der = der.replace(/(.{64})/g, '$1\r\n');
+  der = der.replace(/\r\n$/, '');
+  return '' + '-----BEGIN ' + type + '-----\r\n' + der + '\r\n-----END ' + type + '-----\r\n';
+};
+
+PaymentProtocol.completeChainAndGetCA = PaymentProtocol.prototype._completeChainAndGetCA = function(chain) {
+  var caName, pem, der;
+  var issuer = chain[chain.length - 1];
+  var nder = issuer.toString('hex');
+  var ndata = new Buffer(nder, 'hex');
+  var nc = rfc5280.Certificate.decode(ndata, 'der');
+  var values = nc.tbsCertificate.issuer.value;
+  var l = values.length,
+    i = 0;
+  while (i++ < l && !caName) {
+    var v = values[i];
+    if (!v) continue;
+    var name = v[0].value.toString().substr(2);
+
+    pem = RootCerts.getCert(name);
+    if (!pem) pem = RootCerts.getCert(name.replace('Certification Authority', 'CA'));
+
+    // Root Cert found
+    if (pem) {
+      caName = name;
+      der = PaymentProtocol.PEMtoDER(pem)[0];
+      chain.push(der);
     }
-    type = type || 'PRIVACY-ENHANCED MESSAGE';
-    der = der.toString('base64');
-    der = der.replace(/(.{64})/g, '$1\r\n');
-    der = der.replace(/\r\n$/, '');
-    return '' +
-      '-----BEGIN ' + type + '-----\r\n' +
-      der +
-      '\r\n-----END ' + type + '-----\r\n';
-  };
-
-
-PaymentProtocol.completeChainAndGetCA =
-  PaymentProtocol.prototype._completeChainAndGetCA = function(chain) {
-    var caName, pem, der;
-    var issuer = chain[chain.length - 1];
-    var nder = issuer.toString('hex');
-    var ndata = new Buffer(nder, 'hex');
-    var nc = rfc5280.Certificate.decode(ndata, 'der');
-    var values = nc.tbsCertificate.issuer.value;
-    var l = values.length,
-      i = 0;
-    while (i++ < l && !caName) {
-      var v = values[i];
-      if (!v) continue;
-      var name = v[0].value.toString().substr(2);
-
-      pem = RootCerts.getCert(name);
-      if (!pem)
-        pem = RootCerts.getCert(name.replace('Certification Authority', 'CA'));
-
-      // Root Cert found
-      if (pem) {
-        caName = name;
-        der = PaymentProtocol.PEMtoDER(pem)[0];
-        chain.push(der);
-      }
-    }
-    return caName;
-  };
-
+  }
+  return caName;
+};
 
 // Expose RootCerts
 PaymentProtocol.getTrusted = RootCerts.getTrusted;

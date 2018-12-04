@@ -31,7 +31,7 @@ NotfoundMessage.prototype.setPayload = function(payload) {
   for (var i = 0; i < count; i++) {
     var type = parser.readUInt32LE();
     var hash = parser.read(32);
-    this.inventory.push({type: type, hash: hash});
+    this.inventory.push({ type: type, hash: hash });
   }
 
   utils.checkFinished(parser);

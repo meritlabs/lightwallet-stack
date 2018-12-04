@@ -6,7 +6,6 @@ var sinon = require('sinon');
 var RateLimiter = require('../lib/ratelimiter');
 
 describe('RateLimiter', function() {
-
   describe('@constructor', function() {
     it('will instantiate without options', function() {
       var limiter = new RateLimiter();
@@ -30,7 +29,7 @@ describe('RateLimiter', function() {
         whitelistLimit: 1,
         whitelistInterval: 1,
         blacklistLimit: 1,
-        blacklistInterval: 1
+        blacklistInterval: 1,
       });
       should.exist(limiter);
       should.exist(limiter.config);
@@ -52,12 +51,12 @@ describe('RateLimiter', function() {
       var limiter = new RateLimiter();
       var req = {
         headers: {
-          'cf-connecting-ip': '127.0.0.1'
-        }
+          'cf-connecting-ip': '127.0.0.1',
+        },
       };
       var setHeader = sinon.stub();
       var res = {
-        setHeader: setHeader
+        setHeader: setHeader,
       };
       limiter.middleware()(req, res, function() {
         setHeader.callCount.should.equal(2);
@@ -71,23 +70,23 @@ describe('RateLimiter', function() {
     it('will give rate limit error', function() {
       var node = {
         log: {
-          warn: sinon.stub()
-        }
+          warn: sinon.stub(),
+        },
       };
-      var limiter = new RateLimiter({node: node});
+      var limiter = new RateLimiter({ node: node });
       limiter.exceeded = sinon.stub().returns(true);
       var req = {
         headers: {
-          'cf-connecting-ip': '127.0.0.1'
-        }
+          'cf-connecting-ip': '127.0.0.1',
+        },
       };
       var jsonp = sinon.stub();
       var status = sinon.stub().returns({
-        jsonp: jsonp
+        jsonp: jsonp,
       });
       var res = {
         status: status,
-        setHeader: sinon.stub()
+        setHeader: sinon.stub(),
       };
       limiter.middleware()(req, res);
       status.callCount.should.equal(1);
@@ -95,7 +94,7 @@ describe('RateLimiter', function() {
       jsonp.callCount.should.equal(1);
       jsonp.args[0][0].should.eql({
         status: 429,
-        error: 'Rate limit exceeded'
+        error: 'Rate limit exceeded',
       });
     });
   });
@@ -103,14 +102,14 @@ describe('RateLimiter', function() {
   describe('#exceeded', function() {
     it('should not be exceeded', function() {
       var node = {};
-      var limiter = new RateLimiter({node: node});
+      var limiter = new RateLimiter({ node: node });
       var client = limiter.addClient('127.0.0.1');
       var exceeded = limiter.exceeded(client);
       exceeded.should.equal(false);
     });
     it('should be exceeded', function() {
       var node = {};
-      var limiter = new RateLimiter({node: node});
+      var limiter = new RateLimiter({ node: node });
       var client = limiter.addClient('127.0.0.1');
       client.visits = 3 * 60 * 60 + 1;
       var exceeded = limiter.exceeded(client);
@@ -119,11 +118,9 @@ describe('RateLimiter', function() {
     it('should exclude whitelisted with no limit', function() {
       var node = {};
       var limiter = new RateLimiter({
-        whitelist: [
-          '127.0.0.1'
-        ],
+        whitelist: ['127.0.0.1'],
         node: node,
-        whitelistLimit: -1
+        whitelistLimit: -1,
       });
       var client = limiter.addClient('127.0.0.1');
       client.visits = Infinity;
@@ -135,34 +132,34 @@ describe('RateLimiter', function() {
   describe('#getClientName', function() {
     it('should get client name from cloudflare header', function() {
       var node = {};
-      var limiter = new RateLimiter({node: node});
+      var limiter = new RateLimiter({ node: node });
       var req = {
         headers: {
-          'cf-connecting-ip': '127.0.0.1'
-        }
+          'cf-connecting-ip': '127.0.0.1',
+        },
       };
       var name = limiter.getClientName(req);
       name.should.equal('127.0.0.1');
     });
     it('should get client name from x forwarded header', function() {
       var node = {};
-      var limiter = new RateLimiter({node: node});
+      var limiter = new RateLimiter({ node: node });
       var req = {
         headers: {
-          'x-forwarded-for': '127.0.0.1'
-        }
+          'x-forwarded-for': '127.0.0.1',
+        },
       };
       var name = limiter.getClientName(req);
       name.should.equal('127.0.0.1');
     });
     it('should get client name from connection remote address', function() {
       var node = {};
-      var limiter = new RateLimiter({node: node});
+      var limiter = new RateLimiter({ node: node });
       var req = {
         headers: {},
         connection: {
-          remoteAddress: '127.0.0.1'
-        }
+          remoteAddress: '127.0.0.1',
+        },
       };
       var name = limiter.getClientName(req);
       name.should.equal('127.0.0.1');
@@ -178,12 +175,11 @@ describe('RateLimiter', function() {
       var THREE_HOURS_PLUS = 3 * 60 * 60 * 1000 + 1;
       var clock = sandbox.useFakeTimers();
       var node = {};
-      var limiter = new RateLimiter({node: node});
+      var limiter = new RateLimiter({ node: node });
       limiter.addClient('127.0.0.1');
       should.exist(limiter.clients['127.0.0.1']);
       clock.tick(THREE_HOURS_PLUS);
       should.not.exist(limiter.clients['127.0.0.1']);
     });
   });
-
 });

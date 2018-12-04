@@ -60,10 +60,8 @@ function request(options, callback) {
     options = { uri: options };
   }
 
-  var uri = options.uri || options.url
-    , body = options.json
-        ? JSON.stringify(options.json)
-        : options.body || '';
+  var uri = options.uri || options.url,
+    body = options.json ? JSON.stringify(options.json) : options.body || '';
 
   if (typeof uri !== 'object') {
     uri = url.parse(uri);
@@ -77,9 +75,7 @@ function request(options, callback) {
     uri.path = uri.pathname + '?' + qs.stringify(query);
   }
 
-  var protocol = uri.protocol === 'https:'
-    ? require('https')
-    : http;
+  var protocol = uri.protocol === 'https:' ? require('https') : http;
 
   options.method = options.method || (body ? 'POST' : 'GET');
   options.method = options.method.toUpperCase();
@@ -102,12 +98,11 @@ function request(options, callback) {
     port: uri.port || (protocol === http ? 80 : 443),
     path: uri.path,
     method: options.method,
-    headers: options.headers
+    headers: options.headers,
   };
 
-
-  var req = protocol.request(opt)
-    , response = new Stream;
+  var req = protocol.request(opt),
+    response = new Stream();
 
   req.on('error', function(err) {
     if (callback) {
@@ -118,9 +113,9 @@ function request(options, callback) {
   });
 
   req.on('response', function(res) {
-    var decoder = new StringDecoder('utf8')
-      , done = false
-      , body = '';
+    var decoder = new StringDecoder('utf8'),
+      done = false,
+      body = '';
 
     function end() {
       if (done) return;
@@ -130,9 +125,7 @@ function request(options, callback) {
         if (options.json) {
           try {
             body = JSON.parse(body);
-          } catch (e) {
-            ;
-          }
+          } catch (e) {}
         }
         callback(null, res, body);
       } else {

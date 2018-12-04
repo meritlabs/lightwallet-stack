@@ -2,7 +2,6 @@ import { browser, protractor, element, by } from 'protractor';
 import { EC } from './app.e2e-spec';
 
 export class Transact {
-
   getRootEl() {
     return element(by.css('view-transact'));
   }
@@ -20,9 +19,9 @@ export class Transact {
   }
 
   selectTab(index: number) {
-    const el = this.getTabButtonsEl().element(by.css(`.tab-button:nth-child(${ ++index })`));
+    const el = this.getTabButtonsEl().element(by.css(`.tab-button:nth-child(${++index})`));
     browser.wait(EC.visibilityOf(el), 3000, 'Cant click on tab button');
-   return el.click();
+    return el.click();
   }
 
   getSendView() {
@@ -36,5 +35,4 @@ export class Transact {
   getCommunityView() {
     return this.getRootEl().element(by.css('view-network'));
   }
-
 }

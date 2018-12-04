@@ -32,7 +32,7 @@ describe('Blockchain explorer', function() {
         var exp = new BlockchainExplorer({
           provider: 'dummy',
         });
-      }).should.throw('not supported');
+      }.should.throw('not supported'));
     });
   });
 });

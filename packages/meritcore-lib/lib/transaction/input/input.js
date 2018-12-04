@@ -42,7 +42,7 @@ Object.defineProperty(Input.prototype, 'script', {
       this._script._isInput = true;
     }
     return this._script;
-  }
+  },
 });
 
 Input.fromObject = function(obj) {
@@ -59,12 +59,18 @@ Input.prototype._fromObject = function(params) {
     prevTxId = params.prevTxId;
   }
   this.witnesesses = [];
-  this.output = params.output ?
-    (params.output instanceof Output ? params.output : new Output(params.output)) : undefined;
+  this.output = params.output
+    ? params.output instanceof Output
+      ? params.output
+      : new Output(params.output)
+    : undefined;
   this.prevTxId = prevTxId || params.txidbuf;
   this.outputIndex = _.isUndefined(params.outputIndex) ? params.txoutnum : params.outputIndex;
-  this.sequenceNumber = _.isUndefined(params.sequenceNumber) ?
-    (_.isUndefined(params.seqnum) ? DEFAULT_SEQNUMBER : params.seqnum) : params.sequenceNumber;
+  this.sequenceNumber = _.isUndefined(params.sequenceNumber)
+    ? _.isUndefined(params.seqnum)
+      ? DEFAULT_SEQNUMBER
+      : params.seqnum
+    : params.sequenceNumber;
   if (_.isUndefined(params.script) && _.isUndefined(params.scriptBuffer)) {
     throw new errors.Transaction.Input.MissingScript();
   }
@@ -150,7 +156,8 @@ Input.prototype.setScript = function(script) {
 Input.prototype.getSignatures = function() {
   throw new errors.AbstractMethodInvoked(
     'Trying to sign unsupported output type (only P2PKH and P2SH multisig, and generic P2SH inputs are supported)' +
-    ' for input: ' + JSON.stringify(this)
+      ' for input: ' +
+      JSON.stringify(this),
   );
 };
 
@@ -178,7 +185,7 @@ Input.prototype.isValidSignature = function(transaction, signature) {
     signature.signature,
     signature.publicKey,
     signature.inputIndex,
-    this.output.script
+    this.output.script,
   );
 };
 
@@ -186,8 +193,10 @@ Input.prototype.isValidSignature = function(transaction, signature) {
  * @returns true if this is a coinbase input (represents no input)
  */
 Input.prototype.isNull = function() {
-  return this.prevTxId.toString('hex') === '0000000000000000000000000000000000000000000000000000000000000000' &&
-    this.outputIndex === 0xffffffff;
+  return (
+    this.prevTxId.toString('hex') === '0000000000000000000000000000000000000000000000000000000000000000' &&
+    this.outputIndex === 0xffffffff
+  );
 };
 
 Input.prototype._estimateSize = function() {
@@ -195,13 +204,13 @@ Input.prototype._estimateSize = function() {
 };
 
 Input.prototype.hasWitnesses = function() {
-  if (this.witnesses && this.witnesses.length >0) {
+  if (this.witnesses && this.witnesses.length > 0) {
     return true;
   }
-  return false; 
-}
+  return false;
+};
 
-Input.prototype.getWitnesses = function () {
+Input.prototype.getWitnesses = function() {
   return this.witnesses;
 };
 

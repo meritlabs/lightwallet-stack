@@ -3,12 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { SendFeeView } from './send-fee';
 
 @NgModule({
-  declarations: [
-    SendFeeView,
-  ],
-  imports: [
-    IonicPageModule.forChild(SendFeeView),
-  ],
+  declarations: [SendFeeView],
+  imports: [IonicPageModule.forChild(SendFeeView)],
 })
-export class SendFeeModule {
-}
+export class SendFeeModule {}

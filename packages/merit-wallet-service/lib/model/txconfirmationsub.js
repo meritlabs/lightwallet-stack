@@ -1,6 +1,6 @@
 'use strict';
 
-function TxConfirmationSub() {};
+function TxConfirmationSub() {}
 
 TxConfirmationSub.create = function(opts) {
   opts = opts || {};
@@ -27,6 +27,5 @@ TxConfirmationSub.fromObj = function(obj) {
   x.isActive = obj.isActive;
   return x;
 };
-
 
 module.exports = TxConfirmationSub;

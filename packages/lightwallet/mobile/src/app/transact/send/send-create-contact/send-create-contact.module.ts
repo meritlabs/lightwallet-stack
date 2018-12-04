@@ -4,13 +4,7 @@ import { DirectivesModule } from '@merit/mobile/directives/directives.module';
 import { SendCreateContactView } from './send-create-contact';
 
 @NgModule({
-  declarations: [
-    SendCreateContactView,
-  ],
-  imports: [
-    IonicPageModule.forChild(SendCreateContactView),
-    DirectivesModule
-  ],
+  declarations: [SendCreateContactView],
+  imports: [IonicPageModule.forChild(SendCreateContactView), DirectivesModule],
 })
-export class SendCreateContactModule {
-}
+export class SendCreateContactModule {}

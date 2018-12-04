@@ -1,4 +1,5 @@
 # Networks
+
 Merit library provides support for the main Merit network as well as for `testnet3`, the current test blockchain. We encourage the use of `Networks.livenet` and `Networks.testnet` as constants. Note that the library sometimes may check for equality against this object. Please avoid creating a deep copy of this object.
 
 The `Network` namespace has a function, `get(...)` that returns an instance of a `Network` or `undefined`. The only argument to this function is some kind of identifier of the network: either its name, a reference to a Network object, or a number used as a magic constant to identify the network (for example, the value `0` that gives Merit addresses the distinctive `M` at its beginning on livenet, is a `m` for testnet).
@@ -21,9 +22,11 @@ The regtest network is useful for development as it's possible to programmatical
 ```
 
 ## Setting the Default Network
+
 Most projects will only need to work with one of the networks. The value of `Networks.defaultNetwork` can be set to `Networks.testnet` if the project will need to only to work on testnet (the default is `Networks.livenet`).
 
 ## Network constants
+
 The functionality of testnet and livenet is mostly similar (except for some relaxed block validation rules on testnet). They differ in the constants being used for human representation of base58 encoded strings. These are sometimes referred to as "version" constants.
 
 Take a look at this modified snippet from [networks.js](https://github.com/meritlabs/lightwallet-stack/blob/master/packages/meritcore-lib/lib/networks.js)
@@ -36,9 +39,9 @@ _.extend(livenet, {
   pubkeyhash: 0x00,
   privatekey: 0x80,
   scripthash: 0x05,
-  xpubkey:  0x0488b21e,
+  xpubkey: 0x0488b21e,
   xprivkey: 0x0488ade4,
-  port: 8333
+  port: 8333,
 });
 
 var testnet = new Network();
@@ -50,6 +53,6 @@ _.extend(testnet, {
   scripthash: 0xc4,
   xpubkey: 0x043587cf,
   xprivkey: 0x04358394,
-  port: 18333
+  port: 18333,
 });
 ```

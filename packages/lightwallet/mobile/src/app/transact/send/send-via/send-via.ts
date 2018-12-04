@@ -23,7 +23,6 @@ const searchIn = (method: ISendMethod) => {
   templateUrl: 'send-via.html',
 })
 export class SendViaView {
-
   public contact: MeritContact;
   public amount: number;
   public highlightedMethod: ISendMethod;
@@ -31,10 +30,12 @@ export class SendViaView {
 
   public easySendEnabled: boolean;
 
-  constructor(private viewCtrl: ViewController,
-              private navParams: NavParams,
-              private alertCtrl: AlertController,
-              private addressService: AddressService) {
+  constructor(
+    private viewCtrl: ViewController,
+    private navParams: NavParams,
+    private alertCtrl: AlertController,
+    private addressService: AddressService,
+  ) {
     this.contact = this.navParams.get('contact');
     this.amount = this.navParams.get('amount');
     this.suggestedMethod = this.navParams.get('suggestedMethod');
@@ -50,19 +51,16 @@ export class SendViaView {
       }
 
       if (!this.highlightedMethod) {
-        this.addressService.getSendHistory().then((sendHistory) => {
-          sendHistory
-            .sort((a, b) => b.timestamp - a.timestamp)
-            .some((record) => {
-              const entities: any[] = this.contact[searchIn(this.suggestedMethod)];
-              if (entities.some(entity => entity.value == record.method.value)) {
-                this.highlightedMethod = record;
-                return true;
-              }
-            });
+        this.addressService.getSendHistory().then(sendHistory => {
+          sendHistory.sort((a, b) => b.timestamp - a.timestamp).some(record => {
+            const entities: any[] = this.contact[searchIn(this.suggestedMethod)];
+            if (entities.some(entity => entity.value == record.method.value)) {
+              this.highlightedMethod = record;
+              return true;
+            }
+          });
         });
       }
-
     }
   }
 
@@ -78,28 +76,34 @@ export class SendViaView {
     return this.viewCtrl.dismiss({
       contact: this.contact,
       amount: this.amount,
-      suggestedMethod: { type, destination, value, alias }
+      suggestedMethod: { type, destination, value, alias },
     });
   }
 
   showClassicTooltip() {
-    return this.showTooltip('Classic Send',
-      'ClassicSend transactions do not have power of EasySend, but fee size is lower.');
+    return this.showTooltip(
+      'Classic Send',
+      'ClassicSend transactions do not have power of EasySend, but fee size is lower.',
+    );
   }
 
   showEasyTooltip() {
-    return this.showTooltip('Easy Send',
-      'EasySend transactions could be returned, password protected and limited by expiration time. You can send Merit either to existing merit address or share a link via sms/email');
+    return this.showTooltip(
+      'Easy Send',
+      'EasySend transactions could be returned, password protected and limited by expiration time. You can send Merit either to existing merit address or share a link via sms/email',
+    );
   }
   cancel() {
     this.viewCtrl.dismiss();
   }
 
   private showTooltip(title, message) {
-    return this.alertCtrl.create({
-      title, message,
-      buttons: ['Got it']
-    }).present();
+    return this.alertCtrl
+      .create({
+        title,
+        message,
+        buttons: ['Got it'],
+      })
+      .present();
   }
-
 }

@@ -19,7 +19,7 @@ const showWindowsNotification = (title, message = ' ') => {
     icon,
     appId: 'wallet.merit.me',
     wait: true,
-    sound: true
+    sound: true,
   });
 };
 
@@ -28,8 +28,8 @@ nn.on('click', () => {
 });
 
 window['electron'] = {
-  showNotification: isWin? showWindowsNotification : showNotification,
+  showNotification: isWin ? showWindowsNotification : showNotification,
   checkForUpdates: updater.checkForUpdates,
   downloadUpdate: updater.downloadUpdate,
-  installUpdate: updater.installUpdate
+  installUpdate: updater.installUpdate,
 };

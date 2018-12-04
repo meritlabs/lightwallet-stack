@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 
 import { LoggerService } from '@merit/common/services/logger.service';
-import { IVault } from "@merit/common/models/vault";
+import { IVault } from '@merit/common/models/vault';
 import { WalletService } from '@merit/common/services/wallet.service';
 import { ProfileService } from '@merit/common/services/profile.service';
-import { RateService } from "@merit/common/services/rate.service";
+import { RateService } from '@merit/common/services/rate.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { Constants } from '@merit/common/merit-wallet-client/lib/common/constants';
 import { FeeService } from '@merit/common/services/fee.service';
@@ -12,24 +12,22 @@ import { ENV } from '@app/env';
 import { HDPrivateKey, Address, Script, Transaction, PublicKey, Opcode, crypto } from 'meritcore-lib';
 
 export interface IVaultCreateData {
-  vaultName: string,
-  whiteList: Array<MeritWalletClient>,
-  wallet: MeritWalletClient,
-  amount: number,
-  masterKey: {key: any, phrase: string}
+  vaultName: string;
+  whiteList: Array<MeritWalletClient>;
+  wallet: MeritWalletClient;
+  amount: number;
+  masterKey: { key: any; phrase: string };
 }
 
 @Injectable()
 export class VaultsService {
-
   constructor(
     private logger: LoggerService,
     private walletService: WalletService,
     private profileService: ProfileService,
     private rateService: RateService,
-    private feeService: FeeService
-  ) {
-  }
+    private feeService: FeeService,
+  ) {}
 
   /**
    * Receiving fresh data from MWS db, does not look into blockchain
@@ -49,7 +47,7 @@ export class VaultsService {
    * Changing only name in MWS, no transactions created
    */
   async editVaultName(vault: IVault, newName: string) {
-    return vault.walletClient.updateVaultInfo({_id: vault._id, name: newName});
+    return vault.walletClient.updateVaultInfo({ _id: vault._id, name: newName });
   }
 
   /**
@@ -62,7 +60,7 @@ export class VaultsService {
     const fee = await this.feeService.getTxpFee(txp);
     const tx = await this.getSendTxp(vault, amount, toAddress, fee);
     await vault.walletClient.broadcastRawTx({ rawTx: tx.serialize(), network: ENV.network });
-    await vault.walletClient.updateVaultInfo({_id: vault._id});
+    await vault.walletClient.updateVaultInfo({ _id: vault._id });
     vault = await this.getVaultInfo(vault);
     await this.profileService.updateVault(vault);
 
@@ -70,9 +68,9 @@ export class VaultsService {
   }
 
   /**
-  * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes
-  * so we take all utxos and send them to the same address but differrent scriptPubkey
-  */
+   * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes
+   * so we take all utxos and send them to the same address but differrent scriptPubkey
+   */
   async renewVaultWhitelist(vault: IVault, newWhitelist: Array<any>, masterKey) {
     vault = await this.getVaultInfo(vault);
 
@@ -87,18 +85,18 @@ export class VaultsService {
       _id: vault._id,
       status: 'renewing',
       whitelist: newWhitelist,
-      initialTxId: txid
+      initialTxId: txid,
     };
     return vault.walletClient.updateVaultInfo(infoToUpdate);
   }
 
   /**
-  * create and deposit new vault
-  */
+   * create and deposit new vault
+   */
   async createVault(data: IVaultCreateData) {
     await this.checkCreateData(data);
 
-    const vault:any = this.prepareVault(0, {
+    const vault: any = this.prepareVault(0, {
       whitelist: data.whiteList.map(w => w.rootAddress.toBuffer()),
       masterPubKey: data.masterKey.key.publicKey,
       spendPubKey: HDPrivateKey.fromString(data.wallet.credentials.xPrivKey).publicKey,
@@ -110,7 +108,7 @@ export class VaultsService {
       signPrivKey: data.masterKey.key.privateKey,
       address: vault.address.toString(),
       addressType: Address.ParameterizedPayToScriptHashType, // pubkey address
-      network: data.wallet.credentials.network
+      network: data.wallet.credentials.network,
     };
 
     //todo use wallet decrypt-encrypt decorator
@@ -119,7 +117,7 @@ export class VaultsService {
     await this.walletService.sendInvite(data.wallet, scriptReferralOpts.address, 1, vault.scriptPubKey.toHex());
     vault.scriptPubKey = vault.scriptPubKey.toBuffer().toString('hex');
 
-    const depositData = {amount: data.amount, address: vault.address, scriptPubKey: vault.scriptPubKey};
+    const depositData = { amount: data.amount, address: vault.address, scriptPubKey: vault.scriptPubKey };
     const txp = await this.getDepositTxp(depositData, data.wallet);
     const pubTxp = await this.walletService.publishTx(data.wallet, txp);
     //todo wallet should be decrypted by the moment
@@ -135,32 +133,36 @@ export class VaultsService {
   }
 
   /**
-  * sending money to existing vault
-  */
+   * sending money to existing vault
+   */
   async depositVault(vault, amount) {
     vault = await this.getVaultInfo(vault);
 
     const address = Address(vault.address);
-    const scriptPubKey = Script(vault.scriptPubKey).toBuffer().toString('hex');
-    const txp = await this.getDepositTxp({address, scriptPubKey, amount}, vault.walletClient);
+    const scriptPubKey = Script(vault.scriptPubKey)
+      .toBuffer()
+      .toString('hex');
+    const txp = await this.getDepositTxp({ address, scriptPubKey, amount }, vault.walletClient);
     await this.walletService.publishAndSign(vault.walletClient, txp);
-    await vault.walletClient.updateVaultInfo({_id: vault._id, name: vault.name});
+    await vault.walletClient.updateVaultInfo({ _id: vault._id, name: vault.name });
     vault = await this.getVaultInfo(vault);
     await this.profileService.updateVault(vault);
     return vault;
   }
 
   /**
-  * check if we can create vault
-  */
+   * check if we can create vault
+   */
   private async checkCreateData(data) {
     if (
-      !data.vaultName
-      || !data.wallet
-      || !data.whiteList
-      || !data.whiteList.length
-      || !data.amount
-      || !data.masterKey || !data.masterKey.key || !data.masterKey.phrase
+      !data.vaultName ||
+      !data.wallet ||
+      !data.whiteList ||
+      !data.whiteList.length ||
+      !data.amount ||
+      !data.masterKey ||
+      !data.masterKey.key ||
+      !data.masterKey.phrase
     ) {
       this.logger.warn('Incorrect data', data);
       throw new Error('Incorrect data');
@@ -172,16 +174,16 @@ export class VaultsService {
       throw new Error("You don't have any active invites that you can use to create a vault");
     }
     if (data.amount > data.wallet.balance.spendableAmount) {
-      throw new Error("Wallet balance is less than vault balance");
+      throw new Error('Wallet balance is less than vault balance');
     }
 
     return true;
   }
 
   /**
-  * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes
-  * so we take all utxos and send them to the same address but differrent scriptPubkey
-  */
+   * renewing vault means changing whitelist. Address and redeem script stays the same, but scriptPubKey changes
+   * so we take all utxos and send them to the same address but differrent scriptPubkey
+   */
   private getRenewTxp(vault, newWhitelist, masterKey, fee = FeeService.DEFAULT_FEE) {
     const amount = vault.amount - fee;
 
@@ -191,7 +193,7 @@ export class VaultsService {
 
     let params = [
       new PublicKey(vault.spendPubKey, { network: ENV.network }).toBuffer(),
-      new PublicKey(vault.masterPubKey, { network: ENV.network }).toBuffer()
+      new PublicKey(vault.masterPubKey, { network: ENV.network }).toBuffer(),
     ];
 
     const whitelist = newWhitelist.map(w => Address(w).hashBuffer);
@@ -227,10 +229,9 @@ export class VaultsService {
   }
 
   /**
-  * creating transaction to transfer money from vault to one of whitelisted addresses
-  */
+   * creating transaction to transfer money from vault to one of whitelisted addresses
+   */
   private getSendTxp(vault, amount, address, fee = FeeService.DEFAULT_FEE) {
-
     if (vault.type != 0) throw new Error('Vault type is not supported');
 
     //todo why are we using wallet private key here???
@@ -238,13 +239,13 @@ export class VaultsService {
 
     let selectedCoins = [];
     let selectedAmount = 0;
-    for(let c = 0; c < vault.coins.length && selectedAmount < amount; c++) {
+    for (let c = 0; c < vault.coins.length && selectedAmount < amount; c++) {
       let coin = vault.coins[c];
       selectedAmount += coin.micros;
       selectedCoins.push(coin);
     }
 
-    if(selectedAmount < amount) throw new Error('Insufficient funds');
+    if (selectedAmount < amount) throw new Error('Insufficient funds');
 
     const change = selectedAmount - amount;
 
@@ -268,10 +269,12 @@ export class VaultsService {
 
     let scriptPubKey = Script.buildMixedParameterizedP2SH(redeemScript, params, vault.masterPubKey);
 
-    tx.addOutput(Transaction.Output({
-      script: scriptPubKey,
-      micros: change
-    }));
+    tx.addOutput(
+      Transaction.Output({
+        script: scriptPubKey,
+        micros: change,
+      }),
+    );
 
     tx.fee(fee);
 
@@ -290,29 +293,30 @@ export class VaultsService {
     });
 
     return tx;
-
   }
 
   /**
-  * transfer money to vault
-  */
+   * transfer money to vault
+   */
   private async getDepositTxp(vault: any, wallet: MeritWalletClient): Promise<any> {
     let feeLevel = this.feeService.getCurrentFeeLevel();
 
-    if (vault.amount > Number.MAX_SAFE_INTEGER)  throw new Error('The amount is too big'); // Because Javascript
+    if (vault.amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big'); // Because Javascript
 
-    let txp:any = {
-      outputs: [{
-        'toAddress': vault.address.toString(),
-        'script': vault.scriptPubKey,
-        'amount': vault.amount
-      }],
+    let txp: any = {
+      outputs: [
+        {
+          toAddress: vault.address.toString(),
+          script: vault.scriptPubKey,
+          amount: vault.amount,
+        },
+      ],
       addressType: 'PP2SH',
       inputs: null, //Let Merit wallet service figure out the inputs based
-                    //on the selected wallet.
+      //on the selected wallet.
       feeLevel: feeLevel,
       excludeUnconfirmedUtxos: true,
-      dryRun: true
+      dryRun: true,
     };
     if (vault.amount == wallet.balance.totalConfirmedAmount) {
       delete txp.outputs[0].amount;
@@ -331,21 +335,16 @@ export class VaultsService {
   }
 
   /**
-  * create vautl object before transfering Merit
-  */
+   * create vautl object before transfering Merit
+   */
   private prepareVault(type: number, opts: any = {}) {
-
     if (type != 0) throw new Error('Vault type is not supported');
 
     let tag = opts.masterPubKey.toAddress().hashBuffer;
 
     let whitelist = opts.whitelist.map(w => Address(w).hashBuffer);
 
-    let params = [
-      opts.spendPubKey.toBuffer(),
-      opts.masterPubKey.toBuffer(),
-    ];
-
+    let params = [opts.spendPubKey.toBuffer(), opts.masterPubKey.toBuffer()];
 
     const spendLimit = this.rateService.mrtToMicro(Constants.VAULT_SPEND_LIMIT);
     params.push(crypto.BN.fromNumber(spendLimit).toScriptNumBuffer());
@@ -365,10 +364,9 @@ export class VaultsService {
       masterPubKey: opts.masterPubKey,
       redeemScript: redeemScript,
       scriptPubKey: scriptPubKey,
-      address: Address(scriptPubKey.getAddressInfo())
+      address: Address(scriptPubKey.getAddressInfo()),
     };
 
     return vault;
   }
-
 }

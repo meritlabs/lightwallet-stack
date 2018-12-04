@@ -15,13 +15,11 @@ describe('Base58', function() {
   });
 
   it('validates characters with no false negatives', function() {
-    Base58.validCharacters(
-      '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-    ).should.equal(true);
+    Base58.validCharacters('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz').should.equal(true);
   });
   it('validates characters from buffer', function() {
     Base58.validCharacters(
-      new buffer.Buffer('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz')
+      new buffer.Buffer('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'),
     ).should.equal(true);
   });
 
@@ -35,22 +33,24 @@ describe('Base58', function() {
   });
 
   it('should allow this handy syntax', function() {
-    Base58(buf).toString().should.equal(enc);
-    Base58(enc).toBuffer().toString('hex').should.equal(buf.toString('hex'));
+    Base58(buf)
+      .toString()
+      .should.equal(enc);
+    Base58(enc)
+      .toBuffer()
+      .toString('hex')
+      .should.equal(buf.toString('hex'));
   });
 
   describe('#set', function() {
-
     it('should set a blank buffer', function() {
       Base58().set({
-        buf: new buffer.Buffer([])
+        buf: new buffer.Buffer([]),
       });
     });
-
   });
 
   describe('@encode', function() {
-
     it('should encode the buffer accurately', function() {
       Base58.encode(buf).should.equal(enc);
     });
@@ -58,27 +58,25 @@ describe('Base58', function() {
     it('should throw an error when the Input is not a buffer', function() {
       (function() {
         Base58.encode('string');
-      }).should.throw('Input should be a buffer');
+      }.should.throw('Input should be a buffer'));
     });
-
   });
 
   describe('@decode', function() {
-
     it('should decode this encoded value correctly', function() {
-      Base58.decode(enc).toString('hex').should.equal(buf.toString('hex'));
+      Base58.decode(enc)
+        .toString('hex')
+        .should.equal(buf.toString('hex'));
     });
 
     it('should throw an error when Input is not a string', function() {
       (function() {
         Base58.decode(5);
-      }).should.throw('Input should be a string');
+      }.should.throw('Input should be a string'));
     });
-
   });
 
   describe('#fromBuffer', function() {
-
     it('should not fail', function() {
       should.exist(Base58().fromBuffer(buf));
     });
@@ -87,37 +85,33 @@ describe('Base58', function() {
       var b58 = Base58().fromBuffer(buf);
       b58.buf.toString('hex').should.equal(buf.toString('hex'));
     });
-
   });
 
   describe('#fromString', function() {
-
     it('should convert this known string to a buffer', function() {
-      Base58().fromString(enc).toBuffer().toString('hex').should.equal(buf.toString('hex'));
+      Base58()
+        .fromString(enc)
+        .toBuffer()
+        .toString('hex')
+        .should.equal(buf.toString('hex'));
     });
-
   });
 
   describe('#toBuffer', function() {
-
     it('should return the buffer', function() {
       var b58 = Base58({
-        buf: buf
+        buf: buf,
       });
       b58.buf.toString('hex').should.equal(buf.toString('hex'));
     });
-
   });
 
   describe('#toString', function() {
-
     it('should return the buffer', function() {
       var b58 = Base58({
-        buf: buf
+        buf: buf,
       });
       b58.toString().should.equal(enc);
     });
-
   });
-
 });

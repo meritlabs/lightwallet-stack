@@ -25,7 +25,7 @@ function Lock(opts) {
   } else {
     this.lock = new LocalLock();
   }
-};
+}
 
 Lock.prototype.runLocked = function(token, cb, task) {
   $.shouldBeDefined(token);

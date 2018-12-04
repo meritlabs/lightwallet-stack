@@ -7,19 +7,21 @@ import { ToastControllerService } from '@merit/common/services/toast-controller.
 @IonicPage()
 @Component({
   selector: 'modal-sms-notifications',
-  templateUrl: 'sms-notifications.html'
+  templateUrl: 'sms-notifications.html',
 })
 export class SmsNotificationsModal {
   formData: FormGroup = this.formBuilder.group({
-    phoneNumber: ['', [Validators.required, Validators.pattern(/\d{10,}/)]]
+    phoneNumber: ['', [Validators.required, Validators.pattern(/\d{10,}/)]],
   });
 
-  constructor(private smsNotificationsService: SmsNotificationsService,
-              private viewCtrl: ViewController,
-              private toastCtrl: ToastControllerService,
-              private formBuilder: FormBuilder,
-              private plt: Platform,
-              private loadingCtrl: LoadingController) {}
+  constructor(
+    private smsNotificationsService: SmsNotificationsService,
+    private viewCtrl: ViewController,
+    private toastCtrl: ToastControllerService,
+    private formBuilder: FormBuilder,
+    private plt: Platform,
+    private loadingCtrl: LoadingController,
+  ) {}
 
   async save() {
     const loader = this.loadingCtrl.create({ content: 'Saving settings...' });
@@ -28,7 +30,7 @@ export class SmsNotificationsModal {
     const { value } = this.formData.get('phoneNumber');
 
     try {
-      await this.smsNotificationsService.setSmsSubscription(true, value, this.plt.is('ios')? 'ios' : 'android');
+      await this.smsNotificationsService.setSmsSubscription(true, value, this.plt.is('ios') ? 'ios' : 'android');
       this.toastCtrl.success('You are now subscribed to SMS notifications');
       this.dismiss();
     } catch (err) {

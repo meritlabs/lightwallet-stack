@@ -15,7 +15,7 @@ describe('Status', function() {
       difficulty: 21546.906405522557,
       testnet: true,
       relayFee: 1000,
-      errors: ''
+      errors: '',
     };
 
     var outSetInfo = {
@@ -25,7 +25,7 @@ describe('Status', function() {
       txouts: 151,
       bytes_serialized: 10431,
       hash_serialized: 'c165d5dcb22a897745ee2ee274b47133b995bbcf8dd4a7572fedad87541c7df8',
-      total_amount: 750000000000
+      total_amount: 750000000000,
     };
 
     var node = {
@@ -33,16 +33,16 @@ describe('Status', function() {
         meritd: {
           getInfo: sinon.stub().callsArgWith(0, null, info),
           getBestBlockHash: sinon.stub().callsArgWith(0, null, outSetInfo.bestblock),
-          tiphash: outSetInfo.bestblock
-        }
-      }
+          tiphash: outSetInfo.bestblock,
+        },
+      },
     };
 
     var status = new StatusController(node);
 
     it('getInfo', function(done) {
       var req = {
-        query: {}
+        query: {},
       };
       var res = {
         jsonp: function(data) {
@@ -55,7 +55,7 @@ describe('Status', function() {
           should.exist(data.info.testnet);
           should.exist(data.info.relayfee);
           done();
-        }
+        },
       };
 
       status.show(req, res);
@@ -64,14 +64,14 @@ describe('Status', function() {
     it('getDifficulty', function(done) {
       var req = {
         query: {
-          q: 'getDifficulty'
-        }
+          q: 'getDifficulty',
+        },
       };
       var res = {
         jsonp: function(data) {
           data.difficulty.should.equal(info.difficulty);
           done();
-        }
+        },
       };
 
       status.show(req, res);
@@ -80,14 +80,14 @@ describe('Status', function() {
     it('getBestBlockHash', function(done) {
       var req = {
         query: {
-          q: 'getBestBlockHash'
-        }
+          q: 'getBestBlockHash',
+        },
       };
       var res = {
         jsonp: function(data) {
           data.bestblockhash.should.equal(outSetInfo.bestblock);
           done();
-        }
+        },
       };
       status.show(req, res);
     });
@@ -95,19 +95,18 @@ describe('Status', function() {
     it('getLastBlockHash', function(done) {
       var req = {
         query: {
-          q: 'getLastBlockHash'
-        }
+          q: 'getLastBlockHash',
+        },
       };
       var res = {
         jsonp: function(data) {
           data.syncTipHash.should.equal(outSetInfo.bestblock);
           data.lastblockhash.should.equal(outSetInfo.bestblock);
           done();
-        }
+        },
       };
       status.show(req, res);
     });
-
   });
 
   describe('/sync', function() {
@@ -117,9 +116,9 @@ describe('Status', function() {
           meritd: {
             height: 500000,
             isSynced: sinon.stub().callsArgWith(0, null, true),
-            syncPercentage: sinon.stub().callsArgWith(0, null, 99.99)
-          }
-        }
+            syncPercentage: sinon.stub().callsArgWith(0, null, 99.99),
+          },
+        },
       };
 
       var expected = {
@@ -128,7 +127,7 @@ describe('Status', function() {
         syncPercentage: 100,
         height: 500000,
         error: null,
-        type: 'Merit Node'
+        type: 'Merit Node',
       };
 
       var status = new StatusController(node);
@@ -138,7 +137,7 @@ describe('Status', function() {
         jsonp: function(data) {
           should(data).eql(expected);
           done();
-        }
+        },
       };
       status.sync(req, res);
     });
@@ -151,7 +150,7 @@ describe('Status', function() {
       var expected = {
         connected: true,
         host: '127.0.0.1',
-        port: null
+        port: null,
       };
 
       var req = {};
@@ -159,7 +158,7 @@ describe('Status', function() {
         jsonp: function(data) {
           should(data).eql(expected);
           done();
-        }
+        },
       };
 
       var status = new StatusController(node);
@@ -172,7 +171,7 @@ describe('Status', function() {
     it('should have correct data', function(done) {
       var node = {};
       var expected = {
-        version: require('../package.json').version
+        version: require('../package.json').version,
       };
 
       var req = {};
@@ -180,7 +179,7 @@ describe('Status', function() {
         jsonp: function(data) {
           should(data).eql(expected);
           done();
-        }
+        },
       };
 
       var status = new StatusController(node);

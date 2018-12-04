@@ -408,10 +408,7 @@ export class PersistenceService {
 
   async hideUnlockRequestAddress(address: string) {
     const addresses = await this.getHiddenUnlockRequestsAddresses();
-    return this.setHiddenUnlockRequestsAddresses([
-      ...addresses,
-      address
-    ]);
+    return this.setHiddenUnlockRequestsAddresses([...addresses, address]);
   }
 
   async getActiveRequestsNumber() {

@@ -4,12 +4,7 @@ import { TellPeopleView } from './tell-people';
 import { ClipModule } from 'ng2-clip';
 
 @NgModule({
-  declarations: [
-    TellPeopleView
-  ],
-  imports: [
-    IonicPageModule.forChild(TellPeopleView),
-    ClipModule
-  ],
+  declarations: [TellPeopleView],
+  imports: [IonicPageModule.forChild(TellPeopleView), ClipModule],
 })
 export class TellPeopleModule {}

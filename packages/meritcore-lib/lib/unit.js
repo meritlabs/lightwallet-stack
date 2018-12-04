@@ -6,11 +6,11 @@ var errors = require('./errors');
 var $ = require('./util/preconditions');
 
 var UNITS = {
-  'MRT'      : [1e8, 8],
-  'mMRT'     : [1e5, 5],
-  'uMRT'     : [1e2, 2],
-  'bits'     : [1e2, 2],
-  'micros'   : [1, 0]
+  MRT: [1e8, 8],
+  mMRT: [1e5, 5],
+  uMRT: [1e2, 2],
+  bits: [1e2, 2],
+  micros: [1, 0],
 };
 
 /**
@@ -56,7 +56,9 @@ function Unit(amount, code) {
   var self = this;
   var defineAccesor = function(key) {
     Object.defineProperty(self, key, {
-      get: function() { return self.to(key); },
+      get: function() {
+        return self.to(key);
+      },
       enumerable: true,
     });
   };
@@ -74,7 +76,7 @@ Object.keys(UNITS).forEach(function(key) {
  * @param {String|Object} json - JSON with keys: amount and code
  * @returns {Unit} A Unit instance
  */
-Unit.fromObject = function fromObject(data){
+Unit.fromObject = function fromObject(data) {
   $.checkArgument(_.isObject(data), 'Argument is expected to be an object');
   return new Unit(data.amount, data.code);
 };
@@ -222,7 +224,7 @@ Unit.prototype.toString = function() {
 Unit.prototype.toObject = Unit.prototype.toJSON = function toObject() {
   return {
     amount: this.MRT,
-    code: Unit.MRT
+    code: Unit.MRT,
   };
 };
 

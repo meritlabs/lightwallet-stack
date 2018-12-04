@@ -63,11 +63,13 @@ function Peer(options) {
     this.port = this.network.port;
   }
 
-  this.messages = options.messages || new Messages({
-    network: this.network,
-    Block: meritcore.Block,
-    Transaction: meritcore.Transaction
-  });
+  this.messages =
+    options.messages ||
+    new Messages({
+      network: this.network,
+      Block: meritcore.Block,
+      Transaction: meritcore.Transaction,
+    });
 
   this.dataBuffer = new Buffers();
 
@@ -93,7 +95,7 @@ function Peer(options) {
     var verackResponse = self.messages.VerAck();
     self.sendMessage(verackResponse);
 
-    if(!self.versionSent) {
+    if (!self.versionSent) {
       self._sendVersion();
     }
   });
@@ -103,7 +105,6 @@ function Peer(options) {
   });
 
   return this;
-
 }
 util.inherits(Peer, EventEmitter);
 
@@ -112,7 +113,7 @@ Peer.STATUS = {
   DISCONNECTED: 'disconnected',
   CONNECTING: 'connecting',
   CONNECTED: 'connected',
-  READY: 'ready'
+  READY: 'ready',
 };
 
 /**
@@ -126,7 +127,7 @@ Peer.prototype.setProxy = function(host, port) {
 
   this.proxy = {
     host: host,
-    port: port
+    port: port,
   };
   return this;
 };
@@ -147,7 +148,10 @@ Peer.prototype.connect = function() {
   });
 
   this._addSocketEventHandlers();
-  this.socket.connect(this.port, this.host);
+  this.socket.connect(
+    this.port,
+    this.host,
+  );
   return this;
 };
 
@@ -199,7 +203,7 @@ Peer.prototype.sendMessage = function(message) {
  */
 Peer.prototype._sendVersion = function() {
   // todo: include sending local ip address
-  var message = this.messages.Version({relay: this.relay});
+  var message = this.messages.Version({ relay: this.relay });
   this.versionSent = true;
   this.sendMessage(message);
 };

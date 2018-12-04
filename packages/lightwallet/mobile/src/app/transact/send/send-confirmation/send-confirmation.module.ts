@@ -5,14 +5,7 @@ import { ComponentsModule } from '../../../../components/components.module';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
-  declarations: [
-    SendConfirmationView,
-  ],
-  imports: [
-    IonicPageModule.forChild(SendConfirmationView),
-    ComponentsModule,
-    CommonPipesModule
-  ],
+  declarations: [SendConfirmationView],
+  imports: [IonicPageModule.forChild(SendConfirmationView), ComponentsModule, CommonPipesModule],
 })
-export class SendConfirmationModule {
-}
+export class SendConfirmationModule {}

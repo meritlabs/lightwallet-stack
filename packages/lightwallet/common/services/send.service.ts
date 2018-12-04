@@ -12,23 +12,25 @@ import { isAddress } from '@merit/common/utils/addresses';
 import { clone } from 'lodash';
 import { EasySendService } from '@merit/common/services/easy-send.service';
 import { Address } from 'meritcore-lib';
-import { accessWallet } from "./wallet.service";
+import { accessWallet } from './wallet.service';
 import { getEasySendURL } from '@merit/common/models/easy-send';
-import { AlertService } from "@merit/common/services/alert.service";
+import { AlertService } from '@merit/common/services/alert.service';
 
 export interface ISendTxData {
   amount?: number; // micros
   totalAmount?: number; // micros
   fee?: number; // micros
   feeIncluded?: boolean;
-  easyFee?: number,
+  easyFee?: number;
   password?: string;
-  recipient?: {
-    label?: string;
-    name?: string;
-    emails?: Array<{ value: string }>;
-    phoneNumbers?: Array<{ value: string }>;
-  } | MeritContact;
+  recipient?:
+    | {
+        label?: string;
+        name?: string;
+        emails?: Array<{ value: string }>;
+        phoneNumbers?: Array<{ value: string }>;
+      }
+    | MeritContact;
   sendMethod?: ISendMethod;
   txp?: any;
   easySend?: EasySend;
@@ -41,12 +43,14 @@ export interface ISendTxData {
 
 @Injectable()
 export class SendService {
-  constructor(private feeService: FeeService,
-              private walletService: WalletService,
-              private loggerService: LoggerService,
-              private easySendService: EasySendService,
-              private addressService: AddressService,
-              private alertCtrl: AlertService) {}
+  constructor(
+    private feeService: FeeService,
+    private walletService: WalletService,
+    private loggerService: LoggerService,
+    private easySendService: EasySendService,
+    private addressService: AddressService,
+    private alertCtrl: AlertService,
+  ) {}
 
   async prepareTxp(wallet: MeritWalletClient, amount: number, toAddress: string) {
     if (!isAddress(toAddress)) {
@@ -61,7 +65,7 @@ export class SendService {
       inputs: [], // will be defined on MWS side
       feeLevel: this.feeService.getCurrentFeeLevel(),
       excludeUnconfirmedUtxos: false,
-      dryRun: true
+      dryRun: true,
     };
 
     if (amount == wallet.balance.spendableAmount) {
@@ -81,7 +85,7 @@ export class SendService {
       fee: preparedTxp.fee,
       excludeUnconfirmedUtxos: false,
       dryRun: false,
-      addressType: preparedTxp.addressType
+      addressType: preparedTxp.addressType,
     };
 
     if (preparedTxp.sendMax || !feeIncluded) {
@@ -95,10 +99,9 @@ export class SendService {
 
   @accessWallet
   async send(wallet: MeritWalletClient, txData: ISendTxData) {
-
-    if (txData.sendMethod.type == SendMethodType.Easy)  {
+    if (txData.sendMethod.type == SendMethodType.Easy) {
       const easySend = await this.easySendService.createEasySendScriptHash(wallet, txData.password);
-      const amount = txData.feeIncluded ? txData.amount : (txData.amount + await this.feeService.getEasyReceiveFee());
+      const amount = txData.feeIncluded ? txData.amount : txData.amount + (await this.feeService.getEasyReceiveFee());
 
       txData.easySend = easySend;
       txData.txp = await this.easySendService.prepareTxp(wallet, amount, easySend);
@@ -134,7 +137,6 @@ export class SendService {
     }
   }
 
-
   async estimateFee(wallet: MeritWalletClient, amount: number, isEasySend: boolean, toAddress?: string) {
     if (isEasySend) {
       const easySend = await this.easySendService.bulidScript(wallet);
@@ -148,5 +150,4 @@ export class SendService {
       return txp.fee;
     }
   }
-
 }

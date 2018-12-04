@@ -21,22 +21,23 @@ var Transaction = meritcore.Transaction;
 var readFileSync = sinon.stub().returns(fs.readFileSync(path.resolve(__dirname, '../data/merit.conf')));
 var MeritService = proxyquire('../../lib/services/meritd', {
   fs: {
-    readFileSync: readFileSync
-  }
+    readFileSync: readFileSync,
+  },
 });
 var defaultMeritConf = fs.readFileSync(path.resolve(__dirname, '../data/default.merit.conf'), 'utf8');
 
 describe('Merit Service', function() {
-  var txhex = '01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0704ffff001d0104ffffffff0100f2052a0100000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac00000000';
+  var txhex =
+    '01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0704ffff001d0104ffffffff0100f2052a0100000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac00000000';
 
   var baseConfig = {
     node: {
-      network: meritcore.Networks.testnet
+      network: meritcore.Networks.testnet,
     },
     spawn: {
       datadir: 'testdir',
-      exec: 'testpath'
-    }
+      exec: 'testpath',
+    },
   };
 
   describe('@constructor', function() {
@@ -70,7 +71,7 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       meritd.nodes.should.deep.equal([]);
       meritd.nodesIndex.should.equal(0);
-      meritd.nodes.push({client: sinon.stub()});
+      meritd.nodes.push({ client: sinon.stub() });
       should.exist(meritd.client);
     });
     it('will set subscriptions', function() {
@@ -79,7 +80,7 @@ describe('Merit Service', function() {
         address: {},
         rawtransaction: [],
         hashblock: [],
-        rawreferraltx: []
+        rawreferraltx: [],
       });
     });
   });
@@ -87,7 +88,7 @@ describe('Merit Service', function() {
   describe('#_initDefaults', function() {
     it('will set transaction concurrency', function() {
       var meritd = new MeritService(baseConfig);
-      meritd._initDefaults({transactionConcurrency: 10});
+      meritd._initDefaults({ transactionConcurrency: 10 });
       meritd.transactionConcurrency.should.equal(10);
       meritd._initDefaults({});
       meritd.transactionConcurrency.should.equal(5);
@@ -205,7 +206,7 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       var emitter1 = {};
       var emitter3 = {};
-      meritd.subscriptions.hashblock= [emitter1];
+      meritd.subscriptions.hashblock = [emitter1];
       meritd.unsubscribe('hashblock', emitter3);
       meritd.subscriptions.hashblock.length.should.equal(1);
       meritd.subscriptions.hashblock[0].should.equal(emitter1);
@@ -363,11 +364,11 @@ describe('Merit Service', function() {
         fs: {
           readFileSync: readFileSync,
           existsSync: sinon.stub().returns(true),
-          writeFileSync: sinon.stub()
+          writeFileSync: sinon.stub(),
         },
         mkdirp: {
-          sync: sinon.stub()
-        }
+          sync: sinon.stub(),
+        },
       });
       var meritd = new TestMerit(baseConfig);
       meritd.options.spawn.datadir = '/tmp/.merit';
@@ -400,21 +401,21 @@ describe('Merit Service', function() {
         fs: {
           readFileSync: readFileSync,
           existsSync: sinon.stub().returns(true),
-          writeFileSync: sinon.stub()
+          writeFileSync: sinon.stub(),
         },
         mkdirp: {
-          sync: sinon.stub()
-        }
+          sync: sinon.stub(),
+        },
       });
       var config = {
         node: {
           network: meritcore.Networks.testnet,
-          configPath: '/tmp/.meritcore/merit-node.json'
+          configPath: '/tmp/.meritcore/merit-node.json',
         },
         spawn: {
           datadir: './data',
-          exec: 'testpath'
-        }
+          exec: 'testpath',
+        },
       };
       var meritd = new TestMerit(config);
       meritd.options.spawn.datadir = './data';
@@ -422,20 +423,20 @@ describe('Merit Service', function() {
       meritd._loadSpawnConfiguration(node);
       meritd.options.spawn.datadir.should.equal('/tmp/.meritcore/data');
     });
-    it('should throw an exception if txindex isn\'t enabled in the configuration', function() {
+    it("should throw an exception if txindex isn't enabled in the configuration", function() {
       var TestMerit = proxyquire('../../lib/services/meritd', {
         fs: {
           readFileSync: sinon.stub().returns(fs.readFileSync(__dirname + '/../data/badmerit.conf')),
           existsSync: sinon.stub().returns(true),
         },
         mkdirp: {
-          sync: sinon.stub()
-        }
+          sync: sinon.stub(),
+        },
       });
       var meritd = new TestMerit(baseConfig);
       (function() {
-        meritd._loadSpawnConfiguration({datadir: './test'});
-      }).should.throw(meritcore.errors.InvalidState);
+        meritd._loadSpawnConfiguration({ datadir: './test' });
+      }.should.throw(meritcore.errors.InvalidState));
     });
     it('should NOT set https options if node https options are set', function() {
       var writeFileSync = function(path, config) {
@@ -445,27 +446,27 @@ describe('Merit Service', function() {
         fs: {
           writeFileSync: writeFileSync,
           readFileSync: readFileSync,
-          existsSync: sinon.stub().returns(false)
+          existsSync: sinon.stub().returns(false),
         },
         mkdirp: {
-          sync: sinon.stub()
-        }
+          sync: sinon.stub(),
+        },
       });
       var config = {
         node: {
           network: {
-            name: 'regtest'
+            name: 'regtest',
           },
           https: true,
           httpsOptions: {
             key: 'key.pem',
-            cert: 'cert.pem'
-          }
+            cert: 'cert.pem',
+          },
         },
         spawn: {
           datadir: 'testdir',
-          exec: 'testexec'
-        }
+          exec: 'testexec',
+        },
       };
       var meritd = new TestMerit(config);
       meritd.options.spawn.datadir = '/tmp/.merit';
@@ -492,7 +493,7 @@ describe('Merit Service', function() {
         zmqpubrawtx: 1,
         zmqpubhashblock: 1,
         zmqpubrawreferraltx: 1,
-        reindex: 1
+        reindex: 1,
       };
       var node = {};
       meritd._checkConfigIndexes(config, node);
@@ -509,12 +510,12 @@ describe('Merit Service', function() {
         zmqpubrawtx: 'tcp://127.0.0.1:28332',
         zmqpubhashblock: 'tcp://127.0.0.1:28331',
         zmqpubrawreferraltx: 'tcp://127.0.0.1:28331',
-        reindex: 1
+        reindex: 1,
       };
       var node = {};
       (function() {
         meritd._checkConfigIndexes(config, node);
-      }).should.throw('"zmqpubrawtx", "zmqpubhashblock"');
+      }.should.throw('"zmqpubrawtx", "zmqpubhashblock"'));
     });
   });
 
@@ -545,95 +546,104 @@ describe('Merit Service', function() {
       meritd.tryAllInterval = 1;
       meritd.nodes.push({
         client: {
-          getInfo: sinon.stub().callsArgWith(0, new Error('test'))
-        }
+          getInfo: sinon.stub().callsArgWith(0, new Error('test')),
+        },
       });
       meritd.nodes.push({
         client: {
-          getInfo: sinon.stub().callsArgWith(0, new Error('test'))
-        }
+          getInfo: sinon.stub().callsArgWith(0, new Error('test')),
+        },
       });
       meritd.nodes.push({
         client: {
-          getInfo: sinon.stub().callsArg(0)
-        }
+          getInfo: sinon.stub().callsArg(0),
+        },
       });
-      meritd._tryAllClients(function(client, next) {
-        client.getInfo(next);
-      }, function(err) {
-        if (err) {
-          return done(err);
-        }
-        meritd.nodes[0].client.getInfo.callCount.should.equal(1);
-        meritd.nodes[1].client.getInfo.callCount.should.equal(1);
-        meritd.nodes[2].client.getInfo.callCount.should.equal(1);
-        done();
-      });
+      meritd._tryAllClients(
+        function(client, next) {
+          client.getInfo(next);
+        },
+        function(err) {
+          if (err) {
+            return done(err);
+          }
+          meritd.nodes[0].client.getInfo.callCount.should.equal(1);
+          meritd.nodes[1].client.getInfo.callCount.should.equal(1);
+          meritd.nodes[2].client.getInfo.callCount.should.equal(1);
+          done();
+        },
+      );
     });
     it('will start using the current node index (round-robin)', function(done) {
       var meritd = new MeritService(baseConfig);
       meritd.tryAllInterval = 1;
       meritd.nodes.push({
         client: {
-          getInfo: sinon.stub().callsArgWith(0, new Error('2'))
-        }
+          getInfo: sinon.stub().callsArgWith(0, new Error('2')),
+        },
       });
       meritd.nodes.push({
         client: {
-          getInfo: sinon.stub().callsArgWith(0, new Error('3'))
-        }
+          getInfo: sinon.stub().callsArgWith(0, new Error('3')),
+        },
       });
       meritd.nodes.push({
         client: {
-          getInfo: sinon.stub().callsArgWith(0, new Error('1'))
-        }
+          getInfo: sinon.stub().callsArgWith(0, new Error('1')),
+        },
       });
       meritd.nodesIndex = 2;
-      meritd._tryAllClients(function(client, next) {
-        client.getInfo(next);
-      }, function(err) {
-        err.should.be.instanceOf(Error);
-        err.message.should.equal('3');
-        meritd.nodes[0].client.getInfo.callCount.should.equal(1);
-        meritd.nodes[1].client.getInfo.callCount.should.equal(1);
-        meritd.nodes[2].client.getInfo.callCount.should.equal(1);
-        meritd.nodesIndex.should.equal(2);
-        done();
-      });
+      meritd._tryAllClients(
+        function(client, next) {
+          client.getInfo(next);
+        },
+        function(err) {
+          err.should.be.instanceOf(Error);
+          err.message.should.equal('3');
+          meritd.nodes[0].client.getInfo.callCount.should.equal(1);
+          meritd.nodes[1].client.getInfo.callCount.should.equal(1);
+          meritd.nodes[2].client.getInfo.callCount.should.equal(1);
+          meritd.nodesIndex.should.equal(2);
+          done();
+        },
+      );
     });
     it('will get error if all clients fail', function(done) {
       var meritd = new MeritService(baseConfig);
       meritd.tryAllInterval = 1;
       meritd.nodes.push({
         client: {
-          getInfo: sinon.stub().callsArgWith(0, new Error('test'))
-        }
+          getInfo: sinon.stub().callsArgWith(0, new Error('test')),
+        },
       });
       meritd.nodes.push({
         client: {
-          getInfo: sinon.stub().callsArgWith(0, new Error('test'))
-        }
+          getInfo: sinon.stub().callsArgWith(0, new Error('test')),
+        },
       });
       meritd.nodes.push({
         client: {
-          getInfo: sinon.stub().callsArgWith(0, new Error('test'))
-        }
+          getInfo: sinon.stub().callsArgWith(0, new Error('test')),
+        },
       });
-      meritd._tryAllClients(function(client, next) {
-        client.getInfo(next);
-      }, function(err) {
-        should.exist(err);
-        err.should.be.instanceOf(Error);
-        err.message.should.equal('test');
-        done();
-      });
+      meritd._tryAllClients(
+        function(client, next) {
+          client.getInfo(next);
+        },
+        function(err) {
+          should.exist(err);
+          err.should.be.instanceOf(Error);
+          err.message.should.equal('test');
+          done();
+        },
+      );
     });
   });
 
   describe('#_wrapRPCError', function() {
     it('will convert meritd-rpc error object into JavaScript error', function() {
       var meritd = new MeritService(baseConfig);
-      var error = meritd._wrapRPCError({message: 'Test error', code: -1});
+      var error = meritd._wrapRPCError({ message: 'Test error', code: -1 });
       error.should.be.an.instanceof(errors.RPCError);
       error.code.should.equal(-1);
       error.message.should.equal('Test error');
@@ -656,24 +666,24 @@ describe('Merit Service', function() {
         client: {
           getBestBlockHash: function(callback) {
             callback(null, {
-              result: 'bestblockhash'
+              result: 'bestblockhash',
             });
           },
           getBlock: function(hash, callback) {
             if (hash === 'bestblockhash') {
               callback(null, {
                 result: {
-                  height: 5000
-                }
+                  height: 5000,
+                },
               });
             }
           },
           getBlockHash: function(num, callback) {
             callback(null, {
-              result: 'genesishash'
+              result: 'genesishash',
             });
-          }
-        }
+          },
+        },
       });
       meritd._initChain(function() {
         log.info.callCount.should.equal(1);
@@ -686,11 +696,11 @@ describe('Merit Service', function() {
     });
     it('it will handle error from getBestBlockHash', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getBestBlockHash = sinon.stub().callsArgWith(0, {code: -1, message: 'error'});
+      var getBestBlockHash = sinon.stub().callsArgWith(0, { code: -1, message: 'error' });
       meritd.nodes.push({
         client: {
-          getBestBlockHash: getBestBlockHash
-        }
+          getBestBlockHash: getBestBlockHash,
+        },
       });
       meritd._initChain(function(err) {
         err.should.be.instanceOf(Error);
@@ -700,12 +710,12 @@ describe('Merit Service', function() {
     it('it will handle error from getBlock', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBestBlockHash = sinon.stub().callsArgWith(0, null, {});
-      var getBlock = sinon.stub().callsArgWith(1, {code: -1, message: 'error'});
+      var getBlock = sinon.stub().callsArgWith(1, { code: -1, message: 'error' });
       meritd.nodes.push({
         client: {
           getBestBlockHash: getBestBlockHash,
-          getBlock: getBlock
-        }
+          getBlock: getBlock,
+        },
       });
       meritd._initChain(function(err) {
         err.should.be.instanceOf(Error);
@@ -717,16 +727,16 @@ describe('Merit Service', function() {
       var getBestBlockHash = sinon.stub().callsArgWith(0, null, {});
       var getBlock = sinon.stub().callsArgWith(1, null, {
         result: {
-          height: 10
-        }
+          height: 10,
+        },
       });
-      var getBlockHash = sinon.stub().callsArgWith(1, {code: -1, message: 'error'});
+      var getBlockHash = sinon.stub().callsArgWith(1, { code: -1, message: 'error' });
       meritd.nodes.push({
         client: {
           getBestBlockHash: getBestBlockHash,
           getBlock: getBlock,
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd._initChain(function(err) {
         err.should.be.instanceOf(Error);
@@ -738,16 +748,16 @@ describe('Merit Service', function() {
       var getBestBlockHash = sinon.stub().callsArgWith(0, null, {});
       var getBlock = sinon.stub().callsArgWith(1, null, {
         result: {
-          height: 10
-        }
+          height: 10,
+        },
       });
       var getBlockHash = sinon.stub().callsArgWith(1, null, {});
       meritd.nodes.push({
         client: {
           getBestBlockHash: getBestBlockHash,
           getBlock: getBlock,
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.getRawBlock = sinon.stub().callsArgWith(1, new Error('test'));
       meritd._initChain(function(err) {
@@ -765,12 +775,12 @@ describe('Merit Service', function() {
     it('will get default rpc port for livenet', function() {
       var config = {
         node: {
-          network: meritcore.Networks.livenet
+          network: meritcore.Networks.livenet,
         },
         spawn: {
           datadir: 'testdir',
-          exec: 'testpath'
-        }
+          exec: 'testpath',
+        },
       };
       var meritd = new MeritService(config);
       meritd._getDefaultConf().rpcport.should.equal(8445);
@@ -778,12 +788,12 @@ describe('Merit Service', function() {
     it('will get default rpc port for testnet', function() {
       var config = {
         node: {
-          network: meritcore.Networks.testnet
+          network: meritcore.Networks.testnet,
         },
         spawn: {
           datadir: 'testdir',
-          exec: 'testpath'
-        }
+          exec: 'testpath',
+        },
       };
       var meritd = new MeritService(config);
       meritd._getDefaultConf().rpcport.should.equal(18445);
@@ -792,12 +802,12 @@ describe('Merit Service', function() {
       meritcore.Networks.enableRegtest();
       var config = {
         node: {
-          network: meritcore.Networks.testnet
+          network: meritcore.Networks.testnet,
         },
         spawn: {
           datadir: 'testdir',
-          exec: 'testpath'
-        }
+          exec: 'testpath',
+        },
       };
       var meritd = new MeritService(config);
       meritd._getDefaultConf().rpcport.should.equal(18445);
@@ -812,12 +822,12 @@ describe('Merit Service', function() {
     it('will get default config path for livenet', function() {
       var config = {
         node: {
-          network: meritcore.Networks.livenet
+          network: meritcore.Networks.livenet,
         },
         spawn: {
           datadir: 'testdir',
-          exec: 'testpath'
-        }
+          exec: 'testpath',
+        },
       };
       var meritd = new MeritService(config);
       should.equal(meritd._getNetworkConfigPath(), undefined);
@@ -825,12 +835,12 @@ describe('Merit Service', function() {
     it('will get default rpc port for testnet', function() {
       var config = {
         node: {
-          network: meritcore.Networks.testnet
+          network: meritcore.Networks.testnet,
         },
         spawn: {
           datadir: 'testdir',
-          exec: 'testpath'
-        }
+          exec: 'testpath',
+        },
       };
       var meritd = new MeritService(config);
       meritd._getNetworkConfigPath().should.equal('testnet3/merit.com');
@@ -839,12 +849,12 @@ describe('Merit Service', function() {
       meritcore.Networks.enableRegtest();
       var config = {
         node: {
-          network: meritcore.Networks.testnet
+          network: meritcore.Networks.testnet,
         },
         spawn: {
           datadir: 'testdir',
-          exec: 'testpath'
-        }
+          exec: 'testpath',
+        },
       };
       var meritd = new MeritService(config);
       meritd._getNetworkConfigPath().should.equal('regtest/merit.com');
@@ -970,8 +980,8 @@ describe('Merit Service', function() {
       });
       var node = {
         client: {
-          getBlock: sinon.stub().callsArgWith(1, {message: 'Test error', code: -1})
-        }
+          getBlock: sinon.stub().callsArgWith(1, { message: 'Test error', code: -1 }),
+        },
       };
       meritd._updateTip(node, message);
     });
@@ -983,8 +993,8 @@ describe('Merit Service', function() {
       });
       var node = {
         client: {
-          getBlock: sinon.stub()
-        }
+          getBlock: sinon.stub(),
+        },
       };
       meritd._updateTip(node, message);
     });
@@ -996,8 +1006,8 @@ describe('Merit Service', function() {
       });
       var node = {
         client: {
-          getBlock: sinon.stub()
-        }
+          getBlock: sinon.stub(),
+        },
       };
       meritd._updateTip(node, message);
       log.info.callCount.should.equal(1);
@@ -1013,8 +1023,8 @@ describe('Merit Service', function() {
       });
       var node = {
         client: {
-          getBlock: sinon.stub()
-        }
+          getBlock: sinon.stub(),
+        },
       };
       meritd._updateTip(node, message);
     });
@@ -1032,10 +1042,10 @@ describe('Merit Service', function() {
         client: {
           getBlock: sinon.stub().callsArgWith(1, null, {
             result: {
-              height: 10
-            }
-          })
-        }
+              height: 10,
+            },
+          }),
+        },
       };
       meritd._updateTip(node, message);
     });
@@ -1050,10 +1060,10 @@ describe('Merit Service', function() {
         client: {
           getBlock: sinon.stub().callsArgWith(1, null, {
             result: {
-              height: 10
-            }
-          })
-        }
+              height: 10,
+            },
+          }),
+        },
       };
       meritd._updateTip(node, message);
       meritd._updateTip(node, message);
@@ -1061,12 +1071,12 @@ describe('Merit Service', function() {
     it('will not call syncPercentage if node is stopping', function(done) {
       var config = {
         node: {
-          network: meritcore.Networks.testnet
+          network: meritcore.Networks.testnet,
         },
         spawn: {
           datadir: 'testdir',
-          exec: 'testpath'
-        }
+          exec: 'testpath',
+        },
       };
       var meritd = new MeritService(config);
       meritd.syncPercentage = sinon.stub();
@@ -1076,10 +1086,10 @@ describe('Merit Service', function() {
         client: {
           getBlock: sinon.stub().callsArgWith(1, null, {
             result: {
-              height: 10
-            }
-          })
-        }
+              height: 10,
+            },
+          }),
+        },
       };
       meritd.on('tip', function() {
         meritd.syncPercentage.callCount.should.equal(0);
@@ -1102,7 +1112,7 @@ describe('Merit Service', function() {
         outputIndex: 0,
         script: meritcore.Script(inputAddress),
         address: inputAddress.toString(),
-        micros: 5000000000
+        micros: 5000000000,
       });
       tx.to(outputAddress, 5000000000);
       tx.sign(privkey);
@@ -1114,29 +1124,35 @@ describe('Merit Service', function() {
     it('will handle non-standard script types', function() {
       var meritd = new MeritService(baseConfig);
       var tx = meritcore.Transaction();
-      tx.addInput(meritcore.Transaction.Input({
-        prevTxId: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
-        script: meritcore.Script('OP_TRUE'),
-        outputIndex: 1,
-        output: {
+      tx.addInput(
+        meritcore.Transaction.Input({
+          prevTxId: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
           script: meritcore.Script('OP_TRUE'),
-          micros: 5000000000
-        }
-      }));
-      tx.addOutput(meritcore.Transaction.Output({
-        script: meritcore.Script('OP_TRUE'),
-        micros: 5000000000
-      }));
+          outputIndex: 1,
+          output: {
+            script: meritcore.Script('OP_TRUE'),
+            micros: 5000000000,
+          },
+        }),
+      );
+      tx.addOutput(
+        meritcore.Transaction.Output({
+          script: meritcore.Script('OP_TRUE'),
+          micros: 5000000000,
+        }),
+      );
       var addresses = meritd._getAddressesFromTransaction(tx);
       addresses.length.should.equal(0);
     });
     it('will handle unparsable script types or missing input script', function() {
       var meritd = new MeritService(baseConfig);
       var tx = meritcore.Transaction();
-      tx.addOutput(meritcore.Transaction.Output({
-        script: new Buffer('4c', 'hex'),
-        micros: 5000000000
-      }));
+      tx.addOutput(
+        meritcore.Transaction.Output({
+          script: new Buffer('4c', 'hex'),
+          micros: 5000000000,
+        }),
+      );
       var addresses = meritd._getAddressesFromTransaction(tx);
       addresses.length.should.equal(0);
     });
@@ -1144,14 +1160,18 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       var tx = meritcore.Transaction();
       var address = meritcore.Address('2N2JD6wb56AfK4tfmM6PwdVmoYk2dCKf4Br');
-      tx.addOutput(meritcore.Transaction.Output({
-        script: meritcore.Script(address),
-        micros: 5000000000
-      }));
-      tx.addOutput(meritcore.Transaction.Output({
-        script: meritcore.Script(address),
-        micros: 5000000000
-      }));
+      tx.addOutput(
+        meritcore.Transaction.Output({
+          script: meritcore.Script(address),
+          micros: 5000000000,
+        }),
+      );
+      tx.addOutput(
+        meritcore.Transaction.Output({
+          script: meritcore.Script(address),
+          micros: 5000000000,
+        }),
+      );
       var addresses = meritd._getAddressesFromTransaction(tx);
       addresses.length.should.equal(1);
     });
@@ -1254,10 +1274,10 @@ describe('Merit Service', function() {
         blockEvents++;
       });
       var getBestBlockHash = sinon.stub().callsArgWith(0, null, {
-        result: '00000000000000001bb82a7f5973618cfd3185ba1ded04dd852a653f92a27c45'
+        result: '00000000000000001bb82a7f5973618cfd3185ba1ded04dd852a653f92a27c45',
       });
-      getBestBlockHash.onCall(0).callsArgWith(0, {code: -1 , message: 'Test error'});
-      var progress = 0.90;
+      getBestBlockHash.onCall(0).callsArgWith(0, { code: -1, message: 'Test error' });
+      var progress = 0.9;
       function getProgress() {
         progress = progress + 0.01;
         return progress;
@@ -1266,20 +1286,20 @@ describe('Merit Service', function() {
       Object.defineProperty(info, 'result', {
         get: function() {
           return {
-            verificationprogress: getProgress()
+            verificationprogress: getProgress(),
           };
-        }
+        },
       });
       var getBlockchainInfo = sinon.stub().callsArgWith(0, null, info);
-      getBlockchainInfo.onCall(0).callsArgWith(0, {code: -1, message: 'Test error'});
+      getBlockchainInfo.onCall(0).callsArgWith(0, { code: -1, message: 'Test error' });
       var node = {
         _reindex: true,
         _reindexWait: 1,
         _tipUpdateInterval: 1,
         client: {
           getBestBlockHash: getBestBlockHash,
-          getBlockchainInfo: getBlockchainInfo
-        }
+          getBlockchainInfo: getBlockchainInfo,
+        },
       };
       meritd._checkSyncedAndSubscribeZmqEvents(node);
       setTimeout(function() {
@@ -1293,20 +1313,20 @@ describe('Merit Service', function() {
     it('it will clear interval if node is stopping', function(done) {
       var config = {
         node: {
-          network: meritcore.Networks.testnet
+          network: meritcore.Networks.testnet,
         },
         spawn: {
           datadir: 'testdir',
-          exec: 'testpath'
-        }
+          exec: 'testpath',
+        },
       };
       var meritd = new MeritService(config);
-      var getBestBlockHash = sinon.stub().callsArgWith(0, {code: -1, message: 'error'});
+      var getBestBlockHash = sinon.stub().callsArgWith(0, { code: -1, message: 'error' });
       var node = {
         _tipUpdateInterval: 1,
         client: {
-          getBestBlockHash: getBestBlockHash
-        }
+          getBestBlockHash: getBestBlockHash,
+        },
       };
       meritd._checkSyncedAndSubscribeZmqEvents(node);
       setTimeout(function() {
@@ -1323,20 +1343,20 @@ describe('Merit Service', function() {
       meritd._updateTip = sinon.stub();
       meritd._subscribeZmqEvents = sinon.stub();
       var getBestBlockHash = sinon.stub().callsArgWith(0, null, {
-        result: '00000000000000001bb82a7f5973618cfd3185ba1ded04dd852a653f92a27c45'
+        result: '00000000000000001bb82a7f5973618cfd3185ba1ded04dd852a653f92a27c45',
       });
       var info = {
         result: {
-          verificationprogress: 1.00
-        }
+          verificationprogress: 1.0,
+        },
       };
       var getBlockchainInfo = sinon.stub().callsArgWith(0, null, info);
       var node = {
         _tipUpdateInterval: 1,
         client: {
           getBestBlockHash: getBestBlockHash,
-          getBlockchainInfo: getBlockchainInfo
-        }
+          getBlockchainInfo: getBlockchainInfo,
+        },
       };
       meritd._checkSyncedAndSubscribeZmqEvents(node);
       setTimeout(function() {
@@ -1353,8 +1373,8 @@ describe('Merit Service', function() {
       var node = {
         zmqSubSocket: {
           subscribe: sinon.stub(),
-          on: sinon.stub()
-        }
+          on: sinon.stub(),
+        },
       };
       meritd._subscribeZmqEvents(node);
       node.zmqSubSocket.subscribe.callCount.should.equal(4);
@@ -1365,7 +1385,7 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       meritd._zmqTransactionHandler = sinon.stub();
       var node = {
-        zmqSubSocket: new EventEmitter()
+        zmqSubSocket: new EventEmitter(),
       };
       node.zmqSubSocket.subscribe = sinon.stub();
       meritd._subscribeZmqEvents(node);
@@ -1381,7 +1401,7 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       meritd._zmqBlockHandler = sinon.stub();
       var node = {
-        zmqSubSocket: new EventEmitter()
+        zmqSubSocket: new EventEmitter(),
       };
       node.zmqSubSocket.subscribe = sinon.stub();
       meritd._subscribeZmqEvents(node);
@@ -1398,7 +1418,7 @@ describe('Merit Service', function() {
       meritd._zmqBlockHandler = sinon.stub();
       meritd._zmqTransactionHandler = sinon.stub();
       var node = {
-        zmqSubSocket: new EventEmitter()
+        zmqSubSocket: new EventEmitter(),
       };
       node.zmqSubSocket.subscribe = sinon.stub();
       meritd._subscribeZmqEvents(node);
@@ -1423,8 +1443,8 @@ describe('Merit Service', function() {
       };
       var MeritService = proxyquire('../../lib/services/meritd', {
         zmq: {
-          socket: socketFunc
-        }
+          socket: socketFunc,
+        },
       });
       var meritd = new MeritService(baseConfig);
       var node = {};
@@ -1452,8 +1472,8 @@ describe('Merit Service', function() {
         _reindex: true,
         _reindexWait: 1,
         client: {
-          getBlockchainInfo: sinon.stub().callsArgWith(0, {code: -1 , message: 'Test error'})
-        }
+          getBlockchainInfo: sinon.stub().callsArgWith(0, { code: -1, message: 'Test error' }),
+        },
       };
       meritd._checkReindex(node, function(err) {
         should.exist(err);
@@ -1472,11 +1492,11 @@ describe('Merit Service', function() {
             percent += 0.01;
             callback(null, {
               result: {
-                verificationprogress: percent
-              }
+                verificationprogress: percent,
+              },
             });
-          }
-        }
+          },
+        },
       };
       meritd._checkReindex(node, function() {
         node._reindex.should.equal(false);
@@ -1487,7 +1507,7 @@ describe('Merit Service', function() {
     it('will call callback if reindex is not enabled', function(done) {
       var meritd = new MeritService(baseConfig);
       var node = {
-        _reindex: false
+        _reindex: false,
       };
       meritd._checkReindex(node, function() {
         node._reindex.should.equal(false);
@@ -1506,11 +1526,11 @@ describe('Merit Service', function() {
     });
     it('will give rpc from client getbestblockhash', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getBestBlockHash = sinon.stub().callsArgWith(0, {code: -1, message: 'Test error'});
+      var getBestBlockHash = sinon.stub().callsArgWith(0, { code: -1, message: 'Test error' });
       var node = {
         client: {
-          getBestBlockHash: getBestBlockHash
-        }
+          getBestBlockHash: getBestBlockHash,
+        },
       };
       meritd._loadTipFromNode(node, function(err) {
         err.should.be.instanceof(Error);
@@ -1521,14 +1541,14 @@ describe('Merit Service', function() {
     it('will give rpc from client getblock', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBestBlockHash = sinon.stub().callsArgWith(0, null, {
-        result: '00000000000000001bb82a7f5973618cfd3185ba1ded04dd852a653f92a27c45'
+        result: '00000000000000001bb82a7f5973618cfd3185ba1ded04dd852a653f92a27c45',
       });
       var getBlock = sinon.stub().callsArgWith(1, new Error('Test error'));
       var node = {
         client: {
           getBestBlockHash: getBestBlockHash,
-          getBlock: getBlock
-        }
+          getBlock: getBlock,
+        },
       };
       meritd._loadTipFromNode(node, function(err) {
         getBlock.args[0][0].should.equal('00000000000000001bb82a7f5973618cfd3185ba1ded04dd852a653f92a27c45');
@@ -1539,11 +1559,11 @@ describe('Merit Service', function() {
     });
     it('will log when error is RPC_IN_WARMUP', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getBestBlockHash = sinon.stub().callsArgWith(0, {code: -28, message: 'Verifying blocks...'});
+      var getBestBlockHash = sinon.stub().callsArgWith(0, { code: -28, message: 'Verifying blocks...' });
       var node = {
         client: {
-          getBestBlockHash: getBestBlockHash
-        }
+          getBestBlockHash: getBestBlockHash,
+        },
       };
       meritd._loadTipFromNode(node, function(err) {
         err.should.be.instanceof(Error);
@@ -1554,18 +1574,18 @@ describe('Merit Service', function() {
     it('will set height and emit tip', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBestBlockHash = sinon.stub().callsArgWith(0, null, {
-        result: '00000000000000001bb82a7f5973618cfd3185ba1ded04dd852a653f92a27c45'
+        result: '00000000000000001bb82a7f5973618cfd3185ba1ded04dd852a653f92a27c45',
       });
       var getBlock = sinon.stub().callsArgWith(1, null, {
         result: {
-          height: 100
-        }
+          height: 100,
+        },
       });
       var node = {
         client: {
           getBestBlockHash: getBestBlockHash,
-          getBlock: getBlock
-        }
+          getBlock: getBlock,
+        },
       };
       meritd.on('tip', function(height) {
         height.should.equal(100);
@@ -1596,8 +1616,8 @@ describe('Merit Service', function() {
       readFile.onCall(1).callsArgWith(2, error);
       var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
-          readFile: readFile
-        }
+          readFile: readFile,
+        },
       });
       var meritd = new TestMeritService(baseConfig);
       meritd.spawnStopTime = 1;
@@ -1620,8 +1640,8 @@ describe('Merit Service', function() {
       readFile.onCall(1).callsArgWith(2, error);
       var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
-          readFile: readFile
-        }
+          readFile: readFile,
+        },
       });
       var meritd = new TestMeritService(baseConfig);
       meritd.spawnStopTime = 1;
@@ -1643,8 +1663,8 @@ describe('Merit Service', function() {
       readFile.onCall(0).callsArgWith(2, null, '     ');
       var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
-          readFile: readFile
-        }
+          readFile: readFile,
+        },
       });
       var meritd = new TestMeritService(baseConfig);
       meritd.spawnStopTime = 1;
@@ -1662,8 +1682,8 @@ describe('Merit Service', function() {
       readFile.onCall(0).callsArgWith(2, null, '');
       var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
-          readFile: readFile
-        }
+          readFile: readFile,
+        },
       });
       var meritd = new TestMeritService(baseConfig);
       meritd.spawnStopTime = 1;
@@ -1710,22 +1730,22 @@ describe('Merit Service', function() {
     it('will exit spawn if shutdown', function() {
       var config = {
         node: {
-          network: meritcore.Networks.testnet
+          network: meritcore.Networks.testnet,
         },
         spawn: {
           datadir: 'testdir',
-          exec: 'testpath'
-        }
+          exec: 'testpath',
+        },
       };
       var process = new EventEmitter();
       var spawn = sinon.stub().returns(process);
       var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
-          readFileSync: readFileSync
+          readFileSync: readFileSync,
         },
         child_process: {
-          spawn: spawn
-        }
+          spawn: spawn,
+        },
       });
       var meritd = new TestMeritService(config);
       meritd.spawn = {};
@@ -1742,11 +1762,11 @@ describe('Merit Service', function() {
       var spawn = sinon.stub().returns(process);
       var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
-          readFileSync: readFileSync
+          readFileSync: readFileSync,
         },
         child_process: {
-          spawn: spawn
-        }
+          spawn: spawn,
+        },
       });
       var meritd = new TestMeritService(baseConfig);
 
@@ -1769,13 +1789,9 @@ describe('Merit Service', function() {
         should.not.exist(err);
         spawn.callCount.should.equal(1);
         spawn.args[0][0].should.equal('testexec');
-        spawn.args[0][1].should.deep.equal([
-          '--conf=testdir/merit.com',
-          '--datadir=testdir',
-          '--testnet'
-        ]);
+        spawn.args[0][1].should.deep.equal(['--conf=testdir/merit.com', '--datadir=testdir', '--testnet']);
         spawn.args[0][2].should.deep.equal({
-          stdio: 'inherit'
+          stdio: 'inherit',
         });
         meritd._loadTipFromNode.callCount.should.equal(1);
         meritd._initZmqSubSocket.callCount.should.equal(1);
@@ -1793,11 +1809,11 @@ describe('Merit Service', function() {
       var spawn = sinon.stub().returns(process);
       var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
-          readFileSync: readFileSync
+          readFileSync: readFileSync,
         },
         child_process: {
-          spawn: spawn
-        }
+          spawn: spawn,
+        },
       });
       var meritd = new TestMeritService(baseConfig);
       meritd._loadSpawnConfiguration = sinon.stub();
@@ -1831,11 +1847,11 @@ describe('Merit Service', function() {
       var spawn = sinon.stub().returns(process);
       var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
-          readFileSync: readFileSync
+          readFileSync: readFileSync,
         },
         child_process: {
-          spawn: spawn
-        }
+          spawn: spawn,
+        },
       });
       var meritd = new TestMeritService(baseConfig);
       meritd._loadSpawnConfiguration = sinon.stub();
@@ -1869,20 +1885,20 @@ describe('Merit Service', function() {
       var spawn = sinon.stub().returns(process);
       var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
-          readFileSync: readFileSync
+          readFileSync: readFileSync,
         },
         child_process: {
-          spawn: spawn
-        }
+          spawn: spawn,
+        },
       });
       var config = {
         node: {
-          network: meritcore.Networks.testnet
+          network: meritcore.Networks.testnet,
         },
         spawn: {
           datadir: 'testdir',
-          exec: 'testpath'
-        }
+          exec: 'testpath',
+        },
       };
       var meritd = new TestMeritService(config);
       meritd._loadSpawnConfiguration = sinon.stub();
@@ -1917,11 +1933,11 @@ describe('Merit Service', function() {
       var spawn = sinon.stub().returns(process);
       var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
-          readFileSync: readFileSync
+          readFileSync: readFileSync,
         },
         child_process: {
-          spawn: spawn
-        }
+          spawn: spawn,
+        },
       });
       var meritd = new TestMeritService(baseConfig);
       meritd.startRetryInterval = 1;
@@ -1947,11 +1963,11 @@ describe('Merit Service', function() {
       var spawn = sinon.stub().returns(process);
       var TestMeritService = proxyquire('../../lib/services/meritd', {
         fs: {
-          readFileSync: readFileSync
+          readFileSync: readFileSync,
         },
         child_process: {
-          spawn: spawn
-        }
+          spawn: spawn,
+        },
       });
       var meritd = new TestMeritService(baseConfig);
 
@@ -1982,12 +1998,12 @@ describe('Merit Service', function() {
     it('will give error if connecting while shutting down', function(done) {
       var config = {
         node: {
-          network: meritcore.Networks.testnet
+          network: meritcore.Networks.testnet,
         },
         spawn: {
           datadir: 'testdir',
-          exec: 'testpath'
-        }
+          exec: 'testpath',
+        },
       };
       var meritd = new MeritService(config);
       meritd.node.stopping = true;
@@ -2050,7 +2066,7 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       meritd._spawnChildProcess = sinon.stub().callsArgWith(0, new Error('test'));
       meritd.options = {
-        spawn: {}
+        spawn: {},
       };
       meritd.start(function(err) {
         err.should.be.instanceof(Error);
@@ -2062,9 +2078,7 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       meritd._connectProcess = sinon.stub().callsArgWith(1, new Error('test'));
       meritd.options = {
-        connect: [
-          {}
-        ]
+        connect: [{}],
       };
       meritd.start(function(err) {
         meritd._connectProcess.callCount.should.equal(1);
@@ -2079,7 +2093,7 @@ describe('Merit Service', function() {
       meritd._initChain = sinon.stub().callsArg(0);
       meritd._spawnChildProcess = sinon.stub().callsArgWith(0, null, node);
       meritd.options = {
-        spawn: {}
+        spawn: {},
       };
       meritd.start(function(err) {
         should.not.exist(err);
@@ -2093,9 +2107,7 @@ describe('Merit Service', function() {
       var nodes = [{}];
       meritd._connectProcess = sinon.stub().callsArgWith(1, null, nodes);
       meritd.options = {
-        connect: [
-          {}
-        ]
+        connect: [{}],
       };
       meritd.start(function(err) {
         should.not.exist(err);
@@ -2118,7 +2130,7 @@ describe('Merit Service', function() {
     });
     it('will give "true" if percentage is 100.00', function(done) {
       var meritd = new MeritService(baseConfig);
-      meritd.syncPercentage = sinon.stub().callsArgWith(0, null, 100.00);
+      meritd.syncPercentage = sinon.stub().callsArgWith(0, null, 100.0);
       meritd.isSynced(function(err, synced) {
         if (err) {
           return done(err);
@@ -2165,11 +2177,11 @@ describe('Merit Service', function() {
   describe('#syncPercentage', function() {
     it('will give rpc error', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getBlockchainInfo = sinon.stub().callsArgWith(0, {message: 'error', code: -1});
+      var getBlockchainInfo = sinon.stub().callsArgWith(0, { message: 'error', code: -1 });
       meritd.nodes.push({
         client: {
-          getBlockchainInfo: getBlockchainInfo
-        }
+          getBlockchainInfo: getBlockchainInfo,
+        },
       });
       meritd.syncPercentage(function(err) {
         should.exist(err);
@@ -2181,13 +2193,13 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       var getBlockchainInfo = sinon.stub().callsArgWith(0, null, {
         result: {
-          verificationprogress: '0.983821387'
-        }
+          verificationprogress: '0.983821387',
+        },
       });
       meritd.nodes.push({
         client: {
-          getBlockchainInfo: getBlockchainInfo
-        }
+          getBlockchainInfo: getBlockchainInfo,
+        },
       });
       meritd.syncPercentage(function(err, percentage) {
         if (err) {
@@ -2217,8 +2229,8 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       meritd.nodes.push({
         client: {
-          getAddressBalance: sinon.stub().callsArgWith(1, {code: -1, message: 'Test error'})
-        }
+          getAddressBalance: sinon.stub().callsArgWith(1, { code: -1, message: 'Test error' }),
+        },
       });
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       var options = {};
@@ -2232,13 +2244,13 @@ describe('Merit Service', function() {
       var getAddressBalance = sinon.stub().callsArgWith(1, null, {
         result: {
           received: 100000,
-          balance: 10000
-        }
+          balance: 10000,
+        },
       });
       meritd.nodes.push({
         client: {
-          getAddressBalance: getAddressBalance
-        }
+          getAddressBalance: getAddressBalance,
+        },
       });
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       var options = {};
@@ -2266,11 +2278,11 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       meritd.nodes.push({
         client: {
-          getAddressUtxos: sinon.stub().callsArgWith(1, {code: -1, message: 'Test error'})
-        }
+          getAddressUtxos: sinon.stub().callsArgWith(1, { code: -1, message: 'Test error' }),
+        },
       });
       var options = {
-        queryMempool: false
+        queryMempool: false,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressUnspentOutputs(address, options, function(err) {
@@ -2288,18 +2300,18 @@ describe('Merit Service', function() {
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
           micros: 7679241,
-          height: 207111
-        }
+          height: 207111,
+        },
       ];
       meritd.nodes.push({
         client: {
           getAddressUtxos: sinon.stub().callsArgWith(1, null, {
-            result: expectedUtxos
-          })
-        }
+            result: expectedUtxos,
+          }),
+        },
       });
       var options = {
-        queryMempool: false
+        queryMempool: false,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressUnspentOutputs(address, options, function(err, utxos) {
@@ -2320,19 +2332,19 @@ describe('Merit Service', function() {
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
           micros: 7679241,
-          height: 207111
-        }
+          height: 207111,
+        },
       ];
       var getAddressUtxos = sinon.stub().callsArgWith(1, null, {
-        result: expectedUtxos
+        result: expectedUtxos,
       });
       meritd.nodes.push({
         client: {
-          getAddressUtxos: getAddressUtxos
-        }
+          getAddressUtxos: getAddressUtxos,
+        },
       });
       var options = {
-        queryMempool: false
+        queryMempool: false,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressUnspentOutputs(address, options, function(err, utxos) {
@@ -2362,22 +2374,22 @@ describe('Merit Service', function() {
           index: 0,
           timestamp: 1461342707725,
           prevtxid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          prevout: 1
+          prevout: 1,
         },
         {
           txid: 'f637384e9f81f18767ea50e00bce58fc9848b6588a1130529eebba22a410155f',
           micros: 100000,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
-          timestamp: 1461342833133
+          timestamp: 1461342833133,
         },
         {
           txid: 'f71bccef3a8f5609c7f016154922adbfe0194a96fb17a798c24077c18d0a9345',
           micros: 400000,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 1,
-          timestamp: 1461342954813
-        }
+          timestamp: 1461342954813,
+        },
       ];
       var meritd = new MeritService(baseConfig);
       var confirmedUtxos = [
@@ -2387,8 +2399,8 @@ describe('Merit Service', function() {
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
           micros: 7679241,
-          height: 207111
-        }
+          height: 207111,
+        },
       ];
       var expectedUtxos = [
         {
@@ -2397,7 +2409,7 @@ describe('Merit Service', function() {
           micros: 400000,
           script: '76a914809dc14496f99b6deb722cf46d89d22f4beb8efd88ac',
           timestamp: 1461342954813,
-          txid: 'f71bccef3a8f5609c7f016154922adbfe0194a96fb17a798c24077c18d0a9345'
+          txid: 'f71bccef3a8f5609c7f016154922adbfe0194a96fb17a798c24077c18d0a9345',
         },
         {
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
@@ -2405,21 +2417,21 @@ describe('Merit Service', function() {
           micros: 100000,
           script: '76a914809dc14496f99b6deb722cf46d89d22f4beb8efd88ac',
           timestamp: 1461342833133,
-          txid: 'f637384e9f81f18767ea50e00bce58fc9848b6588a1130529eebba22a410155f'
-        }
+          txid: 'f637384e9f81f18767ea50e00bce58fc9848b6588a1130529eebba22a410155f',
+        },
       ];
       meritd.nodes.push({
         client: {
           getAddressUtxos: sinon.stub().callsArgWith(1, null, {
-            result: confirmedUtxos
+            result: confirmedUtxos,
           }),
           getAddressMempool: sinon.stub().callsArgWith(1, null, {
-            result: deltas
-          })
-        }
+            result: deltas,
+          }),
+        },
       });
       var options = {
-        queryMempool: true
+        queryMempool: true,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressUnspentOutputs(address, options, function(err, utxos) {
@@ -2440,7 +2452,7 @@ describe('Merit Service', function() {
           index: 0,
           timestamp: 1461342707725,
           prevtxid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          prevout: 1
+          prevout: 1,
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
@@ -2449,8 +2461,8 @@ describe('Merit Service', function() {
           index: 1,
           timestamp: 1461342707725,
           prevtxid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          prevout: 2
-        }
+          prevout: 2,
+        },
       ];
       var meritd = new MeritService(baseConfig);
       var confirmedUtxos = [
@@ -2460,7 +2472,7 @@ describe('Merit Service', function() {
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
           micros: 7679241,
-          height: 207111
+          height: 207111,
         },
         {
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
@@ -2468,21 +2480,21 @@ describe('Merit Service', function() {
           outputIndex: 2,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
           micros: 7679241,
-          height: 207111
-        }
+          height: 207111,
+        },
       ];
       meritd.nodes.push({
         client: {
           getAddressUtxos: sinon.stub().callsArgWith(1, null, {
-            result: confirmedUtxos
+            result: confirmedUtxos,
           }),
           getAddressMempool: sinon.stub().callsArgWith(1, null, {
-            result: deltas
-          })
-        }
+            result: deltas,
+          }),
+        },
       });
       var options = {
-        queryMempool: true
+        queryMempool: true,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressUnspentOutputs(address, options, function(err, utxos) {
@@ -2502,7 +2514,7 @@ describe('Merit Service', function() {
           index: 0,
           timestamp: 1461342707725,
           prevtxid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          prevout: 0
+          prevout: 0,
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
@@ -2511,7 +2523,7 @@ describe('Merit Service', function() {
           index: 0,
           timestamp: 1461342707725,
           prevtxid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          prevout: 1
+          prevout: 1,
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
@@ -2520,7 +2532,7 @@ describe('Merit Service', function() {
           index: 1,
           timestamp: 1461342707725,
           prevtxid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          prevout: 2
+          prevout: 2,
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
@@ -2528,8 +2540,8 @@ describe('Merit Service', function() {
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 1,
           script: '76a914809dc14496f99b6deb722cf46d89d22f4beb8efd88ac',
-          timestamp: 1461342833133
-        }
+          timestamp: 1461342833133,
+        },
       ];
       var meritd = new MeritService(baseConfig);
       var confirmedUtxos = [
@@ -2539,7 +2551,7 @@ describe('Merit Service', function() {
           outputIndex: 0,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
           micros: 7679241,
-          height: 207111
+          height: 207111,
         },
         {
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
@@ -2547,7 +2559,7 @@ describe('Merit Service', function() {
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
           micros: 7679241,
-          height: 207111
+          height: 207111,
         },
         {
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
@@ -2555,21 +2567,21 @@ describe('Merit Service', function() {
           outputIndex: 2,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
           micros: 7679241,
-          height: 207111
-        }
+          height: 207111,
+        },
       ];
       meritd.nodes.push({
         client: {
           getAddressUtxos: sinon.stub().callsArgWith(1, null, {
-            result: confirmedUtxos
+            result: confirmedUtxos,
           }),
           getAddressMempool: sinon.stub().callsArgWith(1, null, {
-            result: deltas
-          })
-        }
+            result: deltas,
+          }),
+        },
       });
       var options = {
-        queryMempool: true
+        queryMempool: true,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressUnspentOutputs(address, options, function(err, utxos) {
@@ -2587,14 +2599,14 @@ describe('Merit Service', function() {
           micros: 7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
-          timestamp: 1461342707724
+          timestamp: 1461342707724,
         },
         {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
           micros: 7679241,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 1,
-          timestamp: 1461342707724
+          timestamp: 1461342707724,
         },
         {
           txid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
@@ -2610,7 +2622,7 @@ describe('Merit Service', function() {
           index: 0,
           timestamp: 1461342707725,
           prevtxid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          prevout: 0
+          prevout: 0,
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
@@ -2619,7 +2631,7 @@ describe('Merit Service', function() {
           index: 0,
           timestamp: 1461342707725,
           prevtxid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          prevout: 1
+          prevout: 1,
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
@@ -2628,30 +2640,30 @@ describe('Merit Service', function() {
           index: 1,
           timestamp: 1461342707725,
           prevtxid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          prevout: 2
+          prevout: 2,
         },
         {
           txid: 'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce',
           micros: 100000,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 1,
-          timestamp: 1461342833133
-        }
+          timestamp: 1461342833133,
+        },
       ];
       var meritd = new MeritService(baseConfig);
       var confirmedUtxos = [];
       meritd.nodes.push({
         client: {
           getAddressUtxos: sinon.stub().callsArgWith(1, null, {
-            result: confirmedUtxos
+            result: confirmedUtxos,
           }),
           getAddressMempool: sinon.stub().callsArgWith(1, null, {
-            result: deltas
-          })
-        }
+            result: deltas,
+          }),
+        },
       });
       var options = {
-        queryMempool: true
+        queryMempool: true,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressUnspentOutputs(address, options, function(err, utxos) {
@@ -2676,8 +2688,8 @@ describe('Merit Service', function() {
           index: 0,
           timestamp: 1461342707725,
           prevtxid: '46f24e0c274fc07708b781963576c4c5d5625d926dbb0a17fa865dcd9fe58ea0',
-          prevout: 1
-        }
+          prevout: 1,
+        },
       ];
       var meritd = new MeritService(baseConfig);
       var confirmedUtxos = [
@@ -2687,21 +2699,21 @@ describe('Merit Service', function() {
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
           micros: 0,
-          height: 207111
-        }
+          height: 207111,
+        },
       ];
       meritd.nodes.push({
         client: {
           getAddressUtxos: sinon.stub().callsArgWith(1, null, {
-            result: confirmedUtxos
+            result: confirmedUtxos,
           }),
           getAddressMempool: sinon.stub().callsArgWith(1, null, {
-            result: deltas
-          })
-        }
+            result: deltas,
+          }),
+        },
       });
       var options = {
-        queryMempool: true
+        queryMempool: true,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressUnspentOutputs(address, options, function(err, utxos) {
@@ -2719,8 +2731,8 @@ describe('Merit Service', function() {
           micros: 10000,
           address: '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo',
           index: 0,
-          timestamp: 1461342707725
-        }
+          timestamp: 1461342707725,
+        },
       ];
       var meritd = new MeritService(baseConfig);
       var confirmedUtxos = [
@@ -2730,21 +2742,21 @@ describe('Merit Service', function() {
           outputIndex: 1,
           script: '76a914f399b4b8894f1153b96fce29f05e6e116eb4c21788ac',
           micros: 0,
-          height: 207111
-        }
+          height: 207111,
+        },
       ];
       meritd.nodes.push({
         client: {
           getAddressUtxos: sinon.stub().callsArgWith(1, null, {
-            result: confirmedUtxos
+            result: confirmedUtxos,
           }),
           getAddressMempool: sinon.stub().callsArgWith(1, null, {
-            result: deltas
-          })
-        }
+            result: deltas,
+          }),
+        },
       });
       var options = {
-        queryMempool: true
+        queryMempool: true,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressUnspentOutputs(address, options, function(err, utxos) {
@@ -2759,11 +2771,11 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       meritd.nodes.push({
         client: {
-          getAddressMempool: sinon.stub().callsArgWith(1, {code: -1, message: 'test'})
-        }
+          getAddressMempool: sinon.stub().callsArgWith(1, { code: -1, message: 'test' }),
+        },
       });
       var options = {
-        queryMempool: true
+        queryMempool: true,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressUnspentOutputs(address, options, function(err) {
@@ -2773,11 +2785,11 @@ describe('Merit Service', function() {
     });
     it('should set query mempool if undefined', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getAddressMempool = sinon.stub().callsArgWith(1, {code: -1, message: 'test'});
+      var getAddressMempool = sinon.stub().callsArgWith(1, { code: -1, message: 'test' });
       meritd.nodes.push({
         client: {
-          getAddressMempool: getAddressMempool
-        }
+          getAddressMempool: getAddressMempool,
+        },
       });
       var options = {};
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
@@ -2800,7 +2812,7 @@ describe('Merit Service', function() {
         },
         {
           micros: -10,
-        }
+        },
       ];
       var sum = meritd._getBalanceFromMempool(deltas);
       sum.should.equal(990);
@@ -2819,7 +2831,7 @@ describe('Merit Service', function() {
         },
         {
           txid: 'txid2',
-        }
+        },
       ];
       var txids = meritd._getTxidsFromMempool(deltas);
       txids.length.should.equal(3);
@@ -2838,7 +2850,7 @@ describe('Merit Service', function() {
         },
         {
           txid: 'txid1',
-        }
+        },
       ];
       var txids = meritd._getTxidsFromMempool(deltas);
       txids.length.should.equal(2);
@@ -2852,7 +2864,7 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       var options = {
         start: 20,
-        end: 0
+        end: 0,
       };
       var rangeQuery = meritd._getHeightRangeQuery(options);
       rangeQuery.should.equal(true);
@@ -2861,7 +2873,7 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       var options = {
         start: 20,
-        end: 0
+        end: 0,
       };
       var clone = {};
       meritd._getHeightRangeQuery(options, clone);
@@ -2872,11 +2884,11 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       var options = {
         start: 0,
-        end: 20
+        end: 20,
       };
       (function() {
         meritd._getHeightRangeQuery(options);
-      }).should.throw('"end" is expected');
+      }.should.throw('"end" is expected'));
     });
   });
 
@@ -2894,8 +2906,8 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       meritd.nodes.push({
         client: {
-          getAddressMempool: sinon.stub().callsArgWith(1, {code: -1, message: 'Test error'})
-        }
+          getAddressMempool: sinon.stub().callsArgWith(1, { code: -1, message: 'Test error' }),
+        },
       });
       var options = {};
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
@@ -2908,11 +2920,11 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       meritd.nodes.push({
         client: {
-          getAddressTxids: sinon.stub().callsArgWith(1, {code: -1, message: 'Test error'})
-        }
+          getAddressTxids: sinon.stub().callsArgWith(1, { code: -1, message: 'Test error' }),
+        },
       });
       var options = {
-        queryMempool: false
+        queryMempool: false,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressTxids(address, options, function(err) {
@@ -2931,18 +2943,18 @@ describe('Merit Service', function() {
         'f35e7e2a2334e845946f3eaca76890d9a68f4393ccc9fe37a0c2fb035f66d2e9',
         'edc080f2084eed362aa488ccc873a24c378dc0979aa29b05767517b70569414a',
         'ed11a08e3102f9610bda44c80c46781d97936a4290691d87244b1b345b39a693',
-        'ec94d845c603f292a93b7c829811ac624b76e52b351617ca5a758e9d61a11681'
+        'ec94d845c603f292a93b7c829811ac624b76e52b351617ca5a758e9d61a11681',
       ];
       var meritd = new MeritService(baseConfig);
       meritd.nodes.push({
         client: {
           getAddressTxids: sinon.stub().callsArgWith(1, null, {
-            result: expectedTxids.reverse()
-          })
-        }
+            result: expectedTxids.reverse(),
+          }),
+        },
       });
       var options = {
-        queryMempool: false
+        queryMempool: false,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressTxids(address, options, function(err, txids) {
@@ -2955,20 +2967,18 @@ describe('Merit Service', function() {
       });
     });
     it('will get txid results from cache', function(done) {
-      var expectedTxids = [
-        'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce'
-      ];
+      var expectedTxids = ['e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce'];
       var meritd = new MeritService(baseConfig);
       var getAddressTxids = sinon.stub().callsArgWith(1, null, {
-        result: expectedTxids.reverse()
+        result: expectedTxids.reverse(),
       });
       meritd.nodes.push({
         client: {
-          getAddressTxids: getAddressTxids
-        }
+          getAddressTxids: getAddressTxids,
+        },
       });
       var options = {
-        queryMempool: false
+        queryMempool: false,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressTxids(address, options, function(err, txids) {
@@ -2989,24 +2999,22 @@ describe('Merit Service', function() {
       });
     });
     it('will get txid results WITHOUT cache if rangeQuery and exclude mempool', function(done) {
-      var expectedTxids = [
-        'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce'
-      ];
+      var expectedTxids = ['e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce'];
       var meritd = new MeritService(baseConfig);
       var getAddressMempool = sinon.stub();
       var getAddressTxids = sinon.stub().callsArgWith(1, null, {
-        result: expectedTxids.reverse()
+        result: expectedTxids.reverse(),
       });
       meritd.nodes.push({
         client: {
           getAddressTxids: getAddressTxids,
-          getAddressMempool: getAddressMempool
-        }
+          getAddressMempool: getAddressMempool,
+        },
       });
       var options = {
         queryMempool: true, // start and end will exclude mempool
         start: 4,
-        end: 2
+        end: 2,
       };
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
       meritd.getAddressTxids(address, options, function(err, txids) {
@@ -3029,41 +3037,39 @@ describe('Merit Service', function() {
       });
     });
     it('will get txid results from cache and live mempool', function(done) {
-      var expectedTxids = [
-        'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce'
-      ];
+      var expectedTxids = ['e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce'];
       var meritd = new MeritService(baseConfig);
       var getAddressTxids = sinon.stub().callsArgWith(1, null, {
-        result: expectedTxids.reverse()
+        result: expectedTxids.reverse(),
       });
       var getAddressMempool = sinon.stub().callsArgWith(1, null, {
         result: [
           {
-            txid: 'bc992ad772eb02864db07ef248d31fb3c6826d25f1153ebf8c79df9b7f70fcf2'
+            txid: 'bc992ad772eb02864db07ef248d31fb3c6826d25f1153ebf8c79df9b7f70fcf2',
           },
           {
-            txid: 'f71bccef3a8f5609c7f016154922adbfe0194a96fb17a798c24077c18d0a9345'
+            txid: 'f71bccef3a8f5609c7f016154922adbfe0194a96fb17a798c24077c18d0a9345',
           },
           {
-            txid: 'f35e7e2a2334e845946f3eaca76890d9a68f4393ccc9fe37a0c2fb035f66d2e9'
-          }
-        ]
+            txid: 'f35e7e2a2334e845946f3eaca76890d9a68f4393ccc9fe37a0c2fb035f66d2e9',
+          },
+        ],
       });
       meritd.nodes.push({
         client: {
           getAddressTxids: getAddressTxids,
-          getAddressMempool: getAddressMempool
-        }
+          getAddressMempool: getAddressMempool,
+        },
       });
       var address = '1Cj4UZWnGWAJH1CweTMgPLQMn26WRMfXmo';
-      meritd.getAddressTxids(address, {queryMempool: false}, function(err, txids) {
+      meritd.getAddressTxids(address, { queryMempool: false }, function(err, txids) {
         if (err) {
           return done(err);
         }
         getAddressTxids.callCount.should.equal(1);
         txids.should.deep.equal(expectedTxids);
 
-        meritd.getAddressTxids(address, {queryMempool: true}, function(err, txids) {
+        meritd.getAddressTxids(address, { queryMempool: true }, function(err, txids) {
           if (err) {
             return done(err);
           }
@@ -3072,10 +3078,10 @@ describe('Merit Service', function() {
             'f35e7e2a2334e845946f3eaca76890d9a68f4393ccc9fe37a0c2fb035f66d2e9', // mempool
             'f71bccef3a8f5609c7f016154922adbfe0194a96fb17a798c24077c18d0a9345', // mempool
             'bc992ad772eb02864db07ef248d31fb3c6826d25f1153ebf8c79df9b7f70fcf2', // mempool
-            'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce' // confirmed
+            'e9dcf22807db77ac0276b03cc2d3a8b03c4837db8ac6650501ef45af1c807cce', // confirmed
           ]);
 
-          meritd.getAddressTxids(address, {queryMempoolOnly: true}, function(err, txids) {
+          meritd.getAddressTxids(address, { queryMempoolOnly: true }, function(err, txids) {
             if (err) {
               return done(err);
             }
@@ -3154,20 +3160,30 @@ describe('Merit Service', function() {
     it('will only add address if it matches', function() {
       var meritd = new MeritService(baseConfig);
       var result = {};
-      meritd._getAddressDetailsForInput({
-        address: 'address1'
-      }, 0, result, ['address2']);
+      meritd._getAddressDetailsForInput(
+        {
+          address: 'address1',
+        },
+        0,
+        result,
+        ['address2'],
+      );
       should.not.exist(result.addresses);
       should.not.exist(result.micros);
     });
     it('will instantiate if outputIndexes not defined', function() {
       var meritd = new MeritService(baseConfig);
       var result = {
-        addresses: {}
+        addresses: {},
       };
-      meritd._getAddressDetailsForInput({
-        address: 'address1'
-      }, 0, result, ['address1']);
+      meritd._getAddressDetailsForInput(
+        {
+          address: 'address1',
+        },
+        0,
+        result,
+        ['address1'],
+      );
       should.exist(result.addresses);
       result.addresses['address1'].inputIndexes.should.deep.equal([0]);
       result.addresses['address1'].outputIndexes.should.deep.equal([]);
@@ -3176,14 +3192,19 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       var result = {
         addresses: {
-          'address1': {
-            inputIndexes: [1]
-          }
-        }
+          address1: {
+            inputIndexes: [1],
+          },
+        },
       };
-      meritd._getAddressDetailsForInput({
-        address: 'address1'
-      }, 2, result, ['address1']);
+      meritd._getAddressDetailsForInput(
+        {
+          address: 'address1',
+        },
+        2,
+        result,
+        ['address1'],
+      );
       should.exist(result.addresses);
       result.addresses['address1'].inputIndexes.should.deep.equal([1, 2]);
     });
@@ -3200,20 +3221,30 @@ describe('Merit Service', function() {
     it('will only add address if it matches', function() {
       var meritd = new MeritService(baseConfig);
       var result = {};
-      meritd._getAddressDetailsForOutput({
-        address: 'address1'
-      }, 0, result, ['address2']);
+      meritd._getAddressDetailsForOutput(
+        {
+          address: 'address1',
+        },
+        0,
+        result,
+        ['address2'],
+      );
       should.not.exist(result.addresses);
       should.not.exist(result.micros);
     });
     it('will instantiate if outputIndexes not defined', function() {
       var meritd = new MeritService(baseConfig);
       var result = {
-        addresses: {}
+        addresses: {},
       };
-      meritd._getAddressDetailsForOutput({
-        address: 'address1'
-      }, 0, result, ['address1']);
+      meritd._getAddressDetailsForOutput(
+        {
+          address: 'address1',
+        },
+        0,
+        result,
+        ['address1'],
+      );
       should.exist(result.addresses);
       result.addresses['address1'].inputIndexes.should.deep.equal([]);
       result.addresses['address1'].outputIndexes.should.deep.equal([0]);
@@ -3222,14 +3253,19 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       var result = {
         addresses: {
-          'address1': {
-            outputIndexes: [0]
-          }
-        }
+          address1: {
+            outputIndexes: [0],
+          },
+        },
       };
-      meritd._getAddressDetailsForOutput({
-        address: 'address1'
-      }, 1, result, ['address1']);
+      meritd._getAddressDetailsForOutput(
+        {
+          address: 'address1',
+        },
+        1,
+        result,
+        ['address1'],
+      );
       should.exist(result.addresses);
       result.addresses['address1'].outputIndexes.should.deep.equal([0, 1]);
     });
@@ -3242,41 +3278,39 @@ describe('Merit Service', function() {
         inputs: [
           {
             micros: 1000000000,
-            address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'
-          }
+            address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW',
+          },
         ],
         outputs: [
           {
             micros: 100000000,
-            address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'
+            address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW',
           },
           {
             micros: 200000000,
-            address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'
+            address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW',
           },
           {
             micros: 50000000,
-            address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'
+            address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW',
           },
           {
             micros: 300000000,
-            address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'
+            address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW',
           },
           {
             micros: 349990000,
-            address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'
-          }
+            address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW',
+          },
         ],
-        locktime: 0
+        locktime: 0,
       };
       var meritd = new MeritService(baseConfig);
       var addresses = ['mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'];
       var details = meritd._getAddressDetailsForTransaction(tx, addresses);
       should.exist(details.addresses['mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW']);
       details.addresses['mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'].inputIndexes.should.deep.equal([0]);
-      details.addresses['mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'].outputIndexes.should.deep.equal([
-        0, 1, 2, 3, 4
-      ]);
+      details.addresses['mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'].outputIndexes.should.deep.equal([0, 1, 2, 3, 4]);
       details.micros.should.equal(-10000);
       done();
     });
@@ -3330,34 +3364,25 @@ describe('Merit Service', function() {
       strings[1].should.equal('3CMNFxN1oHBc4R1EpboAL5yzHGgE611Xou');
     });
     it('will get address strings from strings', function() {
-      var addresses = [
-        '1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i',
-        '3CMNFxN1oHBc4R1EpboAL5yzHGgE611Xou',
-      ];
+      var addresses = ['1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', '3CMNFxN1oHBc4R1EpboAL5yzHGgE611Xou'];
       var meritd = new MeritService(baseConfig);
       var strings = meritd._getAddressStrings(addresses);
       strings[0].should.equal('1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i');
       strings[1].should.equal('3CMNFxN1oHBc4R1EpboAL5yzHGgE611Xou');
     });
     it('will get address strings from mixture of types', function() {
-      var addresses = [
-        meritcore.Address('1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'),
-        '3CMNFxN1oHBc4R1EpboAL5yzHGgE611Xou',
-      ];
+      var addresses = [meritcore.Address('1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'), '3CMNFxN1oHBc4R1EpboAL5yzHGgE611Xou'];
       var meritd = new MeritService(baseConfig);
       var strings = meritd._getAddressStrings(addresses);
       strings[0].should.equal('1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i');
       strings[1].should.equal('3CMNFxN1oHBc4R1EpboAL5yzHGgE611Xou');
     });
     it('will give error with unknown', function() {
-      var addresses = [
-        meritcore.Address('1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'),
-        0,
-      ];
+      var addresses = [meritcore.Address('1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'), 0];
       var meritd = new MeritService(baseConfig);
       (function() {
         meritd._getAddressStrings(addresses);
-      }).should.throw(TypeError);
+      }.should.throw(TypeError));
     });
   });
 
@@ -3385,7 +3410,7 @@ describe('Merit Service', function() {
       var txids = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
       (function() {
         meritd._paginateTxids(txids, 1, 0);
-      }).should.throw('"from" (1) is expected to be less than "to"');
+      }.should.throw('"from" (1) is expected to be less than "to"'));
     });
     it('will handle string numbers', function() {
       var meritd = new MeritService(baseConfig);
@@ -3399,7 +3424,7 @@ describe('Merit Service', function() {
     var address = '12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX';
     it('will give error with "from" and "to" range that exceeds max size', function(done) {
       var meritd = new MeritService(baseConfig);
-      meritd.getAddressHistory(address, {from: 0, to: 51}, function(err) {
+      meritd.getAddressHistory(address, { from: 0, to: 51 }, function(err) {
         should.exist(err);
         err.message.match(/^\"from/);
         done();
@@ -3408,7 +3433,7 @@ describe('Merit Service', function() {
     it('will give error with "from" and "to" order is reversed', function(done) {
       var meritd = new MeritService(baseConfig);
       meritd.getAddressTxids = sinon.stub().callsArgWith(2, null, []);
-      meritd.getAddressHistory(address, {from: 51, to: 0}, function(err) {
+      meritd.getAddressHistory(address, { from: 51, to: 0 }, function(err) {
         should.exist(err);
         err.message.match(/^\"from/);
         done();
@@ -3454,7 +3479,7 @@ describe('Merit Service', function() {
       };
       var txids = ['one', 'two', 'three', 'four'];
       meritd.getAddressTxids = sinon.stub().callsArgWith(2, null, txids);
-      meritd.getAddressHistory('address', {from: 1, to: 3}, function(err, data) {
+      meritd.getAddressHistory('address', { from: 1, to: 3 }, function(err, data) {
         if (err) {
           return done(err);
         }
@@ -3479,10 +3504,10 @@ describe('Merit Service', function() {
             result: [
               {
                 txid: '70d9d441d7409aace8e0ffe24ff0190407b2fcb405799a266e0327017288d1f8',
-              }
-            ]
-          })
-        }
+              },
+            ],
+          }),
+        },
       });
       meritd.getAddressTxids = sinon.stub().callsArgWith(2, new Error('test'));
       meritd.getAddressBalance = sinon.stub().callsArgWith(2, null, {});
@@ -3503,10 +3528,10 @@ describe('Merit Service', function() {
             result: [
               {
                 txid: '70d9d441d7409aace8e0ffe24ff0190407b2fcb405799a266e0327017288d1f8',
-              }
-            ]
-          })
-        }
+              },
+            ],
+          }),
+        },
       });
       meritd.getAddressTxids = sinon.stub().callsArgWith(2, null, {});
       meritd.getAddressBalance = sinon.stub().callsArgWith(2, new Error('test'), {});
@@ -3523,8 +3548,8 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       meritd.nodes.push({
         client: {
-          getAddressMempool: sinon.stub().callsArgWith(1, {code: -1, message: 'Test error'})
-        }
+          getAddressMempool: sinon.stub().callsArgWith(1, { code: -1, message: 'Test error' }),
+        },
       });
       meritd.getAddressTxids = sinon.stub().callsArgWith(2, null, {});
       meritd.getAddressBalance = sinon.stub().callsArgWith(2, null, {});
@@ -3545,21 +3570,21 @@ describe('Merit Service', function() {
             result: [
               {
                 txid: memtxid1,
-                micros: -1000000
+                micros: -1000000,
               },
               {
                 txid: memtxid2,
-                micros: 99999
-              }
-            ]
-          })
-        }
+                micros: 99999,
+              },
+            ],
+          }),
+        },
       });
       sinon.spy(meritd, '_paginateTxids');
       meritd.getAddressTxids = sinon.stub().callsArgWith(2, null, [txid1, txid2, txid3]);
       meritd.getAddressBalance = sinon.stub().callsArgWith(2, null, {
         received: 30 * 1e8,
-        balance: 20 * 1e8
+        balance: 20 * 1e8,
       });
       var address = '3NbU8XzUgKyuCgYgZEKsBtUvkTm2r7Xgwj';
       var options = {};
@@ -3578,7 +3603,7 @@ describe('Merit Service', function() {
           'b1bfa8dbbde790cb46b9763ef3407c1a21c8264b67bfe224f462ec0e1f569e92',
           '70d9d441d7409aace8e0ffe24ff0190407b2fcb405799a266e0327017288d1f8',
           '35fafaf572341798b2ce2858755afa7c8800bb6b1e885d3e030b81255b5e172d',
-          '57b7842afc97a2b46575b490839df46e9273524c6ea59ba62e1e86477cf25247'
+          '57b7842afc97a2b46575b490839df46e9273524c6ea59ba62e1e86477cf25247',
         ]);
         done();
       });
@@ -3591,25 +3616,25 @@ describe('Merit Service', function() {
             result: [
               {
                 txid: memtxid1,
-                micros: -1000000
+                micros: -1000000,
               },
               {
                 txid: memtxid2,
-                micros: 99999
-              }
-            ]
-          })
-        }
+                micros: 99999,
+              },
+            ],
+          }),
+        },
       });
       meritd.getAddressTxids = sinon.stub().callsArgWith(2, null, [txid1, txid2, txid3]);
       meritd.getAddressBalance = sinon.stub().callsArgWith(2, null, {
         received: 30 * 1e8,
-        balance: 20 * 1e8
+        balance: 20 * 1e8,
       });
       var address = '3NbU8XzUgKyuCgYgZEKsBtUvkTm2r7Xgwj';
       var options = {
         from: 0,
-        to: 1001
+        to: 1001,
       };
       meritd.getAddressSummary(address, options, function(err) {
         should.exist(err);
@@ -3625,24 +3650,24 @@ describe('Merit Service', function() {
             result: [
               {
                 txid: memtxid1,
-                micros: -1000000
+                micros: -1000000,
               },
               {
                 txid: memtxid2,
-                micros: 99999
-              }
-            ]
-          })
-        }
+                micros: 99999,
+              },
+            ],
+          }),
+        },
       });
       meritd.getAddressTxids = sinon.stub().callsArgWith(2, null, [txid1, txid2, txid3]);
       meritd.getAddressBalance = sinon.stub().callsArgWith(2, null, {
         received: 30 * 1e8,
-        balance: 20 * 1e8
+        balance: 20 * 1e8,
       });
       var address = '3NbU8XzUgKyuCgYgZEKsBtUvkTm2r7Xgwj';
       var options = {
-        noTxList: true
+        noTxList: true,
       };
       function checkSummary(summary) {
         summary.appearances.should.equal(3);
@@ -3670,18 +3695,18 @@ describe('Merit Service', function() {
       var getAddressMempool = sinon.stub();
       meritd.nodes.push({
         client: {
-          getAddressMempool: getAddressMempool
-        }
+          getAddressMempool: getAddressMempool,
+        },
       });
       sinon.spy(meritd, '_paginateTxids');
       meritd.getAddressTxids = sinon.stub().callsArgWith(2, null, [txid1, txid2, txid3]);
       meritd.getAddressBalance = sinon.stub().callsArgWith(2, null, {
         received: 30 * 1e8,
-        balance: 20 * 1e8
+        balance: 20 * 1e8,
       });
       var address = '3NbU8XzUgKyuCgYgZEKsBtUvkTm2r7Xgwj';
       var options = {
-        queryMempool: false
+        queryMempool: false,
       };
       meritd.getAddressSummary(address, options, function() {
         getAddressMempool.callCount.should.equal(0);
@@ -3693,19 +3718,19 @@ describe('Merit Service', function() {
       var getAddressMempool = sinon.stub();
       meritd.nodes.push({
         client: {
-          getAddressMempool: getAddressMempool
-        }
+          getAddressMempool: getAddressMempool,
+        },
       });
       sinon.spy(meritd, '_paginateTxids');
       meritd.getAddressTxids = sinon.stub().callsArgWith(2, null, [txid1, txid2, txid3]);
       meritd.getAddressBalance = sinon.stub().callsArgWith(2, null, {
         received: 30 * 1e8,
-        balance: 20 * 1e8
+        balance: 20 * 1e8,
       });
       meritd._paginateTxids = sinon.stub().throws(new Error('test'));
       var address = '3NbU8XzUgKyuCgYgZEKsBtUvkTm2r7Xgwj';
       var options = {
-        queryMempool: false
+        queryMempool: false,
       };
       meritd.getAddressSummary(address, options, function(err) {
         err.should.be.instanceOf(Error);
@@ -3717,13 +3742,14 @@ describe('Merit Service', function() {
 
   describe('#getRawBlock', function() {
     var blockhash = '00000000050a6d07f583beba2d803296eb1e9d4980c4a20f206c584e89a4f02b';
-    var blockhex = '0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c0101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff4d04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73ffffffff0100f2052a01000000434104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac00000000';
+    var blockhex =
+      '0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c0101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff4d04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73ffffffff0100f2052a01000000434104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac00000000';
     it('will give rcp error from client getblockhash', function(done) {
       var meritd = new MeritService(baseConfig);
       meritd.nodes.push({
         client: {
-          getBlockHash: sinon.stub().callsArgWith(1, {code: -1, message: 'Test error'})
-        }
+          getBlockHash: sinon.stub().callsArgWith(1, { code: -1, message: 'Test error' }),
+        },
       });
       meritd.getRawBlock(10, function(err) {
         should.exist(err);
@@ -3735,8 +3761,8 @@ describe('Merit Service', function() {
       var meritd = new MeritService(baseConfig);
       meritd.nodes.push({
         client: {
-          getBlock: sinon.stub().callsArgWith(2, {code: -1, message: 'Test error'})
-        }
+          getBlock: sinon.stub().callsArgWith(2, { code: -1, message: 'Test error' }),
+        },
       });
       meritd.getRawBlock(blockhash, function(err) {
         should.exist(err);
@@ -3746,24 +3772,24 @@ describe('Merit Service', function() {
     });
     it('will try all nodes for getblock', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getBlockWithError = sinon.stub().callsArgWith(2, {code: -1, message: 'Test error'});
+      var getBlockWithError = sinon.stub().callsArgWith(2, { code: -1, message: 'Test error' });
       meritd.tryAllInterval = 1;
       meritd.nodes.push({
         client: {
-          getBlock: getBlockWithError
-        }
+          getBlock: getBlockWithError,
+        },
       });
       meritd.nodes.push({
         client: {
-          getBlock: getBlockWithError
-        }
+          getBlock: getBlockWithError,
+        },
       });
       meritd.nodes.push({
         client: {
           getBlock: sinon.stub().callsArgWith(2, null, {
-            result: blockhex
-          })
-        }
+            result: blockhex,
+          }),
+        },
       });
       meritd.getRawBlock(blockhash, function(err, buffer) {
         if (err) {
@@ -3777,12 +3803,12 @@ describe('Merit Service', function() {
     it('will get block from cache', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBlock = sinon.stub().callsArgWith(2, null, {
-        result: blockhex
+        result: blockhex,
       });
       meritd.nodes.push({
         client: {
-          getBlock: getBlock
-        }
+          getBlock: getBlock,
+        },
       });
       meritd.getRawBlock(blockhash, function(err, buffer) {
         if (err) {
@@ -3803,16 +3829,16 @@ describe('Merit Service', function() {
     it('will get block by height', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBlock = sinon.stub().callsArgWith(2, null, {
-        result: blockhex
+        result: blockhex,
       });
       var getBlockHash = sinon.stub().callsArgWith(1, null, {
-        result: '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f'
+        result: '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f',
       });
       meritd.nodes.push({
         client: {
           getBlock: getBlock,
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.getRawBlock(0, function(err, buffer) {
         if (err) {
@@ -3827,16 +3853,17 @@ describe('Merit Service', function() {
   });
 
   describe('#getBlock', function() {
-    var blockhex = '0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c0101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff4d04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73ffffffff0100f2052a01000000434104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac00000000';
+    var blockhex =
+      '0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c0101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff4d04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73ffffffff0100f2052a01000000434104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac00000000';
     it('will give an rpc error from client getblock', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getBlock = sinon.stub().callsArgWith(2, {code: -1, message: 'Test error'});
+      var getBlock = sinon.stub().callsArgWith(2, { code: -1, message: 'Test error' });
       var getBlockHash = sinon.stub().callsArgWith(1, null, {});
       meritd.nodes.push({
         client: {
           getBlock: getBlock,
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.getBlock(0, function(err) {
         err.should.be.instanceof(Error);
@@ -3845,11 +3872,11 @@ describe('Merit Service', function() {
     });
     it('will give an rpc error from client getblockhash', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getBlockHash = sinon.stub().callsArgWith(1, {code: -1, message: 'Test error'});
+      var getBlockHash = sinon.stub().callsArgWith(1, { code: -1, message: 'Test error' });
       meritd.nodes.push({
         client: {
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.getBlock(0, function(err) {
         err.should.be.instanceof(Error);
@@ -3859,16 +3886,16 @@ describe('Merit Service', function() {
     it('will getblock as meritcore object from height', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBlock = sinon.stub().callsArgWith(2, null, {
-        result: blockhex
+        result: blockhex,
       });
       var getBlockHash = sinon.stub().callsArgWith(1, null, {
-        result: '00000000050a6d07f583beba2d803296eb1e9d4980c4a20f206c584e89a4f02b'
+        result: '00000000050a6d07f583beba2d803296eb1e9d4980c4a20f206c584e89a4f02b',
       });
       meritd.nodes.push({
         client: {
           getBlock: getBlock,
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.getBlock(0, function(err, block) {
         should.not.exist(err);
@@ -3881,14 +3908,14 @@ describe('Merit Service', function() {
     it('will getblock as meritcore object', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBlock = sinon.stub().callsArgWith(2, null, {
-        result: blockhex
+        result: blockhex,
       });
       var getBlockHash = sinon.stub();
       meritd.nodes.push({
         client: {
           getBlock: getBlock,
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.getBlock('00000000050a6d07f583beba2d803296eb1e9d4980c4a20f206c584e89a4f02b', function(err, block) {
         should.not.exist(err);
@@ -3903,14 +3930,14 @@ describe('Merit Service', function() {
     it('will get block from cache', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBlock = sinon.stub().callsArgWith(2, null, {
-        result: blockhex
+        result: blockhex,
       });
       var getBlockHash = sinon.stub();
       meritd.nodes.push({
         client: {
           getBlock: getBlock,
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       var hash = '00000000050a6d07f583beba2d803296eb1e9d4980c4a20f206c584e89a4f02b';
       meritd.getBlock(hash, function(err, block) {
@@ -3930,16 +3957,16 @@ describe('Merit Service', function() {
     it('will get block from cache with height (but not height)', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBlock = sinon.stub().callsArgWith(2, null, {
-        result: blockhex
+        result: blockhex,
       });
       var getBlockHash = sinon.stub().callsArgWith(1, null, {
-        result: '00000000050a6d07f583beba2d803296eb1e9d4980c4a20f206c584e89a4f02b'
+        result: '00000000050a6d07f583beba2d803296eb1e9d4980c4a20f206c584e89a4f02b',
       });
       meritd.nodes.push({
         client: {
           getBlock: getBlock,
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.getBlock(0, function(err, block) {
         should.not.exist(err);
@@ -3960,11 +3987,11 @@ describe('Merit Service', function() {
   describe('#getBlockHashesByTimestamp', function() {
     it('should give an rpc error', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getBlockHashes = sinon.stub().callsArgWith(3, {message: 'error', code: -1});
+      var getBlockHashes = sinon.stub().callsArgWith(3, { message: 'error', code: -1 });
       meritd.nodes.push({
         client: {
-          getBlockHashes: getBlockHashes
-        }
+          getBlockHashes: getBlockHashes,
+        },
       });
       meritd.getBlockHashesByTimestamp(1441911000, 1441914000, function(err, hashes) {
         should.exist(err);
@@ -3977,12 +4004,12 @@ describe('Merit Service', function() {
       var block1 = '00000000050a6d07f583beba2d803296eb1e9d4980c4a20f206c584e89a4f02b';
       var block2 = '000000000383752a55a0b2891ce018fd0fdc0b6352502772b034ec282b4a1bf6';
       var getBlockHashes = sinon.stub().callsArgWith(3, null, {
-        result: [block2, block1]
+        result: [block2, block1],
       });
       meritd.nodes.push({
         client: {
-          getBlockHashes: getBlockHashes
-        }
+          getBlockHashes: getBlockHashes,
+        },
       });
       meritd.getBlockHashesByTimestamp(1441914000, 1441911000, function(err, hashes) {
         should.not.exist(err);
@@ -3996,11 +4023,11 @@ describe('Merit Service', function() {
     var blockhash = '00000000050a6d07f583beba2d803296eb1e9d4980c4a20f206c584e89a4f02b';
     it('will give error from getBlockHash', function() {
       var meritd = new MeritService(baseConfig);
-      var getBlockHash = sinon.stub().callsArgWith(1, {code: -1, message: 'Test error'});
+      var getBlockHash = sinon.stub().callsArgWith(1, { code: -1, message: 'Test error' });
       meritd.nodes.push({
         client: {
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.getBlockHeader(10, function(err) {
         err.should.be.instanceof(Error);
@@ -4008,11 +4035,11 @@ describe('Merit Service', function() {
     });
     it('it will give rpc error from client getblockheader', function() {
       var meritd = new MeritService(baseConfig);
-      var getBlockHeader = sinon.stub().callsArgWith(1, {code: -1, message: 'Test error'});
+      var getBlockHeader = sinon.stub().callsArgWith(1, { code: -1, message: 'Test error' });
       meritd.nodes.push({
         client: {
-          getBlockHeader: getBlockHeader
-        }
+          getBlockHeader: getBlockHeader,
+        },
       });
       meritd.getBlockHeader(blockhash, function(err) {
         err.should.be.instanceof(Error);
@@ -4021,12 +4048,12 @@ describe('Merit Service', function() {
     it('it will give rpc error from client getblockhash', function() {
       var meritd = new MeritService(baseConfig);
       var getBlockHeader = sinon.stub();
-      var getBlockHash = sinon.stub().callsArgWith(1, {code: -1, message: 'Test error'});
+      var getBlockHash = sinon.stub().callsArgWith(1, { code: -1, message: 'Test error' });
       meritd.nodes.push({
         client: {
           getBlockHeader: getBlockHeader,
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.getBlockHeader(0, function(err) {
         err.should.be.instanceof(Error);
@@ -4047,7 +4074,7 @@ describe('Merit Service', function() {
         medianTime: 1462976771,
         nonce: 2981820714,
         bits: '1a13ca10',
-        difficulty: 847779.0710240941
+        difficulty: 847779.0710240941,
       };
       var getBlockHeader = sinon.stub().callsArgWith(1, null, {
         result: {
@@ -4063,17 +4090,17 @@ describe('Merit Service', function() {
           mediantime: 1462976771,
           nonce: 2981820714,
           bits: '1a13ca10',
-          difficulty: 847779.0710240941
-        }
+          difficulty: 847779.0710240941,
+        },
       });
       var getBlockHash = sinon.stub().callsArgWith(1, null, {
-        result: blockhash
+        result: blockhash,
       });
       meritd.nodes.push({
         client: {
           getBlockHeader: getBlockHeader,
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.getBlockHeader(0, function(err, blockHeader) {
         should.not.exist(err);
@@ -4096,7 +4123,7 @@ describe('Merit Service', function() {
         medianTime: 1462976771,
         nonce: 2981820714,
         bits: '1a13ca10',
-        difficulty: 847779.0710240941
+        difficulty: 847779.0710240941,
       };
       var getBlockHeader = sinon.stub().callsArgWith(1, null, {
         result: {
@@ -4112,15 +4139,15 @@ describe('Merit Service', function() {
           mediantime: 1462976771,
           nonce: 2981820714,
           bits: '1a13ca10',
-          difficulty: 847779.0710240941
-        }
+          difficulty: 847779.0710240941,
+        },
       });
       var getBlockHash = sinon.stub();
       meritd.nodes.push({
         client: {
           getBlockHeader: getBlockHeader,
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.getBlockHeader(blockhash, function(err, blockHeader) {
         should.not.exist(err);
@@ -4136,8 +4163,8 @@ describe('Merit Service', function() {
       var getBlockHash = sinon.stub();
       meritd.nodes.push({
         client: {
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd._maybeGetBlockHash('2N2JD6wb56AfK4tfmM6PwdVmoYk2dCKf4Br', function(err, hash) {
         if (err) {
@@ -4153,8 +4180,8 @@ describe('Merit Service', function() {
       var getBlockHash = sinon.stub();
       meritd.nodes.push({
         client: {
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd._maybeGetBlockHash('109a', function(err, hash) {
         if (err) {
@@ -4168,12 +4195,12 @@ describe('Merit Service', function() {
     it('will get the block hash if argument is a number', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBlockHash = sinon.stub().callsArgWith(1, null, {
-        result: 'blockhash'
+        result: 'blockhash',
       });
       meritd.nodes.push({
         client: {
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd._maybeGetBlockHash(10, function(err, hash) {
         if (err) {
@@ -4187,12 +4214,12 @@ describe('Merit Service', function() {
     it('will get the block hash if argument is a number (as string)', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBlockHash = sinon.stub().callsArgWith(1, null, {
-        result: 'blockhash'
+        result: 'blockhash',
       });
       meritd.nodes.push({
         client: {
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd._maybeGetBlockHash('10', function(err, hash) {
         if (err) {
@@ -4206,19 +4233,19 @@ describe('Merit Service', function() {
     it('will try multiple nodes if one fails', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBlockHash = sinon.stub().callsArgWith(1, null, {
-        result: 'blockhash'
+        result: 'blockhash',
       });
-      getBlockHash.onCall(0).callsArgWith(1, {code: -1, message: 'test'});
+      getBlockHash.onCall(0).callsArgWith(1, { code: -1, message: 'test' });
       meritd.tryAllInterval = 1;
       meritd.nodes.push({
         client: {
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.nodes.push({
         client: {
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd._maybeGetBlockHash(10, function(err, hash) {
         if (err) {
@@ -4231,17 +4258,17 @@ describe('Merit Service', function() {
     });
     it('will give error from getBlockHash', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getBlockHash = sinon.stub().callsArgWith(1, {code: -1, message: 'test'});
+      var getBlockHash = sinon.stub().callsArgWith(1, { code: -1, message: 'test' });
       meritd.tryAllInterval = 1;
       meritd.nodes.push({
         client: {
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd.nodes.push({
         client: {
-          getBlockHash: getBlockHash
-        }
+          getBlockHash: getBlockHash,
+        },
       });
       meritd._maybeGetBlockHash(10, function(err, hash) {
         getBlockHash.callCount.should.equal(2);
@@ -4265,11 +4292,11 @@ describe('Merit Service', function() {
     });
     it('will give error from client.getBlock', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getBlock = sinon.stub().callsArgWith(2, {code: -1, message: 'test'});
+      var getBlock = sinon.stub().callsArgWith(2, { code: -1, message: 'test' });
       meritd.nodes.push({
         client: {
-          getBlock: getBlock
-        }
+          getBlock: getBlock,
+        },
       });
       meritd.getBlockOverview(blockhash, function(err) {
         err.should.be.instanceOf(Error);
@@ -4292,15 +4319,15 @@ describe('Merit Service', function() {
         mediantime: 1462976771,
         nonce: 2981820714,
         bits: '1a13ca10',
-        difficulty: 847779.0710240941
+        difficulty: 847779.0710240941,
       };
       var getBlock = sinon.stub().callsArgWith(2, null, {
-        result: blockResult
+        result: blockResult,
       });
       meritd.nodes.push({
         client: {
-          getBlock: getBlock
-        }
+          getBlock: getBlock,
+        },
       });
       function checkBlock(blockOverview) {
         blockOverview.hash.should.equal('00000000050a6d07f583beba2d803296eb1e9d4980c4a20f206c584e89a4f02b');
@@ -4334,11 +4361,11 @@ describe('Merit Service', function() {
   describe('#estimateFee', function() {
     it('will give rpc error', function(done) {
       var meritd = new MeritService(baseConfig);
-      var estimateFee = sinon.stub().callsArgWith(1, {message: 'error', code: -1});
+      var estimateFee = sinon.stub().callsArgWith(1, { message: 'error', code: -1 });
       meritd.nodes.push({
         client: {
-          estimateFee: estimateFee
-        }
+          estimateFee: estimateFee,
+        },
       });
       meritd.estimateFee(1, function(err) {
         should.exist(err);
@@ -4349,12 +4376,12 @@ describe('Merit Service', function() {
     it('will call client estimateFee and give result', function(done) {
       var meritd = new MeritService(baseConfig);
       var estimateFee = sinon.stub().callsArgWith(1, null, {
-        result: -1
+        result: -1,
       });
       meritd.nodes.push({
         client: {
-          estimateFee: estimateFee
-        }
+          estimateFee: estimateFee,
+        },
       });
       meritd.estimateFee(1, function(err, feesPerKb) {
         if (err) {
@@ -4370,11 +4397,11 @@ describe('Merit Service', function() {
     var tx = meritcore.Transaction(txhex);
     it('will give rpc error', function() {
       var meritd = new MeritService(baseConfig);
-      var sendRawTransaction = sinon.stub().callsArgWith(2, {message: 'error', code: -1});
+      var sendRawTransaction = sinon.stub().callsArgWith(2, { message: 'error', code: -1 });
       meritd.nodes.push({
         client: {
-          sendRawTransaction: sendRawTransaction
-        }
+          sendRawTransaction: sendRawTransaction,
+        },
       });
       meritd.sendTransaction(txhex, function(err) {
         should.exist(err);
@@ -4384,12 +4411,12 @@ describe('Merit Service', function() {
     it('will send to client and get hash', function() {
       var meritd = new MeritService(baseConfig);
       var sendRawTransaction = sinon.stub().callsArgWith(2, null, {
-        result: tx.hash
+        result: tx.hash,
       });
       meritd.nodes.push({
         client: {
-          sendRawTransaction: sendRawTransaction
-        }
+          sendRawTransaction: sendRawTransaction,
+        },
       });
       meritd.sendTransaction(txhex, function(err, hash) {
         if (err) {
@@ -4401,14 +4428,14 @@ describe('Merit Service', function() {
     it('will send to client with absurd fees and get hash', function() {
       var meritd = new MeritService(baseConfig);
       var sendRawTransaction = sinon.stub().callsArgWith(2, null, {
-        result: tx.hash
+        result: tx.hash,
       });
       meritd.nodes.push({
         client: {
-          sendRawTransaction: sendRawTransaction
-        }
+          sendRawTransaction: sendRawTransaction,
+        },
       });
-      meritd.sendTransaction(txhex, {allowAbsurdFees: true}, function(err, hash) {
+      meritd.sendTransaction(txhex, { allowAbsurdFees: true }, function(err, hash) {
         if (err) {
           return done(err);
         }
@@ -4418,28 +4445,28 @@ describe('Merit Service', function() {
     it('missing callback will throw error', function() {
       var meritd = new MeritService(baseConfig);
       var sendRawTransaction = sinon.stub().callsArgWith(2, null, {
-        result: tx.hash
+        result: tx.hash,
       });
       meritd.nodes.push({
         client: {
-          sendRawTransaction: sendRawTransaction
-        }
+          sendRawTransaction: sendRawTransaction,
+        },
       });
       var transaction = meritcore.Transaction();
       (function() {
         meritd.sendTransaction(transaction);
-      }).should.throw(Error);
+      }.should.throw(Error));
     });
   });
 
   describe('#getRawTransaction', function() {
     it('will give rpc error', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getRawTransaction = sinon.stub().callsArgWith(1, {message: 'error', code: -1});
+      var getRawTransaction = sinon.stub().callsArgWith(1, { message: 'error', code: -1 });
       meritd.nodes.push({
         client: {
-          getRawTransaction: getRawTransaction
-        }
+          getRawTransaction: getRawTransaction,
+        },
       });
       meritd.getRawTransaction('txid', function(err) {
         should.exist(err);
@@ -4450,24 +4477,24 @@ describe('Merit Service', function() {
     it('will try all nodes', function(done) {
       var meritd = new MeritService(baseConfig);
       meritd.tryAllInterval = 1;
-      var getRawTransactionWithError = sinon.stub().callsArgWith(1, {message: 'error', code: -1});
+      var getRawTransactionWithError = sinon.stub().callsArgWith(1, { message: 'error', code: -1 });
       var getRawTransaction = sinon.stub().callsArgWith(1, null, {
-        result: txhex
+        result: txhex,
       });
       meritd.nodes.push({
         client: {
-          getRawTransaction: getRawTransactionWithError
-        }
+          getRawTransaction: getRawTransactionWithError,
+        },
       });
       meritd.nodes.push({
         client: {
-          getRawTransaction: getRawTransactionWithError
-        }
+          getRawTransaction: getRawTransactionWithError,
+        },
       });
       meritd.nodes.push({
         client: {
-          getRawTransaction: getRawTransaction
-        }
+          getRawTransaction: getRawTransaction,
+        },
       });
       meritd.getRawTransaction('txid', function(err, tx) {
         if (err) {
@@ -4481,12 +4508,12 @@ describe('Merit Service', function() {
     it('will get from cache', function(done) {
       var meritd = new MeritService(baseConfig);
       var getRawTransaction = sinon.stub().callsArgWith(1, null, {
-        result: txhex
+        result: txhex,
       });
       meritd.nodes.push({
         client: {
-          getRawTransaction: getRawTransaction
-        }
+          getRawTransaction: getRawTransaction,
+        },
       });
       meritd.getRawTransaction('txid', function(err, tx) {
         if (err) {
@@ -4508,11 +4535,11 @@ describe('Merit Service', function() {
   describe('#getTransaction', function() {
     it('will give rpc error', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getRawTransaction = sinon.stub().callsArgWith(1, {message: 'error', code: -1});
+      var getRawTransaction = sinon.stub().callsArgWith(1, { message: 'error', code: -1 });
       meritd.nodes.push({
         client: {
-          getRawTransaction: getRawTransaction
-        }
+          getRawTransaction: getRawTransaction,
+        },
       });
       meritd.getTransaction('txid', function(err) {
         should.exist(err);
@@ -4523,24 +4550,24 @@ describe('Merit Service', function() {
     it('will try all nodes', function(done) {
       var meritd = new MeritService(baseConfig);
       meritd.tryAllInterval = 1;
-      var getRawTransactionWithError = sinon.stub().callsArgWith(1, {message: 'error', code: -1});
+      var getRawTransactionWithError = sinon.stub().callsArgWith(1, { message: 'error', code: -1 });
       var getRawTransaction = sinon.stub().callsArgWith(1, null, {
-        result: txhex
+        result: txhex,
       });
       meritd.nodes.push({
         client: {
-          getRawTransaction: getRawTransactionWithError
-        }
+          getRawTransaction: getRawTransactionWithError,
+        },
       });
       meritd.nodes.push({
         client: {
-          getRawTransaction: getRawTransactionWithError
-        }
+          getRawTransaction: getRawTransactionWithError,
+        },
       });
       meritd.nodes.push({
         client: {
-          getRawTransaction: getRawTransaction
-        }
+          getRawTransaction: getRawTransaction,
+        },
       });
       meritd.getTransaction('txid', function(err, tx) {
         if (err) {
@@ -4554,12 +4581,12 @@ describe('Merit Service', function() {
     it('will get from cache', function(done) {
       var meritd = new MeritService(baseConfig);
       var getRawTransaction = sinon.stub().callsArgWith(1, null, {
-        result: txhex
+        result: txhex,
       });
       meritd.nodes.push({
         client: {
-          getRawTransaction: getRawTransaction
-        }
+          getRawTransaction: getRawTransaction,
+        },
       });
       meritd.getTransaction('txid', function(err, tx) {
         if (err) {
@@ -4574,18 +4601,20 @@ describe('Merit Service', function() {
           getRawTransaction.callCount.should.equal(1);
           done();
         });
-
       });
     });
   });
 
   describe('#getDetailedTransaction', function() {
-    var txBuffer = new Buffer('01000000016f95980911e01c2c664b3e78299527a47933aac61a515930a8fe0213d1ac9abe01000000da0047304402200e71cda1f71e087c018759ba3427eb968a9ea0b1decd24147f91544629b17b4f0220555ee111ed0fc0f751ffebf097bdf40da0154466eb044e72b6b3dcd5f06807fa01483045022100c86d6c8b417bff6cc3bbf4854c16bba0aaca957e8f73e19f37216e2b06bb7bf802205a37be2f57a83a1b5a8cc511dc61466c11e9ba053c363302e7b99674be6a49fc0147522102632178d046673c9729d828cfee388e121f497707f810c131e0d3fc0fe0bd66d62103a0951ec7d3a9da9de171617026442fcd30f34d66100fab539853b43f508787d452aeffffffff0240420f000000000017a9148a31d53a448c18996e81ce67811e5fb7da21e4468738c9d6f90000000017a9148ce5408cfeaddb7ccb2545ded41ef478109454848700000000', 'hex');
+    var txBuffer = new Buffer(
+      '01000000016f95980911e01c2c664b3e78299527a47933aac61a515930a8fe0213d1ac9abe01000000da0047304402200e71cda1f71e087c018759ba3427eb968a9ea0b1decd24147f91544629b17b4f0220555ee111ed0fc0f751ffebf097bdf40da0154466eb044e72b6b3dcd5f06807fa01483045022100c86d6c8b417bff6cc3bbf4854c16bba0aaca957e8f73e19f37216e2b06bb7bf802205a37be2f57a83a1b5a8cc511dc61466c11e9ba053c363302e7b99674be6a49fc0147522102632178d046673c9729d828cfee388e121f497707f810c131e0d3fc0fe0bd66d62103a0951ec7d3a9da9de171617026442fcd30f34d66100fab539853b43f508787d452aeffffffff0240420f000000000017a9148a31d53a448c18996e81ce67811e5fb7da21e4468738c9d6f90000000017a9148ce5408cfeaddb7ccb2545ded41ef478109454848700000000',
+      'hex',
+    );
     var info = {
       blockHash: '00000000000ec715852ea2ecae4dc8563f62d603c820f81ac284cd5be0a944d6',
       height: 530482,
       timestamp: 1439559434000,
-      buffer: txBuffer
+      buffer: txBuffer,
     };
     var rpcRawTransaction = {
       hex: txBuffer.toString('hex'),
@@ -4599,13 +4628,13 @@ describe('Merit Service', function() {
           valueMicros: 110,
           address: 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW',
           txid: '3d003413c13eec3fa8ea1fe8bbff6f40718c66facffe2544d7516c9e2900cac2',
-          sequence: 0xFFFFFFFF,
+          sequence: 0xffffffff,
           vout: 0,
           scriptSig: {
             hex: 'scriptSigHex',
-            asm: 'scriptSigAsm'
-          }
-        }
+            asm: 'scriptSigAsm',
+          },
+        },
       ],
       vout: [
         {
@@ -4616,17 +4645,17 @@ describe('Merit Service', function() {
           scriptPubKey: {
             hex: '76a9140b2f0a0c31bfe0406b0ccc1381fdbe311946dadc88ac',
             asm: 'OP_DUP OP_HASH160 0b2f0a0c31bfe0406b0ccc1381fdbe311946dadc OP_EQUALVERIFY OP_CHECKSIG',
-            addresses: ['mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW']
-          }
-        }
-      ]
+            addresses: ['mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'],
+          },
+        },
+      ],
     };
     it('should give a transaction with height and timestamp', function(done) {
       var meritd = new MeritService(baseConfig);
       meritd.nodes.push({
         client: {
-          getRawTransaction: sinon.stub().callsArgWith(2, {code: -1, message: 'Test error'})
-        }
+          getRawTransaction: sinon.stub().callsArgWith(2, { code: -1, message: 'Test error' }),
+        },
       });
       var txid = '2d950d00494caf6bfc5fff2a3f839f0eb50f663ae85ce092bc5f9d45296ae91f';
       meritd.getDetailedTransaction(txid, function(err) {
@@ -4638,12 +4667,12 @@ describe('Merit Service', function() {
     it('should give a transaction with all properties', function(done) {
       var meritd = new MeritService(baseConfig);
       var getRawTransaction = sinon.stub().callsArgWith(2, null, {
-        result: rpcRawTransaction
+        result: rpcRawTransaction,
       });
       meritd.nodes.push({
         client: {
-          getRawTransaction: getRawTransaction
-        }
+          getRawTransaction: getRawTransaction,
+        },
       });
       var txid = '2d950d00494caf6bfc5fff2a3f839f0eb50f663ae85ce092bc5f9d45296ae91f';
       function checkTx(tx) {
@@ -4663,14 +4692,17 @@ describe('Merit Service', function() {
         should.equal(input.prevTxId, '3d003413c13eec3fa8ea1fe8bbff6f40718c66facffe2544d7516c9e2900cac2');
         should.equal(input.outputIndex, 0);
         should.equal(input.micros, 110);
-        should.equal(input.sequence, 0xFFFFFFFF);
+        should.equal(input.sequence, 0xffffffff);
         should.equal(input.script, 'scriptSigHex');
         should.equal(input.scriptAsm, 'scriptSigAsm');
         should.equal(input.address, 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW');
         var output = tx.outputs[0];
         should.equal(output.micros, 100);
         should.equal(output.script, '76a9140b2f0a0c31bfe0406b0ccc1381fdbe311946dadc88ac');
-        should.equal(output.scriptAsm, 'OP_DUP OP_HASH160 0b2f0a0c31bfe0406b0ccc1381fdbe311946dadc OP_EQUALVERIFY OP_CHECKSIG');
+        should.equal(
+          output.scriptAsm,
+          'OP_DUP OP_HASH160 0b2f0a0c31bfe0406b0ccc1381fdbe311946dadc OP_EQUALVERIFY OP_CHECKSIG',
+        );
         should.equal(output.address, 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW');
         should.equal(output.spentTxId, '4316b98e7504073acd19308b4b8c9f4eeb5e811455c54c0ebfe276c0b1eb6315');
         should.equal(output.spentIndex, 2);
@@ -4693,19 +4725,19 @@ describe('Merit Service', function() {
     });
     it('should set coinbase to true', function(done) {
       var meritd = new MeritService(baseConfig);
-      var rawTransaction = JSON.parse((JSON.stringify(rpcRawTransaction)));
+      var rawTransaction = JSON.parse(JSON.stringify(rpcRawTransaction));
       delete rawTransaction.vin[0];
       rawTransaction.vin = [
         {
-          coinbase: 'abcdef'
-        }
+          coinbase: 'abcdef',
+        },
       ];
       meritd.nodes.push({
         client: {
           getRawTransaction: sinon.stub().callsArgWith(2, null, {
-            result: rawTransaction
-          })
-        }
+            result: rawTransaction,
+          }),
+        },
       });
       var txid = '2d950d00494caf6bfc5fff2a3f839f0eb50f663ae85ce092bc5f9d45296ae91f';
       meritd.getDetailedTransaction(txid, function(err, tx) {
@@ -4716,14 +4748,14 @@ describe('Merit Service', function() {
     });
     it('will not include address if address length is zero', function(done) {
       var meritd = new MeritService(baseConfig);
-      var rawTransaction = JSON.parse((JSON.stringify(rpcRawTransaction)));
+      var rawTransaction = JSON.parse(JSON.stringify(rpcRawTransaction));
       rawTransaction.vout[0].scriptPubKey.addresses = [];
       meritd.nodes.push({
         client: {
           getRawTransaction: sinon.stub().callsArgWith(2, null, {
-            result: rawTransaction
-          })
-        }
+            result: rawTransaction,
+          }),
+        },
       });
       var txid = '2d950d00494caf6bfc5fff2a3f839f0eb50f663ae85ce092bc5f9d45296ae91f';
       meritd.getDetailedTransaction(txid, function(err, tx) {
@@ -4734,14 +4766,14 @@ describe('Merit Service', function() {
     });
     it('will not include address if address length is greater than 1', function(done) {
       var meritd = new MeritService(baseConfig);
-      var rawTransaction = JSON.parse((JSON.stringify(rpcRawTransaction)));
+      var rawTransaction = JSON.parse(JSON.stringify(rpcRawTransaction));
       rawTransaction.vout[0].scriptPubKey.addresses = ['one', 'two'];
       meritd.nodes.push({
         client: {
           getRawTransaction: sinon.stub().callsArgWith(2, null, {
-            result: rawTransaction
-          })
-        }
+            result: rawTransaction,
+          }),
+        },
       });
       var txid = '2d950d00494caf6bfc5fff2a3f839f0eb50f663ae85ce092bc5f9d45296ae91f';
       meritd.getDetailedTransaction(txid, function(err, tx) {
@@ -4752,14 +4784,14 @@ describe('Merit Service', function() {
     });
     it('will handle scriptPubKey.addresses not being set', function(done) {
       var meritd = new MeritService(baseConfig);
-      var rawTransaction = JSON.parse((JSON.stringify(rpcRawTransaction)));
+      var rawTransaction = JSON.parse(JSON.stringify(rpcRawTransaction));
       delete rawTransaction.vout[0].scriptPubKey['addresses'];
       meritd.nodes.push({
         client: {
           getRawTransaction: sinon.stub().callsArgWith(2, null, {
-            result: rawTransaction
-          })
-        }
+            result: rawTransaction,
+          }),
+        },
       });
       var txid = '2d950d00494caf6bfc5fff2a3f839f0eb50f663ae85ce092bc5f9d45296ae91f';
       meritd.getDetailedTransaction(txid, function(err, tx) {
@@ -4770,15 +4802,15 @@ describe('Merit Service', function() {
     });
     it('will not include script if input missing scriptSig or coinbase', function(done) {
       var meritd = new MeritService(baseConfig);
-      var rawTransaction = JSON.parse((JSON.stringify(rpcRawTransaction)));
+      var rawTransaction = JSON.parse(JSON.stringify(rpcRawTransaction));
       delete rawTransaction.vin[0].scriptSig;
       delete rawTransaction.vin[0].coinbase;
       meritd.nodes.push({
         client: {
           getRawTransaction: sinon.stub().callsArgWith(2, null, {
-            result: rawTransaction
-          })
-        }
+            result: rawTransaction,
+          }),
+        },
       });
       var txid = '2d950d00494caf6bfc5fff2a3f839f0eb50f663ae85ce092bc5f9d45296ae91f';
       meritd.getDetailedTransaction(txid, function(err, tx) {
@@ -4789,14 +4821,14 @@ describe('Merit Service', function() {
     });
     it('will set height to -1 if missing height', function(done) {
       var meritd = new MeritService(baseConfig);
-      var rawTransaction = JSON.parse((JSON.stringify(rpcRawTransaction)));
+      var rawTransaction = JSON.parse(JSON.stringify(rpcRawTransaction));
       delete rawTransaction.height;
       meritd.nodes.push({
         client: {
           getRawTransaction: sinon.stub().callsArgWith(2, null, {
-            result: rawTransaction
-          })
-        }
+            result: rawTransaction,
+          }),
+        },
       });
       var txid = '2d950d00494caf6bfc5fff2a3f839f0eb50f663ae85ce092bc5f9d45296ae91f';
       meritd.getDetailedTransaction(txid, function(err, tx) {
@@ -4810,11 +4842,11 @@ describe('Merit Service', function() {
   describe('#getBestBlockHash', function() {
     it('will give rpc error', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getBestBlockHash = sinon.stub().callsArgWith(0, {message: 'error', code: -1});
+      var getBestBlockHash = sinon.stub().callsArgWith(0, { message: 'error', code: -1 });
       meritd.nodes.push({
         client: {
-          getBestBlockHash: getBestBlockHash
-        }
+          getBestBlockHash: getBestBlockHash,
+        },
       });
       meritd.getBestBlockHash(function(err) {
         should.exist(err);
@@ -4825,12 +4857,12 @@ describe('Merit Service', function() {
     it('will call client getInfo and give result', function(done) {
       var meritd = new MeritService(baseConfig);
       var getBestBlockHash = sinon.stub().callsArgWith(0, null, {
-        result: 'besthash'
+        result: 'besthash',
       });
       meritd.nodes.push({
         client: {
-          getBestBlockHash: getBestBlockHash
-        }
+          getBestBlockHash: getBestBlockHash,
+        },
       });
       meritd.getBestBlockHash(function(err, hash) {
         if (err) {
@@ -4846,11 +4878,11 @@ describe('Merit Service', function() {
   describe('#getSpentInfo', function() {
     it('will give rpc error', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getSpentInfo = sinon.stub().callsArgWith(1, {message: 'error', code: -1});
+      var getSpentInfo = sinon.stub().callsArgWith(1, { message: 'error', code: -1 });
       meritd.nodes.push({
         client: {
-          getSpentInfo: getSpentInfo
-        }
+          getSpentInfo: getSpentInfo,
+        },
       });
       meritd.getSpentInfo({}, function(err) {
         should.exist(err);
@@ -4860,11 +4892,11 @@ describe('Merit Service', function() {
     });
     it('will empty object when not found', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getSpentInfo = sinon.stub().callsArgWith(1, {message: 'test', code: -5});
+      var getSpentInfo = sinon.stub().callsArgWith(1, { message: 'test', code: -5 });
       meritd.nodes.push({
         client: {
-          getSpentInfo: getSpentInfo
-        }
+          getSpentInfo: getSpentInfo,
+        },
       });
       meritd.getSpentInfo({}, function(err, info) {
         should.not.exist(err);
@@ -4878,13 +4910,13 @@ describe('Merit Service', function() {
         result: {
           txid: 'txid',
           index: 10,
-          height: 101
-        }
+          height: 101,
+        },
       });
       meritd.nodes.push({
         client: {
-          getSpentInfo: getSpentInfo
-        }
+          getSpentInfo: getSpentInfo,
+        },
       });
       meritd.getSpentInfo({}, function(err, info) {
         if (err) {
@@ -4901,11 +4933,11 @@ describe('Merit Service', function() {
   describe('#getInfo', function() {
     it('will give rpc error', function(done) {
       var meritd = new MeritService(baseConfig);
-      var getInfo = sinon.stub().callsArgWith(0, {message: 'error', code: -1});
+      var getInfo = sinon.stub().callsArgWith(0, { message: 'error', code: -1 });
       meritd.nodes.push({
         client: {
-          getInfo: getInfo
-        }
+          getInfo: getInfo,
+        },
       });
       meritd.getInfo(function(err) {
         should.exist(err);
@@ -4927,13 +4959,13 @@ describe('Merit Service', function() {
           difficulty: 1,
           testnet: true,
           relayfee: 10,
-          errors: ''
-        }
+          errors: '',
+        },
       });
       meritd.nodes.push({
         client: {
-          getInfo: getInfo
-        }
+          getInfo: getInfo,
+        },
       });
       meritd.getInfo(function(err, info) {
         if (err) {
@@ -4959,11 +4991,11 @@ describe('Merit Service', function() {
   describe('#generateBlock', function() {
     it('will give rpc error', function(done) {
       var meritd = new MeritService(baseConfig);
-      var generate = sinon.stub().callsArgWith(1, {message: 'error', code: -1});
+      var generate = sinon.stub().callsArgWith(1, { message: 'error', code: -1 });
       meritd.nodes.push({
         client: {
-          generate: generate
-        }
+          generate: generate,
+        },
       });
       meritd.generateBlock(10, function(err) {
         should.exist(err);
@@ -4974,12 +5006,12 @@ describe('Merit Service', function() {
     it('will call client generate and give result', function(done) {
       var meritd = new MeritService(baseConfig);
       var generate = sinon.stub().callsArgWith(1, null, {
-        result: ['hash']
+        result: ['hash'],
       });
       meritd.nodes.push({
         client: {
-          generate: generate
-        }
+          generate: generate,
+        },
       });
       meritd.generateBlock(10, function(err, hashes) {
         if (err) {
@@ -5035,5 +5067,4 @@ describe('Merit Service', function() {
       meritd.spawn.process.kill.args[0][0].should.equal('SIGINT');
     });
   });
-
 });

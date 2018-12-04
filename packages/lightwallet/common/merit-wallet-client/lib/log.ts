@@ -26,7 +26,7 @@ export interface LoggerWithLevels {
   warn(message: string, ...supportingDetails: any[]): void;
   error(message: string, ...supportingDetails: any[]): void;
   fatal(message: string, ...supportingDetails: any[]): void;
- }
+}
 
 export class Logger implements LoggerWithLevels {
   private static _instance: Logger;
@@ -37,19 +37,18 @@ export class Logger implements LoggerWithLevels {
     return this.levels;
   };
 
-
   private levels = {
-    'silent': -1,
-    'debug': 0,
-    'info': 1,
-    'log': 2,
-    'warn': 3,
-    'error': 4,
-    'fatal': 5
+    silent: -1,
+    debug: 0,
+    info: 1,
+    log: 2,
+    warn: 3,
+    error: 4,
+    fatal: 5,
   };
 
   public silent(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('silent', message)
+    this.logMessage('silent', message);
   }
 
   /**
@@ -59,17 +58,17 @@ export class Logger implements LoggerWithLevels {
    * @param {*} args - the arguments to be logged.
    */
   public debug(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('debug', message)
+    this.logMessage('debug', message);
   }
 
-    /**
+  /**
    * @class Logger
    * @method log
    * @desc Log messages at an intermediary level called 'log'.
    * @param {*} args - the arguments to be logged.
    */
   public log(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('log', message)
+    this.logMessage('log', message);
   }
 
   /**
@@ -79,7 +78,7 @@ export class Logger implements LoggerWithLevels {
    * @param {*} args - the arguments to be logged.
    */
   public info(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('info', message)
+    this.logMessage('info', message);
   }
 
   /**
@@ -89,7 +88,7 @@ export class Logger implements LoggerWithLevels {
    * @param {*} args - the arguments to be logged.
    */
   public warn(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('warn', message)
+    this.logMessage('warn', message);
   }
 
   /**
@@ -99,7 +98,7 @@ export class Logger implements LoggerWithLevels {
    * @param {*} args - the arguments to be logged.
    */
   public error(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('error', message)
+    this.logMessage('error', message);
   }
 
   /**
@@ -109,22 +108,21 @@ export class Logger implements LoggerWithLevels {
    * @param {*} args - the arguments to be logged.
    */
   public fatal(message: string, ...supportingDetails: any[]): void {
-    this.logMessage('fatal', message)
+    this.logMessage('fatal', message);
   }
 
   private constructor() {
-    this.name = "Merit Log";
+    this.name = 'Merit Log';
     this.level = DEFAULT_LOG_LEVEL;
 
-    _.each(this.levels, function(level, levelName: string) {
-
-    });
+    _.each(this.levels, function(level, levelName: string) {});
   }
 
   private logMessage(levelName: string, message: string, supportingDetails?: any[]) {
-    let level:number = this.levels[levelName] || -1;
+    let level: number = this.levels[levelName] || -1;
 
-    if (levelName === 'silent') { // dont create a log.silent() method
+    if (levelName === 'silent') {
+      // dont create a log.silent() method
       return;
     }
     if (level >= this.levels[this.level]) {
@@ -142,7 +140,7 @@ export class Logger implements LoggerWithLevels {
         Error.stackTraceLimit = old;
 
         let str = '[' + levelName + (caller || '') + '] ' + arguments[0],
-        extraArgs = [].slice.call(arguments, 1);
+          extraArgs = [].slice.call(arguments, 1);
         if (console[levelName]) {
           extraArgs.unshift(str);
           console[levelName].apply(console, extraArgs);
@@ -153,7 +151,7 @@ export class Logger implements LoggerWithLevels {
           console.log(str);
         }
       }
-    };
+    }
   }
 
   /**
@@ -168,14 +166,13 @@ export class Logger implements LoggerWithLevels {
     this.level = level;
   };
 
-   /**
+  /**
    * @desc
    * Return singleton
    *
    * @param {string} level - the name of the logging level
    */
   public static getInstance() {
-    return (this._instance || new Logger());
-  };
-
+    return this._instance || new Logger();
+  }
 }

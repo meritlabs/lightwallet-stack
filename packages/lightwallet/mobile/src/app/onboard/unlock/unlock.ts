@@ -8,7 +8,7 @@ import { cleanAddress, isAlias } from '@merit/common/utils/addresses';
 import { AddressService } from '@merit/common/services/address.service';
 
 @IonicPage({
-  defaultHistory: ['OnboardingView']
+  defaultHistory: ['OnboardingView'],
 })
 @Component({
   selector: 'view-unlock',
@@ -19,29 +19,33 @@ export class UnlockView {
   formData = {
     parentAddress: '',
     addressCheckError: '',
-    addressCheckInProgress: false
+    addressCheckInProgress: false,
   };
   easyReceipt: EasyReceipt;
   parsedAddress: '';
 
-  invitation: {address: string, alias: string};
+  invitation: { address: string; alias: string };
 
   get canContinue(): boolean {
     return Boolean(this.parsedAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError;
   }
 
   get shouldShowQRButton(): boolean {
-    return !Boolean(this.formData.parentAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError;
+    return (
+      !Boolean(this.formData.parentAddress) && !this.formData.addressCheckInProgress && !this.formData.addressCheckError
+    );
   }
 
-  @ViewChild(Content) content: Content;
+  @ViewChild(Content)
+  content: Content;
 
-  constructor(private navCtrl: NavController,
-              private navParams: NavParams,
-              private easyReceiveService: EasyReceiveService,
-              private addressService: AddressService,
-              private addressScanner: AddressScannerService) {
-  }
+  constructor(
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private easyReceiveService: EasyReceiveService,
+    private addressService: AddressService,
+    private addressScanner: AddressScannerService,
+  ) {}
 
   // TODO use ngOnInit or ionViewWillLoad
   async ionViewDidLoad() {
@@ -68,7 +72,7 @@ export class UnlockView {
     this.validateAddressDebounce();
   }
 
-  toAliasView() {   
+  toAliasView() {
     if (this.formData.parentAddress && !this.formData.addressCheckInProgress && !this.formData.addressCheckError) {
       const inv = this.navParams.get('invitation');
       const gbs = !!this.navParams.get('gbs');
@@ -93,24 +97,26 @@ export class UnlockView {
   private async validateAddress() {
     this.formData.parentAddress = cleanAddress(this.formData.parentAddress);
 
-    let input = (this.formData.parentAddress && isAlias(this.formData.parentAddress)) ? this.formData.parentAddress.slice(1) : this.formData.parentAddress;
+    let input =
+      this.formData.parentAddress && isAlias(this.formData.parentAddress)
+        ? this.formData.parentAddress.slice(1)
+        : this.formData.parentAddress;
     if (!input) {
       this.formData.addressCheckInProgress = false;
-      return this.formData.addressCheckError = 'Address cannot be empty';
+      return (this.formData.addressCheckError = 'Address cannot be empty');
     } else if (!this.addressService.isAddress(input) && !this.addressService.couldBeAlias(input)) {
       this.formData.addressCheckInProgress = false;
-      return this.formData.addressCheckError = 'Incorrect address or alias format';
+      return (this.formData.addressCheckError = 'Incorrect address or alias format');
     } else {
       let addressInfo = await this.addressService.getAddressInfo(input);
       if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || !addressInfo.isConfirmed) {
         this.formData.addressCheckInProgress = false;
-        return this.formData.addressCheckError = 'Address not found';
+        return (this.formData.addressCheckError = 'Address not found');
       } else {
         this.formData.addressCheckError = null;
         this.formData.addressCheckInProgress = false;
-        return this.parsedAddress = addressInfo.address;
+        return (this.parsedAddress = addressInfo.address);
       }
     }
   }
-
 }

@@ -19,7 +19,11 @@ import { ElectronService } from '@merit/desktop/services/electron.service';
   styleUrls: ['./share-box.component.sass'],
 })
 export class ShareBoxComponent implements OnInit {
-  constructor(private store: Store<IRootAppState>, private toastCtrl: ToastControllerService, private socialSharing: SocialSharing) {}
+  constructor(
+    private store: Store<IRootAppState>,
+    private toastCtrl: ToastControllerService,
+    private socialSharing: SocialSharing,
+  ) {}
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   selectedWallet = {
@@ -35,18 +39,22 @@ export class ShareBoxComponent implements OnInit {
   shareTitle: string = 'Merit - digital currency for humans.';
   shareText: string = `Merit aims to be the world’s friendliest digital currency, making it dead simple to pay friends, buy goods, and manage your wealth.\n Get wallet now, your activation: `;
 
-  @Output() dismiss: EventEmitter<void> = new EventEmitter<void>();
+  @Output()
+  dismiss: EventEmitter<void> = new EventEmitter<void>();
 
   async ngOnInit() {
     const wallets: DisplayWallet[] = await this.wallets$
-      .pipe(filter((wallets: DisplayWallet[]) => wallets.length > 0), take(1))
+      .pipe(
+        filter((wallets: DisplayWallet[]) => wallets.length > 0),
+        take(1),
+      )
       .toPromise();
 
     if (wallets.length > 0) {
       this.selectedWallet = wallets[0];
       this.selectWallet(wallets[0]);
     }
-    this.FB =  await this.socialSharing.authorizeFBSDK();
+    this.FB = await this.socialSharing.authorizeFBSDK();
   }
 
   get isElectron(): boolean {
@@ -69,31 +77,34 @@ export class ShareBoxComponent implements OnInit {
   }
 
   shareFacebook() {
-    this.FB.ui({
-      method: 'share_open_graph',
-      action_type: 'og.shares',
-      action_properties: JSON.stringify({
-        object : {
-          'og:url': `${this.shareLink}`,
-          'og:title': `${this.shareTitle}`,
-          'og:site_name':'MeritLightWallet',
-          'og:description': `${this.shareText} ${this.shareLink}`,
-          'og:image': 'https://www.merit.me/uploads/2018/02/17/shareImage.png',
-          'og:image:width':'250',
-          'og:image:height':'257'
-        }
-      })
-    }, function(response){
-      console.debug(response);
-    });
+    this.FB.ui(
+      {
+        method: 'share_open_graph',
+        action_type: 'og.shares',
+        action_properties: JSON.stringify({
+          object: {
+            'og:url': `${this.shareLink}`,
+            'og:title': `${this.shareTitle}`,
+            'og:site_name': 'MeritLightWallet',
+            'og:description': `${this.shareText} ${this.shareLink}`,
+            'og:image': 'https://www.merit.me/uploads/2018/02/17/shareImage.png',
+            'og:image:width': '250',
+            'og:image:height': '257',
+          },
+        }),
+      },
+      function(response) {
+        console.debug(response);
+      },
+    );
   }
 
   shareTweeter() {
-    this._newWindow(`https://twitter.com/intent/tweet?text=${this.shareText} ${this.shareLink}`);    
+    this._newWindow(`https://twitter.com/intent/tweet?text=${this.shareText} ${this.shareLink}`);
   }
 
   mailTo() {
-    window.location.href = (`mailto:?subject=${this.shareTitle}&body=${this.shareText} ${this.shareLink}`); 
+    window.location.href = `mailto:?subject=${this.shareTitle}&body=${this.shareText} ${this.shareLink}`;
   }
 
   private _newWindow(url) {

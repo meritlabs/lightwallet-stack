@@ -6,7 +6,7 @@ var chai = require('chai');
 var sinon = require('sinon');
 var should = chai.should();
 var tingodb = require('tingodb')({
-  memStore: true
+  memStore: true,
 });
 
 var Storage = require('../lib/storage');
@@ -23,22 +23,20 @@ function openDb(cb) {
     return cb();
   };
   return cb();
-};
-
+}
 
 function resetDb(cb) {
   if (!db) return cb();
   db.dropDatabase(function(err) {
     return cb();
   });
-};
-
+}
 
 describe('Storage', function() {
   before(function(done) {
     openDb(function() {
       storage = new Storage({
-        db: db
+        db: db,
       });
       done();
     });
@@ -66,7 +64,7 @@ describe('Storage', function() {
           w.m.should.equal(wallet.m);
           w.n.should.equal(wallet.n);
           done();
-        })
+        });
       });
     });
     it('should not return error if wallet not found', function(done) {
@@ -106,7 +104,7 @@ describe('Storage', function() {
           lookup.requestPubKeys[0].key.should.equal('requestPubKey 1');
           lookup.requestPubKeys[0].signature.should.equal('xxx');
           done();
-        })
+        });
       });
     });
     it('should not return error if copayer not found', function(done) {
@@ -144,10 +142,12 @@ describe('Storage', function() {
         proposals = _.map(_.range(4), function(i) {
           var tx = Model.TxProposal.create({
             walletId: '123',
-            outputs: [{
-              toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
-              amount: i + 100,
-            }],
+            outputs: [
+              {
+                toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
+                amount: i + 100,
+              },
+            ],
             feePerKb: 100e2,
             creatorId: wallet.copayers[0].id,
           });
@@ -161,12 +161,16 @@ describe('Storage', function() {
           tx.txid = 'txid' + i;
           return tx;
         });
-        async.each(proposals, function(tx, next) {
-          storage.storeTx('123', tx, next);
-        }, function(err) {
-          should.not.exist(err);
-          done();
-        });
+        async.each(
+          proposals,
+          function(tx, next) {
+            storage.storeTx('123', tx, next);
+          },
+          function(err) {
+            should.not.exist(err);
+            done();
+          },
+        );
       });
     });
     it('should fetch tx', function(done) {
@@ -212,7 +216,7 @@ describe('Storage', function() {
             should.exist(txs);
             txs.length.should.equal(3);
             _.some(txs, {
-              id: proposals[0].id
+              id: proposals[0].id,
             }).should.be.false;
             done();
           });

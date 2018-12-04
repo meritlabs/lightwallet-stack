@@ -7,7 +7,6 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
   templateUrl: 'select-color.html',
 })
 export class SelectColorView {
-
   availableColors = [
     '#e57373',
     '#e985a7',
@@ -27,15 +26,12 @@ export class SelectColorView {
     '#8997eb',
     '#808080',
     '#5f6c82',
-    '#383d43'
+    '#383d43',
   ];
 
   selectedColor: string;
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              private viewCtrl: ViewController) {
-  }
+  constructor(public navCtrl: NavController, public navParams: NavParams, private viewCtrl: ViewController) {}
 
   cancel() {
     this.viewCtrl.dismiss();
@@ -44,5 +40,4 @@ export class SelectColorView {
   select(color) {
     this.viewCtrl.dismiss(color);
   }
-
 }

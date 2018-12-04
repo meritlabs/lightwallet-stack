@@ -9,20 +9,22 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 @Component({
   selector: 'sms-notifications-prompt',
   templateUrl: './sms-notifications-prompt.component.html',
-  styleUrls: ['./sms-notifications-prompt.component.sass']
+  styleUrls: ['./sms-notifications-prompt.component.sass'],
 })
 export class SmsNotificationsPromptComponent implements IDynamicComponent {
   formData: FormGroup = this.formBuilder.group({
-    phoneNumber: ['', [Validators.required, Validators.pattern(/\d{10,}/)]]
+    phoneNumber: ['', [Validators.required, Validators.pattern(/\d{10,}/)]],
   });
 
   destroy: Function;
 
-  constructor(private smsNotificationsService: SmsNotificationsService,
-              private toastCtrl: ToastControllerService,
-              private formBuilder: FormBuilder,
-              private loadingCtrl: Ng4LoadingSpinnerService,
-              private persistenceService: PersistenceService2) {}
+  constructor(
+    private smsNotificationsService: SmsNotificationsService,
+    private toastCtrl: ToastControllerService,
+    private formBuilder: FormBuilder,
+    private loadingCtrl: Ng4LoadingSpinnerService,
+    private persistenceService: PersistenceService2,
+  ) {}
 
   init() {}
 

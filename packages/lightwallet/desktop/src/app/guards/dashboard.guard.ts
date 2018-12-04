@@ -9,21 +9,18 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class DashboardGuard implements CanActivate {
-  constructor(private profileService: ProfileService,
-              private router: Router,
-              private store: Store<IRootAppState>) {}
+  constructor(private profileService: ProfileService, private router: Router, private store: Store<IRootAppState>) {}
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    return this.store.select(selectAppState)
-      .pipe(
-        map((state: IAppState) => {
-          if (state.authorized) {
-            return true;
-          } else {
-            this.router.navigateByUrl('/onboarding/unlock');
-            return false;
-          }
-        })
-      );
+    return this.store.select(selectAppState).pipe(
+      map((state: IAppState) => {
+        if (state.authorized) {
+          return true;
+        } else {
+          this.router.navigateByUrl('/onboarding/unlock');
+          return false;
+        }
+      }),
+    );
   }
 }

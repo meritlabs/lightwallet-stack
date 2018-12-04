@@ -16,7 +16,6 @@ function getPayloadBuffer(messageBuffer) {
 }
 
 describe('Messages', function() {
-
   var buildMessage = function(hex) {
     var m = Buffers();
     m.push(new Buffer(hex, 'hex'));
@@ -29,7 +28,7 @@ describe('Messages', function() {
       var messages = new Messages({
         network: network,
         Block: bitcore.Block,
-        Transaction: bitcore.Transaction
+        Transaction: bitcore.Transaction,
       });
       should.exist(messages.builder.commands);
       should.exist(messages.builder.constructors);
@@ -39,10 +38,10 @@ describe('Messages', function() {
     });
     it('network should be unique for each set of messages', function() {
       var messages = new Messages({
-        network: bitcore.Networks.livenet
+        network: bitcore.Networks.livenet,
       });
       var messages2 = new Messages({
-        network: bitcore.Networks.testnet
+        network: bitcore.Networks.testnet,
       });
       messages.network.should.deep.equal(bitcore.Networks.livenet);
       messages2.network.should.deep.equal(bitcore.Networks.testnet);
@@ -94,7 +93,6 @@ describe('Messages', function() {
         message.network.should.deep.equal(bitcore.Networks.defaultNetwork);
       });
     });
-
   });
 
   describe('messages.Version', function() {
@@ -108,7 +106,7 @@ describe('Messages', function() {
     it('#relay setting works', function() {
       [true, false].forEach(function(relay) {
         var message = messages.Version({
-          relay: relay
+          relay: relay,
         });
         message.relay.should.equal(relay);
         var messageBuf = message.getPayload();
@@ -119,7 +117,6 @@ describe('Messages', function() {
   });
 
   describe('Inventory Helpers', function() {
-
     var messages = new Messages();
 
     var constructors = messages.builder.inventoryCommands;
@@ -158,12 +155,12 @@ describe('Messages', function() {
         });
       });
     });
-
   });
 
   describe('#parseBuffer', function() {
     it('fails with invalid command', function() {
-      var invalidCommand = 'f9beb4d96d616c6963696f757300000025000000bd5e830c' +
+      var invalidCommand =
+        'f9beb4d96d616c6963696f757300000025000000bd5e830c' +
         '0102000000ec3995c1bf7269ff728818a65e53af00cbbee6b6eca8ac9ce7bc79d87' +
         '7041ed8';
       var fails = function() {
@@ -174,14 +171,17 @@ describe('Messages', function() {
     });
 
     it('ignores malformed messages', function() {
-      var malformed1 = 'd8c4c3d976657273696f6e000000000065000000fc970f1772110' +
+      var malformed1 =
+        'd8c4c3d976657273696f6e000000000065000000fc970f1772110' +
         '1000100000000000000ba6288540000000001000000000000000000000000000000' +
         '0000ffffba8886dceab0010000000000000000000000000000000000ffff0509552' +
         '2208de7e1c1ef80a1cea70f2f5361746f7368693a302e392e312fa317050001';
-      var malformed2 = 'f9beb4d967657464617461000000000089000000d88134740102' +
+      var malformed2 =
+        'f9beb4d967657464617461000000000089000000d88134740102' +
         '0000006308e4a380c949dbad182747b0f7b6a89e874328ca41f37287f74a81b8f84' +
         '86d';
-      var malformed3 = 'f9beb4d967657464617461000000000025000000616263640102' +
+      var malformed3 =
+        'f9beb4d967657464617461000000000025000000616263640102' +
         '00000069ebcbc34a4f9890da9aea0f773beba883a9afb1ab9ad7647dd4a1cd346c3' +
         '728';
       [malformed1, malformed2, malformed3].forEach(function(malformed) {
@@ -189,7 +189,6 @@ describe('Messages', function() {
         should.not.exist(ret);
       });
     });
-
   });
 
   describe('#add', function() {
@@ -198,7 +197,7 @@ describe('Messages', function() {
       var messages = new Messages({
         network: network,
         Block: bitcore.Block,
-        Transaction: bitcore.Transaction
+        Transaction: bitcore.Transaction,
       });
 
       var CustomMessage = function(arg, options) {
@@ -212,5 +211,4 @@ describe('Messages', function() {
       message.arg.should.equal('hello');
     });
   });
-
 });

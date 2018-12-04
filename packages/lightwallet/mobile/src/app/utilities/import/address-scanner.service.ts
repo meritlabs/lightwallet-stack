@@ -9,10 +9,11 @@ export class AddressScannerService {
   _hasCameraPermissions: boolean;
   _deviceHasCamera: boolean;
 
-  constructor(private modalCtrl: ModalController,
-              private barcodeScanner: BarcodeScanner,
-              private diagnostic: Diagnostic) {
-  }
+  constructor(
+    private modalCtrl: ModalController,
+    private barcodeScanner: BarcodeScanner,
+    private diagnostic: Diagnostic,
+  ) {}
 
   async scanAddress() {
     let error;
@@ -24,7 +25,7 @@ export class AddressScannerService {
           return code;
         }
       } catch (e) {
-        error = e == 'cordova_not_available'? 'This feature is available in native applications only.' : e;
+        error = e == 'cordova_not_available' ? 'This feature is available in native applications only.' : e;
       }
     } else {
       error = 'This feature is available in native applications only.';
@@ -49,12 +50,14 @@ export class AddressScannerService {
     if (typeof this._hasCameraPermissions !== 'boolean') {
       // we didn't check/request permissions yet.. lets do that
 
-      this._hasCameraPermissions = (await this.diagnostic.getCameraAuthorizationStatus(false)) === this.diagnostic.permissionStatus.GRANTED;
+      this._hasCameraPermissions =
+        (await this.diagnostic.getCameraAuthorizationStatus(false)) === this.diagnostic.permissionStatus.GRANTED;
     }
 
     if (this._hasCameraPermissions === true) return true;
 
-    this._hasCameraPermissions = (await this.diagnostic.requestCameraAuthorization(false)) === this.diagnostic.permissionStatus.GRANTED;
+    this._hasCameraPermissions =
+      (await this.diagnostic.requestCameraAuthorization(false)) === this.diagnostic.permissionStatus.GRANTED;
 
     return this._hasCameraPermissions;
   }

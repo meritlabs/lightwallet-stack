@@ -6,18 +6,14 @@ import { ComponentsModule } from '../../../components/components.module';
 import { DirectivesModule } from '@merit/mobile/directives/directives.module';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
-
 @NgModule({
-  declarations: [
-    WalletDetailsView
-  ],
+  declarations: [WalletDetailsView],
   imports: [
     IonicPageModule.forChild(WalletDetailsView),
     MomentModule,
     ComponentsModule,
     DirectivesModule,
-    CommonPipesModule
-  ]
+    CommonPipesModule,
+  ],
 })
-export class WalletDetailsModule {
-}
+export class WalletDetailsModule {}

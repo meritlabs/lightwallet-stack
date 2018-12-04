@@ -8,10 +8,11 @@ import { GlobalsendLinkPopupController } from '@merit/desktop/app/components/glo
   selector: 'history-item',
   templateUrl: './history-item.component.html',
   styleUrls: ['./history-item.component.sass'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistoryItemComponent implements OnInit {
-  @Input() tx: IDisplayTransaction;
+  @Input()
+  tx: IDisplayTransaction;
 
   confirmationsExplanation: string;
   isUnlockRequest: boolean;
@@ -30,10 +31,7 @@ export class HistoryItemComponent implements OnInit {
     }
   }
 
-  constructor(
-    private globalSendLinkCtrl: GlobalsendLinkPopupController,
-    private easyReceive: EasyReceiveService
-  ) {}
+  constructor(private globalSendLinkCtrl: GlobalsendLinkPopupController, private easyReceive: EasyReceiveService) {}
 
   ngOnInit() {
     const { tx } = this;
@@ -45,7 +43,8 @@ export class HistoryItemComponent implements OnInit {
     this.isMiningReward = this.isReward && tx.outputs[0].index === 0;
     this.isEasySend = !this.isInvite && !this.isReward;
     if (tx.isCoinbase && !tx.isMature) {
-      this.confirmationsExplanation = String(this.tx.confirmations) + ' block(s) confirmed from ' + COINBASE_CONFIRMATION_THRESHOLD;
+      this.confirmationsExplanation =
+        String(this.tx.confirmations) + ' block(s) confirmed from ' + COINBASE_CONFIRMATION_THRESHOLD;
     }
 
     if (tx.isGrowthReward) this.image = 'growth';

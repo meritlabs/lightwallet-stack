@@ -17,7 +17,7 @@ var traverseNode = function(parent, errorDefinition) {
     } else {
       throw new Error('Invalid error definition for ' + errorDefinition.name);
     }
-    this.stack = this.message + '\n' + (new Error()).stack;
+    this.stack = this.message + '\n' + new Error().stack;
   };
   NodeError.prototype = Object.create(parent.prototype);
   NodeError.prototype.name = parent.prototype.name + errorDefinition.name;
@@ -41,15 +41,13 @@ var traverseRoot = function(parent, errorsDefinition) {
   return parent;
 };
 
-
 var meritcore = {};
 meritcore.Error = function() {
   this.message = 'Internal error';
-  this.stack = this.message + '\n' + (new Error()).stack;
+  this.stack = this.message + '\n' + new Error().stack;
 };
 meritcore.Error.prototype = Object.create(Error.prototype);
 meritcore.Error.prototype.name = 'meritcore.Error';
-
 
 var data = require('./spec');
 traverseRoot(meritcore.Error, data);

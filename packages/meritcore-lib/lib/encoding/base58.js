@@ -26,7 +26,11 @@ Base58.validCharacters = function validCharacters(chars) {
   if (buffer.Buffer.isBuffer(chars)) {
     chars = chars.toString();
   }
-  return _.every(_.map(chars, function(char) { return _.includes(ALPHABET, char); }));
+  return _.every(
+    _.map(chars, function(char) {
+      return _.includes(ALPHABET, char);
+    }),
+  );
 };
 
 Base58.prototype.set = function(obj) {

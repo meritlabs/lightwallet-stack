@@ -27,7 +27,7 @@ util.inherits(Bus, events.EventEmitter);
 Bus.prototype.subscribe = function(name) {
   var events = [];
 
-  for(var i in this.node.services) {
+  for (var i in this.node.services) {
     var service = this.node.services[i];
     events = events.concat(service.getPublishEvents());
   }
@@ -49,7 +49,7 @@ Bus.prototype.subscribe = function(name) {
 Bus.prototype.unsubscribe = function(name) {
   var events = [];
 
-  for(var i in this.node.services) {
+  for (var i in this.node.services) {
     var service = this.node.services[i];
     events = events.concat(service.getPublishEvents());
   }
@@ -70,7 +70,7 @@ Bus.prototype.unsubscribe = function(name) {
 Bus.prototype.close = function() {
   var events = [];
 
-  for(var i in this.node.services) {
+  for (var i in this.node.services) {
     var service = this.node.services[i];
     events = events.concat(service.getPublishEvents());
   }

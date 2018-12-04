@@ -20,11 +20,11 @@ const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 @IonicPage()
 @Component({
   selector: 'view-send',
-  templateUrl: 'send.html'
+  templateUrl: 'send.html',
 })
 export class SendView {
-
-  @ViewChild(Slides) slides: Slides;
+  @ViewChild(Slides)
+  slides: Slides;
 
   get sliderIsFinished(): boolean {
     return this.slides.isEnd();
@@ -37,9 +37,9 @@ export class SendView {
   contacts: Array<MeritContact> = [];
   amount: number;
   searchResult: {
-    contacts: Array<MeritContact>,
-    toNewEntity: { destination: string, contact: MeritContact },
-    error: string
+    contacts: Array<MeritContact>;
+    toNewEntity: { destination: string; contact: MeritContact };
+    error: string;
   } = { contacts: [], toNewEntity: null, error: null };
 
   hasUnlockedWallets: boolean;
@@ -50,20 +50,19 @@ export class SendView {
 
   searchInProgress: boolean;
 
-  constructor(private navCtrl: NavController,
-              private navParams: NavParams,
-              private contactsService: ContactsService,
-              private profileService: ProfileService,
-              private addressService: AddressService,
-              private modalCtrl: ModalController,
-              private addressScanner: AddressScannerService,
-              private persistenceService: PersistenceService,
-              private events: Events,
-              private toastCtrl: ToastController,
-              private rateService: RateService
-  ) {
-
-  }
+  constructor(
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private contactsService: ContactsService,
+    private profileService: ProfileService,
+    private addressService: AddressService,
+    private modalCtrl: ModalController,
+    private addressScanner: AddressScannerService,
+    private persistenceService: PersistenceService,
+    private events: Events,
+    private toastCtrl: ToastController,
+    private rateService: RateService,
+  ) {}
 
   private async updateHasUnlocked() {
     const wallets = await this.profileService.getWallets();
@@ -71,7 +70,7 @@ export class SendView {
     this.hasActiveInvites = wallets.some(w => w.availableInvites > 0);
 
     let pagesVisited = await this.persistenceService.getPagesVisited();
-    this.showSlider = (pagesVisited.indexOf('send') == -1);
+    this.showSlider = pagesVisited.indexOf('send') == -1;
     this.showSlider = false; // temporary disabled
   }
 
@@ -90,7 +89,7 @@ export class SendView {
     this.contacts = await this.contactsService.getAllMeritContacts();
     this.loadingContacts = false;
     await this.updateRecentContacts();
-    await  this.parseSearch();
+    await this.parseSearch();
 
     this.events.subscribe('Remote:IncomingTx', () => {
       this.updateHasUnlocked();
@@ -103,20 +102,18 @@ export class SendView {
 
     let results, contact;
 
-    sendHistory
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .forEach((record) => {
-        results = this.contactsService.searchContacts(this.contacts, record.method.value);
-        if (results && results.length) {
-          recentContacts.push(results[0]);
-          results = void 0;
-        } else {
-          contact = new MeritContact();
-          contact.name.formatted = record.method.alias ? '@' + record.method.alias : record.method.value;
-          recentContacts.push(contact);
-          contact = void 0;
-        }
-      });
+    sendHistory.sort((a, b) => b.timestamp - a.timestamp).forEach(record => {
+      results = this.contactsService.searchContacts(this.contacts, record.method.value);
+      if (results && results.length) {
+        recentContacts.push(results[0]);
+        results = void 0;
+      } else {
+        contact = new MeritContact();
+        contact.name.formatted = record.method.alias ? '@' + record.method.alias : record.method.value;
+        recentContacts.push(contact);
+        contact = void 0;
+      }
+    });
 
     this.recentContacts = _.uniqBy(recentContacts, 'name.formatted');
   }
@@ -130,7 +127,7 @@ export class SendView {
       this.debounceSearch.cancel();
       this.searchInProgress = false;
       result.contacts = this.contacts;
-      return this.searchResult = result;
+      return (this.searchResult = result);
     }
 
     if (this.searchQuery.length > 6 && this.searchQuery.indexOf('merit:') == 0) {
@@ -150,13 +147,11 @@ export class SendView {
 
   private debounceSearch = _.debounce(() => this.search(), 500);
 
-
   /**
    * Search users based on searchQuery
    * Looks both for contact list and for address/alias
    */
   private async search() {
-
     const result = { contacts: [], toNewEntity: null, error: null };
 
     let input = cleanAddress(this.searchQuery.split('?')[0]);
@@ -168,16 +163,16 @@ export class SendView {
         result.toNewEntity.contact.meritAddresses.push({
           address: addressInfo.address,
           alias: addressInfo.alias,
-          network: ENV.network
+          network: ENV.network,
         });
       }
     }
 
     result.contacts = this.contacts.filter(contact =>
-      _.some(contact.meritAddresses, (meritAddress) => {
+      _.some(contact.meritAddresses, meritAddress => {
         if (meritAddress.address == input) return true;
-        return (meritAddress.alias && meritAddress.alias.match(input));
-      })
+        return meritAddress.alias && meritAddress.alias.match(input);
+      }),
     );
 
     this.searchResult = result;
@@ -204,10 +199,10 @@ export class SendView {
   addContact() {
     let meritAddress = {
       address: null,
-      network: null
+      network: null,
     };
     let modal = this.modalCtrl.create('SendCreateContactView');
-    modal.onDidDismiss((contact) => {
+    modal.onDidDismiss(contact => {
       this.navCtrl.pop();
     });
     modal.present();
@@ -216,7 +211,7 @@ export class SendView {
   createContact() {
     let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
     let modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
-    modal.onDidDismiss((contact) => {
+    modal.onDidDismiss(contact => {
       if (contact) {
         this.navCtrl.push('SendAmountView', {
           contact: contact,
@@ -227,8 +222,8 @@ export class SendView {
             type: SendMethodType.Classic,
             destination: SendMethodDestination.Address,
             value: meritAddress.address,
-            alias: meritAddress.alias
-          }
+            alias: meritAddress.alias,
+          },
         });
       }
     });
@@ -238,7 +233,7 @@ export class SendView {
   bindAddressToContact() {
     let meritAddress = this.searchResult.toNewEntity.contact.meritAddresses[0];
     let modal = this.modalCtrl.create('SendSelectBindContactView', { contacts: this.contacts, address: meritAddress });
-    modal.onDidDismiss((contact) => {
+    modal.onDidDismiss(contact => {
       if (contact) {
         this.navCtrl.push('SendViaView', {
           contact: contact,
@@ -249,8 +244,8 @@ export class SendView {
             type: SendMethodType.Classic,
             destination: SendMethodDestination.Address,
             value: meritAddress.address,
-            alias: meritAddress.alias
-          }
+            alias: meritAddress.alias,
+          },
         });
       }
     });
@@ -267,17 +262,20 @@ export class SendView {
           type: SendMethodType.Classic,
           destination: SendMethodDestination.Address,
           value: contact.meritAddresses[0].address,
-          alias: contact.meritAddresses[0].alias
-        }
+          alias: contact.meritAddresses[0].alias,
+        },
       });
     } else {
-      let modal = this.modalCtrl.create('SendViaView', {
+      let modal = this.modalCtrl.create(
+        'SendViaView',
+        {
           contact: contact,
-          amount: this.amount
-        }, MERIT_MODAL_OPTS
+          amount: this.amount,
+        },
+        MERIT_MODAL_OPTS,
       );
 
-      modal.onDidDismiss((params) => {
+      modal.onDidDismiss(params => {
         if (params) {
           params.amount = this.amount;
           params.wallet = this.wallet;
@@ -303,8 +301,8 @@ export class SendView {
         type: SendMethodType.Classic,
         destination: SendMethodDestination.Address,
         value: entity.contact.meritAddresses[0].address,
-        alias: entity.contact.meritAddresses[0].alias
-      }
+        alias: entity.contact.meritAddresses[0].alias,
+      },
     });
   }
 
@@ -318,13 +316,13 @@ export class SendView {
       this.toastCtrl.create({
         message: 'You do not have any available invites to use MeritMoney',
         duration: 4000,
-        showCloseButton: true
+        showCloseButton: true,
       });
       return;
     }
 
     this.navCtrl.push('SendAmountView', {
-      suggestedMethod: { type: SendMethodType.Easy, wallet: this.wallet }
+      suggestedMethod: { type: SendMethodType.Easy, wallet: this.wallet },
     });
   }
 

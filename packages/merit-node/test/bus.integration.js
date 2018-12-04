@@ -29,8 +29,8 @@ TestService.prototype.getPublishEvents = function() {
       name: 'test/testEvent',
       scope: this,
       subscribe: this.subscribe.bind(this, 'test/testEvent'),
-      unsubscribe: this.unsubscribe.bind(this, 'test/testEvent')
-    }
+      unsubscribe: this.unsubscribe.bind(this, 'test/testEvent'),
+    },
   ];
 };
 
@@ -41,7 +41,6 @@ TestService.prototype.subscribe = function(name, emitter, params) {
 TestService.prototype.unsubscribe = function(name, emitter) {
   emitter.emit('unsubscribe');
 };
-
 
 describe('Bus Functionality', function() {
   var sandbox = sinon.sandbox.create();
@@ -61,9 +60,9 @@ describe('Bus Functionality', function() {
         {
           name: 'testService',
           config: {},
-          module: TestService
-        }
-      ]
+          module: TestService,
+        },
+      ],
     });
     node.start(function() {
       var bus = node.openBus();
@@ -85,9 +84,9 @@ describe('Bus Functionality', function() {
         {
           name: 'testService',
           config: {},
-          module: TestService
-        }
-      ]
+          module: TestService,
+        },
+      ],
     });
     node.start(function() {
       var bus = node.openBus();
@@ -97,8 +96,6 @@ describe('Bus Functionality', function() {
       });
       bus.subscribe('test/testEvent');
       bus.unsubscribe('test/testEvent');
-
     });
-
   });
 });

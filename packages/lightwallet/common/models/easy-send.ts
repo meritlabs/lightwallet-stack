@@ -16,10 +16,12 @@ export interface EasySend {
 }
 
 export const getEasySendURL = (es: EasySend): string => {
-  return ENV.easyUrl +
+  return (
+    ENV.easyUrl +
     `?se=${es.secret}` +
     `&sk=${es.senderPubKey}` +
     `&sn=${es.senderName}` +
     `&bt=${es.blockTimeout}` +
-    `&pa=${es.parentAddress}`;
+    `&pa=${es.parentAddress}`
+  );
 };

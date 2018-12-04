@@ -7,16 +7,7 @@ import { ComponentsModule } from '../../../components/components.module';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
-  declarations: [
-    TxDetailsView
-  ],
-  imports: [
-    IonicPageModule.forChild(TxDetailsView),
-    MomentModule,
-    ComponentsModule,
-    CommonPipesModule,
-    ClipModule
-  ]
+  declarations: [TxDetailsView],
+  imports: [IonicPageModule.forChild(TxDetailsView), MomentModule, ComponentsModule, CommonPipesModule, ClipModule],
 })
-export class TxDetailsViewModule {
-}
+export class TxDetailsViewModule {}

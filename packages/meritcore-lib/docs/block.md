@@ -15,6 +15,7 @@ assert(block.transactions); // an array of transactions, more info below
 ```
 
 ## Block Header
+
 Each instance of Block has a BlockHeader _(which can be instantiated separately)_. The header has validation methods, to verify that the block.
 
 ```javascript
@@ -34,6 +35,7 @@ assert(block.header.nonce);
 ```
 
 ## Transactions
+
 The set of transactions in a block is an array of instances of [Transaction](transaction.md) and can be explored by iterating on the block's `transactions` member.
 
 ```javascript

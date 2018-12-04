@@ -30,7 +30,7 @@ function MerkleBlock(arg) {
     info = MerkleBlock._fromBufferReader(BufferReader(arg));
   } else if (_.isObject(arg)) {
     var header;
-    if(arg.header instanceof BlockHeader) {
+    if (arg.header instanceof BlockHeader) {
       header = arg.header;
     } else {
       header = BlockHeader.fromObject(arg.header);
@@ -55,12 +55,12 @@ function MerkleBlock(arg) {
        * @name MerkleBlock#flags
        * @type {Number[]}
        */
-      flags: arg.flags
+      flags: arg.flags,
     };
   } else {
     throw new TypeError('Unrecognized argument for MerkleBlock');
   }
-  _.extend(this,info);
+  _.extend(this, info);
   this._flagBitsUsed = 0;
   this._hashesUsed = 0;
   return this;
@@ -118,7 +118,7 @@ MerkleBlock.prototype.toObject = MerkleBlock.prototype.toJSON = function toObjec
     header: this.header.toObject(),
     numTransactions: this.numTransactions,
     hashes: this.hashes,
-    flags: this.flags
+    flags: this.flags,
   };
 };
 
@@ -131,19 +131,19 @@ MerkleBlock.prototype.validMerkleTree = function validMerkleTree() {
   $.checkState(_.isArray(this.hashes), 'MerkleBlock hashes is not an array');
 
   // Can't have more hashes than numTransactions
-  if(this.hashes.length > this.numTransactions) {
+  if (this.hashes.length > this.numTransactions) {
     return false;
   }
 
   // Can't have more flag bits than num hashes
-  if(this.flags.length * 8 < this.hashes.length) {
+  if (this.flags.length * 8 < this.hashes.length) {
     return false;
   }
 
   var height = this._calcTreeHeight();
   var opts = { hashesUsed: 0, flagBitsUsed: 0 };
   var root = this._traverseMerkleTree(height, 0, opts);
-  if(opts.hashesUsed !== this.hashes.length) {
+  if (opts.hashesUsed !== this.hashes.length) {
     return false;
   }
   return BufferUtil.equals(root, this.header.merkleRoot);
@@ -170,24 +170,24 @@ MerkleBlock.prototype._traverseMerkleTree = function traverseMerkleTree(depth, p
   opts.flagBitsUsed = opts.flagBitsUsed || 0;
   opts.hashesUsed = opts.hashesUsed || 0;
 
-  if(opts.flagBitsUsed > this.flags.length * 8) {
+  if (opts.flagBitsUsed > this.flags.length * 8) {
     return null;
   }
   var isParentOfMatch = (this.flags[opts.flagBitsUsed >> 3] >>> (opts.flagBitsUsed++ & 7)) & 1;
-  if(depth === 0 || !isParentOfMatch) {
-    if(opts.hashesUsed >= this.hashes.length) {
+  if (depth === 0 || !isParentOfMatch) {
+    if (opts.hashesUsed >= this.hashes.length) {
       return null;
     }
     var hash = this.hashes[opts.hashesUsed++];
-    if(depth === 0 && isParentOfMatch) {
+    if (depth === 0 && isParentOfMatch) {
       opts.txs.push(hash);
     }
     return new Buffer(hash, 'hex');
   } else {
-    var left = this._traverseMerkleTree(depth-1, pos*2, opts);
+    var left = this._traverseMerkleTree(depth - 1, pos * 2, opts);
     var right = left;
-    if(pos*2+1 < this._calcTreeWidth(depth-1)) {
-      right = this._traverseMerkleTree(depth-1, pos*2+1, opts);
+    if (pos * 2 + 1 < this._calcTreeWidth(depth - 1)) {
+      right = this._traverseMerkleTree(depth - 1, pos * 2 + 1, opts);
     }
     return Hash.sha256sha256(new Buffer.concat([left, right]));
   }
@@ -223,11 +223,13 @@ MerkleBlock.prototype._calcTreeHeight = function calcTreeHeight() {
  */
 MerkleBlock.prototype.hasTransaction = function hasTransaction(tx) {
   $.checkArgument(!_.isUndefined(tx), 'tx cannot be undefined');
-  $.checkArgument(tx instanceof Transaction || typeof tx === 'string',
-      'Invalid tx given, tx must be a "string" or "Transaction"');
+  $.checkArgument(
+    tx instanceof Transaction || typeof tx === 'string',
+    'Invalid tx given, tx must be a "string" or "Transaction"',
+  );
 
   var hash = tx;
-  if(tx instanceof Transaction) {
+  if (tx instanceof Transaction) {
     // We need to reverse the id hash for the lookup
     hash = BufferUtil.reverse(new Buffer(tx.id, 'hex')).toString('hex');
   }

@@ -22,9 +22,9 @@ export class MeritClient extends Client {
   public Utils: any = Utils;
   public sjcl: any = sjcl;
   public Meritcore: Meritcore = Meritcore;
-  public sdsa:any;
+  public sdsa: any;
 
-  constructor(opts:any = {}) {
+  constructor(opts: any = {}) {
     super(opts);
   }
 }

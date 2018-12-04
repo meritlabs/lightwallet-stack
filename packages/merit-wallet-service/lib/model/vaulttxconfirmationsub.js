@@ -1,8 +1,8 @@
 'use strict';
 
-function VaultTxConfirmationSub() {};
+function VaultTxConfirmationSub() {}
 
-VaultTxConfirmationSub.create = function (opts) {
+VaultTxConfirmationSub.create = function(opts) {
   opts = opts || {};
 
   const rtx = new VaultTxConfirmationSub();
@@ -18,7 +18,7 @@ VaultTxConfirmationSub.create = function (opts) {
   return rtx;
 };
 
-VaultTxConfirmationSub.fromObj = function (obj) {
+VaultTxConfirmationSub.fromObj = function(obj) {
   const rtx = new VaultTxConfirmationSub();
 
   rtx.version = obj.version;

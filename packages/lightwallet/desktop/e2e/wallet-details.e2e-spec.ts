@@ -2,21 +2,23 @@ import { browser, by, element, protractor } from 'protractor';
 import { EC, TEST_WALLET_ALIAS, TEST_WALLET_MNEMONIC, TEST_WALLET_NAME } from './app.e2e-spec';
 
 describe('[Desktop] Wallet details view', () => {
-
   let header, walletId;
 
   beforeAll(async () => {
     const link = element(by.css('[ng-reflect-router-link="/dashboard"]'));
-    browser.wait(EC.visibilityOf(link), 5000, 'Dashboard menu link isn\'t visible');
+    browser.wait(EC.visibilityOf(link), 5000, "Dashboard menu link isn't visible");
     link.click();
-    browser.wait(EC.urlContains('dashboard'), 5000, 'URL doesn\'t contain dashboard');
+    browser.wait(EC.urlContains('dashboard'), 5000, "URL doesn't contain dashboard");
     const el = element(by.css('wallets-list .wallets__group__wallet'));
     browser.wait(EC.visibilityOf(el), 8000, 'Wallet list item is not visible');
     await el.click();
-    browser.wait(EC.urlContains('wallets'), 5000, 'URL doesn\'t contain wallets');
+    browser.wait(EC.urlContains('wallets'), 5000, "URL doesn't contain wallets");
     header = element(by.css('.wallet-details__header'));
     browser.wait(EC.visibilityOf(header), 5000);
-    walletId = (await browser.getCurrentUrl()).replace('/history', '').split('/').pop();
+    walletId = (await browser.getCurrentUrl())
+      .replace('/history', '')
+      .split('/')
+      .pop();
   });
 
   it('should go to wallet details view', async () => {
@@ -53,7 +55,6 @@ describe('[Desktop] Wallet details view', () => {
   });
 
   describe('> History tab', () => {
-
     it('url should have /history', () => {
       expect(EC.urlContains('/history')).toBeTruthy();
     });
@@ -62,14 +63,10 @@ describe('[Desktop] Wallet details view', () => {
     // it('should have wallet unlocked transaction', async () => {
     //   expect(await element(by.css('history-item:last-child')).getText()).toContain('Wallet Unlocked');
     // });
-
   });
 
   describe('> Preferences tab', () => {
-
-    let header,
-      initialHeaderColor: string,
-      initialToolbarBalance: string;
+    let header, initialHeaderColor: string, initialToolbarBalance: string;
 
     beforeAll(async () => {
       element(by.css('a[href*="settings"]')).click();
@@ -90,7 +87,7 @@ describe('[Desktop] Wallet details view', () => {
       expect(await element(by.css('app-select')).getText()).toContain('Merit blue');
     });
 
-    it('header color should change when we change the wallet\'s color', () => {
+    it("header color should change when we change the wallet's color", () => {
       element(by.css('app-select .selectbox > button')).click();
       element(by.css('app-select .selectbox__dropdown button:first-child')).click();
       expect(element(by.css('.wallet-details__header')).getAttribute('style')).not.toEqual(initialHeaderColor);
@@ -112,7 +109,10 @@ describe('[Desktop] Wallet details view', () => {
     });
 
     it('should hide balance in app toolbar', () => {
-      expect(element(by.css('app-toolbar .amount-merit')).getText()).not.toEqual(initialToolbarBalance, 'Toolbar balance didn\'t change');
+      expect(element(by.css('app-toolbar .amount-merit')).getText()).not.toEqual(
+        initialToolbarBalance,
+        "Toolbar balance didn't change",
+      );
     });
 
     it('should make balance visible', async () => {
@@ -120,11 +120,9 @@ describe('[Desktop] Wallet details view', () => {
       browser.wait(EC.not(EC.textToBePresentInElement(header, '[Balance hidden]')));
       expect(header.getText()).not.toContain('[Balance hidden]', 'Unable to un-hide balance');
     });
-
   });
 
   describe('> Backup tab', () => {
-
     beforeAll(async () => {
       element(by.css('a[href*="export"]')).click();
     });
@@ -152,7 +150,6 @@ describe('[Desktop] Wallet details view', () => {
     });
 
     describe('> QR Code backup', () => {
-
       beforeAll(() => {
         element(by.css('div[routerLink=qr-code]')).click();
         browser.wait(EC.urlContains('qr-code'));
@@ -165,7 +162,7 @@ describe('[Desktop] Wallet details view', () => {
       it('should have QR Code Backup title', () => {
         const el = element(by.css('.page-title h3'));
         expect(el.isDisplayed()).toBeTruthy('Title is not visible');
-        expect(el.getText()).toContain('QR Code backup', 'Doesn\'t have the right title');
+        expect(el.getText()).toContain('QR Code backup', "Doesn't have the right title");
       });
 
       it('should have a QR code image', () => {
@@ -176,7 +173,7 @@ describe('[Desktop] Wallet details view', () => {
 
       it('should have a back button', () => {
         backButton = element(by.css('[routerlink="../"]'));
-        expect(backButton.isDisplayed()).toBeTruthy('Back button doesn\'t exist');
+        expect(backButton.isDisplayed()).toBeTruthy("Back button doesn't exist");
       });
 
       it('should take us back to root export page when clicking on back button', () => {
@@ -184,11 +181,9 @@ describe('[Desktop] Wallet details view', () => {
         browser.wait(EC.not(EC.urlContains('qr-code')));
         expect(browser.getCurrentUrl()).not.toContain('qr-code');
       });
-
     });
 
     describe('> Mnemonic phrase backup', () => {
-
       beforeAll(() => {
         element(by.css('div[routerLink=mnemonic]')).click();
         browser.wait(EC.urlContains('mnemonic'));
@@ -201,20 +196,20 @@ describe('[Desktop] Wallet details view', () => {
       it('should have a Mnemonic Phrase title', () => {
         const el = element(by.css('.page-title h3'));
         expect(el.isDisplayed()).toBeTruthy('Title is not visible');
-        expect(el.getText()).toContain('Mnemonic Phrase', 'Doesn\'t have the right title');
+        expect(el.getText()).toContain('Mnemonic Phrase', "Doesn't have the right title");
       });
 
       it('should display mnemonic phrase', () => {
         const el = element(by.css('.mnemonic-container'));
         expect(el.isDisplayed()).toBeTruthy('Mnemonic container not visible');
-        expect(el.getText()).toContain(TEST_WALLET_MNEMONIC, 'Doesn\'t show mnemonic');
+        expect(el.getText()).toContain(TEST_WALLET_MNEMONIC, "Doesn't show mnemonic");
       });
 
       let backButton;
 
       it('should have a back button', () => {
         backButton = element(by.css('[routerlink="../"]'));
-        expect(backButton.isDisplayed()).toBeTruthy('Back button doesn\'t exist');
+        expect(backButton.isDisplayed()).toBeTruthy("Back button doesn't exist");
       });
 
       it('should take us back to root export page when clicking on back button', () => {
@@ -222,11 +217,9 @@ describe('[Desktop] Wallet details view', () => {
         browser.wait(EC.not(EC.urlContains('mnemonic')));
         expect(browser.getCurrentUrl()).not.toContain('mnemonic');
       });
-
     });
 
     describe('> Backup file export', () => {
-
       beforeAll(() => {
         element(by.css('div[routerLink=file]')).click();
         browser.wait(EC.urlContains('file'));
@@ -239,7 +232,7 @@ describe('[Desktop] Wallet details view', () => {
       it('should have a File backup title', () => {
         const el = element(by.css('.page-title h3'));
         expect(el.isDisplayed()).toBeTruthy('Title is not visible');
-        expect(el.getText()).toContain('File backup', 'Doesn\'t have the right title');
+        expect(el.getText()).toContain('File backup', "Doesn't have the right title");
       });
 
       let passwordEl, repeatPasswordEl, submitButtonEl;
@@ -282,9 +275,6 @@ describe('[Desktop] Wallet details view', () => {
       it('download file button should be enabled', () => {
         expect(submitButtonEl.isEnabled()).toBeTruthy();
       });
-
     });
-
   });
-
 });

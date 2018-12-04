@@ -8,7 +8,7 @@ export class SendValidator {
   static validateWallet(control: AbstractControl) {
     if (!control.value || !(control.value instanceof DisplayWallet)) {
       return {
-        InvalidWallet: true
+        InvalidWallet: true,
       };
     }
 
@@ -32,30 +32,27 @@ export class SendValidator {
   }
 
   static validateMaximumAvailable(control: AbstractControl) {
-    const wallet:DisplayWallet = control.parent.get("wallet").value;
+    const wallet: DisplayWallet = control.parent.get('wallet').value;
 
     try {
       if (control.value > wallet.balance.spendableAmount) {
-        return { NotEnoughMRT: true } 
-      } 
+        return { NotEnoughMRT: true };
+      }
     } catch (e) {
       return null;
     }
   }
 
-
   static validateGlobalSendDestination(control: AbstractControl) {
     const { value } = control;
 
-    if (control.parent && control.parent.get('type').value === 'classic')
-      return null;
+    if (control.parent && control.parent.get('type').value === 'classic') return null;
 
-    if (!value || value.trim() == '')
-      return null;
+    if (!value || value.trim() == '') return null;
 
     if (!validatePhoneNumber(value) && !validateEmail(value))
       return {
-        InvalidDestination: true
+        InvalidDestination: true,
       };
 
     // validate email / phone number
@@ -63,7 +60,7 @@ export class SendValidator {
     return null;
   }
 
-  static isEmail(value) {   
-    return validateEmail(value);  
+  static isEmail(value) {
+    return validateEmail(value);
   }
 }

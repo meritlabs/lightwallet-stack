@@ -19,7 +19,7 @@ export class AddressService {
     private config: ConfigService,
     private persistenceService: PersistenceService,
     private logger: LoggerService,
-    mwcService: MWCService
+    mwcService: MWCService,
   ) {
     this.client = mwcService.getClient(null);
   }
@@ -60,7 +60,6 @@ export class AddressService {
     const info = await this.getAddressInfo(addr);
 
     return info.isValid && info.isBeaconed;
-
   }
 
   async getValidAddress(input: string): Promise<string> {

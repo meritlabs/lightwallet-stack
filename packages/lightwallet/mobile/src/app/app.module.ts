@@ -56,7 +56,7 @@ export function getProviders() {
     EmailNotificationsService,
     AddressService,
     TouchIdService,
-    VaultsService
+    VaultsService,
   ];
 }
 
@@ -75,7 +75,7 @@ export function getIonicNativePlugins() {
     SocialSharing,
     SplashScreen,
     StatusBar,
-    TouchID
+    TouchID,
   ];
 }
 
@@ -88,9 +88,7 @@ export function loadConfigs(appService) {
 }
 
 @NgModule({
-  declarations: [
-    MeritLightWallet
-  ],
+  declarations: [MeritLightWallet],
   imports: [
     BrowserModule,
     MomentModule,
@@ -101,22 +99,20 @@ export function loadConfigs(appService) {
       preloadModules: true,
       tabsHideOnSubPages: true,
       backButtonText: '',
-      autocomplete: 'off'
+      autocomplete: 'off',
     }),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
-        deps: [HttpClient]
-      }
+        deps: [HttpClient],
+      },
     }),
     IonicStorageModule.forRoot(),
-    CommonProvidersModule.forRoot()
+    CommonProvidersModule.forRoot(),
   ],
   bootstrap: [IonicApp],
-  entryComponents: [
-    MeritLightWallet
-  ],
+  entryComponents: [MeritLightWallet],
   providers: [
     ...getProviders(),
     ...getIonicNativePlugins(),
@@ -125,9 +121,8 @@ export function loadConfigs(appService) {
       provide: APP_INITIALIZER,
       useFactory: loadConfigs,
       deps: [AppSettingsService],
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
-export class AppModule {
-}
+export class AppModule {}

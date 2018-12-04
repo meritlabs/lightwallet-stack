@@ -12,7 +12,6 @@ import { AlertService } from '@merit/common/services/alert.service';
 
 @Injectable()
 export class EasySendService {
-
   private readonly DEFAULT_TIMEOUT = 10080; // 7 days * 24 hours * 60 minutes
 
   constructor(
@@ -20,7 +19,8 @@ export class EasySendService {
     private persistenceService: PersistenceService,
     @Optional() private socialSharing: SocialSharing,
     private addressService: AddressService,
-    private alertCtrl: AlertService) {}
+    private alertCtrl: AlertService,
+  ) {}
 
   @accessWallet
   async createEasySendScriptHash(wallet: MeritWalletClient, password?: string): Promise<EasySend> {
@@ -37,7 +37,7 @@ export class EasySendService {
       signPrivKey,
       address: easySendAddress,
       addressType: Address.PayToScriptHashType, // script address
-      network: ENV.network
+      network: ENV.network,
     };
 
     // easy send address is a mix of script_id pubkey_id
@@ -58,7 +58,6 @@ export class EasySendService {
 
       // HACK:
       msg = msg2;
-
     }
 
     try {
@@ -86,11 +85,13 @@ export class EasySendService {
   async updatePendingEasySends(wallet: MeritWalletClient) {
     let easySends: EasySend[] = (await this.persistenceService.getPendingEasySends(wallet.id)) || [];
 
-    easySends = await Promise.all(easySends.map(async (easySend: EasySend) => {
-      if (!easySend.scriptAddress) return null;
-      const txs = await wallet.validateEasyScript(easySend.scriptAddress.toString());
-      return txs.result.every(tx => !tx.spent) ? easySend : null;
-    }));
+    easySends = await Promise.all(
+      easySends.map(async (easySend: EasySend) => {
+        if (!easySend.scriptAddress) return null;
+        const txs = await wallet.validateEasyScript(easySend.scriptAddress.toString());
+        return txs.result.every(tx => !tx.spent) ? easySend : null;
+      }),
+    );
 
     easySends = easySends.filter((easySend: EasySend) => easySend !== null);
     await this.persistenceService.setPendingEasySends(wallet.id, easySends);
@@ -98,7 +99,7 @@ export class EasySendService {
   }
 
   async storeEasySend(walletId: string, easySend: EasySend): Promise<void> {
-    const history: EasySend[] = await this.persistenceService.getPendingEasySends(walletId) || [];
+    const history: EasySend[] = (await this.persistenceService.getPendingEasySends(walletId)) || [];
     history.push(easySend);
     return this.persistenceService.setPendingEasySends(walletId, history);
   }
@@ -107,16 +108,18 @@ export class EasySendService {
     if (amount > Number.MAX_SAFE_INTEGER) throw new Error('The amount is too big');
 
     const txp: any = {
-      outputs: [{
-        'script': easySend.script.toHex(),
-        'toAddress': easySend.scriptAddress,
-        'amount': amount
-      }],
+      outputs: [
+        {
+          script: easySend.script.toHex(),
+          toAddress: easySend.scriptAddress,
+          amount: amount,
+        },
+      ],
       inputs: [], // will be defined on MWS side
       feeLevel: this.feeService.getCurrentFeeLevel(),
       excludeUnconfirmedUtxos: false,
       dryRun: true,
-      addressType: 'P2SH'
+      addressType: 'P2SH',
     };
 
     if (amount == wallet.balance.spendableAmount) {
@@ -125,7 +128,6 @@ export class EasySendService {
     }
 
     return wallet.createTxProposal(txp);
-
   }
 
   /**
@@ -135,10 +137,7 @@ export class EasySendService {
     passphrase = passphrase || '';
     const pubKey = wallet.getRootAddressPubkey();
     const rcvPair = PrivateKey.forNewEasySend(passphrase, ENV.network);
-    const pubKeys = [
-      rcvPair.key.publicKey.toBuffer(),
-      pubKey.toBuffer()
-    ];
+    const pubKeys = [rcvPair.key.publicKey.toBuffer(), pubKey.toBuffer()];
     const script = Script.buildEasySendOut(pubKeys, timeout, ENV.network);
 
     const addressInfo = await this.addressService.getAddressInfo(wallet.getRootAddress().toString());
@@ -154,8 +153,7 @@ export class EasySendService {
       scriptAddress: '',
       scriptReferralOpts: {},
       cancelled: false,
-      inviteOnly: false
+      inviteOnly: false,
     };
   }
-
 }

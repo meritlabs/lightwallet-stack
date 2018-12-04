@@ -10,7 +10,6 @@ import { PlatformService } from '@merit/common/services/platform.service';
   templateUrl: 'easy-send-share.html',
 })
 export class EasySendShareView {
-
   txData: any;
   easySendDelivered: boolean;
 
@@ -27,7 +26,7 @@ export class EasySendShareView {
     private tabs: Tabs,
     private viewCtrl: ViewController,
     private platform: Platform,
-    private alertController: AlertController
+    private alertController: AlertController,
   ) {
     this.txData = this.navParams.get('txData');
     this.easySendDelivered = this.navParams.get('easySendDelivered');
@@ -71,18 +70,23 @@ export class EasySendShareView {
 
   async toWallets() {
     if (this.copied) {
-     this.goToWallets();
+      this.goToWallets();
     } else {
-      this.alertController.create({
-        title: 'Have you copied/shared your link?',
-        message: "Do not forget to copy or share your link, or you can loose money",
-        buttons: [
-          { text: 'Cancel', role: 'cancel' },
-          { text: 'Ok', handler: () => {
-            this.goToWallets();
-          } }
-        ]
-      }).present();
+      this.alertController
+        .create({
+          title: 'Have you copied/shared your link?',
+          message: 'Do not forget to copy or share your link, or you can loose money',
+          buttons: [
+            { text: 'Cancel', role: 'cancel' },
+            {
+              text: 'Ok',
+              handler: () => {
+                this.goToWallets();
+              },
+            },
+          ],
+        })
+        .present();
     }
   }
 

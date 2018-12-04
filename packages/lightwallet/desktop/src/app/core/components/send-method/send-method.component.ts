@@ -10,9 +10,9 @@ import { SendMethodType } from '@merit/common/models/send-method';
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: forwardRef(() => SendMethodComponent)
-    }
-  ]
+      useExisting: forwardRef(() => SendMethodComponent),
+    },
+  ],
 })
 export class SendMethodComponent implements ControlValueAccessor {
   value: SendMethodType;
@@ -23,7 +23,7 @@ export class SendMethodComponent implements ControlValueAccessor {
   invite: boolean;
 
   writeValue(val: SendMethodType) {
-    this.onChange(this.value = val);
+    this.onChange((this.value = val));
   }
 
   registerOnChange(fn: Function) {

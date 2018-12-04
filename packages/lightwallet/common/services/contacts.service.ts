@@ -8,7 +8,6 @@ import { createMeritContact } from '@merit/common/utils/contacts';
 
 @Injectable()
 export class ContactsService {
-
   // TODO cache contacts & re-use instead of retrieving them again
   protected contacts: MeritContact[];
   protected addressBook: IAddressBook;
@@ -29,7 +28,7 @@ export class ContactsService {
         contact.meritAddresses.forEach(({ address, alias }) => {
           if (address) this.addressBook[address] = contact;
           if (alias) this.addressBook[alias] = contact;
-        })
+        }),
       );
 
       await this.persistenceService.setAddressbook(ENV.network, this.addressBook);
@@ -37,17 +36,16 @@ export class ContactsService {
   }
 
   list(network: string = ENV.network): Promise<IAddressBook> {
-    return this.getAddressbook(network)
-      .catch((err) => {
-        return Promise.reject(new Error('Error listing addressBook: ' + err));
-      });
-  };
+    return this.getAddressbook(network).catch(err => {
+      return Promise.reject(new Error('Error listing addressBook: ' + err));
+    });
+  }
 
   async add(entry: MeritContact, address: string, network: string = ENV.network): Promise<IAddressBook> {
     this.addressBook[address] = entry;
     await this.persistenceService.setAddressbook(network, this.addressBook);
     return this.addressBook;
-  };
+  }
 
   async bindAddressToContact(contact: MeritContact, address: string, alias?: string) {
     const addressBook: IAddressBook = await this.getAddressbook(ENV.network);
@@ -60,7 +58,7 @@ export class ContactsService {
       });
     }
     if (existingContact) {
-      existingContact.meritAddresses.push({ address: address, alias: alias,  network: ENV.network });
+      existingContact.meritAddresses.push({ address: address, alias: alias, network: ENV.network });
     } else {
       contact.meritAddresses.push({ address: address, network: ENV.network });
       addressBook[address] = contact;
@@ -78,17 +76,17 @@ export class ContactsService {
     } catch (err) {
       throw new Error('Contact with address ' + addr + ' not found');
     }
-  };
+  }
 
   searchContacts(contacts: MeritContact[], searchQuery: string = ''): MeritContact[] {
     searchQuery = searchQuery.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
     const exp = new RegExp(searchQuery, 'ig');
     return contacts.filter((contact: MeritContact) => {
       if (contact.name.formatted && contact.name.formatted.match(exp)) return true;
-      if (_.some(contact.emails, (email) => email.value.match(exp))) return true;
-      if (_.some(contact.phoneNumbers, (phoneNumber) => phoneNumber.value.match(exp))) return true;
-      if (_.some(contact.meritAddresses, (address) => address.address.match(exp))) return true;
-      if (_.some(contact.meritAddresses, (address) => address.alias && address.alias.match(exp))) return true;
+      if (_.some(contact.emails, email => email.value.match(exp))) return true;
+      if (_.some(contact.phoneNumbers, phoneNumber => phoneNumber.value.match(exp))) return true;
+      if (_.some(contact.meritAddresses, address => address.address.match(exp))) return true;
+      if (_.some(contact.meritAddresses, address => address.alias && address.alias.match(exp))) return true;
       return false;
     });
   }
@@ -97,35 +95,42 @@ export class ContactsService {
     const localContacts: IAddressBook = await this.getAddressbook();
 
     const contacts: MeritContact[] = deviceContacts
-      .filter((contact: Contact) => !_.isEmpty(contact.displayName) && !_.isEmpty(contact.phoneNumbers) || !_.isEmpty(contact.emails))
+      .filter(
+        (contact: Contact) =>
+          (!_.isEmpty(contact.displayName) && !_.isEmpty(contact.phoneNumbers)) || !_.isEmpty(contact.emails),
+      )
       .map((contact: Contact) => createMeritContact(contact));
 
     let localContact: MeritContact, deviceContact: MeritContact;
 
-    Object.keys(localContacts)
-      .forEach((key: string) => {
-        localContact = localContacts[key];
+    Object.keys(localContacts).forEach((key: string) => {
+      localContact = localContacts[key];
 
-        if (localContact.id || localContact.phoneNumbers.length || localContact.emails.length) {
-          deviceContact = contacts.find((c: MeritContact) =>
+      if (localContact.id || localContact.phoneNumbers.length || localContact.emails.length) {
+        deviceContact = contacts.find(
+          (c: MeritContact) =>
             // find by ID
-            (localContact.id === c.id) ||
+            localContact.id === c.id ||
             // find by phone number
-            (localContact.phoneNumbers.some((p: IContactField) => Boolean(c.phoneNumbers.find(_p => _p.value == p.value)))) ||
+            localContact.phoneNumbers.some((p: IContactField) =>
+              Boolean(c.phoneNumbers.find(_p => _p.value == p.value)),
+            ) ||
             // compare emails
-            (localContact.emails.some((e: IContactField) => Boolean(c.emails.find(_e => _e.value == e.value))))
+            localContact.emails.some((e: IContactField) => Boolean(c.emails.find(_e => _e.value == e.value))),
+        );
+
+        if (deviceContact) {
+          // merge addresses
+          deviceContact.meritAddresses = _.uniq(
+            Array.prototype.concat(deviceContact.meritAddresses || [], localContact.meritAddresses || []),
           );
-
-          if (deviceContact) {
-            // merge addresses
-            deviceContact.meritAddresses = _.uniq(Array.prototype.concat((deviceContact.meritAddresses || []), (localContact.meritAddresses || [])));
-            deviceContact = void 0;
-            return;
-          }
+          deviceContact = void 0;
+          return;
         }
+      }
 
-        contacts.push(localContact);
-      });
+      contacts.push(localContact);
+    });
 
     localContact = void 0;
 
@@ -136,7 +141,7 @@ export class ContactsService {
     delete this.addressBook[addr];
     await this.persistenceService.setAddressbook(network, this.addressBook);
     return this.addressBook;
-  };
+  }
 
   deleteAddressBook() {
     return this.persistenceService.setAddressbook(ENV.network, {});
@@ -146,7 +151,4 @@ export class ContactsService {
     const addressBook = await this.persistenceService.getAddressbook(network);
     return _.isEmpty(addressBook) ? {} : addressBook;
   }
-
-
-
 }

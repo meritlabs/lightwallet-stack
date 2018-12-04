@@ -4,13 +4,7 @@ import { CreateWalletView } from '@merit/mobile/app/wallets/create-wallet/create
 import { DirectivesModule } from '@merit/mobile/directives/directives.module';
 
 @NgModule({
-  declarations: [
-    CreateWalletView,
-  ],
-  imports: [
-    IonicPageModule.forChild(CreateWalletView),
-    DirectivesModule
-  ],
+  declarations: [CreateWalletView],
+  imports: [IonicPageModule.forChild(CreateWalletView), DirectivesModule],
 })
-export class CreateWalletComponentModule {
-}
+export class CreateWalletComponentModule {}

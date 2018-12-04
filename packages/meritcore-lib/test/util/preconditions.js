@@ -8,26 +8,25 @@ var $ = meritcore.util.preconditions;
 var PrivateKey = meritcore.PrivateKey;
 
 describe('preconditions', function() {
-
   it('can be used to assert state', function() {
     (function() {
       $.checkState(false, 'testing');
-    }).should.throw(errors.InvalidState);
+    }.should.throw(errors.InvalidState));
   });
   it('throws no false negative', function() {
     (function() {
       $.checkState(true, 'testing');
-    }).should.not.throw();
+    }.should.not.throw());
   });
 
   it('can be used to check an argument', function() {
     (function() {
       $.checkArgument(false, 'testing');
-    }).should.throw(errors.InvalidArgument);
+    }.should.throw(errors.InvalidArgument));
 
     (function() {
       $.checkArgument(true, 'testing');
-    }).should.not.throw(errors.InvalidArgument);
+    }.should.not.throw(errors.InvalidArgument));
   });
 
   it('can be used to check an argument type', function() {
@@ -43,7 +42,7 @@ describe('preconditions', function() {
   it('has no false negatives when used to check an argument type', function() {
     (function() {
       $.checkArgumentType('a String', 'string', 'argumentName');
-    }).should.not.throw();
+    }.should.not.throw());
   });
 
   it('can be used to check an argument type for a class', function() {
@@ -52,7 +51,7 @@ describe('preconditions', function() {
       $.checkArgumentType(1, PrivateKey);
     } catch (e) {
       error = e;
-      var fail = !(~e.message.indexOf('Invalid Argument for (unknown name)'));
+      var fail = !~e.message.indexOf('Invalid Argument for (unknown name)');
       fail.should.equal(false);
     }
     should.exist(error);
@@ -60,7 +59,7 @@ describe('preconditions', function() {
   it('has no false negatives when checking a type for a class', function() {
     (function() {
       $.checkArgumentType(new PrivateKey(), PrivateKey);
-    }).should.not.throw();
+    }.should.not.throw());
   });
 
   it('formats correctly a message on InvalidArgument()', function() {

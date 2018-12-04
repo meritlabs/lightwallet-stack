@@ -4,13 +4,7 @@ import { VerifyBackupView } from '@merit/mobile/app/onboard/verify-backup/verify
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
-  declarations: [
-    VerifyBackupView
-  ],
-  imports: [
-    IonicPageModule.forChild(VerifyBackupView),
-    CommonPipesModule
-  ],
+  declarations: [VerifyBackupView],
+  imports: [IonicPageModule.forChild(VerifyBackupView), CommonPipesModule],
 })
-export class VerifyBackupModule {
-}
+export class VerifyBackupModule {}

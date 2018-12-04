@@ -68,5 +68,4 @@ describe('[Mobile] Wallets view', () => {
       expect(walletItemLabelEl.getText()).toContain(TEST_WALLET_ALIAS);
     });
   });
-
 });

@@ -51,24 +51,29 @@ RootCerts.parsePEM = function(pem) {
   var parts = pem.trim().split(/(?:\r?\n){2,}/);
   var headers = {};
   if (parts.length > 1) {
-    headers = parts[0].trim().split(/[\r\n]/).reduce(function(out, line) {
-      var parts = line.split(/:[ \t]+/);
-      var key = parts[0].trim().toLowerCase();
-      var value = (parts.slice(1).join('') || '').trim();
-      out[key] = value;
-      return out;
-    }, {});
+    headers = parts[0]
+      .trim()
+      .split(/[\r\n]/)
+      .reduce(function(out, line) {
+        var parts = line.split(/:[ \t]+/);
+        var key = parts[0].trim().toLowerCase();
+        var value = (parts.slice(1).join('') || '').trim();
+        out[key] = value;
+        return out;
+      }, {});
     pem = parts.slice(1).join('');
   }
   pem = pem.replace(/\s+/g, '');
   var der = pem ? new Buffer(pem, 'base64') : null;
-  return [{
-    type: type,
-    headers: headers,
-    pem: pem,
-    der: der,
-    body: der || new Buffer([0])
-  }];
+  return [
+    {
+      type: type,
+      headers: headers,
+      pem: pem,
+      der: der,
+      body: der || new Buffer([0]),
+    },
+  ];
 };
 
 RootCerts.certs = certs;

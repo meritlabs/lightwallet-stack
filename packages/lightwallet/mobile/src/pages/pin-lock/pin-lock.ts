@@ -9,10 +9,9 @@ import { TouchIdService } from '@merit/mobile/services/touch-id.service';
   templateUrl: 'pin-lock.html',
 })
 export class PinLockView {
-
   pin: string = '';
 
-  error:boolean;
+  error: boolean;
   isTouchIdAvailable: boolean;
 
   pinBlockedUntil: number;
@@ -35,7 +34,7 @@ export class PinLockView {
     private platform: Platform,
     private viewCtrl: ViewController,
     private touchIdService: TouchIdService,
-    private navParams: NavParams
+    private navParams: NavParams,
   ) {
     if (this.navParams.get('newPinMode')) {
       this.mode = 'new';
@@ -70,9 +69,9 @@ export class PinLockView {
       this.blocked = false;
       this.blockedText = null;
     } else {
-      const minutes = Math.ceil(diff/60000);
+      const minutes = Math.ceil(diff / 60000);
       this.blocked = true;
-      this.blockedText = `You can try again in ${minutes > 1 ? minutes+' minutes' : 'one minute'}`;
+      this.blockedText = `You can try again in ${minutes > 1 ? minutes + ' minutes' : 'one minute'}`;
     }
   }
 
@@ -105,7 +104,7 @@ export class PinLockView {
       if (this.attempts >= this.MAX_ATTEMPTS) {
         this.blocked = true;
         this.checkIsBlocked();
-        this.pinBlockedUntil = Date.now()+1000*60*this.BLOCK_FOR_MINUTES;
+        this.pinBlockedUntil = Date.now() + 1000 * 60 * this.BLOCK_FOR_MINUTES;
         this.persistenceService.blockPin(this.pinBlockedUntil);
         this.attempts = 0;
       }
@@ -137,5 +136,4 @@ export class PinLockView {
   close() {
     this.viewCtrl.dismiss(false);
   }
-
 }

@@ -52,18 +52,18 @@ VersionMessage.prototype.setPayload = function(payload) {
   this.addrMe = {
     services: parser.readUInt64LEBN(),
     ip: utils.parseIP(parser),
-    port: parser.readUInt16BE()
+    port: parser.readUInt16BE(),
   };
   this.addrYou = {
     services: parser.readUInt64LEBN(),
     ip: utils.parseIP(parser),
-    port: parser.readUInt16BE()
+    port: parser.readUInt16BE(),
   };
   this.nonce = parser.read(8);
   this.subversion = parser.readVarLengthBuffer().toString();
   this.startHeight = parser.readUInt32LE();
 
-  if(parser.finished()) {
+  if (parser.finished()) {
     this.relay = true;
   } else {
     this.relay = !!parser.readUInt8();

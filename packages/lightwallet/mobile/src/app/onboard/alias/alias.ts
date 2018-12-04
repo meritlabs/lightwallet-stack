@@ -17,7 +17,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 @IonicPage({
   segment: 'alias/:parentAddress',
-  defaultHistory: ['OnboardingView']
+  defaultHistory: ['OnboardingView'],
 })
 @Component({
   selector: 'view-alias',
@@ -28,31 +28,32 @@ export class AliasView {
   formData = {
     alias: '',
     aliasValidationError: '',
-    aliasCheckInProgress: false
+    aliasCheckInProgress: false,
   };
 
-  @ViewChild(Content) content: Content;
+  @ViewChild(Content)
+  content: Content;
 
   private parentAddress: string;
 
-  constructor(private walletService: WalletService,
-              private toastCtrl: ToastControllerService,
-              private loaderCtrl: LoadingController,
-              private navCtrl: NavController,
-              private navParams: NavParams,
-              private logger: LoggerService,
-              private config: ConfigService,
-              private pushNotificationService: PushNotificationsService,
-              private pollingNotificationService: PollingNotificationsService,
-              private emailNotificationService: EmailNotificationsService,
-              private addressService: AddressService,
-              private inAppBrowser: InAppBrowser ) {
-  }
+  constructor(
+    private walletService: WalletService,
+    private toastCtrl: ToastControllerService,
+    private loaderCtrl: LoadingController,
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private logger: LoggerService,
+    private config: ConfigService,
+    private pushNotificationService: PushNotificationsService,
+    private pollingNotificationService: PollingNotificationsService,
+    private emailNotificationService: EmailNotificationsService,
+    private addressService: AddressService,
+    private inAppBrowser: InAppBrowser,
+  ) {}
 
   async ionViewDidLoad() {
     // An unlock code from a friend sharing the link.
     this.parentAddress = this.navParams.get('parentAddress');
-
   }
 
   checkAlias() {
@@ -65,30 +66,29 @@ export class AliasView {
   }, 750);
 
   private async validateAlias() {
-
     this.formData.alias = cleanAddress(this.formData.alias);
-    const input = (this.formData.alias && isAlias(this.formData.alias)) ? this.formData.alias.slice(1) : this.formData.alias;
+    const input =
+      this.formData.alias && isAlias(this.formData.alias) ? this.formData.alias.slice(1) : this.formData.alias;
 
     if (!input) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
-      return this.formData.aliasValidationError = null;
+      return (this.formData.aliasValidationError = null);
     }
 
     if (input.length < 3) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
-      return this.formData.aliasValidationError = 'Alias should contain at least 3 symbols';
+      return (this.formData.aliasValidationError = 'Alias should contain at least 3 symbols');
     }
 
     if (!this.addressService.couldBeAlias(input)) {
       this.validateAliasDebounce.cancel();
       this.formData.aliasCheckInProgress = false;
-      return this.formData.aliasValidationError = 'Incorrect alias format';
+      return (this.formData.aliasValidationError = 'Incorrect alias format');
     }
 
     this.formData.aliasValidationError = null;
-
 
     let addressExists = await this.addressService.getValidAddress(input);
 
@@ -108,7 +108,7 @@ export class AliasView {
 
     let { alias } = this.formData;
 
-    alias = (alias && isAlias(alias))? alias.slice(1) : alias;
+    alias = alias && isAlias(alias) ? alias.slice(1) : alias;
 
     const loader = this.loaderCtrl.create({ content: 'Creating wallet...' });
     await loader.present();
@@ -124,7 +124,7 @@ export class AliasView {
         this.logger.info('Subscribing to long polling for default wallet');
         await this.emailNotificationService.init();
         this.pollingNotificationService.enablePolling(wallet);
-      }      
+      }
 
       let unlockUrl: string;
 

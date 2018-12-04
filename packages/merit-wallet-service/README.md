@@ -1,4 +1,3 @@
-
 # merit-wallet-service
 
 A Multisig HD Merit Wallet Service.
@@ -10,6 +9,7 @@ Merit Wallet Service facilitates multisig HD wallets creation and operation thro
 BWS can usually be installed within minutes and accommodates all the needed infrastructure for peers in a multisig wallet to communicate and operate – with minimum server trust.
 
 # Getting Started
+
 ```
  git clone https://github.com/meritlabs/lightwallet-stack.git
  make start-stack
@@ -22,13 +22,14 @@ BWS needs mongoDB. You can configure the connection at `config.js`
 BWS uses by default a Request Rate Limitation to CreateWallet endpoint. If you need to modify it, check defaults.js' `Defaults.RateLimit`
 
 # Security Considerations
- * Private keys are never sent to BWS. Copayers store them locally.
- * Extended public keys are stored on BWS. This allows BWS to easily check wallet balance, send offline notifications to copayers, etc.
- * During wallet creation, the initial copayer creates a wallet secret that contains a private key. All copayers need to prove they have the secret by signing their information with this private key when joining the wallet. The secret should be shared using secured channels.
- * A user could join the wallet more than once, and there is no mechanism to prevent this. .
- * All MWS responses are verified:
-  * Addresses and change addresses are derived independently and locally by the copayers from their local data.
-  * TX Proposals templates are signed by copayers and verified by others, so the BWS cannot create or tamper with them.
+
+- Private keys are never sent to BWS. Copayers store them locally.
+- Extended public keys are stored on BWS. This allows BWS to easily check wallet balance, send offline notifications to copayers, etc.
+- During wallet creation, the initial copayer creates a wallet secret that contains a private key. All copayers need to prove they have the secret by signing their information with this private key when joining the wallet. The secret should be shared using secured channels.
+- A user could join the wallet more than once, and there is no mechanism to prevent this. .
+- All MWS responses are verified:
+- Addresses and change addresses are derived independently and locally by the copayers from their local data.
+- TX Proposals templates are signed by copayers and verified by others, so the BWS cannot create or tamper with them.
 
 ## Contributing
 

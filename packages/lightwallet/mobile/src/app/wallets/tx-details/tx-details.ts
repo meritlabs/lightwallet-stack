@@ -6,14 +6,13 @@ import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 import { EasyReceiveService } from '../../../../../common/services/easy-receive.service';
 
 @IonicPage({
-  defaultHistory: ['WalletsView']
+  defaultHistory: ['WalletsView'],
 })
 @Component({
   selector: 'tx-details-view',
-  templateUrl: 'tx-details.html'
+  templateUrl: 'tx-details.html',
 })
 export class TxDetailsView {
-
   tx: IDisplayTransaction;
   confirmationsExplanation: string;
   isUnlockRequest: boolean;
@@ -33,11 +32,12 @@ export class TxDetailsView {
     }
   }
 
-  constructor(private navParams: NavParams,
-              private viewCtrl: ViewController,
-              private toastCtrl: ToastControllerService,
-              private easyReceive: EasyReceiveService) {
-  }
+  constructor(
+    private navParams: NavParams,
+    private viewCtrl: ViewController,
+    private toastCtrl: ToastControllerService,
+    private easyReceive: EasyReceiveService,
+  ) {}
 
   dismiss() {
     return this.viewCtrl.dismiss();
@@ -65,7 +65,8 @@ export class TxDetailsView {
     this.isEasySend = !this.isInvite && !this.isReward;
     this.isCancelled = tx.cancelled;
     if (!tx.isConfirmed) {
-      this.confirmationsExplanation = String(tx.confirmations) + ' block(s) confirmed from ' + COINBASE_CONFIRMATION_THRESHOLD;
+      this.confirmationsExplanation =
+        String(tx.confirmations) + ' block(s) confirmed from ' + COINBASE_CONFIRMATION_THRESHOLD;
     }
 
     if (tx.isGrowthReward) this.image = 'growth';

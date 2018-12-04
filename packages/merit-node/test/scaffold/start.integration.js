@@ -8,7 +8,6 @@ var index = require('../../lib');
 var log = index.log;
 
 describe('#start', function() {
-
   var sandbox = sinon.sandbox.create();
   beforeEach(function() {
     sandbox.stub(log, 'error');
@@ -18,7 +17,6 @@ describe('#start', function() {
   });
 
   describe('will dynamically create a node from a configuration', function() {
-
     it('require each merit-node service with default config', function(done) {
       var node;
       var TestNode = function(options) {
@@ -27,19 +25,19 @@ describe('#start', function() {
           module: MeritService,
           config: {
             spawn: {
-              datadir: './data'
-            }
-          }
+              datadir: './data',
+            },
+          },
         });
       };
       TestNode.prototype.start = sinon.stub().callsArg(0);
       TestNode.prototype.on = sinon.stub();
       TestNode.prototype.chain = {
-        on: sinon.stub()
+        on: sinon.stub(),
       };
 
       var starttest = proxyquire('../../lib/scaffold/start', {
-        '../node': TestNode
+        '../node': TestNode,
       });
 
       starttest.registerExitHandlers = sinon.stub();
@@ -47,17 +45,15 @@ describe('#start', function() {
       node = starttest({
         path: __dirname,
         config: {
-          services: [
-            'meritd'
-          ],
+          services: ['meritd'],
           servicesConfig: {
             meritd: {
               spawn: {
-                datadir: './data'
-              }
-            }
-          }
-        }
+                datadir: './data',
+              },
+            },
+          },
+        },
       });
       node.should.be.instanceof(TestNode);
       done();
@@ -70,7 +66,7 @@ describe('#start', function() {
         });
       };
       var starttest = proxyquire('../../lib/scaffold/start', {
-        '../node': TestNode
+        '../node': TestNode,
       });
       starttest.cleanShutdown = sinon.stub();
       starttest.registerExitHandlers = sinon.stub();
@@ -79,8 +75,8 @@ describe('#start', function() {
         path: __dirname,
         config: {
           services: [],
-          servicesConfig: {}
-        }
+          servicesConfig: {},
+        },
       });
       setImmediate(function() {
         starttest.cleanShutdown.callCount.should.equal(1);
@@ -96,38 +92,35 @@ describe('#start', function() {
           config: {
             param: 'test',
             spawn: {
-              datadir: './data'
-            }
-          }
+              datadir: './data',
+            },
+          },
         });
       };
       TestNode.prototype.start = sinon.stub().callsArg(0);
       TestNode.prototype.on = sinon.stub();
       TestNode.prototype.chain = {
-        on: sinon.stub()
+        on: sinon.stub(),
       };
 
       var starttest = proxyquire('../../lib/scaffold/start', {
-        '../node': TestNode
+        '../node': TestNode,
       });
       starttest.registerExitHandlers = sinon.stub();
 
       node = starttest({
         path: __dirname,
         config: {
-          services: [
-            'meritd'
-          ],
+          services: ['meritd'],
           servicesConfig: {
-            'meritd': {
+            meritd: {
               param: 'test',
               spawn: {
-                datadir: './data'
-              }
-            }
+                datadir: './data',
+              },
+            },
           },
-
-        }
+        },
       });
       node.should.be.instanceof(TestNode);
       done();

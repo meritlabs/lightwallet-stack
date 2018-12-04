@@ -14,9 +14,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { SmsNotificationSetting } from '@merit/common/models/sms-subscription';
 
 export type SavingStatus = 'saving' | 'saved' | 'none';
-export type SmsNotificationSettingsText = {
-  [k in keyof typeof SmsNotificationSetting]: string;
-}
+export type SmsNotificationSettingsText = { [k in keyof typeof SmsNotificationSetting]: string };
 
 const smsNotificationSettingsText: SmsNotificationSettingsText = {
   IncomingInvite: 'Incoming invites',
@@ -35,7 +33,7 @@ export class NotificationSettingsController {
     emailNotifications: [false, [Validators.required]],
     email: [''],
     smsNotifications: [false],
-    phoneNumber: ['', [Validators.required, Validators.pattern(/\d{10,}/)]]
+    phoneNumber: ['', [Validators.required, Validators.pattern(/\d{10,}/)]],
   });
   private subs: Subscription[] = [];
   private emailStatus: Subject<SavingStatus> = new Subject<SavingStatus>();
@@ -69,13 +67,15 @@ export class NotificationSettingsController {
     return this.formData.get('phoneNumber');
   }
 
-  constructor(private persistenceService: PersistenceService2,
-              private pushNotificationsService: PushNotificationsService,
-              private emailNotificationsService: EmailNotificationsService,
-              private smsNotificationsService: SmsNotificationsService,
-              private formBuilder: FormBuilder,
-              private toastCtrl: ToastControllerService,
-              private platform: 'ios' | 'android' | 'desktop') {}
+  constructor(
+    private persistenceService: PersistenceService2,
+    private pushNotificationsService: PushNotificationsService,
+    private emailNotificationsService: EmailNotificationsService,
+    private smsNotificationsService: SmsNotificationsService,
+    private formBuilder: FormBuilder,
+    private toastCtrl: ToastControllerService,
+    private platform: 'ios' | 'android' | 'desktop',
+  ) {}
 
   async init() {
     const settings = await this.persistenceService.getNotificationSettings();
@@ -84,15 +84,17 @@ export class NotificationSettingsController {
 
     const smsNotificationSettings = [];
 
-    Object.keys(SmsNotificationSetting)
-      .forEach((key: keyof SmsNotificationSetting) => {
-        this.formData.addControl(SmsNotificationSetting[key], new FormControl(status && status.settings && status.settings[key]));
+    Object.keys(SmsNotificationSetting).forEach((key: keyof SmsNotificationSetting) => {
+      this.formData.addControl(
+        SmsNotificationSetting[key],
+        new FormControl(status && status.settings && status.settings[key]),
+      );
 
-        smsNotificationSettings.push({
-          name: SmsNotificationSetting[key],
-          label: smsNotificationSettingsText[key]
-        });
+      smsNotificationSettings.push({
+        name: SmsNotificationSetting[key],
+        label: smsNotificationSettingsText[key],
       });
+    });
 
     if (!isEmpty(settings)) {
       this.formData.patchValue(settings, { emitEvent: false });
@@ -109,9 +111,9 @@ export class NotificationSettingsController {
       this.formData.valueChanges
         .pipe(
           filter(() => this.formData.valid),
-          tap((newValue: any) => this.persistenceService.setNotificationSettings(newValue))
+          tap((newValue: any) => this.persistenceService.setNotificationSettings(newValue)),
         )
-        .subscribe()
+        .subscribe(),
     );
 
     this.subs.push(
@@ -125,9 +127,9 @@ export class NotificationSettingsController {
             } else {
               this.pushNotificationsService.disable();
             }
-          })
+          }),
         )
-        .subscribe()
+        .subscribe(),
     );
 
     this.subs.push(
@@ -141,9 +143,9 @@ export class NotificationSettingsController {
             fromPromise(
               this.emailNotificationsService.updateEmail({
                 enabled: this.emailNotificationsEnabled,
-                email: this.email.value
-              })
-            )
+                email: this.email.value,
+              }),
+            ),
           ),
           tap(() => {
             this.emailStatus.next('saved');
@@ -151,22 +153,21 @@ export class NotificationSettingsController {
               this.toastCtrl.success('You are now subscribed to Email notifications!');
             }
             this.updateStorage();
-          })
+          }),
         )
-        .subscribe()
+        .subscribe(),
     );
 
     const smsObservables = [
       this.formData.get('smsNotifications').valueChanges,
-      this.formData.get('phoneNumber').valueChanges
+      this.formData.get('phoneNumber').valueChanges,
     ];
 
-    this.smsNotificationSettings.forEach(({ name }) =>
-      smsObservables.push(this.formData.get(name).valueChanges)
-    );
+    this.smsNotificationSettings.forEach(({ name }) => smsObservables.push(this.formData.get(name).valueChanges));
 
     this.subs.push(
-      merge.apply(merge, smsObservables)
+      merge
+        .apply(merge, smsObservables)
         .pipe(
           tap(() => this.smsStatus.next('none')),
           filter(() => this.smsNotifications.value == false || this.phoneNumber.valid),
@@ -174,17 +175,22 @@ export class NotificationSettingsController {
           debounceTime(750),
           switchMap(() =>
             fromPromise(
-              this.smsNotificationsService.setSmsSubscription(this.smsNotificationsEnabled, this.formData.get('phoneNumber').value, this.platform, this.getSmsNotificationSettings())
-            )
+              this.smsNotificationsService.setSmsSubscription(
+                this.smsNotificationsEnabled,
+                this.formData.get('phoneNumber').value,
+                this.platform,
+                this.getSmsNotificationSettings(),
+              ),
+            ),
           ),
           tap(() => {
             this.smsStatus.next('saved');
             if (this.smsNotificationsEnabled && this.phoneNumber.valid) {
               this.toastCtrl.success('You are now subscribed to SMS notifications!');
             }
-          })
+          }),
         )
-        .subscribe()
+        .subscribe(),
     );
   }
 
@@ -192,8 +198,7 @@ export class NotificationSettingsController {
     this.subs.forEach(sub => {
       try {
         sub.unsubscribe();
-      } catch (e) {
-      }
+      } catch (e) {}
     });
   }
 

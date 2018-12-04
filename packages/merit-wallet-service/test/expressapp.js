@@ -11,8 +11,6 @@ var config = require('../config.js');
 var Common = require('../lib/common');
 var Defaults = Common.Defaults;
 
-
-
 describe('ExpressApp', function() {
   describe('#constructor', function() {
     it('will set an express app', function() {
@@ -28,8 +26,8 @@ describe('ExpressApp', function() {
       var initialize = sinon.stub().callsArg(1);
       var TestExpressApp = proxyquire('../lib/expressapp', {
         './server': {
-          initialize: initialize
-        }
+          initialize: initialize,
+        },
       });
       var app = new TestExpressApp();
       var options = {};
@@ -54,7 +52,7 @@ describe('ExpressApp', function() {
           httpServer.listen(testPort);
           done();
         });
-      };
+      }
 
       afterEach(function() {
         httpServer.close();
@@ -68,15 +66,15 @@ describe('ExpressApp', function() {
           './server': {
             initialize: sinon.stub().callsArg(1),
             getInstanceWithAuth: sinon.stub().callsArgWith(1, null, server),
-          }
+          },
         });
         start(TestExpressApp, function() {
           var requestOptions = {
             url: testHost + ':' + testPort + config.basePath + '/v2/wallets',
             headers: {
               'x-identity': 'identity',
-              'x-signature': 'signature'
-            }
+              'x-signature': 'signature',
+            },
           };
           request(requestOptions, function(err, res, body) {
             should.not.exist(err);
@@ -97,15 +95,15 @@ describe('ExpressApp', function() {
           './server': {
             initialize: sinon.stub().callsArg(1),
             getInstanceWithAuth: sinon.stub().callsArgWith(1, null, server),
-          }
+          },
         });
         start(TestExpressApp, function() {
           var requestOptions = {
             url: testHost + ':' + testPort + config.basePath + '/v1/addresses?limit=4&reverse=1',
             headers: {
               'x-identity': 'identity',
-              'x-signature': 'signature'
-            }
+              'x-signature': 'signature',
+            },
           };
           request(requestOptions, function(err, res, body) {
             should.not.exist(err);
@@ -121,22 +119,22 @@ describe('ExpressApp', function() {
       it('/v1/sendmaxinfo', function(done) {
         var server = {
           getSendMaxInfo: sinon.stub().callsArgWith(1, null, {
-            amount: 123
+            amount: 123,
           }),
         };
         var TestExpressApp = proxyquire('../lib/expressapp', {
           './server': {
             initialize: sinon.stub().callsArg(1),
             getInstanceWithAuth: sinon.stub().callsArgWith(1, null, server),
-          }
+          },
         });
         start(TestExpressApp, function() {
           var requestOptions = {
             url: testHost + ':' + testPort + config.basePath + '/v1/sendmaxinfo?feePerKb=10000&returnInputs=1',
             headers: {
               'x-identity': 'identity',
-              'x-signature': 'signature'
-            }
+              'x-signature': 'signature',
+            },
           };
           request(requestOptions, function(err, res, body) {
             should.not.exist(err);
@@ -159,15 +157,15 @@ describe('ExpressApp', function() {
             './server': {
               initialize: sinon.stub().callsArg(1),
               getInstanceWithAuth: sinon.stub().callsArgWith(1, null, server),
-            }
+            },
           });
           start(TestExpressApp, function() {
             var reqOpts = {
               url: testHost + ':' + testPort + config.basePath + '/v1/balance',
               headers: {
                 'x-identity': 'identity',
-                'x-signature': 'signature'
-              }
+                'x-signature': 'signature',
+              },
             };
             request(reqOpts, function(err, res, body) {
               should.not.exist(err);
@@ -194,13 +192,13 @@ describe('ExpressApp', function() {
           clock = sinon.useFakeTimers(2000000000, 'Date');
 
           server = {
-            getNotifications: sinon.stub().callsArgWith(1, null, {})
+            getNotifications: sinon.stub().callsArgWith(1, null, {}),
           };
           TestExpressApp = proxyquire('../lib/expressapp', {
             './server': {
               initialize: sinon.stub().callsArg(1),
               getInstanceWithAuth: sinon.stub().callsArgWith(1, null, server),
-            }
+            },
           });
         });
         afterEach(function() {
@@ -213,8 +211,8 @@ describe('ExpressApp', function() {
               url: testHost + ':' + testPort + config.basePath + '/v1/notifications' + '?notificationId=123',
               headers: {
                 'x-identity': 'identity',
-                'x-signature': 'signature'
-              }
+                'x-signature': 'signature',
+              },
             };
             request(requestOptions, function(err, res, body) {
               should.not.exist(err);
@@ -234,8 +232,8 @@ describe('ExpressApp', function() {
               url: testHost + ':' + testPort + config.basePath + '/v1/notifications' + '?timeSpan=30',
               headers: {
                 'x-identity': 'identity',
-                'x-signature': 'signature'
-              }
+                'x-signature': 'signature',
+              },
             };
             request(requestOptions, function(err, res, body) {
               should.not.exist(err);
@@ -250,13 +248,13 @@ describe('ExpressApp', function() {
         });
         it('should limit minTs to Defaults.MAX_NOTIFICATIONS_TIMESPAN', function(done) {
           start(TestExpressApp, function() {
-            var overLimit  = Defaults.MAX_NOTIFICATIONS_TIMESPAN * 2;
+            var overLimit = Defaults.MAX_NOTIFICATIONS_TIMESPAN * 2;
             var requestOptions = {
-              url: testHost + ':' + testPort + config.basePath + '/v1/notifications' + '?timeSpan=' + overLimit ,
+              url: testHost + ':' + testPort + config.basePath + '/v1/notifications' + '?timeSpan=' + overLimit,
               headers: {
                 'x-identity': 'identity',
-                'x-signature': 'signature'
-              }
+                'x-signature': 'signature',
+              },
             };
             request(requestOptions, function(err, res, body) {
               should.not.exist(err);

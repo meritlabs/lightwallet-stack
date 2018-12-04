@@ -30,5 +30,5 @@ module.exports = {
         throw new errors.InvalidArgumentType(argument, type.name, argumentName);
       }
     }
-  }
+  },
 };

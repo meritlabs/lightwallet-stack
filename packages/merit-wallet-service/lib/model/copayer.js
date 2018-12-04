@@ -12,7 +12,7 @@ var Meritcore = require('meritcore-lib');
 
 var Constants = require('../common/constants');
 
-function Copayer() {};
+function Copayer() {}
 
 Copayer._xPubToCopayerId = function(xpub) {
   var hash = sjcl.hash.sha256.hash(xpub);
@@ -36,10 +36,12 @@ Copayer.create = function(opts) {
   x.name = opts.name;
   x.requestPubKey = opts.requestPubKey;
   x.signature = opts.signature;
-  x.requestPubKeys = [{
-    key: opts.requestPubKey,
-    signature: opts.signature,
-  }];
+  x.requestPubKeys = [
+    {
+      key: opts.requestPubKey,
+      signature: opts.signature,
+    },
+  ];
 
   var derivationStrategy = opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP45;
   if (AddressManager.supportsCopayerBranches(derivationStrategy)) {
@@ -66,10 +68,12 @@ Copayer.fromObj = function(obj) {
   x.signature = obj.signature;
 
   if (parseInt(x.version) == 1) {
-    x.requestPubKeys = [{
-      key: x.requestPubKey,
-      signature: x.signature,
-    }];
+    x.requestPubKeys = [
+      {
+        key: x.requestPubKey,
+        signature: x.signature,
+      },
+    ];
     x.version = 2;
   } else {
     x.requestPubKeys = obj.requestPubKeys;
@@ -87,7 +91,15 @@ Copayer.prototype.createAddress = function(wallet, isChange) {
   $.checkState(wallet.isComplete());
 
   var path = this.addressManager.getNewAddressPath(isChange);
-  var address = Address.derive(wallet.id, wallet.addressType, wallet.publicKeyRing, path, wallet.m, wallet.network, isChange);
+  var address = Address.derive(
+    wallet.id,
+    wallet.addressType,
+    wallet.publicKeyRing,
+    path,
+    wallet.m,
+    wallet.network,
+    isChange,
+  );
   return address;
 };
 

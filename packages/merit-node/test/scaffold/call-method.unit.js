@@ -6,17 +6,16 @@ var proxyquire = require('proxyquire');
 var EventEmitter = require('events').EventEmitter;
 
 describe('#callMethod', function() {
-
   var expectedUrl = 'http://localhost:3001';
   var expectedOptions = {
     reconnection: false,
-    connect_timeout: 5000
+    connect_timeout: 5000,
   };
 
   var callOptions = {
     host: 'localhost',
     port: 3001,
-    protocol: 'http'
+    protocol: 'http',
   };
 
   var callMethod;
@@ -27,7 +26,7 @@ describe('#callMethod', function() {
         url.should.equal(expectedUrl);
         options.should.deep.equal(expectedOptions);
         return new EventEmitter();
-      }
+      },
     });
   });
 
@@ -51,8 +50,8 @@ describe('#callMethod', function() {
       should.equal(opts.params, null);
       var response = {
         error: {
-          message: 'response'
-        }
+          message: 'response',
+        },
       };
       callback(response);
     };
@@ -69,7 +68,7 @@ describe('#callMethod', function() {
       difficulty: 112628548.66634709,
       testnet: false,
       relayfee: 1000,
-      errors: ''
+      errors: '',
     };
     var socket = callMethod(callOptions, 'getInfo', null, function(err, data) {
       should.not.exist(err);
@@ -83,11 +82,10 @@ describe('#callMethod', function() {
       should.equal(opts.params, null);
       var response = {
         error: null,
-        result: expectedData
+        result: expectedData,
       };
       callback(response);
     };
     socket.emit('connect');
   });
-
 });

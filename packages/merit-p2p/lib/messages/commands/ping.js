@@ -21,7 +21,7 @@ function PingMessage(arg, options) {
   this.command = 'ping';
   $.checkArgument(
     _.isUndefined(arg) || (BufferUtil.isBuffer(arg) && arg.length === 8),
-    'First argument is expected to be an 8 byte buffer'
+    'First argument is expected to be an 8 byte buffer',
   );
   this.nonce = arg || utils.getNonce();
 }

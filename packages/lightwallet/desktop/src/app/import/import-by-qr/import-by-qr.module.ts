@@ -7,19 +7,17 @@ import { ImportByQrView } from '@merit/desktop/app/import/import-by-qr/import-by
     RouterModule.forChild([
       {
         path: '',
-        component: ImportByQrView
-      }
-    ])
+        component: ImportByQrView,
+      },
+    ]),
   ],
-  exports: [
-    RouterModule
-  ]
+  exports: [RouterModule],
 })
 export class ImportByQrRoutingModule {}
 
 @NgModule({
   entryComponents: [ImportByQrView],
   declarations: [ImportByQrView],
-  imports: [ImportByQrRoutingModule]
+  imports: [ImportByQrRoutingModule],
 })
 export class ImportByQrModule {}

@@ -15,8 +15,7 @@ export class PlatformService {
   isDevel: boolean;
   supportsLedger: boolean;
 
-  constructor(private platform: Platform,
-              private log: LoggerService) {
+  constructor(private platform: Platform, private log: LoggerService) {
     let ua = navigator ? navigator.userAgent : null;
 
     if (!ua) {

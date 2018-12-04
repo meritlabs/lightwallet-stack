@@ -22,7 +22,7 @@ function MerkleblockMessage(arg, options) {
   this.command = 'merkleblock';
   $.checkArgument(
     _.isUndefined(arg) || arg instanceof this.MerkleBlock,
-    'An instance of MerkleBlock or undefined is expected'
+    'An instance of MerkleBlock or undefined is expected',
   );
   this.merkleBlock = arg;
 }

@@ -21,12 +21,12 @@ function BlockController(options) {
     pool.searchStrings.forEach(function(s) {
       self.poolStrings[s] = {
         poolName: pool.poolName,
-        url: pool.url
+        url: pool.url,
       };
     });
   });
 
-  this.common = new Common({log: this.node.log});
+  this.common = new Common({ log: this.node.log });
 }
 
 var BLOCK_LIMIT = 200;
@@ -64,9 +64,9 @@ BlockController.prototype.block = function(req, res, next) {
     next();
   } else {
     self.node.getBlock(hash, function(err, block) {
-      if((err && err.code === -5) || (err && err.code === -8)) {
+      if ((err && err.code === -5) || (err && err.code === -8)) {
         return self.common.handleErrors(null, res);
-      } else if(err) {
+      } else if (err) {
         return self.common.handleErrors(err, res);
       }
 
@@ -104,7 +104,7 @@ BlockController.prototype.transformBlock = function(block, info) {
   const inviteIds = blockObj.invites.map(function(invite) {
     return invite.hash;
   });
-  const referralIds = blockObj.referrals.map(function (ref) {
+  const referralIds = blockObj.referrals.map(function(ref) {
     return ref.hash;
   });
   const result = {
@@ -127,8 +127,8 @@ BlockController.prototype.transformBlock = function(block, info) {
     previousblockhash: this._normalizePrevHash(blockObj.header.prevHash),
     nextblockhash: info.nextblockhash,
     reward: this.getBlockReward(info.height) / 1e8,
-    isMainChain: (info.confirmations !== -1),
-    poolInfo: this.getPoolInfo(block)
+    isMainChain: info.confirmations !== -1,
+    poolInfo: this.getPoolInfo(block),
   };
 
   return result;
@@ -157,7 +157,7 @@ BlockController.prototype.blockIndex = function(req, res) {
       return self.common.handleErrors(err, res);
     }
     res.jsonp({
-      blockHash: info.hash
+      blockHash: info.hash,
     });
   });
 };
@@ -207,7 +207,7 @@ BlockController.prototype._getBlockSummary = function(hash, moreTimestamp, next)
           hash: hash,
           time: header.time,
           txlength: txlength,
-          poolInfo: self.getPoolInfo(info)
+          poolInfo: self.getPoolInfo(info),
         };
 
         var confirmations = self.node.services.meritd.height - height + 1;
@@ -218,7 +218,6 @@ BlockController.prototype._getBlockSummary = function(hash, moreTimestamp, next)
         finish(summary);
       });
     });
-
   }
 };
 
@@ -233,7 +232,7 @@ BlockController.prototype.list = function(req, res) {
   if (req.query.blockDate) {
     dateStr = req.query.blockDate;
     var datePattern = /\d{4}-\d{2}-\d{2}/;
-    if(!datePattern.test(dateStr)) {
+    if (!datePattern.test(dateStr)) {
       return self.common.handleErrors(new Error('Please use yyyy-mm-dd format'), res);
     }
 
@@ -243,7 +242,7 @@ BlockController.prototype.list = function(req, res) {
     isToday = true;
   }
 
-  var gte = Math.round((new Date(dateStr)).getTime() / 1000);
+  var gte = Math.round(new Date(dateStr).getTime() / 1000);
 
   //pagination
   var lte = parseInt(req.query.startTimestamp) || gte + 86400;
@@ -254,13 +253,13 @@ BlockController.prototype.list = function(req, res) {
   var moreTimestamp = lte;
 
   self.node.services.meritd.getBlockHashesByTimestamp(lte, gte, function(err, hashes) {
-    if(err) {
+    if (err) {
       return self.common.handleErrors(err, res);
     }
 
     hashes.reverse();
 
-    if(hashes.length > limit) {
+    if (hashes.length > limit) {
       more = true;
       hashes = hashes.slice(0, limit);
     }
@@ -271,7 +270,7 @@ BlockController.prototype.list = function(req, res) {
         self._getBlockSummary(hash, moreTimestamp, next);
       },
       function(err, blocks) {
-        if(err) {
+        if (err) {
           return self.common.handleErrors(err, res);
         }
 
@@ -288,16 +287,16 @@ BlockController.prototype.list = function(req, res) {
             currentTs: lte - 1,
             current: dateStr,
             isToday: isToday,
-            more: more
-          }
+            more: more,
+          },
         };
 
-        if(more) {
+        if (more) {
           data.pagination.moreTs = moreTimestamp;
         }
 
         res.jsonp(data);
-      }
+      },
     );
   });
 };
@@ -306,7 +305,7 @@ BlockController.prototype.getPoolInfo = function(block) {
   if (block.transactions[0] && block.transactions[0].inputs && block.transactions[0].inputs[0]) {
     const coinbaseBuffer = block.transactions[0].inputs[0]._scriptBuffer;
 
-    for(let k in this.poolStrings) {
+    for (let k in this.poolStrings) {
       if (coinbaseBuffer.toString('utf-8').match(k)) {
         return this.poolStrings[k];
       }

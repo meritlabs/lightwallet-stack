@@ -10,14 +10,16 @@ import { ElectronService, IUpdateInfo } from '@merit/desktop/services/electron.s
   selector: 'merit-lw',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.sass'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent {
-  constructor(private domCtrl: DOMController,
-              private renderer2: Renderer2,
-              private easyReceiveService: EasyReceiveService,
-              private updateDialogCtrl: UpdateDialogController,
-              private perstitenceService: PersistenceService2) {
+  constructor(
+    private domCtrl: DOMController,
+    private renderer2: Renderer2,
+    private easyReceiveService: EasyReceiveService,
+    private updateDialogCtrl: UpdateDialogController,
+    private perstitenceService: PersistenceService2,
+  ) {
     // Services can't inject Renderer, so this is a workaround.
     domCtrl.rnd = renderer2;
   }

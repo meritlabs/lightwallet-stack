@@ -59,13 +59,12 @@ interface Receipt {
   styleUrls: ['./send.view.sass'],
 })
 export class SendView implements OnInit, AfterViewInit {
-
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets);
 
   hasUnlockedWallet: boolean;
   hasAvailableInvites: boolean;
 
-  availableCurrencies: Array<{ code: string; name: string; rate: number; }>;
+  availableCurrencies: Array<{ code: string; name: string; rate: number }>;
 
   easySendUrl: string;
   easySendDelivered: boolean;
@@ -136,7 +135,7 @@ export class SendView implements OnInit, AfterViewInit {
       this.overMaximumAmount = false;
     }),
     filter(() => this.formData.dirty),
-    switchMap((formData) => {
+    switchMap(formData => {
       if (this.formData.pending) {
         // wait till form is validated
         return this.formData.statusChanges.pipe(
@@ -147,17 +146,16 @@ export class SendView implements OnInit, AfterViewInit {
       }
       return of(formData);
     }),
-    switchMap((formData) => {
+    switchMap(formData => {
       if (this.formData.valid) {
         this.receiptLoading = true;
-        return fromPromise(this.createTx(formData))
-          .pipe(
-            catchError((err: any) => {
-              console.error(err);
-              this.error = err.message || 'Unknown error';
-              return of({} as ISendTxData);
-            }),
-          );
+        return fromPromise(this.createTx(formData)).pipe(
+          catchError((err: any) => {
+            console.error(err);
+            this.error = err.message || 'Unknown error';
+            return of({} as ISendTxData);
+          }),
+        );
       }
 
       return of({} as ISendTxData);
@@ -169,102 +167,94 @@ export class SendView implements OnInit, AfterViewInit {
   );
 
   submit: Subject<void> = new Subject<void>();
-  onSubmit$: Observable<boolean> = this.submit.asObservable()
-    .pipe(
-      withLatestFrom(this.txData$),
-      tap(() => {
-        this.sending = true;
-        this.loadingCtrl.show();
-        this.error = this.easySendUrl = this.easySendDelivered = null;
-      }),
-      switchMap(([_, txData]) =>
-        fromPromise(this.send(txData))
-          .pipe(
-            catchError(err => {
-              this.error = err.message;
-              return of(false);
-            }),
-          ),
+  onSubmit$: Observable<boolean> = this.submit.asObservable().pipe(
+    withLatestFrom(this.txData$),
+    tap(() => {
+      this.sending = true;
+      this.loadingCtrl.show();
+      this.error = this.easySendUrl = this.easySendDelivered = null;
+    }),
+    switchMap(([_, txData]) =>
+      fromPromise(this.send(txData)).pipe(
+        catchError(err => {
+          this.error = err.message;
+          return of(false);
+        }),
       ),
-      tap((success: boolean) => {
-        this.sending = false;
-        this.loadingCtrl.hide();
-        this.success = success;
+    ),
+    tap((success: boolean) => {
+      this.sending = false;
+      this.loadingCtrl.hide();
+      this.success = success;
 
-        if (success) {
-          this.resetFormData();
-        }
-      }),
-      startWith(false),
-      share(),
-    );
-
+      if (success) {
+        this.resetFormData();
+      }
+    }),
+    startWith(false),
+    share(),
+  );
 
   receiptLoading: boolean;
 
-  receipt$: Observable<Receipt> = combineLatest(this.txData$, this.onSubmit$)
-    .pipe(
-      map(([txData, submitSuccess]) => {
-        const { feeIncluded, wallet } = this.formData.value;
-        const { spendableAmount } = wallet ? wallet.balance : 0;
+  receipt$: Observable<Receipt> = combineLatest(this.txData$, this.onSubmit$).pipe(
+    map(([txData, submitSuccess]) => {
+      const { feeIncluded, wallet } = this.formData.value;
+      const { spendableAmount } = wallet ? wallet.balance : 0;
 
-        if (!txData || this.success) {
-          return {
-            amount: 0,
-            fee: 0,
-            total: 0,
-            inWallet: spendableAmount,
-            remaining: spendableAmount,
-          };
-        }
-
-        this.receiptLoading = true;
-
-        const receipt: Receipt = {
-          amount: txData.amount,
-          fee: txData.fee,
-          total: feeIncluded ? txData.amount : txData.amount + txData.fee,
+      if (!txData || this.success) {
+        return {
+          amount: 0,
+          fee: 0,
+          total: 0,
           inWallet: spendableAmount,
-          remaining: 0,
+          remaining: spendableAmount,
         };
+      }
 
-        receipt.remaining = receipt.inWallet - receipt.total;
+      this.receiptLoading = true;
 
-        return receipt;
-      }),
-      tap(() => this.receiptLoading = false),
-      startWith({} as Receipt),
-    );
+      const receipt: Receipt = {
+        amount: txData.amount,
+        fee: txData.fee,
+        total: feeIncluded ? txData.amount : txData.amount + txData.fee,
+        inWallet: spendableAmount,
+        remaining: 0,
+      };
+
+      receipt.remaining = receipt.inWallet - receipt.total;
+
+      return receipt;
+    }),
+    tap(() => (this.receiptLoading = false)),
+    startWith({} as Receipt),
+  );
 
   amountFiat$: Observable<number> = this.amountMrt.valueChanges.pipe(
     withLatestFrom(this.selectedCurrency.valueChanges),
     switchMap(([amountMrt, selectedCurrency]) =>
-      fromPromise(
-        this.rateService.microsToFiat(
-          this.rateService.mrtToMicro(amountMrt),
-          selectedCurrency.code,
-        ),
-      ),
+      fromPromise(this.rateService.microsToFiat(this.rateService.mrtToMicro(amountMrt), selectedCurrency.code)),
     ),
   );
 
-  constructor(private route: ActivatedRoute,
-              private store: Store<IRootAppState>,
-              private formBuilder: FormBuilder,
-              private logger: LoggerService,
-              private rateService: RateService,
-              private configService: ConfigService,
-              private walletService: WalletService,
-              private passwordPromptCtrl: PasswordPromptController,
-              private addressService: AddressService,
-              private easySendService: EasySendService,
-              private sendService: SendService,
-              private feeService: FeeService,
-              private persistenceService: PersistenceService2,
-              private mwcService: MWCService,
-              private toastCtrl: ToastControllerService,
-              private loadingCtrl: Ng4LoadingSpinnerService) {
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private store: Store<IRootAppState>,
+    private formBuilder: FormBuilder,
+    private logger: LoggerService,
+    private rateService: RateService,
+    private configService: ConfigService,
+    private walletService: WalletService,
+    private passwordPromptCtrl: PasswordPromptController,
+    private addressService: AddressService,
+    private easySendService: EasySendService,
+    private sendService: SendService,
+    private feeService: FeeService,
+    private persistenceService: PersistenceService2,
+    private mwcService: MWCService,
+    private toastCtrl: ToastControllerService,
+    private loadingCtrl: Ng4LoadingSpinnerService,
+  ) {}
 
   async ngOnInit() {
     this.availableCurrencies = await this.rateService.getAvailableFiats();
@@ -280,21 +270,20 @@ export class SendView implements OnInit, AfterViewInit {
       this.amountMrt.markAsDirty();
     }
 
-    this.type.valueChanges.pipe(
-      distinctUntilChanged()
-    )
-      .subscribe((value: SendMethodType) => {
-        if ((value === SendMethodType.Easy && this.address.invalid)
-          || (value === SendMethodType.Classic && this.address.valid)) {
-          // Re-validate address field to make sure it's marked as valid when necessary
-          this.address.updateValueAndValidity({ onlySelf: false });
-        }
+    this.type.valueChanges.pipe(distinctUntilChanged()).subscribe((value: SendMethodType) => {
+      if (
+        (value === SendMethodType.Easy && this.address.invalid) ||
+        (value === SendMethodType.Classic && this.address.valid)
+      ) {
+        // Re-validate address field to make sure it's marked as valid when necessary
+        this.address.updateValueAndValidity({ onlySelf: false });
+      }
 
-        if (value === SendMethodType.Classic && this.destination.invalid) {
-          this.destination.setValue('');
-          this.destination.markAsPristine();
-        }
-      });
+      if (value === SendMethodType.Classic && this.destination.invalid) {
+        this.destination.setValue('');
+        this.destination.markAsPristine();
+      }
+    });
 
     this.onSubmit$.subscribe();
 
@@ -302,11 +291,10 @@ export class SendView implements OnInit, AfterViewInit {
       .pipe(
         filter(() => this.formData.pristine),
         switchMap(() =>
-          this.formData.statusChanges
-            .pipe(
-              filter(() => !this.formData.pristine),
-              take(1)
-            )
+          this.formData.statusChanges.pipe(
+            filter(() => !this.formData.pristine),
+            take(1),
+          ),
         ),
       )
       .subscribe(() => {
@@ -335,10 +323,12 @@ export class SendView implements OnInit, AfterViewInit {
   private async resetFormData() {
     this.formData.reset({ emitEvent: false });
 
-    const wallets = await this.wallets$.pipe(
-      skipWhile(wallets => !wallets || !wallets.length),
-      take(1),
-    ).toPromise();
+    const wallets = await this.wallets$
+      .pipe(
+        skipWhile(wallets => !wallets || !wallets.length),
+        take(1),
+      )
+      .toPromise();
 
     this.hasUnlockedWallet = wallets.length > 0;
     this.hasAvailableInvites = wallets.some(w => w.availableInvites > 0);
@@ -346,7 +336,7 @@ export class SendView implements OnInit, AfterViewInit {
     if (wallets && wallets[0]) {
       this.wallet.setValue(wallets[0], { emitEvent: false });
       if (wallets[0].balance.spendableAmount <= 0) {
-        wallets.some((wallet) => {
+        wallets.some(wallet => {
           if (wallet.balance.spendableAmount > 0) {
             this.wallet.setValue(wallet, { emitEvent: false });
             return true;
@@ -366,8 +356,7 @@ export class SendView implements OnInit, AfterViewInit {
 
   selectWallet(wallet) {
     const { value } = this.wallet;
-    if (!value || value.id !== wallet.id)
-      this.wallet.setValue(wallet);
+    if (!value || value.id !== wallet.id) this.wallet.setValue(wallet);
   }
 
   private async createTx(formValue: any): Promise<ISendTxData> {
@@ -433,11 +422,13 @@ export class SendView implements OnInit, AfterViewInit {
     }
 
     setTimeout(() => {
-      this.store.dispatch(new RefreshOneWalletAction(wallet.id, {
-        skipRewards: true,
-        skipAlias: true,
-        skipShareCode: true,
-      }));
+      this.store.dispatch(
+        new RefreshOneWalletAction(wallet.id, {
+          skipRewards: true,
+          skipAlias: true,
+          skipShareCode: true,
+        }),
+      );
     }, 1750);
 
     return true;

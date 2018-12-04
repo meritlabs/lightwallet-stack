@@ -4,7 +4,11 @@ const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"
 
 export function validateEmail(email: string) {
   email = email || '';
-  return EMAIL_REGEX.test(String(email).trim().toLowerCase());
+  return EMAIL_REGEX.test(
+    String(email)
+      .trim()
+      .toLowerCase(),
+  );
 }
 
 export function validatePhoneNumber(phoneNumber: string) {

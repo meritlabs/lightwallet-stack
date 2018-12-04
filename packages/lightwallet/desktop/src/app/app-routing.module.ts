@@ -14,7 +14,12 @@ import { RateService } from '@merit/common/services/rate.service';
 
 @Injectable()
 export class CoreModuleResolver implements Resolve<void> {
-  constructor(private appService: AppSettingsService, private ratesService: RateService, private profileService: ProfileService, private store: Store<IRootAppState>) {}
+  constructor(
+    private appService: AppSettingsService,
+    private ratesService: RateService,
+    private profileService: ProfileService,
+    private store: Store<IRootAppState>,
+  ) {}
 
   // resolver here is a hack for lazy loaded CoreModule route
   // TODO: figure out if there is a better place to hook in in module initialization process
@@ -22,24 +27,34 @@ export class CoreModuleResolver implements Resolve<void> {
     await this.appService.getInfo();
     await this.ratesService.loadRates();
 
-    this.store.select(selectAppState).pipe(
-      filter((state: IAppState) => state.authorized),
-      tap((state: IAppState) => this.store.dispatch(new RefreshWalletsAction()))
-    ).subscribe();
+    this.store
+      .select(selectAppState)
+      .pipe(
+        filter((state: IAppState) => state.authorized),
+        tap((state: IAppState) => this.store.dispatch(new RefreshWalletsAction())),
+      )
+      .subscribe();
   }
 }
 
 const routes: Routes = [
-  { path: 'onboarding', loadChildren: './onboarding/onboarding.module#OnboardingModule', canActivate: [OnboardingGuard] },
+  {
+    path: 'onboarding',
+    loadChildren: './onboarding/onboarding.module#OnboardingModule',
+    canActivate: [OnboardingGuard],
+  },
   { path: 'market', loadChildren: './market/market.module#MarketModule', canActivate: [DashboardGuard] },
-  { path: '', loadChildren: './core/core.module#CoreModule', canActivate: [DashboardGuard], resolve: { init: CoreModuleResolver } }
+  {
+    path: '',
+    loadChildren: './core/core.module#CoreModule',
+    canActivate: [DashboardGuard],
+    resolve: { init: CoreModuleResolver },
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers: [
-    CoreModuleResolver,
-  ]
+  providers: [CoreModuleResolver],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

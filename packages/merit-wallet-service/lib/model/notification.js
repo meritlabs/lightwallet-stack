@@ -23,7 +23,7 @@ var Uuid = require('uuid');
  * to notify the user
  *
  */
-function Notification() {};
+function Notification() {}
 
 Notification.create = function(opts) {
   opts = opts || {};
@@ -51,8 +51,7 @@ Notification.fromObj = function(obj) {
   x.version = obj.version;
   x.createdOn = obj.createdOn;
   x.id = obj.id;
-  x.type = obj.type,
-  x.data = obj.data;
+  (x.type = obj.type), (x.data = obj.data);
   x.walletId = obj.walletId;
   x.creatorId = obj.creatorId;
   x.lockedForPushNotifications = obj.lockedForPushNotifications ? obj.lockedForPushNotifications : false;

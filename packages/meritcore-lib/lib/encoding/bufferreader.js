@@ -14,7 +14,7 @@ var BufferReader = function BufferReader(buf) {
   }
   if (Buffer.isBuffer(buf)) {
     this.set({
-      buf: buf
+      buf: buf,
     });
   } else if (_.isString(buf)) {
     this.set({
@@ -99,7 +99,7 @@ BufferReader.prototype.readUInt64BEBN = function() {
 BufferReader.prototype.readUInt64LEBN = function() {
   var second = this.buf.readUInt32LE(this.pos);
   var first = this.buf.readUInt32LE(this.pos + 4);
-  var combined = (first * 0x100000000) + second;
+  var combined = first * 0x100000000 + second;
   // Instantiating an instance of BN with a number is faster than with an
   // array or string. However, the maximum safe number for a double precision
   // floating point is 2 ^ 52 - 1 (0x1fffffffffffff), thus we can safely use
@@ -120,11 +120,11 @@ BufferReader.prototype.readUInt64LEBN = function() {
 BufferReader.prototype.readVarintNum = function() {
   var first = this.readUInt8();
   switch (first) {
-    case 0xFD:
+    case 0xfd:
       return this.readUInt16LE();
-    case 0xFE:
+    case 0xfe:
       return this.readUInt32LE();
-    case 0xFF:
+    case 0xff:
       var bn = this.readUInt64LEBN();
       var n = bn.toNumber();
       if (n <= Math.pow(2, 53)) {
@@ -144,19 +144,21 @@ BufferReader.prototype.readVarintNum = function() {
 BufferReader.prototype.readVarLengthBuffer = function() {
   var len = this.readVarintNum();
   var buf = this.read(len);
-  $.checkState(buf.length === len, 'Invalid length while reading varlength buffer. ' +
-    'Expected to read: ' + len + ' and read ' + buf.length);
+  $.checkState(
+    buf.length === len,
+    'Invalid length while reading varlength buffer. ' + 'Expected to read: ' + len + ' and read ' + buf.length,
+  );
   return buf;
 };
 
 BufferReader.prototype.readVarintBuf = function() {
   var first = this.buf.readUInt8(this.pos);
   switch (first) {
-    case 0xFD:
+    case 0xfd:
       return this.read(1 + 2);
-    case 0xFE:
+    case 0xfe:
       return this.read(1 + 4);
-    case 0xFF:
+    case 0xff:
       return this.read(1 + 8);
     default:
       return this.read(1);
@@ -166,11 +168,11 @@ BufferReader.prototype.readVarintBuf = function() {
 BufferReader.prototype.readVarintBN = function() {
   var first = this.readUInt8();
   switch (first) {
-    case 0xFD:
+    case 0xfd:
       return new BN(this.readUInt16LE());
-    case 0xFE:
+    case 0xfe:
       return new BN(this.readUInt32LE());
-    case 0xFF:
+    case 0xff:
       return this.readUInt64LEBN();
     default:
       return new BN(first);

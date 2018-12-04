@@ -11,6 +11,6 @@ describe('#versionGuard', function() {
   it('throw an error if version is already defined', function() {
     (function() {
       meritcore.versionGuard('version');
-    }).should.throw('More than one instance of meritcore');
+    }.should.throw('More than one instance of meritcore'));
   });
 });

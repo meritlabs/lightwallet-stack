@@ -13,8 +13,10 @@ var BufferUtil = meritcore.util.buffer;
 var HDPrivateKey = meritcore.HDPrivateKey;
 var Base58Check = meritcore.encoding.Base58Check;
 
-var xprivkey = 'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi';
-var json = '{"network":"livenet","depth":0,"fingerPrint":876747070,"parentFingerPrint":0,"childIndex":0,"chainCode":"873dff81c02f525623fd1fe5167eac3a55a049de3d314bb42ee227ffed37d508","privateKey":"e8f32e723decf4051aefac8e2c93c9c5b214313817cdb01a1494b917c8436b35","checksum":-411132559,"xprivkey":"xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi"}';
+var xprivkey =
+  'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi';
+var json =
+  '{"network":"livenet","depth":0,"fingerPrint":876747070,"parentFingerPrint":0,"childIndex":0,"chainCode":"873dff81c02f525623fd1fe5167eac3a55a049de3d314bb42ee227ffed37d508","privateKey":"e8f32e723decf4051aefac8e2c93c9c5b214313817cdb01a1494b917c8436b35","checksum":-411132559,"xprivkey":"xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi"}';
 describe('HDPrivate key interface', function() {
   /* jshint maxstatements: 50 */
   var expectFail = function(func, error) {
@@ -73,10 +75,7 @@ describe('HDPrivate key interface', function() {
   });
 
   it('builds a json keeping the structure and same members', function() {
-    assert(_.isEqual(
-      new HDPrivateKey(json).toJSON(),
-      new HDPrivateKey(xprivkey).toJSON()
-    ));
+    assert(_.isEqual(new HDPrivateKey(json).toJSON(), new HDPrivateKey(xprivkey).toJSON()));
   });
 
   describe('instantiation', function() {
@@ -84,17 +83,22 @@ describe('HDPrivate key interface', function() {
       expectFailBuilding(1, hdErrors.UnrecognizedArgument);
     });
     it('allows no-new calling', function() {
-      HDPrivateKey(xprivkey).toString().should.equal(xprivkey);
+      HDPrivateKey(xprivkey)
+        .toString()
+        .should.equal(xprivkey);
     });
     it('allows the use of a copy constructor', function() {
-      HDPrivateKey(HDPrivateKey(xprivkey))
-        .xprivkey.should.equal(xprivkey);
+      HDPrivateKey(HDPrivateKey(xprivkey)).xprivkey.should.equal(xprivkey);
     });
   });
 
   describe('public key', function() {
-    var testnetKey = new HDPrivateKey('tprv8ZgxMBicQKsPdEeU2KiGFnUgRGriMnQxrwrg6FWCBg4jeiidHRyCCdA357kfkZiGaXEapWZsGDKikeeEbvgXo3UmEdbEKNdQH9VXESmGuUK');
-    var livenetKey = new HDPrivateKey('xprv9s21ZrQH143K3e39bnn1vyS7YFa1EAJAFGDoeHaSBsgBxgAkTEXeSx7xLvhNQNJxJwhzziWcK3znUFKRPRwWBPkKZ8ijUBa5YYpYPQmeBDX');
+    var testnetKey = new HDPrivateKey(
+      'tprv8ZgxMBicQKsPdEeU2KiGFnUgRGriMnQxrwrg6FWCBg4jeiidHRyCCdA357kfkZiGaXEapWZsGDKikeeEbvgXo3UmEdbEKNdQH9VXESmGuUK',
+    );
+    var livenetKey = new HDPrivateKey(
+      'xprv9s21ZrQH143K3e39bnn1vyS7YFa1EAJAFGDoeHaSBsgBxgAkTEXeSx7xLvhNQNJxJwhzziWcK3znUFKRPRwWBPkKZ8ijUBa5YYpYPQmeBDX',
+    );
 
     it('matches the network', function() {
       testnetKey.publicKey.network.should.equal(Networks.testnet);
@@ -107,11 +111,12 @@ describe('HDPrivate key interface', function() {
       privateKey.xpubkey.should.equal(privateKey.xpubkey);
       should.exist(privateKey._hdPublicKey);
     });
-
   });
 
   it('inspect() displays correctly', function() {
-    HDPrivateKey(xprivkey).inspect().should.equal('<HDPrivateKey: ' + xprivkey + '>');
+    HDPrivateKey(xprivkey)
+      .inspect()
+      .should.equal('<HDPrivateKey: ' + xprivkey + '>');
   });
   it('fails when trying to derive with an invalid argument', function() {
     expectDerivationFail([], hdErrors.InvalidDerivationArgument);
@@ -128,34 +133,28 @@ describe('HDPrivate key interface', function() {
     derivedByNumber.xprivkey.should.equal(derivedByArgument.xprivkey);
   });
 
-  it('returns itself with \'m\' parameter', function() {
+  it("returns itself with 'm' parameter", function() {
     var privateKey = new HDPrivateKey(xprivkey);
     privateKey.should.equal(privateKey.derive('m'));
   });
 
   it('returns InvalidArgument if invalid data is given to getSerializedError', function() {
-    expect(
-      HDPrivateKey.getSerializedError(1) instanceof hdErrors.UnrecognizedArgument
-    ).to.equal(true);
+    expect(HDPrivateKey.getSerializedError(1) instanceof hdErrors.UnrecognizedArgument).to.equal(true);
   });
 
   it('returns InvalidLength if data of invalid length is given to getSerializedError', function() {
     var b58s = Base58Check.encode(new buffer.Buffer('onestring'));
-    expect(
-      HDPrivateKey.getSerializedError(b58s) instanceof hdErrors.InvalidLength
-    ).to.equal(true);
+    expect(HDPrivateKey.getSerializedError(b58s) instanceof hdErrors.InvalidLength).to.equal(true);
   });
 
   it('returns InvalidNetworkArgument if an invalid network is provided', function() {
     expect(
-      HDPrivateKey.getSerializedError(xprivkey, 'invalidNetwork') instanceof errors.InvalidNetworkArgument
+      HDPrivateKey.getSerializedError(xprivkey, 'invalidNetwork') instanceof errors.InvalidNetworkArgument,
     ).to.equal(true);
   });
 
   it('recognizes that the wrong network was asked for', function() {
-    expect(
-      HDPrivateKey.getSerializedError(xprivkey, 'testnet') instanceof errors.InvalidNetwork
-    ).to.equal(true);
+    expect(HDPrivateKey.getSerializedError(xprivkey, 'testnet') instanceof errors.InvalidNetwork).to.equal(true);
   });
 
   it('recognizes the correct network', function() {
@@ -169,7 +168,7 @@ describe('HDPrivate key interface', function() {
     it('fails when argument is not a buffer or string', function() {
       expectSeedFail(1, hdErrors.InvalidEntropyArgument);
     });
-    it('fails when argument doesn\'t provide enough entropy', function() {
+    it("fails when argument doesn't provide enough entropy", function() {
       expectSeedFail('01', hdErrors.InvalidEntropyArgument.NotEnoughEntropy);
     });
     it('fails when argument provides too much entropy', function() {
@@ -201,10 +200,13 @@ describe('HDPrivate key interface', function() {
     }).to.not.throw();
   });
 
-  it('shouldn\'t matter if derivations are made with strings or numbers', function() {
+  it("shouldn't matter if derivations are made with strings or numbers", function() {
     var privateKey = new HDPrivateKey(xprivkey);
-    var derivedByString = privateKey.derive('m/0\'/1/2\'');
-    var derivedByNumber = privateKey.derive(0, true).derive(1).derive(2, true);
+    var derivedByString = privateKey.derive("m/0'/1/2'");
+    var derivedByNumber = privateKey
+      .derive(0, true)
+      .derive(1)
+      .derive(2, true);
     derivedByNumber.xprivkey.should.equal(derivedByString.xprivkey);
   });
 
@@ -212,7 +214,7 @@ describe('HDPrivate key interface', function() {
     it('validates correct paths', function() {
       var valid;
 
-      valid = HDPrivateKey.isValidPath('m/0\'/1/2\'');
+      valid = HDPrivateKey.isValidPath("m/0'/1/2'");
       valid.should.equal(true);
 
       valid = HDPrivateKey.isValidPath('m');
@@ -231,15 +233,7 @@ describe('HDPrivate key interface', function() {
       valid.should.equal(true);
     });
 
-
-    var invalid = [
-      'm/-1/12',
-      'bad path',
-      'K',
-      'm/',
-      'm/12asd',
-      'm/1/2//3'
-    ];
+    var invalid = ['m/-1/12', 'bad path', 'K', 'm/', 'm/12asd', 'm/1/2//3'];
 
     invalid.forEach(function(datum) {
       it('rejects illegal path ' + datum, function() {
@@ -254,17 +248,17 @@ describe('HDPrivate key interface', function() {
       indexes = HDPrivateKey._getDerivationIndexes('m/-1/12');
       expect(indexes).to.equal(null);
 
-      indexes = HDPrivateKey._getDerivationIndexes('m/0/12/12\'');
+      indexes = HDPrivateKey._getDerivationIndexes("m/0/12/12'");
       indexes.should.eql([0, 12, HDPrivateKey.Hardened + 12]);
 
-      indexes = HDPrivateKey._getDerivationIndexes('m/0/12/12\'');
+      indexes = HDPrivateKey._getDerivationIndexes("m/0/12/12'");
       indexes.should.eql([0, 12, HDPrivateKey.Hardened + 12]);
     });
-
   });
 
   describe('conversion to/from buffer', function() {
-    var str = 'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi';
+    var str =
+      'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi';
     it('should roundtrip to/from a buffer', function() {
       var priv = new HDPrivateKey(str);
       var toBuffer = priv.toBuffer();
@@ -276,16 +270,17 @@ describe('HDPrivate key interface', function() {
 
   describe('conversion to plain object/json', function() {
     var plainObject = {
-      'network': 'livenet',
-      'depth': 0,
-      'fingerPrint': 876747070,
-      'parentFingerPrint': 0,
-      'childIndex': 0,
-      'chainCode': '873dff81c02f525623fd1fe5167eac3a55a049de3d314bb42ee227ffed37d508',
-      'privateKey': 'e8f32e723decf4051aefac8e2c93c9c5b214313817cdb01a1494b917c8436b35',
-      'checksum': -411132559,
-      'xprivkey': 'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvN' +
-        'KmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi'
+      network: 'livenet',
+      depth: 0,
+      fingerPrint: 876747070,
+      parentFingerPrint: 0,
+      childIndex: 0,
+      chainCode: '873dff81c02f525623fd1fe5167eac3a55a049de3d314bb42ee227ffed37d508',
+      privateKey: 'e8f32e723decf4051aefac8e2c93c9c5b214313817cdb01a1494b917c8436b35',
+      checksum: -411132559,
+      xprivkey:
+        'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvN' +
+        'KmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi',
     };
     it('toObject leaves no Buffer instances', function() {
       var privKey = new HDPrivateKey(xprivkey);

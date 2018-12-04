@@ -18,7 +18,7 @@ function TransactionMessage(arg, options) {
   this.Transaction = options.Transaction;
   $.checkArgument(
     _.isUndefined(arg) || arg instanceof this.Transaction,
-    'An instance of Transaction or undefined is expected'
+    'An instance of Transaction or undefined is expected',
   );
   this.transaction = arg;
   if (!this.transaction) {
