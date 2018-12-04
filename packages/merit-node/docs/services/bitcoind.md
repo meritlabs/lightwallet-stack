@@ -51,8 +51,8 @@ It's also possible to connect to separately managed `bitcoind` processes with ro
 
 **Note**: For detailed example configuration see [`regtest/cluster.js`](regtest/cluster.js)
 
-
 ## API Documentation
+
 Methods are available by directly interfacing with the service:
 
 ```js
@@ -74,7 +74,7 @@ node.services.bitcoind.getBlockHashesByTimestamp(high, low, function(err, blockH
 // get the current tip of the chain
 node.services.bitcoind.getBestBlockHash(function(err, blockHash) {
   //...
-})
+});
 ```
 
 **Getting Synchronization and Node Status**
@@ -83,7 +83,7 @@ node.services.bitcoind.getBestBlockHash(function(err, blockHash) {
 // gives a boolean if the daemon is fully synced (not the initial block download)
 node.services.bitcoind.isSynced(function(err, synced) {
   //...
-})
+});
 
 // gives the current estimate of blockchain download as a percentage
 node.services.bitcoind.syncPercentage(function(err, percent) {
@@ -199,9 +199,9 @@ The `unspentOutputs` will have the format:
     height: 150,
     micros: 1000000000,
     script: '76a9140b2f0a0c31bfe0406b0ccc1381fdbe311946dadc88ac',
-    confirmations: 3
-  }
-]
+    confirmations: 3,
+  },
+];
 ```
 
 **View Balances**
@@ -219,14 +219,14 @@ This method will give history of an address limited by a range of block heights 
 
 If "queryMempool" is set as true (it is true by default), it will show unconfirmed transactions from the bitcoin mempool. However, if you specify "start" and "end", "queryMempool" is ignored and is always false.
 
-If "queryMempoolOnly" is set as true (it is false by default), it will show *only* unconfirmed transactions from mempool.
+If "queryMempoolOnly" is set as true (it is false by default), it will show _only_ unconfirmed transactions from mempool.
 
 ```js
 var addresses = ['mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW'];
 var options = {
   start: 345000,
   end: 344000,
-  queryMempool: true // since we presented range, queryMempool will be ignored
+  queryMempool: true, // since we presented range, queryMempool will be ignored
 };
 node.services.bitcoind.getAddressHistory(addresses, options, function(err, history) {
   // see below
@@ -258,7 +258,7 @@ The history format will be:
 ```js
 var address = 'mgY65WSfEmsyYaYPQaXhmXMeBhwp4EcsQW';
 var options = {
-  noTxList: false
+  noTxList: false,
 };
 
 node.services.bitcoind.getAddressSummary(address, options, function(err, summary) {
@@ -281,15 +281,17 @@ The `summary` will have the format (values are in micros):
   ]
 }
 ```
+
 **Notes**:
-- `totalReceived` does not exclude change *(the amount of micros originating from the same address)*
-- `unconfirmedBalance` is the delta that the unconfirmed transactions have on the total balance *(can be both positive and negative)*
+
+- `totalReceived` does not exclude change _(the amount of micros originating from the same address)_
+- `unconfirmedBalance` is the delta that the unconfirmed transactions have on the total balance _(can be both positive and negative)_
 - `unconfirmedAppearances` is the total number of unconfirmed transactions
 - `appearances` is the total confirmed transactions
-- `txids` Are sorted in block order with the most recent at the beginning. A maximum of 1000 *(default)* will be returned, the `from` and `to` options can be used to get further values.
-
+- `txids` Are sorted in block order with the most recent at the beginning. A maximum of 1000 _(default)_ will be returned, the `from` and `to` options can be used to get further values.
 
 ## Events
+
 The Bitcoin Service exposes two events via the Bus, and there are a few events that can be directly registered:
 
 ```js
@@ -307,6 +309,7 @@ node.services.bitcoind.on('block', function(blockHash) {
 ```
 
 For details on instantiating a bus for a node, see the [Bus Documentation](../bus.md).
+
 - Name: `bitcoind/rawtransaction`
 - Name: `bitcoind/hashblock`
 - Name: `bitcoind/addresstxid`, Arguments: [address, address...]

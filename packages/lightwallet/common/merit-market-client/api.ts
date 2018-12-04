@@ -72,7 +72,7 @@ export class MeritMarketClient {
    */
   isPrivKeyEncrypted(): any {
     return this.credentials && this.credentials.isPrivKeyEncrypted();
-  };
+  }
 
   /**
    * Returns unencrypted extended private key and mnemonics
@@ -81,8 +81,7 @@ export class MeritMarketClient {
    */
   getKeys(password: string): any {
     return this.credentials.getKeys(password);
-  };
-
+  }
 
   /**
    * Checks is password is valid
@@ -99,7 +98,7 @@ export class MeritMarketClient {
     } catch (e) {
       return false;
     }
-  };
+  }
 
   /**
    * Do a GET request
@@ -109,8 +108,8 @@ export class MeritMarketClient {
    * @param {Callback} cb
    */
   _doGetRequest(url: string): Promise<any> {
-    return this._doRequest('get', url, {}).then((res) => res.body);
-  };
+    return this._doRequest('get', url, {}).then(res => res.body);
+  }
 
   /**
    * Do a POST request
@@ -122,7 +121,7 @@ export class MeritMarketClient {
    */
   _doPostRequest(url: string, args: any = {}): Promise<any> {
     return this._doRequest('post', url, args).then(res => res.body);
-  };
+  }
 
   /**
    * Do an HTTP request
@@ -137,10 +136,7 @@ export class MeritMarketClient {
       let headers = {};
 
       if (this.credentials) {
-        const privkey =  this.credentials
-          .getDerivedXPrivKey(args.password)
-          .deriveChild('m/0/0')
-          .privateKey;
+        const privkey = this.credentials.getDerivedXPrivKey(args.password).deriveChild('m/0/0').privateKey;
 
         const debug = !ENV.production;
         const [sig, ts] = this._signRequest(url, privkey, debug);

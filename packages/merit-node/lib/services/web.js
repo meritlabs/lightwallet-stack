@@ -14,7 +14,6 @@ var _ = meritcore.deps._;
 var index = require('../');
 var log = index.log;
 
-
 /**
  * This service represents a hub for combining several services over a single HTTP port. Services
  * can extend routes by implementing the methods `getRoutePrefix` and `setupRoutes`. Additionally
@@ -41,8 +40,9 @@ var WebService = function(options) {
   // see: https://github.com/expressjs/body-parser#limit
   this.jsonRequestLimit = options.jsonRequestLimit || '10mb';
 
-  this.enableSocketRPC = _.isUndefined(options.enableSocketRPC) ?
-    WebService.DEFAULT_SOCKET_RPC : options.enableSocketRPC;
+  this.enableSocketRPC = _.isUndefined(options.enableSocketRPC)
+    ? WebService.DEFAULT_SOCKET_RPC
+    : options.enableSocketRPC;
 
   this.node.on('ready', function() {
     self.eventNames = self.getEventNames();
@@ -63,9 +63,9 @@ WebService.DEFAULT_SOCKET_RPC = true;
  */
 WebService.prototype.start = function(callback) {
   this.app = express();
-  this.app.use(bodyParser.json({limit: this.jsonRequestLimit}));
+  this.app.use(bodyParser.json({ limit: this.jsonRequestLimit }));
 
-  if(this.https) {
+  if (this.https) {
     this.transformHttpsOptions();
     this.server = https.createServer(this.httpsOptions, this.app);
   } else {
@@ -86,7 +86,7 @@ WebService.prototype.stop = function(callback) {
   var self = this;
 
   setImmediate(function() {
-    if(self.server) {
+    if (self.server) {
       self.server.close();
     }
     callback();
@@ -98,11 +98,11 @@ WebService.prototype.stop = function(callback) {
  * all of the exposed HTTP routes.
  */
 WebService.prototype.setupAllRoutes = function() {
-  for(var key in this.node.services) {
+  for (var key in this.node.services) {
     var subApp = new express();
     var service = this.node.services[key];
 
-    if(service.getRoutePrefix && service.setupRoutes) {
+    if (service.getRoutePrefix && service.setupRoutes) {
       this.app.use('/' + this.node.services[key].getRoutePrefix(), subApp);
       this.node.services[key].setupRoutes(subApp, express);
     } else {
@@ -129,7 +129,7 @@ WebService.prototype.createMethodsMap = function() {
       fn: function() {
         return method.apply(instance, arguments);
       },
-      args: args
+      args: args,
     };
   });
 };
@@ -143,7 +143,7 @@ WebService.prototype.getEventNames = function() {
   var eventNames = [];
 
   function addEventName(name) {
-    if(eventNames.indexOf(name) > -1) {
+    if (eventNames.indexOf(name) > -1) {
       throw new Error('Duplicate event ' + name);
     }
     eventNames.push(name);
@@ -152,7 +152,7 @@ WebService.prototype.getEventNames = function() {
   events.forEach(function(event) {
     addEventName(event.name);
 
-    if(event.extraEvents) {
+    if (event.extraEvents) {
       event.extraEvents.forEach(function(name) {
         addEventName(name);
       });
@@ -174,7 +174,7 @@ WebService.prototype._getRemoteAddress = function(socket) {
 WebService.prototype.socketHandler = function(socket) {
   var self = this;
   var remoteAddress = self._getRemoteAddress(socket);
-  var bus = this.node.openBus({remoteAddress: remoteAddress});
+  var bus = this.node.openBus({ remoteAddress: remoteAddress });
 
   if (this.enableSocketRPC) {
     socket.on('message', this.socketMessageHandler.bind(this));
@@ -192,10 +192,10 @@ WebService.prototype.socketHandler = function(socket) {
 
   this.eventNames.forEach(function(eventName) {
     bus.on(eventName, function() {
-      if(socket.connected) {
+      if (socket.connected) {
         var results = [];
 
-        for(var i = 0; i < arguments.length; i++) {
+        for (var i = 0; i < arguments.length; i++) {
           results.push(arguments[i]);
         }
 
@@ -221,27 +221,27 @@ WebService.prototype.socketMessageHandler = function(message, socketCallback) {
   if (this.methodsMap[message.method]) {
     var params = message.params;
 
-    if(!params || !params.length) {
+    if (!params || !params.length) {
       params = [];
     }
 
-    if(params.length !== this.methodsMap[message.method].args) {
+    if (params.length !== this.methodsMap[message.method].args) {
       return socketCallback({
         error: {
-          message: 'Expected ' + this.methodsMap[message.method].args + ' parameter(s)'
-        }
+          message: 'Expected ' + this.methodsMap[message.method].args + ' parameter(s)',
+        },
       });
     }
 
     var callback = function(err, result) {
       var response = {};
-      if(err) {
+      if (err) {
         response.error = {
-          message: err.toString()
+          message: err.toString(),
         };
       }
 
-      if(result) {
+      if (result) {
         response.result = result;
       }
 
@@ -253,8 +253,8 @@ WebService.prototype.socketMessageHandler = function(message, socketCallback) {
   } else {
     socketCallback({
       error: {
-        message: 'Method Not Found'
-      }
+        message: 'Method Not Found',
+      },
     });
   }
 };
@@ -264,13 +264,13 @@ WebService.prototype.socketMessageHandler = function(message, socketCallback) {
  * replace the options with the files.
  */
 WebService.prototype.transformHttpsOptions = function() {
-  if(!this.httpsOptions || !this.httpsOptions.key || !this.httpsOptions.cert) {
+  if (!this.httpsOptions || !this.httpsOptions.key || !this.httpsOptions.cert) {
     throw new Error('Missing https options');
   }
 
   this.httpsOptions = {
     key: fs.readFileSync(this.httpsOptions.key),
-    cert: fs.readFileSync(this.httpsOptions.cert)
+    cert: fs.readFileSync(this.httpsOptions.cert),
   };
 };
 

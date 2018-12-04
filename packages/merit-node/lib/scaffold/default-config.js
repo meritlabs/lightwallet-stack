@@ -38,10 +38,10 @@ function getDefaultConfig(options) {
         meritd: {
           spawn: {
             datadir: path.resolve(defaultPath, './data'),
-            exec: path.resolve(__dirname, '../../bin/meritd')
-          }
-        }
-      }
+            exec: path.resolve(__dirname, '../../bin/meritd'),
+          },
+        },
+      },
     };
     fs.writeFileSync(defaultConfigFile, JSON.stringify(defaultConfig, null, 2));
   }
@@ -56,9 +56,8 @@ function getDefaultConfig(options) {
 
   return {
     path: defaultPath,
-    config: config
+    config: config,
   };
-
 }
 
 module.exports = getDefaultConfig;

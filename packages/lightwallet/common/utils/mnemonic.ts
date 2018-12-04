@@ -34,15 +34,15 @@ export function isValidSize(mnemonic: string) {
 }
 
 export function hasValidWords(mnemonic: string, wordlist: string[] = EnglishWordlist) {
-  return !mnemonic.split(' ')
-    .some((word: string) => wordlist.indexOf(word) === -1);
+  return !mnemonic.split(' ').some((word: string) => wordlist.indexOf(word) === -1);
 }
 
 export function hasValidEntropy(mnemonic: string, wordlist: string[] = EnglishWordlist) {
   const words = mnemonic.split(' ');
 
   let bin = '';
-  let i = 0, ind;
+  let i = 0,
+    ind;
 
   for (i; i < words.length; i++) {
     ind = wordlist.indexOf(words[i]);
@@ -69,7 +69,9 @@ export function mnemonicToHDPrivateKey(mnemonic, passphrase, network) {
 }
 
 function entropyChecksum(entropy: Buffer): string {
-  const hash = createHash('sha256').update(entropy).digest(),
+  const hash = createHash('sha256')
+      .update(entropy)
+      .digest(),
     bits = entropy.length * 8,
     cs = bits / 32;
 

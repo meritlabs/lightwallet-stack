@@ -3,11 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { SmsNotificationsModal } from './sms-notifications';
 
 @NgModule({
-  declarations: [
-    SmsNotificationsModal
-  ],
-  imports: [
-    IonicPageModule.forChild(SmsNotificationsModal)
-  ]
+  declarations: [SmsNotificationsModal],
+  imports: [IonicPageModule.forChild(SmsNotificationsModal)],
 })
 export class SmsNotificationsModule {}

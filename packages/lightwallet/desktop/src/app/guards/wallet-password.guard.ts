@@ -16,21 +16,22 @@ import { switchMap } from 'rxjs/operators';
 @Injectable()
 export class WalletPasswordGuard implements CanActivate {
   wallet$: Observable<DisplayWallet> = this.route.params.pipe(
-    switchMap((params: any) =>
-      this.store.select(selectWalletById(params.id))
-    )
+    switchMap((params: any) => this.store.select(selectWalletById(params.id))),
   );
 
-  constructor(private route: ActivatedRoute,
-              private walletService: WalletService,
-              private store: Store<IRootAppState>,
-              private passwordPromptCtrl: PasswordPromptController) {
-                console.log('WalletPasswordGuard');
-              }
+  constructor(
+    private route: ActivatedRoute,
+    private walletService: WalletService,
+    private store: Store<IRootAppState>,
+    private passwordPromptCtrl: PasswordPromptController,
+  ) {
+    console.log('WalletPasswordGuard');
+  }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     return new Promise<boolean>(async resolve => {
-      const wallet = await this.store.select(selectWalletById(route.parent.params.id))
+      const wallet = await this.store
+        .select(selectWalletById(route.parent.params.id))
         .take(1)
         .toPromise();
 

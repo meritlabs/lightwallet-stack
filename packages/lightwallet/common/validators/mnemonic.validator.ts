@@ -7,12 +7,12 @@ export class MnemonicValidator {
 
     if (!isValidSize(words))
       return {
-        InvalidSize: true
+        InvalidSize: true,
       };
 
     if (!hasValidWords(words))
       return {
-        InvalidWords: true
+        InvalidWords: true,
       };
 
     return null;
@@ -23,7 +23,7 @@ export class MnemonicValidator {
 
     if (!hasValidEntropy(words))
       return {
-        InvalidEntropy: true
+        InvalidEntropy: true,
       };
 
     return null;

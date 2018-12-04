@@ -18,7 +18,7 @@ function ClientError() {
       this.message = args[1];
       break;
   }
-};
+}
 
 ClientError.prototype.toString = function() {
   return '<ClientError:' + this.code + ' ' + this.message + '>';

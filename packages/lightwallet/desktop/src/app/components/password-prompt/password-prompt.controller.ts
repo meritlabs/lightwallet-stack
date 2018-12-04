@@ -16,7 +16,7 @@ export class PasswordPromptController {
 
   createForWallet(wallet: DisplayWallet | MeritWalletClient) {
     const validators: ValidatorFn[] = [Validators.required];
-    validators.push(PasswordValidator.VerifyWalletPassword(wallet instanceof DisplayWallet? wallet.client : wallet));
+    validators.push(PasswordValidator.VerifyWalletPassword(wallet instanceof DisplayWallet ? wallet.client : wallet));
     return this.create('Enter password for wallet: ' + wallet.name, validators);
   }
 }

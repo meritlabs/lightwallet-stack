@@ -4,12 +4,7 @@ import { HistoryView } from './history';
 import { ComponentsModule } from '../../components/components.module';
 
 @NgModule({
-  declarations: [
-    HistoryView,
-  ],
-  imports: [
-    IonicPageModule.forChild(HistoryView),
-    ComponentsModule
-  ],
+  declarations: [HistoryView],
+  imports: [IonicPageModule.forChild(HistoryView), ComponentsModule],
 })
 export class HistoryPageModule {}

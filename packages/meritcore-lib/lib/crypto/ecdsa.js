@@ -71,7 +71,6 @@ ECDSA.prototype.randomK = function() {
   return this;
 };
 
-
 // https://tools.ietf.org/html/rfc6979#section-3.2
 ECDSA.prototype.deterministicK = function(badrs) {
   /* jshint maxstatements: 25 */
@@ -86,9 +85,9 @@ ECDSA.prototype.deterministicK = function(badrs) {
   var k = new Buffer(32);
   k.fill(0x00);
   var x = this.privkey.bn.toBuffer({
-    size: 32
+    size: 32,
   });
-  var hashbuf = this.endian === 'little' ? BufferUtil.reverse(this.hashbuf) : this.hashbuf
+  var hashbuf = this.endian === 'little' ? BufferUtil.reverse(this.hashbuf) : this.hashbuf;
   k = Hash.sha256hmac(Buffer.concat([v, new Buffer([0x00]), x, hashbuf]), k);
   v = Hash.sha256hmac(v, k);
   k = Hash.sha256hmac(Buffer.concat([v, new Buffer([0x01]), x, hashbuf]), k);
@@ -150,7 +149,9 @@ ECDSA.prototype.toPublicKey = function() {
   var rInv = r.invm(n);
 
   //var Q = R.multiplyTwo(s, G, eNeg).mul(rInv);
-  var Q = R.mul(s).add(G.mul(eNeg)).mul(rInv);
+  var Q = R.mul(s)
+    .add(G.mul(eNeg))
+    .mul(rInv);
 
   var pubkey = PublicKey.fromPoint(Q, this.sig.compressed);
 
@@ -169,9 +170,14 @@ ECDSA.prototype.sigError = function() {
     return 'r and s not in range';
   }
 
-  var e = BN.fromBuffer(this.hashbuf, this.endian ? {
-    endian: this.endian
-  } : undefined);
+  var e = BN.fromBuffer(
+    this.hashbuf,
+    this.endian
+      ? {
+          endian: this.endian,
+        }
+      : undefined,
+  );
   var n = Point.getN();
   var sinv = s.invm(n);
   var u1 = sinv.mul(e).umod(n);
@@ -182,7 +188,12 @@ ECDSA.prototype.sigError = function() {
     return 'p is infinity';
   }
 
-  if (p.getX().umod(n).cmp(r) !== 0) {
+  if (
+    p
+      .getX()
+      .umod(n)
+      .cmp(r) !== 0
+  ) {
     return 'Invalid signature';
   } else {
     return false;
@@ -212,15 +223,17 @@ ECDSA.prototype._findSignature = function(d, e) {
     k = this.k;
     Q = G.mul(k);
     r = Q.x.umod(N);
-    s = k.invm(N).mul(e.add(d.mul(r))).umod(N);
+    s = k
+      .invm(N)
+      .mul(e.add(d.mul(r)))
+      .umod(N);
   } while (r.cmp(BN.Zero) <= 0 || s.cmp(BN.Zero) <= 0);
 
   s = ECDSA.toLowS(s);
   return {
     s: s,
-    r: r
+    r: r,
   };
-
 };
 
 ECDSA.prototype.sign = function() {
@@ -231,9 +244,14 @@ ECDSA.prototype.sign = function() {
   $.checkState(hashbuf && privkey && d, new Error('invalid parameters'));
   $.checkState(BufferUtil.isBuffer(hashbuf) && hashbuf.length === 32, new Error('hashbuf must be a 32 byte buffer'));
 
-  var e = BN.fromBuffer(hashbuf, this.endian ? {
-    endian: this.endian
-  } : undefined);
+  var e = BN.fromBuffer(
+    hashbuf,
+    this.endian
+      ? {
+          endian: this.endian,
+        }
+      : undefined,
+  );
 
   var obj = this._findSignature(d, e);
   obj.compressed = this.pubkey.compressed;
@@ -277,20 +295,24 @@ ECDSA.prototype.verify = function() {
 };
 
 ECDSA.sign = function(hashbuf, privkey, endian) {
-  return ECDSA().set({
-    hashbuf: hashbuf,
-    endian: endian,
-    privkey: privkey
-  }).sign().sig;
+  return ECDSA()
+    .set({
+      hashbuf: hashbuf,
+      endian: endian,
+      privkey: privkey,
+    })
+    .sign().sig;
 };
 
 ECDSA.verify = function(hashbuf, sig, pubkey, endian) {
-  return ECDSA().set({
-    hashbuf: hashbuf,
-    endian: endian,
-    sig: sig,
-    pubkey: pubkey
-  }).verify().verified;
+  return ECDSA()
+    .set({
+      hashbuf: hashbuf,
+      endian: endian,
+      sig: sig,
+      pubkey: pubkey,
+    })
+    .verify().verified;
 };
 
 module.exports = ECDSA;

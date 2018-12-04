@@ -39,33 +39,37 @@ export class ReceiveView {
   hasUnlockedWallets: boolean;
   loading: boolean;
 
-  @ViewChild('amountInput') amountInput: TextInput;
-  @ViewChild(Footer) footer: Footer;
+  @ViewChild('amountInput')
+  amountInput: TextInput;
+  @ViewChild(Footer)
+  footer: Footer;
 
   private footerHeight: number;
   private toggleButtonHeight: number;
   private footerBottom: number;
   isFooterCollapsed: boolean;
 
-  constructor(private navCtrl: NavController,
-              private modalCtrl: ModalController,
-              private profileService: ProfileService,
-              private walletService: WalletService,
-              private toastCtrl: ToastControllerService,
-              private logger: LoggerService,
-              private socialSharing: SocialSharing,
-              private clipboard: Clipboard,
-              private rateService: RateService,
-              private configService: ConfigService,
-              private events: Events,
-              private addressService: AddressService,
-              private platformService: PlatformService,
-              private navParams: NavParams,
-              private rnd: Renderer2) {
+  constructor(
+    private navCtrl: NavController,
+    private modalCtrl: ModalController,
+    private profileService: ProfileService,
+    private walletService: WalletService,
+    private toastCtrl: ToastControllerService,
+    private logger: LoggerService,
+    private socialSharing: SocialSharing,
+    private clipboard: Clipboard,
+    private rateService: RateService,
+    private configService: ConfigService,
+    private events: Events,
+    private addressService: AddressService,
+    private platformService: PlatformService,
+    private navParams: NavParams,
+    private rnd: Renderer2,
+  ) {
     this.protocolHandler = 'merit';
     this.availableUnits = [
       this.configService.get().wallet.settings.unitCode.toUpperCase(),
-      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
+      this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
     ];
     this.amountCurrency = this.availableUnits[0];
   }
@@ -87,12 +91,9 @@ export class ReceiveView {
   toggleFooter() {
     const el: HTMLElement = this.footer.getNativeElement();
 
-    if (!this.footerHeight)
-      this.footerHeight = el.offsetHeight;
+    if (!this.footerHeight) this.footerHeight = el.offsetHeight;
 
-    if (!this.footerBottom)
-      this.footerBottom = parseInt(el.style.bottom.replace(/\D+/g, ''));
-
+    if (!this.footerBottom) this.footerBottom = parseInt(el.style.bottom.replace(/\D+/g, ''));
 
     if (this.isFooterCollapsed) {
       this.isFooterCollapsed = false;
@@ -125,7 +126,7 @@ export class ReceiveView {
       this.wallet = wallet;
     }
 
-    if (this.wallet)  this.generateAddress();
+    if (this.wallet) this.generateAddress();
 
     this.loading = false;
   }
@@ -147,8 +148,7 @@ export class ReceiveView {
       } else {
         this.addressGenerationInProgress = false;
 
-        if (err.text)
-          this.error = err.text;
+        if (err.text) this.error = err.text;
 
         return this.toastCtrl.error(err.text || 'Failed to generate new address');
       }
@@ -156,11 +156,15 @@ export class ReceiveView {
   }
 
   selectWallet() {
-    const modal = this.modalCtrl.create('SelectWalletModal', {
-      selectedWallet: this.wallet,
-      availableWallets: this.wallets
-    }, MERIT_MODAL_OPTS);
-    modal.onDidDismiss((wallet) => {
+    const modal = this.modalCtrl.create(
+      'SelectWalletModal',
+      {
+        selectedWallet: this.wallet,
+        availableWallets: this.wallets,
+      },
+      MERIT_MODAL_OPTS,
+    );
+    modal.onDidDismiss(wallet => {
       if (wallet) {
         this.wallet = wallet;
         this.generateAddress();
@@ -171,17 +175,16 @@ export class ReceiveView {
 
   showShareButton() {
     return (
-      this.platformService.isCordova
-      && this.wallet
-      && this.wallet.isComplete()
-      && this.qrAddress
-      && !this.addressGenerationInProgress
+      this.platformService.isCordova &&
+      this.wallet &&
+      this.wallet.isComplete() &&
+      this.qrAddress &&
+      !this.addressGenerationInProgress
     );
   }
 
   share() {
-    if (SocialSharing.installed())
-      return this.socialSharing.share(this.qrAddress);
+    if (SocialSharing.installed()) return this.socialSharing.share(this.qrAddress);
   }
 
   copyToClipboard(addressString: string) {
@@ -189,8 +192,7 @@ export class ReceiveView {
 
     const address = addressString.split(':')[1] || addressString;
 
-    if (Clipboard.installed())
-      this.clipboard.copy(address);
+    if (Clipboard.installed()) this.clipboard.copy(address);
 
     this.toastCtrl.message('Address copied to clipboard');
   }
@@ -198,7 +200,8 @@ export class ReceiveView {
   async toggleCurrency() {
     const rate = await this.rateService.getRate(this.availableUnits[1]);
     if (rate > 0) {
-      this.amountCurrency = this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
+      this.amountCurrency =
+        this.amountCurrency == this.availableUnits[0] ? this.availableUnits[1] : this.availableUnits[0];
       this.changeAmount();
     }
   }
@@ -213,6 +216,8 @@ export class ReceiveView {
   }
 
   private formatAddress() {
-    this.qrAddress = `${ this.protocolHandler }:${ this.address }${ this.amountMicros ? '?micros=' + this.amountMicros : '' }`;
+    this.qrAddress = `${this.protocolHandler}:${this.address}${
+      this.amountMicros ? '?micros=' + this.amountMicros : ''
+    }`;
   }
 }

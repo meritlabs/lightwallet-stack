@@ -4,7 +4,7 @@ import { IRootAppState } from '@merit/common/reducers';
 import {
   InterfaceActionType,
   selectPrimaryWallet,
-  SetPrimaryWalletAction
+  SetPrimaryWalletAction,
 } from '@merit/common/reducers/interface-preferences.reducer';
 import { selectWallets } from '@merit/common/reducers/wallets.reducer';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
@@ -18,78 +18,75 @@ import { of } from 'rxjs/observable/of';
 @Injectable()
 export class InterfacePreferencesEffects {
   @Effect({ dispatch: false })
-  setPrimaryWallet: Observable<any> = this.actions$
-    .pipe(
-      ofType(InterfaceActionType.SetPrimaryWallet),
-      skip(1), // the init function emits this action, we can skip the first one
-      switchMap((action: SetPrimaryWalletAction) => {
-        if (action.primaryWallet) {
-          return of(action.primaryWallet);
-        }
+  setPrimaryWallet: Observable<any> = this.actions$.pipe(
+    ofType(InterfaceActionType.SetPrimaryWallet),
+    skip(1), // the init function emits this action, we can skip the first one
+    switchMap((action: SetPrimaryWalletAction) => {
+      if (action.primaryWallet) {
+        return of(action.primaryWallet);
+      }
 
-        return this.store.select(selectWallets)
-          .pipe(
-            take(1),
-            map((wallets: DisplayWallet[]) =>
-              wallets[0]
-            )
-          );
-      }),
-      filter((wallet: DisplayWallet) => !!wallet),
-      tap((wallet: DisplayWallet) => this.persistenceService.setUserSettings(UserSettingsKey.primaryWalletID, wallet.id))
-    );
+      return this.store.select(selectWallets).pipe(
+        take(1),
+        map((wallets: DisplayWallet[]) => wallets[0]),
+      );
+    }),
+    filter((wallet: DisplayWallet) => !!wallet),
+    tap((wallet: DisplayWallet) => this.persistenceService.setUserSettings(UserSettingsKey.primaryWalletID, wallet.id)),
+  );
 
   @Effect()
-  refreshPrimaryWallet: Observable<any> = this.actions$
-    .pipe(
-      ofType(InterfaceActionType.RefreshPrimaryWallet),
-      withLatestFrom(this.store.select(selectPrimaryWallet), this.store.select(selectWallets).pipe(filter(wallets => wallets.length > 0))),
-      map(([_, primaryWallet, wallets]) => {
-        if (!primaryWallet) {
-          const confirmedWallet: DisplayWallet = wallets.find(wallet => wallet.confirmed);
+  refreshPrimaryWallet: Observable<any> = this.actions$.pipe(
+    ofType(InterfaceActionType.RefreshPrimaryWallet),
+    withLatestFrom(
+      this.store.select(selectPrimaryWallet),
+      this.store.select(selectWallets).pipe(filter(wallets => wallets.length > 0)),
+    ),
+    map(([_, primaryWallet, wallets]) => {
+      if (!primaryWallet) {
+        const confirmedWallet: DisplayWallet = wallets.find(wallet => wallet.confirmed);
 
-          if (confirmedWallet) {
-            primaryWallet = confirmedWallet;
+        if (confirmedWallet) {
+          primaryWallet = confirmedWallet;
+        } else {
+          primaryWallet = wallets[0];
+        }
+      }
+
+      return new SetPrimaryWalletAction(primaryWallet);
+    }),
+  );
+
+  @Effect()
+  init$: Observable<any> = fromPromise(this.persistenceService.getUserSettings(UserSettingsKey.primaryWalletID)).pipe(
+    switchMap((walletId: string) => {
+      return this.store.select(selectWallets).pipe(
+        filter(wallets => wallets.length > 0),
+        take(1),
+        map((wallets: DisplayWallet[]) => {
+          let wallet: DisplayWallet;
+
+          if (walletId) {
+            wallet = wallets.find(wallet => wallet.id === walletId);
           } else {
-            primaryWallet = wallets[0];
+            wallet = wallets.find(wallet => wallet.confirmed);
           }
-        }
 
-        return new SetPrimaryWalletAction(primaryWallet);
-      })
-    );
+          if (!wallet) {
+            wallet = wallets[0];
+          }
 
-  @Effect()
-  init$: Observable<any> = fromPromise(this.persistenceService.getUserSettings(UserSettingsKey.primaryWalletID))
-    .pipe(
-      switchMap((walletId: string) => {
-        return this.store.select(selectWallets)
-          .pipe(
-            filter(wallets => wallets.length > 0),
-            take(1),
-            map((wallets: DisplayWallet[]) => {
-              let wallet: DisplayWallet;
+          // return any wallet if we don't have a confirmed one
+          return wallet;
+        }),
+      );
+    }),
+    map((wallet: DisplayWallet) => new SetPrimaryWalletAction(wallet)),
+  );
 
-              if (walletId) {
-                wallet = wallets.find(wallet => wallet.id === walletId);
-              } else {
-                wallet = wallets.find(wallet => wallet.confirmed);
-              }
-
-              if (!wallet) {
-                wallet = wallets[0];
-              }
-
-              // return any wallet if we don't have a confirmed one
-              return wallet;
-            })
-          );
-      }),
-      map((wallet: DisplayWallet) => new SetPrimaryWalletAction(wallet))
-    );
-
-  constructor(private actions$: Actions,
-              private persistenceService: PersistenceService2,
-              private store: Store<IRootAppState>) {
-  }
+  constructor(
+    private actions$: Actions,
+    private persistenceService: PersistenceService2,
+    private store: Store<IRootAppState>,
+  ) {}
 }

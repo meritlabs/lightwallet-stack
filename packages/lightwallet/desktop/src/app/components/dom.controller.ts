@@ -5,7 +5,7 @@ import {
   Injectable,
   Injector,
   Renderer2,
-  Type
+  Type,
 } from '@angular/core';
 
 export interface IDynamicComponent {
@@ -30,9 +30,7 @@ export interface IDynamicComponent {
 export class DOMController {
   rnd: Renderer2;
 
-  constructor(private appRef: ApplicationRef,
-              private cfr: ComponentFactoryResolver,
-              private injector: Injector) {}
+  constructor(private appRef: ApplicationRef, private cfr: ComponentFactoryResolver, private injector: Injector) {}
 
   create<T extends IDynamicComponent>(component: Type<T>, config: any, parentElement?: HTMLElement) {
     const componentRef = this.cfr.resolveComponentFactory(component).create(this.injector);

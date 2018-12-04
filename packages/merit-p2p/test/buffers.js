@@ -5,7 +5,6 @@ var should = chai.should();
 var Buffers = require('../lib/buffers');
 
 describe('Buffers', function() {
-
   var buffs = function buffs() {
     var b = new Buffers();
     b.push(new Buffer('0123', 'hex'));
@@ -59,5 +58,4 @@ describe('Buffers', function() {
     b.length.should.equal(1);
     b.buffers[0].should.deep.equal(new Buffer('ef', 'hex'));
   });
-
 });

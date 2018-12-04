@@ -16,8 +16,7 @@ function Insight(opts) {
   this.hosts = opts.url;
   this.userAgent = opts.userAgent || 'bws';
   log = opts.log || require('npmlog');
-};
-
+}
 
 var _parseErr = function(err, res) {
   // The 'err' can be misleading because it's not really the error returned from insight.
@@ -25,11 +24,13 @@ var _parseErr = function(err, res) {
   const errMessage = res.body;
   if (err) {
     log.warn('Network error connecting to blockchain explorer: ', err);
-    return { localMessage: "Error connecting to the blockchain explorer.", ...errMessage };
+    return { localMessage: 'Error connecting to the blockchain explorer.', ...errMessage };
   }
-  log.warn("Insight " + res.request.href + " Returned Status: " + res.statusCode + ". Error message: " + errMessage.message);
+  log.warn(
+    'Insight ' + res.request.href + ' Returned Status: ' + res.statusCode + '. Error message: ' + errMessage.message,
+  );
 
-  return { localMessage: "Error querying the blockchain", ...errMessage };
+  return { localMessage: 'Error querying the blockchain', ...errMessage };
 };
 
 Insight.prototype._doRequest = function(args, cb) {
@@ -37,7 +38,7 @@ Insight.prototype._doRequest = function(args, cb) {
     hosts: this.hosts,
     headers: {
       'User-Agent': this.userAgent,
-    }
+    },
   };
   requestList(_.defaults(args, opts), cb);
 };
@@ -74,7 +75,7 @@ Insight.prototype.broadcast = function(rawTx, cb) {
     method: 'POST',
     path: this.apiPrefix + '/tx/send',
     json: {
-      rawtx: rawTx
+      rawtx: rawTx,
     },
   };
 
@@ -93,8 +94,7 @@ Insight.prototype.getTransaction = function(txid, cb) {
 
   this._doRequest(args, function(err, res, tx) {
     if (res && res.statusCode == 404) return cb();
-    if (err || res.statusCode !== 200)
-      return cb(_parseErr(err, res));
+    if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
 
     return cb(null, tx);
   });
@@ -109,40 +109,37 @@ Insight.prototype.getReferral = function(refid, cb) {
 
   this._doRequest(args, function(err, res, tx) {
     if (res && res.statusCode == 404) return cb();
-    if (err || res.statusCode !== 200)
-      return cb(_parseErr(err, res));
+    if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
 
     return cb(null, tx);
   });
 };
 
 Insight.prototype.getAddressReferrals = function(addresses, cb) {
+  var args = {
+    method: 'POST',
+    path: this.apiPrefix + '/addrs/referrals',
+    json: {
+      addrs: [].concat(addresses).join(','),
+    },
+    timeout: 120000,
+  };
 
-    var args = {
-        method: 'POST',
-        path: this.apiPrefix + '/addrs/referrals',
-        json: {
-            addrs: [].concat(addresses).join(',')
-        },
-        timeout: 120000
-    };
+  this._doRequest(args, function(err, res, referrals) {
+    if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
 
-    this._doRequest(args, function(err, res, referrals) {
-        if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
+    if (_.isObject(referrals)) {
+      if (referrals.totalItems) var total = referrals.totalItems;
 
-        if (_.isObject(referrals)) {
-            if (referrals.totalItems)
-                var total = referrals.totalItems;
+      if (referrals.items) referrals = referrals.items;
+    }
 
-            if (referrals.items)
-                referrals = referrals.items;
-        }
+    // NOTE: Whenever Insight breaks communication with meritd, it returns invalid data but no error code.
+    if (!_.isArray(referrals) || referrals.length != _.compact(referrals).length)
+      return cb(new Error('Could not retrieve referrals from blockchain. Request was:' + JSON.stringify(args)));
 
-        // NOTE: Whenever Insight breaks communication with meritd, it returns invalid data but no error code.
-        if (!_.isArray(referrals) || (referrals.length != _.compact(referrals).length)) return cb(new Error('Could not retrieve referrals from blockchain. Request was:' + JSON.stringify(args)));
-
-        return cb(null, referrals, total);
-    });
+    return cb(null, referrals, total);
+  });
 };
 
 Insight.prototype.getTransactions = function(addresses, from, to, cb) {
@@ -160,7 +157,7 @@ Insight.prototype.getTransactions = function(addresses, from, to, cb) {
     method: 'POST',
     path: this.apiPrefix + '/addrs/txs' + (qs.length > 0 ? '?' + qs.join('&') : ''),
     json: {
-      addrs: [].concat(addresses).join(',')
+      addrs: [].concat(addresses).join(','),
     },
     timeout: 120000,
   };
@@ -169,15 +166,14 @@ Insight.prototype.getTransactions = function(addresses, from, to, cb) {
     if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
 
     if (_.isObject(txs)) {
-      if (txs.totalItems)
-        total = txs.totalItems;
+      if (txs.totalItems) total = txs.totalItems;
 
-      if (txs.items)
-        txs = txs.items;
+      if (txs.items) txs = txs.items;
     }
 
     // NOTE: Whenever Insight breaks communication with meritd, it returns invalid data but no error code.
-    if (!_.isArray(txs) || (txs.length != _.compact(txs).length)) return cb(new Error('Could not retrieve transactions from blockchain. Request was:' + JSON.stringify(args)));
+    if (!_.isArray(txs) || txs.length != _.compact(txs).length)
+      return cb(new Error('Could not retrieve transactions from blockchain. Request was:' + JSON.stringify(args)));
 
     return cb(null, txs, total);
   });
@@ -194,8 +190,7 @@ Insight.prototype.getAddressActivity = function(address, cb) {
 
   this._doRequest(args, function(err, res, result) {
     if (res && res.statusCode == 404) return cb();
-    if (err || res.statusCode !== 200)
-      return cb(_parseErr(err, res));
+    if (err || res.statusCode !== 200) return cb(_parseErr(err, res));
 
     var nbTxs = result.unconfirmedTxApperances + result.txApperances;
     return cb(null, nbTxs > 0);
@@ -249,14 +244,17 @@ Insight.prototype.getBlock = function(blockHash, cb) {
     console.log('insight block received. Referrals: ', body.referrals);
     return cb(null, body);
   });
-}
+};
 
 Insight.prototype.initSocket = function() {
   console.log('Insight hosts:', this.hosts);
   // sockets always use the first server on the pull
-  var socket = io.connect(_.head([].concat(this.hosts)), {
-    'reconnection': true,
-  });
+  var socket = io.connect(
+    _.head([].concat(this.hosts)),
+    {
+      reconnection: true,
+    },
+  );
   return socket;
 };
 
@@ -282,8 +280,8 @@ Insight.prototype.getANV = function(addresses, cb) {
     method: 'GET',
     path: `${this.apiPrefix}/anv`,
     json: {
-      addresses: addresses
-    }
+      addresses: addresses,
+    },
   };
 
   this._doRequest(args, function(err, res, body) {
@@ -297,7 +295,7 @@ Insight.prototype.getANV = function(addresses, cb) {
 Insight.prototype.getCommunityInfo = function(address, cb) {
   const args = {
     method: 'GET',
-    path: `${this.apiPrefix}/communityinfo/${address}`
+    path: `${this.apiPrefix}/communityinfo/${address}`,
   };
 
   this._doRequest(args, (err, res, body) => {
@@ -311,20 +309,20 @@ Insight.prototype.getCommunityInfo = function(address, cb) {
 Insight.prototype.getRewards = function(addresses, cb) {
   var self = this;
 
-    var args = {
-      method: 'GET',
-      path: `${this.apiPrefix}/rewards`,
-      json: {
-        addresses: addresses
-      }
-    };
+  var args = {
+    method: 'GET',
+    path: `${this.apiPrefix}/rewards`,
+    json: {
+      addresses: addresses,
+    },
+  };
 
-    this._doRequest(args, function(err, res, body) {
-      if (err || res.statusCode !== 200) {
-        return cb(_parseErr(err, res));
-      }
-      return cb(null, body);
-    });
-}
+  this._doRequest(args, function(err, res, body) {
+    if (err || res.statusCode !== 200) {
+      return cb(_parseErr(err, res));
+    }
+    return cb(null, body);
+  });
+};
 
 module.exports = Insight;

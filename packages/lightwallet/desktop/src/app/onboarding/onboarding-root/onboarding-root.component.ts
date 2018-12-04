@@ -7,14 +7,10 @@ import { getQueryParam } from '@merit/common/utils/url';
   selector: 'view-onboarding-root',
   templateUrl: './onboarding-root.component.html',
   styleUrls: ['./onboarding-root.component.sass'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class OnboardingRootComponent implements OnInit {
-  constructor(
-    private router: Router,
-    private easyReceiveService: EasyReceiveService
-  ) {
-  }
+  constructor(private router: Router, private easyReceiveService: EasyReceiveService) {}
 
   async ngOnInit() {
     const receipts = await this.easyReceiveService.getPendingReceipts();
@@ -25,7 +21,6 @@ export class OnboardingRootComponent implements OnInit {
         query = '?source=' + source;
       }
       this.router.navigateByUrl(`onboarding/unlock${query}`);
-    } 
+    }
   }
-
 }

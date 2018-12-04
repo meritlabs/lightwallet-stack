@@ -3,13 +3,10 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'illustration-thats-it',
   templateUrl: './thats-it.component.html',
-  styleUrls: ['./thats-it.component.sass']
+  styleUrls: ['./thats-it.component.sass'],
 })
 export class ThatsItComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

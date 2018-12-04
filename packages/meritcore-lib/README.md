@@ -1,5 +1,4 @@
-Merit Library
-=======
+# Merit Library
 
 A pure and powerful JavaScript Merit library.
 
@@ -8,7 +7,6 @@ A pure and powerful JavaScript Merit library.
 Merit is a powerful new peer-to-peer platform for the next generation of financial technology. The decentralized nature of the Merit network allows for highly resilient Merit infrastructure, and the developer community needs reliable, open-source tools to implement Merit apps and services.
 
 To get community assistance and ask for help with implementation questions, please use our [community forums](https://forum.merit.me/), [Discord](https://discordapp.com/invite/X3v3n3b), or [Telegram](https://t.me/meritocracy).
-
 
 ## Security
 

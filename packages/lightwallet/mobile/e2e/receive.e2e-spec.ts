@@ -3,9 +3,7 @@ import { browser, by, ElementFinder } from 'protractor';
 import { EC, TEST_WALLET_ALIAS } from './app.e2e-spec';
 
 describe('[Mobile] Receive', () => {
-  let transact: Transact,
-    receiveViewEl: ElementFinder,
-    qrCodeEl: ElementFinder;
+  let transact: Transact, receiveViewEl: ElementFinder, qrCodeEl: ElementFinder;
 
   beforeAll(async () => {
     transact = new Transact();

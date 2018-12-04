@@ -4,14 +4,19 @@ export class MwcError extends Error {
   }
 }
 
-
 export class MWCErrors {
   public static INVALID_BACKUP = new MwcError('INVALID_BACKUP', 'Invalid backup');
   public static WALLET_DOES_NOT_EXIST = new MwcError('WALLET_DOES_NOT_EXIST', 'Wallet does not exist');
   public static MISSING_PRIVATE_KEY = new MwcError('MISSING_PRIVATE_KEY', 'Missing private keys to sign');
-  public static ENCRYPTED_PRIVATE_KEY = new MwcError('ENCRYPTED_PRIVATE_KEY', 'Private key is encrypted, cannot sign transaction');
+  public static ENCRYPTED_PRIVATE_KEY = new MwcError(
+    'ENCRYPTED_PRIVATE_KEY',
+    'Private key is encrypted, cannot sign transaction',
+  );
   public static SERVER_COMPROMISED = new MwcError('SERVER_COMPROMISED', 'Server response could not be verified');
-  public static COULD_NOT_BUILD_TRANSACTION = new MwcError('COULD_NOT_BUILD_TRANSACTION', 'Could not build the transaction');
+  public static COULD_NOT_BUILD_TRANSACTION = new MwcError(
+    'COULD_NOT_BUILD_TRANSACTION',
+    'Could not build the transaction',
+  );
   public static INSUFFICIENT_FUNDS = new MwcError('INSUFFICIENT_FUNDS', 'Insufficient funds');
   public static CONNECTION_ERROR = new MwcError('CONNECTION_ERROR', 'Connection error');
   public static NOT_FOUND = new MwcError('NOT_FOUND', 'Not found');
@@ -30,7 +35,10 @@ export class MWCErrors {
   public static TX_NOT_FOUND = new MwcError('TX_NOT_FOUND', 'Transaction proposal not found');
   public static INVALID_REFERRAL = new MwcError('INVALID_REFERRAL', 'Invalid referral');
   public static REFERRER_INVALID = new MwcError('REFERRER_INVALID', 'Invalid referrer address');
-  public static MAIN_ADDRESS_GAP_REACHED = new MwcError('MAIN_ADDRESS_GAP_REACHED', 'Maximum number of consecutive addresses without activity reached');
+  public static MAIN_ADDRESS_GAP_REACHED = new MwcError(
+    'MAIN_ADDRESS_GAP_REACHED',
+    'Maximum number of consecutive addresses without activity reached',
+  );
   public static SERVER_UNAVAILABLE = new MwcError('SERVER_UNAVAILABLE', 'Could not reach the server');
   public static TX_MAX_SIZE_EXCEEDED = new MwcError('TX_MAX_SIZE_EXCEEDED', 'Maximum size of transaction exceeded');
 }

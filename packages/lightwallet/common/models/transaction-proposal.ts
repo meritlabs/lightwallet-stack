@@ -24,4 +24,3 @@ export interface TransactionProposal {
   toColor?: string;
   usingCustomFee?: boolean;
 }
-

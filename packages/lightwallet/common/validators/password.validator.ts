@@ -16,7 +16,7 @@ export class PasswordValidator {
   }
 
   static VerifyWalletPassword(wallet: MeritWalletClient): ValidatorFn {
-    return (control: AbstractControl) => wallet.checkPassword(control.value) ? null : { IncorrectPassword: true };
+    return (control: AbstractControl) => (wallet.checkPassword(control.value) ? null : { IncorrectPassword: true });
   }
 
   static ValidateEasyReceivePassword(receipt: EasyReceipt, easyReceiveService: EasyReceiveService): AsyncValidatorFn {
@@ -24,7 +24,7 @@ export class PasswordValidator {
       const { txs } = await easyReceiveService.validateEasyReceiptOnBlockchain(receipt, control.value);
       if (!txs || !txs.length) {
         return {
-          IncorrectPassword: true
+          IncorrectPassword: true,
         };
       }
     };

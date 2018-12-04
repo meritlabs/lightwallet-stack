@@ -4,13 +4,7 @@ import { SendWalletView } from './send-wallet';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
-  declarations: [
-    SendWalletView,
-  ],
-  imports: [
-    CommonPipesModule,
-    IonicPageModule.forChild(SendWalletView),
-  ],
+  declarations: [SendWalletView],
+  imports: [CommonPipesModule, IonicPageModule.forChild(SendWalletView)],
 })
-export class SensWalletModule {
-}
+export class SensWalletModule {}

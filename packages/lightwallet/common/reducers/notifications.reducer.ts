@@ -31,7 +31,7 @@ export enum NotificationsActionType {
   Clear = '[Notifications] Clear',
   Load = '[Notifications] Load',
   Save = '[Notifications] Save',
-  MarkAllAsRead = '[Notifications] Mark all as read'
+  MarkAllAsRead = '[Notifications] Mark all as read',
 }
 
 export class LoadNotificationsAction implements Action {
@@ -51,8 +51,7 @@ export class SaveNotificationsAction implements Action {
 export class UpdateNotificationsAction implements Action {
   type = NotificationsActionType.Update;
 
-  constructor(public notifications: INotification[]) {
-  }
+  constructor(public notifications: INotification[]) {}
 }
 
 /**
@@ -74,8 +73,7 @@ export class AddNotificationAction implements Action {
 export class MarkNotificationAsReadAction implements Action {
   type = NotificationsActionType.MarkAsRead;
 
-  constructor(public notificationId: string) {
-  }
+  constructor(public notificationId: string) {}
 }
 
 /**
@@ -84,8 +82,7 @@ export class MarkNotificationAsReadAction implements Action {
 export class DeleteNotificationAction implements Action {
   type = NotificationsActionType.Delete;
 
-  constructor(public notificationId: string) {
-  }
+  constructor(public notificationId: string) {}
 }
 
 /**
@@ -99,26 +96,18 @@ export class MarkAllNotificationsAsReadAction implements Action {
   type = NotificationsActionType.MarkAllAsRead;
 }
 
-export type NotificationAction =
-  UpdateNotificationsAction
-  & AddNotificationAction
-  & MarkNotificationAsReadAction
-  & DeleteNotificationAction
-  & ClearNotificationsAction;
+export type NotificationAction = UpdateNotificationsAction &
+  AddNotificationAction &
+  MarkNotificationAsReadAction &
+  DeleteNotificationAction &
+  ClearNotificationsAction;
 
 export function calculateUnreadNotifications(notifications: INotification[]): number {
   return notifications.reduce((total: number, notification: INotification) => total + Number(!notification.read), 0);
 }
 
 export function processNotifications(notifications: INotification[]): INotification[] {
-  return sortBy(
-    uniq(
-      compact(
-        notifications.map(formatNotification)
-      )
-    ),
-    'timestamp'
-  ).reverse();
+  return sortBy(uniq(compact(notifications.map(formatNotification))), 'timestamp').reverse();
 }
 
 export function formatNotification(notification: INotification): INotification {
@@ -126,7 +115,10 @@ export function formatNotification(notification: INotification): INotification {
     switch (notification.type) {
       case 'IncomingTx':
         notification.title = 'New payment received';
-        notification.message = `A payment of ${ formatAmount(notification.amount, 'mrt') }MRT has been received into your wallet.`;
+        notification.message = `A payment of ${formatAmount(
+          notification.amount,
+          'mrt',
+        )}MRT has been received into your wallet.`;
         break;
 
       case 'IncomingInvite':
@@ -141,7 +133,10 @@ export function formatNotification(notification: INotification): INotification {
 
       case 'IncomingCoinbase':
         notification.title = 'Mining reward received';
-        notification.message = `Congratulations! You received a mining reward of ${ formatAmount(notification.amount, 'mrt') }MRT.`;
+        notification.message = `Congratulations! You received a mining reward of ${formatAmount(
+          notification.amount,
+          'mrt',
+        )}MRT.`;
         break;
 
       case 'IncomingInviteRequest':
@@ -164,29 +159,32 @@ export function formatNotification(notification: INotification): INotification {
   return notification;
 }
 
-export function notificationsReducer(state: INotificationsState = {
-  notifications: [],
-  totalUnread: 0
-}, action: NotificationAction): INotificationsState {
+export function notificationsReducer(
+  state: INotificationsState = {
+    notifications: [],
+    totalUnread: 0,
+  },
+  action: NotificationAction,
+): INotificationsState {
   switch (action.type) {
     case NotificationsActionType.Update:
       return {
         notifications: processNotifications(action.notifications),
-        totalUnread: calculateUnreadNotifications(action.notifications)
+        totalUnread: calculateUnreadNotifications(action.notifications),
       };
 
     case NotificationsActionType.Add:
       state.notifications.push(action.notification);
       return {
         notifications: processNotifications(state.notifications),
-        totalUnread: state.totalUnread + Number(!action.notification.read)
+        totalUnread: state.totalUnread + Number(!action.notification.read),
       };
 
     case NotificationsActionType.MarkAsRead:
       state.notifications.find((notification: INotification) => notification.id === action.notificationId).read = true;
       return {
         notifications: state.notifications,
-        totalUnread: state.totalUnread - 1
+        totalUnread: state.totalUnread - 1,
       };
 
     case NotificationsActionType.MarkAllAsRead:
@@ -195,20 +193,22 @@ export function notificationsReducer(state: INotificationsState = {
           notification.read = true;
           return notification;
         }),
-        totalUnread: 0
+        totalUnread: 0,
       };
 
     case NotificationsActionType.Delete:
-      state.notifications = state.notifications.filter((notification: INotification) => notification.id !== action.notificationId);
+      state.notifications = state.notifications.filter(
+        (notification: INotification) => notification.id !== action.notificationId,
+      );
       return {
         notifications: state.notifications,
-        totalUnread: calculateUnreadNotifications(state.notifications)
+        totalUnread: calculateUnreadNotifications(state.notifications),
       };
 
     case NotificationsActionType.Clear:
       return {
         notifications: [],
-        totalUnread: 0
+        totalUnread: 0,
       };
 
     default:

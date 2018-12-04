@@ -16,15 +16,16 @@ log.debug = function() {};
  */
 function checkConfigVersion2(fullConfig) {
   var datadirUndefined = _.isUndefined(fullConfig.datadir);
-  var addressDefined = (fullConfig.services.indexOf('address') >= 0);
-  var dbDefined = (fullConfig.services.indexOf('db') >= 0);
+  var addressDefined = fullConfig.services.indexOf('address') >= 0;
+  var dbDefined = fullConfig.services.indexOf('db') >= 0;
 
   if (!datadirUndefined || addressDefined || dbDefined) {
-
-    console.warn('\nConfiguration file is not compatible with this version. \n' +
-                 'A reindex for meritd is necessary for this upgrade with the "reindex=1" merit.conf option. \n' +
-                 'There are changes necessary in both merit.conf and merit-node.json. \n\n' +
-                 'To upgrade please see the details below and documentation at: \n');
+    console.warn(
+      '\nConfiguration file is not compatible with this version. \n' +
+        'A reindex for meritd is necessary for this upgrade with the "reindex=1" merit.conf option. \n' +
+        'There are changes necessary in both merit.conf and merit-node.json. \n\n' +
+        'To upgrade please see the details below and documentation at: \n',
+    );
 
     if (!datadirUndefined) {
       console.warn('Please remove "datadir" and add it to the config at ' + fullConfig.path + ' with:');
@@ -33,10 +34,10 @@ function checkConfigVersion2(fullConfig) {
           meritd: {
             spawn: {
               datadir: fullConfig.datadir,
-              exec: path.resolve(__dirname, '../../bin/meritd')
-            }
-          }
-        }
+              exec: path.resolve(__dirname, '../../bin/meritd'),
+            },
+          },
+        },
       };
       console.warn(JSON.stringify(missingConfig, null, 2) + '\n');
     }
@@ -97,7 +98,7 @@ function start(options) {
   });
 
   node.start(function(err) {
-    if(err) {
+    if (err) {
       log.error('Failed to start services');
       if (err.stack) {
         log.error(err.stack);
@@ -107,7 +108,6 @@ function start(options) {
   });
 
   return node;
-
 }
 
 /**
@@ -116,12 +116,14 @@ function start(options) {
  */
 function checkService(service) {
   // check that the service supports expected methods
-  if (!service.module.prototype ||
-      !service.module.dependencies ||
-      !service.module.prototype.start ||
-      !service.module.prototype.stop) {
+  if (
+    !service.module.prototype ||
+    !service.module.dependencies ||
+    !service.module.prototype.start ||
+    !service.module.prototype.stop
+  ) {
     throw new Error(
-      'Could not load service "' + service.name + '" as it does not support necessary methods and properties.'
+      'Could not load service "' + service.name + '" as it does not support necessary methods and properties.',
     );
   }
 }
@@ -136,8 +138,7 @@ function loadModule(req, service) {
   try {
     // first try in the built-in merit-node services directory
     service.module = req(path.resolve(__dirname, '../services/' + service.name));
-  } catch(e) {
-
+  } catch (e) {
     // check if the package.json specifies a specific file to use
     var servicePackage = req(service.name + '/package.json');
     var serviceModule = service.name;
@@ -165,7 +166,6 @@ function loadModule(req, service) {
  * @returns {Array}
  */
 function setupServices(req, servicesPath, config) {
-
   module.paths.push(path.resolve(servicesPath, './packages'));
 
   var services = [];
@@ -193,7 +193,7 @@ function setupServices(req, servicesPath, config) {
  */
 function cleanShutdown(_process, node) {
   node.stop(function(err) {
-    if(err) {
+    if (err) {
       log.error('Failed to stop services: ' + err);
       return _process.exit(1);
     }
@@ -210,15 +210,15 @@ function cleanShutdown(_process, node) {
  * @param {Object} _process - The Node.js process
  * @param {Node} node
  * @param {Error} error
-*/
+ */
 function exitHandler(options, _process, node, err) {
   if (err) {
     log.error('uncaught exception:', err);
-    if(err.stack) {
+    if (err.stack) {
       log.error(err.stack);
     }
     node.stop(function(err) {
-      if(err) {
+      if (err) {
         log.error('Failed to stop services: ' + err);
       }
       _process.exit(-1);
@@ -240,10 +240,10 @@ function exitHandler(options, _process, node, err) {
  */
 function registerExitHandlers(_process, node) {
   //catches uncaught exceptions
-  _process.on('uncaughtException', exitHandler.bind(null, {exit:true}, _process, node));
+  _process.on('uncaughtException', exitHandler.bind(null, { exit: true }, _process, node));
 
   //catches ctrl+c event
-  _process.on('SIGINT', exitHandler.bind(null, {sigint:true}, _process, node));
+  _process.on('SIGINT', exitHandler.bind(null, { sigint: true }, _process, node));
 }
 
 module.exports = start;

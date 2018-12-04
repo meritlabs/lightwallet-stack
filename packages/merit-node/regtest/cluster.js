@@ -28,7 +28,7 @@ describe('Merit Cluster', function() {
       rpcpassword: 'local321',
       rpcport: 30521,
       zmqpubrawtx: 'tcp://127.0.0.1:30611',
-      zmqpubhashblock: 'tcp://127.0.0.1:30611'
+      zmqpubhashblock: 'tcp://127.0.0.1:30611',
     },
     {
       datadir: path.resolve(__dirname, './data/node2'),
@@ -37,7 +37,7 @@ describe('Merit Cluster', function() {
       rpcpassword: 'local321',
       rpcport: 30522,
       zmqpubrawtx: 'tcp://127.0.0.1:30622',
-      zmqpubhashblock: 'tcp://127.0.0.1:30622'
+      zmqpubhashblock: 'tcp://127.0.0.1:30622',
     },
     {
       datadir: path.resolve(__dirname, './data/node3'),
@@ -46,53 +46,59 @@ describe('Merit Cluster', function() {
       rpcpassword: 'local321',
       rpcport: 30523,
       zmqpubrawtx: 'tcp://127.0.0.1:30633',
-      zmqpubhashblock: 'tcp://127.0.0.1:30633'
-    }
+      zmqpubhashblock: 'tcp://127.0.0.1:30633',
+    },
   ];
 
   before(function(done) {
     log.info('Starting 3 meritd daemons');
     this.timeout(60000);
-    async.each(nodesConf, function(nodeConf, next) {
-      var opts = [
-        '--regtest',
-        '--datadir=' + nodeConf.datadir,
-        '--conf=' + nodeConf.conf
-      ];
+    async.each(
+      nodesConf,
+      function(nodeConf, next) {
+        var opts = ['--regtest', '--datadir=' + nodeConf.datadir, '--conf=' + nodeConf.conf];
 
-      rimraf(path.resolve(nodeConf.datadir, './regtest'), function(err) {
-        if (err) {
-          return done(err);
-        }
+        rimraf(path.resolve(nodeConf.datadir, './regtest'), function(err) {
+          if (err) {
+            return done(err);
+          }
 
-        var process = spawn(execPath, opts, {stdio: 'inherit'});
+          var process = spawn(execPath, opts, { stdio: 'inherit' });
 
-        var client = new MeritRPC({
-          protocol: 'http',
-          host: '127.0.0.1',
-          port: nodeConf.rpcport,
-          user: nodeConf.rpcuser,
-          pass: nodeConf.rpcpassword
+          var client = new MeritRPC({
+            protocol: 'http',
+            host: '127.0.0.1',
+            port: nodeConf.rpcport,
+            user: nodeConf.rpcuser,
+            pass: nodeConf.rpcpassword,
+          });
+
+          daemons.push(process);
+
+          async.retry(
+            { times: 10, interval: 5000 },
+            function(ready) {
+              client.getInfo(ready);
+            },
+            next,
+          );
         });
-
-        daemons.push(process);
-
-        async.retry({times: 10, interval: 5000}, function(ready) {
-          client.getInfo(ready);
-        }, next);
-
-      });
-
-    }, done);
+      },
+      done,
+    );
   });
 
   after(function(done) {
     this.timeout(10000);
     setTimeout(function() {
-      async.each(daemons, function(process, next) {
-        process.once('exit', next);
-        process.kill('SIGINT');
-      }, done);
+      async.each(
+        daemons,
+        function(process, next) {
+          process.once('exit', next);
+          process.kill('SIGINT');
+        },
+        done,
+      );
     }, 1000);
   });
 
@@ -111,26 +117,26 @@ describe('Merit Cluster', function() {
                 rpcport: 30521,
                 rpcuser: 'merit',
                 rpcpassword: 'local321',
-                zmqpubrawtx: 'tcp://127.0.0.1:30611'
+                zmqpubrawtx: 'tcp://127.0.0.1:30611',
               },
               {
                 rpchost: '127.0.0.1',
                 rpcport: 30522,
                 rpcuser: 'merit',
                 rpcpassword: 'local321',
-                zmqpubrawtx: 'tcp://127.0.0.1:30622'
+                zmqpubrawtx: 'tcp://127.0.0.1:30622',
               },
               {
                 rpchost: '127.0.0.1',
                 rpcport: 30523,
                 rpcuser: 'merit',
                 rpcpassword: 'local321',
-                zmqpubrawtx: 'tcp://127.0.0.1:30633'
-              }
-            ]
-          }
-        }
-      ]
+                zmqpubrawtx: 'tcp://127.0.0.1:30633',
+              },
+            ],
+          },
+        },
+      ],
     };
 
     var regtest = meritcore.Networks.get('regtest');
@@ -151,7 +157,6 @@ describe('Merit Cluster', function() {
         return done(err);
       }
     });
-
   });
 
   it('step 2: receive block events', function(done) {
@@ -169,15 +174,18 @@ describe('Merit Cluster', function() {
   });
 
   it('step 3: get blocks', function(done) {
-    async.times(3, function(n, next) {
-      node.getBlock(1, function(err, block) {
-        if (err) {
-          return next(err);
-        }
-        should.exist(block);
-        next();
-      });
-    }, done);
+    async.times(
+      3,
+      function(n, next) {
+        node.getBlock(1, function(err, block) {
+          if (err) {
+            return next(err);
+          }
+          should.exist(block);
+          next();
+        });
+      },
+      done,
+    );
   });
-
 });

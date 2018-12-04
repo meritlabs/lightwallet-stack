@@ -22,7 +22,7 @@ function FilteraddMessage(arg, options) {
   this.command = 'filteradd';
   $.checkArgument(
     _.isUndefined(arg) || BufferUtil.isBuffer(arg),
-    'First argument is expected to be a Buffer or undefined'
+    'First argument is expected to be a Buffer or undefined',
   );
   this.data = arg || BufferUtil.EMPTY_BUFFER;
 }

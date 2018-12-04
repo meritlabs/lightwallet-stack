@@ -14,7 +14,7 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
   selector: 'history-list',
   templateUrl: './history-list.component.html',
   styleUrls: ['./history-list.component.sass'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class HistoryListComponent {
   private _transactions: IDisplayTransaction[];
@@ -29,20 +29,20 @@ export class HistoryListComponent {
     return this._transactions;
   }
 
-  @Input() loading: boolean;
-  @Input() widget: boolean;
+  @Input()
+  loading: boolean;
+  @Input()
+  widget: boolean;
 
   viewPortItems: IDisplayTransaction[];
   mineInviteTaskSlug: TaskSlug = TaskSlug.MineInvite;
   unlockTaskSlug: TaskSlug = TaskSlug.UnlockWallet;
-  isInviteMined$: Observable<boolean> = this.store.select(selectStatusForTask(this.mineInviteTaskSlug))
-    .pipe(
-      map((status: ProgressStatus) => status !== ProgressStatus.Incomplete)
-    );
-  isWalletUnlocked$: Observable<boolean> = this.store.select(selectPrimaryWallet)
-    .pipe(
-      map((wallet: DisplayWallet) => wallet && wallet.confirmed)
-    );
+  isInviteMined$: Observable<boolean> = this.store
+    .select(selectStatusForTask(this.mineInviteTaskSlug))
+    .pipe(map((status: ProgressStatus) => status !== ProgressStatus.Incomplete));
+  isWalletUnlocked$: Observable<boolean> = this.store
+    .select(selectPrimaryWallet)
+    .pipe(map((wallet: DisplayWallet) => wallet && wallet.confirmed));
 
   constructor(private store: Store<IRootAppState>) {}
 
@@ -53,11 +53,12 @@ export class HistoryListComponent {
 
     const primaryWallet = await getLatestDefinedValue(this.store.select(selectPrimaryWallet));
 
-    if (this.transactions.some((tx: IDisplayTransaction) =>
-      tx.action === TransactionAction.INVITE &&
-      !tx.isWalletUnlock &&
-      tx.walletId === primaryWallet.id
-    )) {
+    if (
+      this.transactions.some(
+        (tx: IDisplayTransaction) =>
+          tx.action === TransactionAction.INVITE && !tx.isWalletUnlock && tx.walletId === primaryWallet.id,
+      )
+    ) {
       this.store.dispatch(new SetTaskStatus(this.mineInviteTaskSlug, ProgressStatus.Complete));
     }
   }

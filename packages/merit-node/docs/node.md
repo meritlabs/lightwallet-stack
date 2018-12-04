@@ -1,7 +1,9 @@
 # Node
+
 A node represents a collection of services that are loaded together. For more information about services, please see the [Services Documentation](services.md).
 
 ## API Documentation
+
 - `start()` - Will start the node's services in the correct order based on the dependencies of a service.
 - `stop()` - Will stop the node's services.
 - `openBus()` - Will create a new event bus to subscribe to events.
@@ -13,7 +15,6 @@ A node represents a collection of services that are loaded together. For more in
 ## Example Usage
 
 ```js
-
 var index = require('merit-node');
 var Merit = index.services.Merit;
 var Node = index.Node;
@@ -25,9 +26,9 @@ var configuration = {
     {
       name: 'meritd',
       module: Merit,
-      config: {}
-    }
-  ]
+      config: {},
+    },
+  ],
 };
 
 var node = new Node(configuration);

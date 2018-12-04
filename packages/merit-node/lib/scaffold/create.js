@@ -20,8 +20,8 @@ var BASE_PACKAGE = {
   readme: 'README.md',
   dependencies: {
     'meritcore-lib': '^' + meritcore.version,
-    'merit-node': version
-  }
+    'merit-node': version,
+  },
 };
 
 /**
@@ -65,11 +65,10 @@ function createConfigDirectory(options, configDir, isGlobal, done) {
       if (!isGlobal) {
         fs.writeFileSync(configDir + '/package.json', packageJSON);
       }
-    } catch(e) {
+    } catch (e) {
       done(e);
     }
     done();
-
   });
 }
 
@@ -101,54 +100,55 @@ function create(options, done) {
   var absConfigDir = path.resolve(cwd, dirname);
   var absDataDir = path.resolve(absConfigDir, datadir);
 
-  async.series([
-    function(next) {
-      // Setup the the merit-node directory and configuration
-      if (!fs.existsSync(absConfigDir)) {
-        var createOptions = {
-          network: options.network,
-          datadir: datadir
-        };
-        createConfigDirectory(createOptions, absConfigDir, isGlobal, next);
-      } else {
-        next(new Error('Directory "' + absConfigDir+ '" already exists.'));
-      }
-    },
-    function(next) {
-      // Setup the Merit directory and configuration
-      if (!fs.existsSync(absDataDir)) {
-        createMeritDirectory(absDataDir, next);
-      } else {
-        next();
-      }
-    },
-    function(next) {
-      // Install all of the necessary dependencies
-      if (!isGlobal) {
-        var npm = spawn('npm', ['install'], {cwd: absConfigDir});
+  async.series(
+    [
+      function(next) {
+        // Setup the the merit-node directory and configuration
+        if (!fs.existsSync(absConfigDir)) {
+          var createOptions = {
+            network: options.network,
+            datadir: datadir,
+          };
+          createConfigDirectory(createOptions, absConfigDir, isGlobal, next);
+        } else {
+          next(new Error('Directory "' + absConfigDir + '" already exists.'));
+        }
+      },
+      function(next) {
+        // Setup the Merit directory and configuration
+        if (!fs.existsSync(absDataDir)) {
+          createMeritDirectory(absDataDir, next);
+        } else {
+          next();
+        }
+      },
+      function(next) {
+        // Install all of the necessary dependencies
+        if (!isGlobal) {
+          var npm = spawn('npm', ['install'], { cwd: absConfigDir });
 
-        npm.stdout.on('data', function (data) {
-          process.stdout.write(data);
-        });
+          npm.stdout.on('data', function(data) {
+            process.stdout.write(data);
+          });
 
-        npm.stderr.on('data', function (data) {
-          process.stderr.write(data);
-        });
+          npm.stderr.on('data', function(data) {
+            process.stderr.write(data);
+          });
 
-        npm.on('close', function (code) {
-          if (code !== 0) {
-            return next(new Error('There was an error installing dependencies.'));
-          } else {
-            return next();
-          }
-        });
-
-      } else {
-        next();
-      }
-    }
-  ], done);
-
+          npm.on('close', function(code) {
+            if (code !== 0) {
+              return next(new Error('There was an error installing dependencies.'));
+            } else {
+              return next();
+            }
+          });
+        } else {
+          next();
+        }
+      },
+    ],
+    done,
+  );
 }
 
 module.exports = create;

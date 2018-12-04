@@ -17,7 +17,7 @@ const ERROR_ALIAS_NOT_FOUND = 'ALIAS_NOT_FOUND';
 @IonicPage()
 @Component({
   selector: 'view-send-invite',
-  templateUrl: 'send-invite.html'
+  templateUrl: 'send-invite.html',
 })
 export class SendInviteView {
   searchQuery: string = '';
@@ -26,19 +26,18 @@ export class SendInviteView {
 
   searchInProgress: boolean;
   searchResult: {
-    withMerit: Array<MeritContact>,
-    toNewEntity: { destination: string, contact: MeritContact },
-    error: string
+    withMerit: Array<MeritContact>;
+    toNewEntity: { destination: string; contact: MeritContact };
+    error: string;
   } = { withMerit: [], toNewEntity: null, error: null };
 
-
-  constructor(private navCtrl: NavController,
-              private contactsService: ContactsService,
-              private addressService: AddressService,
-              private modalCtrl: ModalController,
-              private addressScanner: AddressScannerService
-  ) {
-  }
+  constructor(
+    private navCtrl: NavController,
+    private contactsService: ContactsService,
+    private addressService: AddressService,
+    private modalCtrl: ModalController,
+    private addressScanner: AddressScannerService,
+  ) {}
 
   async ionViewWillEnter() {
     this.loadingContacts = true;
@@ -55,7 +54,7 @@ export class SendInviteView {
       this.clearSearch();
       this.debounceSearch.cancel();
       result.withMerit = this.contacts;
-      return this.searchResult = result;
+      return (this.searchResult = result);
       this.searchInProgress = false;
     }
 
@@ -68,7 +67,6 @@ export class SendInviteView {
   private debounceSearch = debounce(() => this.search(), 500);
 
   private async search() {
-
     let result = { withMerit: [], toNewEntity: null, error: null };
 
     const input = cleanAddress(this.searchQuery.split('?')[0]);
@@ -87,15 +85,18 @@ export class SendInviteView {
 
       if (addressInfo && addressInfo.isConfirmed) {
         result.toNewEntity = { destination: SendMethodDestination.Address, contact: new MeritContact() };
-        result.toNewEntity.contact.meritAddresses.push({ alias: input, address: addressInfo.address, network: ENV.network });
+        result.toNewEntity.contact.meritAddresses.push({
+          alias: input,
+          address: addressInfo.address,
+          network: ENV.network,
+        });
       }
     }
 
-    this.contactsService.searchContacts(this.contacts, input)
-      .forEach((contact: MeritContact) => {
-        if (contact.meritAddresses && contact.meritAddresses.length) {
-          result.withMerit.push(contact);
-        }
+    this.contactsService.searchContacts(this.contacts, input).forEach((contact: MeritContact) => {
+      if (contact.meritAddresses && contact.meritAddresses.length) {
+        result.withMerit.push(contact);
+      }
     });
 
     this.searchResult = result;
@@ -112,7 +113,7 @@ export class SendInviteView {
   createContact() {
     const address = this.searchResult.toNewEntity.contact.meritAddresses[0];
     const modal = this.modalCtrl.create('SendCreateContactView', { address });
-    modal.onDidDismiss((contact) => {
+    modal.onDidDismiss(contact => {
       if (contact) {
         return this.sendInvite(this.searchResult.toNewEntity.contact);
       }
@@ -123,7 +124,7 @@ export class SendInviteView {
   bindAddressToContact() {
     const address = this.searchResult.toNewEntity.contact.meritAddresses[0];
     const modal = this.modalCtrl.create('SendSelectBindContactView', { contacts: this.contacts, address });
-    modal.onDidDismiss((contact) => {
+    modal.onDidDismiss(contact => {
       if (contact) {
         return this.sendInvite(this.searchResult.toNewEntity.contact);
       }
@@ -141,26 +142,26 @@ export class SendInviteView {
   }
 
   async sendInvite(contact) {
-
     if (contact.meritAddresses.length == 1) {
       this.toSendAmount(contact.meritAddresses[0].address);
     } else {
-      let modal = this.modalCtrl.create('SendViaView', {
-          contact: contact
-        }, MERIT_MODAL_OPTS
+      let modal = this.modalCtrl.create(
+        'SendViaView',
+        {
+          contact: contact,
+        },
+        MERIT_MODAL_OPTS,
       );
-      modal.onDidDismiss((params) => {
+      modal.onDidDismiss(params => {
         if (params) {
           this.toSendAmount(params.suggestedMethod.value);
         }
       });
       modal.present();
     }
-
   }
 
   private toSendAmount(address) {
     this.navCtrl.push('SendInviteAmountView', { address: address });
   }
-
 }

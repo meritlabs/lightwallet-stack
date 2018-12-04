@@ -36,7 +36,7 @@ PaymentProtocol.prototype.x509Sign = function(key, returnTrust) {
       isChain: pki_data.length > 1,
       signature: sig,
       caTrusted: !!caName,
-      caName: caName || null
+      caName: caName || null,
     };
   }
 
@@ -75,9 +75,7 @@ PaymentProtocol.prototype.x509Verify = function(returnTrust) {
   pem = PaymentProtocol.DERtoPEM(der, 'CERTIFICATE');
   var caName = RootCerts.getTrusted(pem);
 
-  if (!caName) 
-    caName = PaymentProtocol.completeChainAndGetCA(chain);
-
+  if (!caName) caName = PaymentProtocol.completeChainAndGetCA(chain);
 
   if (chain.length === 1 && !caName) {
     if (returnTrust) {
@@ -87,7 +85,7 @@ PaymentProtocol.prototype.x509Verify = function(returnTrust) {
         verified: verified,
         caTrusted: false,
         caName: null,
-        chainVerified: false
+        chainVerified: false,
       };
     }
     return verified;
@@ -103,7 +101,7 @@ PaymentProtocol.prototype.x509Verify = function(returnTrust) {
         verified: verified,
         caTrusted: false,
         caName: null,
-        chainVerified: false
+        chainVerified: false,
       };
     }
     return verified;
@@ -118,7 +116,7 @@ PaymentProtocol.prototype.x509Verify = function(returnTrust) {
       verified: verified,
       caTrusted: !!caName,
       caName: caName || null,
-      chainVerified: chainVerified
+      chainVerified: chainVerified,
     };
   }
 
@@ -149,8 +147,7 @@ PaymentProtocol.verifyCertChain = function(chain, sigHashAlg) {
     // Get Public Key from next certificate:
     var ndata = new Buffer(nder, 'hex');
     var nc = rfc5280.Certificate.decode(ndata, 'der');
-    var npubKeyAlg = PaymentProtocol.getAlgorithm(
-      nc.tbsCertificate.subjectPublicKeyInfo.algorithm.algorithm);
+    var npubKeyAlg = PaymentProtocol.getAlgorithm(nc.tbsCertificate.subjectPublicKeyInfo.algorithm.algorithm);
     var npubKey = nc.tbsCertificate.subjectPublicKeyInfo.subjectPublicKey.data;
     npubKey = PaymentProtocol.DERtoPEM(npubKey, npubKeyAlg + ' PUBLIC KEY');
 

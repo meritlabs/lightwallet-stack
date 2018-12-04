@@ -19,32 +19,46 @@ export interface IDisplayWalletOptions {
 export function ClientProperty(target: DisplayWallet, key: keyof MeritWalletClient) {
   Object.defineProperty(target, key, {
     enumerable: true,
-    get: function () {
+    get: function() {
       return this.client[key];
     },
-    set: function (value: any) {
+    set: function(value: any) {
       this.client[key] = value;
-    }
+    },
   });
 }
 
 const MINIMAL_STAKE = 2000000000;
 
 export class DisplayWallet {
-  @ClientProperty readonly id: string;
-  @ClientProperty readonly locked: boolean;
-  @ClientProperty name: string;
-  @ClientProperty color: string;
-  @ClientProperty totalNetworkValue: number;
-  @ClientProperty credentials: any;
-  @ClientProperty network: string;
-  @ClientProperty status: any;
-  @ClientProperty balanceHidden: boolean;
-  @ClientProperty balance: any;
-  @ClientProperty availableInvites: number;
-  @ClientProperty pendingInvites: number;
-  @ClientProperty sendableInvites: number;
-  @ClientProperty confirmed: boolean;
+  @ClientProperty
+  readonly id: string;
+  @ClientProperty
+  readonly locked: boolean;
+  @ClientProperty
+  name: string;
+  @ClientProperty
+  color: string;
+  @ClientProperty
+  totalNetworkValue: number;
+  @ClientProperty
+  credentials: any;
+  @ClientProperty
+  network: string;
+  @ClientProperty
+  status: any;
+  @ClientProperty
+  balanceHidden: boolean;
+  @ClientProperty
+  balance: any;
+  @ClientProperty
+  availableInvites: number;
+  @ClientProperty
+  pendingInvites: number;
+  @ClientProperty
+  sendableInvites: number;
+  @ClientProperty
+  confirmed: boolean;
 
   referrerAddress: string;
   alias: string;
@@ -72,11 +86,13 @@ export class DisplayWallet {
 
   communitySize: number = 0;
 
-  constructor(public client: MeritWalletClient,
+  constructor(
+    public client: MeritWalletClient,
     private walletService: WalletService,
     private addressService: AddressService,
     private txFormatService?: TxFormatService,
-    private persistenceService2?: PersistenceService2) {
+    private persistenceService2?: PersistenceService2,
+  ) {
     this.client = client;
     this.walletService = walletService;
     this.txFormatService = txFormatService;
@@ -94,7 +110,7 @@ export class DisplayWallet {
       id: this.id,
       name: this.name,
       color: this.color,
-      balanceHidden: this.balanceHidden
+      balanceHidden: this.balanceHidden,
     };
   }
 
@@ -124,11 +140,10 @@ export class DisplayWallet {
 
   async updateStatus() {
     this.client.status = await this.client.getStatus();
-    let visitedInvites = await this.persistenceService2.getVisitedInvites() || [];
+    let visitedInvites = (await this.persistenceService2.getVisitedInvites()) || [];
     this.inviteRequests = (await this.client.getUnlockRequests())
       .filter((request: IUnlockRequest) => !request.isConfirmed)
       .map((request: IUnlockRequest) => {
-
         request.walletClient = this.client;
         request.isNew = visitedInvites.findIndex(rId => rId === request.rId) === -1;
 
@@ -156,8 +171,13 @@ export class DisplayWallet {
 
   private formatNetworkInfo() {
     if (!isNil(this.totalNetworkValueMicro)) {
-      this.totalNetworkValueMerit = this.txFormatService.parseAmount(this.totalNetworkValueMicro, 'micros').amountUnitStr;
-      this.totalNetworkValueFiat = new FiatAmount(+this.txFormatService.formatToUSD(this.totalNetworkValueMicro)).amountStr;
+      this.totalNetworkValueMerit = this.txFormatService.parseAmount(
+        this.totalNetworkValueMicro,
+        'micros',
+      ).amountUnitStr;
+      this.totalNetworkValueFiat = new FiatAmount(
+        +this.txFormatService.formatToUSD(this.totalNetworkValueMicro),
+      ).amountStr;
     }
 
     if (!isNil(this.miningRewardsMicro)) {
@@ -172,23 +192,26 @@ export class DisplayWallet {
   }
 }
 
-export async function createDisplayWallet(wallet: MeritWalletClient, walletService: WalletService, addressService?: AddressService, txFormatService?: TxFormatService, persistenceService2?: PersistenceService2, options: IDisplayWalletOptions = {}): Promise<DisplayWallet> {
+export async function createDisplayWallet(
+  wallet: MeritWalletClient,
+  walletService: WalletService,
+  addressService?: AddressService,
+  txFormatService?: TxFormatService,
+  persistenceService2?: PersistenceService2,
+  options: IDisplayWalletOptions = {},
+): Promise<DisplayWallet> {
   const displayWallet = new DisplayWallet(wallet, walletService, addressService, txFormatService, persistenceService2);
   return updateDisplayWallet(displayWallet, options);
 }
 
 export async function updateDisplayWallet(displayWallet: DisplayWallet, options: IDisplayWalletOptions) {
-  if (!options.skipAlias)
-    await displayWallet.updateAlias();
+  if (!options.skipAlias) await displayWallet.updateAlias();
 
-  if (!options.skipStatus)
-    await displayWallet.updateStatus();
+  if (!options.skipStatus) await displayWallet.updateStatus();
 
-  if (!options.skipRewards)
-    await displayWallet.updateRewards();
+  if (!options.skipRewards) await displayWallet.updateRewards();
 
-  if (!options.skipShareCode)
-    await displayWallet.updateShareCode();
+  if (!options.skipShareCode) await displayWallet.updateShareCode();
 
   return displayWallet;
 }

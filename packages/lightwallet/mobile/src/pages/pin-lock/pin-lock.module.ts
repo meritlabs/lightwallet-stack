@@ -3,11 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { PinLockView } from './pin-lock';
 
 @NgModule({
-  declarations: [
-    PinLockView,
-  ],
-  imports: [
-    IonicPageModule.forChild(PinLockView),
-  ],
+  declarations: [PinLockView],
+  imports: [IonicPageModule.forChild(PinLockView)],
 })
 export class PinLockModule {}

@@ -1,7 +1,7 @@
 import { EasySend } from '@merit/common/models/easy-send';
 import { MeritContact } from './merit-contact';
 import { DisplayWallet } from './display-wallet';
-import { MeritWalletClient } from "@merit/common/merit-wallet-client/index";
+import { MeritWalletClient } from '@merit/common/merit-wallet-client/index';
 
 export enum TransactionAction {
   RECEIVED = 'received',
@@ -18,7 +18,7 @@ export enum TransactionAction {
 export enum UnlockRequestStatus {
   ACCEPTED = 'accepted',
   DECLINED = 'declined',
-  PENDING = 'pending'
+  PENDING = 'pending',
 }
 
 export interface ITransactionIO {
@@ -65,8 +65,8 @@ export interface IDisplayTransaction extends ITransaction {
   safeConfirmed?: string;
   contact?: MeritContact;
   feeStr: string;
-  to: { alias: string; address: string; };
-  from: { alias: string; address: string; };
+  to: { alias: string; address: string };
+  from: { alias: string; address: string };
   displayWallet?: DisplayWallet;
   wallet: MeritWalletClient;
   isMiningReward: boolean;

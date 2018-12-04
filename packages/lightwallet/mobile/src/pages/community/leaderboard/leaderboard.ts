@@ -4,27 +4,24 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
-
-
 @IonicPage()
 @Component({
   selector: 'view-leaderboard',
   templateUrl: 'leaderboard.html',
 })
 export class LeaderboardView {
-
   wallets: Array<MeritWalletClient>;
   leaderboard: Array<{
-    rank: number,
-    alias?: string,
-    address?: string,
-    anv: number
+    rank: number;
+    alias?: string;
+    address?: string;
+    anv: number;
   }>;
   displayLeaderboard: Array<{
-    rank: number,
-    alias?: string,
-    address?: string,
-    anv: number
+    rank: number;
+    alias?: string;
+    address?: string;
+    anv: number;
   }>;
 
   ranks: Array<any>;
@@ -36,12 +33,7 @@ export class LeaderboardView {
 
   loading: boolean = true;
 
-  constructor(
-    private navCtrl: NavController,
-    private navParams: NavParams,
-    private profileService: ProfileService
-  ) {
-  }
+  constructor(private navCtrl: NavController, private navParams: NavParams, private profileService: ProfileService) {}
 
   async ionViewWillEnter() {
     this.wallets = await this.profileService.getConfimedWallets();
@@ -68,10 +60,12 @@ export class LeaderboardView {
 
   async getRankInfo() {
     const ranks = [];
-    await Promise.all(this.wallets.map(async (w) => {
-      const rankInfo = (await w.getCommunityRank()).ranks[0];
-      ranks.push(rankInfo);
-    }));
+    await Promise.all(
+      this.wallets.map(async w => {
+        const rankInfo = (await w.getCommunityRank()).ranks[0];
+        ranks.push(rankInfo);
+      }),
+    );
     this.ranks = ranks;
   }
 
@@ -84,5 +78,4 @@ export class LeaderboardView {
   isOwnWallet(r) {
     return !!this.ranks.some(w => w.address == r.address);
   }
-
 }

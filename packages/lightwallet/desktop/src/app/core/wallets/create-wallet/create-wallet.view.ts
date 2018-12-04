@@ -25,10 +25,9 @@ import 'rxjs/add/operator/toPromise';
 @Component({
   selector: 'view-create-wallet',
   templateUrl: './create-wallet.view.html',
-  styleUrls: ['./create-wallet.view.sass']
+  styleUrls: ['./create-wallet.view.sass'],
 })
 export class CreateWalletView {
-
   formData: FormGroup = this.formBuilder.group({
     walletName: ['Personal wallet', Validators.required],
     parentAddress: ['', Validators.required, AddressValidator.validateAddress(this.mwcService)],
@@ -38,33 +37,37 @@ export class CreateWalletView {
     password: '',
     repeatPassword: ['', PasswordValidator.MatchPassword],
     color: ['#00B0DD'],
-    hideBalance: false
+    hideBalance: false,
   });
 
   selectedColor = {
     name: 'Merit blue',
-    color: '#00B0DD'
+    color: '#00B0DD',
   };
 
   availableColors: any = WalletSettingsColors;
   backUpWallet: boolean;
   createdWallet;
 
-  constructor(private formBuilder: FormBuilder,
-              private walletService: WalletService,
-              private config: ConfigService,
-              private logger: LoggerService,
-              private router: Router,
-              private store: Store<IRootAppState>,
-              private addressService: AddressService,
-              private txFormatService: TxFormatService,
-              private loader: Ng4LoadingSpinnerService,
-              private mwcService: MWCService,
-              private persistenceService2: PersistenceService2) {
-  }
+  constructor(
+    private formBuilder: FormBuilder,
+    private walletService: WalletService,
+    private config: ConfigService,
+    private logger: LoggerService,
+    private router: Router,
+    private store: Store<IRootAppState>,
+    private addressService: AddressService,
+    private txFormatService: TxFormatService,
+    private loader: Ng4LoadingSpinnerService,
+    private mwcService: MWCService,
+    private persistenceService2: PersistenceService2,
+  ) {}
 
   async ngOnInit() {
-    const wallets = await this.store.select(selectWallets).pipe(take(1)).toPromise();
+    const wallets = await this.store
+      .select(selectWallets)
+      .pipe(take(1))
+      .toPromise();
     let wallet = wallets.find(w => w.availableInvites > 0);
     wallet = wallet || wallets[0];
 
@@ -86,7 +89,7 @@ export class CreateWalletView {
       recoveryPhrase: mnemonic,
       hideBalance,
       password,
-      color
+      color,
     } = this.formData.getRawValue();
 
     parentAddress = cleanAddress(parentAddress);
@@ -100,7 +103,7 @@ export class CreateWalletView {
       mnemonic,
       networkName: ENV.network,
       m: 1, //todo temp!
-      n: 1 //todo temp!
+      n: 1, //todo temp!
     };
 
     try {
@@ -127,8 +130,8 @@ export class CreateWalletView {
         // TODO(ibby): fix this implementation here & in mobile version
         const colorOpts = {
           colorFor: {
-            [wallet.id]: color
-          }
+            [wallet.id]: color,
+          },
         };
         promises.push(this.config.set(colorOpts));
       }
@@ -139,8 +142,14 @@ export class CreateWalletView {
         this.logger.error(e);
       }
 
-      const displayWallet = await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, this.persistenceService2);
-      this.store.dispatch(new AddWalletAction(displayWallet));    
+      const displayWallet = await createDisplayWallet(
+        wallet,
+        this.walletService,
+        this.addressService,
+        this.txFormatService,
+        this.persistenceService2,
+      );
+      this.store.dispatch(new AddWalletAction(displayWallet));
       this.backUpWallet = true;
       this.createdWallet = displayWallet;
     } catch (err) {
@@ -151,7 +160,7 @@ export class CreateWalletView {
     }
   }
 
-  proceedToWallet() {   
+  proceedToWallet() {
     this.router.navigateByUrl(`/wallets/${this.createdWallet.client.id}/settings`);
   }
 

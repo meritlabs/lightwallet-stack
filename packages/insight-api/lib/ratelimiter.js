@@ -21,7 +21,7 @@ function RateLimiter(options) {
     return new RateLimiter(options);
   }
 
-  if (!options){
+  if (!options) {
     options = {};
   }
 
@@ -33,18 +33,17 @@ function RateLimiter(options) {
   this.config = {
     whitelist: {
       totalRequests: options.whitelistLimit || 3 * 60 * 60 * 10, // 108,000
-      interval: options.whitelistInterval || THREE_HOURS
+      interval: options.whitelistInterval || THREE_HOURS,
     },
     blacklist: {
       totalRequests: options.blacklistLimit || 0,
-      interval: options.blacklistInterval || THREE_HOURS
+      interval: options.blacklistInterval || THREE_HOURS,
     },
     normal: {
       totalRequests: options.limit || 3 * 60 * 60, // 10,800
-      interval: options.interval || THREE_HOURS
-    }
+      interval: options.interval || THREE_HOURS,
+    },
   };
-
 }
 
 RateLimiter.prototype.middleware = function() {
@@ -55,13 +54,12 @@ RateLimiter.prototype.middleware = function() {
 };
 
 RateLimiter.prototype._middleware = function(req, res, next) {
-
   var name = this.getClientName(req);
   var client = this.clients[name];
 
   res.ratelimit = {
     clients: this.clients,
-    exceeded: false
+    exceeded: false,
   };
 
   if (!client) {
@@ -81,7 +79,7 @@ RateLimiter.prototype._middleware = function(req, res, next) {
     this.node.log.warn('Rate limited:', client);
     res.status(429).jsonp({
       status: 429,
-      error: 'Rate limit exceeded'
+      error: 'Rate limit exceeded',
     });
   }
 };
@@ -115,7 +113,7 @@ RateLimiter.prototype.addClient = function(name) {
   var client = {
     name: name,
     type: this.getClientType(name),
-    visits: 1
+    visits: 1,
   };
 
   var resetTime = this.config[client.type].interval;
@@ -127,7 +125,6 @@ RateLimiter.prototype.addClient = function(name) {
   this.clients[name] = client;
 
   return client;
-
 };
 
 module.exports = RateLimiter;

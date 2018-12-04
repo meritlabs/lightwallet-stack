@@ -1,20 +1,16 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, ViewController } from 'ionic-angular';
 
-
 @IonicPage()
 @Component({
   selector: 'view-send-wallet',
   templateUrl: 'send-wallet.html',
 })
 export class SendWalletView {
-
   wallets;
   selectedWallet;
 
-  constructor(private navParams: NavParams,
-              private viewCtrl: ViewController) {
-  }
+  constructor(private navParams: NavParams, private viewCtrl: ViewController) {}
 
   async ionViewDidLoad() {
     this.selectedWallet = this.navParams.get('selectedWallet');
@@ -28,5 +24,4 @@ export class SendWalletView {
   select(wallet) {
     this.viewCtrl.dismiss(wallet);
   }
-
 }

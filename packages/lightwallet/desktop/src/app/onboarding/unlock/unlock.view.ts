@@ -73,20 +73,20 @@ export class UnlockComponent {
     private addressService: AddressService,
     private persistence: PersistenceService2,
     private loadingCtrl: Ng4LoadingSpinnerService,
-    private toastCtrl: ToastControllerService
+    private toastCtrl: ToastControllerService,
   ) {}
 
   async ngOnInit() {
     const receipts = await this.easyReceiveService.getPendingReceipts();
     this.easyReceipt = receipts.pop();
 
-    let inviteCode;  
+    let inviteCode;
 
     this.gbsUnlock = (await this.persistence.getSource()) === 'gbs';
 
     if (this.easyReceipt) {
       inviteCode = this.easyReceipt.parentAddress;
-    } else {      
+    } else {
       inviteCode = cleanAddress(getQueryParam('invite'));
       this.invite = this.addressService.couldBeAlias(inviteCode) ? `@${inviteCode}` : inviteCode;
     }
@@ -135,7 +135,7 @@ export class UnlockComponent {
         new UpdateAppAction({
           loading: false,
           authorized: true,
-        })
+        }),
       );
 
       if (this.gbsUnlock && !!win) {

@@ -9,14 +9,15 @@ import { FiatAmount } from '@merit/common/models/fiat-amount';
 
 @Injectable()
 export class TxFormatService {
-
   // TODO: implement configService
   pendingTxProposalsCountForUs: number;
 
-  constructor(private mwcService: MWCService,
-              private rate: RateService,
-              private config: ConfigService,
-              private logger: LoggerService) {
+  constructor(
+    private mwcService: MWCService,
+    private rate: RateService,
+    private config: ConfigService,
+    private logger: LoggerService,
+  ) {
     this.logger.info('Hello TxFormatService Service');
   }
 
@@ -27,7 +28,7 @@ export class TxFormatService {
 
     //TODO : now only works for english, specify opts to change thousand separator and decimal separator
     let opts = {
-      fullPrecision: !!fullPrecision
+      fullPrecision: !!fullPrecision,
     };
     return this.mwcService.getUtils().formatAmount(micros, settings.unitCode, opts);
   }
@@ -46,7 +47,7 @@ export class TxFormatService {
   }
 
   toFiatStr(micros: number, code: string): Promise<string> {
-    return this.toFiat(micros, code).then((fiatAmount) => {
+    return this.toFiat(micros, code).then(fiatAmount => {
       return new FiatAmount(parseFloat(fiatAmount)).amountStr;
     });
   }
@@ -62,7 +63,7 @@ export class TxFormatService {
     if (isNaN(micros)) return;
     let settings = this.config.get().wallet.settings;
 
-    let v1 = parseFloat((this.rate.fromMicrosToFiat(micros, settings.alternativeIsoCode)).toFixed(2));
+    let v1 = parseFloat(this.rate.fromMicrosToFiat(micros, settings.alternativeIsoCode).toFixed(2));
     if (!v1) return null;
     let v1FormatFiat = new FiatAmount(v1);
     if (!v1FormatFiat) return null;
@@ -94,12 +95,10 @@ export class TxFormatService {
   }
 
   async processTx(tx: any): Promise<any> {
-    if (!tx || tx.action == 'invalid')
-      return tx;
+    if (!tx || tx.action == 'invalid') return tx;
 
     // New transaction output format
     if (tx.outputs && tx.outputs.length) {
-
       let outputsNr = tx.outputs.length;
 
       if (tx.action != 'received') {
@@ -127,44 +126,42 @@ export class TxFormatService {
     this.pendingTxProposalsCountForUs = 0;
     let now = Math.floor(Date.now() / 1000);
 
-    const pTxps = await Promise.all(txps.map(async (tx: any) => {
-      // no future transactions...
-      if (tx.createdOn > now)
-        tx.createdOn = now;
+    const pTxps = await Promise.all(
+      txps.map(async (tx: any) => {
+        // no future transactions...
+        if (tx.createdOn > now) tx.createdOn = now;
 
+        // TODO: We should not call any services here.  Data should be passed in.
+        tx.wallet = { copayerId: 'yepNope' };
 
-      // TODO: We should not call any services here.  Data should be passed in.
-      tx.wallet = { copayerId: 'yepNope' };
+        if (!tx.wallet) {
+          this.logger.info('no wallet at txp?');
+          return;
+        }
 
+        const pTx = await this.processTx(tx);
 
-      if (!tx.wallet) {
-        this.logger.info('no wallet at txp?');
-        return;
-      }
+        let action: any = _.find(pTx.actions, {
+          copayerId: pTx.wallet.copayerId,
+        });
 
-      const pTx = await this.processTx(tx);
+        if (!action && pTx.status == 'pending') {
+          pTx.pendingForUs = true;
+        }
 
-      let action: any = _.find(pTx.actions, {
-        copayerId: pTx.wallet.copayerId
-      });
+        if (action && action.type == 'accept') {
+          pTx.statusForUs = 'accepted';
+        } else if (action && action.type == 'reject') {
+          pTx.statusForUs = 'rejected';
+        } else {
+          pTx.statusForUs = 'pending';
+        }
 
-      if (!action && pTx.status == 'pending') {
-        pTx.pendingForUs = true;
-      }
+        if (!pTx.deleteLockTime) pTx.canBeRemoved = true;
 
-      if (action && action.type == 'accept') {
-        pTx.statusForUs = 'accepted';
-      } else if (action && action.type == 'reject') {
-        pTx.statusForUs = 'rejected';
-      } else {
-        pTx.statusForUs = 'pending';
-      }
-
-      if (!pTx.deleteLockTime)
-        pTx.canBeRemoved = true;
-
-      return pTx;
-    }));
+        return pTx;
+      }),
+    );
 
     this.logger.warn('What are the TXPs after promise all?');
     this.logger.warn(pTxps);
@@ -203,9 +200,8 @@ export class TxFormatService {
       currency: currency,
       alternativeIsoCode: alternativeIsoCode,
       amountMicros: amountMicros,
-      amountUnitStr: amountUnitStr
+      amountUnitStr: amountUnitStr,
     };
-
   }
 
   satToUnit(amount: any) {
@@ -216,5 +212,4 @@ export class TxFormatService {
     let unitDecimals = settings.unitDecimals;
     return parseFloat((amount * satToUnit).toFixed(unitDecimals));
   }
-
 }

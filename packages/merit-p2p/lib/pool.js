@@ -58,7 +58,7 @@ function Pool(options) {
   this.relay = options.relay === false ? false : true;
 
   if (options.addrs) {
-    for(var i = 0; i < options.addrs.length; i++) {
+    for (var i = 0; i < options.addrs.length; i++) {
       this._addAddr(options.addrs[i]);
     }
   }
@@ -69,7 +69,7 @@ function Pool(options) {
       var length = addrs.length;
       for (var i = 0; i < length; i++) {
         var addr = addrs[i];
-        var future = new Date().getTime() + (10 * 60 * 1000);
+        var future = new Date().getTime() + 10 * 60 * 1000;
         if (addr.time.getTime() <= 100000000000 || addr.time.getTime() > future) {
           // In case of an invalid time, assume "5 days ago"
           var past = new Date(new Date().getTime() - 5 * 24 * 60 * 60 * 1000);
@@ -84,8 +84,8 @@ function Pool(options) {
     ips.forEach(function(ip) {
       self._addAddr({
         ip: {
-          v4: ip
-        }
+          v4: ip,
+        },
       });
     });
     if (self.keepalive) {
@@ -102,17 +102,33 @@ function Pool(options) {
   });
 
   return this;
-
 }
 
 util.inherits(Pool, EventEmitter);
 
 Pool.MaxConnectedPeers = 8;
 Pool.RetrySeconds = 30;
-Pool.PeerEvents = ['version', 'inv', 'getdata', 'ping', 'pong', 'addr',
-  'getaddr', 'verack', 'reject', 'alert', 'headers', 'block', 'merkleblock',
-  'tx', 'getblocks', 'getheaders', 'error', 'filterload', 'filteradd',
-  'filterclear'
+Pool.PeerEvents = [
+  'version',
+  'inv',
+  'getdata',
+  'ping',
+  'pong',
+  'addr',
+  'getaddr',
+  'verack',
+  'reject',
+  'alert',
+  'headers',
+  'block',
+  'merkleblock',
+  'tx',
+  'getblocks',
+  'getheaders',
+  'error',
+  'filterload',
+  'filteradd',
+  'filterclear',
 ];
 
 /**
@@ -194,7 +210,7 @@ Pool.prototype._connectPeer = function _connectPeer(addr) {
       port: port,
       messages: self.messages,
       network: this.network,
-      relay: self.relay
+      relay: self.relay,
     });
 
     peer.on('connect', function peerConnect() {
@@ -222,7 +238,7 @@ Pool.prototype._addConnectedPeer = function _addConnectedPeer(socket, addr) {
     var peer = new Peer({
       socket: socket,
       network: this.network,
-      messages: self.messages
+      messages: self.messages,
     });
 
     self._addPeerEventHandlers(peer, addr);
@@ -335,10 +351,15 @@ Pool.prototype._addAddrsFromSeeds = function _addAddrsFromSeeds() {
  * @returns {String} A string formatted for the console
  */
 Pool.prototype.inspect = function inspect() {
-  return '<Pool network: ' +
-    this.network + ', connected: ' +
-    this.numberConnected() + ', available: ' +
-    this._addrs.length + '>';
+  return (
+    '<Pool network: ' +
+    this.network +
+    ', connected: ' +
+    this.numberConnected() +
+    ', available: ' +
+    this._addrs.length +
+    '>'
+  );
 };
 
 /**
@@ -347,7 +368,7 @@ Pool.prototype.inspect = function inspect() {
  */
 Pool.prototype.sendMessage = function(message) {
   // broadcast to peers
-  for(var key in this._connectedPeers) {
+  for (var key in this._connectedPeers) {
     var peer = this._connectedPeers[key];
     peer.sendMessage(message);
   }
@@ -363,9 +384,9 @@ Pool.prototype.listen = function() {
   // Create server
   this.server = net.createServer(function(socket) {
     var addr = {
-      ip: {}
+      ip: {},
     };
-    if(net.isIPv6(socket.remoteAddress)) {
+    if (net.isIPv6(socket.remoteAddress)) {
       addr.ip.v6 = socket.remoteAddress;
     } else {
       addr.ip.v4 = socket.remoteAddress;

@@ -11,13 +11,11 @@ import { PersistenceService } from '@merit/common/services/persistence.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { Events } from 'ionic-angular/util/events';
 import * as _ from 'lodash';
-import { AlertService } from "@merit/common/services/alert.service";
-
+import { AlertService } from '@merit/common/services/alert.service';
 
 export function accessWallet(target, key: string, descriptor: any) {
-
   return {
-    value: async function (...args:any[]) {
+    value: async function(...args: any[]) {
       const wallet: MeritWalletClient = args[0];
 
       if (!wallet || !wallet.credentials) {
@@ -49,26 +47,23 @@ export function accessWallet(target, key: string, descriptor: any) {
         }
       }
       return result;
-    }
-
+    },
   };
 }
 
 @Injectable()
 export class WalletService {
-
-
-  constructor(private logger: LoggerService,
-              private mwcService: MWCService,
-              private configService: ConfigService,
-              private profileService: ProfileService,
-              private persistenceService: PersistenceService,
-              private mnemonicService: MnemonicService,
-              private easySendService: EasySendService,
-              private events: Events,
-              private alertCtrl: AlertService
-  ) {
-  }
+  constructor(
+    private logger: LoggerService,
+    private mwcService: MWCService,
+    private configService: ConfigService,
+    private profileService: ProfileService,
+    private persistenceService: PersistenceService,
+    private mnemonicService: MnemonicService,
+    private easySendService: EasySendService,
+    private events: Events,
+    private alertCtrl: AlertService,
+  ) {}
 
   isWalletEncrypted(wallet: MeritWalletClient) {
     return wallet.isPrivKeyEncrypted();
@@ -77,7 +72,7 @@ export class WalletService {
   encryptWallet(wallet: MeritWalletClient, password: string): Promise<any> {
     wallet.encryptPrivateKey(password, {});
     return this.profileService.updateWallet(wallet);
-  };
+  }
 
   decryptWallet(wallet: MeritWalletClient, password: string) {
     return wallet.decryptPrivateKey(password);
@@ -106,8 +101,7 @@ export class WalletService {
 
   @accessWallet
   broadcastTx(wallet: MeritWalletClient, txp: any): Promise<any> {
-    if (txp.status != 'accepted')
-      throw new Error('TX_NOT_ACCEPTED');
+    if (txp.status != 'accepted') throw new Error('TX_NOT_ACCEPTED');
 
     return wallet.broadcastTxProposal(txp);
   }
@@ -135,7 +129,6 @@ export class WalletService {
 
   @accessWallet
   async publishAndSign(wallet: MeritWalletClient, txp: any): Promise<any> {
-
     if (txp.status != 'pending') {
       txp = await this.publishTx(wallet, txp);
     }
@@ -168,16 +161,24 @@ export class WalletService {
    *
    */
   @accessWallet
-  async sendInvite(wallet: MeritWalletClient, toAddress: string, amount: number = 1, script = null, message: string = ''): Promise<any> {
+  async sendInvite(
+    wallet: MeritWalletClient,
+    toAddress: string,
+    amount: number = 1,
+    script = null,
+    message: string = '',
+  ): Promise<any> {
     amount = parseInt(amount as any);
     const opts = {
       invite: true,
-      outputs: [_.pickBy({
-        amount,
-        toAddress,
-        message,
-        script
-      })]
+      outputs: [
+        _.pickBy({
+          amount,
+          toAddress,
+          message,
+          script,
+        }),
+      ],
     };
 
     let txp = await wallet.createTxProposal(opts);
@@ -207,7 +208,6 @@ export class WalletService {
     return easySend;
   }
 
-
   /** =================== CREATE WALLET METHODS ================ */
 
   createDefaultWallet(parentAddress: string, alias: string) {
@@ -233,7 +233,7 @@ export class WalletService {
       singleAddress: opts.singleAddress,
       walletPrivKey: opts.walletPrivKey,
       parentAddress: opts.parentAddress,
-      alias: opts.alias
+      alias: opts.alias,
     });
 
     await this.profileService.addWallet(wallet);
@@ -243,7 +243,6 @@ export class WalletService {
 
   // TODO: Rename this.
   private async seedWallet(opts: any): Promise<MeritWalletClient> {
-
     let walletClient = this.mwcService.getClient(null, opts);
 
     if (opts.mnemonic) {
@@ -256,9 +255,9 @@ export class WalletService {
     } else if (opts.extendedPrivateKey) {
       try {
         walletClient.seedFromExtendedPrivateKey(opts.extendedPrivateKey, {
-          network:  ENV.network,
+          network: ENV.network,
           account: opts.account || 0,
-          derivationStrategy: opts.derivationStrategy || 'BIP44'
+          derivationStrategy: opts.derivationStrategy || 'BIP44',
         });
       } catch (ex) {
         this.logger.warn(ex);
@@ -268,7 +267,7 @@ export class WalletService {
       try {
         walletClient.seedFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
           account: opts.account || 0,
-          derivationStrategy: opts.derivationStrategy || 'BIP44'
+          derivationStrategy: opts.derivationStrategy || 'BIP44',
         });
         walletClient.credentials.hwInfo = opts.hwInfo;
       } catch (ex) {
@@ -276,11 +275,11 @@ export class WalletService {
         throw new Error('Could not create using the specified extended key'); // TODO GetTextCatalog
       }
     } else {
-        walletClient.seedFromRandomWithMnemonic({
-          network:  ENV.network,
-          passphrase: opts.passphrase,
-          account: 0
-        });
+      walletClient.seedFromRandomWithMnemonic({
+        network: ENV.network,
+        passphrase: opts.passphrase,
+        account: 0,
+      });
     }
     return walletClient;
   }
@@ -290,7 +289,7 @@ export class WalletService {
     const encodingType = {
       mnemonic: 1,
       xpriv: 2,
-      xpub: 3
+      xpub: 3,
     };
     let info: any = {};
 
@@ -302,41 +301,47 @@ export class WalletService {
     if (keys.mnemonic) {
       info = {
         type: encodingType.mnemonic,
-        data: keys.mnemonic
+        data: keys.mnemonic,
       };
     } else {
       info = {
         type: encodingType.xpriv,
-        data: keys.xPrivKey
+        data: keys.xPrivKey,
       };
     }
 
-    return info.type + '|' + info.data + '|' + wallet.credentials.network.toLowerCase() + '|' + derivationPath + '|' + (wallet.credentials.mnemonicHasPassphrase);
+    return (
+      info.type +
+      '|' +
+      info.data +
+      '|' +
+      wallet.credentials.network.toLowerCase() +
+      '|' +
+      derivationPath +
+      '|' +
+      wallet.credentials.mnemonicHasPassphrase
+    );
   }
-
 
   /** ================ PREFERENCES METHODS ========================  **/
 
   async setHiddenBalanceOption(walletId: string, hideBalance: boolean): Promise<void> {
-      await this.persistenceService.setHideBalanceFlag(walletId, String(hideBalance));
+    await this.persistenceService.setHideBalanceFlag(walletId, String(hideBalance));
   }
 
   private updateRemotePreferencesFor(clients: any[], prefs: any): Promise<any> {
-    return Promise.all(clients.map((wallet: any) =>
-      wallet.savePreferences(prefs)
-    ));
+    return Promise.all(clients.map((wallet: any) => wallet.savePreferences(prefs)));
   }
 
   async updateRemotePreferences(clients: any[], prefs: any = {}): Promise<any> {
-    if (!_.isArray(clients))
-      clients = [clients];
+    if (!_.isArray(clients)) clients = [clients];
 
     // Update this JIC.
     let config: any = this.configService.get();
     prefs.email = config.emailNotifications.email;
     prefs.language = 'en';
 
-    Promise.all(clients.map(async (w) => w.savePreferences(prefs) ));
+    Promise.all(clients.map(async w => w.savePreferences(prefs)));
 
     clients.forEach(c => {
       c.preferences = _.assign(prefs, c.preferences);
@@ -351,7 +356,7 @@ export class WalletService {
     try {
       await walletClient.importFromExtendedPublicKey(opts.extendedPublicKey, opts.externalSource, opts.entropySource, {
         account: opts.account || 0,
-        derivationStrategy: opts.derivationStrategy || 'BIP44'
+        derivationStrategy: opts.derivationStrategy || 'BIP44',
       });
 
       return this.profileService.addWallet(walletClient);
@@ -362,7 +367,6 @@ export class WalletService {
   }
 
   async importExtendedPrivateKey(xPrivKey: string, opts: any): Promise<any> {
-
     const walletClient = this.mwcService.getClient(null, opts);
     this.logger.debug('Importing Wallet xPrivKey');
 
@@ -398,5 +402,4 @@ export class WalletService {
       throw new Error('Could not import. Check input file and spending password'); // TODO getTextCatalog
     }
   }
-
 }

@@ -16,7 +16,7 @@ The lightwallet development environment consists of:
 
 Make sure the following conditions are met
 
-- GNU/Linux x86_32/x86_64, or OSX 64bit _(for meritd distributed binaries)_
+- GNU/Linux x86*32/x86_64, or OSX 64bit *(for meritd distributed binaries)\_
 - ZeroMQ _(libzmq3-dev for Ubuntu/Debian or zeromq on OSX)_
 - GNU Make version 4.2.1
 - The lightwallet-stack stably tested on Node.js >= v4.8.4

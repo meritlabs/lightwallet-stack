@@ -1,4 +1,5 @@
 # Web Service
+
 The web service creates an express app which can be used by services for setting up web routes for API's, static content, web applications, etc. This allows users to interact with various Merit Node services over one http or https port.
 
 In order for your service to add routes, it must implement the `setupRoutes()` and `getRoutePrefix()` methods.
@@ -17,11 +18,12 @@ MyService.prototype.setupRoutes = function(app, express) {
 };
 
 MyService.prototype.getRoutePrefix = function() {
-  return 'my-service'
+  return 'my-service';
 };
 ```
 
 ## Configuring Web Service for HTTPS
+
 You can run the web service over https by editing your Merit Node config, setting https to true and adding httpsOptions:
 
 ```json
@@ -32,8 +34,6 @@ You can run the web service over https by editing your Merit Node config, settin
     "key": "path-to-private-key",
     "cert": "path-to-certificate"
   },
-  "services": [
-    "web"
-  ]
+  "services": ["web"]
 }
 ```

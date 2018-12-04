@@ -20,9 +20,12 @@ export class SliderGuideComponent {
     loop: false,
   };
 
-  @Output() hideGuide = new EventEmitter<Boolean>();
-  @Input() skipButton: string = 'Skip tutorial';
-  @Input() primaryButton: string = 'Get started';
+  @Output()
+  hideGuide = new EventEmitter<Boolean>();
+  @Input()
+  skipButton: string = 'Skip tutorial';
+  @Input()
+  primaryButton: string = 'Get started';
 
   skipIntro() {
     this.hideGuide.emit(false);

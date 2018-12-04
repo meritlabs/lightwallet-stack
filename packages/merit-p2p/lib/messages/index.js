@@ -1,4 +1,4 @@
- 'use strict';
+'use strict';
 
 var meritcore = require('meritcore-lib');
 var BufferUtil = meritcore.util.buffer;
@@ -19,7 +19,7 @@ function Messages(options) {
   this.builder = Messages.builder(options);
 
   // map message constructors by name
-  for(var key in this.builder.commandsMap) {
+  for (var key in this.builder.commandsMap) {
     var name = this.builder.commandsMap[key];
     this[name] = this.builder.commands[key];
   }
@@ -49,7 +49,8 @@ Messages.prototype.parseBuffer = function(dataBuffer) {
     return;
   }
 
-  var payloadLen = (dataBuffer.get(Messages.PAYLOAD_START)) +
+  var payloadLen =
+    dataBuffer.get(Messages.PAYLOAD_START) +
     (dataBuffer.get(Messages.PAYLOAD_START + 1) << 8) +
     (dataBuffer.get(Messages.PAYLOAD_START + 2) << 16) +
     (dataBuffer.get(Messages.PAYLOAD_START + 3) << 24);
@@ -59,7 +60,10 @@ Messages.prototype.parseBuffer = function(dataBuffer) {
     return;
   }
 
-  var command = dataBuffer.slice(4, 16).toString('ascii').replace(/\0+$/, '');
+  var command = dataBuffer
+    .slice(4, 16)
+    .toString('ascii')
+    .replace(/\0+$/, '');
   var payload = dataBuffer.slice(24, messageLength);
   var checksum = dataBuffer.slice(20, 24);
 
@@ -87,7 +91,7 @@ Messages.prototype._discardUntilNextMessage = function(dataBuffer) {
     }
 
     // did we reach the end of the buffer?
-    if (i > (dataBuffer.length - 4)) {
+    if (i > dataBuffer.length - 4) {
       dataBuffer.skip(i);
       return false;
     }

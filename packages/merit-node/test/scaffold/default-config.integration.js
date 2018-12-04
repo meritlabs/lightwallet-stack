@@ -9,22 +9,23 @@ describe('#defaultConfig', function() {
   var expectedExecPath = path.resolve(__dirname, '../../bin/meritd');
 
   it('will return expected configuration', function() {
-    var config = JSON.stringify({
-      network: 'livenet',
-      port: 3001,
-      services: [
-        'meritd',
-        'web'
-      ],
-      servicesConfig: {
-        meritd: {
-          spawn: {
-            datadir: process.env.HOME + '/.meritcore/data',
-            exec: expectedExecPath
-          }
-        }
-      }
-    }, null, 2);
+    var config = JSON.stringify(
+      {
+        network: 'livenet',
+        port: 3001,
+        services: ['meritd', 'web'],
+        servicesConfig: {
+          meritd: {
+            spawn: {
+              datadir: process.env.HOME + '/.meritcore/data',
+              exec: expectedExecPath,
+            },
+          },
+        },
+      },
+      null,
+      2,
+    );
     var defaultConfig = proxyquire('../../lib/scaffold/default-config', {
       fs: {
         existsSync: sinon.stub().returns(false),
@@ -34,11 +35,11 @@ describe('#defaultConfig', function() {
         },
         readFileSync: function() {
           return config;
-        }
+        },
       },
       mkdirp: {
-        sync: sinon.stub()
-      }
+        sync: sinon.stub(),
+      },
     });
     var home = process.env.HOME;
     var info = defaultConfig();
@@ -52,24 +53,23 @@ describe('#defaultConfig', function() {
     meritd.spawn.exec.should.equal(expectedExecPath);
   });
   it('will include additional services', function() {
-    var config = JSON.stringify({
-      network: 'livenet',
-      port: 3001,
-      services: [
-        'meritd',
-        'web',
-        'insight-api',
-        'insight-ui'
-      ],
-      servicesConfig: {
-        meritd: {
-          spawn: {
-            datadir: process.env.HOME + '/.meritcore/data',
-            exec: expectedExecPath
-          }
-        }
-      }
-    }, null, 2);
+    var config = JSON.stringify(
+      {
+        network: 'livenet',
+        port: 3001,
+        services: ['meritd', 'web', 'insight-api', 'insight-ui'],
+        servicesConfig: {
+          meritd: {
+            spawn: {
+              datadir: process.env.HOME + '/.meritcore/data',
+              exec: expectedExecPath,
+            },
+          },
+        },
+      },
+      null,
+      2,
+    );
     var defaultConfig = proxyquire('../../lib/scaffold/default-config', {
       fs: {
         existsSync: sinon.stub().returns(false),
@@ -79,25 +79,20 @@ describe('#defaultConfig', function() {
         },
         readFileSync: function() {
           return config;
-        }
+        },
       },
       mkdirp: {
-        sync: sinon.stub()
-      }
+        sync: sinon.stub(),
+      },
     });
     var home = process.env.HOME;
     var info = defaultConfig({
-      additionalServices: ['insight-api', 'insight-ui']
+      additionalServices: ['insight-api', 'insight-ui'],
     });
     info.path.should.equal(home + '/.meritcore');
     info.config.network.should.equal('livenet');
     info.config.port.should.equal(3001);
-    info.config.services.should.deep.equal([
-      'meritd',
-      'web',
-      'insight-api',
-      'insight-ui'
-    ]);
+    info.config.services.should.deep.equal(['meritd', 'web', 'insight-api', 'insight-ui']);
     var meritd = info.config.servicesConfig.meritd;
     should.exist(meritd);
     meritd.spawn.datadir.should.equal(home + '/.meritcore/data');

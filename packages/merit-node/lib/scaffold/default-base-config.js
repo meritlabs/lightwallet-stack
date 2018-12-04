@@ -23,11 +23,11 @@ function getDefaultBaseConfig(options) {
         meritd: {
           spawn: {
             datadir: options.datadir || path.resolve(process.env.HOME, '.merit'),
-            exec: path.resolve(__dirname, '../../bin/meritd')
-          }
-        }
-      }
-    }
+            exec: path.resolve(__dirname, '../../bin/meritd'),
+          },
+        },
+      },
+    },
   };
 }
 

@@ -6,9 +6,7 @@ var builder = P2P.Messages.builder;
 var meritcore = require('meritcore-lib');
 
 describe('Messages Builder', function() {
-
   describe('@constructor', function() {
-
     it('should return commands based on default', function() {
       // instantiate
       var b = builder();
@@ -20,11 +18,9 @@ describe('Messages Builder', function() {
       var b = builder({
         network: meritcore.Networks.testnet,
         Block: meritcore.Block,
-        Transaction: meritcore.Transaction
+        Transaction: meritcore.Transaction,
       });
       should.exist(b);
     });
-
   });
-
 });

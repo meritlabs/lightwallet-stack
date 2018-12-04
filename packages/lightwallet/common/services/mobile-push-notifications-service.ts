@@ -24,18 +24,20 @@ export class MobilePushNotificationsService extends PushNotificationsService {
     return this.configService.get().pushNotificationsEnabled;
   }
 
-  constructor(http: HttpClient,
-              public profileService: ProfileService,
-              public platformService: PlatformService,
-              public configService: ConfigService,
-              logger: LoggerService,
-              public appService: AppSettingsService,
-              private app: App,
-              private mwcService: MWCService,
-              platform: Platform,
-              private FCM: FCM,
-              private ngZone: NgZone,
-              private pollingNotifications: PollingNotificationsService) {
+  constructor(
+    http: HttpClient,
+    public profileService: ProfileService,
+    public platformService: PlatformService,
+    public configService: ConfigService,
+    logger: LoggerService,
+    public appService: AppSettingsService,
+    private app: App,
+    private mwcService: MWCService,
+    platform: Platform,
+    private FCM: FCM,
+    private ngZone: NgZone,
+    private pollingNotifications: PollingNotificationsService,
+  ) {
     super(http, logger);
     this.logger.info('Hello PushNotificationsService Service');
     this.isIOS = this.platformService.isIOS;
@@ -114,11 +116,14 @@ export class MobilePushNotificationsService extends PushNotificationsService {
             const wallet = (await this.profileService.getWallets()).find(w => w.id == data.walletId);
             if (!_.isEmpty(wallet)) {
               // Let's re-shape the event to match the notificatons stored in MWS
-              this.profileService.propogateBwsEvent({
-                data: _.pick(data, ['amount', 'address', 'txid']),
-                type: data.type,
-                walletId: data.walletId
-              }, wallet);
+              this.profileService.propogateBwsEvent(
+                {
+                  data: _.pick(data, ['amount', 'address', 'txid']),
+                  type: data.type,
+                  walletId: data.walletId,
+                },
+                wallet,
+              );
             }
           }
         }
@@ -138,14 +143,13 @@ export class MobilePushNotificationsService extends PushNotificationsService {
     this.subscribe(walletClient);
   }
 
-
   enable() {
     if (!this.token) {
       this.logger.warn('No token available for this device. Cannot set push notifications. Needs registration.');
       return;
     }
     return super.enable();
-  };
+  }
 
   async disable() {
     if (!this.usePushNotifications) {
@@ -183,7 +187,11 @@ export class MobilePushNotificationsService extends PushNotificationsService {
     }
     if (!this.token && this.retriesRemaining > 0) {
       this.retriesRemaining--;
-      this.logger.warn(`Attempted to subscribe without an available token; attempting to acquire. ${this.retriesRemaining} attempts remaining.`);
+      this.logger.warn(
+        `Attempted to subscribe without an available token; attempting to acquire. ${
+          this.retriesRemaining
+        } attempts remaining.`,
+      );
       await this.getToken();
       return super.subscribe(walletClient);
     }

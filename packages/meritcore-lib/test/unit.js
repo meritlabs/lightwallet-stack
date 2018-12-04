@@ -8,7 +8,6 @@ var errors = meritcore.errors;
 var Unit = meritcore.Unit;
 
 describe('Unit', function() {
-
   it('can be created from a number and unit', function() {
     expect(function() {
       return new Unit(1.2, 'MRT');
@@ -160,7 +159,7 @@ describe('Unit', function() {
   });
 
   it('can be imported and exported from/to JSON', function() {
-    var json = JSON.stringify({amount:1.3, code:'MRT'});
+    var json = JSON.stringify({ amount: 1.3, code: 'MRT' });
     var unit = Unit.fromObject(JSON.parse(json));
     JSON.stringify(unit).should.deep.equal(json);
   });
@@ -193,5 +192,4 @@ describe('Unit', function() {
       return new Unit(100, 'MRT').atRate(-123);
     }).to.throw(errors.Unit.InvalidRate);
   });
-
 });

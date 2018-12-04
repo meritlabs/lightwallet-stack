@@ -1,5 +1,4 @@
-meritd-rpc.js
-===============
+# meritd-rpc.js
 
 A client library to connect to Merit Core RPC in JavaScript.
 
@@ -27,14 +26,14 @@ var run = function() {
   var txids = [];
 
   function showNewTransactions() {
-    rpc.getRawMemPool(function (err, ret) {
+    rpc.getRawMemPool(function(err, ret) {
       if (err) {
         console.error(err);
         return setTimeout(showNewTransactions, 10000);
       }
 
       function batchCall() {
-        ret.result.forEach(function (txid) {
+        ret.result.forEach(function(txid) {
           if (txids.indexOf(txid) === -1) {
             rpc.getRawTransaction(txid);
           }
@@ -47,7 +46,7 @@ var run = function() {
           return setTimeout(showNewTransactions, 10000);
         }
 
-        rawtxs.map(function (rawtx) {
+        rawtxs.map(function(rawtx) {
           var tx = new meritcore.Transaction(rawtx.result);
           console.log('\n\n\n' + tx.id + ':', tx.toObject());
         });

@@ -3,7 +3,7 @@ import { Events } from 'ionic-angular/util/events';
 import { ENV } from '@app/env';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { PersistenceService } from '@merit/common/services/persistence.service';
-import { IVault } from "@merit/common/models/vault";
+import { IVault } from '@merit/common/models/vault';
 import { LoggerService } from '@merit/common/services/logger.service';
 import { MWCService } from '@merit/common/services/mwc.service';
 
@@ -12,23 +12,22 @@ import { MWCService } from '@merit/common/services/mwc.service';
  */
 @Injectable()
 export class ProfileService {
-
   public wallets: Array<MeritWalletClient>;
 
   public communityInfo: {
-    communitySize: number,
-    networkValue: number,
-    miningRewards: number,
-    growthRewards: number,
+    communitySize: number;
+    networkValue: number;
+    miningRewards: number;
+    growthRewards: number;
     wallets: Array<{
-      name: string,
-      alias: string,
-      referralAddress: string,
-      confirmed: boolean,
-      communitySize: number,
-      miningRewards: number,
-      growthRewards: number,
-      color: string
+      name: string;
+      alias: string;
+      referralAddress: string;
+      confirmed: boolean;
+      communitySize: number;
+      miningRewards: number;
+      growthRewards: number;
+      color: string;
     }>;
   };
 
@@ -36,8 +35,8 @@ export class ProfileService {
     private persistenceService: PersistenceService,
     private logger: LoggerService,
     private events: Events,
-    private mwcService: MWCService
-  ){
+    private mwcService: MWCService,
+  ) {
     this.loadProfile();
   }
 
@@ -74,7 +73,6 @@ export class ProfileService {
     this.events.publish(eventName, wallet.id, n.type, n);
   }
 
-
   async loadProfile() {
     const profile = await this.persistenceService.getProfile();
 
@@ -83,9 +81,7 @@ export class ProfileService {
       if (profile.wallets) {
         wallets = profile.wallets.map(w => MeritWalletClient.fromObj(w));
       } else if (profile.credentials) {
-        wallets = profile.credentials.map(c =>
-          this.mwcService.getClient(JSON.stringify(c))
-        )
+        wallets = profile.credentials.map(c => this.mwcService.getClient(JSON.stringify(c)));
       }
     }
     this.wallets = wallets;
@@ -96,7 +92,7 @@ export class ProfileService {
 
   async isAuthorized() {
     if (this.wallets == undefined) await this.loadProfile();
-    return (this.wallets.length > 0);
+    return this.wallets.length > 0;
   }
 
   async getWallets() {
@@ -122,23 +118,24 @@ export class ProfileService {
   }
 
   async refreshData() {
-    let updateWallets = () => this.wallets.map(async (w) => {
-      status = await w.getStatus();
-    });
+    let updateWallets = () =>
+      this.wallets.map(async w => {
+        status = await w.getStatus();
+      });
 
-    let updateVaults = () => this.wallets.map(async (w) => {
-      w.vaults = await w.getVaults();
-      w.vaults.forEach(v => {
-        v.walletClient = w;
-      })
-    });
+    let updateVaults = () =>
+      this.wallets.map(async w => {
+        w.vaults = await w.getVaults();
+        w.vaults.forEach(v => {
+          v.walletClient = w;
+        });
+      });
 
     await Promise.all(updateWallets().concat(updateVaults()));
     this.storeProfile();
   }
 
   async addWallet(wallet: MeritWalletClient) {
-
     if (this.wallets.find(w => w.id == wallet.credentials.walletId)) throw new Error('Wallet already added');
 
     wallet.initialize(true);
@@ -153,7 +150,6 @@ export class ProfileService {
   }
 
   async updateWallet(wallet: MeritWalletClient) {
-
     this.wallets = this.wallets.filter(w => w.id != wallet.id);
 
     this.wallets.push(wallet);
@@ -162,16 +158,14 @@ export class ProfileService {
   }
 
   async deleteWallet(wallet: MeritWalletClient) {
-
     wallet.eventEmitter.removeAllListeners();
 
-    this.wallets = this.wallets.filter(w => (w.id != wallet.id));
+    this.wallets = this.wallets.filter(w => w.id != wallet.id);
 
     return this.storeProfile();
   }
 
   async addVault(vault: IVault) {
-
     this.wallets.some(w => {
       if (w.id == vault.walletClient.id) {
         if (!w.vaults) w.vaults = [];
@@ -184,10 +178,9 @@ export class ProfileService {
   }
 
   async updateVault(vault: IVault) {
-
     this.wallets.some(w => {
       if (w.id == vault.walletClient.id) {
-        w.vaults = w.vaults.filter(v => (v._id != vault._id));
+        w.vaults = w.vaults.filter(v => v._id != vault._id);
         w.vaults.push(vault);
         return true;
       }
@@ -197,7 +190,6 @@ export class ProfileService {
   }
 
   storeProfile() {
-
     if (this.wallets == undefined) return;
 
     /** do not save profile if we have wallet in temporary mode */
@@ -206,7 +198,7 @@ export class ProfileService {
     let profile = {
       version: '2.0.0',
       wallets: this.wallets.map(w => w.toObj()),
-      credentials: this.wallets.map(w => w.export())
+      credentials: this.wallets.map(w => w.export()),
     };
 
     this.persistenceService.storeProfile(profile);
@@ -229,28 +221,30 @@ export class ProfileService {
       networkValue: 0,
       miningRewards: 0,
       growthRewards: 0,
-      wallets: wallets.map(w => { return {
-        name: w.name,
-        alias: w.rootAlias,
-        referralAddress: w.rootAddress.toString(),
-        confirmed: w.confirmed,
-        communitySize: 0,
-        miningRewards: 0,
-        growthRewards: 0,
-        color: w.color
-      }})
+      wallets: wallets.map(w => {
+        return {
+          name: w.name,
+          alias: w.rootAlias,
+          referralAddress: w.rootAddress.toString(),
+          confirmed: w.confirmed,
+          communitySize: 0,
+          miningRewards: 0,
+          growthRewards: 0,
+          color: w.color,
+        };
+      }),
     };
 
     const addresses = network.wallets.map(w => w.referralAddress);
 
     if (addresses.length) {
-
-      const getCommunitySizes = () => addresses.map(async (a) => {
-        const { referralcount } = await wallets[0].getCommunityInfo(a);
-        let w = network.wallets.find(w => w.referralAddress == a);
-        w.communitySize = referralcount;
-        network.communitySize += referralcount;
-      });
+      const getCommunitySizes = () =>
+        addresses.map(async a => {
+          const { referralcount } = await wallets[0].getCommunityInfo(a);
+          let w = network.wallets.find(w => w.referralAddress == a);
+          w.communitySize = referralcount;
+          network.communitySize += referralcount;
+        });
 
       const getRewards = async () => {
         const rewards = await this.wallets[0].getRewards(addresses);
@@ -278,5 +272,4 @@ export class ProfileService {
     }
     return this.communityInfo;
   }
-
 }

@@ -36,16 +36,18 @@ var errors = {
   WALLET_LOCKED: 'Wallet is locked',
   WALLET_NOT_COMPLETE: 'Wallet is not complete',
   WALLET_NOT_FOUND: 'Wallet not found',
-  UNLOCKED_ALREADY: "Address already unlocked.",
-  INVALID_PARAMETERS: "Invalid parameters sent to server.",
-  INVALID_REFERRAL: "Invalid referral id",
-  MISSING_REFERRER: "Referrer address not found",
+  UNLOCKED_ALREADY: 'Address already unlocked.',
+  INVALID_PARAMETERS: 'Invalid parameters sent to server.',
+  INVALID_REFERRAL: 'Invalid referral id',
+  MISSING_REFERRER: 'Referrer address not found',
   INSUFFICIENT_INVITES: 'Insufficient invites',
 };
 
-var errorObjects = _.fromPairs(_.map(errors, function(msg, code) {
-  return [code, new ClientError(code, msg)];
-}));
+var errorObjects = _.fromPairs(
+  _.map(errors, function(msg, code) {
+    return [code, new ClientError(code, msg)];
+  }),
+);
 
 errorObjects.codes = _.mapValues(errors, function(v, k) {
   return k;

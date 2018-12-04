@@ -8,8 +8,8 @@ import { IDynamicComponent } from '@merit/desktop/app/components/dom.controller'
   styleUrls: ['./toast-notification.component.sass'],
   host: {
     '[class]': 'config.cssClass',
-    '[hidden]': '!show'
-  }
+    '[hidden]': '!show',
+  },
 })
 export class ToastNotificationComponent implements IDynamicComponent, OnDestroy {
   config: IMeritToastConfig;

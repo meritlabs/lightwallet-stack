@@ -3,12 +3,11 @@ import { BackdropComponent } from '../backdrop/backdrop.component';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 
 describe('Confirm Dialog', () => {
-
   let instance: ComponentFixture<ConfirmDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ConfirmDialogComponent, BackdropComponent]
+      declarations: [ConfirmDialogComponent, BackdropComponent],
     }).compileComponents();
 
     instance = TestBed.createComponent(ConfirmDialogComponent);
@@ -18,12 +17,12 @@ describe('Confirm Dialog', () => {
       buttons: [
         {
           text: 'Ok',
-          class: 'primary'
+          class: 'primary',
         },
         {
-          text: 'Cancel'
-        }
-      ]
+          text: 'Cancel',
+        },
+      ],
     });
     instance.detectChanges();
   });
@@ -69,5 +68,4 @@ describe('Confirm Dialog', () => {
     instance.detectChanges();
     expect(spy).toHaveBeenCalledWith();
   });
-
 });

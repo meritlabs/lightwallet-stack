@@ -20,7 +20,7 @@ function FilterloadMessage(arg, options) {
   this.command = 'filterload';
   $.checkArgument(
     _.isUndefined(arg) || arg instanceof BloomFilter,
-    'An instance of BloomFilter or undefined is expected'
+    'An instance of BloomFilter or undefined is expected',
   );
   this.filter = arg;
 }
@@ -31,7 +31,7 @@ FilterloadMessage.prototype.setPayload = function(payload) {
 };
 
 FilterloadMessage.prototype.getPayload = function() {
-  if(this.filter) {
+  if (this.filter) {
     return this.filter.toBuffer();
   } else {
     return BufferUtil.EMPTY_BUFFER;

@@ -57,7 +57,7 @@ export class ElectronService {
         total: 0,
         transferred: 0,
         percent: 0,
-        bytesPerSecond: 0
+        bytesPerSecond: 0,
       });
 
       this.electron.downloadUpdate((progress: IUpdateProgress) => {

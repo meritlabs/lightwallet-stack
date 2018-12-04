@@ -3,27 +3,22 @@ import { IonicPage, NavController, NavParams, Slides } from 'ionic-angular';
 import { RateService } from '@merit/common/services/rate.service';
 
 @IonicPage({
-  defaultHistory: ['OnboardingView']
+  defaultHistory: ['OnboardingView'],
 })
 @Component({
   selector: 'view-tour',
   templateUrl: 'tour.html',
 })
 export class TourView {
-
-  @ViewChild(Slides) slides: Slides;
+  @ViewChild(Slides)
+  slides: Slides;
 
   rateData: any = {};
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              private rateService: RateService) {
-  }
+  constructor(public navCtrl: NavController, public navParams: NavParams, private rateService: RateService) {}
 
   async ionViewDidLoad() {
-    this.rateData.usdPerMerit = this.rateService.microsToMrt(
-      await this.rateService.fiatToMicros(1e8, 'USD')
-    );
+    this.rateData.usdPerMerit = this.rateService.microsToMrt(await this.rateService.fiatToMicros(1e8, 'USD'));
   }
 
   ionViewDidEnter() {
@@ -57,5 +52,4 @@ export class TourView {
         slides.lockSwipeToPrev(false);
     }
   }
-
 }

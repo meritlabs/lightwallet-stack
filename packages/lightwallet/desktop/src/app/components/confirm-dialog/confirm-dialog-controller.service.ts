@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   ConfirmDialogComponent,
-  IConfirmDialogButton
+  IConfirmDialogButton,
 } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog.component';
 import { DOMController } from '@merit/desktop/app/components/dom.controller';
 

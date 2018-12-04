@@ -15,7 +15,7 @@ CurrencyController.DEFAULT_CURRENCY_DELAY = 10;
 CurrencyController.prototype.index = function(req, res) {
   var self = this;
   var currentTime = Date.now();
-  if (self.bitstampRate === 0 || currentTime >= (self.timestamp + self.currencyDelay)) {
+  if (self.bitstampRate === 0 || currentTime >= self.timestamp + self.currencyDelay) {
     self.timestamp = currentTime;
     request('https://www.bitstamp.net/api/ticker/', function(err, response, body) {
       if (err) {
@@ -26,20 +26,19 @@ CurrencyController.prototype.index = function(req, res) {
       }
       res.jsonp({
         status: 200,
-        data: { 
-          bitstamp: self.bitstampRate 
-        }
+        data: {
+          bitstamp: self.bitstampRate,
+        },
       });
     });
   } else {
     res.jsonp({
       status: 200,
-      data: { 
-        bitstamp: self.bitstampRate 
-      }
+      data: {
+        bitstamp: self.bitstampRate,
+      },
     });
   }
-
 };
 
 module.exports = CurrencyController;

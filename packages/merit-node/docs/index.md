@@ -1,5 +1,4 @@
-Merit Node
-============
+# Merit Node
 
 A Merit full node for building applications and services with Node.js. A node is extensible and can be configured to run additional services. At the minimum a node has an interface to Merit Core with additional indexing for more advanced address queries. Additional services can be enabled to make a node more useful such as exposing new APIs, running a block explorer and wallet service.
 
@@ -9,9 +8,9 @@ Merit Node is a part of Merit Lightwallet Stack and is distributed as a source c
 
 ## Prerequisites
 
-- GNU/Linux x86_32/x86_64, or OSX 64bit *(for bitcoind distributed binaries)*
+- GNU/Linux x86_32/x86_64, or OSX 64bit _(for bitcoind distributed binaries)_
 - Node.js v0.10, v0.12 or v4
-- ZeroMQ *(libzmq3-dev for Ubuntu/Debian or zeromq on OSX)*
+- ZeroMQ _(libzmq3-dev for Ubuntu/Debian or zeromq on OSX)_
 - ~200GB of disk storage
 - ~8GB of RAM
 

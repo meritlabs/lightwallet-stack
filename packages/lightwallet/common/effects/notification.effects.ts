@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { IRootAppState } from '@merit/common/reducers';
 import {
-  AddNotificationAction, formatNotification,
+  AddNotificationAction,
+  formatNotification,
   INotification,
-  LoadNotificationsAction, MarkNotificationAsReadAction,
+  LoadNotificationsAction,
+  MarkNotificationAsReadAction,
   NotificationsActionType,
   SaveNotificationsAction,
   selectNotificationsState,
-  UpdateNotificationsAction
+  UpdateNotificationsAction,
 } from '@merit/common/reducers/notifications.reducer';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -28,22 +30,28 @@ export class NotificationEffects {
    */
   @Effect()
   saveWhenNeeded$: Observable<SaveNotificationsAction> = this.actions$.pipe(
-    ofType(NotificationsActionType.Add, NotificationsActionType.Clear, NotificationsActionType.Delete, NotificationsActionType.MarkAsRead, NotificationsActionType.MarkAllAsRead),
-    map(() => new SaveNotificationsAction())
+    ofType(
+      NotificationsActionType.Add,
+      NotificationsActionType.Clear,
+      NotificationsActionType.Delete,
+      NotificationsActionType.MarkAsRead,
+      NotificationsActionType.MarkAllAsRead,
+    ),
+    map(() => new SaveNotificationsAction()),
   );
 
   @Effect()
   load$: Observable<UpdateNotificationsAction> = this.actions$.pipe(
     ofType(NotificationsActionType.Load),
     switchMap(() => fromPromise(this.persistenceService.getNotifications())),
-    map((notifications: INotification[]) => new UpdateNotificationsAction(notifications))
+    map((notifications: INotification[]) => new UpdateNotificationsAction(notifications)),
   );
 
   @Effect({ dispatch: false })
   save$ = this.actions$.pipe(
     ofType(NotificationsActionType.Save),
     withLatestFrom(this.store.select(selectNotificationsState)),
-    map(([action, notifications]) => this.persistenceService.setNotifications(notifications.notifications))
+    map(([action, notifications]) => this.persistenceService.setNotifications(notifications.notifications)),
   );
 
   @Effect({ dispatch: false })
@@ -66,17 +74,15 @@ export class NotificationEffects {
       const toast = this.toastCtrl.create({
         title: notification.title,
         message: notification.message,
-        cssClass: 'success'
+        cssClass: 'success',
       });
 
       toast.onDidDismiss = () => this.store.dispatch(new MarkNotificationAsReadAction(notification.id));
-    })
+    }),
   );
 
   @Effect()
-  loadOnFocus$ = fromEvent(window, 'focus').pipe(
-    map(() => new LoadNotificationsAction())
-  );
+  loadOnFocus$ = fromEvent(window, 'focus').pipe(map(() => new LoadNotificationsAction()));
 
   /**
    * Load notifications from storage on startup
@@ -85,9 +91,10 @@ export class NotificationEffects {
   @Effect()
   init$ = of(new LoadNotificationsAction());
 
-  constructor(private actions$: Actions,
-              private store: Store<IRootAppState>,
-              private persistenceService: PersistenceService2,
-              private toastCtrl: ToastControllerService) {
-  }
+  constructor(
+    private actions$: Actions,
+    private store: Store<IRootAppState>,
+    private persistenceService: PersistenceService2,
+    private toastCtrl: ToastControllerService,
+  ) {}
 }

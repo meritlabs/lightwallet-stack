@@ -39,8 +39,7 @@ Message.prototype.magicHash = function magicHash() {
 };
 
 Message.prototype._sign = function _sign(privateKey) {
-  $.checkArgument(privateKey instanceof PrivateKey,
-    'First argument should be an instance of PrivateKey');
+  $.checkArgument(privateKey instanceof PrivateKey, 'First argument should be an instance of PrivateKey');
   var hash = this.magicHash();
   var ecdsa = new ECDSA();
   ecdsa.hashbuf = hash;
@@ -113,7 +112,7 @@ Message.prototype.verify = function verify(meritAddress, signatureString) {
  * @param {String} str - A string of the message
  * @returns {Message} A new instance of a Message
  */
-Message.fromString = function (str) {
+Message.fromString = function(str) {
   return new Message(str);
 };
 
@@ -135,7 +134,7 @@ Message.fromJSON = function fromJSON(json) {
  */
 Message.prototype.toObject = function toObject() {
   return {
-    message: this.message
+    message: this.message,
   };
 };
 
@@ -151,7 +150,7 @@ Message.prototype.toJSON = function toJSON() {
  *
  * @returns {String} Message
  */
-Message.prototype.toString = function () {
+Message.prototype.toString = function() {
   return this.message;
 };
 
@@ -160,7 +159,7 @@ Message.prototype.toString = function () {
  *
  * @returns {String} Message
  */
-Message.prototype.inspect = function () {
+Message.prototype.inspect = function() {
   return '<Message: ' + this.toString() + '>';
 };
 

@@ -3,13 +3,17 @@ import { Directive, HostListener, Input } from '@angular/core';
 declare const gtag: any;
 
 @Directive({
-  selector: '[gtag]'
+  selector: '[gtag]',
 })
 export class GtagDirective {
-  @Input() gtagEvent: string;
-  @Input() gtagCategory: string;
-  @Input() gtagAction: string;
-  @Input() gtagLabel: string;
+  @Input()
+  gtagEvent: string;
+  @Input()
+  gtagCategory: string;
+  @Input()
+  gtagAction: string;
+  @Input()
+  gtagLabel: string;
 
   @HostListener('click')
   onClick() {
@@ -17,7 +21,7 @@ export class GtagDirective {
       gtag('event', this.gtagEvent, {
         event_category: this.gtagCategory,
         event_action: this.gtagAction,
-        event_label: this.gtagLabel
+        event_label: this.gtagLabel,
       });
     }
   }

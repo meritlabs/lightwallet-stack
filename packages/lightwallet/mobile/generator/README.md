@@ -6,6 +6,7 @@ Expample:
 
 `node run.js /some/awesome-stuff`
 will create following structure:
+
 ```
 src/
   app/

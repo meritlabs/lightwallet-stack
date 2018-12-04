@@ -5,14 +5,7 @@ import { SelectWalletModal } from '@merit/mobile/app/transact/select-wallet/sele
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
-  declarations: [
-    SelectWalletModal,
-  ],
-  imports: [
-    MomentModule,
-    CommonPipesModule,
-    IonicPageModule.forChild(SelectWalletModal),
-  ],
+  declarations: [SelectWalletModal],
+  imports: [MomentModule, CommonPipesModule, IonicPageModule.forChild(SelectWalletModal)],
 })
-export class SelectWalletComponentModule {
-}
+export class SelectWalletComponentModule {}

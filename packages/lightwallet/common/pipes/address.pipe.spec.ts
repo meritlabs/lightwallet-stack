@@ -12,27 +12,27 @@ const ALIAS = 'ibby-demo-mac';
     <div #test3>{{ 'mNAxzEYp7HcQCdMqstzftS548SSYx5PvWd' | address:5:true }}</div>
     <div #test4>{{ 'ibby-demo-mac' | address }}</div>
     <div #test5>{{ '@ibby-demo-mac' | address }}</div>
-  `
+  `,
 })
 class TestComponent {
-  @ViewChild('test1') test1: ElementRef;
-  @ViewChild('test2') test2: ElementRef;
-  @ViewChild('test3') test3: ElementRef;
-  @ViewChild('test4') test4: ElementRef;
-  @ViewChild('test5') test5: ElementRef;
+  @ViewChild('test1')
+  test1: ElementRef;
+  @ViewChild('test2')
+  test2: ElementRef;
+  @ViewChild('test3')
+  test3: ElementRef;
+  @ViewChild('test4')
+  test4: ElementRef;
+  @ViewChild('test5')
+  test5: ElementRef;
 }
 
 describe('Pipes.Address', () => {
-
-  let comp: TestComponent,
-    instance: ComponentFixture<TestComponent>;
+  let comp: TestComponent, instance: ComponentFixture<TestComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        AddressPipe,
-        TestComponent
-      ]
+      declarations: [AddressPipe, TestComponent],
     }).compileComponents();
     instance = TestBed.createComponent(TestComponent);
     comp = instance.componentInstance;

@@ -9,11 +9,9 @@ import { IonicPage, NavParams, ViewController } from 'ionic-angular';
   templateUrl: 'import-scan.html',
 })
 export class ImportScanView {
-
   err;
 
-  constructor(private viewCtrl: ViewController,
-              private navParams: NavParams) {
+  constructor(private viewCtrl: ViewController, private navParams: NavParams) {
     this.err = navParams.get('error');
     if (!this.err) {
       this.close();
@@ -23,5 +21,4 @@ export class ImportScanView {
   close() {
     this.viewCtrl.dismiss();
   }
-
 }

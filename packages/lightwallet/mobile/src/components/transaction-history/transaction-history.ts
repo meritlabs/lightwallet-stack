@@ -6,14 +6,13 @@ import { IDisplayTransaction, TransactionAction } from '@merit/common/models/tra
 @Component({
   selector: 'transaction-history',
   templateUrl: 'transaction-history.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransactionHistoryComponent {
   @Input()
   transactions: IDisplayTransaction[];
 
-  constructor(private modalCtrl: ModalController) {
-  }
+  constructor(private modalCtrl: ModalController) {}
 
   viewTxDetails(tx: IDisplayTransaction) {
     return this.modalCtrl.create('TxDetailsView', { tx }, MERIT_MODAL_OPTS).present();
@@ -52,12 +51,23 @@ export class TransactionHistoryComponent {
   }
 
   isRegularTx(transaction: IDisplayTransaction) {
-    return !transaction.isGrowthReward && !transaction.easySendUrl && !transaction.isPoolReward && !transaction.isInvite && !transaction.isCoinbase;
+    return (
+      !transaction.isGrowthReward &&
+      !transaction.easySendUrl &&
+      !transaction.isPoolReward &&
+      !transaction.isInvite &&
+      !transaction.isCoinbase
+    );
   }
 
   private isReward(transaction: IDisplayTransaction) {
     try {
-      return Boolean(transaction.isCoinbase) && transaction.outputs[0] && !isNaN(transaction.outputs[0].index) && !transaction.isInvite;
+      return (
+        Boolean(transaction.isCoinbase) &&
+        transaction.outputs[0] &&
+        !isNaN(transaction.outputs[0].index) &&
+        !transaction.isInvite
+      );
     } catch (e) {
       return false;
     }

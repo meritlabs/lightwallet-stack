@@ -8,22 +8,33 @@ var meritcore = require('..');
 var Opcode = meritcore.Opcode;
 
 describe('Opcode', function() {
-
   it('should create a new Opcode', function() {
     var opcode = new Opcode(5);
     should.exist(opcode);
   });
 
   it('should convert to a string with this handy syntax', function() {
-    Opcode(0).toString().should.equal('OP_0');
-    Opcode(96).toString().should.equal('OP_16');
-    Opcode(97).toString().should.equal('OP_NOP');
+    Opcode(0)
+      .toString()
+      .should.equal('OP_0');
+    Opcode(96)
+      .toString()
+      .should.equal('OP_16');
+    Opcode(97)
+      .toString()
+      .should.equal('OP_NOP');
   });
 
   it('should convert to a number with this handy syntax', function() {
-    Opcode('OP_0').toNumber().should.equal(0);
-    Opcode('OP_16').toNumber().should.equal(96);
-    Opcode('OP_NOP').toNumber().should.equal(97);
+    Opcode('OP_0')
+      .toNumber()
+      .should.equal(0);
+    Opcode('OP_16')
+      .toNumber()
+      .should.equal(96);
+    Opcode('OP_NOP')
+      .toNumber()
+      .should.equal(97);
   });
 
   describe('#fromNumber', function() {
@@ -48,14 +59,18 @@ describe('Opcode', function() {
 
   describe('#toNumber', function() {
     it('should work for 0', function() {
-      Opcode.fromNumber(0).toNumber().should.equal(0);
+      Opcode.fromNumber(0)
+        .toNumber()
+        .should.equal(0);
     });
   });
 
   describe('#buffer', function() {
     it('should correctly input/output a buffer', function() {
       var buf = new Buffer('a6', 'hex');
-      Opcode.fromBuffer(buf).toBuffer().should.deep.equal(buf);
+      Opcode.fromBuffer(buf)
+        .toBuffer()
+        .should.deep.equal(buf);
     });
   });
 
@@ -74,11 +89,13 @@ describe('Opcode', function() {
 
   describe('#toString', function() {
     it('should work for OP_0', function() {
-      Opcode.fromString('OP_0').toString().should.equal('OP_0');
+      Opcode.fromString('OP_0')
+        .toString()
+        .should.equal('OP_0');
     });
 
     it('should not work for non-opcode', function() {
-      expect(function(){
+      expect(function() {
         Opcode('OP_NOTACODE').toString();
       }).to.throw('Opcode does not have a string representation');
     });
@@ -113,12 +130,14 @@ describe('Opcode', function() {
     Opcode('OP_13'),
     Opcode('OP_14'),
     Opcode('OP_15'),
-    Opcode('OP_16')
+    Opcode('OP_16'),
   ];
 
   describe('@smallInt', function() {
     var testSmallInt = function(n, op) {
-      Opcode.smallInt(n).toString().should.equal(op.toString());
+      Opcode.smallInt(n)
+        .toString()
+        .should.equal(op.toString());
     };
 
     for (var i = 0; i < smallints.length; i++) {
@@ -126,15 +145,15 @@ describe('Opcode', function() {
       it('should work for small int ' + op, testSmallInt.bind(null, i, op));
     }
 
-    it('with not number', function () {
+    it('with not number', function() {
       Opcode.smallInt.bind(null, '2').should.throw('Invalid Argument');
     });
 
-    it('with n equal -1', function () {
+    it('with n equal -1', function() {
       Opcode.smallInt.bind(null, -1).should.throw('Invalid Argument');
     });
 
-    it('with n equal 17', function () {
+    it('with n equal 17', function() {
       Opcode.smallInt.bind(null, 17).should.throw('Invalid Argument');
     });
   });
@@ -153,13 +172,13 @@ describe('Opcode', function() {
       Opcode.isSmallIntOp(Opcode('OP_IF')).should.equal(false);
       Opcode.isSmallIntOp(Opcode('OP_NOP')).should.equal(false);
     });
-
   });
 
   describe('#inspect', function() {
     it('should output opcode by name, hex, and decimal', function() {
-      Opcode.fromString('OP_NOP').inspect().should.equal('<Opcode: OP_NOP, hex: 61, decimal: 97>');
+      Opcode.fromString('OP_NOP')
+        .inspect()
+        .should.equal('<Opcode: OP_NOP, hex: 61, decimal: 97>');
     });
   });
-
 });

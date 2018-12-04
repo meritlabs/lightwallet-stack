@@ -11,7 +11,6 @@ var index = require('../lib');
 var log = index.log;
 
 describe('Merit Node', function() {
-
   var baseConfig = {};
 
   var Node;
@@ -37,8 +36,8 @@ describe('Merit Node', function() {
         services: [
           {
             name: 'test1',
-            module: TestService
-          }
+            module: TestService,
+          },
         ],
       };
       var TestNode = proxyquire('../lib/node', {});
@@ -60,8 +59,8 @@ describe('Merit Node', function() {
         services: [
           {
             name: 'test1',
-            module: TestService
-          }
+            module: TestService,
+          },
         ],
       };
       var TestNode = proxyquire('../lib/node', {});
@@ -75,8 +74,8 @@ describe('Merit Node', function() {
         services: [
           {
             name: 'test1',
-            module: TestService
-          }
+            module: TestService,
+          },
         ],
       };
       var TestNode = proxyquire('../lib/node', {});
@@ -92,10 +91,10 @@ describe('Merit Node', function() {
         services: [
           {
             name: 'test1',
-            module: TestService
-          }
+            module: TestService,
+          },
         ],
-        formatLogs: false
+        formatLogs: false,
       };
       var TestNode = proxyquire('../lib/node', {});
       var node = new TestNode(config);
@@ -116,7 +115,7 @@ describe('Merit Node', function() {
     });
     it('will use remoteAddress config option', function() {
       var node = new Node(baseConfig);
-      var bus = node.openBus({remoteAddress: '127.0.0.1'});
+      var bus = node.openBus({ remoteAddress: '127.0.0.1' });
       bus.remoteAddress.should.equal('127.0.0.1');
     });
   });
@@ -129,11 +128,11 @@ describe('Merit Node', function() {
           getAPIMethods: sinon.stub().returns(['db1', 'db2']),
         },
         service1: {
-          getAPIMethods: sinon.stub().returns(['mda1', 'mda2'])
+          getAPIMethods: sinon.stub().returns(['mda1', 'mda2']),
         },
         service2: {
-          getAPIMethods: sinon.stub().returns(['mdb1', 'mdb2'])
-        }
+          getAPIMethods: sinon.stub().returns(['mdb1', 'mdb2']),
+        },
       };
 
       var methods = node.getAllAPIMethods();
@@ -147,8 +146,8 @@ describe('Merit Node', function() {
         },
         service1: {},
         service2: {
-          getAPIMethods: sinon.stub().returns(['mdb1', 'mdb2'])
-        }
+          getAPIMethods: sinon.stub().returns(['mdb1', 'mdb2']),
+        },
       };
 
       var methods = node.getAllAPIMethods();
@@ -164,11 +163,11 @@ describe('Merit Node', function() {
           getPublishEvents: sinon.stub().returns(['db1', 'db2']),
         },
         service1: {
-          getPublishEvents: sinon.stub().returns(['mda1', 'mda2'])
+          getPublishEvents: sinon.stub().returns(['mda1', 'mda2']),
         },
         service2: {
-          getPublishEvents: sinon.stub().returns(['mdb1', 'mdb2'])
-        }
+          getPublishEvents: sinon.stub().returns(['mdb1', 'mdb2']),
+        },
       };
       var events = node.getAllPublishEvents();
       events.should.deep.equal(['db1', 'db2', 'mda1', 'mda2', 'mdb1', 'mdb2']);
@@ -181,8 +180,8 @@ describe('Merit Node', function() {
         },
         service1: {},
         service2: {
-          getPublishEvents: sinon.stub().returns(['mdb1', 'mdb2'])
-        }
+          getPublishEvents: sinon.stub().returns(['mdb1', 'mdb2']),
+        },
       };
       var events = node.getAllPublishEvents();
       events.should.deep.equal(['db1', 'db2', 'mdb1', 'mdb2']);
@@ -196,27 +195,27 @@ describe('Merit Node', function() {
         {
           name: 'chain',
           module: {
-            dependencies: ['db']
-          }
+            dependencies: ['db'],
+          },
         },
         {
           name: 'db',
           module: {
-            dependencies: ['daemon', 'p2p']
-          }
+            dependencies: ['daemon', 'p2p'],
+          },
         },
         {
-          name:'daemon',
+          name: 'daemon',
           module: {
-            dependencies: []
-          }
+            dependencies: [],
+          },
         },
         {
           name: 'p2p',
           module: {
-            dependencies: []
-          }
-        }
+            dependencies: [],
+          },
+        },
       ];
       var order = node.getServiceOrder();
       order[0].name.should.equal('daemon');
@@ -242,14 +241,12 @@ describe('Merit Node', function() {
       var getData = sinon.stub();
       TestService.prototype.getData = getData;
       TestService.prototype.getAPIMethods = function() {
-        return [
-          ['getData', this, this.getData, 1]
-        ];
+        return [['getData', this, this.getData, 1]];
       };
       var service = {
         name: 'testservice',
         module: TestService,
-        config: {}
+        config: {},
       };
       node._startService(service, function(err) {
         if (err) {
@@ -270,9 +267,7 @@ describe('Merit Node', function() {
       var getData = sinon.stub();
       TestService.prototype.getData = getData;
       TestService.prototype.getAPIMethods = function() {
-        return [
-          ['getData', this, this.getData, 1]
-        ];
+        return [['getData', this, this.getData, 1]];
       };
       var service = {
         name: 'testservice',
@@ -297,7 +292,7 @@ describe('Merit Node', function() {
       var service = {
         name: 'testservice',
         module: TestService,
-        config: {}
+        config: {},
       };
       node._startService(service, function(err) {
         err.message.should.equal('test');
@@ -321,9 +316,7 @@ describe('Merit Node', function() {
       TestService.prototype.start = sinon.stub().callsArg(0);
       TestService.prototype.getData = function() {};
       TestService.prototype.getAPIMethods = function() {
-        return [
-          ['getData', this, this.getData, 1]
-        ];
+        return [['getData', this, this.getData, 1]];
       };
 
       function TestService2() {}
@@ -331,22 +324,20 @@ describe('Merit Node', function() {
       TestService2.prototype.start = sinon.stub().callsArg(0);
       TestService2.prototype.getData2 = function() {};
       TestService2.prototype.getAPIMethods = function() {
-        return [
-          ['getData2', this, this.getData2, 1]
-        ];
+        return [['getData2', this, this.getData2, 1]];
       };
 
       node.getServiceOrder = sinon.stub().returns([
         {
           name: 'test1',
           module: TestService,
-          config: {}
+          config: {},
         },
         {
           name: 'test2',
           module: TestService2,
-          config: {}
-        }
+          config: {},
+        },
       ]);
       node.start(function() {
         TestService2.prototype.start.callCount.should.equal(1);
@@ -364,9 +355,7 @@ describe('Merit Node', function() {
       TestService.prototype.start = sinon.stub().callsArg(0);
       TestService.prototype.getData = function() {};
       TestService.prototype.getAPIMethods = function() {
-        return [
-          ['getData', this, this.getData, 1]
-        ];
+        return [['getData', this, this.getData, 1]];
       };
 
       function ConflictService() {}
@@ -374,22 +363,20 @@ describe('Merit Node', function() {
       ConflictService.prototype.start = sinon.stub().callsArg(0);
       ConflictService.prototype.getData = function() {};
       ConflictService.prototype.getAPIMethods = function() {
-        return [
-          ['getData', this, this.getData, 1]
-        ];
+        return [['getData', this, this.getData, 1]];
       };
 
       node.getServiceOrder = sinon.stub().returns([
         {
           name: 'test',
           module: TestService,
-          config: {}
+          config: {},
         },
         {
           name: 'conflict',
           module: ConflictService,
-          config: {}
-        }
+          config: {},
+        },
       ]);
 
       node.start(function(err) {
@@ -397,7 +384,6 @@ describe('Merit Node', function() {
         err.message.should.match(/^Existing API method\(s\) exists\:/);
         done();
       });
-
     });
     it('will handle service with getAPIMethods undefined', function(done) {
       var node = new Node(baseConfig);
@@ -411,7 +397,7 @@ describe('Merit Node', function() {
         {
           name: 'test',
           module: TestService,
-          config: {}
+          config: {},
         },
       ]);
 
@@ -419,7 +405,6 @@ describe('Merit Node', function() {
         TestService.prototype.start.callCount.should.equal(1);
         done();
       });
-
     });
   });
 
@@ -433,14 +418,14 @@ describe('Merit Node', function() {
     });
     it('it will return the network name for testnet', function() {
       var baseConfig = {
-        network: 'testnet'
+        network: 'testnet',
       };
       var node = new Node(baseConfig);
       node.getNetworkName().should.equal('testnet');
     });
     it('it will return the network for regtest', function() {
       var baseConfig = {
-        network: 'regtest'
+        network: 'regtest',
       };
       var node = new Node(baseConfig);
       node.getNetworkName().should.equal('regtest');
@@ -462,20 +447,18 @@ describe('Merit Node', function() {
       TestService.prototype.stop = sinon.stub().callsArg(0);
       TestService.prototype.getData = function() {};
       TestService.prototype.getAPIMethods = function() {
-        return [
-          ['getData', this, this.getData, 1]
-        ];
+        return [['getData', this, this.getData, 1]];
       };
       node.services = {
-        'test1': new TestService({node: node})
+        test1: new TestService({ node: node }),
       };
       node.test2 = {};
       node.test2.stop = sinon.stub().callsArg(0);
       node.getServiceOrder = sinon.stub().returns([
         {
           name: 'test1',
-          module: TestService
-        }
+          module: TestService,
+        },
       ]);
       node.stop(function() {
         TestService.prototype.stop.callCount.should.equal(1);

@@ -34,7 +34,7 @@ export interface IAppConfig {
     };
     copay: {
       url: string;
-    }
+    };
   };
 
   rateApp: {
@@ -44,7 +44,6 @@ export interface IAppConfig {
       wp: string;
     };
   };
-
 
   recentTransactions: {
     enabled: boolean;
@@ -63,8 +62,8 @@ export interface IAppConfig {
   };
 
   help: {
-    url: string
-  },
+    url: string;
+  };
 
   pushNotificationsEnabled: boolean;
 
@@ -84,14 +83,13 @@ export interface IAppConfig {
   // Custom Aliases
   // Stored like: aliasFor[WalletId] = "Full Wallet"
   aliasFor?: object;
-
 }
 
 const configDefault: IAppConfig = {
   // wallet limits
   limits: {
     totalCopayers: 6,
-    mPlusN: 100
+    mPlusN: 100,
   },
 
   // wallet default config
@@ -109,83 +107,82 @@ const configDefault: IAppConfig = {
       alternativeName: 'US Dollar',
       alternativeIsoCode: 'USD',
       defaultLanguage: '',
-      feeLevel: 'normal'
-    }
+      feeLevel: 'normal',
+    },
   },
 
   download: {
     bitpay: {
-      url: 'https://merit.me/wallet'
+      url: 'https://merit.me/wallet',
     },
     copay: {
-      url: 'https://merit.me/#download'
-    }
+      url: 'https://merit.me/#download',
+    },
   },
 
   rateApp: {
     lightwallet: {
       ios: 'http://coming.soon',
       android: 'http://coming.soon',
-      wp: ''
-    }
+      wp: '',
+    },
   },
 
   // External services
   recentTransactions: {
-    enabled: true
+    enabled: true,
   },
 
   hideNextSteps: {
-    enabled: false
+    enabled: false,
   },
 
   rates: {
-    url: 'https://insight.merit.me:443/api/rates'
+    url: 'https://insight.merit.me:443/api/rates',
   },
 
   release: {
-    url: 'https://api.github.com/repos/meritlabs/lightwallet-stack/releases/latest'
+    url: 'https://api.github.com/repos/meritlabs/lightwallet-stack/releases/latest',
   },
 
   help: {
-    url: 'https://help.merit.me'
+    url: 'https://help.merit.me',
   },
 
   pushNotificationsEnabled: true,
 
   confirmedTxsNotifications: {
-    enabled: true
+    enabled: true,
   },
 
   emailNotifications: {
     enabled: false,
-    emailAddress: ''
+    emailAddress: '',
   },
 
   log: {
-    filter: 'debug'
-  }
-
+    filter: 'debug',
+  },
 };
 
 @Injectable()
 export class ConfigService {
   private configCache: IAppConfig = _.clone(configDefault);
 
-  constructor(private logger: LoggerService,
-              private persistence: PersistenceService) {
+  constructor(private logger: LoggerService, private persistence: PersistenceService) {
     this.load()
       .then(() => {
         this.logger.debug('ConfigService initialized.');
-      }).catch(err => {
-      this.logger.warn('ConfigService could not load default config');
-    });
+      })
+      .catch(err => {
+        this.logger.warn('ConfigService could not load default config');
+      });
   }
 
   async load(): Promise<IAppConfig> {
     try {
       const config: any = await this.persistence.getConfig();
-      this.configCache = _.clone(_.isEmpty(config)? configDefault : config);
+      this.configCache = _.clone(_.isEmpty(config) ? configDefault : config);
     } catch (err) {
       this.logger.error(err);
       throw err;
@@ -215,5 +212,4 @@ export class ConfigService {
   getDefaults(): IAppConfig {
     return configDefault;
   }
-
 }

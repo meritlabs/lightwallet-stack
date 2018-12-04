@@ -25,7 +25,7 @@ var ExpressApp = function(node) {
   // If merit-node isn't here, then you probably didn't run MWS from merit-node.
 
   if (!node) {
-    throw new Error("Merit node not detected; shutting down...");
+    throw new Error('Merit node not detected; shutting down...');
   }
 
   this.node = node;
@@ -48,7 +48,10 @@ ExpressApp.prototype.start = function(opts, cb) {
   this.app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'x-signature,x-identity,x-session,x-client-version,x-wallet-id,X-Requested-With,Content-Type,Authorization');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'x-signature,x-identity,x-session,x-client-version,x-wallet-id,X-Requested-With,Content-Type,Authorization',
+    );
     res.setHeader('x-service-version', WalletService.getServiceVersion());
     next();
   });
@@ -59,11 +62,9 @@ ExpressApp.prototype.start = function(opts, cb) {
       return;
     }
     next();
-  }
+  };
   this.app.use(allowCORS);
   this.app.enable('trust proxy');
-
-
 
   // handle `abort` https://nodejs.org/api/http.html#http_event_abort
   this.app.use(function(req, res, next) {
@@ -73,48 +74,52 @@ ExpressApp.prototype.start = function(opts, cb) {
     next();
   });
 
-  var POST_LIMIT = 10 * 1024 * 1024 /* Max POST 10mb */ ;
+  var POST_LIMIT = 10 * 1024 * 1024 /* Max POST 10mb */;
 
-  this.app.use(bodyParser.json({
-    limit: POST_LIMIT
-  }));
+  this.app.use(
+    bodyParser.json({
+      limit: POST_LIMIT,
+    }),
+  );
 
   if (opts.disableLogs) {
     log.level = 'silent';
   } else {
     var morgan = require('morgan');
     morgan.token('walletId', function getId(req) {
-      return req.walletId
+      return req.walletId;
     });
 
     morgan.token('copayerId', function getId(req) {
-      return req.copayerId
+      return req.copayerId;
     });
 
-    var logFormat = ':remote-addr :date[iso] ":method :url" :status :res[content-length] :req[content-length] :response-time ":user-agent" :walletId :copayerId';
+    var logFormat =
+      ':remote-addr :date[iso] ":method :url" :status :res[content-length] :req[content-length] :response-time ":user-agent" :walletId :copayerId';
     var logOpts = {
       skip: function(req, res) {
         if (res.statusCode != 200) return false;
         return req.path.indexOf('/notifications/') >= 0;
-      }
+      },
     };
     this.app.use(morgan(logFormat, logOpts));
   }
 
   var router = express.Router();
 
-
   function returnError(err, res, req) {
     if (err instanceof WalletService.ClientError) {
       // Return a 401 if the unlock code is not valid, or the request is broadly unauthorized.
-      var status = (err.code == 'NOT_AUTHORIZED') ? 401 : 400;
-      if (!opts.disableLogs)
-        log.info('Client Err: ' + status + ' ' + req.url + ' ' + JSON.stringify(err));
+      var status = err.code == 'NOT_AUTHORIZED' ? 401 : 400;
+      if (!opts.disableLogs) log.info('Client Err: ' + status + ' ' + req.url + ' ' + JSON.stringify(err));
 
-      return res.status(status).json({
-        code: err.code,
-        message: err.message,
-      }).end();
+      return res
+        .status(status)
+        .json({
+          code: err.code,
+          message: err.message,
+        })
+        .end();
     } else {
       var code = 500,
         message;
@@ -125,18 +130,20 @@ ExpressApp.prototype.start = function(opts, cb) {
 
       var m = message || err.toString();
 
-      if (!opts.disableLogs)
-        log.error(req.url + ' :' + code + ':' + m);
+      if (!opts.disableLogs) log.error(req.url + ' :' + code + ':' + m);
 
-      return res.status(code || 500).json({
-        error: m,
-      }).end();
+      return res
+        .status(code || 500)
+        .json({
+          error: m,
+        })
+        .end();
     }
-  };
+  }
 
   function logDeprecated(req) {
     log.warn('DEPRECATED', req.method, req.url, '(' + req.header('x-client-version') + ')');
-  };
+  }
 
   function getCredentials(req) {
     var identity = req.header('x-identity');
@@ -147,14 +154,14 @@ ExpressApp.prototype.start = function(opts, cb) {
       signature: req.header('x-signature'),
       session: req.header('x-session'),
     };
-  };
+  }
 
   function getServer(req, res) {
     var opts = {
       clientVersion: req.header('x-client-version'),
     };
     return WalletService.getInstance(opts);
-  };
+  }
 
   function getServerWithAuth(req, res, opts, cb) {
     if (_.isFunction(opts)) {
@@ -165,15 +172,17 @@ ExpressApp.prototype.start = function(opts, cb) {
 
     var util = require('util');
 
-
     var credentials = getCredentials(req);
     if (!credentials) {
-      log.debug("NO CREDENTIALS SUPPLIED TO MWS");
-      return returnError(new WalletService.ClientError({
-        code: 'NOT_AUTHORIZED'
-      }), res, req);
+      log.debug('NO CREDENTIALS SUPPLIED TO MWS');
+      return returnError(
+        new WalletService.ClientError({
+          code: 'NOT_AUTHORIZED',
+        }),
+        res,
+        req,
+      );
     }
-
 
     var auth = {
       copayerId: credentials.copayerId,
@@ -187,7 +196,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     }
     WalletService.getInstanceWithAuth(auth, function(err, server) {
       if (err) {
-        log.debug("Could not get Wallet Instance with Auth");
+        log.debug('Could not get Wallet Instance with Auth');
         return returnError(err, res, req);
       }
 
@@ -197,22 +206,24 @@ ExpressApp.prototype.start = function(opts, cb) {
 
       return cb(server);
     });
-  };
-
+  }
 
   var createWalletLimiter;
 
   if (Defaults.RateLimit.createWallet && !opts.ignoreRateLimiter) {
-    log.info('', 'Limiting wallet creation per IP: %d req/h', (Defaults.RateLimit.createWallet.max / Defaults.RateLimit.createWallet.windowMs * 60 * 60 * 1000).toFixed(2))
+    log.info(
+      '',
+      'Limiting wallet creation per IP: %d req/h',
+      ((Defaults.RateLimit.createWallet.max / Defaults.RateLimit.createWallet.windowMs) * 60 * 60 * 1000).toFixed(2),
+    );
     createWalletLimiter = new RateLimit(Defaults.RateLimit.createWallet);
     // router.use(/\/v\d+\/wallets\/$/, createWalletLimiter)
   } else {
     log.info('', 'Running without wallet creation rate limiting');
     createWalletLimiter = function(req, res, next) {
-      next()
+      next();
     };
   }
-
 
   router.post('/v1/wallets/', createWalletLimiter, function(req, res) {
     var server;
@@ -227,7 +238,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     server.createWallet(req.body, function(err, walletId) {
       if (err) return returnError(err, res, req);
       res.json({
-        walletId
+        walletId,
       });
     });
   });
@@ -242,10 +253,9 @@ ExpressApp.prototype.start = function(opts, cb) {
 
     server.recreateWallet(req.body, function(err, walletId, parentAddress) {
       if (err) return returnError(err, res, req);
-      res.json({walletId, parentAddress});
+      res.json({ walletId, parentAddress });
     });
   });
-
 
   router.put('/v1/copayers/:id/', function(req, res) {
     req.body.copayerId = req.params['id'];
@@ -290,26 +300,31 @@ ExpressApp.prototype.start = function(opts, cb) {
   });
 
   router.get('/v1/wallets/:identifier/', function(req, res) {
-    getServerWithAuth(req, res, {
-      onlySupportStaff: true
-    }, function(server) {
-      var opts = {
-        identifier: req.params['identifier'],
-      };
-      server.getWalletFromIdentifier(opts, function(err, wallet) {
-        if (err) return returnError(err, res, req);
-        if (!wallet) return res.end();
-
-        server.walletId = wallet.id;
-        var opts = {};
-        if (req.query.includeExtendedInfo == '1') opts.includeExtendedInfo = true;
-        if (req.query.twoStep == '1') opts.twoStep = true;
-        server.getStatus(opts, function(err, status) {
+    getServerWithAuth(
+      req,
+      res,
+      {
+        onlySupportStaff: true,
+      },
+      function(server) {
+        var opts = {
+          identifier: req.params['identifier'],
+        };
+        server.getWalletFromIdentifier(opts, function(err, wallet) {
           if (err) return returnError(err, res, req);
-          res.json(status);
+          if (!wallet) return res.end();
+
+          server.walletId = wallet.id;
+          var opts = {};
+          if (req.query.includeExtendedInfo == '1') opts.includeExtendedInfo = true;
+          if (req.query.twoStep == '1') opts.twoStep = true;
+          server.getStatus(opts, function(err, status) {
+            if (err) return returnError(err, res, req);
+            res.json(status);
+          });
         });
-      });
-    });
+      },
+    );
   });
 
   router.get('/v1/preferences/', function(req, res) {
@@ -372,7 +387,7 @@ ExpressApp.prototype.start = function(opts, cb) {
     getServerWithAuth(req, res, function(server) {
       var opts = {};
       if (req.query.limit) opts.limit = +req.query.limit;
-      opts.reverse = (req.query.reverse == '1');
+      opts.reverse = req.query.reverse == '1';
 
       server.getMainAddresses(opts, function(err, addresses) {
         if (err) return returnError(err, res, req);
@@ -512,7 +527,7 @@ ExpressApp.prototype.start = function(opts, cb) {
       server.removePendingTx(req.body, function(err) {
         if (err) return returnError(err, res, req);
         res.json({
-          success: true
+          success: true,
         });
         res.end();
       });
@@ -530,15 +545,14 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-
   router.get('/v1/unlockrequests', function(req, res) {
-      getServerWithAuth(req, res, function(server) {
-          server.getUnlockRequests(opts, function(err, refs) {
-              if (err) return returnError(err, res, req);
-              res.json(refs);
-              res.end();
-          });
+    getServerWithAuth(req, res, function(server) {
+      server.getUnlockRequests(opts, function(err, refs) {
+        if (err) return returnError(err, res, req);
+        res.json(refs);
+        res.end();
       });
+    });
   });
 
   router.get('/v1/txhistory/', function(req, res) {
@@ -617,20 +631,27 @@ ExpressApp.prototype.start = function(opts, cb) {
   });
 
   router.get('/v1/notifications/', function(req, res) {
-    getServerWithAuth(req, res, {
-      allowSession: true,
-    }, function(server) {
-      var timeSpan = req.query.timeSpan ? Math.min(+req.query.timeSpan || 0, Defaults.MAX_NOTIFICATIONS_TIMESPAN) : Defaults.NOTIFICATIONS_TIMESPAN;
-      var opts = {
-        minTs: +Date.now() - (timeSpan * 1000),
-        notificationId: req.query.notificationId,
-      };
+    getServerWithAuth(
+      req,
+      res,
+      {
+        allowSession: true,
+      },
+      function(server) {
+        var timeSpan = req.query.timeSpan
+          ? Math.min(+req.query.timeSpan || 0, Defaults.MAX_NOTIFICATIONS_TIMESPAN)
+          : Defaults.NOTIFICATIONS_TIMESPAN;
+        var opts = {
+          minTs: +Date.now() - timeSpan * 1000,
+          notificationId: req.query.notificationId,
+        };
 
-      server.getNotifications(opts, function(err, notifications) {
-        if (err) return returnError(err, res, req);
-        res.json(notifications);
-      });
-    });
+        server.getNotifications(opts, function(err, notifications) {
+          if (err) return returnError(err, res, req);
+          res.json(notifications);
+        });
+      },
+    );
   });
 
   router.get('/v1/txnotes/:txid', function(req, res) {
@@ -694,7 +715,6 @@ ExpressApp.prototype.start = function(opts, cb) {
       });
     });
   });
-
 
   router.delete('/v1/pushnotifications/subscriptions/:token', function(req, res) {
     var opts = {
@@ -760,12 +780,12 @@ ExpressApp.prototype.start = function(opts, cb) {
   * EasySend Routes
   */
   router.get('/v1/easyreceive/validate/:scriptId', function(req, res) {
-    var scriptId = req.params['scriptId']
+    var scriptId = req.params['scriptId'];
 
     var server = getServer(req, res);
     server.validateEasyScript(scriptId, function(err, response) {
       if (err) {
-        log.debug("Called Validate EasyReceipt in MWS: ", err);
+        log.debug('Called Validate EasyReceipt in MWS: ', err);
         return returnError(err, res, req);
       }
       res.json(response);
@@ -811,14 +831,14 @@ ExpressApp.prototype.start = function(opts, cb) {
   router.get('/v1/communityinfo', (req, res) => {
     const opts = {
       network: req.query.network || 'testnet',
-      keys: req.query.keys.split(',')
+      keys: req.query.keys.split(','),
     };
 
     getServerWithAuth(req, res, server => {
       server.getCommunityInfo(opts, (err, response) => {
         if (err) return returnError(err, res, req);
         res.json(response);
-      })
+      });
     });
   });
 
@@ -859,10 +879,10 @@ ExpressApp.prototype.start = function(opts, cb) {
 
   router.post('/v1/vaults/:id/update_info', function(req, res) {
     getServerWithAuth(req, res, function(server) {
-        server.updateVaultInfo(req.body, function(err, vault) {
-            if (err) return returnError(err, res, req);
-            res.json(vault);
-        });
+      server.updateVaultInfo(req.body, function(err, vault) {
+        if (err) return returnError(err, res, req);
+        res.json(vault);
+      });
     });
   });
 
@@ -883,13 +903,12 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-
   router.get('/v1/vaults/:vaultId', function(req, res) {
     getServerWithAuth(req, res, function(server) {
-        server.getVault(req.params.vaultId, function(err, vault) {
-            if (err) return returnError(err, res, req);
-            res.json(vault);
-        });
+      server.getVault(req.params.vaultId, function(err, vault) {
+        if (err) return returnError(err, res, req);
+        res.json(vault);
+      });
     });
   });
 
@@ -929,72 +948,74 @@ ExpressApp.prototype.start = function(opts, cb) {
   });
 
   router.get('/v1/rates', function(req, res) {
-    const dummy = [{"code": "USD", "name": "US Dollar", "rate": 0}];
+    const dummy = [{ code: 'USD', name: 'US Dollar', rate: 0 }];
     res.json(dummy);
     res.end();
   });
 
   router.post('/v1/globalsend/register', function(req, res) {
-      getServerWithAuth(req, res, function(server) {
-          server.registerGlobalSend(req.body, function(err) {
-              if (err) return returnError(err, res, req);
-              res.json('ok').end();
-          });
+    getServerWithAuth(req, res, function(server) {
+      server.registerGlobalSend(req.body, function(err) {
+        if (err) return returnError(err, res, req);
+        res.json('ok').end();
       });
+    });
   });
 
   router.post('/v1/globalsend/cancel', function(req, res) {
-      getServerWithAuth(req, res, function(server) {
-          server.cancelGlobalSend(req.body, function(err) {
-              if (err) return returnError(err, res, req);
-              res.json('ok').end();
-          });
+    getServerWithAuth(req, res, function(server) {
+      server.cancelGlobalSend(req.body, function(err) {
+        if (err) return returnError(err, res, req);
+        res.json('ok').end();
       });
+    });
   });
 
   router.get('/v1/globalsend/history', function(req, res) {
-      getServerWithAuth(req, res, function(server) {
-          server.getGlobalSends(req, function(err, links) {
-              if (err) return returnError(err, res, req);
-              res.json(links).end();
-          });
+    getServerWithAuth(req, res, function(server) {
+      server.getGlobalSends(req, function(err, links) {
+        if (err) return returnError(err, res, req);
+        res.json(links).end();
       });
+    });
   });
-
 
   router.post('/v1/globalsend', (req, res) => {
     getServerWithAuth(req, res, () => {
-      request({
-        method: 'POST',
-        uri: opts.meritMessagingUrl + '/globalsend',
-        json: req.body
-      }, (err, response) => {
-        if (!err && parseInt(response.statusCode) === 200) {
-          res.send();
-        } else {
-          res.status(400).send();
-        }
-      });
+      request(
+        {
+          method: 'POST',
+          uri: opts.meritMessagingUrl + '/globalsend',
+          json: req.body,
+        },
+        (err, response) => {
+          if (!err && parseInt(response.statusCode) === 200) {
+            res.send();
+          } else {
+            res.status(400).send();
+          }
+        },
+      );
     });
   });
 
   router.get('/v1/community/rank/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
-        server.getCommunityRank(function(err, txs) {
-            if (err) return returnError(err, res, req);
-            res.json(txs);
-            res.end();
-        });
+      server.getCommunityRank(function(err, txs) {
+        if (err) return returnError(err, res, req);
+        res.json(txs);
+        res.end();
+      });
     });
   });
 
   router.post('/v1/community/ranks/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
-        server.getCommunityRanks(req.body.addresses, function(err, txs) {
-            if (err) return returnError(err, res, req);
-            res.json(txs);
-            res.end();
-        });
+      server.getCommunityRanks(req.body.addresses, function(err, txs) {
+        if (err) return returnError(err, res, req);
+        res.json(txs);
+        res.end();
+      });
     });
   });
 
@@ -1013,7 +1034,6 @@ ExpressApp.prototype.start = function(opts, cb) {
   // This allows us to access Meritd directly from MWS.
   opts.node = this.node;
   WalletService.initialize(opts, cb);
-
 };
 
 module.exports = ExpressApp;

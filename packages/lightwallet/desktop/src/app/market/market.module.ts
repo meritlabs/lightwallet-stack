@@ -19,14 +19,7 @@ import { CommonPipesModule } from '@merit/common/common-pipes.module';
     SharedComponentsModule.forRoot(),
     CommonPipesModule,
   ],
-  declarations: [
-    MarketLoginView,
-    EscrowPaymentView,
-  ],
-  providers: [
-    EscrowGuard,
-    WalletService,
-    SendService,
-  ]
+  declarations: [MarketLoginView, EscrowPaymentView],
+  providers: [EscrowGuard, WalletService, SendService],
 })
 export class MarketModule {}

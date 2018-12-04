@@ -16,10 +16,18 @@ export class MobileAlertService extends AlertService {
           .create({
             title: 'Enter wallet password',
             cssClass: highlightInvalid ? 'invalid-input-prompt password-prompt' : 'password-prompt',
-            inputs: [ { name: 'password', placeholder: 'Password', type: 'text' } ],
+            inputs: [{ name: 'password', placeholder: 'Password', type: 'text' }],
             buttons: [
-              {text: 'Cancel', role: 'cancel', handler: () => { reject(); }},
-              { text: 'Ok', handler: data => {
+              {
+                text: 'Cancel',
+                role: 'cancel',
+                handler: () => {
+                  reject();
+                },
+              },
+              {
+                text: 'Ok',
+                handler: data => {
                   if (!data.password) {
                     showPassPrompt(true);
                   } else {
@@ -31,10 +39,11 @@ export class MobileAlertService extends AlertService {
                       showPassPrompt(true);
                     }
                   }
-                }
-              }
-            ]
-          }).present();
+                },
+              },
+            ],
+          })
+          .present();
       };
 
       showPassPrompt();

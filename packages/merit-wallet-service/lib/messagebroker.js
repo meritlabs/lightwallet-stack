@@ -27,7 +27,7 @@ function MessageBroker(opts) {
 
     log.info('Using message broker server at ' + url);
   }
-};
+}
 
 nodeutil.inherits(MessageBroker, events.EventEmitter);
 

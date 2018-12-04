@@ -47,11 +47,10 @@ export class WalletEffects {
   refreshOne$: Observable<UpdateOneWalletAction> = this.actions$.pipe(
     ofType(WalletsActionType.RefreshOne),
     switchMap((action: RefreshOneWalletAction) =>
-      this.store.select(selectWalletById(action.walletId))
-        .pipe(
-          take(1),
-          switchMap((wallet: DisplayWallet) => fromPromise(updateDisplayWallet(wallet, action.opts))),
-        ),
+      this.store.select(selectWalletById(action.walletId)).pipe(
+        take(1),
+        switchMap((wallet: DisplayWallet) => fromPromise(updateDisplayWallet(wallet, action.opts))),
+      ),
     ),
     map((wallet: DisplayWallet) => new UpdateOneWalletAction(wallet)),
   );
@@ -59,20 +58,30 @@ export class WalletEffects {
   // TODO(ibby): update totals only if the numbers we depend on changed --> use distinct/distinctUntilChanged operators
   @Effect()
   updateTotals$: Observable<UpdateWalletTotalsAction> = this.actions$.pipe(
-    ofType(WalletsActionType.Update, WalletsActionType.UpdateOne, WalletsActionType.Add, WalletsActionType.DeleteWallet),
+    ofType(
+      WalletsActionType.Update,
+      WalletsActionType.UpdateOne,
+      WalletsActionType.Add,
+      WalletsActionType.DeleteWallet,
+    ),
     withLatestFrom(this.store.select(selectWallets)),
     map(([action, wallets]) => new UpdateWalletTotalsAction(this.calculateTotals(wallets))),
   );
 
   @Effect()
   updateInviteRequests$: Observable<UpdateInviteRequestsAction> = this.actions$.pipe(
-    ofType(WalletsActionType.UpdateOne, WalletsActionType.Update, WalletsActionType.Add, WalletsActionType.DeleteWallet),
+    ofType(
+      WalletsActionType.UpdateOne,
+      WalletsActionType.Update,
+      WalletsActionType.Add,
+      WalletsActionType.DeleteWallet,
+    ),
     withLatestFrom(this.store.select(selectWallets)),
     map(([action, wallets]) => wallets.reduce((requests, wallet) => requests.concat(wallet.inviteRequests), [])),
     withLatestFrom(fromPromise(this.persistenceService.getHiddenUnlockRequestsAddresses())),
     map(([inviteRequests, hiddenAddresses]) => {
       const hiddenAddressesMap = {};
-      hiddenAddresses.forEach(address => hiddenAddressesMap[address] = true);
+      hiddenAddresses.forEach(address => (hiddenAddressesMap[address] = true));
       return inviteRequests.filter(request => !hiddenAddressesMap[request.address]);
     }),
     map((inviteRequests: any[]) => new UpdateInviteRequestsAction(inviteRequests)),
@@ -86,9 +95,11 @@ export class WalletEffects {
     map((args: any[]) => args[1].map((wallet: DisplayWallet) => wallet.exportPreferences())),
     distinctUntilChanged(),
     skip(1),
-    switchMap((preferences: any[]) => fromPromise(
-      Promise.all(preferences.map(this.persistenceService2.saveWalletPreferences.bind(this.persistenceService2))),
-    )),
+    switchMap((preferences: any[]) =>
+      fromPromise(
+        Promise.all(preferences.map(this.persistenceService2.saveWalletPreferences.bind(this.persistenceService2))),
+      ),
+    ),
   );
 
   @Effect()
@@ -96,24 +107,20 @@ export class WalletEffects {
     ofType(WalletsActionType.DeleteWallet),
     switchMap((action: DeleteWalletAction) => this.store.select(selectWalletById(action.walletId)).pipe(take(1))),
     switchMap((wallet: DisplayWallet) =>
-      fromPromise(
-        this.profileService.deleteWallet(wallet.client)
-          .then(() => this.profileService.isAuthorized()),
-      )
-        .pipe(
-          tap(async (authorized: boolean) => {
-            if (!authorized) {
-              await this.storage.clear();
-              this.router.navigateByUrl('/onboarding');
-            } else {
-              this.router.navigateByUrl('/wallets');
-            }
-          }),
-          mergeMap((authorized: boolean) => [
-            new UpdateAppAction({ authorized }),
-            new DeleteWalletCompletedAction(wallet.id),
-          ]),
-        ),
+      fromPromise(this.profileService.deleteWallet(wallet.client).then(() => this.profileService.isAuthorized())).pipe(
+        tap(async (authorized: boolean) => {
+          if (!authorized) {
+            await this.storage.clear();
+            this.router.navigateByUrl('/onboarding');
+          } else {
+            this.router.navigateByUrl('/wallets');
+          }
+        }),
+        mergeMap((authorized: boolean) => [
+          new UpdateAppAction({ authorized }),
+          new DeleteWalletCompletedAction(wallet.id),
+        ]),
+      ),
     ),
   );
 
@@ -121,34 +128,39 @@ export class WalletEffects {
   ignoreInviteRequest$: Observable<any> = this.actions$.pipe(
     ofType(WalletsActionType.IgnoreInviteRequest),
     switchMap((action: IgnoreInviteRequestAction) =>
-      fromPromise(
-        this.persistenceService.hideUnlockRequestAddress(action.address)
-          .then(() => action.address),
-      ),
+      fromPromise(this.persistenceService.hideUnlockRequestAddress(action.address).then(() => action.address)),
     ),
     withLatestFrom(this.store.select(selectInviteRequests)),
-    map(([address, inviteRequests]) =>
-      new UpdateInviteRequestsAction(inviteRequests.filter(req => req.address !== address)),
+    map(
+      ([address, inviteRequests]) =>
+        new UpdateInviteRequestsAction(inviteRequests.filter(req => req.address !== address)),
     ),
   );
 
-  constructor(private actions$: Actions,
-              private walletService: WalletService,
-              private addressService: AddressService,
-              private profileService: ProfileService,
-              private txFormatService: TxFormatService,
-              private store: Store<IRootAppState>,
-              private persistenceService: PersistenceService,
-              private persistenceService2: PersistenceService2,
-              private storage: Storage,
-              private router: Router) {
-  }
+  constructor(
+    private actions$: Actions,
+    private walletService: WalletService,
+    private addressService: AddressService,
+    private profileService: ProfileService,
+    private txFormatService: TxFormatService,
+    private store: Store<IRootAppState>,
+    private persistenceService: PersistenceService,
+    private persistenceService2: PersistenceService2,
+    private storage: Storage,
+    private router: Router,
+  ) {}
 
   private async updateAllWallets(): Promise<DisplayWallet[]> {
     const wallets = await this.profileService.getWallets();
     return Promise.all<DisplayWallet>(
       wallets.map(async w => {
-        const displayWallet = await createDisplayWallet(w, this.walletService, this.addressService, this.txFormatService, this.persistenceService2);
+        const displayWallet = await createDisplayWallet(
+          w,
+          this.walletService,
+          this.addressService,
+          this.txFormatService,
+          this.persistenceService2,
+        );
         displayWallet.importPreferences(await this.persistenceService2.getWalletPreferences(displayWallet.id));
         await this.updateVisitedInviteRequests(displayWallet.inviteRequests);
         return displayWallet;
@@ -157,7 +169,7 @@ export class WalletEffects {
   }
 
   private async updateVisitedInviteRequests(inviteRequests: IUnlockRequest[]) {
-    const visitedInvites = await this.persistenceService2.getVisitedInvites() || [];
+    const visitedInvites = (await this.persistenceService2.getVisitedInvites()) || [];
     let updateVisitedInvites;
 
     inviteRequests.forEach(request => {

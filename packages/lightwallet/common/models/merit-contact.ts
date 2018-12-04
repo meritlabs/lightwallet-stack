@@ -6,13 +6,12 @@ export interface IAddressBook {
 }
 
 export interface IMeritAddress {
-  network: string,
-  address: string,
-  alias?: string
+  network: string;
+  address: string;
+  alias?: string;
 }
 
 export class MeritContact implements IContactProperties {
-
   id: string;
   name: IContactName = { formatted: '' };
   phoneNumbers: IContactField[] = [];
@@ -25,7 +24,7 @@ export class MeritContact implements IContactProperties {
     if (!this.name) return false;
     if (!this.meritAddresses.length) return false;
     let isValid = true;
-    this.meritAddresses.forEach((address) => {
+    this.meritAddresses.forEach(address => {
       if (!address.network) {
         isValid = false;
       } else {
@@ -36,13 +35,11 @@ export class MeritContact implements IContactProperties {
   }
 
   formatAddress() {
-    this.meritAddresses.forEach((val) => {
+    this.meritAddresses.forEach(val => {
       if (val.address.indexOf('merit:') == 0) val.address = val.address.split(':')[1];
       try {
         val.network = Address.fromString(val.address).network.name;
-      } catch (e) {
-      }
+      } catch (e) {}
     });
   }
-
 }

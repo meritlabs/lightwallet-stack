@@ -4,18 +4,15 @@ const $ = preconditions.singleton();
 import * as Meritcore from 'meritcore-lib';
 import { Common } from './common';
 let Utils = Common.Utils;
-import { Logger } from "./log";
+import { Logger } from './log';
 const log = Logger.getInstance();
-
 
 /**
  * @desc Verifier constructor. Checks data given by the server
  *
  * @constructor
  */
-export module Verifier {
-
-
+export namespace Verifier {
   /**
    * Check address
    *
@@ -27,9 +24,15 @@ export module Verifier {
     if (!address) return false;
     $.checkState(credentials.isComplete());
 
-    var local = Utils.deriveAddress(address.type || credentials.addressType, credentials.publicKeyRing, address.path, credentials.m, credentials.network);
+    var local = Utils.deriveAddress(
+      address.type || credentials.addressType,
+      credentials.publicKeyRing,
+      address.path,
+      credentials.m,
+      credentials.network,
+    );
 
-    return (local.address == address.address && _.difference(local.publicKeys, address.publicKeys).length === 0);
+    return local.address == address.address && _.difference(local.publicKeys, address.publicKeys).length === 0;
   };
 
   /**
@@ -41,7 +44,9 @@ export module Verifier {
    */
   export let checkCopayers = function(credentials, copayers): boolean {
     $.checkState(credentials.walletPrivKey);
-    var walletPubKey = Meritcore.PrivateKey.fromString(credentials.walletPrivKey).toPublicKey().toString();
+    var walletPubKey = Meritcore.PrivateKey.fromString(credentials.walletPrivKey)
+      .toPublicKey()
+      .toString();
 
     if (copayers.length != credentials.n) {
       log.error('Missing public keys in server response');
@@ -60,7 +65,12 @@ export module Verifier {
       }
 
       // Not signed pub keys
-      if (!(copayer.encryptedName || copayer.name) || !copayer.xPubKey || !copayer.requestPubKey || !copayer.signature) {
+      if (
+        !(copayer.encryptedName || copayer.name) ||
+        !copayer.xPubKey ||
+        !copayer.requestPubKey ||
+        !copayer.signature
+      ) {
         log.error('Missing copayer fields in server response');
         error = true;
       } else {
@@ -75,7 +85,7 @@ export module Verifier {
     if (error) return false;
 
     if (!_.includes(_.map(copayers, 'xPubKey'), credentials.xPubKey)) {
-      log.error('Server response does not contains our let keys')
+      log.error('Server response does not contains our let keys');
       return false;
     }
     return true;
@@ -83,7 +93,7 @@ export module Verifier {
 
   export let checkProposalCreation = function(args, txp, encryptingKey, sendMax?): boolean {
     function strEqual(str1, str2) {
-      return ((!str1 && !str2) || (str1 === str2));
+      return (!str1 && !str2) || str1 === str2;
     }
 
     if (txp.outputs.length != args.outputs.length) return false;
@@ -111,7 +121,7 @@ export module Verifier {
     }
 
     if (args.changeAddress && !strEqual(changeAddress, args.changeAddress)) return false;
-    if (_.isNumber(args.feePerKb) && (txp.feePerKb != args.feePerKb)) return false;
+    if (_.isNumber(args.feePerKb) && txp.feePerKb != args.feePerKb) return false;
     if (!strEqual(txp.payProUrl, args.payProUrl)) return false;
 
     let decryptedMessage = null;
@@ -139,7 +149,6 @@ export module Verifier {
 
     // If the txp using a selfsigned pub key?
     if (txp.proposalSignaturePubKey) {
-
       // Verify it...
       if (!Utils.verifyRequestPubKey(txp.proposalSignaturePubKey, txp.proposalSignaturePubKeySig, creatorKeys.xPubKey))
         return false;
@@ -159,15 +168,12 @@ export module Verifier {
     }
 
     log.debug('Regenerating & verifying tx proposal hash -> Hash: ', hash, ' Signature: ', txp.proposalSignature);
-    if (!Utils.verifyMessage(hash, txp.proposalSignature, creatorSigningPubKey))
-      return false;
+    if (!Utils.verifyMessage(hash, txp.proposalSignature, creatorSigningPubKey)) return false;
 
-    if (!this.checkAddress(credentials, txp.changeAddress))
-      return false;
+    if (!this.checkAddress(credentials, txp.changeAddress)) return false;
 
     return true;
   };
-
 
   export let checkPaypro = function(txp, payproOpts): boolean {
     var toAddress, amount;
@@ -180,9 +186,8 @@ export module Verifier {
       amount = txp.amount;
     }
 
-    return (toAddress == payproOpts.toAddress && amount == payproOpts.amount);
+    return toAddress == payproOpts.toAddress && amount == payproOpts.amount;
   };
-
 
   /**
    * Check transaction proposal
@@ -195,13 +200,10 @@ export module Verifier {
   export let checkTxProposal = function(credentials, txp, opts): boolean {
     opts = opts || {};
 
-    if (!this.checkTxProposalSignature(credentials, txp))
-      return false;
+    if (!this.checkTxProposalSignature(credentials, txp)) return false;
 
-    if (opts.paypro && !this.checkPaypro(txp, opts.paypro))
-      return false;
+    if (opts.paypro && !this.checkPaypro(txp, opts.paypro)) return false;
 
     return true;
   };
-
 }

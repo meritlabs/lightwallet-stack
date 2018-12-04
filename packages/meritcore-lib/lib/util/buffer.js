@@ -120,7 +120,7 @@ module.exports = {
    */
   integerFromBuffer: function integerFromBuffer(buffer) {
     $.checkArgumentType(buffer, 'Buffer', 'buffer');
-    return buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
+    return (buffer[0] << 24) | (buffer[1] << 16) | (buffer[2] << 8) | buffer[3];
   },
 
   /**
@@ -170,7 +170,7 @@ module.exports = {
   hexToBuffer: function hexToBuffer(string) {
     assert(js.isHexa(string));
     return new buffer.Buffer(string, 'hex');
-  }
+  },
 };
 
 module.exports.NULL_HASH = module.exports.fill(new Buffer(32), 0);

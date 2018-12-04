@@ -25,7 +25,7 @@ Utils.getMissingFields = function(obj, args) {
  */
 Utils.strip = function(number) {
   return parseFloat(number.toPrecision(12));
-}
+};
 
 /* TODO: It would be nice to be compatible with meritd signmessage. How
  * the hash is calculated there? */
@@ -64,7 +64,7 @@ Utils._tryImportPublicKey = function(publicKey) {
       publicKeyBuffer = new Buffer(publicKey, 'hex');
     }
     return publicKeyBuffer;
-  } catch(e) {
+  } catch (e) {
     return false;
   }
 };
@@ -76,7 +76,7 @@ Utils._tryImportSignature = function(signature) {
       signatureBuffer = new Buffer(signature, 'hex');
     }
     return secp256k1.signatureImport(signatureBuffer);
-  } catch(e) {
+  } catch (e) {
     return false;
   }
 };
@@ -84,7 +84,7 @@ Utils._tryImportSignature = function(signature) {
 Utils._tryVerifyMessage = function(hash, sig, publicKeyBuffer) {
   try {
     return secp256k1.verify(hash, sig, publicKeyBuffer);
-  } catch(e) {
+  } catch (e) {
     return false;
   }
 };
@@ -105,7 +105,7 @@ Utils.formatAmount = function(micros, unit, opts) {
       toMicros: 1,
       maxDecimals: 0,
       minDecimals: 0,
-    }
+    },
   };
 
   $.shouldBeNumber(micros);
@@ -134,10 +134,12 @@ Utils.formatAmount = function(micros, unit, opts) {
 };
 
 Utils.formatAmountInMrt = function(amount) {
-  return Utils.formatAmount(amount, 'mrt', {
-    minDecimals: 8,
-    maxDecimals: 8,
-  }) + 'mrt';
+  return (
+    Utils.formatAmount(amount, 'mrt', {
+      minDecimals: 8,
+      maxDecimals: 8,
+    }) + 'mrt'
+  );
 };
 
 Utils.formatUtxos = function(utxos) {
@@ -150,11 +152,11 @@ Utils.formatUtxos = function(utxos) {
 };
 
 Utils.formatRatio = function(ratio) {
-  return (ratio * 100.).toFixed(4) + '%';
+  return (ratio * 100).toFixed(4) + '%';
 };
 
 Utils.formatSize = function(size) {
-  return (size / 1000.).toFixed(4) + 'kB';
+  return (size / 1000).toFixed(4) + 'kB';
 };
 
 Utils.parseVersion = function(version) {
@@ -176,7 +178,7 @@ Utils.parseVersion = function(version) {
   return v;
 };
 
-Utils.isHash = function (value) {
+Utils.isHash = function(value) {
   return typeof value === 'string' && value.length === 64 && /^[0-9a-fA-F]+$/.test(value);
 };
 

@@ -18,57 +18,52 @@ import { filter, map, tap } from 'rxjs/operators';
 @Component({
   selector: 'app-wallet-setup-list',
   templateUrl: './wallet-setup-list.view.html',
-  styleUrls: ['./wallet-setup-list.view.sass']
+  styleUrls: ['./wallet-setup-list.view.sass'],
 })
 export class WalletSetupListView implements OnInit {
   constructor(
     private store: Store<IRootAppState>,
     private formBuilder: FormBuilder,
-    private persistenceService2: PersistenceService2
+    private persistenceService2: PersistenceService2,
   ) {}
 
-  progress$: Observable<IFullProgress> = this.store.select(selectGoalsProgress)
-    .pipe(
-      filter(progress => !!progress && progress.goals && progress.goals.length > 0)
-    );
+  progress$: Observable<IFullProgress> = this.store
+    .select(selectGoalsProgress)
+    .pipe(filter(progress => !!progress && progress.goals && progress.goals.length > 0));
 
   private trackerSettings: any;
 
   toDo$: Observable<IFullGoal[]> = this.progress$.pipe(
-    map(progress =>
-      progress.goals.filter(goal => goal.status === ProgressStatus.Incomplete)
-    )
+    map(progress => progress.goals.filter(goal => goal.status === ProgressStatus.Incomplete)),
   );
 
   done$: Observable<IFullGoal[]> = this.progress$.pipe(
-    map(progress =>
-      progress.goals.filter(goal => goal.status === ProgressStatus.Complete)
-    )
+    map(progress => progress.goals.filter(goal => goal.status === ProgressStatus.Complete)),
   );
 
   formData: FormGroup = this.formBuilder.group({
-    isSetupTrackerEnabled: false
+    isSetupTrackerEnabled: false,
   });
 
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   selectedWallet$: Observable<DisplayWallet> = this.store.select(selectPrimaryWallet);
 
-  isConfirmed$: Observable<boolean> = this.selectedWallet$
-    .pipe(
-      filter(wallet => !!wallet),
-      map((wallet: DisplayWallet) => wallet.confirmed)
-    );
+  isConfirmed$: Observable<boolean> = this.selectedWallet$.pipe(
+    filter(wallet => !!wallet),
+    map((wallet: DisplayWallet) => wallet.confirmed),
+  );
 
   async ngOnInit() {
     this.trackerSettings = await getLatestValue(this.store.select(selectGoalSettings), settings => !!settings);
 
-    this.formData.get('isSetupTrackerEnabled').setValue(this.trackerSettings.isSetupTrackerEnabled, { emitEvent: false });
+    this.formData
+      .get('isSetupTrackerEnabled')
+      .setValue(this.trackerSettings.isSetupTrackerEnabled, { emitEvent: false });
 
-    this.formData.valueChanges
-      .subscribe(({ isSetupTrackerEnabled }) => {
-        this.trackerSettings.isSetupTrackerEnabled = isSetupTrackerEnabled;
-        this.store.dispatch(new SaveGoalSettingsAction(this.trackerSettings));
-      });
+    this.formData.valueChanges.subscribe(({ isSetupTrackerEnabled }) => {
+      this.trackerSettings.isSetupTrackerEnabled = isSetupTrackerEnabled;
+      this.store.dispatch(new SaveGoalSettingsAction(this.trackerSettings));
+    });
   }
 
   async selectWallet(wallet: DisplayWallet) {

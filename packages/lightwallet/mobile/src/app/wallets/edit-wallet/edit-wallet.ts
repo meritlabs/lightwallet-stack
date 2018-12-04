@@ -27,7 +27,7 @@ export class EditWalletView {
     private toastCtrl: ToastControllerService,
     private configService: ConfigService,
     private walletService: WalletService,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {
     this.wallet = this.navParams.get('wallet');
     this.logger.info(this.wallet);
@@ -55,7 +55,7 @@ export class EditWalletView {
 
   changeColor() {
     let modal = this.modalCtrl.create('SelectColorView', { color: this.wallet.color });
-    modal.onDidDismiss((color) => {
+    modal.onDidDismiss(color => {
       if (color) {
         this.wallet.color = color;
         let colorOpts = { colorFor: {} };
@@ -76,29 +76,29 @@ export class EditWalletView {
   }
 
   deleteWallet() {
-
-    this.alertCtrl.create({
-      title: 'WARNING!',
-      message: 'This action will permanently delete this wallet. IT CANNOT BE REVERSED!',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-          }
-        },
-        {
-          text: 'Delete',
-          handler: () => {
-            if (!this.walletService.isWalletEncrypted(this.wallet)) {
-              this.doDeleteWallet();
-            } else {
-              this.showPasswordPrompt();
-            }
-          }
-        }
-      ]
-    }).present();
+    this.alertCtrl
+      .create({
+        title: 'WARNING!',
+        message: 'This action will permanently delete this wallet. IT CANNOT BE REVERSED!',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {},
+          },
+          {
+            text: 'Delete',
+            handler: () => {
+              if (!this.walletService.isWalletEncrypted(this.wallet)) {
+                this.doDeleteWallet();
+              } else {
+                this.showPasswordPrompt();
+              }
+            },
+          },
+        ],
+      })
+      .present();
   }
 
   private showPasswordPrompt(highlightInvalid = false) {
@@ -106,8 +106,10 @@ export class EditWalletView {
       .create({
         title: 'Enter wallet password',
         cssClass: highlightInvalid ? 'invalid-input-prompt' : '',
-        inputs: [ { name: 'password', placeholder: 'Password', type: 'password'} ],
-        buttons: [ { text: 'Cancel',role: 'cancel', },{
+        inputs: [{ name: 'password', placeholder: 'Password', type: 'password' }],
+        buttons: [
+          { text: 'Cancel', role: 'cancel' },
+          {
             text: 'Ok',
             handler: data => {
               if (!data.password) {
@@ -128,19 +130,21 @@ export class EditWalletView {
   }
 
   private doDeleteWallet() {
-
-    this.profileService.deleteWallet(this.wallet).then(() => {
-      this.profileService.isAuthorized().then((authorized) => {
-        if (authorized) {
-          this.navCtrl.popToRoot();
-        } else {
-          const nav = this.app.getRootNavs()[0];
-          nav.setRoot('OnboardingView');
-          nav.popToRoot();
-        }
+    this.profileService
+      .deleteWallet(this.wallet)
+      .then(() => {
+        this.profileService.isAuthorized().then(authorized => {
+          if (authorized) {
+            this.navCtrl.popToRoot();
+          } else {
+            const nav = this.app.getRootNavs()[0];
+            nav.setRoot('OnboardingView');
+            nav.popToRoot();
+          }
+        });
       })
-    }).catch((err) => {
-      this.toastCtrl.error(JSON.stringify(err));
-    });
+      .catch(err => {
+        this.toastCtrl.error(JSON.stringify(err));
+      });
   }
 }

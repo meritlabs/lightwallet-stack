@@ -4,12 +4,7 @@ import { GlobalsendReceiveView } from './globalsend-receive';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
-  declarations: [
-    GlobalsendReceiveView,
-  ],
-  imports: [
-    IonicPageModule.forChild(GlobalsendReceiveView),
-    CommonPipesModule
-  ],
+  declarations: [GlobalsendReceiveView],
+  imports: [IonicPageModule.forChild(GlobalsendReceiveView), CommonPipesModule],
 })
 export class GlobalsendReceiveModule {}

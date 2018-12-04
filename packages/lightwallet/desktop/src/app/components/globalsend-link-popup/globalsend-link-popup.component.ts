@@ -20,7 +20,7 @@ import { ToastControllerService } from '../toast-notification/toast-controller.s
     </div>
     <app-backdrop (click)="dismiss()"></app-backdrop>
 
-  `
+  `,
 })
 export class GlobalsendLinkPopupComponent implements IDynamicComponent {
   destroy: Function;
@@ -35,7 +35,7 @@ export class GlobalsendLinkPopupComponent implements IDynamicComponent {
   }
 
   onCopy() {
-    this.toastCtrl.success((this.isInvite? 'MeritInvite' : 'MeritMoney') + ' link copied!');
+    this.toastCtrl.success((this.isInvite ? 'MeritInvite' : 'MeritMoney') + ' link copied!');
   }
 
   dismiss() {

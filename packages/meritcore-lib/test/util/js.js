@@ -8,9 +8,7 @@ var meritcore = require('../..');
 var JSUtil = meritcore.util.js;
 
 describe('js utils', function() {
-
   describe('isValidJSON', function() {
-
     var hexa = '8080808080808080808080808080808080808080808080808080808080808080';
     var json = '{"key": ["value", "value2"]}';
     var json2 = '["value", "value2", {"key": "value"}]';
@@ -29,7 +27,6 @@ describe('js utils', function() {
       var valid = JSUtil.isValidJSON(json);
       valid.should.equal(true);
     });
-
   });
 
   describe('isNaturalNumber', function() {
@@ -77,7 +74,5 @@ describe('js utils', function() {
       var a = JSUtil.isNaturalNumber(1000);
       a.should.equal(true);
     });
-
   });
-
 });

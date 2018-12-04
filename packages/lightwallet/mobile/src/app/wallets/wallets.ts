@@ -11,10 +11,9 @@ import { Events, IonicPage, NavController, Platform } from 'ionic-angular';
 @IonicPage()
 @Component({
   selector: 'view-wallets',
-  templateUrl: 'wallets.html'
+  templateUrl: 'wallets.html',
 })
 export class WalletsView {
-
   totalInvites: number;
   totalAmount: number;
 
@@ -27,12 +26,13 @@ export class WalletsView {
   showCommunityPopup: boolean;
   communitySize: number;
 
-  constructor(private navCtrl: NavController,
-              private logger: LoggerService,
-              private toastCtrl: ToastControllerService,
-              private profileService: ProfileService,
-              private platform: Platform,
-              private events: Events
+  constructor(
+    private navCtrl: NavController,
+    private logger: LoggerService,
+    private toastCtrl: ToastControllerService,
+    private profileService: ProfileService,
+    private platform: Platform,
+    private events: Events,
   ) {
     this.logger.debug('WalletsView constructor!');
   }
@@ -44,13 +44,13 @@ export class WalletsView {
       this.logger.info('WalletView is going to refresh data on resume.');
       if (this.isActivePage) {
         this.refreshing = true;
-        this.updateAllInfo().then(() => this.refreshing = false);
+        this.updateAllInfo().then(() => (this.refreshing = false));
       }
     });
 
     this.events.subscribe('Remote:IncomingTx', () => {
       this.refreshing = true;
-      this.updateAllInfo().then(() => this.refreshing = false);
+      this.updateAllInfo().then(() => (this.refreshing = false));
     });
   }
 
@@ -71,7 +71,8 @@ export class WalletsView {
       this.loading = false;
       this.refreshing = true;
       await this.updateAllInfo();
-    } catch (e) {} finally {
+    } catch (e) {
+    } finally {
       this.loading = false;
       this.refreshing = true;
     }
@@ -93,21 +94,20 @@ export class WalletsView {
   }
 
   async loadCommunitySize() {
-
     let communitySize = 0;
-    const getCommunitySizes = () => this.wallets.map(async (w) => {
-      let { referralcount } =  await w.getCommunityInfo(w.rootAddress.toString());
-      return w.communitySize = referralcount;
-    });
+    const getCommunitySizes = () =>
+      this.wallets.map(async w => {
+        let { referralcount } = await w.getCommunityInfo(w.rootAddress.toString());
+        return (w.communitySize = referralcount);
+      });
     await Promise.all(getCommunitySizes());
     this.communitySize = communitySize;
-
   }
 
   toAddWallet() {
     let referralAddress = '';
     this.wallets.some(w => {
-      if (w.availableInvites) return referralAddress = w.rootAddress;
+      if (w.availableInvites) return (referralAddress = w.rootAddress);
     });
     return this.navCtrl.push('CreateWalletView', { parentAddress: referralAddress });
   }
@@ -139,7 +139,7 @@ export class WalletsView {
 
     this.totalAmount = totalAmount;
     this.communitySize = this.wallets.reduce((size, w) => {
-      return size + w.communitySize
+      return size + w.communitySize;
     }, 0);
   }
 
@@ -147,7 +147,4 @@ export class WalletsView {
     this.showCommunityPopup = false;
     this.profileService.closeCommunityPopup();
   }
-
-
 }
-

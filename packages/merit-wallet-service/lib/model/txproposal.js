@@ -15,7 +15,7 @@ var Defaults = Common.Defaults;
 
 var TxProposalAction = require('./txproposalaction');
 
-function TxProposal() {};
+function TxProposal() {}
 
 TxProposal.create = function(opts) {
   opts = opts || {};
@@ -43,8 +43,7 @@ TxProposal.create = function(opts) {
   x.walletM = opts.walletM;
   x.walletN = opts.walletN;
   x.requiredSignatures = x.walletM;
-  x.requiredRejections = Math.min(x.walletM, x.walletN - x.walletM + 1),
-  x.status = 'temporary';
+  (x.requiredRejections = Math.min(x.walletM, x.walletN - x.walletM + 1)), (x.status = 'temporary');
   x.actions = [];
   x.feeLevel = opts.feeLevel;
   x.feePerKb = opts.feePerKb;
@@ -159,10 +158,12 @@ TxProposal.prototype._buildTx = function() {
   _.each(self.outputs, function(o) {
     $.checkState(o.script || o.toAddress, 'Output should have either toAddress or script specified');
     if (o.script) {
-      t.addOutput(new Meritcore.Transaction.Output({
-        script: o.script,
-        micros: o.amount
-      }));
+      t.addOutput(
+        new Meritcore.Transaction.Output({
+          script: o.script,
+          micros: o.amount,
+        }),
+      );
     } else {
       t.to(o.toAddress, o.amount);
     }
@@ -191,18 +192,21 @@ TxProposal.prototype._buildTx = function() {
   var totalInputs = _.sumBy(t.inputs, 'output.micros');
   var totalOutputs = _.sumBy(t.outputs, 'micros');
 
-  $.checkState(totalInputs > 0 && totalOutputs > 0 && totalInputs >= totalOutputs,
-    'Value in outputs is greater than value in inputs');
-  $.checkState(totalInputs - totalOutputs <= Defaults.adjustableMaxFee(totalOutputs),
-    'Maximum fee is higher than safe boundary (0.01%): ' + ((totalInputs - totalOutputs) / totalOutputs));
+  $.checkState(
+    totalInputs > 0 && totalOutputs > 0 && totalInputs >= totalOutputs,
+    'Value in outputs is greater than value in inputs',
+  );
+  $.checkState(
+    totalInputs - totalOutputs <= Defaults.adjustableMaxFee(totalOutputs),
+    'Maximum fee is higher than safe boundary (0.01%): ' + (totalInputs - totalOutputs) / totalOutputs,
+  );
 
   return t;
 };
 
-
 TxProposal.prototype._getCurrentSignatures = function() {
   var acceptedActions = _.filter(this.actions, {
-    type: 'accept'
+    type: 'accept',
   });
 
   return _.map(acceptedActions, function(x) {
@@ -269,12 +273,12 @@ TxProposal.prototype.getEstimatedSize = function() {
 TxProposal.prototype.getEstimatedFee = function() {
   if (this.isInvite) return 0;
   $.checkState(_.isNumber(this.feePerKb));
-  var fee = this.feePerKb * this.getEstimatedSize() / 1000;
+  var fee = (this.feePerKb * this.getEstimatedSize()) / 1000;
   return parseInt(fee.toFixed(0));
 };
 
 TxProposal.prototype.estimateFee = function() {
-  this.fee = this.isInvite? 0 : this.getEstimatedFee();
+  this.fee = this.isInvite ? 0 : this.getEstimatedFee();
 };
 
 /**
@@ -295,7 +299,6 @@ TxProposal.prototype.getActors = function() {
   return _.map(this.actions, 'copayerId');
 };
 
-
 /**
  * getApprovers
  *
@@ -304,8 +307,10 @@ TxProposal.prototype.getActors = function() {
 TxProposal.prototype.getApprovers = function() {
   return _.map(
     _.filter(this.actions, {
-      type: 'accept'
-    }), 'copayerId');
+      type: 'accept',
+    }),
+    'copayerId',
+  );
 };
 
 /**
@@ -316,7 +321,7 @@ TxProposal.prototype.getApprovers = function() {
  */
 TxProposal.prototype.getActionBy = function(copayerId) {
   return _.find(this.actions, {
-    copayerId: copayerId
+    copayerId: copayerId,
   });
 };
 
@@ -335,8 +340,7 @@ TxProposal.prototype.addAction = function(copayerId, type, comment, signatures, 
 TxProposal.prototype._addSignaturesToMeritcoreTx = function(tx, signatures, xpub) {
   var self = this;
 
-  if (signatures.length != this.inputs.length)
-    throw new Error('Number of signatures does not match number of inputs');
+  if (signatures.length != this.inputs.length) throw new Error('Number of signatures does not match number of inputs');
 
   var i = 0,
     x = new Meritcore.HDPublicKey(xpub);
@@ -354,13 +358,11 @@ TxProposal.prototype._addSignaturesToMeritcoreTx = function(tx, signatures, xpub
       };
       tx.inputs[i].addSignature(tx, s);
       i++;
-    } catch (e) {};
+    } catch (e) {}
   });
 
-  if (i != tx.inputs.length)
-    throw new Error('Wrong signatures');
+  if (i != tx.inputs.length) throw new Error('Wrong signatures');
 };
-
 
 TxProposal.prototype.sign = function(copayerId, signatures, xpub) {
   try {

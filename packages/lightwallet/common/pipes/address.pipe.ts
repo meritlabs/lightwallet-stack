@@ -2,7 +2,7 @@ import { Pipe } from '@angular/core';
 import { cleanAddress, isAddress, isAlias } from '@merit/common/utils/addresses';
 
 @Pipe({
-  name: 'address'
+  name: 'address',
 })
 export class AddressPipe {
   transform(value: string, maxAddressLength?: number, showEllipsis?: boolean) {

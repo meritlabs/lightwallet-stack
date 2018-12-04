@@ -7,19 +7,17 @@ import { ImportWalletView } from '@merit/desktop/app/import/import-wallet.view';
     RouterModule.forChild([
       {
         path: '',
-        component: ImportWalletView
-      }
-    ])
+        component: ImportWalletView,
+      },
+    ]),
   ],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class ImportRoutingModule {}
 
 @NgModule({
   entryComponents: [ImportWalletView],
   declarations: [ImportWalletView],
-  imports: [
-    ImportRoutingModule
-  ]
+  imports: [ImportRoutingModule],
 })
 export class ImportModule {}
