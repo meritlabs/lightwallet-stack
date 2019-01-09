@@ -1,7 +1,8 @@
 'use strict';
 
-angular.module('insight.address').controller('AddressController',
-  function($scope, $rootScope, $routeParams, $location, Global, Address, getSocket) {
+angular
+  .module('insight.address')
+  .controller('AddressController', function($scope, $rootScope, $routeParams, $location, Global, Address, getSocket) {
     $scope.global = Global;
 
     var socket = getSocket($scope);
@@ -19,7 +20,7 @@ angular.module('insight.address').controller('AddressController',
       socket.emit('subscribe', 'meritd/addresstxid', [addrStr]);
     };
 
-    var _stopSocket = function () {
+    var _stopSocket = function() {
       socket.emit('unsubscribe', 'meritd/addresstxid', [addrStr]);
     };
 
@@ -27,7 +28,7 @@ angular.module('insight.address').controller('AddressController',
       _startSocket();
     });
 
-    $scope.$on('$destroy', function(){
+    $scope.$on('$destroy', function() {
       _stopSocket();
     });
 
@@ -37,8 +38,9 @@ angular.module('insight.address').controller('AddressController',
       $rootScope.currentAddr = $routeParams.addrStr;
       _startSocket();
 
-      Address.get({
-          addrStr: $routeParams.addrStr
+      Address.get(
+        {
+          addrStr: $routeParams.addrStr,
         },
         function(address) {
           $rootScope.titleDetail = address.addrStr.substring(0, 7) + '...';
@@ -54,7 +56,7 @@ angular.module('insight.address').controller('AddressController',
             $rootScope.flashMessage = 'Address Not Found';
           }
           $location.path('/');
-        });
+        },
+      );
     };
-
   });

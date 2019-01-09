@@ -7,11 +7,7 @@ import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 @Injectable()
 export class MnemonicService {
-
-  constructor(private logger: LoggerService,
-              private profileService: ProfileService,
-              private mwcService: MWCService) {
-  }
+  constructor(private logger: LoggerService, private profileService: ProfileService, private mwcService: MWCService) {}
 
   async importMnemonic(words: string, opts: any): Promise<MeritWalletClient> {
     const walletClient = this.mwcService.getClient(null, opts);
@@ -24,7 +20,7 @@ export class MnemonicService {
       passphrase: opts.passphrase,
       entropySourcePath: opts.entropySourcePath,
       derivationStrategy: opts.derivationStrategy || 'BIP44',
-      account: opts.account || 0
+      account: opts.account || 0,
     });
 
     return this.profileService.addWallet(walletClient);
@@ -40,7 +36,7 @@ export class MnemonicService {
         network: opts.networkName || ENV.network,
         passphrase: opts.passphrase,
         account: opts.account || 0,
-        derivationStrategy: opts.derivationStrategy || 'BIP44'
+        derivationStrategy: opts.derivationStrategy || 'BIP44',
       });
 
       return walletClient;
@@ -56,5 +52,5 @@ export class MnemonicService {
     let wordList = words.split(/[\u3000\s]+/);
 
     return wordList.join(isJA ? '\u3000' : ' ');
-  };
+  }
 }

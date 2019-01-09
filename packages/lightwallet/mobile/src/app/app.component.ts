@@ -19,31 +19,30 @@ import { Events, ModalController, Nav, Platform } from 'ionic-angular';
 import { getQueryParam } from '@merit/common/utils/url';
 
 @Component({
-  templateUrl: 'app.html'
+  templateUrl: 'app.html',
 })
 export class MeritLightWallet {
-
-  @ViewChild(Nav) nav: Nav;
+  @ViewChild(Nav)
+  nav: Nav;
   private authorized: boolean;
 
-  constructor(private platform: Platform,
-              private statusBar: StatusBar,
-              private splashScreen: SplashScreen,
-              private profileService: ProfileService,
-              private logger: LoggerService,
-              private modalCtrl: ModalController,
-              private appService: AppSettingsService,
-              private persistenceService: PersistenceService,
-              private deepLinkService: DeepLinkService,
-              private easyReceiveService: EasyReceiveService,
-              private events: Events,
-              private keyboard: Keyboard,
-              private addressService: AddressService,
-              ) {
-  }
+  constructor(
+    private platform: Platform,
+    private statusBar: StatusBar,
+    private splashScreen: SplashScreen,
+    private profileService: ProfileService,
+    private logger: LoggerService,
+    private modalCtrl: ModalController,
+    private appService: AppSettingsService,
+    private persistenceService: PersistenceService,
+    private deepLinkService: DeepLinkService,
+    private easyReceiveService: EasyReceiveService,
+    private events: Events,
+    private keyboard: Keyboard,
+    private addressService: AddressService,
+  ) {}
 
   async ngOnInit() {
-
     if (await this.persistenceService.isPinEnabled()) {
       this.modalCtrl.create('PinLockView').present();
     }
@@ -54,8 +53,8 @@ export class MeritLightWallet {
     });
 
     this.platform.resume.subscribe(() => {
-      if (Date.now() - pausedAt > 1*60*1000) {
-        this.persistenceService.isPinEnabled().then((isEnabled) => {
+      if (Date.now() - pausedAt > 1 * 60 * 1000) {
+        this.persistenceService.isPinEnabled().then(isEnabled => {
           if (isEnabled) this.modalCtrl.create('PinLockView').present();
         });
       }
@@ -69,7 +68,7 @@ export class MeritLightWallet {
 
     const appInfo: any = await this.appService.getInfo();
     this.logger.info(`
-            platform ready (${ readySource }): -v ${ appInfo.version } # ${ appInfo.commitHash }
+            platform ready (${readySource}): -v ${appInfo.version} # ${appInfo.commitHash}
     `);
 
     this.registerMwcErrorHandler();
@@ -123,7 +122,6 @@ export class MeritLightWallet {
     }
   }
 
-
   /**
    * Get Easy send params eiter from url or from branch
    */
@@ -159,11 +157,10 @@ export class MeritLightWallet {
     const invitation = this.parseInviteParams();
 
     if (invitation && !this.authorized) {
-     
       await this.nav.setRoot('UnlockView', { ...invitation });
     } else {
       const receipt = await this.loadEasySend();
-      if (receipt && !this.authorized) {   
+      if (receipt && !this.authorized) {
         await this.nav.setRoot('UnlockView', { gbs: getQueryParam('source', search).toLowerCase() === 'gbs' });
       } else {
         await this.nav.setRoot(this.authorized ? 'TransactView' : 'OnboardingView');
@@ -179,5 +176,4 @@ export class MeritLightWallet {
       this.nav.setRoot('NoSessionView');
     });
   }
-
 }

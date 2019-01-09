@@ -9,24 +9,17 @@ import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
     RouterModule.forChild([
       {
         path: '',
-        component: ImportWithFileView
-      }
-    ])
+        component: ImportWithFileView,
+      },
+    ]),
   ],
-  exports: [
-    RouterModule
-  ]
+  exports: [RouterModule],
 })
 export class ImportWithFileRoutingModule {}
 
 @NgModule({
   entryComponents: [ImportWithFileView],
   declarations: [ImportWithFileView],
-  imports: [
-    ImportWithFileRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    Ng4LoadingSpinnerModule
-  ]
+  imports: [ImportWithFileRoutingModule, FormsModule, ReactiveFormsModule, Ng4LoadingSpinnerModule],
 })
 export class ImportWithFileModule {}

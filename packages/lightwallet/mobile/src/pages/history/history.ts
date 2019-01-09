@@ -15,7 +15,7 @@ import { IonicPage, ModalController } from 'ionic-angular';
 @IonicPage()
 @Component({
   selector: 'view-history',
-  templateUrl: 'history.html'
+  templateUrl: 'history.html',
 })
 export class HistoryView {
   transactions: Array<any> = [];
@@ -29,13 +29,13 @@ export class HistoryView {
   offset: number = 0;
   limit: number = 10;
 
-  constructor(private profileService: ProfileService,
-              private contactsService: ContactsService,
-              private modalCtrl: ModalController,
-              private easyReceiveService: EasyReceiveService,
-              private feeService: FeeService
-  ) {
-  }
+  constructor(
+    private profileService: ProfileService,
+    private contactsService: ContactsService,
+    private modalCtrl: ModalController,
+    private easyReceiveService: EasyReceiveService,
+    private feeService: FeeService,
+  ) {}
 
   async ionViewDidLoad() {
     this.loading = true;
@@ -43,10 +43,9 @@ export class HistoryView {
     this.selectDefaultWallet();
     await this.loadHistory();
 
-    this.easyReceiveService.cancelledEasySend$
-      .subscribe(() => {
-        this.refreshHistory();
-      });
+    this.easyReceiveService.cancelledEasySend$.subscribe(() => {
+      this.refreshHistory();
+    });
   }
 
   async ionViewWillEnter() {
@@ -83,7 +82,6 @@ export class HistoryView {
   }
 
   async loadMoreHistory(infiniter) {
-
     this.offset += this.limit;
     try {
       const txs = await this.wallet.getTxHistory({ skip: this.offset, limit: this.limit, includeExtendedInfo: true });
@@ -97,16 +95,26 @@ export class HistoryView {
 
   private async formatHistory() {
     const easySends = await this.wallet.getGlobalSendHistory();
-    this.transactions = await formatWalletHistory(this.txs, this.wallet, easySends, this.feeService,  this.contactsService);
+    this.transactions = await formatWalletHistory(
+      this.txs,
+      this.wallet,
+      easySends,
+      this.feeService,
+      this.contactsService,
+    );
   }
 
   selectWallet() {
     if (this.wallets.length == 1) return;
-    const modal = this.modalCtrl.create('SelectWalletModal', {
-      selectedWallet: this.wallet,
-      availableWallets: this.wallets.filter(w => w.confirmed)
-    }, MERIT_MODAL_OPTS);
-    modal.onDidDismiss((wallet) => {
+    const modal = this.modalCtrl.create(
+      'SelectWalletModal',
+      {
+        selectedWallet: this.wallet,
+        availableWallets: this.wallets.filter(w => w.confirmed),
+      },
+      MERIT_MODAL_OPTS,
+    );
+    modal.onDidDismiss(wallet => {
       if (wallet) {
         this.wallet = wallet;
         this.loadHistory();
@@ -114,5 +122,4 @@ export class HistoryView {
     });
     return modal.present();
   }
-
 }

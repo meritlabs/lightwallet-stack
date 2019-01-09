@@ -6,5 +6,4 @@ import { IonicPage } from 'ionic-angular';
   selector: 'view-send-valid-till',
   templateUrl: 'send-valid-till.html',
 })
-export class SendValidTillView {
-}
+export class SendValidTillView {}

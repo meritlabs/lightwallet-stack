@@ -8,7 +8,7 @@ export const DefaultToastConfig: Partial<IMeritToastConfig> = {
   duration: 3000,
   position: 'top',
   cssClass: 'toast-message',
-  showCloseButton: true
+  showCloseButton: true,
 };
 
 @Injectable()
@@ -18,14 +18,14 @@ export class MobileToastControllerService implements ToastControllerService {
   create(opts?: IMeritToastConfig): Toast {
     return this.toastCtrl.create({
       ...DefaultToastConfig,
-      ...(opts || {})
+      ...(opts || {}),
     } as ToastOptions);
   }
 
   createSticky(opts?: IMeritToastConfig): Toast {
     opts = {
-      ...DefaultToastConfig as IMeritToastConfig,
-      ...(opts || {})
+      ...(DefaultToastConfig as IMeritToastConfig),
+      ...(opts || {}),
     };
 
     delete opts.duration;
@@ -36,7 +36,7 @@ export class MobileToastControllerService implements ToastControllerService {
   success(message: string) {
     return this.create({
       message,
-      cssClass: 'toast-success'
+      cssClass: 'toast-success',
     }).present();
   }
 
@@ -47,7 +47,7 @@ export class MobileToastControllerService implements ToastControllerService {
   error(message: string) {
     return this.create({
       message,
-      cssClass: 'toast-error'
+      cssClass: 'toast-error',
     }).present();
   }
 }

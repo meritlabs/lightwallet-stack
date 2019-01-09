@@ -69,7 +69,7 @@ Script.fromBuffer = function(buffer) {
         script.chunks.push({
           buf: br.read(len),
           len: len,
-          opcodenum: opcodenum
+          opcodenum: opcodenum,
         });
       } else if (opcodenum === Opcode.OP_PUSHDATA1) {
         len = br.readUInt8();
@@ -77,7 +77,7 @@ Script.fromBuffer = function(buffer) {
         script.chunks.push({
           buf: buf,
           len: len,
-          opcodenum: opcodenum
+          opcodenum: opcodenum,
         });
       } else if (opcodenum === Opcode.OP_PUSHDATA2) {
         len = br.readUInt16LE();
@@ -85,7 +85,7 @@ Script.fromBuffer = function(buffer) {
         script.chunks.push({
           buf: buf,
           len: len,
-          opcodenum: opcodenum
+          opcodenum: opcodenum,
         });
       } else if (opcodenum === Opcode.OP_PUSHDATA4) {
         len = br.readUInt32LE();
@@ -93,11 +93,11 @@ Script.fromBuffer = function(buffer) {
         script.chunks.push({
           buf: buf,
           len: len,
-          opcodenum: opcodenum
+          opcodenum: opcodenum,
         });
       } else {
         script.chunks.push({
-          opcodenum: opcodenum
+          opcodenum: opcodenum,
         });
       }
     } catch (e) {
@@ -154,21 +154,23 @@ Script.fromASM = function(str) {
       script.chunks.push({
         buf: buf,
         len: buf.length,
-        opcodenum: buf.length
+        opcodenum: buf.length,
       });
       i = i + 1;
-    } else if (opcodenum === Opcode.OP_PUSHDATA1 ||
+    } else if (
+      opcodenum === Opcode.OP_PUSHDATA1 ||
       opcodenum === Opcode.OP_PUSHDATA2 ||
-      opcodenum === Opcode.OP_PUSHDATA4) {
+      opcodenum === Opcode.OP_PUSHDATA4
+    ) {
       script.chunks.push({
         buf: new Buffer(tokens[i + 2], 'hex'),
         len: parseInt(tokens[i + 1]),
-        opcodenum: opcodenum
+        opcodenum: opcodenum,
       });
       i = i + 3;
     } else {
       script.chunks.push({
-        opcodenum: opcodenum
+        opcodenum: opcodenum,
       });
       i = i + 1;
     }
@@ -200,27 +202,29 @@ Script.fromString = function(str) {
         script.chunks.push({
           buf: new Buffer(tokens[i + 1].slice(2), 'hex'),
           len: opcodenum,
-          opcodenum: opcodenum
+          opcodenum: opcodenum,
         });
         i = i + 2;
       } else {
         throw new Error('Invalid script: ' + JSON.stringify(str));
       }
-    } else if (opcodenum === Opcode.OP_PUSHDATA1 ||
+    } else if (
+      opcodenum === Opcode.OP_PUSHDATA1 ||
       opcodenum === Opcode.OP_PUSHDATA2 ||
-      opcodenum === Opcode.OP_PUSHDATA4) {
+      opcodenum === Opcode.OP_PUSHDATA4
+    ) {
       if (tokens[i + 2].slice(0, 2) !== '0x') {
         throw new Error('Pushdata data must start with 0x');
       }
       script.chunks.push({
         buf: new Buffer(tokens[i + 2].slice(2), 'hex'),
         len: parseInt(tokens[i + 1]),
-        opcodenum: opcodenum
+        opcodenum: opcodenum,
       });
       i = i + 3;
     } else {
       script.chunks.push({
-        opcodenum: opcodenum
+        opcodenum: opcodenum,
       });
       i = i + 1;
     }
@@ -230,7 +234,7 @@ Script.fromString = function(str) {
 
 Script.prototype._chunkToString = function(chunk, type) {
   var opcodenum = chunk.opcodenum;
-  var asm = (type === 'asm');
+  var asm = type === 'asm';
   var str = '';
   if (!chunk.buf) {
     // no data chunk
@@ -241,7 +245,7 @@ Script.prototype._chunkToString = function(chunk, type) {
         if (opcodenum === 0) {
           // OP_0 -> 0
           str = str + ' 0';
-        } else if(opcodenum === 79) {
+        } else if (opcodenum === 79) {
           // OP_1NEGATE -> 1
           str = str + ' -1';
         } else {
@@ -263,9 +267,11 @@ Script.prototype._chunkToString = function(chunk, type) {
     }
   } else {
     // data chunk
-    if (!asm && opcodenum === Opcode.OP_PUSHDATA1 ||
+    if (
+      (!asm && opcodenum === Opcode.OP_PUSHDATA1) ||
       opcodenum === Opcode.OP_PUSHDATA2 ||
-      opcodenum === Opcode.OP_PUSHDATA4) {
+      opcodenum === Opcode.OP_PUSHDATA4
+    ) {
       str = str + ' ' + Opcode(opcodenum).toString();
     }
     if (chunk.len > 0) {
@@ -313,13 +319,15 @@ Script.prototype.inspect = function() {
  * @returns {boolean} if this is a pay to pubkey hash output script
  */
 Script.prototype.isPublicKeyHashOut = function() {
-  return !!(this.chunks.length === 5 &&
+  return !!(
+    this.chunks.length === 5 &&
     this.chunks[0].opcodenum === Opcode.OP_DUP &&
     this.chunks[1].opcodenum === Opcode.OP_HASH160 &&
     this.chunks[2].buf &&
     this.chunks[2].buf.length === 20 &&
     this.chunks[3].opcodenum === Opcode.OP_EQUALVERIFY &&
-    this.chunks[4].opcodenum === Opcode.OP_CHECKSIG);
+    this.chunks[4].opcodenum === Opcode.OP_CHECKSIG
+  );
 };
 
 /**
@@ -329,16 +337,9 @@ Script.prototype.isPublicKeyHashIn = function() {
   if (this.chunks.length === 2) {
     var signatureBuf = this.chunks[0].buf;
     var pubkeyBuf = this.chunks[1].buf;
-    if (signatureBuf &&
-        signatureBuf.length &&
-        signatureBuf[0] === 0x30 &&
-        pubkeyBuf &&
-        pubkeyBuf.length
-       ) {
+    if (signatureBuf && signatureBuf.length && signatureBuf[0] === 0x30 && pubkeyBuf && pubkeyBuf.length) {
       var version = pubkeyBuf[0];
-      if ((version === 0x04 ||
-           version === 0x06 ||
-           version === 0x07) && pubkeyBuf.length === 65) {
+      if ((version === 0x04 || version === 0x06 || version === 0x07) && pubkeyBuf.length === 65) {
         return true;
       } else if ((version === 0x03 || version === 0x02) && pubkeyBuf.length === 33) {
         return true;
@@ -349,12 +350,12 @@ Script.prototype.isPublicKeyHashIn = function() {
 };
 
 Script.prototype.getPublicKey = function() {
-  $.checkState(this.isPublicKeyOut(), 'Can\'t retrieve PublicKey from a non-PK output');
+  $.checkState(this.isPublicKeyOut(), "Can't retrieve PublicKey from a non-PK output");
   return this.chunks[0].buf;
 };
 
 Script.prototype.getPublicKeyHash = function() {
-  $.checkState(this.isPublicKeyHashOut(), 'Can\'t retrieve PublicKeyHash from a non-PKH output');
+  $.checkState(this.isPublicKeyHashOut(), "Can't retrieve PublicKeyHash from a non-PKH output");
   return this.chunks[2].buf;
 };
 
@@ -362,16 +363,16 @@ Script.prototype.getPublicKeyHash = function() {
  * @returns {boolean} if this is a public key output script
  */
 Script.prototype.isPublicKeyOut = function() {
-  if (this.chunks.length === 2 &&
-      this.chunks[0].buf &&
-      this.chunks[0].buf.length &&
-      this.chunks[1].opcodenum === Opcode.OP_CHECKSIG) {
+  if (
+    this.chunks.length === 2 &&
+    this.chunks[0].buf &&
+    this.chunks[0].buf.length &&
+    this.chunks[1].opcodenum === Opcode.OP_CHECKSIG
+  ) {
     var pubkeyBuf = this.chunks[0].buf;
     var version = pubkeyBuf[0];
     var isVersion = false;
-    if ((version === 0x04 ||
-         version === 0x06 ||
-         version === 0x07) && pubkeyBuf.length === 65) {
+    if ((version === 0x04 || version === 0x06 || version === 0x07) && pubkeyBuf.length === 65) {
       isVersion = true;
     } else if ((version === 0x03 || version === 0x02) && pubkeyBuf.length === 33) {
       isVersion = true;
@@ -389,9 +390,7 @@ Script.prototype.isPublicKeyOut = function() {
 Script.prototype.isPublicKeyIn = function() {
   if (this.chunks.length === 1) {
     var signatureBuf = this.chunks[0].buf;
-    if (signatureBuf &&
-        signatureBuf.length &&
-        signatureBuf[0] === 0x30) {
+    if (signatureBuf && signatureBuf.length && signatureBuf[0] === 0x30) {
       return true;
     }
   }
@@ -403,10 +402,9 @@ Script.prototype.isPublicKeyIn = function() {
  */
 Script.prototype.isScriptHashOut = function() {
   var buf = this.toBuffer();
-  return (buf.length === 23 &&
-    buf[0] === Opcode.OP_HASH160 &&
-    buf[1] === 0x14 &&
-    buf[buf.length - 1] === Opcode.OP_EQUAL);
+  return (
+    buf.length === 23 && buf[0] === Opcode.OP_HASH160 && buf[1] === 0x14 && buf[buf.length - 1] === Opcode.OP_EQUAL
+  );
 };
 
 /**
@@ -414,11 +412,13 @@ Script.prototype.isScriptHashOut = function() {
  */
 Script.prototype.isParameterizedScriptHashOut = function() {
   var buf = this.toBuffer();
-  return (buf.length > 25 &&
+  return (
+    buf.length > 25 &&
     buf[0] === Opcode.OP_HASH160 &&
     buf[1] === 0x14 &&
     buf[buf.length - 3] === Opcode.OP_DEPTH &&
-    buf[buf.length - 1] === Opcode.OP_GREATERTHANOREQUAL);
+    buf[buf.length - 1] === Opcode.OP_GREATERTHANOREQUAL
+  );
 };
 
 /**
@@ -452,27 +452,28 @@ Script.prototype.isScriptHashIn = function() {
  * @returns {boolean} if this is a mutlsig output script
  */
 Script.prototype.isMultisigOut = function() {
-  return (this.chunks.length > 3 &&
+  return (
+    this.chunks.length > 3 &&
     Opcode.isSmallIntOp(this.chunks[0].opcodenum) &&
     this.chunks.slice(1, this.chunks.length - 2).every(function(obj) {
       return obj.buf && BufferUtil.isBuffer(obj.buf);
     }) &&
     Opcode.isSmallIntOp(this.chunks[this.chunks.length - 2].opcodenum) &&
-    this.chunks[this.chunks.length - 1].opcodenum === Opcode.OP_CHECKMULTISIG);
+    this.chunks[this.chunks.length - 1].opcodenum === Opcode.OP_CHECKMULTISIG
+  );
 };
-
 
 /**
  * @returns {boolean} if this is a multisig input script
  */
 Script.prototype.isMultisigIn = function() {
-  return this.chunks.length >= 2 &&
+  return (
+    this.chunks.length >= 2 &&
     this.chunks[0].opcodenum === 0 &&
     this.chunks.slice(1, this.chunks.length).every(function(obj) {
-      return obj.buf &&
-        BufferUtil.isBuffer(obj.buf) &&
-        Signature.isTxDER(obj.buf);
-    });
+      return obj.buf && BufferUtil.isBuffer(obj.buf) && Signature.isTxDER(obj.buf);
+    })
+  );
 };
 
 /**
@@ -481,9 +482,7 @@ Script.prototype.isMultisigIn = function() {
 Script.prototype.isEasySendIn = function() {
   if (this.chunks.length === 1) {
     var signatureBuf = this.chunks[0].buf;
-    if (signatureBuf &&
-        signatureBuf.length &&
-        signatureBuf[0] === 0x30) {
+    if (signatureBuf && signatureBuf.length && signatureBuf[0] === 0x30) {
       return true;
     }
   }
@@ -495,20 +494,22 @@ Script.prototype.isEasySendIn = function() {
  */
 Script.prototype.isEasySendOut = function() {
   var buf = this.toBuffer();
-  return (buf.length >= 1 && buf[buf.length - 1] === Opcode.OP_EASYSEND);
+  return buf.length >= 1 && buf[buf.length - 1] === Opcode.OP_EASYSEND;
 };
 
 /**
  * @returns {boolean} true if this is a valid standard OP_RETURN output
  */
 Script.prototype.isDataOut = function() {
-  return this.chunks.length >= 1 &&
+  return (
+    this.chunks.length >= 1 &&
     this.chunks[0].opcodenum === Opcode.OP_RETURN &&
     (this.chunks.length === 1 ||
       (this.chunks.length === 2 &&
         this.chunks[1].buf &&
         this.chunks[1].buf.length <= Script.OP_RETURN_STANDARD_SIZE &&
-        this.chunks[1].length === this.chunks.len));
+        this.chunks[1].length === this.chunks.len))
+  );
 };
 
 /**
@@ -518,17 +519,12 @@ Script.prototype.isDataOut = function() {
  * @returns {Buffer}
  */
 Script.prototype.getData = function() {
-  if (
-      this.isDataOut() ||
-      this.isScriptHashOut() ||
-      this.isParameterizedScriptHashOut()) {
-
+  if (this.isDataOut() || this.isScriptHashOut() || this.isParameterizedScriptHashOut()) {
     if (_.isUndefined(this.chunks[1])) {
       return new Buffer(0);
     } else {
       return new Buffer(this.chunks[1].buf);
     }
-
   } else if (this.isPublicKeyHashOut()) {
     return new Buffer(this.chunks[2].buf);
   }
@@ -544,7 +540,6 @@ Script.prototype.isPushOnly = function() {
     return chunk.opcodenum <= Opcode.OP_16;
   });
 };
-
 
 Script.types = {};
 Script.types.UNKNOWN = 'Unknown';
@@ -616,7 +611,6 @@ Script.prototype.classifyInput = function() {
   return Script.types.UNKNOWN;
 };
 
-
 /**
  * @returns {boolean} if script is one of the known types
  */
@@ -624,7 +618,6 @@ Script.prototype.isStandard = function() {
   // TODO: Add BIP62 compliance
   return this.classify() !== Script.types.UNKNOWN;
 };
-
 
 // Script construction methods
 
@@ -707,9 +700,12 @@ Script.prototype._addOpcode = function(opcode, prepend) {
   } else {
     op = Opcode(opcode).toNumber();
   }
-  this._insertAtPosition({
-    opcodenum: op
-  }, prepend);
+  this._insertAtPosition(
+    {
+      opcodenum: op,
+    },
+    prepend,
+  );
   return this;
 };
 
@@ -725,13 +721,16 @@ Script.prototype._addBuffer = function(buf, prepend) {
   } else if (len < Math.pow(2, 32)) {
     opcodenum = Opcode.OP_PUSHDATA4;
   } else {
-    throw new Error('You can\'t push that much data');
+    throw new Error("You can't push that much data");
   }
-  this._insertAtPosition({
-    buf: buf,
-    len: len,
-    opcodenum: opcodenum
-  }, prepend);
+  this._insertAtPosition(
+    {
+      buf: buf,
+      len: len,
+      opcodenum: opcodenum,
+    },
+    prepend,
+  );
   return this;
 };
 
@@ -758,8 +757,10 @@ Script.prototype.removeCodeseparators = function() {
  *                      public keys before creating the script
  */
 Script.buildMultisigOut = function(publicKeys, threshold, opts) {
-  $.checkArgument(threshold <= publicKeys.length,
-    'Number of required signatures must be less than or equal to the number of public keys');
+  $.checkArgument(
+    threshold <= publicKeys.length,
+    'Number of required signatures must be less than or equal to the number of public keys',
+  );
   opts = opts || {};
   var script = new Script();
   script.add(Opcode.smallInt(threshold));
@@ -843,8 +844,7 @@ Script.buildP2SHMultisigIn = function(pubkeys, threshold, signatures, opts) {
  *                                until it isn't redeemable anymore.
  */
 Script.buildEasySendOut = function(publicKeys, blockTimeout, network) {
-  $.checkArgument(publicKeys.length >= 2,
-    'Number of required public keys must be two or more');
+  $.checkArgument(publicKeys.length >= 2, 'Number of required public keys must be two or more');
 
   blockTimeout = parseInt(blockTimeout, 10);
 
@@ -872,10 +872,7 @@ Script.buildEasySendOut = function(publicKeys, blockTimeout, network) {
  */
 Script.buildEasySendIn = function(signature, easyScript, pubkeyId) {
   var s = new Script();
-  var sigBuf = BufferUtil.concat([
-    signature.toDER(),
-    BufferUtil.integerAsSingleByteBuffer(Signature.SIGHASH_ALL)
-  ]);
+  var sigBuf = BufferUtil.concat([signature.toDER(), BufferUtil.integerAsSingleByteBuffer(Signature.SIGHASH_ALL)]);
   s.add(sigBuf);
   s.add(pubkeyId);
   s.add(easyScript.toBuffer());
@@ -888,58 +885,58 @@ Script.buildSimpleVaultScript = function(tag, network) {
   var s = new Script();
   s._network = network;
 
-  s.add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> <spendlimit> [addresses] <tag>|
-   .add(Opcode. OP_DROP                      )// <sig> <mode> <spend key> <renew key> <spendlimit> [addresses] |
-   .add(Opcode. OP_NTOALTSTACK               )// <sig> <mode> <spend key> <renew key> <spendlimit> | [addresses]
-   .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> <spend key> <renew key> | [addresses] <spendlimit>
-   .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> <spend key> | [addresses] <spendlimit> <renew key>
-   .add(Opcode. OP_TOALTSTACK                )// <sig> <mode> | [addresses] <spendlimit> <renew key> <spend key>
-   .add(        Opcode.smallInt(0)           )// <sig> <mode> 0 | [addresses] <spendlimit> <renew key> <spend key>
-   .add(Opcode. OP_EQUAL                     )// <sig> <bool> | [addresses] <spendlimit> <renew key> <spend key>
-   .add(Opcode. OP_IF                        )// <sig> | [addresses] <spendlimit> <renew key> <spend key>
-   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <spend key> | [addresses] <spendlimit> <renew key>
-   .add(Opcode.      OP_DUP                  )// <sig> <spend key> <spend key> | [addresses] <spendlimit> <renew key>
-   .add(Opcode.      OP_TOALTSTACK           )// <sig> <spend key> | [addresses] <spendlimit> <renew key> <spend key>
-   .add(Opcode.      OP_CHECKSIGVERIFY       )// | [addresses] <spendlimit> <renew key> <spend key>
-   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> | [addresses] <spendlimit> <renew key>
-   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> | [addresses] <spendlimit>
-   .add(Opcode.      OP_FROMALTSTACK         )// <spend key> <renew key> <spendlimit> | [addresses]
-   .add(Opcode.      OP_DUP                  )// <spend key> <renew key> <spendlimit> <speedlimit> | [addresses]
-   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <spendlimit> <speedlimit> 0 | [addresses]
-   .add(Opcode.      OP_OUTPUTAMOUNT         )// <spend key> <renew key> <spendlimit> <speedlimit> <output at 0> | [addresses]
-   .add(Opcode.      OP_GREATERTHANOREQUAL   )// <spend key> <renew key> <spendlimit> <true or false> | [addresses]
-   .add(Opcode.      OP_VERIFY               )// <spend key> <renew key> <spendlimit> | [addresses]
-   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <spendlimit> <0 args> | [addresses]
-   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <spendlimit> <0 args> <out index> | [addresses]
-   .add(Opcode.      OP_NFROMALTSTACK        )// <spend key> <renew key> <spendlimit> <0 args> <out index> [addresses] |
-   .add(Opcode.      OP_NDUP                 )// <spend key> <renew key> <spendlimit> <0 args> <out index> [addresses] [addresses] |
-   .add(Opcode.      OP_NTOALTSTACK          )// <spend key> <renew key> <spendlimit> <0 args> <out index> [addresses] | [addresses]
-   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )// <spend key> <renew key> <spendlimit> | [addresses]
-   .add(Opcode.      OP_NFROMALTSTACK        )// <spend key> <renew key> <spendlimit> [addresses] |
-   .add(             tag                     )// <spend key> <renew key> <spendlimit> [addresses] <tag> |
-   .add(             Opcode.smallInt(0)      )// <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> |
-   .add(Opcode.      OP_DEPTH                )// <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> <total args> |
-   .add(             Opcode.smallInt(1)      )// <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> <total args> <out index> |
-   .add(             "s"                     )// <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> <total args> <out index> <self> |
-   .add(             Opcode.smallInt(1)      )// <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> <total args> <out index> <self> <num addresses>|
-   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )// |
-   .add(             Opcode.smallInt(2)      )// 2 |
-   .add(Opcode.      OP_OUTPUTCOUNT          )// <count>
-   .add(Opcode.      OP_EQUAL                )// <bool>
-   .add(Opcode. OP_ELSE                      )
-   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <spend key> | [addresses] <spendlimit> <renew key>
-   .add(Opcode.      OP_DROP                 )// <sig> | [addresses] <spendlimit> <renew key>
-   .add(Opcode.      OP_FROMALTSTACK         )// <sig> <renew key> | [addresses]
-   .add(Opcode.      OP_CHECKSIGVERIFY       )// | [addresses]
-   .add(             Opcode.smallInt(0)      )// <total args> | [addresses] <spendlimit>
-   .add(             Opcode.smallInt(0)      )// <total args> <out index> | [addresses] <spendlimit>
-   .add(             "s"                     )// <total args> <out index> <self> | [addresses] <spendlimit>
-   .add(             Opcode.smallInt(1)      )// <total args> <out index> <self> <num addresses>| [addresses] <spendlimit>
-   .add(Opcode.      OP_CHECKOUTPUTSIGVERIFY )//  | [addresses] <spendlimit>
-   .add(             Opcode.smallInt(1)      )// 1 | [addresses] <spendlimit>
-   .add(Opcode.      OP_OUTPUTCOUNT          )// 1 <count> | [addresses] <spendlimit>
-   .add(Opcode.      OP_EQUAL                )// <bool> | [addresses] <spendlimit>
-   .add(Opcode. OP_ENDIF);
+  s.add(Opcode.OP_DROP) // <sig> <mode> <spend key> <renew key> <spendlimit> [addresses] <tag>|
+    .add(Opcode.OP_DROP) // <sig> <mode> <spend key> <renew key> <spendlimit> [addresses] |
+    .add(Opcode.OP_NTOALTSTACK) // <sig> <mode> <spend key> <renew key> <spendlimit> | [addresses]
+    .add(Opcode.OP_TOALTSTACK) // <sig> <mode> <spend key> <renew key> | [addresses] <spendlimit>
+    .add(Opcode.OP_TOALTSTACK) // <sig> <mode> <spend key> | [addresses] <spendlimit> <renew key>
+    .add(Opcode.OP_TOALTSTACK) // <sig> <mode> | [addresses] <spendlimit> <renew key> <spend key>
+    .add(Opcode.smallInt(0)) // <sig> <mode> 0 | [addresses] <spendlimit> <renew key> <spend key>
+    .add(Opcode.OP_EQUAL) // <sig> <bool> | [addresses] <spendlimit> <renew key> <spend key>
+    .add(Opcode.OP_IF) // <sig> | [addresses] <spendlimit> <renew key> <spend key>
+    .add(Opcode.OP_FROMALTSTACK) // <sig> <spend key> | [addresses] <spendlimit> <renew key>
+    .add(Opcode.OP_DUP) // <sig> <spend key> <spend key> | [addresses] <spendlimit> <renew key>
+    .add(Opcode.OP_TOALTSTACK) // <sig> <spend key> | [addresses] <spendlimit> <renew key> <spend key>
+    .add(Opcode.OP_CHECKSIGVERIFY) // | [addresses] <spendlimit> <renew key> <spend key>
+    .add(Opcode.OP_FROMALTSTACK) // <spend key> | [addresses] <spendlimit> <renew key>
+    .add(Opcode.OP_FROMALTSTACK) // <spend key> <renew key> | [addresses] <spendlimit>
+    .add(Opcode.OP_FROMALTSTACK) // <spend key> <renew key> <spendlimit> | [addresses]
+    .add(Opcode.OP_DUP) // <spend key> <renew key> <spendlimit> <speedlimit> | [addresses]
+    .add(Opcode.smallInt(0)) // <spend key> <renew key> <spendlimit> <speedlimit> 0 | [addresses]
+    .add(Opcode.OP_OUTPUTAMOUNT) // <spend key> <renew key> <spendlimit> <speedlimit> <output at 0> | [addresses]
+    .add(Opcode.OP_GREATERTHANOREQUAL) // <spend key> <renew key> <spendlimit> <true or false> | [addresses]
+    .add(Opcode.OP_VERIFY) // <spend key> <renew key> <spendlimit> | [addresses]
+    .add(Opcode.smallInt(0)) // <spend key> <renew key> <spendlimit> <0 args> | [addresses]
+    .add(Opcode.smallInt(0)) // <spend key> <renew key> <spendlimit> <0 args> <out index> | [addresses]
+    .add(Opcode.OP_NFROMALTSTACK) // <spend key> <renew key> <spendlimit> <0 args> <out index> [addresses] |
+    .add(Opcode.OP_NDUP) // <spend key> <renew key> <spendlimit> <0 args> <out index> [addresses] [addresses] |
+    .add(Opcode.OP_NTOALTSTACK) // <spend key> <renew key> <spendlimit> <0 args> <out index> [addresses] | [addresses]
+    .add(Opcode.OP_CHECKOUTPUTSIGVERIFY) // <spend key> <renew key> <spendlimit> | [addresses]
+    .add(Opcode.OP_NFROMALTSTACK) // <spend key> <renew key> <spendlimit> [addresses] |
+    .add(tag) // <spend key> <renew key> <spendlimit> [addresses] <tag> |
+    .add(Opcode.smallInt(0)) // <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> |
+    .add(Opcode.OP_DEPTH) // <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> <total args> |
+    .add(Opcode.smallInt(1)) // <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> <total args> <out index> |
+    .add('s') // <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> <total args> <out index> <self> |
+    .add(Opcode.smallInt(1)) // <spend key> <renew key> <spendlimit> [addresses] <tag> <vault type> <total args> <out index> <self> <num addresses>|
+    .add(Opcode.OP_CHECKOUTPUTSIGVERIFY) // |
+    .add(Opcode.smallInt(2)) // 2 |
+    .add(Opcode.OP_OUTPUTCOUNT) // <count>
+    .add(Opcode.OP_EQUAL) // <bool>
+    .add(Opcode.OP_ELSE)
+    .add(Opcode.OP_FROMALTSTACK) // <sig> <spend key> | [addresses] <spendlimit> <renew key>
+    .add(Opcode.OP_DROP) // <sig> | [addresses] <spendlimit> <renew key>
+    .add(Opcode.OP_FROMALTSTACK) // <sig> <renew key> | [addresses]
+    .add(Opcode.OP_CHECKSIGVERIFY) // | [addresses]
+    .add(Opcode.smallInt(0)) // <total args> | [addresses] <spendlimit>
+    .add(Opcode.smallInt(0)) // <total args> <out index> | [addresses] <spendlimit>
+    .add('s') // <total args> <out index> <self> | [addresses] <spendlimit>
+    .add(Opcode.smallInt(1)) // <total args> <out index> <self> <num addresses>| [addresses] <spendlimit>
+    .add(Opcode.OP_CHECKOUTPUTSIGVERIFY) //  | [addresses] <spendlimit>
+    .add(Opcode.smallInt(1)) // 1 | [addresses] <spendlimit>
+    .add(Opcode.OP_OUTPUTCOUNT) // 1 <count> | [addresses] <spendlimit>
+    .add(Opcode.OP_EQUAL) // <bool> | [addresses] <spendlimit>
+    .add(Opcode.OP_ENDIF);
 
   return s;
 };
@@ -953,10 +950,7 @@ Script.buildSimpleVaultScript = function(tag, network) {
  */
 Script.buildVaultIn = function(mode, signature, vaultScript, signPubKey) {
   var s = new Script();
-  var sigBuf = BufferUtil.concat([
-    signature.toDER(),
-    BufferUtil.integerAsSingleByteBuffer(Signature.SIGHASH_ALL)
-  ]);
+  var sigBuf = BufferUtil.concat([signature.toDER(), BufferUtil.integerAsSingleByteBuffer(Signature.SIGHASH_ALL)]);
   s.add(sigBuf);
   s.add(Opcode.smallInt(mode)); //spend is 0, and renew mode is 1
   s.add(Hash.sha256ripemd160(signPubKey.toBuffer()));
@@ -975,7 +969,6 @@ Script.buildVaultRenewIn = function(signature, vaultScript, signPubKey) {
   return Script.buildVaultIn(1, signature, vaultScript, signPubKey);
 };
 
-
 /**
  * Build a vault input which selects spend mode
  * @param {signature} signature to be append to the script
@@ -991,18 +984,18 @@ Script.buildParameterizedP2SH = function(script, params) {
   let s = new Script();
 
   s.add(Opcode.OP_HASH160)
-   .add(script instanceof Address ? script.hashBuffer : Hash.sha256ripemd160(script.toBuffer()))
-   .add(Opcode.OP_EQUALVERIFY);
+    .add(script instanceof Address ? script.hashBuffer : Hash.sha256ripemd160(script.toBuffer()))
+    .add(Opcode.OP_EQUALVERIFY);
 
   let size = 0;
-  for(let i = 0; i < params.length; i++) {
+  for (let i = 0; i < params.length; i++) {
     s.add(params[i]);
     size++;
   }
 
   s.add(Opcode.OP_DEPTH)
-   .add(Opcode.smallInt(size))
-   .add(Opcode.OP_GREATERTHANOREQUAL);
+    .add(Opcode.smallInt(size))
+    .add(Opcode.OP_GREATERTHANOREQUAL);
 
   return s;
 };
@@ -1020,10 +1013,7 @@ Script.buildMixedParameterizedP2SH = function(script, params, signerPubKey) {
   signerPubKey = PublicKey(signerPubKey);
 
   const mixedAddress = Hash.sha256ripemd160(
-    Buffer.concat([
-      Hash.sha256ripemd160(script.toBuffer()),
-      Hash.sha256ripemd160(signerPubKey.toBuffer())
-    ])
+    Buffer.concat([Hash.sha256ripemd160(script.toBuffer()), Hash.sha256ripemd160(signerPubKey.toBuffer())]),
   );
 
   var s = new Script();
@@ -1035,7 +1025,7 @@ Script.buildMixedParameterizedP2SH = function(script, params, signerPubKey) {
     .add(Opcode.OP_EQUALVERIFY);
 
   let size = 0;
-  for(let i = 0; i < params.length; i++) {
+  for (let i = 0; i < params.length; i++) {
     s.add(params[i]);
     size++;
   }
@@ -1077,8 +1067,7 @@ Script.buildPublicKeyHashOut = function(to) {
 Script.buildPublicKeyOut = function(pubkey) {
   $.checkArgument(pubkey instanceof PublicKey);
   var s = new Script();
-  s.add(pubkey.toBuffer())
-    .add(Opcode.OP_CHECKSIG);
+  s.add(pubkey.toBuffer()).add(Opcode.OP_CHECKSIG);
   return s;
 };
 
@@ -1106,8 +1095,7 @@ Script.buildDataOut = function(data, encoding) {
  * @returns {Script} new pay to script hash script for given script
  */
 Script.buildScriptHashOut = function(script) {
-  $.checkArgument(script instanceof Script ||
-    (script instanceof Address && script.isPayToScriptHash()));
+  $.checkArgument(script instanceof Script || (script instanceof Address && script.isPayToScriptHash()));
   var s = new Script();
   s.add(Opcode.OP_HASH160)
     .add(script instanceof Address ? script.hashBuffer : Hash.sha256ripemd160(script.toBuffer()))
@@ -1129,10 +1117,7 @@ Script.buildMixedScriptHashOut = function(script, signerPubKey) {
   signerPubKey = PublicKey(signerPubKey);
 
   const mixedAddress = Hash.sha256ripemd160(
-    Buffer.concat([
-      Hash.sha256ripemd160(script.toBuffer()),
-      Hash.sha256ripemd160(signerPubKey.toBuffer())
-    ])
+    Buffer.concat([Hash.sha256ripemd160(script.toBuffer()), Hash.sha256ripemd160(signerPubKey.toBuffer())]),
   );
 
   var s = new Script();
@@ -1157,10 +1142,7 @@ Script.buildPublicKeyIn = function(signature, sigtype) {
     signature = signature.toBuffer();
   }
   var script = new Script();
-  script.add(BufferUtil.concat([
-    signature,
-    BufferUtil.integerAsSingleByteBuffer(sigtype || Signature.SIGHASH_ALL)
-  ]));
+  script.add(BufferUtil.concat([signature, BufferUtil.integerAsSingleByteBuffer(sigtype || Signature.SIGHASH_ALL)]));
   return script;
 };
 
@@ -1179,10 +1161,7 @@ Script.buildPublicKeyHashIn = function(publicKey, signature, sigtype) {
     signature = signature.toBuffer();
   }
   var script = new Script()
-    .add(BufferUtil.concat([
-      signature,
-      BufferUtil.integerAsSingleByteBuffer(sigtype || Signature.SIGHASH_ALL)
-    ]))
+    .add(BufferUtil.concat([signature, BufferUtil.integerAsSingleByteBuffer(sigtype || Signature.SIGHASH_ALL)]))
     .add(new PublicKey(publicKey).toBuffer());
   return script;
 };
@@ -1313,7 +1292,7 @@ Script.prototype.findAndDelete = function(script) {
   var hex = buf.toString('hex');
   for (var i = 0; i < this.chunks.length; i++) {
     var script2 = Script({
-      chunks: [this.chunks[i]]
+      chunks: [this.chunks[i]],
     });
     var buf2 = script2.toBuffer();
     var hex2 = buf2.toString('hex');
@@ -1378,7 +1357,7 @@ Script.prototype._decodeOP_N = function(opcode) {
  * @returns {number} number of signature operations required by this script
  */
 Script.prototype.getSignatureOperationsCount = function(accurate) {
-  accurate = (_.isUndefined(accurate) ? true : accurate);
+  accurate = _.isUndefined(accurate) ? true : accurate;
   var self = this;
   var n = 0;
   var lastOpcode = Opcode.OP_INVALIDOPCODE;

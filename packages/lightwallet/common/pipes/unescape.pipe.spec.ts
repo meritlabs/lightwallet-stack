@@ -5,23 +5,19 @@ import { UnescapePipe } from '@merit/common/pipes/unescape.pipe';
 @Component({
   template: `
     <div #test1>{{ '%40' | unescape }}</div>
-  `
+  `,
 })
 class TestComponent {
-  @ViewChild('test1') test1: ElementRef;
+  @ViewChild('test1')
+  test1: ElementRef;
 }
 
 describe('Pipes.Unescape', () => {
-
-  let comp: TestComponent,
-    instance: ComponentFixture<TestComponent>;
+  let comp: TestComponent, instance: ComponentFixture<TestComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        UnescapePipe,
-        TestComponent
-      ]
+      declarations: [UnescapePipe, TestComponent],
     }).compileComponents();
     instance = TestBed.createComponent(TestComponent);
     comp = instance.componentInstance;

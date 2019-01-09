@@ -28,7 +28,6 @@ var outputForIsSpentTest1;
 var unspentOutputSpentTxId;
 
 describe('Node Functionality', function() {
-
   var regtest;
 
   before(function(done) {
@@ -39,7 +38,6 @@ describe('Node Functionality', function() {
     testKey = meritcore.PrivateKey(testWIF);
 
     rimraf(datadir + '/regtest', function(err) {
-
       if (err) {
         throw err;
       }
@@ -53,11 +51,11 @@ describe('Node Functionality', function() {
             config: {
               spawn: {
                 datadir: datadir,
-                exec: path.resolve(__dirname, '../bin/meritd')
-              }
-            }
-          }
-        ]
+                exec: path.resolve(__dirname, '../bin/meritd'),
+              },
+            },
+          },
+        ],
       };
 
       node = new meritcoreNode(configuration);
@@ -80,7 +78,7 @@ describe('Node Functionality', function() {
           port: 30331,
           user: 'merit',
           pass: 'local321',
-          rejectUnauthorized: false
+          rejectUnauthorized: false,
         });
 
         var syncedHandler = function() {
@@ -97,17 +95,14 @@ describe('Node Functionality', function() {
             throw err;
           }
         });
-
       });
-
-
     });
   });
 
   after(function(done) {
     this.timeout(20000);
     node.stop(function(err, result) {
-      if(err) {
+      if (err) {
         throw err;
       }
       done();
@@ -189,7 +184,7 @@ describe('Node Functionality', function() {
       var options = {
         from: 0,
         to: 10,
-        queryMempool: false
+        queryMempool: false,
       };
       node.getAddressHistory(address, options, function(err, results) {
         if (err) {
@@ -211,7 +206,7 @@ describe('Node Functionality', function() {
     });
     it('correctly give the summary for the address', function(done) {
       var options = {
-        queryMempool: false
+        queryMempool: false,
       };
       node.getAddressSummary(address, options, function(err, results) {
         if (err) {
@@ -228,7 +223,6 @@ describe('Node Functionality', function() {
       });
     });
     describe('History', function() {
-
       this.timeout(20000);
 
       var testKey2;
@@ -310,81 +304,78 @@ describe('Node Functionality', function() {
               }
               results.length.should.equal(5);
 
-              async.series([
-                function(next) {
-                  var tx2 = new Transaction();
-                  tx2Amount = results[0].micros - 10000;
-                  tx2.from(results[0]);
-                  tx2.to(address2, tx2Amount);
-                  tx2.change(address);
-                  tx2.sign(testKey);
-                  tx2Hash = tx2.hash;
-                  node.sendTransaction(tx2.serialize(), function(err) {
-                    if (err) {
-                      return next(err);
-                    }
-                    mineBlock(next);
-                  });
-                }, function(next) {
-                  var tx3 = new Transaction();
-                  tx3.from(results[1]);
-                  tx3.to(address3, results[1].micros - 10000);
-                  tx3.change(address);
-                  tx3.sign(testKey);
-                  node.sendTransaction(tx3.serialize(), function(err) {
-                    if (err) {
-                      return next(err);
-                    }
-                    mineBlock(next);
-                  });
-                }, function(next) {
-                  var tx4 = new Transaction();
-                  tx4.from(results[2]);
-                  tx4.to(address4, results[2].micros - 10000);
-                  tx4.change(address);
-                  tx4.sign(testKey);
-                  node.sendTransaction(tx4.serialize(), function(err) {
-                    if (err) {
-                      return next(err);
-                    }
-                    mineBlock(next);
-                  });
-                }, function(next) {
-                  var tx5 = new Transaction();
-                  tx5.from(results[3]);
-                  tx5.from(results[4]);
-                  tx5.to(address5, results[3].micros - 10000);
-                  tx5.to(address6, results[4].micros - 10000);
-                  tx5.change(address);
-                  tx5.sign(testKey);
-                  node.sendTransaction(tx5.serialize(), function(err) {
-                    if (err) {
-                      return next(err);
-                    }
-                    mineBlock(next);
-                  });
-                }
-              ], function(err) {
-                if (err) {
-                  throw err;
-                }
-              });
+              async.series(
+                [
+                  function(next) {
+                    var tx2 = new Transaction();
+                    tx2Amount = results[0].micros - 10000;
+                    tx2.from(results[0]);
+                    tx2.to(address2, tx2Amount);
+                    tx2.change(address);
+                    tx2.sign(testKey);
+                    tx2Hash = tx2.hash;
+                    node.sendTransaction(tx2.serialize(), function(err) {
+                      if (err) {
+                        return next(err);
+                      }
+                      mineBlock(next);
+                    });
+                  },
+                  function(next) {
+                    var tx3 = new Transaction();
+                    tx3.from(results[1]);
+                    tx3.to(address3, results[1].micros - 10000);
+                    tx3.change(address);
+                    tx3.sign(testKey);
+                    node.sendTransaction(tx3.serialize(), function(err) {
+                      if (err) {
+                        return next(err);
+                      }
+                      mineBlock(next);
+                    });
+                  },
+                  function(next) {
+                    var tx4 = new Transaction();
+                    tx4.from(results[2]);
+                    tx4.to(address4, results[2].micros - 10000);
+                    tx4.change(address);
+                    tx4.sign(testKey);
+                    node.sendTransaction(tx4.serialize(), function(err) {
+                      if (err) {
+                        return next(err);
+                      }
+                      mineBlock(next);
+                    });
+                  },
+                  function(next) {
+                    var tx5 = new Transaction();
+                    tx5.from(results[3]);
+                    tx5.from(results[4]);
+                    tx5.to(address5, results[3].micros - 10000);
+                    tx5.to(address6, results[4].micros - 10000);
+                    tx5.change(address);
+                    tx5.sign(testKey);
+                    node.sendTransaction(tx5.serialize(), function(err) {
+                      if (err) {
+                        return next(err);
+                      }
+                      mineBlock(next);
+                    });
+                  },
+                ],
+                function(err) {
+                  if (err) {
+                    throw err;
+                  }
+                },
+              );
             });
-
           });
-
         });
-
       });
 
       it('five addresses', function(done) {
-        var addresses = [
-          address2,
-          address3,
-          address4,
-          address5,
-          address6
-        ];
+        var addresses = [address2, address3, address4, address5, address6];
         var options = {};
         node.getAddressHistory(addresses, options, function(err, results) {
           if (err) {
@@ -409,16 +400,10 @@ describe('Node Functionality', function() {
       });
 
       it('five addresses (limited by height)', function(done) {
-        var addresses = [
-          address2,
-          address3,
-          address4,
-          address5,
-          address6
-        ];
+        var addresses = [address2, address3, address4, address5, address6];
         var options = {
           start: 158,
-          end: 157
+          end: 157,
         };
         node.getAddressHistory(addresses, options, function(err, results) {
           if (err) {
@@ -436,16 +421,10 @@ describe('Node Functionality', function() {
       });
 
       it('five addresses (limited by height 155 to 154)', function(done) {
-        var addresses = [
-          address2,
-          address3,
-          address4,
-          address5,
-          address6
-        ];
+        var addresses = [address2, address3, address4, address5, address6];
         var options = {
           start: 157,
-          end: 156
+          end: 156,
         };
         node.getAddressHistory(addresses, options, function(err, results) {
           if (err) {
@@ -461,16 +440,10 @@ describe('Node Functionality', function() {
       });
 
       it('five addresses (paginated by index)', function(done) {
-        var addresses = [
-          address2,
-          address3,
-          address4,
-          address5,
-          address6
-        ];
+        var addresses = [address2, address3, address4, address5, address6];
         var options = {
           from: 0,
-          to: 3
+          to: 3,
         };
         node.getAddressHistory(addresses, options, function(err, results) {
           if (err) {
@@ -488,9 +461,7 @@ describe('Node Functionality', function() {
       });
 
       it('one address with sending and receiving', function(done) {
-        var addresses = [
-          address
-        ];
+        var addresses = [address];
         var options = {};
         node.getAddressHistory(addresses, options, function(err, results) {
           if (err) {
@@ -532,11 +503,8 @@ describe('Node Functionality', function() {
         });
       });
 
-
       it('total transaction count (sending and receiving)', function(done) {
-        var addresses = [
-          address
-        ];
+        var addresses = [address];
         var options = {};
         node.getAddressHistory(addresses, options, function(err, results) {
           if (err) {
@@ -551,7 +519,7 @@ describe('Node Functionality', function() {
         it('from 0 to 1', function(done) {
           var options = {
             from: 0,
-            to: 1
+            to: 1,
           };
           node.getAddressHistory(address, options, function(err, results) {
             if (err) {
@@ -566,7 +534,7 @@ describe('Node Functionality', function() {
         it('from 1 to 2', function(done) {
           var options = {
             from: 1,
-            to: 2
+            to: 2,
           };
           node.getAddressHistory(address, options, function(err, results) {
             if (err) {
@@ -581,7 +549,7 @@ describe('Node Functionality', function() {
         it('from 2 to 3', function(done) {
           var options = {
             from: 2,
-            to: 3
+            to: 3,
           };
           node.getAddressHistory(address, options, function(err, results) {
             if (err) {
@@ -596,7 +564,7 @@ describe('Node Functionality', function() {
         it('from 3 to 4', function(done) {
           var options = {
             from: 3,
-            to: 4
+            to: 4,
           };
           node.getAddressHistory(address, options, function(err, results) {
             if (err) {
@@ -611,7 +579,7 @@ describe('Node Functionality', function() {
         it('from 4 to 5', function(done) {
           var options = {
             from: 4,
-            to: 5
+            to: 5,
           };
           node.getAddressHistory(address, options, function(err, results) {
             if (err) {
@@ -629,7 +597,7 @@ describe('Node Functionality', function() {
         it('from 5 to 6', function(done) {
           var options = {
             from: 5,
-            to: 6
+            to: 6,
           };
           node.getAddressHistory(address, options, function(err, results) {
             if (err) {
@@ -642,7 +610,6 @@ describe('Node Functionality', function() {
             done();
           });
         });
-
       });
     });
 
@@ -660,7 +627,10 @@ describe('Node Functionality', function() {
       });
 
       it('will update the mempool index after new tx', function(done) {
-        var memAddress = meritcore.PrivateKey().toAddress(node.network).toString();
+        var memAddress = meritcore
+          .PrivateKey()
+          .toAddress(node.network)
+          .toString();
         var tx = new Transaction();
         tx.from(unspentOutput);
         tx.to(memAddress, unspentOutput.micros - 1000);
@@ -678,9 +648,7 @@ describe('Node Functionality', function() {
           });
         });
       });
-
     });
-
   });
 
   describe('Orphaned Transactions', function() {
@@ -691,52 +659,55 @@ describe('Node Functionality', function() {
       var count;
       var invalidatedBlockHash;
 
-      async.series([
-        function(next) {
-          client.sendToAddress(testKey.toAddress(regtest).toString(), 10, function(err) {
-            if (err) {
-              return next(err);
-            }
-            client.generate(1, next);
-          });
+      async.series(
+        [
+          function(next) {
+            client.sendToAddress(testKey.toAddress(regtest).toString(), 10, function(err) {
+              if (err) {
+                return next(err);
+              }
+              client.generate(1, next);
+            });
+          },
+          function(next) {
+            client.getBlockCount(function(err, response) {
+              if (err) {
+                return next(err);
+              }
+              count = response.result;
+              next();
+            });
+          },
+          function(next) {
+            client.getBlockHash(count, function(err, response) {
+              if (err) {
+                return next(err);
+              }
+              invalidatedBlockHash = response.result;
+              next();
+            });
+          },
+          function(next) {
+            client.getBlock(invalidatedBlockHash, function(err, response) {
+              if (err) {
+                return next(err);
+              }
+              orphanedTransaction = response.result.tx[1];
+              should.exist(orphanedTransaction);
+              next();
+            });
+          },
+          function(next) {
+            client.invalidateBlock(invalidatedBlockHash, next);
+          },
+        ],
+        function(err) {
+          if (err) {
+            throw err;
+          }
+          done();
         },
-        function(next) {
-          client.getBlockCount(function(err, response) {
-            if (err) {
-              return next(err);
-            }
-            count = response.result;
-            next();
-          });
-        },
-        function(next) {
-          client.getBlockHash(count, function(err, response) {
-            if (err) {
-              return next(err);
-            }
-            invalidatedBlockHash = response.result;
-            next();
-          });
-        },
-        function(next) {
-          client.getBlock(invalidatedBlockHash, function(err, response) {
-            if (err) {
-              return next(err);
-            }
-            orphanedTransaction = response.result.tx[1];
-            should.exist(orphanedTransaction);
-            next();
-          });
-        },
-        function(next) {
-          client.invalidateBlock(invalidatedBlockHash, next);
-        }
-      ], function(err) {
-        if (err) {
-          throw err;
-        }
-        done();
-      });
+      );
     });
 
     it('will not show confirmation count for orphaned transaction', function(done) {
@@ -752,7 +723,5 @@ describe('Node Functionality', function() {
         done();
       });
     });
-
   });
-
 });

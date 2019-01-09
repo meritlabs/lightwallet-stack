@@ -6,7 +6,7 @@ import { PasswordPromptController } from '@merit/desktop/app/components/password
 @Injectable()
 export class DesktopAlertService extends AlertService {
   constructor(private passwordPromptCtrl: PasswordPromptController) {
-    super()
+    super();
   }
 
   promptForWalletPassword(wallet: MeritWalletClient) {

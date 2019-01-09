@@ -9,8 +9,10 @@ import { DisplayWallet } from '@merit/common/models/display-wallet';
 export class RecordPassphraseComponent {
   constructor() {}
 
-  @Input() wallets: DisplayWallet[];
-  @Output() dismiss: EventEmitter<void> = new EventEmitter<void>();
+  @Input()
+  wallets: DisplayWallet[];
+  @Output()
+  dismiss: EventEmitter<void> = new EventEmitter<void>();
   copy: string = 'COPY';
   showPhrase: boolean = false;
   showNextBtn: boolean = false;
@@ -20,6 +22,6 @@ export class RecordPassphraseComponent {
     setTimeout(() => {
       this.copy = 'COPY';
     }, 1000);
-    this.showNextBtn=true;
+    this.showNextBtn = true;
   }
 }

@@ -8,14 +8,20 @@ var Hash = module.exports;
 
 Hash.sha1 = function(buf) {
   $.checkArgument(BufferUtil.isBuffer(buf));
-  return crypto.createHash('sha1').update(buf).digest();
+  return crypto
+    .createHash('sha1')
+    .update(buf)
+    .digest();
 };
 
 Hash.sha1.blocksize = 512;
 
 Hash.sha256 = function(buf) {
   $.checkArgument(BufferUtil.isBuffer(buf));
-  return crypto.createHash('sha256').update(buf).digest();
+  return crypto
+    .createHash('sha256')
+    .update(buf)
+    .digest();
 };
 
 Hash.sha256.blocksize = 512;
@@ -27,7 +33,10 @@ Hash.sha256sha256 = function(buf) {
 
 Hash.ripemd160 = function(buf) {
   $.checkArgument(BufferUtil.isBuffer(buf));
-  return crypto.createHash('ripemd160').update(buf).digest();
+  return crypto
+    .createHash('ripemd160')
+    .update(buf)
+    .digest();
 };
 
 Hash.sha256ripemd160 = function(buf) {
@@ -37,7 +46,10 @@ Hash.sha256ripemd160 = function(buf) {
 
 Hash.sha512 = function(buf) {
   $.checkArgument(BufferUtil.isBuffer(buf));
-  return crypto.createHash('sha512').update(buf).digest();
+  return crypto
+    .createHash('sha512')
+    .update(buf)
+    .digest();
 };
 
 Hash.sha512.blocksize = 1024;

@@ -1,5 +1,4 @@
-export module Constants {
-
+export namespace Constants {
   export const DEFAULT_NET = 'testnet';
 
   export const SCRIPT_TYPES = {
@@ -17,7 +16,7 @@ export module Constants {
   export const PATHS = {
     REQUEST_KEY: "m/1'/0",
     TXPROPOSAL_KEY: "m/1'/1",
-    REQUEST_KEY_AUTH: "m/2", // relative to BASE
+    REQUEST_KEY_AUTH: 'm/2', // relative to BASE
   };
 
   export const BIP45_SHARED_INDEX = 0x80000000 - 1;
@@ -32,7 +31,7 @@ export module Constants {
       short: {
         maxDecimals: 6,
         minDecimals: 2,
-      }
+      },
     },
     bit: {
       toMicros: 100,
@@ -43,12 +42,11 @@ export module Constants {
       short: {
         maxDecimals: 0,
         minDecimals: 0,
-      }
+      },
     },
   };
 
   // value here is NOT limited to max merit supply as in meritd
   // as it overflows BN max supported value (Number.MAX_SAFE_INTEGER)
   export const VAULT_SPEND_LIMIT = 10000000;
-
-};
+}

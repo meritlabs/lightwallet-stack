@@ -9,15 +9,15 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   styleUrls: ['./ui-checkbox.component.sass'],
   host: {
     '(click)': 'onClick()',
-    '[class.checked]': 'value'
+    '[class.checked]': 'value',
   },
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: forwardRef(() => UICheckboxComponent)
-    }
-  ]
+      useExisting: forwardRef(() => UICheckboxComponent),
+    },
+  ],
 })
 export class UICheckboxComponent implements ControlValueAccessor {
   value: boolean;
@@ -25,7 +25,7 @@ export class UICheckboxComponent implements ControlValueAccessor {
   onTouched: Function = () => {};
 
   writeValue(val: boolean) {
-    this.onChange(this.value = Boolean(val));
+    this.onChange((this.value = Boolean(val)));
   }
 
   registerOnChange(fn: Function) {

@@ -1,11 +1,10 @@
 import * as _ from 'lodash';
 
 export class FiatAmount {
-
   formats: {
-    CURRENCY_SYM: string,
-    DECIMAL_SEP: string,
-    GROUP_SEP: string
+    CURRENCY_SYM: string;
+    DECIMAL_SEP: string;
+    GROUP_SEP: string;
   };
   amount: number;
   amountStr: string;
@@ -14,7 +13,7 @@ export class FiatAmount {
     this.formats = {
       CURRENCY_SYM: '$',
       DECIMAL_SEP: '.',
-      GROUP_SEP: ','
+      GROUP_SEP: ',',
     };
     this.amount = this.formatFiatAmount(amount);
     this.amountStr = this.formatAmountStr(amount);
@@ -65,5 +64,4 @@ export class FiatAmount {
 
     return formatter.format(this.formatFiatAmount(amount));
   }
-
 }

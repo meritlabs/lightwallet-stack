@@ -5,17 +5,8 @@ import { ReceiveView } from '@merit/mobile/app/transact/receive/receive';
 import { ClipModule } from 'ng2-clip';
 import { DirectivesModule } from '@merit/mobile/directives/directives.module';
 
-
 @NgModule({
-  declarations: [
-    ReceiveView
-  ],
-  imports: [
-    QRCodeModule,
-    ClipModule,
-    IonicPageModule.forChild(ReceiveView),
-    DirectivesModule
-  ],
+  declarations: [ReceiveView],
+  imports: [QRCodeModule, ClipModule, IonicPageModule.forChild(ReceiveView), DirectivesModule],
 })
-export class ReceiveComponentModule {
-}
+export class ReceiveComponentModule {}

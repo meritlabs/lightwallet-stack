@@ -15,7 +15,7 @@ import { Observable } from 'rxjs/Observable';
   selector: 'view-receive',
   templateUrl: './receive.view.html',
   styleUrls: ['./receive.view.sass'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class ReceiveView implements OnInit {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectConfirmedWallets);
@@ -35,25 +35,25 @@ export class ReceiveView implements OnInit {
 
   availableCurrencies: any = [
     {
-      'name': 'USD',
-      'symbol': '$',
-      'value': 10
+      name: 'USD',
+      symbol: '$',
+      value: 10,
     },
     {
-      'name': 'RUB',
-      'symbol': '₽',
-      'value': 0.1
+      name: 'RUB',
+      symbol: '₽',
+      value: 0.1,
     },
     {
-      'name': 'CAD',
-      'symbol': 'C$',
-      'value': 2
+      name: 'CAD',
+      symbol: 'C$',
+      value: 2,
     },
     {
-      'name': 'EUR',
-      'symbol': '€',
-      'value': 3
-    }
+      name: 'EUR',
+      symbol: '€',
+      value: 3,
+    },
   ];
 
   // For now, the first wallet in the list of wallets is the default.
@@ -61,21 +61,23 @@ export class ReceiveView implements OnInit {
   selectedWallet: DisplayWallet;
 
   selectedCurrency: any = {
-    'name': 'USD',
-    'symbol': '$',
-    'value': 10
+    name: 'USD',
+    symbol: '$',
+    value: 10,
   };
 
-  constructor(private configService: ConfigService,
-              private store: Store<IRootAppState>,
-              private walletService: WalletService,
-              private addressService: AddressService,
-              private rateService: RateService,
-              private toastCtrl: ToastControllerService) {
+  constructor(
+    private configService: ConfigService,
+    private store: Store<IRootAppState>,
+    private walletService: WalletService,
+    private addressService: AddressService,
+    private rateService: RateService,
+    private toastCtrl: ToastControllerService,
+  ) {
     try {
       this.availableUnits = [
         this.configService.get().wallet.settings.unitCode.toUpperCase(),
-        this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase()
+        this.configService.get().wallet.settings.alternativeIsoCode.toUpperCase(),
       ];
     } catch (err) {
       console.error('Error reading the config service.');
@@ -89,8 +91,7 @@ export class ReceiveView implements OnInit {
       this.hasUnlockedWallet = wallets.length > 0;
       this.selectWallet(wallets[0]);
     } catch (err) {
-      if (err.text)
-        console.error('Could not initialize: ', err.text);
+      if (err.text) console.error('Could not initialize: ', err.text);
     }
   }
 
@@ -123,6 +124,8 @@ export class ReceiveView implements OnInit {
   }
 
   private formatAddress() {
-    this.qrAddress = `${ this.protocolHandler }:${ this.address }${ this.amountMicros ? '?micros=' + this.amountMicros : '' }`;
+    this.qrAddress = `${this.protocolHandler}:${this.address}${
+      this.amountMicros ? '?micros=' + this.amountMicros : ''
+    }`;
   }
 }

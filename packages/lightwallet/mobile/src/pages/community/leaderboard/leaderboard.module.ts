@@ -4,12 +4,7 @@ import { LeaderboardView } from './leaderboard';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
-  declarations: [
-    LeaderboardView
-  ],
-  imports: [
-    IonicPageModule.forChild(LeaderboardView),
-    CommonPipesModule
-  ],
+  declarations: [LeaderboardView],
+  imports: [IonicPageModule.forChild(LeaderboardView), CommonPipesModule],
 })
 export class LeaderboardModule {}

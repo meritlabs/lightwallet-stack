@@ -8,11 +8,11 @@ export interface IAppState {
 
 const INITIAL_STATE: IAppState = {
   loading: true,
-  authorized: false
+  authorized: false,
 };
 
 export enum AppReducerActionType {
-  UPDATE = '[App] Update'
+  UPDATE = '[App] Update',
 }
 
 export class UpdateAppAction implements Action {
@@ -27,10 +27,11 @@ export function appReducer(state: IAppState = INITIAL_STATE, action: AppReducerA
     case AppReducerActionType.UPDATE:
       return {
         ...state,
-        ...action.payload
+        ...action.payload,
       };
 
-    default: return state;
+    default:
+      return state;
   }
 }
 

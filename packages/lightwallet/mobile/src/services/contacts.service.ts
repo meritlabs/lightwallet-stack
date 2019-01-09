@@ -4,23 +4,18 @@ import { Diagnostic } from '@ionic-native/diagnostic';
 import { Contacts } from '@ionic-native/contacts';
 import { PersistenceService } from '@merit/common/services/persistence.service';
 
-const DESIRED_FIELDS = [
-  'displayName',
-  'emails',
-  'name',
-  'phoneNumbers',
-  'photos'
-];
+const DESIRED_FIELDS = ['displayName', 'emails', 'name', 'phoneNumbers', 'photos'];
 
 @Injectable()
 export class ContactsService extends OriginalContactsProvider {
-
   private devicePermissionGranted: boolean;
   private devicePermissionStatus: string;
 
-  constructor(private deviceContactsProvider: Contacts,
-              private deviceDiagnosticProvider: Diagnostic,
-              persistenceService: PersistenceService) {
+  constructor(
+    private deviceContactsProvider: Contacts,
+    private deviceDiagnosticProvider: Diagnostic,
+    persistenceService: PersistenceService,
+  ) {
     super(persistenceService);
   }
 
@@ -33,31 +28,33 @@ export class ContactsService extends OriginalContactsProvider {
   }
 
   async requestDevicePermission() {
-    if (!Diagnostic.installed())
-      return false;
+    if (!Diagnostic.installed()) return false;
 
     // we have permission, no need to request it again
-    if (await this.hasDevicePermission())
-      return true;
+    if (await this.hasDevicePermission()) return true;
 
     // we do not have permission
-    const status: string = this.devicePermissionStatus = await this.deviceDiagnosticProvider.requestContactsAuthorization();
+    const status: string = (this.devicePermissionStatus = await this.deviceDiagnosticProvider.requestContactsAuthorization());
 
     // permission was granted
-    if ([this.deviceDiagnosticProvider.permissionStatus.GRANTED, this.deviceDiagnosticProvider.permissionStatus.GRANTED_WHEN_IN_USE].indexOf(status) > -1)
-      return this.devicePermissionGranted = true;
+    if (
+      [
+        this.deviceDiagnosticProvider.permissionStatus.GRANTED,
+        this.deviceDiagnosticProvider.permissionStatus.GRANTED_WHEN_IN_USE,
+      ].indexOf(status) > -1
+    )
+      return (this.devicePermissionGranted = true);
 
     // permission wasn't granted
     return false;
   }
 
   async getDeviceContacts() {
-    if (!await this.hasDevicePermission())
-      return [];
+    if (!(await this.hasDevicePermission())) return [];
 
     return this.deviceContactsProvider.find(['emails', 'phoneNumbers'], {
       desiredFields: DESIRED_FIELDS,
-      multiple: true
+      multiple: true,
     });
   }
 
@@ -65,7 +62,12 @@ export class ContactsService extends OriginalContactsProvider {
     await this.init;
 
     if (this.devicePermissionGranted === true) return true;
-    return [this.deviceDiagnosticProvider.permissionStatus.DENIED, this.deviceDiagnosticProvider.permissionStatus.DENIED_ALWAYS].indexOf(this.devicePermissionStatus) > -1;
+    return (
+      [
+        this.deviceDiagnosticProvider.permissionStatus.DENIED,
+        this.deviceDiagnosticProvider.permissionStatus.DENIED_ALWAYS,
+      ].indexOf(this.devicePermissionStatus) > -1
+    );
   }
 
   async getAllMeritContacts() {
@@ -74,7 +76,9 @@ export class ContactsService extends OriginalContactsProvider {
 
   private async hasDevicePermission() {
     if (!Diagnostic.installed()) return false;
-    return (await this.deviceDiagnosticProvider.getContactsAuthorizationStatus()) === this.deviceDiagnosticProvider.permissionStatus.GRANTED;
+    return (
+      (await this.deviceDiagnosticProvider.getContactsAuthorizationStatus()) ===
+      this.deviceDiagnosticProvider.permissionStatus.GRANTED
+    );
   }
-
 }

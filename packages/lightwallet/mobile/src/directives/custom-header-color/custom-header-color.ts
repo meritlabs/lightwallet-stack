@@ -1,10 +1,9 @@
 import { AfterViewInit, Directive, ElementRef, Input, Renderer2 } from '@angular/core';
 
 @Directive({
-  selector: '[custom-header-color]'
+  selector: '[custom-header-color]',
 })
 export class CustomHeaderColorDirective implements AfterViewInit {
-
   private toolbarBackgroundNativeElement: HTMLElement;
 
   _color: string;
@@ -21,8 +20,7 @@ export class CustomHeaderColorDirective implements AfterViewInit {
     return this._color;
   }
 
-  constructor(private rnd: Renderer2,
-              private el: ElementRef) {}
+  constructor(private rnd: Renderer2, private el: ElementRef) {}
 
   ngAfterViewInit() {
     this.toolbarBackgroundNativeElement = this.el.nativeElement.querySelector('.toolbar-background');
@@ -34,5 +32,4 @@ export class CustomHeaderColorDirective implements AfterViewInit {
       this.rnd.setStyle(this.toolbarBackgroundNativeElement, 'background', this.color);
     }
   }
-
 }

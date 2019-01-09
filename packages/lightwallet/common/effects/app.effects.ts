@@ -9,7 +9,8 @@ import { getQueryParam } from '@merit/common/utils/url';
 @Injectable()
 export class AppEffects {
   // Take the user to the onboarding page if they delete all wallets
-  @Effect({ dispatch: false }) update$ = this.actions$.pipe(
+  @Effect({ dispatch: false })
+  update$ = this.actions$.pipe(
     ofType(AppReducerActionType.UPDATE),
     filter((action: UpdateAppAction) => !action.payload.authorized),
     tap(() => {
@@ -26,9 +27,8 @@ export class AppEffects {
       } else if (window.location.pathname.indexOf('/onboarding') !== 0) {
         this.router.navigateByUrl('/onboarding');
       }
-    })
+    }),
   );
 
-  constructor(private actions$: Actions, private router: Router, private persistence: PersistenceService2) {
-  }
+  constructor(private actions$: Actions, private router: Router, private persistence: PersistenceService2) {}
 }

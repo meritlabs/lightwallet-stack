@@ -9,9 +9,7 @@ export class PushNotificationsService {
   protected platform: string;
   protected packageName: string;
 
-  constructor(
-    protected http: HttpClient,
-    protected logger: LoggerService) {}
+  constructor(protected http: HttpClient, protected logger: LoggerService) {}
 
   protected get pushNotificationsEnabled(): boolean {
     return false;
@@ -22,15 +20,23 @@ export class PushNotificationsService {
   }
 
   // abstract methods
-  init(): Promise<void> { return; }
+  init(): Promise<void> {
+    return;
+  }
 
-  protected requestPermission(): Promise<boolean> { return; }
+  protected requestPermission(): Promise<boolean> {
+    return;
+  }
 
-  protected getToken(): Promise<string> { return; }
+  protected getToken(): Promise<string> {
+    return;
+  }
 
   protected subscribeToEvents() {}
 
-  protected getWallets(): Promise<MeritWalletClient[]> { return; }
+  protected getWallets(): Promise<MeritWalletClient[]> {
+    return;
+  }
 
   protected enablePolling() {}
 
@@ -59,7 +65,7 @@ export class PushNotificationsService {
         await walletClient.pushNotificationsSubscribe({
           token: this.token,
           platform: this.platform,
-          packageName: this.packageName
+          packageName: this.packageName,
         });
       } catch (err) {
         if (err) {

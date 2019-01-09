@@ -5,13 +5,7 @@ import { VaultCreateView } from './vault-create';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
-  declarations: [
-    VaultCreateView,
-  ],
-  imports: [
-    IonicPageModule.forChild(VaultCreateView),
-    CommonPipesModule,
-    DirectivesModule
-  ]
+  declarations: [VaultCreateView],
+  imports: [IonicPageModule.forChild(VaultCreateView), CommonPipesModule, DirectivesModule],
 })
 export class VaultCreateModule {}

@@ -17,10 +17,7 @@ export class MarketLoginView implements OnInit {
   selectedWalletIndex = -1;
   profile;
 
-  constructor(
-    private persistenceService: PersistenceService,
-    private passwordPromptCtrl: PasswordPromptController,
-  ) {}
+  constructor(private persistenceService: PersistenceService, private passwordPromptCtrl: PasswordPromptController) {}
 
   async ngOnInit() {
     this.loadingWallets = true;
@@ -62,8 +59,8 @@ export class MarketLoginView implements OnInit {
 
       if (authData.token) {
         const message = JSON.stringify({
-          message: "Lightwallet.Market.Auth",
-          data: { token: authData.token }
+          message: 'Lightwallet.Market.Auth',
+          data: { token: authData.token },
         });
         window.opener.postMessage(message, ENV.marketUrl);
       }

@@ -11,22 +11,23 @@ import { IonicPage, LoadingController, ModalController, NavController, NavParams
 @IonicPage()
 @Component({
   selector: 'view-incoming-request',
-  templateUrl: 'incoming-request.html'
+  templateUrl: 'incoming-request.html',
 })
 export class IncomingRequestModal {
-
   public unlockRequest: any;
   public contacts: Array<MeritContact> = [];
   public wallets: Array<MeritWalletClient> = [];
 
-  constructor(private navCtrl: NavController,
-              private navParams: NavParams,
-              private modalCtrl: ModalController,
-              private contactsService: ContactsService,
-              private addressService: AddressService,
-              private toastCtrl: ToastControllerService,
-              private unlockService: UnlockRequestService,
-              private loadingCtrl: LoadingController) {
+  constructor(
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private modalCtrl: ModalController,
+    private contactsService: ContactsService,
+    private addressService: AddressService,
+    private toastCtrl: ToastControllerService,
+    private unlockService: UnlockRequestService,
+    private loadingCtrl: LoadingController,
+  ) {
     this.unlockRequest = this.navParams.get('request');
     this.wallets = this.navParams.get('wallets');
   }
@@ -56,7 +57,7 @@ export class IncomingRequestModal {
     const meritAddress = {
       address: this.unlockRequest.address,
       alias: this.unlockRequest.alias,
-      network: this.addressService.getAddressNetwork(this.unlockRequest.address).name
+      network: this.addressService.getAddressNetwork(this.unlockRequest.address).name,
     };
     const modal = this.modalCtrl.create('SendCreateContactView', { address: meritAddress });
     modal.onDidDismiss(() => {
@@ -69,7 +70,7 @@ export class IncomingRequestModal {
     let meritAddress = {
       address: this.unlockRequest.address,
       alias: this.unlockRequest.alias,
-      network: this.addressService.getAddressNetwork(this.unlockRequest.address).name
+      network: this.addressService.getAddressNetwork(this.unlockRequest.address).name,
     };
     let modal = this.modalCtrl.create('SendSelectBindContactView', { contacts: this.contacts, address: meritAddress });
     modal.onDidDismiss(() => {
@@ -84,12 +85,16 @@ export class IncomingRequestModal {
   }
 
   selectWallet() {
-    const modal = this.modalCtrl.create('SelectWalletModal', {
-      showInvites: true,
-      selectedWallet: this.unlockRequest.walletClient,
-      availableWallets: this.wallets.filter((wallet) => wallet.availableInvites > 0)
-    }, MERIT_MODAL_OPTS);
-    modal.onDidDismiss((wallet) => {
+    const modal = this.modalCtrl.create(
+      'SelectWalletModal',
+      {
+        showInvites: true,
+        selectedWallet: this.unlockRequest.walletClient,
+        availableWallets: this.wallets.filter(wallet => wallet.availableInvites > 0),
+      },
+      MERIT_MODAL_OPTS,
+    );
+    modal.onDidDismiss(wallet => {
       if (wallet) {
         this.unlockRequest.walletClient = wallet;
       }

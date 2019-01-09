@@ -12,8 +12,7 @@ describe('log utils', function() {
   });
 
   it('should log .warn', function() {
-    if (console.warn.restore)
-      console.warn.restore();
+    if (console.warn.restore) console.warn.restore();
 
     sinon.stub(console, 'warn');
 
@@ -26,22 +25,19 @@ describe('log utils', function() {
     console.warn.restore();
   });
 
-
   it('should log .fatal', function() {
-    if (console.log.restore)
-      console.log.restore();
+    if (console.log.restore) console.log.restore();
 
     sinon.stub(console, 'log');
 
     log.setLevel('debug');
-    log.fatal('hola', "que", 'tal');
+    log.fatal('hola', 'que', 'tal');
 
     var arg = console.log.getCall(0).args[0];
     //arg.should.contain('util.log.js');        /* Firefox does not include the stack track */
     arg.should.contain('que');
     console.log.restore();
   });
-
 
   it('should not log debug', function() {
     sinon.stub(console, 'log');
@@ -75,5 +71,4 @@ describe('log utils', function() {
   it('should not create a log.silent() method', function() {
     should.not.exist(log.silent);
   });
-
 });

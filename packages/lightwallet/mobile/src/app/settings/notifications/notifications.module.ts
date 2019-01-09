@@ -4,13 +4,7 @@ import { NotificationsView } from '@merit/mobile/app/settings/notifications/noti
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [
-    NotificationsView
-  ],
-  imports: [
-    IonicPageModule.forChild(NotificationsView),
-    TranslateModule
-  ]
+  declarations: [NotificationsView],
+  imports: [IonicPageModule.forChild(NotificationsView), TranslateModule],
 })
-export class NotificationsViewModule {
-}
+export class NotificationsViewModule {}

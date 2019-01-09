@@ -6,7 +6,7 @@ var inherits = require('inherits');
 var events = require('events');
 var nodeutil = require('util');
 
-function NotificationBroadcaster() {};
+function NotificationBroadcaster() {}
 
 nodeutil.inherits(NotificationBroadcaster, events.EventEmitter);
 

@@ -9,15 +9,14 @@ import { ClipModule } from 'ng2-clip';
 import { MomentModule } from 'ngx-moment';
 import { HistoryItemComponent } from './history-item.component';
 
-
 const BASE_TRANSACTION: Partial<IDisplayTransaction> = {
   isConfirmed: true,
   isInvite: false,
   isCoinbase: false,
   wallet: <MeritWalletClient>{
-    name: 'Personal wallet'
+    name: 'Personal wallet',
   },
-  time: Date.now() / 1000
+  time: Date.now() / 1000,
 };
 
 @Injectable()
@@ -35,25 +34,17 @@ class MockMeritMoneyLinkPopupController {
 class MockEasyReceiveService {}
 
 describe('History item component', () => {
-
-  let instance: ComponentFixture<HistoryItemComponent>,
-    de: DebugElement,
-    comp: HistoryItemComponent;
+  let instance: ComponentFixture<HistoryItemComponent>, de: DebugElement, comp: HistoryItemComponent;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        HistoryItemComponent
-      ],
+      declarations: [HistoryItemComponent],
       providers: [
         { provide: GlobalsendLinkPopupController, useClass: MockMeritMoneyLinkPopupController },
         { provide: ToastControllerService, useClass: MockToastController },
         { provide: EasyReceiveService, useClass: MockEasyReceiveService },
       ],
-      imports: [
-        ClipModule,
-        MomentModule
-      ]
+      imports: [ClipModule, MomentModule],
     }).compileComponents();
 
     instance = TestBed.createComponent(HistoryItemComponent);
@@ -73,7 +64,7 @@ describe('History item component', () => {
         action: TransactionAction.RECEIVED,
         name,
         amountStr,
-        alternativeAmountStr
+        alternativeAmountStr,
       };
       instance.detectChanges();
     });
@@ -91,7 +82,5 @@ describe('History item component', () => {
       expect(innerHTML).toContain('Received to');
       expect(innerHTML).toContain('Personal wallet');
     });
-
   });
-
 });

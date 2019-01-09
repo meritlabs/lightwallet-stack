@@ -13,7 +13,7 @@ export interface IPasswordPromptConfig {
 @Component({
   selector: 'password-prompt',
   templateUrl: './password-prompt.component.html',
-  styleUrls: ['./password-prompt.component.sass']
+  styleUrls: ['./password-prompt.component.sass'],
 })
 export class PasswordPromptComponent implements IDynamicComponent {
   destroy: Function;
@@ -22,7 +22,9 @@ export class PasswordPromptComponent implements IDynamicComponent {
   ready: boolean;
   title: string;
 
-  get password(): AbstractControl { return this.formData.get('password'); }
+  get password(): AbstractControl {
+    return this.formData.get('password');
+  }
 
   constructor(private formBuilder: FormBuilder) {}
 
@@ -30,7 +32,7 @@ export class PasswordPromptComponent implements IDynamicComponent {
     this.title = config.title;
 
     this.formData = this.formBuilder.group({
-      password: ['', config.validators, config.asyncValidators]
+      password: ['', config.validators, config.asyncValidators],
     });
 
     this.ready = true;

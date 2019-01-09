@@ -7,8 +7,7 @@ import { ISmsNotificationSettings, ISmsNotificationStatus } from '@merit/common/
 export class SmsNotificationsService {
   status: ISmsNotificationStatus;
 
-  constructor(private profileService: ProfileService,
-              private persistenceService: PersistenceService2) {}
+  constructor(private profileService: ProfileService, private persistenceService: PersistenceService2) {}
 
   async getSmsSubscriptionStatus(): Promise<ISmsNotificationStatus> {
     if (this.status) {
@@ -22,7 +21,6 @@ export class SmsNotificationsService {
     if (!wallets || !wallets.length) {
       status = { enabled: false };
     } else {
-
       try {
         status = await wallets[0].getSmsNotificationSubscription();
       } catch (err) {}
@@ -36,17 +34,21 @@ export class SmsNotificationsService {
 
     await this.persistenceService.setNotificationSettings({
       smsNotifications: status.enabled,
-      phoneNumber: status.phoneNumber || ''
+      phoneNumber: status.phoneNumber || '',
     });
 
-    return this.status = status;
+    return (this.status = status);
   }
 
-  async setSmsSubscription(enabled: boolean, phoneNumber?: string, platform?: string, settings?: ISmsNotificationSettings) {
+  async setSmsSubscription(
+    enabled: boolean,
+    phoneNumber?: string,
+    platform?: string,
+    settings?: ISmsNotificationSettings,
+  ) {
     await this.persistenceService.setNotificationSettings({ smsNotifications: enabled, phoneNumber });
 
-    if (enabled && !phoneNumber)
-      return;
+    if (enabled && !phoneNumber) return;
 
     const wallets = await this.profileService.getWallets();
     let promises;
@@ -56,13 +58,13 @@ export class SmsNotificationsService {
         enabled,
         phoneNumber,
         platform,
-        settings
+        settings,
       };
 
       promises = wallets.map(wallet => wallet.smsNotificationsSubscribe(phoneNumber, platform, settings));
     } else {
       this.status = {
-        enabled
+        enabled,
       };
 
       promises = wallets.map(wallet => wallet.smsNotificationsUnsubscribe());

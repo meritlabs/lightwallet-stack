@@ -12,7 +12,6 @@ var sighash = Transaction.sighash;
 var vectors_sighash = require('../data/sighash.json');
 
 describe('sighash', function() {
-
   vectors_sighash.forEach(function(vector, i) {
     if (i === 0) {
       // First element is just a row describing the next ones
@@ -31,7 +30,10 @@ describe('sighash', function() {
       tx.uncheckedSerialize().should.equal(txbuf.toString('hex'));
 
       //sighash ought to be correct
-      sighash.sighash(tx, nhashtype, nin, subscript).toString('hex').should.equal(sighashbuf.toString('hex'));
+      sighash
+        .sighash(tx, nhashtype, nin, subscript)
+        .toString('hex')
+        .should.equal(sighashbuf.toString('hex'));
     });
   });
 });

@@ -11,7 +11,7 @@ var AddressManager = require('./addressmanager');
 
 var Constants = require('../common/constants');
 
-function Wallet() {};
+function Wallet() {}
 
 Wallet.create = function(opts) {
   opts = opts || {};
@@ -94,13 +94,12 @@ Wallet.getMaxRequiredCopayers = function(totalCopayers) {
 };
 
 Wallet.verifyCopayerLimits = function(m, n) {
-  return (n >= 1 && n <= 15) && (m >= 1 && m <= n);
+  return n >= 1 && n <= 15 && (m >= 1 && m <= n);
 };
 
 Wallet.prototype.isShared = function() {
   return this.n > 1;
 };
-
 
 Wallet.prototype._updatePublicKeyRing = function() {
   this.publicKeyRing = _.map(this.copayers, function(copayer) {
@@ -109,7 +108,6 @@ Wallet.prototype._updatePublicKeyRing = function() {
 };
 
 Wallet.prototype.addCopayer = function(copayer) {
-
   this.copayers.push(copayer);
   if (this.copayers.length < this.n) return;
 
@@ -134,7 +132,7 @@ Wallet.prototype.addCopayerRequestKey = function(copayerId, requestPubKey, signa
 
 Wallet.prototype.getCopayer = function(copayerId) {
   return _.find(this.copayers, {
-    id: copayerId
+    id: copayerId,
   });
 };
 
@@ -159,6 +157,5 @@ Wallet.prototype.createAddress = function(isChange) {
   var address = Address.derive(self.id, this.addressType, this.publicKeyRing, path, this.m, this.network, isChange);
   return address;
 };
-
 
 module.exports = Wallet;

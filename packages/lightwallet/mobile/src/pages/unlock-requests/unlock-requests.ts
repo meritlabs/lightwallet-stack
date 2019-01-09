@@ -8,10 +8,9 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 @IonicPage()
 @Component({
   selector: 'view-unlock-requests',
-  templateUrl: 'unlock-requests.html'
+  templateUrl: 'unlock-requests.html',
 })
 export class UnlockRequestsView {
-
   hiddenRequests: IUnlockRequest[] = [];
   confirmedRequests: IUnlockRequest[] = [];
   activeRequests: IUnlockRequest[] = [];
@@ -23,12 +22,13 @@ export class UnlockRequestsView {
 
   showHiddenRequests: boolean;
 
-  constructor(private navCtrl: NavController,
-              private navParams: NavParams,
-              private toastCtrl: ToastControllerService,
-              private unlockRequestService: UnlockRequestService,
-              private profileService: ProfileService) {
-  }
+  constructor(
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private toastCtrl: ToastControllerService,
+    private unlockRequestService: UnlockRequestService,
+    private profileService: ProfileService,
+  ) {}
 
   async ionViewWillEnter() {
     let vaults = await this.profileService.getVaults();
@@ -62,12 +62,12 @@ export class UnlockRequestsView {
 
   processRequest(request: IUnlockRequest) {
     if (!this.totalInvites) {
-      return this.toastCtrl.error('You don\'t have any invites you can spend now');
+      return this.toastCtrl.error("You don't have any invites you can spend now");
     }
 
     this.navCtrl.push('IncomingRequestModal', {
       request,
-      wallets: this.wallets
+      wallets: this.wallets,
     });
   }
 

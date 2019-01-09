@@ -10,26 +10,30 @@ To get started, just `npm install meritcore-lib`.
 
 ## Addresses and Key Management
 
-* [Addresses](address.md)
-* [Using Different Networks](networks.md)
-* [Private Keys](privatekey.md) and [Public Keys](publickey.md)
-* [Hierarchically-derived Private and Public Keys](hierarchical.md)
+- [Addresses](address.md)
+- [Using Different Networks](networks.md)
+- [Private Keys](privatekey.md) and [Public Keys](publickey.md)
+- [Hierarchically-derived Private and Public Keys](hierarchical.md)
 
 ## Payment Handling
-* [Using Different Units](unit.md)
-* [Acknowledging and Requesting Payments: Merit URIs](uri.md)
-* [The Transaction Class](transaction.md)
+
+- [Using Different Units](unit.md)
+- [Acknowledging and Requesting Payments: Merit URIs](uri.md)
+- [The Transaction Class](transaction.md)
 
 ## Merit Internals
-* [Scripts](script.md)
-* [Block](block.md)
+
+- [Scripts](script.md)
+- [Block](block.md)
 
 ## Extra
-* [Crypto](crypto.md)
-* [Encoding](encoding.md)
+
+- [Crypto](crypto.md)
+- [Encoding](encoding.md)
 
 ## Module Development
-* [Browser Builds](browser.md)
+
+- [Browser Builds](browser.md)
 
 # Examples
 
@@ -63,7 +67,7 @@ var p2shAddress = new meritcore.Address([publicKey1, publicKey2, publicKey3], 2)
 ```javascript
 var paymentInfo = {
   address: '1DNtTk4PUCGAdiNETAzQFWZiy2fCHtGnPx',
-  amount: 120000 //micros
+  amount: 120000, //micros
 };
 var uri = new meritcore.URI(paymentInfo).toString();
 ```
@@ -72,10 +76,10 @@ var uri = new meritcore.URI(paymentInfo).toString();
 
 ```javascript
 var transaction = new Transaction()
-    .from(utxos)          // Feed information about what unspent outputs one can use
-    .to(address, amount)  // Add an output with the given amount of micros
-    .change(address)      // Sets up a change address where the rest of the funds will go
-    .sign(privkeySet)     // Signs all the inputs it can
+  .from(utxos) // Feed information about what unspent outputs one can use
+  .to(address, amount) // Add an output with the given amount of micros
+  .change(address) // Sets up a change address where the rest of the funds will go
+  .sign(privkeySet); // Signs all the inputs it can
 ```
 
 ## Connect to the Network

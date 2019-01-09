@@ -37,14 +37,16 @@ PublicKeyHashInput.prototype.getSignatures = function(transaction, privateKey, i
   sigtype = sigtype || Signature.SIGHASH_ALL;
 
   if (BufferUtil.equals(hashData, this.output.script.getPublicKeyHash())) {
-    return [new TransactionSignature({
-      publicKey: privateKey.publicKey,
-      prevTxId: this.prevTxId,
-      outputIndex: this.outputIndex,
-      inputIndex: index,
-      signature: Sighash.sign(transaction, privateKey, sigtype, index, this.output.script),
-      sigtype: sigtype
-    })];
+    return [
+      new TransactionSignature({
+        publicKey: privateKey.publicKey,
+        prevTxId: this.prevTxId,
+        outputIndex: this.outputIndex,
+        inputIndex: index,
+        signature: Sighash.sign(transaction, privateKey, sigtype, index, this.output.script),
+        sigtype: sigtype,
+      }),
+    ];
   }
   return [];
 };
@@ -61,11 +63,7 @@ PublicKeyHashInput.prototype.getSignatures = function(transaction, privateKey, i
  */
 PublicKeyHashInput.prototype.addSignature = function(transaction, signature) {
   $.checkState(this.isValidSignature(transaction, signature), 'Signature is invalid');
-  this.setScript(Script.buildPublicKeyHashIn(
-    signature.publicKey,
-    signature.signature.toDER(),
-    signature.sigtype
-  ));
+  this.setScript(Script.buildPublicKeyHashIn(signature.publicKey, signature.signature.toDER(), signature.sigtype));
   return this;
 };
 

@@ -2,7 +2,6 @@ import { browser, by, element } from 'protractor';
 import { EC } from './app.e2e-spec';
 
 describe('[Desktop] History', () => {
-
   beforeAll(() => {
     const link = element(by.css('[ng-reflect-router-link="/history"]'));
     browser.wait(EC.visibilityOf(link), 5000);
@@ -23,5 +22,4 @@ describe('[Desktop] History', () => {
   it('should have a list of history items', () => {
     expect(element(by.css('history-list history-item')).isDisplayed()).toBeTruthy();
   });
-
 });

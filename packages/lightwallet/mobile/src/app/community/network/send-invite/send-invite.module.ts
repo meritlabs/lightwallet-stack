@@ -4,13 +4,7 @@ import { SendInviteView } from '@merit/mobile/app/community/network/send-invite/
 import { ComponentsModule } from '@merit/mobile/components/components.module';
 
 @NgModule({
-  declarations: [
-    SendInviteView,
-  ],
-  imports: [
-    IonicPageModule.forChild(SendInviteView),
-    ComponentsModule
-  ]
+  declarations: [SendInviteView],
+  imports: [IonicPageModule.forChild(SendInviteView), ComponentsModule],
 })
-export class SendInviteViewModule {
-}
+export class SendInviteViewModule {}

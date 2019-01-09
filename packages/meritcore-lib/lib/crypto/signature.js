@@ -13,7 +13,7 @@ var Signature = function Signature(r, s) {
   if (r instanceof BN) {
     this.set({
       r: r,
-      s: s
+      s: s,
     });
   } else if (r) {
     var obj = r;
@@ -26,8 +26,7 @@ Signature.prototype.set = function(obj) {
   this.r = obj.r || this.r || undefined;
   this.s = obj.s || this.s || undefined;
   this.i = typeof obj.i !== 'undefined' ? obj.i : this.i; //public key recovery parameter in range [0, 3]
-  this.compressed = typeof obj.compressed !== 'undefined' ?
-    obj.compressed : this.compressed; //whether the recovered pubkey is compressed
+  this.compressed = typeof obj.compressed !== 'undefined' ? obj.compressed : this.compressed; //whether the recovered pubkey is compressed
   this.nhashtype = obj.nhashtype || this.nhashtype || undefined;
   return this;
 };
@@ -83,7 +82,6 @@ Signature.fromString = function(str) {
   return Signature.fromDER(buf);
 };
 
-
 /**
  * In order to mimic the non-strict DER encoding of OpenSSL, set strict = false.
  */
@@ -135,12 +133,11 @@ Signature.parseDER = function(buf, strict) {
     slength: slength,
     sneg: sneg,
     sbuf: sbuf,
-    s: s
+    s: s,
   };
 
   return obj;
 };
-
 
 Signature.prototype.toCompact = function(i, compressed) {
   i = typeof i === 'number' ? i : this.i;
@@ -156,10 +153,10 @@ Signature.prototype.toCompact = function(i, compressed) {
   }
   var b1 = new Buffer([val]);
   var b2 = this.r.toBuffer({
-    size: 32
+    size: 32,
   });
   var b3 = this.s.toBuffer({
-    size: 32
+    size: 32,
   });
   return Buffer.concat([b1, b2, b3]);
 };
@@ -225,7 +222,7 @@ Signature.isTxDER = function(buf) {
     return false;
   }
   var nLenS = buf[5 + nLenR];
-  if ((nLenR + nLenS + 7) !== buf.length) {
+  if (nLenR + nLenS + 7 !== buf.length) {
     //  Non-canonical signature: R+S length mismatch
     return false;
   }
@@ -243,7 +240,7 @@ Signature.isTxDER = function(buf) {
     //  Non-canonical signature: R value negative
     return false;
   }
-  if (nLenR > 1 && (R[0] === 0x00) && !(R[1] & 0x80)) {
+  if (nLenR > 1 && R[0] === 0x00 && !(R[1] & 0x80)) {
     //  Non-canonical signature: R value excessively padded
     return false;
   }
@@ -261,7 +258,7 @@ Signature.isTxDER = function(buf) {
     //  Non-canonical signature: S value negative
     return false;
   }
-  if (nLenS > 1 && (S[0] === 0x00) && !(S[1] & 0x80)) {
+  if (nLenS > 1 && S[0] === 0x00 && !(S[1] & 0x80)) {
     //  Non-canonical signature: S value excessively padded
     return false;
   }
@@ -274,8 +271,10 @@ Signature.isTxDER = function(buf) {
  * See also BIP 62, "low S values in signatures"
  */
 Signature.prototype.hasLowS = function() {
-  if (this.s.lt(new BN(1)) ||
-    this.s.gt(new BN('7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0', 'hex'))) {
+  if (
+    this.s.lt(new BN(1)) ||
+    this.s.gt(new BN('7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0', 'hex'))
+  ) {
     return false;
   }
   return true;

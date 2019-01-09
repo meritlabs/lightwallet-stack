@@ -190,7 +190,7 @@ Block.fromRawBlock = function fromRawBlock(data, network) {
 
 Block.prototype.isDaedalus = function isDaedalus() {
   return this.header.isDaedalus();
-}
+};
 
 /**
  * @returns {Object} - A plain object with the block properties
@@ -281,7 +281,6 @@ Block.prototype.getTransactionHashes = function getTransactionHashes() {
  * @returns {Array} - An array with each level of the tree after the other.
  */
 Block.prototype.getMerkleTree = function getMerkleTree() {
-
   var tree = this.getTransactionHashes();
 
   var j = 0;
@@ -311,7 +310,6 @@ Block.prototype.getMerkleRoot = function getMerkleRoot() {
  * @returns {Boolean} - If the merkle roots match
  */
 Block.prototype.validMerkleRoot = function validMerkleRoot() {
-
   var h = new BN(this.header.merkleRoot.toString('hex'), 'hex');
   var c = new BN(this.getMerkleRoot().toString('hex'), 'hex');
 
@@ -341,7 +339,7 @@ var idProperty = {
     }
     return this._id;
   },
-  set: _.noop
+  set: _.noop,
 };
 Object.defineProperty(Block.prototype, 'id', idProperty);
 Object.defineProperty(Block.prototype, 'hash', idProperty);

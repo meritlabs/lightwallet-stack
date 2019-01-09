@@ -10,10 +10,9 @@ var http = require('http');
 var https = require('https');
 var async = require('async');
 
-if(!setImmediate) setImmediate = setTimeout;
+if (!setImmediate) setImmediate = setTimeout;
 
 describe('RpcClient', function() {
-
   it('should initialize the main object', function() {
     should.exist(RpcClient);
   });
@@ -31,10 +30,10 @@ describe('RpcClient', function() {
 
   it('should be able to define a custom logger', function() {
     var customLogger = {
-      info: function(){},
-      warn: function(){},
-      err: function(){},
-      debug: function(){}
+      info: function() {},
+      warn: function() {},
+      err: function() {},
+      debug: function() {},
     };
     RpcClient.config.log = customLogger;
     var s = new RpcClient();
@@ -54,12 +53,12 @@ describe('RpcClient', function() {
     s.log.should.equal(RpcClient.loggers.none);
   });
 
-  function FakeResponse(){
+  function FakeResponse() {
     EventEmitter.call(this);
   }
   util.inherits(FakeResponse, EventEmitter);
 
-  function FakeRequest(){
+  function FakeRequest() {
     EventEmitter.call(this);
     return this;
   }
@@ -71,44 +70,39 @@ describe('RpcClient', function() {
   FakeRequest.prototype.end = function() {};
 
   it('should use https', function() {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       port: 8445,
     });
     client.protocol.should.equal(https);
-
   });
 
   it('should use http', function() {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
-      protocol: 'http'
+      protocol: 'http',
     });
     client.protocol.should.equal(http);
-
   });
 
   it('should call a method and receive response', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: true
+      disableAgent: true,
     });
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       var res = new FakeResponse();
-      var req =  new FakeRequest();
-      setImmediate(function(){
+      var req = new FakeRequest();
+      setImmediate(function() {
         res.emit('data', '{}');
         res.emit('end');
       });
@@ -122,24 +116,22 @@ describe('RpcClient', function() {
       should.exist(parsedBuf);
       done();
     });
-
   });
 
   it('accept many values for bool', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: false
+      disableAgent: false,
     });
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       var res = new FakeResponse();
       var req = new FakeRequest();
-      setImmediate(function(){
+      setImmediate(function() {
         res.emit('data', req.data);
         res.emit('end');
       });
@@ -147,35 +139,37 @@ describe('RpcClient', function() {
       return req;
     });
 
-    async.eachSeries([true, 'true', 1, '1', 'True'], function(i, next) {
-      client.importAddress('n28S35tqEMbt6vNad7A5K3mZ7vdn8dZ86X', '', i, function(error, parsedBuf) {
-        should.not.exist(error);
-        should.exist(parsedBuf);
-        parsedBuf.params[2].should.equal(true);
-        next();
-      });
-    }, function(err) {
-      requestStub.restore();
-      done();
-    });
-
+    async.eachSeries(
+      [true, 'true', 1, '1', 'True'],
+      function(i, next) {
+        client.importAddress('n28S35tqEMbt6vNad7A5K3mZ7vdn8dZ86X', '', i, function(error, parsedBuf) {
+          should.not.exist(error);
+          should.exist(parsedBuf);
+          parsedBuf.params[2].should.equal(true);
+          next();
+        });
+      },
+      function(err) {
+        requestStub.restore();
+        done();
+      },
+    );
   });
 
   it('should process object arguments', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: false
+      disableAgent: false,
     });
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       var res = new FakeResponse();
       var req = new FakeRequest();
-      setImmediate(function(){
+      setImmediate(function() {
         res.emit('data', req.data);
         res.emit('end');
       });
@@ -183,35 +177,37 @@ describe('RpcClient', function() {
       return req;
     });
 
-    var obj = {'n28S35tqEMbt6vNad7A5K3mZ7vdn8dZ86X': 1};
-    async.eachSeries([obj, JSON.stringify(obj)], function(i, next) {
-      client.sendMany('account', i, function(error, parsedBuf) {
-        should.not.exist(error);
-        should.exist(parsedBuf);
-        parsedBuf.params[1].should.have.property('n28S35tqEMbt6vNad7A5K3mZ7vdn8dZ86X', 1);
-        next();
-      });
-    }, function(err) {
-      requestStub.restore();
-      done();
-    });
-
+    var obj = { n28S35tqEMbt6vNad7A5K3mZ7vdn8dZ86X: 1 };
+    async.eachSeries(
+      [obj, JSON.stringify(obj)],
+      function(i, next) {
+        client.sendMany('account', i, function(error, parsedBuf) {
+          should.not.exist(error);
+          should.exist(parsedBuf);
+          parsedBuf.params[1].should.have.property('n28S35tqEMbt6vNad7A5K3mZ7vdn8dZ86X', 1);
+          next();
+        });
+      },
+      function(err) {
+        requestStub.restore();
+        done();
+      },
+    );
   });
 
   it('should batch calls for a method and receive a response', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: false
+      disableAgent: false,
     });
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       var res = new FakeResponse();
-      setImmediate(function(){
+      setImmediate(function() {
         res.emit('data', '[{}, {}, {}]');
         res.emit('end');
       });
@@ -224,34 +220,35 @@ describe('RpcClient', function() {
     client.listReceivedByAccount(2, true);
     client.listReceivedByAccount(3, true);
     client.batchedCalls.length.should.equal(3);
-    client.batch(function(){
-      // batch started
-    }, function(error, result){
-      // batch ended
-      requestStub.restore();
-      should.not.exist(error);
-      should.exist(result);
-      result.length.should.equal(3);
-      done();
-    });
-
+    client.batch(
+      function() {
+        // batch started
+      },
+      function(error, result) {
+        // batch ended
+        requestStub.restore();
+        should.not.exist(error);
+        should.exist(result);
+        result.length.should.equal(3);
+        done();
+      },
+    );
   });
 
   it('should handle connection rejected 401 unauthorized', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: true
+      disableAgent: true,
     });
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       var res = new FakeResponse();
       res.statusCode = 401;
-      setImmediate(function(){
+      setImmediate(function() {
         res.emit('end');
       });
       callback(res);
@@ -264,24 +261,22 @@ describe('RpcClient', function() {
       error.message.should.equal('Merit JSON-RPC: Connection Rejected: 401 Unnauthorized');
       done();
     });
-
   });
 
   it('should handle connection rejected 401 forbidden', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: true
+      disableAgent: true,
     });
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       var res = new FakeResponse();
       res.statusCode = 403;
-      setImmediate(function(){
+      setImmediate(function() {
         res.emit('end');
       });
       callback(res);
@@ -294,24 +289,22 @@ describe('RpcClient', function() {
       error.message.should.equal('Merit JSON-RPC: Connection Rejected: 403 Forbidden');
       done();
     });
-
   });
 
   it('should handle 500 work limit exceeded error', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: true
+      disableAgent: true,
     });
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       var res = new FakeResponse();
       res.statusCode = 500;
-      setImmediate(function(){
+      setImmediate(function() {
         res.emit('data', 'Work queue depth exceeded');
         res.emit('end');
       });
@@ -325,27 +318,25 @@ describe('RpcClient', function() {
       error.message.should.equal('Merit JSON-RPC: Work queue depth exceeded');
       done();
     });
-
   });
 
   it('should handle EPIPE error case 1', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: true
+      disableAgent: true,
     });
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       var req = new FakeRequest();
-      setImmediate(function(){
+      setImmediate(function() {
         req.emit('error', new Error('write EPIPE'));
       });
       var res = new FakeResponse();
-      setImmediate(function(){
+      setImmediate(function() {
         res.emit('data', '{}');
         res.emit('end');
       });
@@ -359,28 +350,26 @@ describe('RpcClient', function() {
       error.message.should.equal('Merit JSON-RPC: Request Error: write EPIPE');
       done();
     });
-
   });
 
   it('should handle EPIPE error case 2', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: true
+      disableAgent: true,
     });
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       var res = new FakeResponse();
-      setImmediate(function(){
+      setImmediate(function() {
         res.emit('data', '{}');
         res.emit('end');
       });
       var req = new FakeRequest();
-      setImmediate(function(){
+      setImmediate(function() {
         req.emit('error', new Error('write EPIPE'));
       });
       callback(res);
@@ -392,24 +381,22 @@ describe('RpcClient', function() {
     });
 
     client.getDifficulty(function(error, parsedBuf) {});
-
   });
 
   it('should handle ECONNREFUSED error', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: true
+      disableAgent: true,
     });
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       var res = new FakeResponse();
       var req = new FakeRequest();
-      setImmediate(function(){
+      setImmediate(function() {
         req.emit('error', new Error('connect ECONNREFUSED'));
       });
       callback(res);
@@ -422,23 +409,21 @@ describe('RpcClient', function() {
       error.message.should.equal('Merit JSON-RPC: Request Error: connect ECONNREFUSED');
       done();
     });
-
   });
 
   it('should callback with error if invalid json', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: true
+      disableAgent: true,
     });
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       var res = new FakeResponse();
-      setImmediate(function(){
+      setImmediate(function() {
         res.emit('data', 'not a json string');
         res.emit('end');
       });
@@ -453,23 +438,21 @@ describe('RpcClient', function() {
       error.message.should.contain('Merit JSON-RPC: Error Parsing JSON: Unexpected token o');
       done();
     });
-
   });
 
   it('should callback with error if blank response', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: true
+      disableAgent: true,
     });
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       var res = new FakeResponse();
-      setImmediate(function(){
+      setImmediate(function() {
         res.emit('data', '');
         res.emit('end');
       });
@@ -484,30 +467,28 @@ describe('RpcClient', function() {
       error.message.should.equal('Merit JSON-RPC: Error Parsing JSON: Unexpected end of JSON input');
       done();
     });
-
   });
 
   it('should add additional http options', function(done) {
-
     var client = new RpcClient({
       user: 'user',
       pass: 'pass',
       host: 'localhost',
       port: 8445,
       rejectUnauthorized: true,
-      disableAgent: true
+      disableAgent: true,
     });
 
     client.httpOptions = {
-      port: 20001
+      port: 20001,
     };
 
     var calledPort = false;
 
-    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback){
+    var requestStub = sinon.stub(client.protocol, 'request', function(options, callback) {
       calledPort = options.port;
       var res = new FakeResponse();
-      setImmediate(function(){
+      setImmediate(function() {
         res.emit('data', '{}');
         res.emit('end');
       });
@@ -523,7 +504,5 @@ describe('RpcClient', function() {
       requestStub.restore();
       done();
     });
-
   });
-
 });

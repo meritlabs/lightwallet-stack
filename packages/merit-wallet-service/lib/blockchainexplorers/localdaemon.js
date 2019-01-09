@@ -67,14 +67,12 @@ LocalDaemon.prototype.sendReferral = function(rawReferral, cb) {
   });
 };
 
-
-
-LocalDaemon.prototype.getMempoolReferrals  = function(addresses) {
-    return this.node.getMempoolReferrals(addresses);
+LocalDaemon.prototype.getMempoolReferrals = function(addresses) {
+  return this.node.getMempoolReferrals(addresses);
 };
 
 LocalDaemon.prototype.getBlockchainReferrals = function(addresses) {
-    return this.node.getBlockchainReferrals(addresses);
+  return this.node.getBlockchainReferrals(addresses);
 };
 
 /**
@@ -83,34 +81,32 @@ LocalDaemon.prototype.getBlockchainReferrals = function(addresses) {
  * @return Array of addresses that were accepted
  */
 LocalDaemon.prototype.getMempoolAcceptedAddresses = async function(addresses) {
-    let acceptedAddresses = [];
+  let acceptedAddresses = [];
 
-    const txs = (await this.node.getAddressMempool(addresses))
-        .filter(t => t.isInvite && t.satoshis < 0); //is invite tx and sent FROM given address
+  const txs = (await this.node.getAddressMempool(addresses)).filter(t => t.isInvite && t.satoshis < 0); //is invite tx and sent FROM given address
 
-    await Promise.all(_.map(txs, async (t) => {
-        let res = await promisify(this.node.getDetailedTransaction)(t.txid);
-        acceptedAddresses.push(res.outputs[0].address);
-    }));
+  await Promise.all(
+    _.map(txs, async t => {
+      let res = await promisify(this.node.getDetailedTransaction)(t.txid);
+      acceptedAddresses.push(res.outputs[0].address);
+    }),
+  );
 
-    return acceptedAddresses;
+  return acceptedAddresses;
 };
 
 LocalDaemon.prototype.getCommunityRank = function(addresses) {
-    return this.node.getCommunityRank(addresses);
+  return this.node.getCommunityRank(addresses);
 };
 
-
 LocalDaemon.prototype.getCommunityLeaderboard = function(limit) {
-    return this.node.getCommunityLeaderboard(limit);
+  return this.node.getCommunityLeaderboard(limit);
 };
 
 LocalDaemon.prototype.getAddressBalance = async function(addresses, options) {
-  const {err, result} = await promisify(this.node.getAddressBalance.bind(this.node))(addresses, options);
-  if(err) throw err;
+  const { err, result } = await promisify(this.node.getAddressBalance.bind(this.node))(addresses, options);
+  if (err) throw err;
   return result;
 };
-
-
 
 module.exports = LocalDaemon;

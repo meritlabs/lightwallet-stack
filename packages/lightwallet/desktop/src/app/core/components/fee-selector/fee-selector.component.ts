@@ -9,9 +9,9 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: forwardRef(() => FeeSelectorComponent)
-    }
-  ]
+      useExisting: forwardRef(() => FeeSelectorComponent),
+    },
+  ],
 })
 export class FeeSelectorComponent implements ControlValueAccessor {
   value: boolean;
@@ -19,7 +19,7 @@ export class FeeSelectorComponent implements ControlValueAccessor {
   onTouched: Function = () => {};
 
   writeValue(val: boolean) {
-    this.onChange(this.value = Boolean(val));
+    this.onChange((this.value = Boolean(val)));
   }
 
   registerOnChange(fn: Function) {

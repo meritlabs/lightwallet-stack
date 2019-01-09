@@ -41,11 +41,12 @@ function UnspentOutput(data) {
   if (!_.isNumber(outputIndex)) {
     throw new Error('Invalid outputIndex, received ' + outputIndex);
   }
-  $.checkArgument(!_.isUndefined(data.scriptPubKey) || !_.isUndefined(data.script),
-                  'Must provide the scriptPubKey for that output!');
+  $.checkArgument(
+    !_.isUndefined(data.scriptPubKey) || !_.isUndefined(data.script),
+    'Must provide the scriptPubKey for that output!',
+  );
   var script = new Script(data.scriptPubKey || data.script);
-  $.checkArgument(!_.isUndefined(data.amount) || !_.isUndefined(data.micros),
-                  'Must provide an amount for the output');
+  $.checkArgument(!_.isUndefined(data.amount) || !_.isUndefined(data.micros), 'Must provide an amount for the output');
   var amount = !_.isUndefined(data.amount) ? new Unit.fromMRT(data.amount).toMicros() : data.micros;
   $.checkArgument(_.isNumber(amount), 'Amount must be a number');
   JSUtil.defineImmutable(this, {
@@ -53,7 +54,7 @@ function UnspentOutput(data) {
     txId: txId,
     outputIndex: outputIndex,
     script: script,
-    micros: amount
+    micros: amount,
   });
 }
 
@@ -62,8 +63,17 @@ function UnspentOutput(data) {
  * @returns string
  */
 UnspentOutput.prototype.inspect = function() {
-  return '<UnspentOutput: ' + this.txId + ':' + this.outputIndex +
-         ', micros: ' + this.micros + ', address: ' + this.address + '>';
+  return (
+    '<UnspentOutput: ' +
+    this.txId +
+    ':' +
+    this.outputIndex +
+    ', micros: ' +
+    this.micros +
+    ', address: ' +
+    this.address +
+    '>'
+  );
 };
 
 /**
@@ -93,7 +103,7 @@ UnspentOutput.prototype.toObject = UnspentOutput.prototype.toJSON = function toO
     txid: this.txId,
     vout: this.outputIndex,
     scriptPubKey: this.script.toBuffer().toString('hex'),
-    amount: Unit.fromMicros(this.micros).toMRT()
+    amount: Unit.fromMicros(this.micros).toMRT(),
   };
 };
 

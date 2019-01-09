@@ -17,11 +17,11 @@ function Opcode(num) {
   } else if (_.isString(num)) {
     value = Opcode.map[num];
   } else {
-    throw new TypeError('Unrecognized num type: "' + typeof(num) + '" for Opcode');
+    throw new TypeError('Unrecognized num type: "' + typeof num + '" for Opcode');
   }
 
   JSUtil.defineImmutable(this, {
-    num: value
+    num: value,
   });
 
   return this;
@@ -215,7 +215,7 @@ Opcode.map = {
   // template matching params
   OP_PUBKEYHASH: 253,
   OP_PUBKEY: 254,
-  OP_INVALIDOPCODE: 255
+  OP_INVALIDOPCODE: 255,
 };
 
 Opcode.reverseMap = [];
@@ -234,8 +234,7 @@ Opcode.isSmallIntOp = function(opcode) {
   if (opcode instanceof Opcode) {
     opcode = opcode.toNumber();
   }
-  return ((opcode === Opcode.map.OP_0) ||
-    ((opcode >= Opcode.map.OP_1) && (opcode <= Opcode.map.OP_16)));
+  return opcode === Opcode.map.OP_0 || (opcode >= Opcode.map.OP_1 && opcode <= Opcode.map.OP_16);
 };
 
 /**
@@ -244,7 +243,7 @@ Opcode.isSmallIntOp = function(opcode) {
  * @returns {string} Script opcode
  */
 Opcode.prototype.inspect = function() {
-  return '<Opcode: ' + this.toString() + ', hex: '+this.toHex()+', decimal: '+this.num+'>';
+  return '<Opcode: ' + this.toString() + ', hex: ' + this.toHex() + ', decimal: ' + this.num + '>';
 };
 
 module.exports = Opcode;

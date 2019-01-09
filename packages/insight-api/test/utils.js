@@ -11,29 +11,29 @@ describe('Utils', function() {
         services: {
           meritd: {
             estimateFee: function(blocks, callback) {
-              switch(blocks) {
-              case 1:
-                return callback(null, 1000 / 1e8);
-              case 3:
-                return callback(null, 3000 / 1e8);
+              switch (blocks) {
+                case 1:
+                  return callback(null, 1000 / 1e8);
+                case 3:
+                  return callback(null, 3000 / 1e8);
               }
-            }
-          }
-        }
+            },
+          },
+        },
       };
       var utils = new UtilsController(node);
 
       var req = {
         query: {
-          nbBlocks: '1, 3'
-        }
+          nbBlocks: '1, 3',
+        },
       };
 
       var res = {
         jsonp: function(fees) {
-          should(fees).eql({1: 0.00001, 3: 0.00003});
+          should(fees).eql({ 1: 0.00001, 3: 0.00003 });
           done();
-        }
+        },
       };
       utils.estimateFee(req, res);
     });

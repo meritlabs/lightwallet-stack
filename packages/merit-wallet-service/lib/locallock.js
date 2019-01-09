@@ -3,7 +3,7 @@ var $ = require('preconditions').singleton();
 
 function Lock() {
   this.tasks = {};
-};
+}
 
 Lock.prototype._release = function(token, task) {
   if (!task.running) return;
@@ -15,9 +15,12 @@ Lock.prototype._release = function(token, task) {
 Lock.prototype._runOne = function(token) {
   var self = this;
 
-  if (_.some(self.tasks[token], {
-    running: true
-  })) return;
+  if (
+    _.some(self.tasks[token], {
+      running: true,
+    })
+  )
+    return;
 
   var task = _.head(self.tasks[token]);
   if (!task) return;

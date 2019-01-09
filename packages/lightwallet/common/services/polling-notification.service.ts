@@ -16,10 +16,12 @@ import { ElectronService } from '../../desktop/src/services/electron.service';
 export class PollingNotificationsService {
   private pollingNotificationsSubscriptions: { [walletId: string]: Subscription } = {};
 
-  constructor(protected profileService: ProfileService,
-              protected logger: LoggerService,
-              @Optional() private store: Store<IRootAppState>,
-              @Optional() private persistenceService: PersistenceService2) {
+  constructor(
+    protected profileService: ProfileService,
+    protected logger: LoggerService,
+    @Optional() private store: Store<IRootAppState>,
+    @Optional() private persistenceService: PersistenceService2,
+  ) {
     this.logger.info('Hello PollingNotification Service');
   }
 
@@ -30,7 +32,7 @@ export class PollingNotificationsService {
     }
 
     (await this.profileService.getWallets()).forEach(w => this.enablePolling(w));
-  };
+  }
 
   disable() {
     let walletId: string;
@@ -46,11 +48,12 @@ export class PollingNotificationsService {
     if (this.pollingNotificationsSubscriptions[walletClient.id]) {
       this.logger.warn('Attempting to enable polling for wallet that already has polling enabled: ', walletClient.id);
     } else {
-      this.pollingNotificationsSubscriptions[walletClient.id] = walletClient.initNotifications()
+      this.pollingNotificationsSubscriptions[walletClient.id] = walletClient
+        .initNotifications()
         .pipe(
           filter((notifications: any[]) => !!notifications),
           map((notifications: any[]) => uniqBy(notifications, 'walletId')),
-          debounceTime(500)
+          debounceTime(500),
         )
         .subscribe(this.onFetch.bind(this));
     }
@@ -64,12 +67,12 @@ export class PollingNotificationsService {
   }
 
   protected onFetch(notifications: any[]) {
-    notifications.forEach((notification) => {
+    notifications.forEach(notification => {
       if (notification) {
         notification = {
           ...notification,
           ...notification.data,
-          read: false
+          read: false,
         };
 
         delete notification.data;
@@ -77,10 +80,12 @@ export class PollingNotificationsService {
         this.store.dispatch(new AddNotificationAction(notification));
 
         if (notification.walletId) {
-          this.store.dispatch(new RefreshOneWalletAction(notification.walletId, {
-            skipAlias: true,
-            skipShareCode: true
-          }));
+          this.store.dispatch(
+            new RefreshOneWalletAction(notification.walletId, {
+              skipAlias: true,
+              skipShareCode: true,
+            }),
+          );
         }
       }
     });

@@ -3,12 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { SendViaView } from './send-via';
 
 @NgModule({
-  declarations: [
-    SendViaView,
-  ],
-  imports: [
-    IonicPageModule.forChild(SendViaView),
-  ],
+  declarations: [SendViaView],
+  imports: [IonicPageModule.forChild(SendViaView)],
 })
-export class SendViaModule {
-}
+export class SendViaModule {}

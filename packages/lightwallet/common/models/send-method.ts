@@ -1,12 +1,12 @@
 export enum SendMethodType {
   Easy = 'easy',
-  Classic = 'classic'
+  Classic = 'classic',
 }
 
 export enum SendMethodDestination {
   Sms = 'sms',
   Email = 'email',
-  Address = 'address'
+  Address = 'address',
 }
 
 export interface ISendMethod {

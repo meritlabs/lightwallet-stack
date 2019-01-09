@@ -9,9 +9,6 @@ var log = require('npmlog');
 log.debug = log.verbose;
 log.disableColor();
 
-
-
-
 var port = process.env.MWS_PORT || config.port || 3232;
 
 var cluster = require('cluster');
@@ -28,15 +25,16 @@ if (config.https) {
   if (config.ciphers) {
     serverOpts.ciphers = config.ciphers;
     serverOpts.honorCipherOrder = true;
-  };
+  }
 
   // This sets the intermediate CA certs only if they have all been designated in the config.js
   if (config.CAinter1 && config.CAinter2 && config.CAroot) {
-    serverOpts.ca = [fs.readFileSync(config.CAinter1),
+    serverOpts.ca = [
+      fs.readFileSync(config.CAinter1),
       fs.readFileSync(config.CAinter2),
-      fs.readFileSync(config.CAroot)
+      fs.readFileSync(config.CAroot),
     ];
-  };
+  }
 }
 
 if (config.cluster && !config.lockOpts.lockerServer)
@@ -48,11 +46,13 @@ if (config.cluster && !config.messageBrokerOpts.messageBrokerServer)
 var expressApp = new ExpressApp();
 
 function startInstance(cb) {
-  var server = config.https ? serverModule.createServer(serverOpts, expressApp.app) : serverModule.Server(expressApp.app);
+  var server = config.https
+    ? serverModule.createServer(serverOpts, expressApp.app)
+    : serverModule.Server(expressApp.app);
 
   server.on('connection', function(socket) {
     socket.setTimeout(300 * 1000);
-  })
+  });
 
   expressApp.start(config, function(err) {
     if (err) {
@@ -64,13 +64,12 @@ function startInstance(cb) {
 
     var instanceInfo = cluster.worker ? ' [Instance:' + cluster.worker.id + ']' : '';
     log.info('MWS running ' + instanceInfo);
-    log.debug("We have a Merit Node: ", this.node);
+    log.debug('We have a Merit Node: ', this.node);
     return;
   });
-};
+}
 
 if (config.cluster && cluster.isMaster) {
-
   log.info('Starting ' + clusterInstances + ' instances');
 
   // Create a worker for each CPU
@@ -88,4 +87,4 @@ if (config.cluster && cluster.isMaster) {
 } else {
   log.info('Listening on port: ' + port);
   startInstance();
-};
+}

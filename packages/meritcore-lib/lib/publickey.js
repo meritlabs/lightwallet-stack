@@ -34,7 +34,6 @@ var $ = require('./util/preconditions');
  * @constructor
  */
 function PublicKey(data, extra) {
-
   if (!(this instanceof PublicKey)) {
     return new PublicKey(data, extra);
   }
@@ -55,11 +54,11 @@ function PublicKey(data, extra) {
   JSUtil.defineImmutable(this, {
     point: info.point,
     compressed: info.compressed,
-    network: info.network || Network.defaultNetwork
+    network: info.network || Network.defaultNetwork,
   });
 
   return this;
-};
+}
 
 /**
  * Internal function to differentiate between arguments passed to the constructor
@@ -69,7 +68,7 @@ function PublicKey(data, extra) {
 PublicKey.prototype._classifyArgs = function(data, extra) {
   /* jshint maxcomplexity: 10 */
   var info = {
-    compressed: _.isUndefined(extra.compressed) || extra.compressed
+    compressed: _.isUndefined(extra.compressed) || extra.compressed,
   };
 
   // detect type of data
@@ -77,7 +76,7 @@ PublicKey.prototype._classifyArgs = function(data, extra) {
     info.point = data;
   } else if (data.x && data.y) {
     info = PublicKey._transformObject(data, extra);
-  } else if (typeof(data) === 'string') {
+  } else if (typeof data === 'string') {
     info = PublicKey._transformDER(new Buffer(data, 'hex'));
   } else if (PublicKey._isBuffer(data)) {
     info = PublicKey._transformDER(data);
@@ -112,7 +111,7 @@ PublicKey._isPrivateKey = function(param) {
  * @private
  */
 PublicKey._isBuffer = function(param) {
-  return (param instanceof Buffer) || (param instanceof Uint8Array);
+  return param instanceof Buffer || param instanceof Uint8Array;
 };
 
 /**
@@ -206,7 +205,7 @@ PublicKey._transformObject = function(json, extra) {
   var point = new Point(x, y);
   return new PublicKey(point, {
     compressed: json.compressed,
-    network: extra.network
+    network: extra.network,
   });
 };
 
@@ -221,7 +220,7 @@ PublicKey.fromPrivateKey = function(privkey) {
   var info = PublicKey._transformPrivateKey(privkey);
   return new PublicKey(info.point, {
     compressed: info.compressed,
-    network: info.network
+    network: info.network,
   });
 };
 
@@ -235,7 +234,7 @@ PublicKey.fromDER = PublicKey.fromBuffer = function(buf, strict) {
   $.checkArgument(PublicKey._isBuffer(buf), 'Must be a hex buffer of DER encoded public key');
   var info = PublicKey._transformDER(buf, strict);
   return new PublicKey(info.point, {
-    compressed: info.compressed
+    compressed: info.compressed,
   });
 };
 
@@ -249,7 +248,7 @@ PublicKey.fromDER = PublicKey.fromBuffer = function(buf, strict) {
 PublicKey.fromPoint = function(point, compressed) {
   $.checkArgument(point instanceof Point, 'First argument must be an instance of Point.');
   return new PublicKey(point, {
-    compressed: compressed
+    compressed: compressed,
   });
 };
 
@@ -266,7 +265,7 @@ PublicKey.fromString = function(str, network, encoding) {
   var info = PublicKey._transformDER(buf);
   return new PublicKey(info.point, {
     compressed: info.compressed,
-    network: network || Network.defaultNetwork
+    network: network || Network.defaultNetwork,
   });
 };
 
@@ -280,7 +279,7 @@ PublicKey.fromString = function(str, network, encoding) {
 PublicKey.fromX = function(odd, x) {
   var info = PublicKey._transformX(odd, x);
   return new PublicKey(info.point, {
-    compressed: info.compressed
+    compressed: info.compressed,
   });
 };
 
@@ -318,7 +317,7 @@ PublicKey.prototype.toObject = PublicKey.prototype.toJSON = function toObject() 
   return {
     x: this.point.getX().toString('hex', 2),
     y: this.point.getY().toString('hex', 2),
-    compressed: this.compressed
+    compressed: this.compressed,
   };
 };
 
@@ -332,10 +331,10 @@ PublicKey.prototype.toBuffer = PublicKey.prototype.toDER = function() {
   var y = this.point.getY();
 
   var xbuf = x.toBuffer({
-    size: 32
+    size: 32,
   });
   var ybuf = y.toBuffer({
-    size: 32
+    size: 32,
   });
 
   var prefix;
@@ -388,9 +387,7 @@ PublicKey.prototype.toString = function() {
  * @returns {string} Public key
  */
 PublicKey.prototype.inspect = function() {
-  return '<PublicKey: ' + this.toString() +
-    (this.compressed ? '' : ', uncompressed') + '>';
+  return '<PublicKey: ' + this.toString() + (this.compressed ? '' : ', uncompressed') + '>';
 };
-
 
 module.exports = PublicKey;

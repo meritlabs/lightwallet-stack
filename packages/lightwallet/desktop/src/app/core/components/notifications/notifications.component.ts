@@ -3,19 +3,21 @@ import { IRootAppState } from '@merit/common/reducers';
 import {
   ClearNotificationsAction,
   INotification,
-  MarkAllNotificationsAsReadAction
+  MarkAllNotificationsAsReadAction,
 } from '@merit/common/reducers/notifications.reducer';
 import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.sass']
+  styleUrls: ['./notifications.component.sass'],
 })
 export class NotificationsComponent {
   showHistory: boolean;
-  @Input() notifications: INotification[];
-  @Input() hasNewNotifications: boolean;
+  @Input()
+  notifications: INotification[];
+  @Input()
+  hasNewNotifications: boolean;
 
   constructor(private store: Store<IRootAppState>) {}
 

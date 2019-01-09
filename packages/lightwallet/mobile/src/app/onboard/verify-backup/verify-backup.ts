@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { LoggerService } from '@merit/common/services/logger.service';
 
 @IonicPage({
-  defaultHistory: ['OnboardingView']
+  defaultHistory: ['OnboardingView'],
 })
 @Component({
   selector: 'view-verify-backup',
@@ -13,21 +13,24 @@ import { LoggerService } from '@merit/common/services/logger.service';
 export class VerifyBackupView {
   mnemonic: string;
   enteredPhrase: string[] = [];
-  wordList: { word: string, selected: boolean }[] = [];
+  wordList: { word: string; selected: boolean }[] = [];
 
-  constructor(private alertController: AlertController,
-              private navCtrl: NavController,
-              private navParams: NavParams,
-              private logger: LoggerService) {
-  }
+  constructor(
+    private alertController: AlertController,
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private logger: LoggerService,
+  ) {}
 
   ionViewDidLoad() {
     this.mnemonic = this.navParams.get('mnemonic');
     if (this.mnemonic) {
-      this.wordList = _.shuffle(_.map(this.mnemonic.split(' '), (word) => ({
-        word: word,
-        selected: false
-      })));
+      this.wordList = _.shuffle(
+        _.map(this.mnemonic.split(' '), word => ({
+          word: word,
+          selected: false,
+        })),
+      );
     } else {
       this.navCtrl.pop();
     }
@@ -37,7 +40,7 @@ export class VerifyBackupView {
     return _.every(this.wordList, 'selected');
   }
 
-  toggleWord(wordObj: { word: string, selected: boolean }): void {
+  toggleWord(wordObj: { word: string; selected: boolean }): void {
     wordObj.selected = !wordObj.selected;
     if (wordObj.selected) {
       this.enteredPhrase.push(wordObj.word);
@@ -47,7 +50,7 @@ export class VerifyBackupView {
   }
 
   resetWords(): void {
-    _.each(this.wordList, (word) => {
+    _.each(this.wordList, word => {
       word.selected = false;
     });
     this.enteredPhrase = [];
@@ -69,14 +72,19 @@ export class VerifyBackupView {
   }
 
   private failedAlert(): void {
-    this.alertController.create({
-      title: 'Oops...',
-      message: 'The phrase you entered didn\'t match your backup phrase! ' +
-      'If you lose your wallet without a backup, it is lost for good!',
-      buttons: [{
-        text: 'Try Again',
-        handler: this.resetWords
-      }]
-    }).present();
+    this.alertController
+      .create({
+        title: 'Oops...',
+        message:
+          "The phrase you entered didn't match your backup phrase! " +
+          'If you lose your wallet without a backup, it is lost for good!',
+        buttons: [
+          {
+            text: 'Try Again',
+            handler: this.resetWords,
+          },
+        ],
+      })
+      .present();
   }
 }

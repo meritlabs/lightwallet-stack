@@ -14,9 +14,12 @@ import { TaskSlug, ProgressStatus, IFullGoal, GoalSlug } from '@merit/common/mod
 export class TaskPreviewComponent implements OnInit {
   constructor(private router: Router, private store: Store<IRootAppState>, private goalService: GoalsService) {}
 
-  @Input() goal: IFullGoal;
-  @Input() isComplete: boolean;
-  @Input() isConfirmed: boolean;
+  @Input()
+  goal: IFullGoal;
+  @Input()
+  isComplete: boolean;
+  @Input()
+  isConfirmed: boolean;
 
   route: string;
   readinessBackground: string;
@@ -29,7 +32,7 @@ export class TaskPreviewComponent implements OnInit {
     const toDo = this.goal.tasks.filter((item: any) => item.status === ProgressStatus.Incomplete),
       complete = this.goal.tasks.length - toDo.length,
       total = this.goal.tasks.length,
-      readiness = complete / total * 100;
+      readiness = (complete / total) * 100;
 
     this.readinessBackground = `linear-gradient(to right, #74cd4f ${readiness}%, #555b7033 ${readiness}%)`;
   }

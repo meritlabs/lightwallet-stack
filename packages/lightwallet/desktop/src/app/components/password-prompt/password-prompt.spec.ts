@@ -5,17 +5,12 @@ import { BackdropComponent } from '../backdrop/backdrop.component';
 import { PasswordPromptComponent } from './password-prompt.component';
 
 describe('Password Prompt', () => {
-  let instance: ComponentFixture<PasswordPromptComponent>,
-    de: DebugElement,
-    comp: PasswordPromptComponent;
+  let instance: ComponentFixture<PasswordPromptComponent>, de: DebugElement, comp: PasswordPromptComponent;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [PasswordPromptComponent, BackdropComponent],
-      imports: [
-        FormsModule,
-        ReactiveFormsModule
-      ]
+      imports: [FormsModule, ReactiveFormsModule],
     }).compileComponents();
 
     instance = TestBed.createComponent(PasswordPromptComponent);
@@ -23,7 +18,7 @@ describe('Password Prompt', () => {
     comp.init({
       title: 'Enter password',
       validators: [Validators.required],
-      asyncValidators: []
+      asyncValidators: [],
     });
     instance.detectChanges();
     de = instance.debugElement;
@@ -34,11 +29,11 @@ describe('Password Prompt', () => {
   });
 
   it('should display a title', () => {
-     expect(de.nativeElement.querySelector('h2.title').innerHTML).toContain('Enter password');
+    expect(de.nativeElement.querySelector('h2.title').innerHTML).toContain('Enter password');
   });
 
   it('should display a password input', () => {
-     expect(de.nativeElement.querySelector('input[type=password]')).toBeDefined();
+    expect(de.nativeElement.querySelector('input[type=password]')).toBeDefined();
   });
 
   it('should validate password input', () => {

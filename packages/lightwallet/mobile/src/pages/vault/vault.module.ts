@@ -6,14 +6,7 @@ import { ComponentsModule } from '@merit/mobile/components/components.module';
 import { MomentModule } from 'ngx-moment';
 
 @NgModule({
-  declarations: [
-    VaultView,
-  ],
-  imports: [
-    IonicPageModule.forChild(VaultView),
-    CommonPipesModule,
-    ComponentsModule,
-    MomentModule
-  ]
+  declarations: [VaultView],
+  imports: [IonicPageModule.forChild(VaultView), CommonPipesModule, ComponentsModule, MomentModule],
 })
 export class VaultModule {}

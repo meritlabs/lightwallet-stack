@@ -17,27 +17,30 @@ export class SendEditContactView {
   contact: MeritContact;
   newAddress: string = '';
 
-  private actions: Array<{ type: string, mAddress: IMeritAddress }> = []; //logging all actions to properly modify addressbook
+  private actions: Array<{ type: string; mAddress: IMeritAddress }> = []; //logging all actions to properly modify addressbook
 
   private readonly TYPE_REMOVE = 'remove';
   private readonly TYPE_ADD = 'add';
 
-  constructor(private navCtrl: NavController,
-              private navParams: NavParams,
-              private contactsService: ContactsService,
-              private toastController: ToastControllerService,
-              private addressService: AddressService,
-              private alertCtrl: AlertController) {
+  constructor(
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private contactsService: ContactsService,
+    private toastController: ToastControllerService,
+    private addressService: AddressService,
+    private alertCtrl: AlertController,
+  ) {
     this.contact = this.navParams.get('contact');
   }
 
   removeAddress(meritAddress) {
     this.actions.push({ type: this.TYPE_REMOVE, mAddress: meritAddress });
-    this.actions = this.actions.filter((action) => { //removing fresh added address
-      return (action.type != this.TYPE_ADD || action.mAddress.address != meritAddress.address);
+    this.actions = this.actions.filter(action => {
+      //removing fresh added address
+      return action.type != this.TYPE_ADD || action.mAddress.address != meritAddress.address;
     });
     this.contact.meritAddresses = this.contact.meritAddresses.filter(mAddress => {
-      return (mAddress.address != meritAddress.address);
+      return mAddress.address != meritAddress.address;
     });
   }
 
@@ -57,7 +60,7 @@ export class SendEditContactView {
     const meritAddress: IMeritAddress = {
       network: ENV.network,
       address: info.address,
-      alias: info.alias
+      alias: info.alias,
     };
 
     this.actions.push({ type: this.TYPE_ADD, mAddress: meritAddress });
@@ -67,14 +70,14 @@ export class SendEditContactView {
 
   async save() {
     const removalPromises = [];
-    this.actions.forEach((action) => {
+    this.actions.forEach(action => {
       if (action.type == this.TYPE_REMOVE) {
         removalPromises.push(this.contactsService.remove(action.mAddress.address, action.mAddress.network));
       }
     });
 
     //removing all entities with existing addresses key
-    this.contact.meritAddresses.forEach((mAddress) => {
+    this.contact.meritAddresses.forEach(mAddress => {
       removalPromises.push(this.contactsService.remove(mAddress.address, mAddress.network));
     });
 
@@ -91,7 +94,7 @@ export class SendEditContactView {
 
   // we are able to delete merit contacts and edit name property, instead of contacts in device address book
   isMeritContact() {
-    return (!this.contact.phoneNumbers.length && !this.contact.emails.length);
+    return !this.contact.phoneNumbers.length && !this.contact.emails.length;
   }
 
   isSaveAvailable() {
@@ -100,25 +103,29 @@ export class SendEditContactView {
 
   deleteContact() {
     let remove = () => {
-      this.contact.meritAddresses.forEach((m) => {
+      this.contact.meritAddresses.forEach(m => {
         this.removeAddress(m);
       });
       return this.save();
     };
 
-    this.alertCtrl.create({
-      title: `Are you sure want to delete this contact?`,
-      buttons: [
-        {
-          text: 'Cancel', role: 'cancel', handler: () => {
-        }
-        },
-        {
-          text: 'Delete', handler: () => {
-          remove();
-        }
-        }
-      ]
-    }).present();
+    this.alertCtrl
+      .create({
+        title: `Are you sure want to delete this contact?`,
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {},
+          },
+          {
+            text: 'Delete',
+            handler: () => {
+              remove();
+            },
+          },
+        ],
+      })
+      .present();
   }
 }

@@ -4,7 +4,7 @@ import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 
 export interface IWalletsState {
   wallets: DisplayWallet[];
-  walletsMap: { [walletId: string]: DisplayWallet; };
+  walletsMap: { [walletId: string]: DisplayWallet };
   loading: boolean;
   totals: IWalletTotals;
   totalsLoading: boolean;
@@ -33,11 +33,11 @@ const DEFAULT_STATE: IWalletsState = {
     totalWalletsBalanceFiat: '0.00',
     allBalancesHidden: false,
     totalCommunitySize: 0,
-    invites: 0
+    invites: 0,
   },
   loading: true,
   totalsLoading: true,
-  inviteRequests: []
+  inviteRequests: [],
 };
 
 export enum WalletsActionType {
@@ -51,14 +51,13 @@ export enum WalletsActionType {
   UpdateInviteRequests = '[Wallets] Update Invite Wait List',
   DeleteWallet = '[Wallets] Delete wallet',
   DeleteWalletCompleted = '[Wallets] Delete wallet completed',
-  IgnoreInviteRequest = '[Wallets] Ignore invite request'
+  IgnoreInviteRequest = '[Wallets] Ignore invite request',
 }
 
 export class AddWalletAction implements Action {
   type = WalletsActionType.Add;
 
-  constructor(public wallet: DisplayWallet) {
-  }
+  constructor(public wallet: DisplayWallet) {}
 }
 
 export class UpdateWalletsAction implements Action {
@@ -67,7 +66,7 @@ export class UpdateWalletsAction implements Action {
   walletsMap: any = {};
 
   constructor(public payload: DisplayWallet[]) {
-    payload.forEach(w => this.walletsMap[w.id] = w);
+    payload.forEach(w => (this.walletsMap[w.id] = w));
   }
 }
 
@@ -114,17 +113,16 @@ export class IgnoreInviteRequestAction implements Action {
   constructor(public address: string) {}
 }
 
-export type WalletsAction =
-  AddWalletAction
-  & UpdateWalletsAction
-  & RefreshWalletsAction
-  & UpdateOneWalletAction
-  & RefreshOneWalletAction
-  & UpdateWalletTotalsAction
-  & UpdateInviteRequestsAction
-  & DeleteWalletAction
-  & DeleteWalletCompletedAction
-  & IgnoreInviteRequestAction;
+export type WalletsAction = AddWalletAction &
+  UpdateWalletsAction &
+  RefreshWalletsAction &
+  UpdateOneWalletAction &
+  RefreshOneWalletAction &
+  UpdateWalletTotalsAction &
+  UpdateInviteRequestsAction &
+  DeleteWalletAction &
+  DeleteWalletCompletedAction &
+  IgnoreInviteRequestAction;
 
 export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: WalletsAction) {
   switch (action.type) {
@@ -135,19 +133,16 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
         loading: false,
         walletsMap: {
           ...state.walletsMap,
-          [newWallet.id]: newWallet
+          [newWallet.id]: newWallet,
         },
-        wallets: [
-          ...state.wallets,
-          newWallet
-        ],
-        totalsLoading: true
+        wallets: [...state.wallets, newWallet],
+        totalsLoading: true,
       };
 
     case WalletsActionType.Refresh:
       return {
         ...state,
-        loading: true
+        loading: true,
       };
 
     case WalletsActionType.Update:
@@ -155,7 +150,7 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
         ...state,
         loading: false,
         wallets: action.payload,
-        walletsMap: action.walletsMap
+        walletsMap: action.walletsMap,
       };
 
     case WalletsActionType.UpdateOne:
@@ -163,33 +158,31 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
       state.wallets[index] = action.wallet;
       return {
         ...state,
-        wallets: [
-          ...state.wallets
-        ],
+        wallets: [...state.wallets],
         loading: false,
         walletsMap: {
           ...state.walletsMap,
-          [action.wallet.id]: action.wallet
-        }
+          [action.wallet.id]: action.wallet,
+        },
       };
 
     case WalletsActionType.RefreshTotals:
       return {
         ...state,
-        totalsLoading: true
+        totalsLoading: true,
       };
 
     case WalletsActionType.UpdateTotals:
       return {
         ...state,
         totalsLoading: false,
-        totals: action.totals
+        totals: action.totals,
       };
 
     case WalletsActionType.UpdateInviteRequests:
       return {
         ...state,
-        inviteRequests: action.inviteRequests
+        inviteRequests: action.inviteRequests,
       };
 
     case WalletsActionType.DeleteWalletCompleted:
@@ -198,8 +191,8 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
         wallets: state.wallets.filter(wallet => wallet.id !== action.walletId),
         walletsMap: {
           ...state.walletsMap,
-          [action.walletId]: undefined
-        }
+          [action.walletId]: undefined,
+        },
       };
 
     default:
@@ -210,11 +203,15 @@ export function walletsReducer(state: IWalletsState = DEFAULT_STATE, action: Wal
 export const selectWalletsState = createFeatureSelector<IWalletsState>('wallets');
 export const selectWalletsLoading = createSelector(selectWalletsState, state => state.loading);
 export const selectWallets = createSelector(selectWalletsState, state => state.wallets);
-export const selectConfirmedWallets = createSelector(selectWallets, wallets => wallets.filter((w: DisplayWallet) => w.client.confirmed));
+export const selectConfirmedWallets = createSelector(selectWallets, wallets =>
+  wallets.filter((w: DisplayWallet) => w.client.confirmed),
+);
 export const selectWalletTotals = createSelector(selectWalletsState, state => state.totals);
 export const selectWalletTotalsLoading = createSelector(selectWalletsState, state => state.totalsLoading);
 export const selectWalletById = (id: string) => createSelector(selectWalletsState, state => state.walletsMap[id]);
-export const selectWalletsWithInvites = createSelector(selectWallets, (wallets: DisplayWallet[]) => wallets.filter(wallet => wallet.availableInvites > 0));
+export const selectWalletsWithInvites = createSelector(selectWallets, (wallets: DisplayWallet[]) =>
+  wallets.filter(wallet => wallet.availableInvites > 0),
+);
 export const selectInvites = createSelector(selectWalletTotals, totals => totals.invites);
 export const selectInviteRequests = createSelector(selectWalletsState, state => state.inviteRequests);
 export const selectNumberOfInviteRequests = createSelector(selectInviteRequests, inviteRequests => {

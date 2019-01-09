@@ -7,20 +7,22 @@ export class AddressValidator {
     return async (abstractCtrl: AbstractControl) => {
       let { value } = abstractCtrl;
 
-      if (!value)
-        return { required: true };
+      if (!value) return { required: true };
 
       value = cleanAddress(value);
 
-      if (value.length < 3)
-        return { minlength: true };
+      if (value.length < 3) return { minlength: true };
 
-      if (!isAddress(value) && !couldBeAlias(value))
-        return { InvalidFormat: true };
+      if (!isAddress(value) && !couldBeAlias(value)) return { InvalidFormat: true };
 
       const addressInfo = await getAddressInfo(value, mwcService);
 
-      if (!addressInfo || !addressInfo.isValid || !addressInfo.isBeaconed || (!allowUnconfirmed && !addressInfo.isConfirmed))
+      if (
+        !addressInfo ||
+        !addressInfo.isValid ||
+        !addressInfo.isBeaconed ||
+        (!allowUnconfirmed && !addressInfo.isConfirmed)
+      )
         return { AddressNotFound: true };
     };
   }
@@ -29,18 +31,15 @@ export class AddressValidator {
     return async (abstractCtrl: AbstractControl) => {
       let { value } = abstractCtrl;
 
-      if (!value)
-        return null;
+      if (!value) return null;
 
       value = cleanAddress(value);
 
-      if (!couldBeAlias(value))
-        return { InvalidFormat: true };
+      if (!couldBeAlias(value)) return { InvalidFormat: true };
 
       const addressInfo = await getAddressInfo(value, mwcService);
 
-      if (addressInfo && addressInfo.isConfirmed)
-        return { AliasInUse: true };
+      if (addressInfo && addressInfo.isConfirmed) return { AliasInUse: true };
     };
   }
 }

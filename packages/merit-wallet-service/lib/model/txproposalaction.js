@@ -1,6 +1,6 @@
 'use strict';
 
-function TxProposalAction() {};
+function TxProposalAction() {}
 
 TxProposalAction.create = function(opts) {
   opts = opts || {};

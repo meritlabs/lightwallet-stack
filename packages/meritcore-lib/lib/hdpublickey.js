@@ -160,12 +160,16 @@ HDPublicKey.prototype._deriveWithNumber = function(index, hardened) {
   var indexBuffer = BufferUtil.integerAsBuffer(index);
   var data = BufferUtil.concat([this.publicKey.toBuffer(), indexBuffer]);
   var hash = Hash.sha512hmac(data, this._buffers.chainCode);
-  var leftPart = BN.fromBuffer(hash.slice(0, 32), {size: 32});
+  var leftPart = BN.fromBuffer(hash.slice(0, 32), { size: 32 });
   var chainCode = hash.slice(32, 64);
 
   var publicKey;
   try {
-    publicKey = PublicKey.fromPoint(Point.getG().mul(leftPart).add(this.publicKey.point));
+    publicKey = PublicKey.fromPoint(
+      Point.getG()
+        .mul(leftPart)
+        .add(this.publicKey.point),
+    );
   } catch (e) {
     return this._deriveWithNumber(index + 1);
   }
@@ -176,7 +180,7 @@ HDPublicKey.prototype._deriveWithNumber = function(index, hardened) {
     parentFingerPrint: this.fingerPrint,
     childIndex: index,
     chainCode: chainCode,
-    publicKey: publicKey
+    publicKey: publicKey,
   });
 
   return derived;
@@ -244,7 +248,7 @@ HDPublicKey.getSerializedError = function(data, network) {
     }
   }
   var version = BufferUtil.integerFromBuffer(data.slice(0, 4));
-  if (version === Network.livenet.xprivkey || version === Network.testnet.xprivkey ) {
+  if (version === Network.livenet.xprivkey || version === Network.testnet.xprivkey) {
     return new hdErrors.ArgumentIsPrivateExtended();
   }
   return null;
@@ -262,7 +266,7 @@ HDPublicKey._validateNetwork = function(data, networkArg) {
   return null;
 };
 
-HDPublicKey.prototype._buildFromPrivate = function (arg) {
+HDPublicKey.prototype._buildFromPrivate = function(arg) {
   var args = _.clone(arg._buffers);
   var point = Point.getG().mul(BN.fromBuffer(args.privateKey));
   args.publicKey = Point.pointToCompressed(point);
@@ -279,12 +283,17 @@ HDPublicKey.prototype._buildFromObject = function(arg) {
   var buffers = {
     version: arg.network ? BufferUtil.integerAsBuffer(Network.get(arg.network).xpubkey) : arg.version,
     depth: _.isNumber(arg.depth) ? BufferUtil.integerAsSingleByteBuffer(arg.depth) : arg.depth,
-    parentFingerPrint: _.isNumber(arg.parentFingerPrint) ? BufferUtil.integerAsBuffer(arg.parentFingerPrint) : arg.parentFingerPrint,
+    parentFingerPrint: _.isNumber(arg.parentFingerPrint)
+      ? BufferUtil.integerAsBuffer(arg.parentFingerPrint)
+      : arg.parentFingerPrint,
     childIndex: _.isNumber(arg.childIndex) ? BufferUtil.integerAsBuffer(arg.childIndex) : arg.childIndex,
     chainCode: _.isString(arg.chainCode) ? BufferUtil.hexToBuffer(arg.chainCode) : arg.chainCode,
-    publicKey: _.isString(arg.publicKey) ? BufferUtil.hexToBuffer(arg.publicKey) :
-      BufferUtil.isBuffer(arg.publicKey) ? arg.publicKey : arg.publicKey.toBuffer(),
-    checksum: _.isNumber(arg.checksum) ? BufferUtil.integerAsBuffer(arg.checksum) : arg.checksum
+    publicKey: _.isString(arg.publicKey)
+      ? BufferUtil.hexToBuffer(arg.publicKey)
+      : BufferUtil.isBuffer(arg.publicKey)
+        ? arg.publicKey
+        : arg.publicKey.toBuffer(),
+    checksum: _.isNumber(arg.checksum) ? BufferUtil.integerAsBuffer(arg.checksum) : arg.checksum,
   };
   return this._buildFromBuffers(buffers);
 };
@@ -294,13 +303,12 @@ HDPublicKey.prototype._buildFromSerialized = function(arg) {
   var buffers = {
     version: decoded.slice(HDPublicKey.VersionStart, HDPublicKey.VersionEnd),
     depth: decoded.slice(HDPublicKey.DepthStart, HDPublicKey.DepthEnd),
-    parentFingerPrint: decoded.slice(HDPublicKey.ParentFingerPrintStart,
-                                     HDPublicKey.ParentFingerPrintEnd),
+    parentFingerPrint: decoded.slice(HDPublicKey.ParentFingerPrintStart, HDPublicKey.ParentFingerPrintEnd),
     childIndex: decoded.slice(HDPublicKey.ChildIndexStart, HDPublicKey.ChildIndexEnd),
     chainCode: decoded.slice(HDPublicKey.ChainCodeStart, HDPublicKey.ChainCodeEnd),
     publicKey: decoded.slice(HDPublicKey.PublicKeyStart, HDPublicKey.PublicKeyEnd),
     checksum: decoded.slice(HDPublicKey.ChecksumStart, HDPublicKey.ChecksumEnd),
-    xpubkey: arg
+    xpubkey: arg,
   };
   return this._buildFromBuffers(buffers);
 };
@@ -328,13 +336,10 @@ HDPublicKey.prototype._buildFromBuffers = function(arg) {
   HDPublicKey._validateBufferArguments(arg);
 
   JSUtil.defineImmutable(this, {
-    _buffers: arg
+    _buffers: arg,
   });
 
-  var sequence = [
-    arg.version, arg.depth, arg.parentFingerPrint, arg.childIndex, arg.chainCode,
-    arg.publicKey
-  ];
+  var sequence = [arg.version, arg.depth, arg.parentFingerPrint, arg.childIndex, arg.chainCode, arg.publicKey];
   var concat = BufferUtil.concat(sequence);
   var checksum = Base58Check.checksum(concat);
   if (!arg.checksum || !arg.checksum.length) {
@@ -350,7 +355,7 @@ HDPublicKey.prototype._buildFromBuffers = function(arg) {
   xpubkey = Base58Check.encode(BufferUtil.concat(sequence));
   arg.xpubkey = new Buffer(xpubkey);
 
-  var publicKey = new PublicKey(arg.publicKey, {network: network});
+  var publicKey = new PublicKey(arg.publicKey, { network: network });
   var size = HDPublicKey.ParentFingerPrintSize;
   var fingerPrint = Hash.sha256ripemd160(publicKey.toBuffer()).slice(0, size);
 
@@ -359,7 +364,7 @@ HDPublicKey.prototype._buildFromBuffers = function(arg) {
     network: network,
     depth: BufferUtil.integerFromSingleByteBuffer(arg.depth),
     publicKey: publicKey,
-    fingerPrint: fingerPrint
+    fingerPrint: fingerPrint,
   });
 
   return this;
@@ -368,11 +373,8 @@ HDPublicKey.prototype._buildFromBuffers = function(arg) {
 HDPublicKey._validateBufferArguments = function(arg) {
   var checkBuffer = function(name, size) {
     var buff = arg[name];
-    assert(BufferUtil.isBuffer(buff), name + ' argument is not a buffer, it\'s ' + typeof buff);
-    assert(
-      buff.length === size,
-      name + ' has not the expected size: found ' + buff.length + ', expected ' + size
-    );
+    assert(BufferUtil.isBuffer(buff), name + " argument is not a buffer, it's " + typeof buff);
+    assert(buff.length === size, name + ' has not the expected size: found ' + buff.length + ', expected ' + size);
   };
   checkBuffer('version', HDPublicKey.VersionSize);
   checkBuffer('depth', HDPublicKey.DepthSize);
@@ -438,7 +440,7 @@ HDPublicKey.prototype.toObject = HDPublicKey.prototype.toJSON = function toObjec
     chainCode: BufferUtil.bufferToHex(this._buffers.chainCode),
     publicKey: this.publicKey.toString(),
     checksum: BufferUtil.integerFromBuffer(this._buffers.checksum),
-    xpubkey: this.xpubkey
+    xpubkey: this.xpubkey,
   };
 };
 
@@ -475,20 +477,20 @@ HDPublicKey.CheckSumSize = 4;
 HDPublicKey.DataSize = 78;
 HDPublicKey.SerializedByteSize = 82;
 
-HDPublicKey.VersionStart           = 0;
-HDPublicKey.VersionEnd             = HDPublicKey.VersionStart + HDPublicKey.VersionSize;
-HDPublicKey.DepthStart             = HDPublicKey.VersionEnd;
-HDPublicKey.DepthEnd               = HDPublicKey.DepthStart + HDPublicKey.DepthSize;
+HDPublicKey.VersionStart = 0;
+HDPublicKey.VersionEnd = HDPublicKey.VersionStart + HDPublicKey.VersionSize;
+HDPublicKey.DepthStart = HDPublicKey.VersionEnd;
+HDPublicKey.DepthEnd = HDPublicKey.DepthStart + HDPublicKey.DepthSize;
 HDPublicKey.ParentFingerPrintStart = HDPublicKey.DepthEnd;
-HDPublicKey.ParentFingerPrintEnd   = HDPublicKey.ParentFingerPrintStart + HDPublicKey.ParentFingerPrintSize;
-HDPublicKey.ChildIndexStart        = HDPublicKey.ParentFingerPrintEnd;
-HDPublicKey.ChildIndexEnd          = HDPublicKey.ChildIndexStart + HDPublicKey.ChildIndexSize;
-HDPublicKey.ChainCodeStart         = HDPublicKey.ChildIndexEnd;
-HDPublicKey.ChainCodeEnd           = HDPublicKey.ChainCodeStart + HDPublicKey.ChainCodeSize;
-HDPublicKey.PublicKeyStart         = HDPublicKey.ChainCodeEnd;
-HDPublicKey.PublicKeyEnd           = HDPublicKey.PublicKeyStart + HDPublicKey.PublicKeySize;
-HDPublicKey.ChecksumStart          = HDPublicKey.PublicKeyEnd;
-HDPublicKey.ChecksumEnd            = HDPublicKey.ChecksumStart + HDPublicKey.CheckSumSize;
+HDPublicKey.ParentFingerPrintEnd = HDPublicKey.ParentFingerPrintStart + HDPublicKey.ParentFingerPrintSize;
+HDPublicKey.ChildIndexStart = HDPublicKey.ParentFingerPrintEnd;
+HDPublicKey.ChildIndexEnd = HDPublicKey.ChildIndexStart + HDPublicKey.ChildIndexSize;
+HDPublicKey.ChainCodeStart = HDPublicKey.ChildIndexEnd;
+HDPublicKey.ChainCodeEnd = HDPublicKey.ChainCodeStart + HDPublicKey.ChainCodeSize;
+HDPublicKey.PublicKeyStart = HDPublicKey.ChainCodeEnd;
+HDPublicKey.PublicKeyEnd = HDPublicKey.PublicKeyStart + HDPublicKey.PublicKeySize;
+HDPublicKey.ChecksumStart = HDPublicKey.PublicKeyEnd;
+HDPublicKey.ChecksumEnd = HDPublicKey.ChecksumStart + HDPublicKey.CheckSumSize;
 
 assert(HDPublicKey.PublicKeyEnd === HDPublicKey.DataSize);
 assert(HDPublicKey.ChecksumEnd === HDPublicKey.SerializedByteSize);

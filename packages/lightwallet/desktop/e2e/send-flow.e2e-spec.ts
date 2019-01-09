@@ -2,7 +2,6 @@ import { browser, by, element } from 'protractor';
 import { EC, TEST_WALLET_ALIAS } from './app.e2e-spec';
 
 describe('[Desktop] Sending Merit', () => {
-
   beforeAll(() => {
     const link = element(by.css('[ng-reflect-router-link="/send"]'));
     browser.wait(EC.visibilityOf(link), 5000);
@@ -84,7 +83,6 @@ describe('[Desktop] Sending Merit', () => {
   });
 
   describe('> Sending', () => {
-
     const amountInputEl = element(by.css('[formcontrolname=amountMrt]')),
       selectBoxEl = element(by.css('.ui-input.ui-input--select.ui-input--form.selectbox__selected')),
       selectMethodEl = element(by.css('.select-method')),
@@ -251,7 +249,5 @@ describe('[Desktop] Sending Merit', () => {
         });
       });
     });
-
   });
-
 });

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   IMeritToastConfig,
-  ToastControllerService as ToastControllerServiceBase
+  ToastControllerService as ToastControllerServiceBase,
 } from '@merit/common/services/toast-controller.service';
 import { DOMController } from '../dom.controller';
 import { ToastNotificationComponent } from './toast-notification.component';
@@ -20,7 +20,7 @@ export class ToastControllerService extends ToastControllerServiceBase {
     return this.create({
       cssClass: 'error',
       title: 'Error',
-      message
+      message,
     });
   }
 
@@ -28,7 +28,7 @@ export class ToastControllerService extends ToastControllerServiceBase {
     return this.create({
       cssClass: 'success',
       title: 'Success',
-      message
+      message,
     });
   }
 }

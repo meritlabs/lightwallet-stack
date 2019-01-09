@@ -51,7 +51,7 @@ export function getComponents() {
     UICheckboxComponent,
     WalletUnlockAlertComponent,
     SmsNotificationsPromptComponent,
-    UpdateDialogComponent
+    UpdateDialogComponent,
   ];
 }
 
@@ -62,7 +62,7 @@ export function getComponents() {
     ConfirmDialogComponent,
     GlobalsendLinkPopupComponent,
     SmsNotificationsPromptComponent,
-    UpdateDialogComponent
+    UpdateDialogComponent,
   ],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule, CommonDirectivesModule, MomentModule],
   declarations: getComponents(),
@@ -79,7 +79,7 @@ export class SharedComponentsModule {
         ConfirmDialogControllerService,
         GlobalsendLinkPopupController,
         SmsNotificationsPromptController,
-        UpdateDialogController
+        UpdateDialogController,
       ],
     };
   }

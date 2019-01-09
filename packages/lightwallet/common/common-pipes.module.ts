@@ -17,7 +17,7 @@ import { AddressPipe } from '@merit/common/pipes/address.pipe';
     UnescapePipe,
     AddressPipe,
     AddressErrorMessagePipe,
-    AliasErrorMessagePipe
+    AliasErrorMessagePipe,
   ],
   exports: [
     ChunksPipe,
@@ -27,7 +27,7 @@ import { AddressPipe } from '@merit/common/pipes/address.pipe';
     UnescapePipe,
     AddressPipe,
     AddressErrorMessagePipe,
-    AliasErrorMessagePipe
-  ]
+    AliasErrorMessagePipe,
+  ],
 })
 export class CommonPipesModule {}

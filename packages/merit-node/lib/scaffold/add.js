@@ -21,10 +21,7 @@ function addConfig(configFilePath, service, done) {
       return done(err);
     }
     var config = JSON.parse(data);
-    $.checkState(
-      Array.isArray(config.services),
-      'Configuration file is expected to have a services array.'
-    );
+    $.checkState(Array.isArray(config.services), 'Configuration file is expected to have a services array.');
     config.services.push(service);
     config.services = _.uniq(config.services);
     config.services.sort(function(a, b) {
@@ -41,7 +38,7 @@ function addConfig(configFilePath, service, done) {
  */
 function addService(configDir, service, done) {
   $.checkState(utils.isAbsolutePath(configDir), 'An absolute path is expected');
-  var npm = spawn('npm', ['install', service, '--save'], {cwd: configDir});
+  var npm = spawn('npm', ['install', service, '--save'], { cwd: configDir });
 
   npm.stdout.on('data', function(data) {
     process.stdout.write(data);
@@ -69,10 +66,7 @@ function addService(configDir, service, done) {
 function add(options, done) {
   $.checkArgument(_.isObject(options));
   $.checkArgument(_.isFunction(done));
-  $.checkArgument(
-    _.isString(options.path) && utils.isAbsolutePath(options.path),
-    'An absolute path is expected'
-  );
+  $.checkArgument(_.isString(options.path) && utils.isAbsolutePath(options.path), 'An absolute path is expected');
   $.checkArgument(Array.isArray(options.services));
 
   var configPath = options.path;
@@ -82,9 +76,7 @@ function add(options, done) {
   var packagePath = path.resolve(configPath, 'package.json');
 
   if (!fs.existsSync(meritcoreConfigPath) || !fs.existsSync(packagePath)) {
-    return done(
-      new Error('Directory does not have a merit-node.json and/or package.json file.')
-    );
+    return done(new Error('Directory does not have a merit-node.json and/or package.json file.'));
   }
 
   var oldPackage = JSON.parse(fs.readFileSync(packagePath));
@@ -102,7 +94,7 @@ function add(options, done) {
         var updatedPackage = JSON.parse(fs.readFileSync(packagePath));
         var newDependencies = _.difference(
           Object.keys(updatedPackage.dependencies),
-          Object.keys(oldPackage.dependencies)
+          Object.keys(oldPackage.dependencies),
         );
         $.checkState(newDependencies.length === 1);
         oldPackage = updatedPackage;
@@ -111,7 +103,8 @@ function add(options, done) {
         // add service to merit-node.json
         addConfig(meritcoreConfigPath, serviceName, next);
       });
-    }, done
+    },
+    done,
   );
 }
 

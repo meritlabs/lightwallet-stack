@@ -14,15 +14,12 @@ export class SelectWalletModal {
 
   showInvites: boolean;
 
-  constructor(private navParams: NavParams,
-              private viewCtrl: ViewController,
-              private profileService: ProfileService) {
-  }
+  constructor(private navParams: NavParams, private viewCtrl: ViewController, private profileService: ProfileService) {}
 
   async ngOnInit() {
-    this.wallets = this.navParams.get('availableWallets') || await this.profileService.getWallets();
+    this.wallets = this.navParams.get('availableWallets') || (await this.profileService.getWallets());
     this.selectedWallet = this.navParams.get('selectedWallet');
-    this.showInvites = this.navParams.get('showInvites'); 
+    this.showInvites = this.navParams.get('showInvites');
   }
 
   cancel() {
@@ -30,6 +27,6 @@ export class SelectWalletModal {
   }
 
   select(wallet) {
-     this.viewCtrl.dismiss(wallet);
+    this.viewCtrl.dismiss(wallet);
   }
 }

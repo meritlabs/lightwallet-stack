@@ -5,53 +5,45 @@ import { EasyReceiveService } from '@merit/common/services/easy-receive.service'
 import { LoggerService } from '@merit/common/services/logger.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { UnlockRequestService } from '@merit/common/services/unlock-request.service';
-import {
-  AlertController,
-  IonicPage,
-  ModalController,
-  NavController,
-  NavParams,
-  Platform,
-  Tabs
-} from 'ionic-angular';
+import { AlertController, IonicPage, ModalController, NavController, NavParams, Platform, Tabs } from 'ionic-angular';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
 import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 
-
 @IonicPage({
-  segment: 'transact'
+  segment: 'transact',
 })
 @Component({
   selector: 'view-transact',
   templateUrl: 'transact.html',
   host: {
-    '[class.keyboard-visible]': 'keyboardVisible'
-  }
+    '[class.keyboard-visible]': 'keyboardVisible',
+  },
 })
 export class TransactView {
-  @ViewChild('tabs') tabs: Tabs;
+  @ViewChild('tabs')
+  tabs: Tabs;
 
   private subs: Subscription[] = [];
   keyboardVisible: boolean = false;
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              private logger: LoggerService,
-              private profileService: ProfileService,
-              private plt: Platform,
-              private keyboard: Keyboard,
-              private unlockRequestService: UnlockRequestService,
-              private easyReceiveService: EasyReceiveService,
-              private alertCtrl: AlertController,
-              private modalCtrl: ModalController,
-              private persistenceService2: PersistenceService2,
-              private smsNotificationsService: SmsNotificationsService) {
-  }
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    private logger: LoggerService,
+    private profileService: ProfileService,
+    private plt: Platform,
+    private keyboard: Keyboard,
+    private unlockRequestService: UnlockRequestService,
+    private easyReceiveService: EasyReceiveService,
+    private alertCtrl: AlertController,
+    private modalCtrl: ModalController,
+    private persistenceService2: PersistenceService2,
+    private smsNotificationsService: SmsNotificationsService,
+  ) {}
 
   async ngOnInit() {
-
     if (this.navParams.get('unlockUrl')) {
       window.location.href = this.navParams.get('unlockUrl');
     }
@@ -63,26 +55,22 @@ export class TransactView {
           debounceTime(500),
           tap(() => {
             this.processPendingEasyReceipts();
-          })
+          }),
         )
         .subscribe(),
-      this.easyReceiveService.cancelEasySendObservable$.subscribe(
-        receipt => {
-          this.processEasyReceipt(receipt, false, '', false);
-        }
-      )
+      this.easyReceiveService.cancelEasySendObservable$.subscribe(receipt => {
+        this.processEasyReceipt(receipt, false, '', false);
+      }),
     );
 
     if (this.plt.is('android') && Keyboard.installed()) {
       this.subs.push(
-        this.keyboard.onKeyboardShow()
-          .subscribe(() => {
-            this.keyboardVisible = true;
-          }),
-        this.keyboard.onKeyboardHide()
-          .subscribe(() => {
-            this.keyboardVisible = false;
-          })
+        this.keyboard.onKeyboardShow().subscribe(() => {
+          this.keyboardVisible = true;
+        }),
+        this.keyboard.onKeyboardHide().subscribe(() => {
+          this.keyboardVisible = false;
+        }),
       );
     }
 
@@ -90,13 +78,11 @@ export class TransactView {
 
     const smsPromptSetting = await this.persistenceService2.getUserSettings(UserSettingsKey.SmsNotificationsPrompt);
 
-    if (smsPromptSetting == true)
-      return;
+    if (smsPromptSetting == true) return;
 
     const smsNotificationStatus = await this.smsNotificationsService.getSmsSubscriptionStatus();
 
-    if (smsNotificationStatus.enabled)
-      return;
+    if (smsNotificationStatus.enabled) return;
 
     const modal = this.modalCtrl.create('SmsNotificationsModal');
     modal.present();
@@ -112,7 +98,7 @@ export class TransactView {
   }
 
   async ionViewCanEnter() {
-    const wallets = await this.profileService.wallets || [];
+    const wallets = (await this.profileService.wallets) || [];
     return wallets.length > 0;
   }
 
@@ -133,7 +119,12 @@ export class TransactView {
    * @returns {Promise<void>}
    * @memberof WalletsView
    */
-  private async processEasyReceipt(receipt: EasyReceipt, isRetry: boolean, password: string = '', processAll: boolean = true) {
+  private async processEasyReceipt(
+    receipt: EasyReceipt,
+    isRetry: boolean,
+    password: string = '',
+    processAll: boolean = true,
+  ) {
     const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, password);
     let txs = data.txs;
 
@@ -143,8 +134,7 @@ export class TransactView {
       txs = [txs];
     }
 
-    if (!txs.length) return this.showPasswordEasyReceivePrompt(receipt,  data);
-
+    if (!txs.length) return this.showPasswordEasyReceivePrompt(receipt, data);
 
     if (txs.some(tx => tx.spent)) {
       await this.easyReceiveService.deletePendingReceipt(receipt);
@@ -152,7 +142,7 @@ export class TransactView {
       return await this.processPendingEasyReceipts();
     }
 
-    if (txs.some(tx => (tx.confirmations === undefined))) {
+    if (txs.some(tx => tx.confirmations === undefined)) {
       this.logger.warn('Got easyReceipt with unknown depth. It might be expired!');
       return this.showEasyReceivePrompt(receipt, data);
     }
@@ -170,8 +160,8 @@ export class TransactView {
   /**
    * Shows easy receive popup with password input.
    */
-  private showPasswordEasyReceivePrompt(receipt: EasyReceipt,data) {
-    const modal = this.modalCtrl.create('GlobalsendReceiveView', {mode: 'validate', receipt, data});
+  private showPasswordEasyReceivePrompt(receipt: EasyReceipt, data) {
+    const modal = this.modalCtrl.create('GlobalsendReceiveView', { mode: 'validate', receipt, data });
     modal.onDidDismiss(() => {
       this.processPendingEasyReceipts();
     });
@@ -182,7 +172,7 @@ export class TransactView {
    * @param receipt
    */
   private showEasyReceivePrompt(receipt: EasyReceipt, data) {
-    const modal = this.modalCtrl.create('GlobalsendReceiveView', {mode: 'receive', receipt, data});
+    const modal = this.modalCtrl.create('GlobalsendReceiveView', { mode: 'receive', receipt, data });
     modal.onDidDismiss(() => {
       this.processPendingEasyReceipts();
     });
@@ -190,25 +180,24 @@ export class TransactView {
   }
 
   private showSpentEasyReceiptAlert() {
-    this.alertCtrl.create({
-      title: 'Uh oh',
-      message: 'It seems that the MeritLink has already been redeemed!',
-      buttons: [
-        'Ok'
-      ]
-    }).present();
+    this.alertCtrl
+      .create({
+        title: 'Uh oh',
+        message: 'It seems that the MeritLink has already been redeemed!',
+        buttons: ['Ok'],
+      })
+      .present();
   }
 
   private showExpiredEasyReceiptAlert() {
-    this.alertCtrl.create({
-      title: 'Uh oh',
-      subTitle: 'It seems that this transaction has expired. ',
-      message: 'Transaction was returned to sender! ' +
-      'You can ask the sender to make a new transaction.',
-      buttons: [
-        'Ok'
-      ]
-    }).present();
+    this.alertCtrl
+      .create({
+        title: 'Uh oh',
+        subTitle: 'It seems that this transaction has expired. ',
+        message: 'Transaction was returned to sender! ' + 'You can ask the sender to make a new transaction.',
+        buttons: ['Ok'],
+      })
+      .present();
   }
 
   countUnlockRequests() {

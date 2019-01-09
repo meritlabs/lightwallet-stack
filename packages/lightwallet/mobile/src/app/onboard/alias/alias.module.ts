@@ -4,13 +4,7 @@ import { AliasView } from '@merit/mobile/app/onboard/alias/alias';
 import { DirectivesModule } from '@merit/mobile/directives/directives.module';
 
 @NgModule({
-  declarations: [
-    AliasView,
-  ],
-  imports: [
-    IonicPageModule.forChild(AliasView),
-    DirectivesModule
-  ],
+  declarations: [AliasView],
+  imports: [IonicPageModule.forChild(AliasView), DirectivesModule],
 })
-export class AliasViewModule {
-}
+export class AliasViewModule {}

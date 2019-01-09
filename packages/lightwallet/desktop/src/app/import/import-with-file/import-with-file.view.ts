@@ -21,15 +21,14 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 @Component({
   selector: 'view-import-with-file',
   templateUrl: './import-with-file.view.html',
-  styleUrls: ['./import-with-file.view.scss']
+  styleUrls: ['./import-with-file.view.scss'],
 })
 export class ImportWithFileView {
-
   formData = {
     backupFile: null,
     backupFileBlob: null,
     filePassword: '',
-    mwsUrl: ENV.mwsUrl
+    mwsUrl: ENV.mwsUrl,
   };
 
   showPass: boolean;
@@ -40,26 +39,28 @@ export class ImportWithFileView {
 
   private sjcl = this.mwcService.getSJCL();
 
-  constructor(private mwcService: MWCService,
-              private store: Store<IRootAppState>,
-              private logger: LoggerService,
-              private profileService: ProfileService,
-              private walletService: WalletService,
-              private addressService: AddressService,
-              private txFormatService: TxFormatService,
-              private router: Router,
-              private toastCtrl: ToastControllerService,
-              private pushNotificationsService: PushNotificationsService,
-              private loadingCtrl: Ng4LoadingSpinnerService,
-              private persistenceService2: PersistenceService2) {
-  }
+  constructor(
+    private mwcService: MWCService,
+    private store: Store<IRootAppState>,
+    private logger: LoggerService,
+    private profileService: ProfileService,
+    private walletService: WalletService,
+    private addressService: AddressService,
+    private txFormatService: TxFormatService,
+    private router: Router,
+    private toastCtrl: ToastControllerService,
+    private pushNotificationsService: PushNotificationsService,
+    private loadingCtrl: Ng4LoadingSpinnerService,
+    private persistenceService2: PersistenceService2,
+  ) {}
 
   fileChangeListener($event) {
     this.formData.backupFile = $event.target.files[0];
 
     const reader = new FileReader();
     reader.onloadend = (loadEvent: any) => {
-      if (loadEvent.target.readyState == 2) { //DONE  == 2
+      if (loadEvent.target.readyState == 2) {
+        //DONE  == 2
         this.formData.backupFileBlob = loadEvent.target.result;
       }
     };
@@ -74,7 +75,6 @@ export class ImportWithFileView {
     try {
       decrypted = this.sjcl.decrypt(this.formData.filePassword, this.formData.backupFileBlob);
     } catch (e) {
-
       this.logger.warn(e);
       this.loadingCtrl.hide();
       return this.toastCtrl.error('Could not decrypt file, check your password.');
@@ -84,23 +84,32 @@ export class ImportWithFileView {
     // loader.present();
 
     try {
-      const wallet: MeritWalletClient = await this.walletService.importWallet(decrypted, { bwsurl: this.formData.mwsUrl });
+      const wallet: MeritWalletClient = await this.walletService.importWallet(decrypted, {
+        bwsurl: this.formData.mwsUrl,
+      });
       this.pushNotificationsService.subscribe(wallet);
 
       this.store.dispatch(
         new AddWalletAction(
-          await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, this.persistenceService2)
-        )
+          await createDisplayWallet(
+            wallet,
+            this.walletService,
+            this.addressService,
+            this.txFormatService,
+            this.persistenceService2,
+          ),
+        ),
       );
 
       // update state so we're allowed to access the dashboard, in case this is done via onboarding import
-      this.store.dispatch(new UpdateAppAction({
-        loading: false,
-        authorized: true
-      }));
+      this.store.dispatch(
+        new UpdateAppAction({
+          loading: false,
+          authorized: true,
+        }),
+      );
 
       return this.router.navigateByUrl('/wallets');
-
     } catch (err) {
       // loader.dismiss();
       this.logger.warn(err);
@@ -108,5 +117,4 @@ export class ImportWithFileView {
       return this.toastCtrl.error(err);
     }
   }
-
 }

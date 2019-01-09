@@ -3,8 +3,7 @@ import { EC } from './app.e2e-spec';
 import { Transact } from './transact.po';
 
 describe('[Mobile] Send flow', () => {
-  let transact: Transact,
-    sendViewEl;
+  let transact: Transact, sendViewEl;
 
   beforeAll(async () => {
     transact = new Transact();
@@ -81,9 +80,5 @@ describe('[Mobile] Send flow', () => {
     });
   });
 
-  describe('> Classic send', () => {
-
-  });
-
-
+  describe('> Classic send', () => {});
 });

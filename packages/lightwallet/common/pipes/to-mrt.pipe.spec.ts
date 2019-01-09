@@ -9,27 +9,26 @@ import { RateService } from '@merit/common/services/rate.service';
     <div #test2>{{ 123e6 | toMRT:null:true }}</div>
     <div #test3>{{ 123e6 | toMRT:1 }}</div>
     <div #test4>{{ 123e6 | toMRT:2 }}</div>
-  `
+  `,
 })
 class TestComponent {
-  @ViewChild('test1') test1: ElementRef;
-  @ViewChild('test2') test2: ElementRef;
-  @ViewChild('test3') test3: ElementRef;
-  @ViewChild('test4') test4: ElementRef;
+  @ViewChild('test1')
+  test1: ElementRef;
+  @ViewChild('test2')
+  test2: ElementRef;
+  @ViewChild('test3')
+  test3: ElementRef;
+  @ViewChild('test4')
+  test4: ElementRef;
 }
 
 describe('Pipes.ToMRT', () => {
-
-  let comp: TestComponent,
-    instance: ComponentFixture<TestComponent>;
+  let comp: TestComponent, instance: ComponentFixture<TestComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        ToMrtPipe,
-        TestComponent
-      ],
-      providers: [RateService]
+      declarations: [ToMrtPipe, TestComponent],
+      providers: [RateService],
     }).compileComponents();
     instance = TestBed.createComponent(TestComponent);
     comp = instance.componentInstance;

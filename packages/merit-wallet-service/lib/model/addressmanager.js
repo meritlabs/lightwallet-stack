@@ -4,7 +4,7 @@ var $ = require('preconditions').singleton();
 var Meritcore = require('meritcore-lib');
 var Constants = require('../common/constants');
 
-function AddressManager() {};
+function AddressManager() {}
 
 AddressManager.create = function(opts) {
   opts = opts || {};
@@ -56,10 +56,13 @@ AddressManager.prototype.rewindIndex = function(isChange, n) {
 };
 
 AddressManager.prototype.getCurrentAddressPath = function(isChange) {
-  return 'm/' +
+  return (
+    'm/' +
     (this.derivationStrategy == Constants.DERIVATION_STRATEGIES.BIP45 ? this.copayerIndex + '/' : '') +
-    (isChange ? 1 : 0) + '/' +
-    (isChange ? this.changeAddressIndex : this.receiveAddressIndex);
+    (isChange ? 1 : 0) +
+    '/' +
+    (isChange ? this.changeAddressIndex : this.receiveAddressIndex)
+  );
 };
 
 AddressManager.prototype.getNewAddressPath = function(isChange) {

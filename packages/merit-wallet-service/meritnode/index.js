@@ -41,7 +41,7 @@ function Service(options) {
     this.lockerPort = baseConfig.lockOpts.lockerServer.port;
   }
   this.lockerPort = options.lockerPort || this.lockerPort;
-};
+}
 
 util.inherits(Service, EventEmitter);
 
@@ -66,7 +66,7 @@ Service.prototype._readHttpsOptions = function() {
     serverOpts.ca = [
       fs.readFileSync(this.httpsOptions.CAinter1),
       fs.readFileSync(this.httpsOptions.CAinter2),
-      fs.readFileSync(this.httpsOptions.CAroot)
+      fs.readFileSync(this.httpsOptions.CAroot),
     ];
   }
   return serverOpts;
@@ -83,7 +83,7 @@ Service.prototype._getConfiguration = function() {
   var providerOptions = {
     provider: 'insight',
     url: (self.node.https ? 'https://' : 'http://') + 'localhost:' + self.node.port,
-    apiPrefix: '/insight-api'
+    apiPrefix: '/insight-api',
   };
 
   // A merit-node is either livenet or testnet, so we'll pass
@@ -91,18 +91,17 @@ Service.prototype._getConfiguration = function() {
   // instance of the insight-api service.
   if (self.node.network === Networks.livenet) {
     baseConfig.blockchainExplorerOpts = {
-      livenet: providerOptions
+      livenet: providerOptions,
     };
   } else if (self.node.network === Networks.testnet) {
     baseConfig.blockchainExplorerOpts = {
-      testnet: providerOptions
+      testnet: providerOptions,
     };
   } else {
     throw new Error('Unknown network');
   }
 
   return baseConfig;
-
 };
 
 /**
@@ -119,7 +118,7 @@ Service.prototype._startWalletService = function(config, next) {
     self.server = http.Server(expressApp.app);
   }
 
-  expressApp.start(config, function(err){
+  expressApp.start(config, function(err) {
     if (err) {
       return next(err);
     }
@@ -131,7 +130,6 @@ Service.prototype._startWalletService = function(config, next) {
  * Called by the node to start the service
  */
 Service.prototype.start = function(done) {
-
   var self = this;
   var config;
   try {
@@ -152,44 +150,45 @@ Service.prototype.start = function(done) {
     });
   });
 
-  async.series([
+  async.series(
+    [
+      function(next) {
+        // Blockchain Monitor
+        var blockChainMonitor = new BlockchainMonitor();
+        blockChainMonitor.start(config, next);
+      },
+      function(next) {
+        // Email Service
+        if (config.emailOpts) {
+          var emailService = new EmailService();
+          emailService.start(config, next);
+        } else {
+          setImmediate(next);
+        }
+      },
+      function(next) {
+        // Push notification service
+        if (config.pushNotificationsOpts) {
+          var pushNotificationService = new PushNotificationService();
+          pushNotificationService.start(config, next);
+        } else {
+          setImmediate(next);
+        }
+      },
+      function(next) {
+        if (config.smsOpts.enabled) {
+          // Start SMS Notifications service
+          new SmsService(config);
+        }
 
-    function(next) {
-      // Blockchain Monitor
-      var blockChainMonitor = new BlockchainMonitor();
-      blockChainMonitor.start(config, next);
-    },
-    function(next) {
-      // Email Service
-      if (config.emailOpts) {
-        var emailService = new EmailService();
-        emailService.start(config, next);
-      } else {
-        setImmediate(next);
-      }
-    },
-    function(next) {
-      // Push notification service
-      if (config.pushNotificationsOpts) {
-        var pushNotificationService = new PushNotificationService();
-        pushNotificationService.start(config, next);
-      } else {
-        setImmediate(next);
-      }
-    },
-    function(next) {
-      if (config.smsOpts.enabled) {
-        // Start SMS Notifications service
-        new SmsService(config);
-      }
-
-      next();
-    },
-    function(next) {
-      self._startWalletService(config, next);
-    }
-  ], done);
-
+        next();
+      },
+      function(next) {
+        self._startWalletService(config, next);
+      },
+    ],
+    done,
+  );
 };
 
 /**

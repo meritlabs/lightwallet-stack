@@ -12,7 +12,7 @@ import { RateService } from '@merit/common/services/rate.service';
 import { accessWallet, WalletService } from '@merit/common/services/wallet.service';
 import { Address, crypto, HDPrivateKey, HDPublicKey, PrivateKey, PublicKey, Script, Transaction } from 'meritcore-lib';
 import { Subject } from 'rxjs/Subject';
-import { AlertService } from "@merit/common/services/alert.service";
+import { AlertService } from '@merit/common/services/alert.service';
 
 @Injectable()
 export class EasyReceiveService {
@@ -25,9 +25,8 @@ export class EasyReceiveService {
     private ledger: LedgerService,
     private rateService: RateService,
     private walletService: WalletService,
-    private alertCtrl: AlertService
-  ) {
-  }
+    private alertCtrl: AlertService,
+  ) {}
 
   private cancelEasySendSource = new Subject<EasyReceipt>();
   private cancelledEasySendSource = new Subject<EasyReceipt>();
@@ -57,7 +56,7 @@ export class EasyReceiveService {
       senderName: params.sn,
       senderPublicKey: params.sk,
       blockTimeout: params.bt,
-      deepLinkURL: params['~referring_link']
+      deepLinkURL: params['~referring_link'],
     });
   }
 
@@ -87,7 +86,8 @@ export class EasyReceiveService {
     wallet: MeritWalletClient,
     receipt: EasyReceipt,
     input: any,
-    destinationAddress: any): Promise<void> {
+    destinationAddress: any,
+  ): Promise<void> {
     return this.spendEasyReceipt(receipt, wallet, input, destinationAddress);
   }
 
@@ -122,11 +122,9 @@ export class EasyReceiveService {
     return tx ? tx.amount : 0;
   }
 
-
   isInviteOnly(txs: Array<any>) {
     return !txs.some(tx => !tx.invite);
   }
-
 
   async validateEasyReceiptOnBlockchain(receipt: EasyReceipt, password = ''): Promise<any> {
     const walletClient = this.mwcService.getClient(null, {});
@@ -143,7 +141,7 @@ export class EasyReceiveService {
         privateKey: scriptData.privateKey,
         publicKey: scriptData.publicKey,
         script: scriptData.script,
-        scriptId: scriptAddress
+        scriptId: scriptAddress,
       };
     } catch (err) {
       this.logger.error('Could not validate easyScript on the blockchain.', err);
@@ -151,7 +149,12 @@ export class EasyReceiveService {
     }
   }
 
-  private async spendEasyReceipt(receipt: EasyReceipt, wallet: MeritWalletClient, input: any, destinationAddress: any): Promise<void> {
+  private async spendEasyReceipt(
+    receipt: EasyReceipt,
+    wallet: MeritWalletClient,
+    input: any,
+    destinationAddress: any,
+  ): Promise<void> {
     // Claim invites
     await Promise.all(input.txs.map(tx => tx.invite && this.sendEasyReceiveTx(input, tx, destinationAddress, wallet)));
 
@@ -167,7 +170,7 @@ export class EasyReceiveService {
     const txp = await this.buildEasySendRedeemTransaction(input, tx, destinationAddress, fee);
     return this.walletService.broadcastRawTx(wallet, {
       rawTx: txp.serialize({ disableSmallFees: tx.invite }),
-      network: ENV.network
+      network: ENV.network,
     });
   }
 
@@ -183,7 +186,7 @@ export class EasyReceiveService {
       privateKey: receivePrv,
       publicKey: receivePub,
       script: script,
-      scriptPubKey: script.toMixedScriptHashOut(senderPubKey)
+      scriptPubKey: script.toMixedScriptHashOut(senderPubKey),
     };
   }
 
@@ -208,7 +211,6 @@ export class EasyReceiveService {
    * @param {toAddress} Address to put the funds into.
    */
   buildEasySendRedeemTransaction(input: any, txn: any, toAddress: string, fee = FeeService.DEFAULT_FEE): Promise<any> {
-
     const totalAmount = txn.amount;
     const amount = txn.invite ? txn.amount : totalAmount - fee;
 
@@ -225,7 +227,7 @@ export class EasyReceiveService {
       output: Transaction.Output.fromObject({ script: p2shScript, micros: totalAmount }),
       prevTxId: txn.txid,
       outputIndex: txn.index,
-      script: input.script
+      script: input.script,
     };
     tx.addInput(new Transaction.Input.PayToScriptHashInput(p2shInput, input.script, p2shScript));
 
@@ -243,7 +245,6 @@ export class EasyReceiveService {
     return tx;
   }
 
-
   cancelEasySend(url: string) {
     let params = this.parseEasySendUrl(url);
     let receipt = this.paramsToReceipt(params);
@@ -260,8 +261,8 @@ export class EasyReceiveService {
     wallet: MeritWalletClient,
     receipt: EasyReceipt,
     password: string,
-    walletPassword: string) {
-
+    walletPassword: string,
+  ) {
     //figure out wallet info
     const signingKey = wallet.getRootPrivateKey(walletPassword);
     const pubKey = wallet.getRootAddressPubkey();
@@ -280,18 +281,16 @@ export class EasyReceiveService {
     const input = {
       script: redeemScript,
       privateKey: signingKey,
-      senderPublicKey: pubKey.toString()
+      senderPublicKey: pubKey.toString(),
     };
 
     //get the invite back
     const invite = txs.find(tx => tx.invite);
-    if (invite)
-      await this.sendEasyReceiveTx(input, invite, destAddress, wallet);
+    if (invite) await this.sendEasyReceiveTx(input, invite, destAddress, wallet);
 
     //get the merit back
     const transact = txs.find(tx => !tx.invite);
-    if (transact)
-      await this.sendEasyReceiveTx(input, transact, destAddress, wallet);
+    if (transact) await this.sendEasyReceiveTx(input, transact, destAddress, wallet);
 
     await wallet.cancelGlobalSend(scriptAddress.toString());
 
@@ -299,8 +298,7 @@ export class EasyReceiveService {
 
     return {
       invite: invite,
-      tx: transact
+      tx: transact,
     };
   }
-
 }

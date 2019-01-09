@@ -4,13 +4,7 @@ import { DirectivesModule } from '@merit/mobile/directives/directives.module';
 import { SetWalletPasswordView } from './set-wallet-password';
 
 @NgModule({
-  declarations: [
-    SetWalletPasswordView,
-  ],
-  imports: [
-    IonicPageModule.forChild(SetWalletPasswordView),
-    DirectivesModule
-  ],
+  declarations: [SetWalletPasswordView],
+  imports: [IonicPageModule.forChild(SetWalletPasswordView), DirectivesModule],
 })
-export class SetWalletPasswordModule {
-}
+export class SetWalletPasswordModule {}

@@ -1,18 +1,17 @@
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 
 export class RateService {
-
   private readonly CACHE_TIME = 120000; //2min
   public mwClient: MeritWalletClient;
   private MRT_TO_MIC = 1e8;
 
   private cache: {
-    updatedTs: number,
+    updatedTs: number;
     rates: Array<{
-      code: string,
-      name: string,
-      rate: number
-    }>
+      code: string;
+      name: string;
+      rate: number;
+    }>;
   };
 
   /**
@@ -73,11 +72,10 @@ export class RateService {
     return this.microsToMrt(micros) * rate;
   }
 
-  async fiatToMicros(amount: number, code: string): Promise<number>  {
+  async fiatToMicros(amount: number, code: string): Promise<number> {
     const rate = await this.getRate(code);
-    return Math.ceil(amount / rate * this.MRT_TO_MIC);
+    return Math.ceil((amount / rate) * this.MRT_TO_MIC);
   }
-
 
   /**
    * @OBSOLETE Remove this after removing usages of this method
@@ -100,8 +98,6 @@ export class RateService {
    */
   fromFiatToMicros(amount: number, code: string) {
     const r = this.cache.rates.find(l => l.code == code) || { rate: 0 };
-    return Math.ceil(amount / r.rate * this.MRT_TO_MIC);
+    return Math.ceil((amount / r.rate) * this.MRT_TO_MIC);
   }
-
 }
-

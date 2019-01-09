@@ -8,11 +8,13 @@ utils.isHash = function isHash(value) {
 };
 
 utils.isSafeNatural = function isSafeNatural(value) {
-  return typeof value === 'number' &&
+  return (
+    typeof value === 'number' &&
     isFinite(value) &&
     Math.floor(value) === value &&
     value >= 0 &&
-    value <= MAX_SAFE_INTEGER;
+    value <= MAX_SAFE_INTEGER
+  );
 };
 
 utils.startAtZero = function startAtZero(obj, key) {
@@ -31,7 +33,7 @@ utils.parseParamsWithJSON = function parseParamsWithJSON(paramsArg) {
     var param;
     try {
       param = JSON.parse(paramArg);
-    } catch(err) {
+    } catch (err) {
       param = paramArg;
     }
     return param;

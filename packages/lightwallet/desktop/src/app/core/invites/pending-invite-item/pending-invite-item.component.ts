@@ -22,15 +22,20 @@ export class PendingInviteItemComponent {
     private confirmDialogCtrl: ConfirmDialogControllerService,
     private logger: LoggerService,
     private toastCtrl: ToastControllerService,
-    private walletService: WalletService
+    private walletService: WalletService,
   ) {}
 
-  @Input() request;
-  @Input() availableInvites;
-  @Input() inviteRequests;
-  @Input() wallets;
+  @Input()
+  request;
+  @Input()
+  availableInvites;
+  @Input()
+  inviteRequests;
+  @Input()
+  wallets;
 
-  @Output() approveInviteRequest: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output()
+  approveInviteRequest: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   sending: { [referralId: string]: boolean } = {};
 
@@ -54,7 +59,7 @@ export class PendingInviteItemComponent {
         {
           text: 'No',
         },
-      ]
+      ],
     );
 
     dialog.onDidDismiss(async (value: string) => {
@@ -105,7 +110,7 @@ export class PendingInviteItemComponent {
         {
           text: 'No',
         },
-      ]
+      ],
     );
 
     dialog.onDidDismiss(async (value: string) => {

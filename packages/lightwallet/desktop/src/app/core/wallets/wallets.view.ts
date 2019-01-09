@@ -12,23 +12,24 @@ import 'rxjs/add/operator/toPromise';
   selector: 'view-wallets',
   templateUrl: './wallets.view.html',
   styleUrls: ['./wallets.view.sass'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class WalletsView {
   wallets$: Observable<DisplayWallet[]> = this.store.select(selectWallets);
   walletsLoading$: Observable<boolean> = this.store.select(selectWalletsLoading);
 
-  constructor(private store: Store<IRootAppState>,
-    private router: Router) {}
+  constructor(private store: Store<IRootAppState>, private router: Router) {}
 
-  ngOnInit() {    
-    return this.wallets$.pipe(
-      take(1),
-      tap((wallets) => {
-        if(wallets.length === 1) {
-          this.router.navigate(['/wallets/', wallets[0].id]);
-        }
-      })
-    ).toPromise();
+  ngOnInit() {
+    return this.wallets$
+      .pipe(
+        take(1),
+        tap(wallets => {
+          if (wallets.length === 1) {
+            this.router.navigate(['/wallets/', wallets[0].id]);
+          }
+        }),
+      )
+      .toPromise();
   }
 }

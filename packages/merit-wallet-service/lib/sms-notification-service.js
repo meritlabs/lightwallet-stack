@@ -23,7 +23,10 @@ function SmsNotificationService(opts) {
     this.storage = opts.storage;
   } else {
     this.storage = new Storage();
-    this.storage.connect(opts.storageOpts, () => {});
+    this.storage.connect(
+      opts.storageOpts,
+      () => {},
+    );
   }
 
   console.log('[SMS Service] Started!');
@@ -46,28 +49,31 @@ SmsNotificationService.prototype.sendSMS = function(notification, cb) {
 
     const { amount, isInvite } = notification.data;
 
-    request({
-      method: 'POST',
-      uri: this.notificationsServiceUrl + '/notification',
-      json: {
-        type: 'sms',
-        destination: recipient.phoneNumber,
-        id: notification.id,
-        template: _.snakeCase(notification.type),
-        language: 'en',
-        notification: {
-          amount: isInvite? String(amount) : (amount / 1e8) + 'MRT'
+    request(
+      {
+        method: 'POST',
+        uri: this.notificationsServiceUrl + '/notification',
+        json: {
+          type: 'sms',
+          destination: recipient.phoneNumber,
+          id: notification.id,
+          template: _.snakeCase(notification.type),
+          language: 'en',
+          notification: {
+            amount: isInvite ? String(amount) : amount / 1e8 + 'MRT',
+          },
+        },
+      },
+      (err, response) => {
+        if (!err && parseInt(response.statusCode) === 200) {
+          console.log('[SMS Service] Sent notification!');
+          cb();
+        } else {
+          console.log('[SMS Service] Error sending notification!', err);
+          cb(err || 'Unexpected error');
         }
-      }
-    }, (err, response) => {
-      if (!err && parseInt(response.statusCode) === 200) {
-        console.log('[SMS Service] Sent notification!');
-        cb();
-      } else {
-        console.log('[SMS Service] Error sending notification!', err);
-        cb(err || 'Unexpected error');
-      }
-    });
+      },
+    );
   });
 };
 

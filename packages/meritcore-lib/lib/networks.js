@@ -66,7 +66,6 @@ function get(arg, keys) {
  * @return Network
  */
 function addNetwork(data) {
-
   var network = new Network();
 
   JSUtil.defineImmutable(network, {
@@ -77,24 +76,24 @@ function addNetwork(data) {
     scripthash: data.scripthash,
     paramscripthash: data.paramscripthash,
     xpubkey: data.xpubkey,
-    xprivkey: data.xprivkey
+    xprivkey: data.xprivkey,
   });
 
   if (data.networkMagic) {
     JSUtil.defineImmutable(network, {
-      networkMagic: BufferUtil.integerAsBuffer(data.networkMagic)
+      networkMagic: BufferUtil.integerAsBuffer(data.networkMagic),
     });
   }
 
   if (data.port) {
     JSUtil.defineImmutable(network, {
-      port: data.port
+      port: data.port,
     });
   }
 
   if (data.dnsSeeds) {
     JSUtil.defineImmutable(network, {
-      dnsSeeds: data.dnsSeeds
+      dnsSeeds: data.dnsSeeds,
     });
   }
   _.each(network, function(value) {
@@ -106,7 +105,6 @@ function addNetwork(data) {
   networks.push(network);
 
   return network;
-
 }
 
 /**
@@ -140,7 +138,7 @@ addNetwork({
   xprivkey: 0x0488ade4,
   networkMagic: 0xf9beb4d9,
   port: 8333,
-  dnsSeeds: []
+  dnsSeeds: [],
 });
 
 /**
@@ -157,7 +155,7 @@ addNetwork({
   paramscripthash: 0x75,
   privatekey: 0x80,
   xpubkey: 0x043587cf,
-  xprivkey: 0x04358394
+  xprivkey: 0x04358394,
 });
 
 /**
@@ -172,7 +170,7 @@ var testnet = get('testnet');
 var TESTNET = {
   PORT: 18333,
   NETWORK_MAGIC: BufferUtil.integerAsBuffer(0x0b110907),
-  DNS_SEEDS: []
+  DNS_SEEDS: [],
 };
 
 for (var key in TESTNET) {
@@ -184,7 +182,7 @@ for (var key in TESTNET) {
 var REGTEST = {
   PORT: 18444,
   NETWORK_MAGIC: BufferUtil.integerAsBuffer(0xfabfb5da),
-  DNS_SEEDS: []
+  DNS_SEEDS: [],
 };
 
 for (var key in REGTEST) {
@@ -202,7 +200,7 @@ Object.defineProperty(testnet, 'port', {
     } else {
       return TESTNET.PORT;
     }
-  }
+  },
 });
 
 Object.defineProperty(testnet, 'networkMagic', {
@@ -214,7 +212,7 @@ Object.defineProperty(testnet, 'networkMagic', {
     } else {
       return TESTNET.NETWORK_MAGIC;
     }
-  }
+  },
 });
 
 Object.defineProperty(testnet, 'dnsSeeds', {
@@ -226,7 +224,7 @@ Object.defineProperty(testnet, 'dnsSeeds', {
     } else {
       return TESTNET.DNS_SEEDS;
     }
-  }
+  },
 });
 
 /**
@@ -259,5 +257,5 @@ module.exports = {
   testnet: testnet,
   get: get,
   enableRegtest: enableRegtest,
-  disableRegtest: disableRegtest
+  disableRegtest: disableRegtest,
 };

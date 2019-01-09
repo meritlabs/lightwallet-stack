@@ -13,18 +13,18 @@ describe('Merit Node Service', function() {
         https: true,
         httpsOptions: {
           key: 'key',
-          cert: 'cert'
-        }
+          cert: 'cert',
+        },
       };
       var options = {
-        node: node
+        node: node,
       };
       var service = new Service(options);
       service.node.should.equal(node);
       service.https.should.equal(true);
       service.httpsOptions.should.deep.equal({
         key: 'key',
-        cert: 'cert'
+        cert: 'cert',
       });
       service.bwsPort.should.equal(3232);
       service.messageBrokerPort.should.equal(3380);
@@ -37,14 +37,14 @@ describe('Merit Node Service', function() {
         https: true,
         httpsOptions: {
           key: 'key',
-          cert: 'cert'
-        }
+          cert: 'cert',
+        },
       };
       var service = new Service(options);
       service.https.should.equal(true);
       service.httpsOptions.should.deep.equal({
         key: 'key',
-        cert: 'cert'
+        cert: 'cert',
       });
       service.bwsPort.should.equal(3232);
       service.messageBrokerPort.should.equal(3380);
@@ -56,7 +56,7 @@ describe('Merit Node Service', function() {
         node: node,
         bwsPort: 1000,
         messageBrokerPort: 1001,
-        lockerPort: 1002
+        lockerPort: 1002,
       };
       var service = new Service(options);
       service.bwsPort.should.equal(1000);
@@ -69,8 +69,8 @@ describe('Merit Node Service', function() {
       fs: {
         readFileSync: function(arg) {
           return arg;
-        }
-      }
+        },
+      },
     });
     it('will create server options from httpsOptions', function() {
       var options = {
@@ -81,9 +81,9 @@ describe('Merit Node Service', function() {
             cert: 'cert',
             CAinter1: 'CAinter1',
             CAinter2: 'CAinter2',
-            CAroot: 'CAroot'
-          }
-        }
+            CAroot: 'CAroot',
+          },
+        },
       };
       var service = new TestService(options);
       var serverOptions = service._readHttpsOptions();
@@ -98,42 +98,42 @@ describe('Merit Node Service', function() {
     it('will throw with an unknown network', function() {
       var options = {
         node: {
-          network: 'unknown'
-        }
+          network: 'unknown',
+        },
       };
       var service = new Service(options);
       (function() {
         service._getConfiguration();
-      }).should.throw('Unknown network');
+      }.should.throw('Unknown network'));
     });
     it('livenet local insight', function() {
       var options = {
         node: {
           network: meritcore.Networks.livenet,
-          port: 3001
-        }
+          port: 3001,
+        },
       };
       var service = new Service(options);
       var config = service._getConfiguration();
       config.blockchainExplorerOpts.livenet.should.deep.equal({
-        'apiPrefix': '/insight-api',
-        'provider': 'insight',
-        'url': 'http://localhost:3001'
+        apiPrefix: '/insight-api',
+        provider: 'insight',
+        url: 'http://localhost:3001',
       });
     });
     it('testnet local insight', function() {
       var options = {
         node: {
           network: meritcore.Networks.testnet,
-          port: 3001
-        }
+          port: 3001,
+        },
       };
       var service = new Service(options);
       var config = service._getConfiguration();
       config.blockchainExplorerOpts.testnet.should.deep.equal({
-        'apiPrefix': '/insight-api',
-        'provider': 'insight',
-        'url': 'http://localhost:3001'
+        apiPrefix: '/insight-api',
+        provider: 'insight',
+        url: 'http://localhost:3001',
       });
     });
   });
@@ -147,16 +147,16 @@ describe('Merit Node Service', function() {
       var TestService = proxyquire('../meritnode', {
         '../lib/expressapp': TestExpressApp,
         '../lib/wsapp': TestWSApp,
-        'http': {
+        http: {
           Server: sinon.stub().returns({
-            listen: listen
-          })
-        }
+            listen: listen,
+          }),
+        },
       });
       var options = {
         node: {
-          bwsPort: 3232
-        }
+          bwsPort: 3232,
+        },
       };
       var service = new TestService(options);
       var config = {};
@@ -177,19 +177,19 @@ describe('Merit Node Service', function() {
       var TestService = proxyquire('../meritnode', {
         '../lib/expressapp': TestExpressApp,
         '../lib/wsapp': TestWSApp,
-        'http': {
+        http: {
           Server: function() {
             arguments[0].should.equal(app);
             return {
-              listen: listen
+              listen: listen,
             };
-          }
-        }
+          },
+        },
       });
       var options = {
         node: {
-          bwsPort: 3232
-        }
+          bwsPort: 3232,
+        },
       };
       var service = new TestService(options);
       var config = {};
@@ -212,21 +212,21 @@ describe('Merit Node Service', function() {
         arguments[0].should.equal(httpsOptions);
         arguments[1].should.equal(app);
         return {
-          listen: listen
+          listen: listen,
         };
       };
       var TestService = proxyquire('../meritnode', {
         '../lib/expressapp': TestExpressApp,
         '../lib/wsapp': TestWSApp,
-        'https': {
-          createServer: createServer
-        }
+        https: {
+          createServer: createServer,
+        },
       });
       var options = {
         node: {
           https: true,
-          bwsPort: 3232
-        }
+          bwsPort: 3232,
+        },
       };
       var service = new TestService(options);
       service._readHttpsOptions = sinon.stub().returns(httpsOptions);
@@ -241,7 +241,7 @@ describe('Merit Node Service', function() {
   describe('#start', function(done) {
     it('error from configuration', function(done) {
       var options = {
-        node: {}
+        node: {},
       };
       var service = new Service(options);
       service._getConfiguration = function() {
@@ -264,12 +264,12 @@ describe('Merit Node Service', function() {
         '../lib/blockchainmonitor': TestBlockchainMonitor,
         '../lib/emailservice': TestEmailService,
         'socket.io': sinon.stub().returns({
-          on: sinon.stub()
+          on: sinon.stub(),
         }),
         'locker-server': TestLocker,
       });
       var options = {
-        node: {}
+        node: {},
       };
       var service = new TestService(options);
       var config = {};
@@ -292,16 +292,16 @@ describe('Merit Node Service', function() {
         '../lib/blockchainmonitor': TestBlockchainMonitor,
         '../lib/emailservice': TestEmailService,
         'socket.io': sinon.stub().returns({
-          on: sinon.stub()
+          on: sinon.stub(),
         }),
         'locker-server': TestLocker,
       });
       var options = {
-        node: {}
+        node: {},
       };
       var service = new TestService(options);
       service._getConfiguration = sinon.stub().returns({
-        emailOpts: {}
+        emailOpts: {},
       });
       var config = {};
       service._startWalletService = sinon.stub().callsArg(1);

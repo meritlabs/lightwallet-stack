@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class LedgerService {
-
   static description = {
     id: 'ledger',
     name: 'Ledger',
     longName: 'Ledger Hardware Wallet',
     isEmbeddedHardware: false,
-    supportsTestnet: false
+    supportsTestnet: false,
   };
 
   private static LEDGER_CHROME_ID = 'kkdpmhnladdopljabkgpacgpliggeeaf';
@@ -17,10 +16,9 @@ export class LedgerService {
     let bstr = new ByteString(s, GP.HEX).toBuffer();
     let a = new Uint8Array(bstr.length);
 
-    Array.prototype.forEach.call(bstr,
-      (ch, i) => {
-        a[i] = (ch + '').charCodeAt(0);
-      });
+    Array.prototype.forEach.call(bstr, (ch, i) => {
+      a[i] = (ch + '').charCodeAt(0);
+    });
 
     return a;
   }
@@ -28,12 +26,9 @@ export class LedgerService {
   public hexToString(s) {
     return new ByteString(s, GP.HEX).toBuffer();
   }
-
 }
 
-
 class Convert {
-
   /**
    * Convert a binary string to his hexadecimal representation
    * @param {String} src binary string
@@ -47,7 +42,7 @@ class Convert {
       r += hexes[src.charCodeAt(i) >> 4] + hexes[src.charCodeAt(i) & 0xf];
     }
     return r;
-  };
+  }
 
   /**
    * Convert an hexadecimal string to its binary representation
@@ -59,7 +54,7 @@ class Convert {
   static hexToBin(src) {
     var result = '';
     var digits = '0123456789ABCDEF';
-    if ((src.length % 2) != 0) {
+    if (src.length % 2 != 0) {
       throw 'Invalid string: ' + src;
     }
     src = src.toUpperCase();
@@ -84,12 +79,15 @@ class Convert {
    * @param {Number} offset offset to the digit (default is 0)
    * @returns {Number} converted digit
    */
-  public static readHexDigit = function (data, offset) {
+  public static readHexDigit = function(data, offset) {
     var digits = '0123456789ABCDEF';
     if (typeof offset == 'undefined') {
       offset = 0;
     }
-    return (digits.indexOf(data.substring(offset, offset + 1).toUpperCase()) << 4) + (digits.indexOf(data.substring(offset + 1, offset + 2).toUpperCase()));
+    return (
+      (digits.indexOf(data.substring(offset, offset + 1).toUpperCase()) << 4) +
+      digits.indexOf(data.substring(offset + 1, offset + 2).toUpperCase())
+    );
   };
 
   /**
@@ -98,9 +96,9 @@ class Convert {
    * @param {Number} number number to convert
    * @returns {String} converted number
    */
-  public static toHexDigit = function (number) {
+  public static toHexDigit = function(number) {
     var digits = '0123456789abcdef';
-    return digits.charAt(number >> 4) + digits.charAt(number & 0x0F);
+    return digits.charAt(number >> 4) + digits.charAt(number & 0x0f);
   };
 
   /**
@@ -109,7 +107,7 @@ class Convert {
    * @param {Number} number number to convert
    * @returns {String} converted number
    */
-  public static toHexByte = function (number) {
+  public static toHexByte = function(number) {
     return this.toHexDigit(number);
   };
 
@@ -119,11 +117,10 @@ class Convert {
    * @param {Number} number number to convert
    * @returns {String} converted number
    */
-  public static toHexByteBCD = function (numberBCD) {
-    var number = ((numberBCD / 10) * 16) + (numberBCD % 10);
+  public static toHexByteBCD = function(numberBCD) {
+    var number = (numberBCD / 10) * 16 + (numberBCD % 10);
     return this.toHexDigit(number);
   };
-
 
   /**
    * Convert a number to an hexadecimal short number
@@ -131,7 +128,7 @@ class Convert {
    * @param {Number} number number to convert
    * @returns {String} converted number
    */
-  public static toHexShort = function (number) {
+  public static toHexShort = function(number) {
     return this.toHexDigit((number >> 8) & 0xff) + this.toHexDigit(number & 0xff);
   };
 
@@ -141,9 +138,13 @@ class Convert {
    * @param {Number} number number to convert
    * @returns {String} converted number
    */
-  public static toHexInt = function (number) {
-    return this.toHexDigit((number >> 24) & 0xff) + this.toHexDigit((number >> 16) & 0xff) +
-      this.toHexDigit((number >> 8) & 0xff) + this.toHexDigit(number & 0xff);
+  public static toHexInt = function(number) {
+    return (
+      this.toHexDigit((number >> 24) & 0xff) +
+      this.toHexDigit((number >> 16) & 0xff) +
+      this.toHexDigit((number >> 8) & 0xff) +
+      this.toHexDigit(number & 0xff)
+    );
   };
 }
 
@@ -159,8 +160,7 @@ GP.HEX = 5;
  * @constructs
  */
 class ByteString {
-
-  public toBuffer = function () {
+  public toBuffer = function() {
     return this.value;
   };
   private hasBuffer: boolean;
@@ -168,10 +168,10 @@ class ByteString {
   private length: any;
 
   constructor(value, private encoding) {
-    this.hasBuffer = (typeof Buffer != 'undefined');
+    this.hasBuffer = typeof Buffer != 'undefined';
     this.hasBuffer = false;
 
-    if (this.hasBuffer && (value instanceof Buffer)) {
+    if (this.hasBuffer && value instanceof Buffer) {
       this.value = value;
       this.encoding = GP.HEX;
     } else {

@@ -4,7 +4,7 @@ import { LoggerService } from '@merit/common/services/logger.service';
 @Component({
   selector: 'view-settings-session-log',
   templateUrl: './settings-session-log.view.html',
-  styleUrls: ['./settings-session-log.view.sass']
+  styleUrls: ['./settings-session-log.view.sass'],
 })
 export class SettingsSessionLogView {
   logLevel: number = 4;
@@ -29,8 +29,11 @@ export class SettingsSessionLogView {
 
     let logsString = '';
 
-    this.filteredLogs.forEach(log =>
-      logsString += `${(new Date(log.timestamp)).toString()}: ${this.getLogLevelName(log.level)} ${log.arguments.join('\n')}`
+    this.filteredLogs.forEach(
+      log =>
+        (logsString += `${new Date(log.timestamp).toString()}: ${this.getLogLevelName(log.level)} ${log.arguments.join(
+          '\n',
+        )}`),
     );
 
     this.logsString = logsString;

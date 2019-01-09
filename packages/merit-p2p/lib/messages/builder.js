@@ -26,17 +26,13 @@ function builder(options) {
       Block: options.Block,
       BlockHeader: options.BlockHeader,
       Transaction: options.Transaction,
-      MerkleBlock: options.MerkleBlock
+      MerkleBlock: options.MerkleBlock,
     },
     defaults: {
       protocolVersion: options.protocolVersion,
-      network: options.network
+      network: options.network,
     },
-    inventoryCommands: [
-      'getdata',
-      'inv',
-      'notfound'
-    ],
+    inventoryCommands: ['getdata', 'inv', 'notfound'],
     commandsMap: {
       version: 'Version',
       verack: 'VerAck',
@@ -58,9 +54,9 @@ function builder(options) {
       getblocks: 'GetBlocks',
       getheaders: 'GetHeaders',
       mempool: 'MemPool',
-      getaddr: 'GetAddr'
+      getaddr: 'GetAddr',
     },
-    commands: {}
+    commands: {},
   };
 
   exported.add = function(key, Command) {
@@ -82,7 +78,6 @@ function builder(options) {
   });
 
   exported.inventoryCommands.forEach(function(command) {
-
     // add forTransaction methods
     exported.commands[command].forTransaction = function forTransaction(hash) {
       return new exported.commands[command]([Inventory.forTransaction(hash)]);
@@ -97,11 +92,9 @@ function builder(options) {
     exported.commands[command].forFilteredBlock = function forFilteredBlock(hash) {
       return new exported.commands[command]([Inventory.forFilteredBlock(hash)]);
     };
-
   });
 
   return exported;
-
 }
 
 module.exports = builder;

@@ -8,7 +8,6 @@ const async = require('async');
 
 const MAXINT = 0xffffffff; // Math.pow(2, 32) - 1;
 
-
 function ReferralsController(node) {
   this.node = node;
   this.common = new Common({ log: this.node.log });
@@ -29,7 +28,7 @@ ReferralsController.prototype.referral = function(req, res, next) {
   this.node.getReferral(refid, (err, referral) => {
     if (err && err.code === -5) {
       return this.common.handleErrors(null, res);
-    } else if(err) {
+    } else if (err) {
       return this.common.handleErrors(err, res);
     }
 

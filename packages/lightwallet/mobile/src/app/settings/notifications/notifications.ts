@@ -15,7 +15,7 @@ import { NotificationSettingsController } from '@merit/common/utils/notification
 @IonicPage()
 @Component({
   selector: 'notifications-view',
-  templateUrl: 'notifications.html'
+  templateUrl: 'notifications.html',
 })
 export class NotificationsView {
   usePushNotifications: boolean = this.platformService.isCordova;
@@ -27,21 +27,22 @@ export class NotificationsView {
     this.smsNotificationsService,
     this.formBuilder,
     this.toastCtrl,
-    this.platformService.isIOS ? 'ios' : 'android'
+    this.platformService.isIOS ? 'ios' : 'android',
   );
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              public formBuilder: FormBuilder,
-              private configService: ConfigService,
-              private appService: AppSettingsService,
-              private platformService: PlatformService,
-              private pushNotificationsService: PushNotificationsService,
-              private emailNotificationsService: EmailNotificationsService,
-              private loadingCtrl: LoadingController,
-              private smsNotificationsService: SmsNotificationsService,
-              private persistenceService: PersistenceService2,
-              private toastCtrl: ToastControllerService
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    public formBuilder: FormBuilder,
+    private configService: ConfigService,
+    private appService: AppSettingsService,
+    private platformService: PlatformService,
+    private pushNotificationsService: PushNotificationsService,
+    private emailNotificationsService: EmailNotificationsService,
+    private loadingCtrl: LoadingController,
+    private smsNotificationsService: SmsNotificationsService,
+    private persistenceService: PersistenceService2,
+    private toastCtrl: ToastControllerService,
   ) {}
 
   ngOnInit() {

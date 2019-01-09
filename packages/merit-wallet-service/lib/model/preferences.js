@@ -1,6 +1,6 @@
 'use strict';
 
-function Preferences() {};
+function Preferences() {}
 
 Preferences.create = function(opts) {
   opts = opts || {};
@@ -29,6 +29,5 @@ Preferences.fromObj = function(obj) {
   x.unit = obj.unit;
   return x;
 };
-
 
 module.exports = Preferences;

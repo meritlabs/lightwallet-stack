@@ -43,10 +43,12 @@ export class AppSettingsService {
   public info: AppSettings;
   private jsonPath: string = 'assets/appConfig.json';
 
-  constructor(public http: HttpClient,
-              private logger: LoggerService,
-              private language: LanguageService,
-              private config: ConfigService) {
+  constructor(
+    public http: HttpClient,
+    private logger: LoggerService,
+    private language: LanguageService,
+    private config: ConfigService,
+  ) {
     this.logger.info('AppService initialized.');
   }
 

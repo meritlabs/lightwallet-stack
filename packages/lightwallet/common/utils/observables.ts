@@ -14,4 +14,5 @@ export const getLatestValue = (obs: Observable<any>, filterFn?: (val: any) => bo
   return obs.pipe.apply(obs, args).toPromise();
 };
 
-export const getLatestDefinedValue = (obs: Observable<any>) => getLatestValue(obs, val => typeof val !== 'undefined' && val !== null);
+export const getLatestDefinedValue = (obs: Observable<any>) =>
+  getLatestValue(obs, val => typeof val !== 'undefined' && val !== null);

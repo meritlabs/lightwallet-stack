@@ -29,14 +29,16 @@ PayToScriptHashInput.prototype.getSignatures = function(transaction, privateKey,
   sigtype = sigtype || Signature.SIGHASH_ALL;
 
   var results = [];
-  results.push(new TransactionSignature({
-    publicKey: privateKey.publicKey,
-    prevTxId: this.prevTxId,
-    outputIndex: this.outputIndex,
-    inputIndex: index,
-    signature: Sighash.sign(transaction, privateKey, sigtype, index, this.redeemScript),
-    sigtype: sigtype
-  }));
+  results.push(
+    new TransactionSignature({
+      publicKey: privateKey.publicKey,
+      prevTxId: this.prevTxId,
+      outputIndex: this.outputIndex,
+      inputIndex: index,
+      signature: Sighash.sign(transaction, privateKey, sigtype, index, this.redeemScript),
+      sigtype: sigtype,
+    }),
+  );
   return results;
 };
 
@@ -44,11 +46,9 @@ PayToScriptHashInput.prototype.isFullySigned = function() {
   return true;
 };
 
-PayToScriptHashInput.prototype.addSignature = function() {
-};
+PayToScriptHashInput.prototype.addSignature = function() {};
 
-PayToScriptHashInput.prototype.clearSignatures = function() {
-};
+PayToScriptHashInput.prototype.clearSignatures = function() {};
 
 PayToScriptHashInput.OPCODES_SIZE = 7; // serialized size (<=3) + 0 .. N .. M OP_CHECKMULTISIG
 PayToScriptHashInput.SIGNATURE_SIZE = 74; // size (1) + DER (<=72) + sighash (1)

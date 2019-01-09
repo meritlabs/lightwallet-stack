@@ -2,7 +2,6 @@ import { browser, by, element } from 'protractor';
 import { TEST_WALLET_MNEMONIC, EC } from './app.e2e-spec';
 
 describe('[Desktop] Dashboard view', () => {
-
   beforeAll(() => {
     const link = element(by.css('[ng-reflect-router-link="/dashboard"]'));
     browser.wait(EC.visibilityOf(link), 5000);
@@ -19,7 +18,6 @@ describe('[Desktop] Dashboard view', () => {
   });
 
   describe('> Welcome guide', () => {
-
     let rootEl;
 
     beforeEach(() => {
@@ -67,8 +65,5 @@ describe('[Desktop] Dashboard view', () => {
       browser.sleep(200);
       expect(rootEl.isPresent()).toBeFalsy('Guide is still visible');
     });
-
   });
-
-
 });

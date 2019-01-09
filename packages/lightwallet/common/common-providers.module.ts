@@ -61,8 +61,8 @@ export class CommonProvidersModule {
         AlertService,
         GoalsService,
         SmsNotificationsService,
-        SocialSharing
-      ]
+        SocialSharing,
+      ],
     };
   }
 }

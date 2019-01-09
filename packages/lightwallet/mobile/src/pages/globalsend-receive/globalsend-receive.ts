@@ -6,7 +6,7 @@ import {
   ModalController,
   NavController,
   NavParams,
-  ViewController
+  ViewController,
 } from 'ionic-angular';
 import { EasyReceiveService } from '@merit/common/services/easy-receive.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
@@ -21,7 +21,6 @@ import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
   templateUrl: 'globalsend-receive.html',
 })
 export class GlobalsendReceiveView {
-
   receipt: EasyReceipt;
   data;
 
@@ -46,7 +45,7 @@ export class GlobalsendReceiveView {
     private toastCtrl: ToastControllerService,
     private profileService: ProfileService,
     private modalCtrl: ModalController,
-    private events: Events
+    private events: Events,
   ) {
     this.receipt = this.navParams.get('receipt');
     this.data = this.navParams.get('data');
@@ -60,15 +59,14 @@ export class GlobalsendReceiveView {
 
     if (await this.easyReceiveService.isInviteOnly(this.data.txs)) {
       const invitesAmount = await this.easyReceiveService.getInvitesAmount(this.data.txs);
-      this.amountStr = (invitesAmount == 1) ? 'Invite Token' : invitesAmount + ' Invite tokens';
+      this.amountStr = invitesAmount == 1 ? 'Invite Token' : invitesAmount + ' Invite tokens';
       this.type = 'MeritInvite';
     } else {
       this.type = 'MeritMoney';
-      this.amountStr = await this.easyReceiveService.getReceiverAmount(this.data.txs) + ' MRT';
+      this.amountStr = (await this.easyReceiveService.getReceiverAmount(this.data.txs)) + ' MRT';
     }
     this.loading = false;
   }
-
 
   async accept() {
     let loader = this.loadingCtrl.create({ content: 'Accepting payment...' });
@@ -99,7 +97,6 @@ export class GlobalsendReceiveView {
   }
 
   async ignore() {
-
     let loader = this.loadingCtrl.create({ content: 'Ignoring...' });
     loader.present();
     try {
@@ -118,7 +115,6 @@ export class GlobalsendReceiveView {
     loader.present();
     this.validationError = false;
     try {
-
       let data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(this.receipt, this.password);
       let txs = data.txs;
 
@@ -133,15 +129,12 @@ export class GlobalsendReceiveView {
         this.data = data;
         this.mode = 'receive';
       }
-
     } catch (e) {
       console.warn(e);
       this.toastCtrl.error('Unexpected error occurred');
     }
 
     loader.dismiss();
-
-
   }
 
   private async acceptEasyReceipt(receipt: EasyReceipt, data: any): Promise<any> {
@@ -154,13 +147,17 @@ export class GlobalsendReceiveView {
   }
 
   selectWallet() {
-    const modal = this.modalCtrl.create('SelectWalletModal', {
-      selectedWallet: this.wallet,
-      showInvites: true,
-      availableWallets: this.wallets
-    }, MERIT_MODAL_OPTS);
+    const modal = this.modalCtrl.create(
+      'SelectWalletModal',
+      {
+        selectedWallet: this.wallet,
+        showInvites: true,
+        availableWallets: this.wallets,
+      },
+      MERIT_MODAL_OPTS,
+    );
 
-    modal.onDidDismiss(async (wallet) => {
+    modal.onDidDismiss(async wallet => {
       if (wallet) {
         this.wallet = wallet;
       }
@@ -168,5 +165,4 @@ export class GlobalsendReceiveView {
 
     modal.present();
   }
-
 }

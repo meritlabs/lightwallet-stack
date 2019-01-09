@@ -6,14 +6,17 @@ import { INotification } from '@merit/common/reducers/notifications.reducer';
   templateUrl: './notifications-history.component.html',
   styleUrls: ['./notifications-history.component.sass'],
   host: {
-    '[class.show]': 'showHistory'
+    '[class.show]': 'showHistory',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificationsHistoryComponent {
-  @Input() notifications: INotification[];
-  @Input() showHistory: boolean;
-  @Output() onClear: EventEmitter<void> = new EventEmitter<void>();
+  @Input()
+  notifications: INotification[];
+  @Input()
+  showHistory: boolean;
+  @Output()
+  onClear: EventEmitter<void> = new EventEmitter<void>();
 
   clearAll() {
     this.onClear.emit();

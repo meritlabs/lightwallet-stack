@@ -6,7 +6,6 @@ var meritcore = require('..');
 var networks = meritcore.Networks;
 
 describe('Networks', function() {
-
   var customnet;
 
   it('should contain all Networks', function() {
@@ -44,10 +43,7 @@ describe('Networks', function() {
       xprivkey: 0x0278ade4,
       networkMagic: 0xe7beb4d4,
       port: 20001,
-      dnsSeeds: [
-        'localhost',
-        'mynet.localhost'
-      ]
+      dnsSeeds: ['localhost', 'mynet.localhost'],
     };
     networks.add(custom);
     customnet = networks.get('customnet');
@@ -77,9 +73,7 @@ describe('Networks', function() {
       xprivkey: 0x0278ade5,
       networkMagic: 0xe7beb4d5,
       port: 20008,
-      dnsSeeds: [
-        'somenet.localhost'
-      ]
+      dnsSeeds: ['somenet.localhost'],
     };
     networks.add(custom);
     var network = networks.get(undefined);
@@ -89,8 +83,8 @@ describe('Networks', function() {
 
   var constants = ['name', 'alias', 'pubkeyhash', 'scripthash', 'xpubkey', 'xprivkey'];
 
-  constants.forEach(function(key){
-    it('should have constant '+key+' for livenet and testnet', function(){
+  constants.forEach(function(key) {
+    it('should have constant ' + key + ' for livenet and testnet', function() {
       networks.testnet.hasOwnProperty(key).should.equal(true);
       networks.livenet.hasOwnProperty(key).should.equal(true);
     });
@@ -112,9 +106,10 @@ describe('Networks', function() {
   });
 
   it('network object should be immutable', function() {
-    expect(networks.testnet.name).to.equal('testnet')
-    var fn = function() { networks.testnet.name = 'livenet' }
-    expect(fn).to.throw(TypeError)
+    expect(networks.testnet.name).to.equal('testnet');
+    var fn = function() {
+      networks.testnet.name = 'livenet';
+    };
+    expect(fn).to.throw(TypeError);
   });
-
 });
