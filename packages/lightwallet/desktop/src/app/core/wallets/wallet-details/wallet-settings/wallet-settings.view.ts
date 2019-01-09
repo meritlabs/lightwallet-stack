@@ -22,7 +22,6 @@ import { WalletSettingsColors } from '@merit/common/const/wallet-colors';
   styleUrls: ['./wallet-settings.view.sass'],
 })
 export class WalletSettingsView implements OnInit, OnDestroy {
-
   availableColors: any = WalletSettingsColors;
   selectedColor: any;
 
@@ -63,7 +62,7 @@ export class WalletSettingsView implements OnInit, OnDestroy {
     private passwordPromptCtrl: PasswordPromptController,
     private confirmDialogCtrl: ConfirmDialogControllerService,
     private router: Router,
-    private toastCtrl: ToastControllerService
+    private toastCtrl: ToastControllerService,
   ) {}
 
   ngOnInit() {
@@ -88,14 +87,17 @@ export class WalletSettingsView implements OnInit, OnDestroy {
 
           this.subs.push(
             this.settingsForm.valueChanges
-              .pipe(debounceTime(100), filter(() => this.settingsForm.valid))
+              .pipe(
+                debounceTime(100),
+                filter(() => this.settingsForm.valid),
+              )
               .subscribe(({ name, balanceHidden }) => {
                 this.wallet.name = name;
                 this.wallet.balanceHidden = balanceHidden;
                 this.store.dispatch(new UpdateOneWalletAction(this.wallet));
-              })
+              }),
           );
-        })
+        }),
     );
   }
 
@@ -103,7 +105,7 @@ export class WalletSettingsView implements OnInit, OnDestroy {
     // wallet is encrypted and we need a password to decrypt before setting a new password
     this.passwordChangeForm.addControl(
       'currentPassword',
-      this.formBuilder.control('', [Validators.required, PasswordValidator.VerifyWalletPassword(this.wallet.client)])
+      this.formBuilder.control('', [Validators.required, PasswordValidator.VerifyWalletPassword(this.wallet.client)]),
     );
     this.isWalletEncrypted = true;
   }
@@ -152,7 +154,7 @@ export class WalletSettingsView implements OnInit, OnDestroy {
           text: 'No',
           value: 'no',
         },
-      ]
+      ],
     );
 
     confirmDialog.onDidDismiss(async (value: string) => {

@@ -25,7 +25,7 @@ function HeadersMessage(arg, options) {
   this.command = 'headers';
   $.checkArgument(
     _.isUndefined(arg) || (Array.isArray(arg) && arg[0] instanceof this.BlockHeader),
-    'First argument is expected to be an array of BlockHeader instances'
+    'First argument is expected to be an array of BlockHeader instances',
   );
   this.headers = arg;
 }

@@ -11,45 +11,52 @@ export class LanguageService {
   private languages: Array<any> = [
     {
       name: 'English',
-      isoCode: 'en'
-    }, {
+      isoCode: 'en',
+    },
+    {
       name: 'Español',
-      isoCode: 'es'
-    }, {
+      isoCode: 'es',
+    },
+    {
       name: 'Français',
       isoCode: 'fr',
-    }, {
+    },
+    {
       name: 'Italiano',
       isoCode: 'it',
-    }, {
+    },
+    {
       name: 'Polski',
       isoCode: 'pl',
-    }, {
+    },
+    {
       name: 'Deutsch',
       isoCode: 'de',
-    }, {
+    },
+    {
       name: '日本語',
       isoCode: 'ja',
       useIdeograms: true,
-    }, {
+    },
+    {
       name: '中文（简体）',
       isoCode: 'zh',
       useIdeograms: true,
-    }, {
+    },
+    {
       name: 'Pусский',
       isoCode: 'ru',
-    }, {
+    },
+    {
       name: 'Português',
       isoCode: 'pt',
-    }
+    },
   ];
   private current: string;
 
-  constructor(private logger: LoggerService,
-              private translate: TranslateService,
-              private config: ConfigService) {
+  constructor(private logger: LoggerService, private translate: TranslateService, private config: ConfigService) {
     this.logger.info('LanguageService initialized.');
-    this.translate.onLangChange.subscribe((event) => {
+    this.translate.onLangChange.subscribe(event => {
       this.logger.info('Settings language changed to: ' + event.lang);
     });
   }
@@ -74,9 +81,12 @@ export class LanguageService {
   }
 
   getName(lang: string) {
-    return _.result(_.find(this.languages, {
-      'isoCode': lang
-    }), 'name');
+    return _.result(
+      _.find(this.languages, {
+        isoCode: lang,
+      }),
+      'name',
+    );
   }
 
   getDefault() {
@@ -93,12 +103,11 @@ export class LanguageService {
 
   getCurrentInfo() {
     return _.find(this.languages, {
-      'isoCode': this.current
+      isoCode: this.current,
     });
   }
 
   getAvailables() {
     return this.languages;
   }
-
 }

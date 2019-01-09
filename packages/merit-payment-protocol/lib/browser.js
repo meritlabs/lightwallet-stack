@@ -26,7 +26,7 @@ PaymentProtocol.prototype.x509Sign = function(key, returnTrust) {
   if (type !== 'none') {
     var jsrsaSig = new KJUR.crypto.Signature({
       alg: type + 'withRSA',
-      prov: 'cryptojs/jsrsa'
+      prov: 'cryptojs/jsrsa',
     });
 
     jsrsaSig.init(key);
@@ -52,7 +52,7 @@ PaymentProtocol.prototype.x509Sign = function(key, returnTrust) {
       isChain: pki_data.length > 1,
       signature: sig,
       caTrusted: !!caName,
-      caName: caName || null
+      caName: caName || null,
     };
   }
 
@@ -75,7 +75,7 @@ PaymentProtocol.prototype.x509Verify = function(returnTrust) {
   if (type !== 'none') {
     var jsrsaSig = new KJUR.crypto.Signature({
       alg: type + 'withRSA',
-      prov: 'cryptojs/jsrsa'
+      prov: 'cryptojs/jsrsa',
     });
     var signedCert = pki_data[0];
     der = signedCert.toString('hex');
@@ -96,8 +96,7 @@ PaymentProtocol.prototype.x509Verify = function(returnTrust) {
   pem = KJUR.asn1.ASN1Util.getPEMStringFromHex(der, 'CERTIFICATE');
   var caName = RootCerts.getTrusted(pem);
 
-  if (!caName) 
-    caName = PaymentProtocol.completeChainAndGetCA(chain);
+  if (!caName) caName = PaymentProtocol.completeChainAndGetCA(chain);
 
   if (chain.length === 1 && !caName) {
     if (returnTrust) {
@@ -107,7 +106,7 @@ PaymentProtocol.prototype.x509Verify = function(returnTrust) {
         verified: verified,
         caTrusted: false,
         caName: null,
-        chainVerified: false
+        chainVerified: false,
       };
     }
     return verified;
@@ -123,7 +122,7 @@ PaymentProtocol.prototype.x509Verify = function(returnTrust) {
         verified: verified,
         caTrusted: false,
         caName: null,
-        chainVerified: false
+        chainVerified: false,
       };
     }
     return verified;
@@ -138,7 +137,7 @@ PaymentProtocol.prototype.x509Verify = function(returnTrust) {
       verified: verified,
       caTrusted: !!caName,
       caName: caName || null,
-      chainVerified: chainVerified
+      chainVerified: chainVerified,
     };
   }
 
@@ -175,7 +174,7 @@ PaymentProtocol.verifyCertChain = function(chain, sigHashAlg) {
     if (sigHashAlg !== 'none') {
       var js = new KJUR.crypto.Signature({
         alg: sigHashAlg + 'withRSA',
-        prov: 'cryptojs/jsrsa'
+        prov: 'cryptojs/jsrsa',
       });
       js.initVerifyByCertificatePEM(npem);
       npubKey = js.pubKey;
@@ -198,7 +197,7 @@ PaymentProtocol.verifyCertChain = function(chain, sigHashAlg) {
     if (sigHashAlg !== 'none') {
       var jsrsaSig = new KJUR.crypto.Signature({
         alg: sigHashAlg + 'withRSA',
-        prov: 'cryptojs/jsrsa'
+        prov: 'cryptojs/jsrsa',
       });
       jsrsaSig.initVerifyByPublicKey(npubKey);
 

@@ -41,7 +41,7 @@ RejectMessage.CCODE = {
   REJECT_NONSTANDARD: 0x40,
   REJECT_DUST: 0x41,
   REJECT_INSUFFICIENTFEE: 0x42,
-  REJECT_CHECKPOINT: 0x43
+  REJECT_CHECKPOINT: 0x43,
 };
 
 RejectMessage.prototype.setPayload = function(payload) {

@@ -6,7 +6,6 @@ var sinon = require('sinon');
 var should = chai.should();
 var AddressManager = require('../../lib/model/addressmanager');
 
-
 describe('AddressManager', function() {
   describe('#create', function() {
     it('should create BIP45 address manager by default', function() {
@@ -20,7 +19,7 @@ describe('AddressManager', function() {
         version: '1.0.0',
         receiveAddressIndex: 2,
         changeAddressIndex: 0,
-        copayerIndex: 4
+        copayerIndex: 4,
       };
       var am = AddressManager.fromObj(obj);
       am.derivationStrategy.should.equal('BIP45');

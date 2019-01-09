@@ -47,10 +47,9 @@ const FIELDS = [
 
 function _checkNetwork(network: string): void {
   if (!_.includes(['livenet', 'testnet'], network)) throw new Error('Invalid network');
-};
+}
 
 export class Credentials {
-
   public network: string;
   public xPrivKey: any;
   public xPubKey: string;
@@ -81,17 +80,13 @@ export class Credentials {
   public parentAddress: string;
   public hwInfo: string;
 
-
-
-
-
   public static create = function(network): Credentials {
     _checkNetwork(network);
 
     let x = new Credentials();
 
     x.network = network;
-    x.xPrivKey = (new Meritcore.HDPrivateKey(network)).toString();
+    x.xPrivKey = new Meritcore.HDPrivateKey(network).toString();
     x.compliantDerivation = true;
     x._expand();
     return x;
@@ -106,22 +101,21 @@ export class Credentials {
   private static createMnemonicWithRetries(m?: string, tries?: number) {
     m = m || generateMnemonic();
     tries = tries || 5;
-    if(!validateImportMnemonic(m)){
+    if (!validateImportMnemonic(m)) {
       if (--tries > 0) {
-        this.createMnemonicWithRetries(m, tries)
+        this.createMnemonicWithRetries(m, tries);
       } else {
-        throw new Error("Error generating valid mnemonic")
+        throw new Error('Error generating valid mnemonic');
       }
     }
     return m;
   }
 
-
   public static createWithMnemonic = function(network, passphrase, language, account, opts: any = {}): Credentials {
     _checkNetwork(network);
     $.shouldBeNumber(account);
 
-    let m: string  = this.createMnemonicWithRetries(null, 5);
+    let m: string = this.createMnemonicWithRetries(null, 5);
     let x = new Credentials();
     x.network = network;
     x.account = account;
@@ -147,7 +141,14 @@ export class Credentials {
     return x;
   };
 
-  public static fromMnemonic = function(network, words, passphrase, account, derivationStrategy, opts: any = {}): Credentials {
+  public static fromMnemonic = function(
+    network,
+    words,
+    passphrase,
+    account,
+    derivationStrategy,
+    opts: any = {},
+  ): Credentials {
     _checkNetwork(network);
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
@@ -165,14 +166,21 @@ export class Credentials {
     return x;
   };
 
-  public static fromExtendedPublicKey = function(xPubKey, source, entropySourceHex, account, derivationStrategy, opts: any = {}): Credentials {
+  public static fromExtendedPublicKey = function(
+    xPubKey,
+    source,
+    entropySourceHex,
+    account,
+    derivationStrategy,
+    opts: any = {},
+  ): Credentials {
     $.checkArgument(entropySourceHex);
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
 
     let entropyBuffer = new Buffer(entropySourceHex, 'hex');
     //require at least 112 bits of entropy
-    $.checkArgument(entropyBuffer.length >= 14, 'At least 112 bits of entropy are needed')
+    $.checkArgument(entropyBuffer.length >= 14, 'At least 112 bits of entropy are needed');
 
     let x = new Credentials();
     x.xPubKey = xPubKey;
@@ -201,7 +209,7 @@ export class Credentials {
     x.addressType = x.addressType || Constants.SCRIPT_TYPES.P2SH;
     x.account = x.account || 0;
 
-    $.checkState(x.xPrivKey || x.xPubKey || x.xPrivKeyEncrypted, "invalid input");
+    $.checkState(x.xPrivKey || x.xPubKey || x.xPrivKeyEncrypted, 'invalid input');
     return x;
   };
 
@@ -212,14 +220,14 @@ export class Credentials {
 
   constructor() {
     this.network = ENV.network;
-    this.xPrivKey = (new Meritcore.HDPrivateKey(ENV.network)).toString();
+    this.xPrivKey = new Meritcore.HDPrivateKey(ENV.network).toString();
     this.compliantDerivation = true;
     this.version = '1.0.0';
     this.derivationStrategy = Constants.DERIVATION_STRATEGIES.BIP44;
     this.account = 0;
   }
 
-   public Mnemonic = function(network, passphrase, language, account, opts): Credentials {
+  public Mnemonic = function(network, passphrase, language, account, opts): Credentials {
     $.shouldBeNumber(account);
 
     opts = opts || {};
@@ -281,14 +289,21 @@ export class Credentials {
   * entropySource should be a HEX string containing pseudo-random data, that can
   * be deterministically derived from the xPrivKey, and should not be derived from xPubKey
   */
-  public edPublicKey = function(xPubKey, source, entropySourceHex, account, derivationStrategy, opts: any = {}): Credentials {
+  public edPublicKey = function(
+    xPubKey,
+    source,
+    entropySourceHex,
+    account,
+    derivationStrategy,
+    opts: any = {},
+  ): Credentials {
     $.checkArgument(entropySourceHex);
     $.shouldBeNumber(account);
     $.checkArgument(_.includes(_.values(Constants.DERIVATION_STRATEGIES), derivationStrategy));
 
     let entropyBuffer = new Buffer(entropySourceHex, 'hex');
     //require at least 112 bits of entropy
-    $.checkArgument(entropyBuffer.length >= 14, 'At least 112 bits of entropy are needed')
+    $.checkArgument(entropyBuffer.length >= 14, 'At least 112 bits of entropy are needed');
 
     let x = new Credentials();
     x.xPubKey = xPubKey;
@@ -319,7 +334,6 @@ export class Credentials {
     return b2.slice(0, length);
   };
 
-
   public _expand = function(): void {
     $.checkState(this.xPrivKey || (this.xPubKey && this.entropySource));
 
@@ -334,7 +348,9 @@ export class Credentials {
     if (this.xPrivKey) {
       let xPrivKey = new Meritcore.HDPrivateKey.fromString(this.xPrivKey);
 
-      deriveFn = this.compliantDerivation ? _.bind(xPrivKey.deriveChild, xPrivKey) : _.bind(xPrivKey.deriveNonCompliantChild, xPrivKey);
+      deriveFn = this.compliantDerivation
+        ? _.bind(xPrivKey.deriveChild, xPrivKey)
+        : _.bind(xPrivKey.deriveNonCompliantChild, xPrivKey);
 
       const derivedXPrivKey: any = deriveFn(this.getBaseAddressDerivationPath());
 
@@ -371,10 +387,12 @@ export class Credentials {
     this.personalEncryptingKey = this._hashFromEntropy('personalKey', 16).toString('base64');
 
     this.copayerId = Credentials._xPubToCopayerId(this.xPubKey);
-    this.publicKeyRing = [{
-      xPubKey: this.xPubKey,
-      requestPubKey: this.requestPubKey,
-    }];
+    this.publicKeyRing = [
+      {
+        xPubKey: this.xPubKey,
+        requestPubKey: this.requestPubKey,
+      },
+    ];
   };
 
   public fromObj = function(obj): Credentials {
@@ -388,7 +406,7 @@ export class Credentials {
     x.addressType = x.addressType || Constants.SCRIPT_TYPES.P2SH;
     x.account = x.account || 0;
 
-    $.checkState(x.xPrivKey || x.xPubKey || x.xPrivKeyEncrypted, "invalid input");
+    $.checkState(x.xPrivKey || x.xPubKey || x.xPrivKeyEncrypted, 'invalid input');
     return x;
   };
 
@@ -417,14 +435,16 @@ export class Credentials {
         throw new Error('Credentials#getBaseAddressDerivationPath: derivation strategy is not set.');
     }
 
-    let coin = (this.network == 'livenet' ? "0" : "1");
-    return "m/" + purpose + "'/" + coin + "'/" + this.account + "'";
+    let coin = this.network == 'livenet' ? '0' : '1';
+    return 'm/' + purpose + "'/" + coin + "'/" + this.account + "'";
   };
 
   public getDerivedXPrivKey = function(password) {
     let path = this.getBaseAddressDerivationPath();
     let xPrivKey = new Meritcore.HDPrivateKey(this.getKeys(password).xPrivKey, this.network);
-    let deriveFn = !!this.compliantDerivation ? _.bind(xPrivKey.deriveChild, xPrivKey) : _.bind(xPrivKey.deriveNonCompliantChild, xPrivKey);
+    let deriveFn = !!this.compliantDerivation
+      ? _.bind(xPrivKey.deriveChild, xPrivKey)
+      : _.bind(xPrivKey.deriveNonCompliantChild, xPrivKey);
     return deriveFn(path);
   };
 
@@ -434,7 +454,7 @@ export class Credentials {
   };
 
   // TODO: figure out if we need to store refid in credentials
-  public addWalletInfo = function(walletId, walletName, m, n, copayerName, parentAddress): void  {
+  public addWalletInfo = function(walletId, walletName, m, n, copayerName, parentAddress): void {
     this.walletId = walletId;
     this.walletName = walletName;
     this.m = m;
@@ -443,13 +463,10 @@ export class Credentials {
     this.parentAddress = parentAddress;
     this.unlocked = true;
 
-    if (copayerName)
-      this.copayerName = copayerName;
+    if (copayerName) this.copayerName = copayerName;
 
-    if (this.derivationStrategy == 'BIP44' && n == 1)
-      this.addressType = Constants.SCRIPT_TYPES.P2PKH;
-    else
-      this.addressType = Constants.SCRIPT_TYPES.P2SH;
+    if (this.derivationStrategy == 'BIP44' && n == 1) this.addressType = Constants.SCRIPT_TYPES.P2PKH;
+    else this.addressType = Constants.SCRIPT_TYPES.P2SH;
 
     // Use m/48' for multisig hardware wallets
     if (!this.xPrivKey && this.externalSource && n > 1) {
@@ -457,10 +474,12 @@ export class Credentials {
     }
 
     if (n == 1) {
-      this.addPublicKeyRing([{
-        xPubKey: this.xPubKey,
-        requestPubKey: this.requestPubKey,
-      }]);
+      this.addPublicKeyRing([
+        {
+          xPubKey: this.xPubKey,
+          requestPubKey: this.requestPubKey,
+        },
+      ]);
     }
   };
 
@@ -469,31 +488,25 @@ export class Credentials {
   };
 
   public isPrivKeyEncrypted = function() {
-    return (!!this.xPrivKeyEncrypted) && !this.xPrivKey;
+    return !!this.xPrivKeyEncrypted && !this.xPrivKey;
   };
 
   public encryptPrivateKey = function(password, opts): void {
-    if (this.xPrivKeyEncrypted)
-      throw new Error('Private key already encrypted');
+    if (this.xPrivKeyEncrypted) throw new Error('Private key already encrypted');
 
-    if (!this.xPrivKey)
-      throw new Error('No private key to encrypt');
-
+    if (!this.xPrivKey) throw new Error('No private key to encrypt');
 
     this.xPrivKeyEncrypted = sjcl.encrypt(password, this.xPrivKey, opts);
-    if (!this.xPrivKeyEncrypted)
-      throw new Error('Could not encrypt');
+    if (!this.xPrivKeyEncrypted) throw new Error('Could not encrypt');
 
-    if (this.mnemonic)
-      this.mnemonicEncrypted = sjcl.encrypt(password, this.mnemonic, opts);
+    if (this.mnemonic) this.mnemonicEncrypted = sjcl.encrypt(password, this.mnemonic, opts);
 
     delete this.xPrivKey;
     delete this.mnemonic;
   };
 
   public decryptPrivateKey = function(password): void {
-    if (!this.xPrivKeyEncrypted)
-      throw new Error('Private key is not encrypted');
+    if (!this.xPrivKeyEncrypted) throw new Error('Private key is not encrypted');
 
     try {
       this.xPrivKey = sjcl.decrypt(password, this.xPrivKeyEncrypted);
@@ -508,8 +521,8 @@ export class Credentials {
     }
   };
 
-  public getKeys = function(password):any {
-    let keys:any = {};
+  public getKeys = function(password): any {
+    let keys: any = {};
 
     if (this.isPrivKeyEncrypted()) {
       $.checkArgument(password, 'Private keys are encrypted, a password is needed');
@@ -534,7 +547,7 @@ export class Credentials {
   };
 
   public canSign = function(): boolean {
-    return (!!this.xPrivKey || !!this.xPrivKeyEncrypted);
+    return !!this.xPrivKey || !!this.xPrivKeyEncrypted;
   };
 
   public setNoSign = function(): void {
@@ -551,7 +564,7 @@ export class Credentials {
   };
 
   public hasExternalSource = function(): boolean {
-    return (typeof this.externalSource == "string");
+    return typeof this.externalSource == 'string';
   };
 
   public getExternalSourceName = function() {

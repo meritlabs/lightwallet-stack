@@ -17,15 +17,14 @@ function main(servicesPath, additionalServices) {
   var findConfig = meritcorenode.scaffold.findConfig;
   var defaultConfig = meritcorenode.scaffold.defaultConfig;
 
-  program
-    .version(version);
+  program.version(version);
 
   program
     .command('create <directory>')
     .description('Create a new node')
     .option('-d, --datadir <dir>', 'Specify the Merit database directory')
     .option('-t, --testnet', 'Enable testnet as the network')
-    .action(function(dirname, cmd){
+    .action(function(dirname, cmd) {
       if (cmd.datadir) {
         cmd.datadir = path.resolve(process.cwd(), cmd.datadir);
       }
@@ -33,7 +32,7 @@ function main(servicesPath, additionalServices) {
         cwd: process.cwd(),
         dirname: dirname,
         datadir: cmd.datadir || './data',
-        isGlobal: false
+        isGlobal: false,
       };
       if (cmd.testnet) {
         opts.network = 'testnet';
@@ -50,14 +49,14 @@ function main(servicesPath, additionalServices) {
     .command('start')
     .description('Start the current node')
     .option('-c, --config <dir>', 'Specify the directory with Merit Node configuration')
-    .action(function(cmd){
+    .action(function(cmd) {
       if (cmd.config) {
         cmd.config = path.resolve(process.cwd(), cmd.config);
       }
       var configInfo = findConfig(cmd.config || process.cwd());
       if (!configInfo) {
         configInfo = defaultConfig({
-          additionalServices: additionalServices
+          additionalServices: additionalServices,
         });
       }
       if (servicesPath) {
@@ -69,14 +68,14 @@ function main(servicesPath, additionalServices) {
   program
     .command('install <services...>')
     .description('Install a service for the current node')
-    .action(function(services){
+    .action(function(services) {
       var configInfo = findConfig(process.cwd());
       if (!configInfo) {
         throw new Error('Could not find configuration, see `merit-node create --help`');
       }
       var opts = {
         path: configInfo.path,
-        services: services
+        services: services,
       };
       add(opts, function(err) {
         if (err) {
@@ -84,7 +83,8 @@ function main(servicesPath, additionalServices) {
         }
         console.log('Successfully added services(s):', services.join(', '));
       });
-    }).on('--help', function() {
+    })
+    .on('--help', function() {
       console.log('  Examples:');
       console.log();
       console.log('    $ merit-node add wallet-service');
@@ -95,14 +95,14 @@ function main(servicesPath, additionalServices) {
   program
     .command('uninstall <services...>')
     .description('Uninstall a service for the current node')
-    .action(function(services){
+    .action(function(services) {
       var configInfo = findConfig(process.cwd());
       if (!configInfo) {
         throw new Error('Could not find configuration, see `merit-node create --help`');
       }
       var opts = {
         path: configInfo.path,
-        services: services
+        services: services,
       };
       remove(opts, function(err) {
         if (err) {
@@ -110,7 +110,8 @@ function main(servicesPath, additionalServices) {
         }
         console.log('Successfully removed services(s):', services.join(', '));
       });
-    }).on('--help', function() {
+    })
+    .on('--help', function() {
       console.log('  Examples:');
       console.log();
       console.log('    $ merit-node remove wallet-service');
@@ -130,7 +131,7 @@ function main(servicesPath, additionalServices) {
       var options = {
         protocol: 'http',
         host: 'localhost',
-        port: configInfo.config.port
+        port: configInfo.config.port,
       };
       callMethod(options, method, params, function(err, data) {
         if (err) {
@@ -145,7 +146,6 @@ function main(servicesPath, additionalServices) {
   if (process.argv.length === 2) {
     program.help();
   }
-
 }
 
 module.exports = main;

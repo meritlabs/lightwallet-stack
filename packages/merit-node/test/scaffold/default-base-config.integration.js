@@ -18,11 +18,11 @@ describe('#defaultBaseConfig', function() {
     meritd.spawn.exec.should.equal(path.resolve(__dirname, '../../bin/meritd'));
   });
   it('be able to specify a network', function() {
-    var info = defaultBaseConfig({network: 'testnet'});
+    var info = defaultBaseConfig({ network: 'testnet' });
     info.config.network.should.equal('testnet');
   });
   it('be able to specify a datadir', function() {
-    var info = defaultBaseConfig({datadir: './data2', network: 'testnet'});
+    var info = defaultBaseConfig({ datadir: './data2', network: 'testnet' });
     info.config.servicesConfig.meritd.spawn.datadir.should.equal('./data2');
   });
 });

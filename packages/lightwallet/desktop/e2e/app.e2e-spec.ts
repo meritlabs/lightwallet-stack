@@ -12,7 +12,10 @@ export async function isBrowser(browser: string) {
 describe('[Desktop] Onboarding', () => {
   beforeAll(() => {
     // maximize window
-    browser.driver.manage().window().maximize();
+    browser.driver
+      .manage()
+      .window()
+      .maximize();
 
     browser.get('/');
 
@@ -29,7 +32,7 @@ describe('[Desktop] Onboarding', () => {
     expect(browser.getCurrentUrl()).toContain('onboarding');
   });
 
-  it('shouldn\'t let the user go to dashboard', async () => {
+  it("shouldn't let the user go to dashboard", async () => {
     await browser.get('/dashboard');
     expect(browser.getCurrentUrl()).toContain('onboarding');
   });
@@ -67,7 +70,6 @@ describe('[Desktop] Onboarding', () => {
   });
 
   describe('> QT Wallet unboarding', () => {
-
     beforeEach(() => {
       browser.get('/onboarding');
       const el = element(by.css('[routerlink=tour-desktop]'));
@@ -135,13 +137,10 @@ describe('[Desktop] Onboarding', () => {
         expect(browser.getCurrentUrl()).not.toContain('tour-desktop');
         expect(browser.getCurrentUrl()).toContain('import');
       });
-
     });
-
   });
 
   describe('> Unlock view', () => {
-
     let el;
 
     beforeAll(() => {
@@ -184,13 +183,10 @@ describe('[Desktop] Onboarding', () => {
       browser.wait(EC.not(EC.urlContains('unlock')));
       expect(browser.getCurrentUrl()).not.toContain('unlock');
     });
-
   });
 
   describe('> Import wallet', () => {
-
     describe('> Main import view', () => {
-
       beforeAll(() => {
         browser.get('/');
         const el = element(by.css('[routerLink="import"]'));
@@ -207,14 +203,10 @@ describe('[Desktop] Onboarding', () => {
         expect(mnemonicButton.isDisplayed()).toBeTruthy();
       });
 
-      it('should have a file backup option', async () => {
-
-      });
-
+      it('should have a file backup option', async () => {});
     });
 
     describe('> Mnemonic phrase', () => {
-
       let mnemonicButton, mnemonicInput, submitButton;
 
       beforeAll(() => {
@@ -247,13 +239,10 @@ describe('[Desktop] Onboarding', () => {
         browser.wait(EC.urlContains('wallets'));
         expect(browser.getCurrentUrl()).toContain('wallets');
       });
-
     });
 
     // describe('File backup', () => {
     //
     // });
-
   });
-
 });

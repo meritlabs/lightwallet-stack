@@ -7,15 +7,15 @@ import { LoggerService } from '@merit/common/services/logger.service';
 
 @Injectable()
 export class TouchIdService {
-
   private _isAvailable: boolean;
 
-  constructor(private touchId: TouchID,
-              private androidFingerprintAuth: AndroidFingerprintAuth,
-              private platform: PlatformService,
-              private config: ConfigService,
-              private log: LoggerService) {
-  }
+  constructor(
+    private touchId: TouchID,
+    private androidFingerprintAuth: AndroidFingerprintAuth,
+    private platform: PlatformService,
+    private config: ConfigService,
+    private log: LoggerService,
+  ) {}
 
   async checkIOS() {
     try {
@@ -51,8 +51,7 @@ export class TouchIdService {
         return;
       }
 
-      this.log.info('Didn\'t authenticate!');
-
+      this.log.info("Didn't authenticate!");
     } catch (error) {
       if (error === this.androidFingerprintAuth.ERRORS.FINGERPRINT_CANCELLED) {
         this.log.warn('Fingerprint authentication cancelled');
@@ -66,12 +65,11 @@ export class TouchIdService {
 
   async isAvailable() {
     if (this._isAvailable == undefined) {
-
       await this.platform.ready();
       if (this.platform.isAndroid) {
         this._isAvailable = await this.checkAndroid();
-      } else  if (this.platform.isIOS) {
-        this._isAvailable =  await this.checkIOS();
+      } else if (this.platform.isIOS) {
+        this._isAvailable = await this.checkIOS();
       } else {
         this._isAvailable = false;
       }

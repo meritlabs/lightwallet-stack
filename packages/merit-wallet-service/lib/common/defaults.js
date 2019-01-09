@@ -25,31 +25,36 @@ Defaults.MAX_MAIN_ADDRESS_GAP = 200;
 // TODO: should allow different gap sizes for external/internal chains
 Defaults.SCAN_ADDRESS_GAP = Defaults.MAX_MAIN_ADDRESS_GAP + 20;
 
-Defaults.FEE_LEVELS = [{
-  name: 'urgent',
-  nbBlocks: 2,
-  multiplier: 1.5,
-  defaultValue: 150000,
-}, {
-  name: 'priority',
-  nbBlocks: 2,
-  defaultValue: 100000
-}, {
-  name: 'normal',
-  nbBlocks: 3,
-  defaultValue: 80000
-}, {
-  name: 'economy',
-  nbBlocks: 6,
-  defaultValue: 50000
-}, {
-  name: 'superEconomy',
-  nbBlocks: 24,
-  defaultValue: 20000
-}];
+Defaults.FEE_LEVELS = [
+  {
+    name: 'urgent',
+    nbBlocks: 2,
+    multiplier: 1.5,
+    defaultValue: 150000,
+  },
+  {
+    name: 'priority',
+    nbBlocks: 2,
+    defaultValue: 100000,
+  },
+  {
+    name: 'normal',
+    nbBlocks: 3,
+    defaultValue: 80000,
+  },
+  {
+    name: 'economy',
+    nbBlocks: 6,
+    defaultValue: 50000,
+  },
+  {
+    name: 'superEconomy',
+    nbBlocks: 24,
+    defaultValue: 20000,
+  },
+];
 
-
-Defaults.EASYRECEIVE_FEE = 20000*1; //super economy * avg easyreceive fee size TODO: calculate tx size
+Defaults.EASYRECEIVE_FEE = 20000 * 1; //super economy * avg easyreceive fee size TODO: calculate tx size
 
 Defaults.DEFAULT_FEE_PER_KB = Defaults.FEE_LEVELS[1].defaultValue;
 
@@ -92,7 +97,6 @@ Defaults.HISTORY_CACHE_ADDRESS_THRESOLD = 100;
 // Cache time for blockchain height (in seconds)
 Defaults.BLOCKHEIGHT_CACHE_TIME = 10 * 60;
 
-
 // Max allowed timespan for notification queries in seconds
 Defaults.MAX_NOTIFICATIONS_TIMESPAN = 60 * 60 * 24 * 14; // ~ 2 weeks
 Defaults.NOTIFICATIONS_TIMESPAN = 60;
@@ -105,7 +109,7 @@ Defaults.RateLimit = {
     delayAfter: 10, // begin slowing down responses after the 3rd request
     delayMs: 3000, // slow down subsequent responses by 3 seconds per request
     max: 20, // start blocking after 20 request
-    message: "Too many wallets created from this IP, please try again after an hour"
+    message: 'Too many wallets created from this IP, please try again after an hour',
   },
   // otherPosts: {
   //   windowMs: 60 * 60 * 1000, // 1 hour window
@@ -116,6 +120,6 @@ Defaults.RateLimit = {
 Defaults.adjustableMaxFee = function(value) {
   const percents = value * Defaults.MAX_TX_FEE_PERCENT;
   return percents > Defaults.MAX_TX_FEE ? percents : Defaults.MAX_TX_FEE;
-}
+};
 
 module.exports = Defaults;

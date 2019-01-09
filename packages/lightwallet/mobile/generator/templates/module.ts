@@ -3,11 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { $$componentName$$ } from './$$fileName$$';
 
 @NgModule({
-  declarations: [
-    $$componentName$$,
-  ],
-  imports: [
-    IonicPageModule.forChild($$componentName$$),
-  ],
+  declarations: [$$componentName$$],
+  imports: [IonicPageModule.forChild($$componentName$$)],
 })
 export class $$moduleName$$Module {}

@@ -24,7 +24,7 @@ function findConfig(cwd) {
   console.log(directory);
   return {
     path: directory,
-    config: require(path.resolve(directory, 'merit-node.json'))
+    config: require(path.resolve(directory, 'merit-node.json')),
   };
 }
 

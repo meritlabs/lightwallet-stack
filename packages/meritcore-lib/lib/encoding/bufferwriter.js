@@ -4,12 +4,9 @@ var bufferUtil = require('../util/buffer');
 var assert = require('assert');
 
 var BufferWriter = function BufferWriter(obj) {
-  if (!(this instanceof BufferWriter))
-    return new BufferWriter(obj);
-  if (obj)
-    this.set(obj);
-  else
-    this.bufs = [];
+  if (!(this instanceof BufferWriter)) return new BufferWriter(obj);
+  if (obj) this.set(obj);
+  else this.bufs = [];
 };
 
 BufferWriter.prototype.set = function(obj) {
@@ -86,13 +83,13 @@ BufferWriter.prototype.writeUInt32LE = function(n) {
 };
 
 BufferWriter.prototype.writeUInt64BEBN = function(bn) {
-  var buf = bn.toBuffer({size: 8});
+  var buf = bn.toBuffer({ size: 8 });
   this.write(buf);
   return this;
 };
 
 BufferWriter.prototype.writeUInt64LEBN = function(bn) {
-  var buf = bn.toBuffer({size: 8});
+  var buf = bn.toBuffer({ size: 8 });
   this.writeReverse(buf);
   return this;
 };

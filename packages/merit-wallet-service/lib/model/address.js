@@ -6,7 +6,7 @@ var _ = require('lodash');
 var meritcore = require('meritcore-lib');
 var Constants = require('../common/constants');
 
-function Address() {};
+function Address() {}
 
 Address.create = function(opts) {
   opts = opts || {};
@@ -81,12 +81,13 @@ Address._deriveAddress = function(scriptType, publicKeyRing, path, m, network) {
 
 Address.derive = function(walletId, scriptType, publicKeyRing, path, m, network, isChange) {
   var raw = Address._deriveAddress(scriptType, publicKeyRing, path, m, network);
-  return Address.create(_.extend(raw, {
-    walletId: walletId,
-    type: scriptType,
-    isChange: isChange
-  }));
+  return Address.create(
+    _.extend(raw, {
+      walletId: walletId,
+      type: scriptType,
+      isChange: isChange,
+    }),
+  );
 };
-
 
 module.exports = Address;

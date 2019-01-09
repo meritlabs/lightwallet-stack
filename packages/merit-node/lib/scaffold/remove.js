@@ -22,10 +22,7 @@ function removeConfig(configFilePath, service, done) {
       return done(err);
     }
     var config = JSON.parse(data);
-    $.checkState(
-      Array.isArray(config.services),
-      'Configuration file is expected to have a services array.'
-    );
+    $.checkState(Array.isArray(config.services), 'Configuration file is expected to have a services array.');
     // remove the service from the configuration
     for (var i = 0; i < config.services.length; i++) {
       if (config.services[i] === service) {
@@ -50,7 +47,7 @@ function uninstallService(configDir, service, done) {
   $.checkArgument(utils.isAbsolutePath(configDir), 'An absolute path is expected');
   $.checkArgument(_.isString(service), 'A string is expected for the service argument');
 
-  var child = spawn('npm', ['uninstall', service, '--save'], {cwd: configDir});
+  var child = spawn('npm', ['uninstall', service, '--save'], { cwd: configDir });
 
   child.stdout.on('data', function(data) {
     process.stdout.write(data);
@@ -91,10 +88,7 @@ function removeService(configDir, service, done) {
 function remove(options, done) {
   $.checkArgument(_.isObject(options));
   $.checkArgument(_.isFunction(done));
-  $.checkArgument(
-    _.isString(options.path) && utils.isAbsolutePath(options.path),
-    'An absolute path is expected'
-  );
+  $.checkArgument(_.isString(options.path) && utils.isAbsolutePath(options.path), 'An absolute path is expected');
   $.checkArgument(Array.isArray(options.services));
 
   var configPath = options.path;
@@ -104,9 +98,7 @@ function remove(options, done) {
   var packagePath = path.resolve(configPath, 'package.json');
 
   if (!fs.existsSync(meritcoreConfigPath) || !fs.existsSync(packagePath)) {
-    return done(
-      new Error('Directory does not have a merit-node.json and/or package.json file.')
-    );
+    return done(new Error('Directory does not have a merit-node.json and/or package.json file.'));
   }
 
   async.eachSeries(
@@ -120,7 +112,8 @@ function remove(options, done) {
         // remove service to merit-node.json
         removeConfig(meritcoreConfigPath, service, next);
       });
-    }, done
+    },
+    done,
   );
 }
 

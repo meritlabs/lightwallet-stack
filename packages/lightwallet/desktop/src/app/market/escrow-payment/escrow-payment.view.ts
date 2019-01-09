@@ -11,7 +11,7 @@ import { PasswordPromptController } from '@merit/desktop/app/components/password
 @Component({
   selector: 'view-escrow-payment',
   templateUrl: './escrow-payment.view.html',
-  styleUrls: ['./escrow-payment.view.sass']
+  styleUrls: ['./escrow-payment.view.sass'],
 })
 export class EscrowPaymentView implements OnInit {
   error: string;
@@ -52,14 +52,16 @@ export class EscrowPaymentView implements OnInit {
     this.feeCalculated = false;
 
     const opts = {
-      outputs: [{
-        amount: this.amount,
-        toAddress: this.sendTo,
-      },
-      {
-        script: Script.buildDataOut(`MeritMarket:${this.entitiesType}:${this.entitiesIds}`).toHex(),
-        amount: 0
-      }],
+      outputs: [
+        {
+          amount: this.amount,
+          toAddress: this.sendTo,
+        },
+        {
+          script: Script.buildDataOut(`MeritMarket:${this.entitiesType}:${this.entitiesIds}`).toHex(),
+          amount: 0,
+        },
+      ],
       validateOutputs: false,
     };
 
@@ -112,8 +114,8 @@ export class EscrowPaymentView implements OnInit {
       this.success = true;
 
       const message = JSON.stringify({
-        message: "Lightwallet.Market.SendToEscrow",
-        data: { ok: true, txid: this.txp.txid }
+        message: 'Lightwallet.Market.SendToEscrow',
+        data: { ok: true, txid: this.txp.txid },
       });
       window.opener.postMessage(message, ENV.marketUrl);
     } catch (e) {
@@ -123,8 +125,8 @@ export class EscrowPaymentView implements OnInit {
 
   cancel() {
     const message = JSON.stringify({
-      message: "Lightwallet.Market.SendToEscrow",
-      data: { ok: false }
+      message: 'Lightwallet.Market.SendToEscrow',
+      data: { ok: false },
     });
     window.opener.postMessage(message, ENV.marketUrl);
   }

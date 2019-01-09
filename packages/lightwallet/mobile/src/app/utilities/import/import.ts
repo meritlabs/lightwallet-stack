@@ -13,14 +13,15 @@ import { AddressScannerService } from '@merit/mobile/app/utilities/import/addres
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
 
 @IonicPage({
-  defaultHistory: ['OnboardingView']
+  defaultHistory: ['OnboardingView'],
 })
 @Component({
   selector: 'view-import',
   templateUrl: 'import.html',
 })
 export class ImportView {
-  @ViewChild('fileInput') input: ElementRef;
+  @ViewChild('fileInput')
+  input: ElementRef;
 
   segment = 'phrase';
   formData = {
@@ -32,7 +33,7 @@ export class ImportView {
     backupFileBlob: '',
     filePassword: '',
     network: '',
-    hasPassphrase: false
+    hasPassphrase: false,
   };
 
   loadFileInProgress = false;
@@ -47,13 +48,11 @@ export class ImportView {
     private mnemonicService: MnemonicService,
     private addressScanner: AddressScannerService,
     private pushNotificationsService: PushNotificationsService,
-    private walletService: WalletService
+    private walletService: WalletService,
   ) {
     this.formData.network = ENV.network;
     this.formData.derivationPath =
-      this.formData.network == 'livenet' ?
-        DerivationPath.getDefault() :
-        DerivationPath.getDefaultTestnet();
+      this.formData.network == 'livenet' ? DerivationPath.getDefault() : DerivationPath.getDefaultTestnet();
 
     this.sjcl = this.mwcService.getSJCL();
   }
@@ -80,7 +79,8 @@ export class ImportView {
     const reader: any = new FileReader();
     this.loadFileInProgress = true;
     reader.onloadend = (loadEvent: any) => {
-      if (loadEvent.target.readyState == 2) { //DONE  == 2
+      if (loadEvent.target.readyState == 2) {
+        //DONE  == 2
         this.loadFileInProgress = false;
         this.formData.backupFileBlob = loadEvent.target.result;
       }
@@ -88,7 +88,6 @@ export class ImportView {
 
     reader.readAsText($event.target.files[0]);
   }
-
 
   async importMnemonic() {
     const loader = this.loadingCtrl.create({ content: 'Importing wallet' });
@@ -103,7 +102,7 @@ export class ImportView {
       const opts: any = {
         account: pathData.account,
         networkName: pathData.networkName,
-        derivationStrategy: pathData.derivationStrategy
+        derivationStrategy: pathData.derivationStrategy,
       };
 
       let wallet;
@@ -142,7 +141,6 @@ export class ImportView {
     try {
       decrypted = this.sjcl.decrypt(this.formData.filePassword, this.formData.backupFileBlob);
     } catch (e) {
-
       this.logger.warn(e);
       return this.toastCtrl.error('Could not decrypt file, check your password');
     }
@@ -173,9 +171,7 @@ export class ImportView {
   }
 
   fileImportAllowed() {
-    return (
-      !this.loadFileInProgress && this.formData.backupFileBlob && this.formData.filePassword
-    );
+    return !this.loadFileInProgress && this.formData.backupFileBlob && this.formData.filePassword;
   }
 
   private async processCreatedWallet(wallet: MeritWalletClient, loader?: Loading) {

@@ -24,10 +24,9 @@ declare const WEBPACK_CONFIG: any;
 @Component({
   selector: 'view-settings-preferences',
   templateUrl: './settings-preferences.view.html',
-  styleUrls: ['./settings-preferences.view.sass']
+  styleUrls: ['./settings-preferences.view.sass'],
 })
 export class SettingsPreferencesView implements OnInit, OnDestroy {
-
   get isElectron(): boolean {
     return ElectronService.isElectronAvailable;
   }
@@ -42,20 +41,22 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     this.smsNotificationsService,
     this.formBuilder,
     this.toastCtrl,
-    'desktop'
+    'desktop',
   );
 
-  constructor(private formBuilder: FormBuilder,
-              private state: State<IRootAppState>,
-              private persistenceService: PersistenceService2,
-              private emailNotificationsService: EmailNotificationsService,
-              private pushNotificationsService: PushNotificationsService,
-              private toastCtrl: ToastControllerService,
-              private confirmDialogCtrl: ConfirmDialogControllerService,
-              private passwordPromptCtrl: PasswordPromptController,
-              private profileService: ProfileService,
-              private store: Store<IRootAppState>,
-              private smsNotificationsService: SmsNotificationsService) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private state: State<IRootAppState>,
+    private persistenceService: PersistenceService2,
+    private emailNotificationsService: EmailNotificationsService,
+    private pushNotificationsService: PushNotificationsService,
+    private toastCtrl: ToastControllerService,
+    private confirmDialogCtrl: ConfirmDialogControllerService,
+    private passwordPromptCtrl: PasswordPromptController,
+    private profileService: ProfileService,
+    private store: Store<IRootAppState>,
+    private smsNotificationsService: SmsNotificationsService,
+  ) {
     if (typeof WEBPACK_CONFIG !== 'undefined') {
       this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
       this.version = WEBPACK_CONFIG.VERSION;
@@ -80,12 +81,12 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
         {
           text: 'Delete',
           value: 'delete',
-          class: 'primary danger'
+          class: 'primary danger',
         },
         {
-          text: 'Cancel'
-        }
-      ]
+          text: 'Cancel',
+        },
+      ],
     );
 
     dialog.onDidDismiss(async (value: string) => {
@@ -111,7 +112,7 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
               await this.persistenceService.resetUserSettings();
               this.store.dispatch(new SetPrimaryWalletAction(null));
               this.store.dispatch(new DeleteWalletAction(wallet.id));
-            })
+            }),
           );
 
           this.toastCtrl.success('All wallets are now deleted!');

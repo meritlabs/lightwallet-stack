@@ -16,7 +16,7 @@ export interface IConfirmDialogOptions {
 @Component({
   selector: 'confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
-  styleUrls: ['./confirm-dialog.component.sass']
+  styleUrls: ['./confirm-dialog.component.sass'],
 })
 export class ConfirmDialogComponent implements IDynamicComponent {
   buttons: any[];

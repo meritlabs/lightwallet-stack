@@ -66,11 +66,12 @@ function Address(data, network, type) {
     throw new TypeError('Second argument must be "livenet" or "testnet".');
   }
 
-  if (type &&
-      (type !== Address.PayToPublicKeyHash &&
-       type !== Address.PayToScriptHash &&
-       type !== Address.ParameterizedPayToScriptHash)) {
-
+  if (
+    type &&
+    (type !== Address.PayToPublicKeyHash &&
+      type !== Address.PayToScriptHash &&
+      type !== Address.ParameterizedPayToScriptHash)
+  ) {
     throw new TypeError('Third argument must be "pubkeyhash", "scripthash", or "paramscripthash".');
   }
 
@@ -83,7 +84,7 @@ function Address(data, network, type) {
   JSUtil.defineImmutable(this, {
     hashBuffer: info.hashBuffer,
     network: info.network,
-    type: info.type
+    type: info.type,
   });
 
   return this;
@@ -107,7 +108,7 @@ Address.prototype._classifyArguments = function(data, network, type) {
     return Address._transformPublicKey(data);
   } else if (data instanceof Script) {
     return Address._transformScript(data, network);
-  } else if (typeof(data) === 'string') {
+  } else if (typeof data === 'string') {
     return Address._transformString(data, network, type);
   } else if (_.isObject(data)) {
     return Address._transformObject(data);
@@ -167,7 +168,7 @@ Address._transformObject = function(data) {
   return {
     hashBuffer: data.hash ? new Buffer(data.hash, 'hex') : data.hashBuffer,
     network: Networks.get(data.network) || Networks.defaultNetwork,
-    type: data.type
+    type: data.type,
   };
 };
 
@@ -238,7 +239,10 @@ Address._transformBuffer = function(buffer, network, type) {
     throw new TypeError('Address has mismatched network type.');
   }
 
-  if (!bufferVersion.type || (type && (type !== bufferVersion.type && Address.AddressTypes[type] !== bufferVersion.type))) {
+  if (
+    !bufferVersion.type ||
+    (type && (type !== bufferVersion.type && Address.AddressTypes[type] !== bufferVersion.type))
+  ) {
     throw new TypeError('Address has mismatched type.');
   }
 
@@ -308,7 +312,7 @@ Address.createMultisig = function(publicKeys, threshold, network) {
  * @private
  */
 Address._transformString = function(data, network, type) {
-  if (typeof(data) !== 'string') {
+  if (typeof data !== 'string') {
     throw new TypeError('data parameter supplied is not a string.');
   }
   data = data.trim();
@@ -399,7 +403,6 @@ Address.fromScript = function(script, network) {
  * @returns {Address} A new valid and frozen instance of an Address
  */
 Address.fromBuffer = function(buffer, network, type) {
-
   var info = Address._transformBuffer(buffer, network, type);
   return new Address(info.hashBuffer, info.network, info.type);
 };
@@ -424,10 +427,7 @@ Address.fromString = function(str, network, type) {
  * @returns {Address} A new valid instance of an Address
  */
 Address.fromObject = function fromObject(obj) {
-  $.checkState(
-    JSUtil.isHexa(obj.hash),
-    'Unexpected hash property, "' + obj.hash + '", expected to be hex.'
-  );
+  $.checkState(JSUtil.isHexa(obj.hash), 'Unexpected hash property, "' + obj.hash + '", expected to be hex.');
   var hashBuffer = new Buffer(obj.hash, 'hex');
   return new Address(hashBuffer, obj.network, obj.type);
 };
@@ -516,7 +516,7 @@ Address.prototype.toBuffer = function() {
  */
 Address.prototype.toBufferLean = function() {
   return this.hashBuffer;
-}
+};
 
 /**
  * @returns {Object} A plain object with the address information
@@ -525,7 +525,7 @@ Address.prototype.toObject = Address.prototype.toJSON = function toObject() {
   return {
     hash: this.hashBuffer.toString('hex'),
     type: this.type,
-    network: this.network.toString()
+    network: this.network.toString(),
   };
 };
 

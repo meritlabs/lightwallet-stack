@@ -44,8 +44,7 @@ Object.defineProperty(Output.prototype, 'script', {
       this.setScriptFromBuffer(this._scriptBuffer);
       return this._script;
     }
-
-  }
+  },
 });
 
 Object.defineProperty(Output.prototype, 'micros', {
@@ -62,18 +61,12 @@ Object.defineProperty(Output.prototype, 'micros', {
       this._micros = parseInt(num);
       this._microsBN = BN.fromNumber(this._micros);
     } else {
-      $.checkArgument(
-        JSUtil.isNaturalNumber(num),
-        'Output micros is not a natural number'
-      );
+      $.checkArgument(JSUtil.isNaturalNumber(num), 'Output micros is not a natural number');
       this._microsBN = BN.fromNumber(num);
       this._micros = num;
     }
-    $.checkState(
-      JSUtil.isNaturalNumber(this._micros),
-      'Output micros is not a natural number'
-    );
-  }
+    $.checkState(JSUtil.isNaturalNumber(this._micros), 'Output micros is not a natural number');
+  },
 });
 
 Output.prototype.invalidMicros = function() {
@@ -91,7 +84,7 @@ Output.prototype.invalidMicros = function() {
 
 Output.prototype.toObject = Output.prototype.toJSON = function toObject() {
   var obj = {
-    micros: this.micros
+    micros: this.micros,
   };
   obj.script = this._scriptBuffer.toString('hex');
   return obj;
@@ -106,7 +99,7 @@ Output.prototype.setScriptFromBuffer = function(buffer) {
   try {
     this._script = Script.fromBuffer(this._scriptBuffer);
     this._script._isOutput = true;
-  } catch(e) {
+  } catch (e) {
     if (e instanceof errors.Script.InvalidBuffer) {
       this._script = null;
     } else {

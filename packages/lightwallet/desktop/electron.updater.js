@@ -24,10 +24,10 @@ const checkForUpdates = async () => {
       const file = res.updateInfo.files[0];
 
       return {
-        size: file.size? (Math.round(file.size / 1024 / 1024 * 100) / 100) + 'MB' : 'Unknown',
+        size: file.size ? Math.round((file.size / 1024 / 1024) * 100) / 100 + 'MB' : 'Unknown',
         releaseDate: res.updateInfo.releaseDate,
         releaseNotes: res.updateInfo.releaseNotes,
-        version: res.updateInfo.version
+        version: res.updateInfo.version,
       };
     }
   } catch (err) {
@@ -38,7 +38,7 @@ const checkForUpdates = async () => {
 const downloadUpdate = async progressCallback => {
   autoUpdater.on('download-progress', progressCallback);
   try {
-    await autoUpdater.downloadUpdate()
+    await autoUpdater.downloadUpdate();
   } catch (err) {
     log.error('Error downloading update', err);
   }
@@ -49,5 +49,5 @@ const installUpdate = () => autoUpdater.quitAndInstall(false, true);
 module.exports = {
   checkForUpdates,
   downloadUpdate,
-  installUpdate
+  installUpdate,
 };

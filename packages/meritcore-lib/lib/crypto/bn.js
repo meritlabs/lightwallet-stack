@@ -63,7 +63,6 @@ BN.fromSM = function(buf, opts) {
   return ret;
 };
 
-
 BN.prototype.toNumber = function() {
   return parseInt(this.toString(10), 10);
 };
@@ -110,7 +109,7 @@ BN.prototype.toSMBigEndian = function() {
     }
   }
 
-  if (buf.length === 1 & buf[0] === 0) {
+  if ((buf.length === 1) & (buf[0] === 0)) {
     buf = new Buffer([]);
   }
   return buf;
@@ -156,7 +155,7 @@ BN.fromScriptNumBuffer = function(buf, fRequireMinimal, size) {
     }
   }
   return BN.fromSM(buf, {
-    endian: 'little'
+    endian: 'little',
   });
 };
 
@@ -168,7 +167,7 @@ BN.fromScriptNumBuffer = function(buf, fRequireMinimal, size) {
  */
 BN.prototype.toScriptNumBuffer = function() {
   return this.toSM({
-    endian: 'little'
+    endian: 'little',
   });
 };
 

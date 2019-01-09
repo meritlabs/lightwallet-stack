@@ -3,7 +3,7 @@ var Uuid = require('uuid');
 
 var Defaults = require('../common/defaults');
 
-function Session() {};
+function Session() {}
 
 Session.create = function(opts) {
   opts = opts || {};
@@ -41,7 +41,7 @@ Session.prototype.toObject = function() {
 
 Session.prototype.isValid = function() {
   var now = Math.floor(Date.now() / 1000);
-  return (now - this.updatedOn) <= Defaults.SESSION_EXPIRATION;
+  return now - this.updatedOn <= Defaults.SESSION_EXPIRATION;
 };
 
 Session.prototype.touch = function() {

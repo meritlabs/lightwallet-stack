@@ -3,10 +3,7 @@ import { browser, by, ElementFinder } from 'protractor';
 import { EC } from './app.e2e-spec';
 
 describe('[Mobile] Community', () => {
-
-  let transact: Transact,
-    communityViewEl: ElementFinder,
-    headerEl: ElementFinder;
+  let transact: Transact, communityViewEl: ElementFinder, headerEl: ElementFinder;
 
   beforeAll(async () => {
     transact = new Transact();

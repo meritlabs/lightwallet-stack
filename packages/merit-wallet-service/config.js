@@ -81,9 +81,11 @@ var config = {
   //    testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
   //  },
   //},
-  mailer: sgTransport({ auth: {
-    api_key: '',
-  }}),
+  mailer: sgTransport({
+    auth: {
+      api_key: '',
+    },
+  }),
   emailOpts: {
     subjectPrefix: '[Merit]',
     from: 'support@merit.me',
@@ -92,11 +94,11 @@ var config = {
     publicTxUrlTemplate: {
       livenet: 'https://insight.bitpay.com/tx/{{txid}}',
       testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
-    }
+    },
   },
   meritMessagingUrl: process.env.MERIT_MESSAGING_URL || 'http://localhost:8300',
   smsOpts: {
-    enabled: process.env.SMS_ENABLED
-  }
+    enabled: process.env.SMS_ENABLED,
+  },
 };
 module.exports = config;

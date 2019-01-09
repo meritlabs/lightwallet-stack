@@ -29,8 +29,10 @@ interface IRankInfo {
 export class ProfileStatsComponent {
   private _wallets: DisplayWallet[];
 
-  @Input() totals: any;
-  @Input() loading: boolean;
+  @Input()
+  totals: any;
+  @Input()
+  loading: boolean;
 
   @Input()
   set wallets(val: DisplayWallet[]) {
@@ -81,7 +83,9 @@ export class ProfileStatsComponent {
       }
     });
 
-    const topRankWallet: DisplayWallet = this.wallets.find((wallet: DisplayWallet) => wallet.referrerAddress === topRank.address);
+    const topRankWallet: DisplayWallet = this.wallets.find(
+      (wallet: DisplayWallet) => wallet.referrerAddress === topRank.address,
+    );
 
     this.rankData = {
       unlocked: true,
@@ -95,12 +99,11 @@ export class ProfileStatsComponent {
     this.displayLeaderboard = this.leaderboard.slice(this.offset, this.LIMIT);
   }
 
-
   // TODO: move this function to a utils file
   private getPercentileStr(rankData: IRankInfo) {
     const percentile = Number(rankData.percentile);
 
-    return (percentile > 20)
+    return percentile > 20
       ? 'Top ' + Math.max(Math.round(100 - percentile), 1) + '%'
       : 'Bottom ' + Math.max(Math.round(percentile), 1) + '%';
   }

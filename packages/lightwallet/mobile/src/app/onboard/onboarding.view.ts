@@ -2,11 +2,10 @@ import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 
 @IonicPage({
-  segment: 'onboarding'
+  segment: 'onboarding',
 })
 @Component({
   selector: 'view-onboarding',
   templateUrl: 'onboarding.html',
 })
-export class OnboardingView {
-}
+export class OnboardingView {}

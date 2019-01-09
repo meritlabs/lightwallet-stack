@@ -17,10 +17,7 @@ function BlockMessage(arg, options) {
   Message.call(this, options);
   this.Block = options.Block;
   this.command = 'block';
-  $.checkArgument(
-    _.isUndefined(arg) || arg instanceof this.Block,
-    'An instance of Block or undefined is expected'
-  );
+  $.checkArgument(_.isUndefined(arg) || arg instanceof this.Block, 'An instance of Block or undefined is expected');
   this.block = arg;
 }
 inherits(BlockMessage, Message);

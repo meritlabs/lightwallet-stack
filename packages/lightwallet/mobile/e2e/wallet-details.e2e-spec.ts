@@ -3,15 +3,16 @@ import { EC, TEST_WALLET_ALIAS, TEST_WALLET_NAME } from './app.e2e-spec';
 import { Transact } from './transact.po';
 
 describe('[Mobile] Wallet details', () => {
-
-  let transact: Transact,
-    rootEl;
+  let transact: Transact, rootEl;
 
   beforeAll(async () => {
     transact = new Transact();
     transact.selectTab(0);
     browser.wait(EC.visibilityOf(transact.getRootEl()));
-    await transact.getRootEl().element(by.css('ion-list.wallets button[ion-item]')).click();
+    await transact
+      .getRootEl()
+      .element(by.css('ion-list.wallets button[ion-item]'))
+      .click();
     rootEl = element(by.css('wallet-details-view'));
     browser.wait(EC.visibilityOf(rootEl), 3000, 'Element was not visible in 3s');
   });
@@ -59,6 +60,4 @@ describe('[Mobile] Wallet details', () => {
       expect(el.isEnabled()).toBeTruthy();
     });
   });
-
-
 });

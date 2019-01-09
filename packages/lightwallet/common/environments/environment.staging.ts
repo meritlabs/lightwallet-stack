@@ -13,6 +13,6 @@ export const ENV = {
   fbSDK: {
     appId: '335944163815670',
     status: true,
-    version: 'v2.7'
-  }
+    version: 'v2.7',
+  },
 };

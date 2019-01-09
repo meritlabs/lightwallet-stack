@@ -35,7 +35,7 @@ Inventory.forItem = function(type, hash) {
     hash = new Buffer(hash, 'hex');
     hash = BufferUtil.reverse(hash);
   }
-  return new Inventory({type: type, hash: hash});
+  return new Inventory({ type: type, hash: hash });
 };
 
 /**
@@ -111,11 +111,6 @@ Inventory.TYPE.ERROR = 0;
 Inventory.TYPE.TX = 1;
 Inventory.TYPE.BLOCK = 2;
 Inventory.TYPE.FILTERED_BLOCK = 3;
-Inventory.TYPE_NAME = [
-  'ERROR',
-  'TX',
-  'BLOCK',
-  'FILTERED_BLOCK'
-];
+Inventory.TYPE_NAME = ['ERROR', 'TX', 'BLOCK', 'FILTERED_BLOCK'];
 
 module.exports = Inventory;

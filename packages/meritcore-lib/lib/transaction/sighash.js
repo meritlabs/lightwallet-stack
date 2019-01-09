@@ -45,9 +45,7 @@ var sighash = function sighash(transaction, sighashType, inputNumber, subscript)
 
   txcopy.inputs[inputNumber] = new Input(txcopy.inputs[inputNumber]).setScript(subscript);
 
-  if ((sighashType & 31) === Signature.SIGHASH_NONE ||
-    (sighashType & 31) === Signature.SIGHASH_SINGLE) {
-
+  if ((sighashType & 31) === Signature.SIGHASH_NONE || (sighashType & 31) === Signature.SIGHASH_SINGLE) {
     // clear all sequenceNumbers
     for (i = 0; i < txcopy.inputs.length; i++) {
       if (i !== inputNumber) {
@@ -58,7 +56,6 @@ var sighash = function sighash(transaction, sighashType, inputNumber, subscript)
 
   if ((sighashType & 31) === Signature.SIGHASH_NONE) {
     txcopy.outputs = [];
-
   } else if ((sighashType & 31) === Signature.SIGHASH_SINGLE) {
     // The SIGHASH_SINGLE bug.
     // https://bitcointalk.org/index.php?topic=260595.0
@@ -71,7 +68,7 @@ var sighash = function sighash(transaction, sighashType, inputNumber, subscript)
     for (i = 0; i < inputNumber; i++) {
       txcopy.outputs[i] = new Output({
         micros: BN.fromBuffer(new buffer.Buffer(BITS_64_ON, 'hex')),
-        script: Script.empty()
+        script: Script.empty(),
       });
     }
   }
@@ -103,7 +100,7 @@ var sighash = function sighash(transaction, sighashType, inputNumber, subscript)
 function sign(transaction, privateKey, sighashType, inputIndex, subscript) {
   var hashbuf = sighash(transaction, sighashType, inputIndex, subscript);
   var sig = ECDSA.sign(hashbuf, privateKey, 'little').set({
-    nhashtype: sighashType
+    nhashtype: sighashType,
   });
   return sig;
 }
@@ -132,5 +129,5 @@ function verify(transaction, signature, publicKey, inputIndex, subscript) {
 module.exports = {
   sighash: sighash,
   sign: sign,
-  verify: verify
+  verify: verify,
 };

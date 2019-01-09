@@ -86,6 +86,4 @@ Service.prototype.getRoutePrefix = function() {
   return this.name;
 };
 
-
-
 module.exports = Service;

@@ -6,7 +6,6 @@ const MAX_DRAG_ANGLE = 40;
 const DRAG_THRESHOLD = 20;
 
 export class PanGesture {
-
   onMove: (delta: number) => void;
 
   onEnd: () => void;
@@ -25,18 +24,14 @@ export class PanGesture {
 
   private listeners: Function[] = [];
 
-  constructor(
-    private plt: Platform,
-    private el: HTMLElement,
-    private rnd: Renderer2
-  ) {
+  constructor(private plt: Platform, private el: HTMLElement, private rnd: Renderer2) {
     this.listeners.push(
       rnd.listen(el, 'mousedown', this._onStart.bind(this)),
       rnd.listen(el, 'touchstart', this._onStart.bind(this)),
       rnd.listen(el, 'touchmove', this._onMove.bind(this)),
       rnd.listen(el, 'mousemove', this._onMove.bind(this)),
       rnd.listen(el, 'touchend', this._onEnd.bind(this)),
-      rnd.listen(el, 'mouseup', this._onEnd.bind(this))
+      rnd.listen(el, 'mouseup', this._onEnd.bind(this)),
     );
   }
 
@@ -60,7 +55,6 @@ export class PanGesture {
 
     this.initialCoords = coords;
     this.lastPosX = coords.x;
-
   }
 
   private _onMove(ev: TouchEvent | MouseEvent) {
@@ -70,18 +64,14 @@ export class PanGesture {
     if (!this.initialCoords) return;
 
     if (!this.isDragging) {
-
       if (typeof this.shouldCapture !== 'boolean')
-      // we haven't decided yet if we want to capture this gesture
+        // we haven't decided yet if we want to capture this gesture
         this.checkGesture(coords);
 
-
       if (this.shouldCapture === true)
-      // gesture is good, let's capture all next onTouchMove events
+        // gesture is good, let's capture all next onTouchMove events
         this.isDragging = true;
-      else
-        return;
-
+      else return;
     }
 
     // stop anything else from capturing these events, to make sure the content doesn't slide
@@ -96,7 +86,6 @@ export class PanGesture {
 
     // update last X value
     this.lastPosX = coords.x;
-
   }
 
   private _onEnd(ev: TouchEvent | MouseEvent) {
@@ -109,7 +98,6 @@ export class PanGesture {
 
     this.isDragging = false;
     this.shouldCapture = undefined;
-
   }
 
   private checkGesture(newCoords: PointerCoordinates) {
@@ -128,5 +116,4 @@ export class PanGesture {
       this.shouldCapture = Math.abs(cosine) > maxCosine;
     }
   }
-
 }

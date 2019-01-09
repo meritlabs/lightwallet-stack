@@ -21,7 +21,7 @@ export enum UserSettingsKey {
   GetStartedTips = 'get_started_tips',
   recordPassphrase = 'record_passphrase',
   primaryWalletID = 'primary_wallet_id',
-  SmsNotificationsPrompt = 'sms_notifications_prompt'
+  SmsNotificationsPrompt = 'sms_notifications_prompt',
 }
 
 export interface INotificationSettings {
@@ -37,7 +37,7 @@ const DEFAULT_NOTIFICATION_SETTINGS: INotificationSettings = {
   emailNotifications: false,
   pushNotifications: true,
   smsNotifications: false,
-  phoneNumber: ''
+  phoneNumber: '',
 };
 
 /**
@@ -45,7 +45,7 @@ const DEFAULT_NOTIFICATION_SETTINGS: INotificationSettings = {
  */
 @Injectable()
 export class PersistenceService2 {
-  constructor(private storage: Storage) { }
+  constructor(private storage: Storage) {}
 
   /**
    * Use this method to set a generic value that doesn't require it's own function
@@ -76,8 +76,8 @@ export class PersistenceService2 {
 
   async setNotificationSettings(settings: Partial<INotificationSettings>) {
     return this.storage.set(StorageKey.NotificationSettings, {
-      ...await this.getNotificationSettings(),
-      ...settings
+      ...(await this.getNotificationSettings()),
+      ...settings,
     });
   }
 
@@ -85,7 +85,7 @@ export class PersistenceService2 {
     const settings = (await this.storage.get(StorageKey.NotificationSettings)) || {};
     return {
       ...DEFAULT_NOTIFICATION_SETTINGS,
-      ...settings
+      ...settings,
     };
   }
 
@@ -113,7 +113,7 @@ export class PersistenceService2 {
       await this.setEasySends(easySends);
       return true;
     } else {
-      console.error('Couldn\'t find EasySend to cancel', scriptAddress);
+      console.error("Couldn't find EasySend to cancel", scriptAddress);
       return false;
     }
   }

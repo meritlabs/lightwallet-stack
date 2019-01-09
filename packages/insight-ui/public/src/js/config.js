@@ -2,55 +2,56 @@
 
 //Setting up route
 angular.module('insight').config(function($routeProvider) {
-  $routeProvider.
-    when('/block/:blockHash', {
+  $routeProvider
+    .when('/block/:blockHash', {
       templateUrl: 'views/block.html',
-      title: 'Merit Block '
-    }).
-    when('/block-index/:blockHeight', {
+      title: 'Merit Block ',
+    })
+    .when('/block-index/:blockHeight', {
       controller: 'BlocksController',
-      templateUrl: 'views/redirect.html'
-    }).
-    when('/tx/send', {
+      templateUrl: 'views/redirect.html',
+    })
+    .when('/tx/send', {
       templateUrl: 'views/transaction_sendraw.html',
-      title: 'Broadcast Raw Transaction'
-    }).
-    when('/tx/:txId/:v_type?/:v_index?', {
+      title: 'Broadcast Raw Transaction',
+    })
+    .when('/tx/:txId/:v_type?/:v_index?', {
       templateUrl: 'views/transaction.html',
-      title: 'Merit Transaction '
-    }).
-    when('/', {
+      title: 'Merit Transaction ',
+    })
+    .when('/', {
       templateUrl: 'views/index.html',
-      title: 'Home'
-    }).
-    when('/blocks', {
+      title: 'Home',
+    })
+    .when('/blocks', {
       templateUrl: 'views/block_list.html',
-      title: 'Merit Blocks solved Today'
-    }).
-    when('/blocks-date/:blockDate/:startTimestamp?', {
+      title: 'Merit Blocks solved Today',
+    })
+    .when('/blocks-date/:blockDate/:startTimestamp?', {
       templateUrl: 'views/block_list.html',
-      title: 'Merit Blocks solved '
-    }).
-    when('/address/:addrStr', {
+      title: 'Merit Blocks solved ',
+    })
+    .when('/address/:addrStr', {
       templateUrl: 'views/address.html',
-      title: 'Merit Address '
-    }).
-    when('/status', {
+      title: 'Merit Address ',
+    })
+    .when('/status', {
       templateUrl: 'views/status.html',
-      title: 'Status'
-    }).
-    when('/messages/verify', {
+      title: 'Status',
+    })
+    .when('/messages/verify', {
       templateUrl: 'views/messages_verify.html',
-      title: 'Verify Message'
+      title: 'Verify Message',
     })
     .otherwise({
       templateUrl: 'views/404.html',
-      title: 'Error'
+      title: 'Error',
     });
 });
 
 //Setting HTML5 Location Mode
-angular.module('insight')
+angular
+  .module('insight')
   .config(function($locationProvider) {
     $locationProvider.html5Mode(true);
     $locationProvider.hashPrefix('!');

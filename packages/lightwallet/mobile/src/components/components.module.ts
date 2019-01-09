@@ -7,20 +7,8 @@ import { ContactAvatarComponent } from './contact-avatar/contact-avatar';
 import { CommonPipesModule } from '@merit/common/common-pipes.module';
 
 @NgModule({
-	declarations: [
-    TransactionHistoryComponent,
-    SlideToActionComponent,
-    ContactAvatarComponent
-  ],
-	imports: [
-    MomentModule,
-    CommonPipesModule,
-    IonicModule
-  ],
-	exports: [
-    TransactionHistoryComponent,
-    SlideToActionComponent,
-    ContactAvatarComponent
-  ]
+  declarations: [TransactionHistoryComponent, SlideToActionComponent, ContactAvatarComponent],
+  imports: [MomentModule, CommonPipesModule, IonicModule],
+  exports: [TransactionHistoryComponent, SlideToActionComponent, ContactAvatarComponent],
 })
 export class ComponentsModule {}

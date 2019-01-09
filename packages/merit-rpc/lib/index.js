@@ -12,13 +12,13 @@ function RpcClient(opts) {
   this.pass = opts.pass || 'pass';
   this.protocol = opts.protocol === 'http' ? http : https;
   this.batchedCalls = null;
-  this.disableAgent  = opts.disableAgent || false;
+  this.disableAgent = opts.disableAgent || false;
   var queueSize = opts.queue || 16;
 
   var isRejectUnauthorized = typeof opts.rejectUnauthorized !== 'undefined';
   this.rejectUnauthorized = isRejectUnauthorized ? opts.rejectUnauthorized : true;
 
-  if(RpcClient.config.log) {
+  if (RpcClient.config.log) {
     this.log = RpcClient.config.log;
   } else {
     this.log = RpcClient.loggers[RpcClient.config.logger || 'normal'];
@@ -34,13 +34,13 @@ var cl = console.log.bind(console);
 var noop = function() {};
 
 RpcClient.loggers = {
-  none: {info: noop, warn: noop, err: noop, debug: noop},
-  normal: {info: cl, warn: cl, err: cl, debug: noop},
-  debug: {info: cl, warn: cl, err: cl, debug: cl}
+  none: { info: noop, warn: noop, err: noop, debug: noop },
+  normal: { info: cl, warn: cl, err: cl, debug: noop },
+  debug: { info: cl, warn: cl, err: cl, debug: cl },
 };
 
 RpcClient.config = {
-  logger: 'normal' // none, normal, debug
+  logger: 'normal', // none, normal, debug
 };
 
 function rpc(request, callback) {
@@ -68,7 +68,7 @@ function innerRpc(request, callback) {
     method: 'POST',
     port: self.port,
     rejectUnauthorized: self.rejectUnauthorized,
-    agent: self.disableAgent ? false : undefined
+    agent: self.disableAgent ? false : undefined,
   };
 
   if (self.httpOptions) {
@@ -82,14 +82,12 @@ function innerRpc(request, callback) {
   var errorMessage = 'Merit JSON-RPC: ';
 
   var req = this.protocol.request(options, function(res) {
-
     var buf = '';
     res.on('data', function(data) {
       buf += data;
     });
 
     res.on('end', function() {
-
       if (called) {
         return;
       }
@@ -113,7 +111,7 @@ function innerRpc(request, callback) {
       var parsedBuf;
       try {
         parsedBuf = JSON.parse(buf);
-      } catch(e) {
+      } catch (e) {
         self.log.err(e.stack);
         self.log.err(buf);
         self.log.err('HTTP Status code:' + res.statusCode);
@@ -123,7 +121,6 @@ function innerRpc(request, callback) {
       }
 
       callback(parsedBuf.error, parsedBuf);
-
     });
   });
 
@@ -220,7 +217,7 @@ RpcClient.callspec = {
   move: 'str str float int str',
   prioritiseTransaction: 'str float int',
   sendFrom: 'str str float int str str',
-  sendMany: 'str obj int str',  //not sure this is will work
+  sendMany: 'str obj int str', //not sure this is will work
   sendRawTransaction: 'str',
   sendToAddress: 'str float str str',
   setAccount: '',
@@ -245,10 +242,10 @@ RpcClient.callspec = {
   getaddressanv: 'obj',
   sendRawReferral: 'str',
   getRawReferral: 'str int',
-  getaddressmempoolreferrals: "obj",
-  getaddressreferrals: "obj",
+  getaddressmempoolreferrals: 'obj',
+  getaddressreferrals: 'obj',
   getaddressrank: 'obj',
-  getaddressleaderboard: 'obj'
+  getaddressleaderboard: 'obj',
 };
 
 var slice = function(arr, start, end) {
@@ -256,10 +253,8 @@ var slice = function(arr, start, end) {
 };
 
 function generateRPCMethods(constructor, apiCalls, rpc) {
-
   function createRPCMethod(methodName, argMap) {
     return function() {
-
       var limit = arguments.length - 1;
 
       if (this.batchedCalls) {
@@ -267,7 +262,7 @@ function generateRPCMethods(constructor, apiCalls, rpc) {
       }
 
       for (var i = 0; i < limit; i++) {
-        if(argMap[i]) {
+        if (argMap[i]) {
           arguments[i] = argMap[i](arguments[i]);
         }
       }
@@ -277,18 +272,21 @@ function generateRPCMethods(constructor, apiCalls, rpc) {
           jsonrpc: '2.0',
           method: methodName,
           params: slice(arguments),
-          id: getRandomId()
+          id: getRandomId(),
         });
       } else {
-        rpc.call(this, {
-          method: methodName,
-          params: slice(arguments, 0, arguments.length - 1),
-          id: getRandomId()
-        }, arguments[arguments.length - 1]);
+        rpc.call(
+          this,
+          {
+            method: methodName,
+            params: slice(arguments, 0, arguments.length - 1),
+            id: getRandomId(),
+          },
+          arguments[arguments.length - 1],
+        );
       }
-
     };
-  };
+  }
 
   var types = {
     str: function(arg) {
@@ -301,20 +299,20 @@ function generateRPCMethods(constructor, apiCalls, rpc) {
       return parseFloat(arg);
     },
     bool: function(arg) {
-      return (arg === true || arg == '1' || arg == 'true' || arg.toString().toLowerCase() == 'true');
+      return arg === true || arg == '1' || arg == 'true' || arg.toString().toLowerCase() == 'true';
     },
     obj: function(arg) {
-      if(typeof arg === 'string') {
+      if (typeof arg === 'string') {
         return JSON.parse(arg);
       }
       return arg;
-    }
+    },
   };
 
-  for(var k in apiCalls) {
+  for (var k in apiCalls) {
     var spec = apiCalls[k].split(' ');
     for (var i = 0; i < spec.length; i++) {
-      if(types[spec[i]]) {
+      if (types[spec[i]]) {
         spec[i] = types[spec[i]];
       } else {
         spec[i] = types.str;
@@ -324,7 +322,6 @@ function generateRPCMethods(constructor, apiCalls, rpc) {
     constructor.prototype[k] = createRPCMethod(methodName, spec);
     constructor.prototype[methodName] = constructor.prototype[k];
   }
-
 }
 
 function getRandomId() {

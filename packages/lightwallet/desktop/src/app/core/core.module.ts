@@ -72,7 +72,7 @@ export function getPages() {
     SendInviteView,
     WalletSetupView,
     WalletSetupListView,
-    BackupNewWallet
+    BackupNewWallet,
   ];
 }
 

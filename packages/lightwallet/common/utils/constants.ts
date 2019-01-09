@@ -1,11 +1,10 @@
 import { ModalOptions } from 'ionic-angular';
 import { ENV } from '@app/env';
 
-
 export const MERIT_MODAL_OPTS: ModalOptions = {
   leaveAnimation: 'modal-slide-out',
   enterAnimation: 'modal-slide-in',
-  cssClass: 'merit-modal'
+  cssClass: 'merit-modal',
 };
 
 export const COINBASE_CONFIRMATION_THRESHOLD = ENV.network == 'testnet' ? 6 : 100;
@@ -22,7 +21,7 @@ export const UNITS = {
     short: {
       maxDecimals: 6,
       minDecimals: 2,
-    }
+    },
   },
   bit: {
     toMicros: 100,
@@ -33,6 +32,6 @@ export const UNITS = {
     short: {
       maxDecimals: 0,
       minDecimals: 0,
-    }
+    },
   },
 };

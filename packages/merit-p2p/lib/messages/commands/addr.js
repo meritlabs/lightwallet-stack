@@ -21,10 +21,10 @@ function AddrMessage(arg, options) {
   $.checkArgument(
     _.isUndefined(arg) ||
       (Array.isArray(arg) &&
-       !_.isUndefined(arg[0].services) &&
-       !_.isUndefined(arg[0].ip) &&
-       !_.isUndefined(arg[0].port)),
-    'First argument is expected to be an array of addrs'
+        !_.isUndefined(arg[0].services) &&
+        !_.isUndefined(arg[0].ip) &&
+        !_.isUndefined(arg[0].port)),
+    'First argument is expected to be an array of addrs',
   );
   this.addresses = arg;
 }

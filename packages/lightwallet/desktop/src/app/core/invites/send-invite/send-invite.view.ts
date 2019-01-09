@@ -9,7 +9,7 @@ import { RefreshOneWalletTransactions } from '@merit/common/reducers/transaction
 import {
   RefreshOneWalletAction,
   selectInvites,
-  selectWalletsWithInvites
+  selectWalletsWithInvites,
 } from '@merit/common/reducers/wallets.reducer';
 import { AddressService } from '@merit/common/services/address.service';
 import { AlertService } from '@merit/common/services/alert.service';
@@ -32,7 +32,7 @@ import { filter, take, tap } from 'rxjs/operators';
 @Component({
   selector: 'view-send-invite',
   templateUrl: './send-invite.view.html',
-  styleUrls: ['./send-invite.view.sass']
+  styleUrls: ['./send-invite.view.sass'],
 })
 export class SendInviteView {
   availableInvites$: Observable<number> = this.store.select(selectInvites);
@@ -58,40 +58,63 @@ export class SendInviteView {
   easySendUrl: string;
   easySendDelivered: boolean;
 
-  get address() { return this.formData.get('address'); }
-  get type() { return this.formData.get('type'); }
-  get destination() { return this.formData.get('destination'); }
-  get amount() { return this.formData.get('amount'); }
-  get message() { return this.formData.get('message'); }
+  get address() {
+    return this.formData.get('address');
+  }
+  get type() {
+    return this.formData.get('type');
+  }
+  get destination() {
+    return this.formData.get('destination');
+  }
+  get amount() {
+    return this.formData.get('amount');
+  }
+  get message() {
+    return this.formData.get('message');
+  }
 
-  constructor(private store: Store<IRootAppState>,
-              private formBuilder: FormBuilder,
-              private mwcService: MWCService,
-              private walletService: WalletService,
-              private toastCtrl: ToastControllerService,
-              private addressService: AddressService,
-              private loader: Ng4LoadingSpinnerService,
-              private easySendService: EasySendService,
-              private logger: LoggerService,
-              private alertCtrl: AlertService) {}
+  constructor(
+    private store: Store<IRootAppState>,
+    private formBuilder: FormBuilder,
+    private mwcService: MWCService,
+    private walletService: WalletService,
+    private toastCtrl: ToastControllerService,
+    private addressService: AddressService,
+    private loader: Ng4LoadingSpinnerService,
+    private easySendService: EasySendService,
+    private logger: LoggerService,
+    private alertCtrl: AlertService,
+  ) {}
 
   async ngOnInit() {
-    const wallets: DisplayWallet[] = await this.wallets$.pipe(filter((wallets: DisplayWallet[]) => wallets.length > 0), take(1)).toPromise();
+    const wallets: DisplayWallet[] = await this.wallets$
+      .pipe(
+        filter((wallets: DisplayWallet[]) => wallets.length > 0),
+        take(1),
+      )
+      .toPromise();
 
-    if (this.hasAWalletWithInvites = wallets.length > 0) {
+    if ((this.hasAWalletWithInvites = wallets.length > 0)) {
       this.selectWallet(wallets[0]);
-      this.formData.get("wallet").setValue(this.selectedWallet);
+      this.formData.get('wallet').setValue(this.selectedWallet);
       const code = this.selectedWallet.alias || this.selectedWallet.referrerAddress;
       this.emailSubject = `Merit invite from ${code}`;
-      this.emailBody = `${ code } invites you to Merit Community. Create your wallet now - ${ getShareLink(code) }`;
+      this.emailBody = `${code} invites you to Merit Community. Create your wallet now - ${getShareLink(code)}`;
     }
 
     // this.formData.valueChanges.subscribe(val => (this.showEmailMessage = validateEmail(val.address)));
 
-    this.type.valueChanges.pipe(
-      filter((value: string) => (value === 'easy' && this.address.invalid) || (value === 'classic' && this.address.valid && !this.address.value)),
-      tap(() => this.address.updateValueAndValidity({ onlySelf: false }))
-    ).subscribe();
+    this.type.valueChanges
+      .pipe(
+        filter(
+          (value: string) =>
+            (value === 'easy' && this.address.invalid) ||
+            (value === 'classic' && this.address.valid && !this.address.value),
+        ),
+        tap(() => this.address.updateValueAndValidity({ onlySelf: false })),
+      )
+      .subscribe();
   }
 
   @accessWallet
@@ -114,7 +137,7 @@ export class SendInviteView {
               type: SendMethodType.Easy,
               destination: destinationType,
               message: message,
-              value: destination
+              value: destination,
             });
 
             this.easySendDelivered = true;
@@ -123,7 +146,6 @@ export class SendInviteView {
             this.easySendDelivered = false;
           }
         }
-
       } else {
         address = cleanAddress(address);
         address = await this.addressService.getAddressInfo(address);
@@ -133,12 +155,14 @@ export class SendInviteView {
 
       this.success = true;
 
-      this.store.dispatch(new RefreshOneWalletAction(this.selectedWallet.id, {
-        skipRewards: true,
-        skipAnv: true,
-        skipAlias: true,
-        skipShareCode: true
-      }));
+      this.store.dispatch(
+        new RefreshOneWalletAction(this.selectedWallet.id, {
+          skipRewards: true,
+          skipAnv: true,
+          skipAlias: true,
+          skipShareCode: true,
+        }),
+      );
 
       this.store.dispatch(new RefreshOneWalletTransactions(this.selectedWallet.id));
       this.address.reset();

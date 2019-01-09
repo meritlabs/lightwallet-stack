@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
-import { IVault } from "@merit/common/models/vault";
-import { RateService } from "@merit/common/services/rate.service";
+import { IVault } from '@merit/common/models/vault';
+import { RateService } from '@merit/common/services/rate.service';
 import { VaultsService } from '@merit/common/services/vaults.service';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 
@@ -11,7 +11,6 @@ import { ToastControllerService, IMeritToastConfig } from '@merit/common/service
   templateUrl: 'vault-deposit.html',
 })
 export class VaultDepositView {
-
   public vault: IVault;
   public amount;
 
@@ -21,21 +20,21 @@ export class VaultDepositView {
     private rateService: RateService,
     private vaultsService: VaultsService,
     private loadingCtrl: LoadingController,
-    private toastCtrl: ToastControllerService
+    private toastCtrl: ToastControllerService,
   ) {
     this.vault = this.navParams.get('vault');
   }
 
   get isSendingAvailable() {
-      return (
-        this.amount
-        && this.amount > 0
-        && this.rateService.mrtToMicro(this.amount) <= this.vault.walletClient.balance.totalConfirmedAmount
-      )
+    return (
+      this.amount &&
+      this.amount > 0 &&
+      this.rateService.mrtToMicro(this.amount) <= this.vault.walletClient.balance.totalConfirmedAmount
+    );
   }
 
   async send() {
-    const loader = this.loadingCtrl.create({ content: 'Sending transaction...'});
+    const loader = this.loadingCtrl.create({ content: 'Sending transaction...' });
     loader.present();
     try {
       await this.vaultsService.depositVault(this.vault, this.rateService.mrtToMicro(this.amount));
@@ -45,5 +44,4 @@ export class VaultDepositView {
     }
     loader.dismiss();
   }
-
 }

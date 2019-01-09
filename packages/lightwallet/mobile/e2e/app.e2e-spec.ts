@@ -5,12 +5,13 @@ export const TEST_WALLET_ALIAS = '@ibby-demo-mac';
 export const TEST_WALLET_NAME = 'Personal wallet';
 export const EC: ProtractorExpectedConditions = new ProtractorExpectedConditions(browser);
 
-
 describe('[Mobile] Onboarding', () => {
-
   beforeAll(() => {
     browser.get('/');
-    browser.driver.manage().window().maximize();
+    browser.driver
+      .manage()
+      .window()
+      .maximize();
 
     // Clickblock prevents us from making certain click actions, so let's get rid of it
     browser.executeScript(`document.querySelector('.click-block').remove()`);
@@ -65,7 +66,6 @@ describe('[Mobile] Onboarding', () => {
   });
 
   describe('> Tour', () => {
-
     let nextButtonEl;
 
     it('get started button should go to tour page', async () => {
@@ -80,7 +80,7 @@ describe('[Mobile] Onboarding', () => {
 
     it('should have a link to the import page', async () => {
       const buttonEl = element(by.css('view-tour ion-header button[navpush=ImportView]'));
-      expect((await  buttonEl.getText()).toLowerCase()).toContain('restore');
+      expect((await buttonEl.getText()).toLowerCase()).toContain('restore');
       expect(buttonEl.isDisplayed()).toBeTruthy();
       expect(buttonEl.isEnabled()).toBeTruthy();
     });
@@ -123,11 +123,9 @@ describe('[Mobile] Onboarding', () => {
       browser.wait(EC.urlContains('unlock'));
       expect(browser.getCurrentUrl()).toContain('unlock');
     });
-
   });
 
   describe('> Unlock view', () => {
-
     let rootEl;
     let inviteInputEl, nextButtonEl, backButtonEl, errorEl;
 
@@ -180,11 +178,9 @@ describe('[Mobile] Onboarding', () => {
       expect(browser.getCurrentUrl()).not.toContain('unlock');
       expect(browser.getCurrentUrl()).toContain('tour');
     });
-
   });
 
   describe('> Import view', () => {
-
     beforeAll(() => {
       const restoreButtonEl = element(by.css('view-tour ion-header button[navpush=ImportView]'));
       restoreButtonEl.click();
@@ -201,7 +197,7 @@ describe('[Mobile] Onboarding', () => {
       });
 
       it('should show the file tab when clicking on segment button', () => {
-         expect(element(by.css('view-import .file')).isDisplayed()).toBeTruthy();
+        expect(element(by.css('view-import .file')).isDisplayed()).toBeTruthy();
       });
     });
 
@@ -230,8 +226,8 @@ describe('[Mobile] Onboarding', () => {
       });
 
       it('should have a mnemonic textarea', () => {
-         mnemonicEl = rootEl.element(by.css('.mnemonic-input textarea'));
-         expect(mnemonicEl.isDisplayed()).toBeTruthy();
+        mnemonicEl = rootEl.element(by.css('.mnemonic-input textarea'));
+        expect(mnemonicEl.isDisplayed()).toBeTruthy();
       });
 
       it('should detect invalid mnemonic', () => {
@@ -252,7 +248,5 @@ describe('[Mobile] Onboarding', () => {
         expect(rootEl.isPresent()).toBeFalsy();
       });
     });
-
   });
-
 });

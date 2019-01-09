@@ -6,7 +6,6 @@ var sinon = require('sinon');
 var should = chai.should();
 var Lock = require('../lib/locallock');
 
-
 describe('Local locks', function() {
   var lock;
   beforeEach(function() {
@@ -103,9 +102,8 @@ describe('Local locks', function() {
     });
     i.should.equal(1);
     this.clock.tick(4);
-    i.should.equal(2)
+    i.should.equal(2);
     this.clock.tick(7);
-    i.should.equal(3)
+    i.should.equal(3);
   });
-
 });

@@ -9,15 +9,15 @@ var index = require('../../lib');
 var log = index.log;
 
 var httpStub = {
-  createServer: sinon.spy()
+  createServer: sinon.spy(),
 };
 var httpsStub = {
-  createServer: sinon.spy()
+  createServer: sinon.spy(),
 };
 var fsStub = {
   readFileSync: function(arg1) {
     return arg1 + '-buffer';
-  }
+  },
 };
 
 var fakeSocketListener = new EventEmitter();
@@ -30,24 +30,24 @@ fakeSocket.on('test/event1', function(data) {
 fakeSocketListener.emit('connection', fakeSocket);
 fakeSocket.emit('subscribe', 'test/event1');
 
-var WebService = proxyquire('../../lib/services/web', {http: httpStub, https: httpsStub, fs: fsStub});
+var WebService = proxyquire('../../lib/services/web', { http: httpStub, https: httpsStub, fs: fsStub });
 
 describe('WebService', function() {
   var defaultNode = new EventEmitter();
 
   describe('@constructor', function() {
     it('will set socket rpc settings', function() {
-      var web = new WebService({node: defaultNode, enableSocketRPC: false});
+      var web = new WebService({ node: defaultNode, enableSocketRPC: false });
       web.enableSocketRPC.should.equal(false);
 
-      var web2 = new WebService({node: defaultNode, enableSocketRPC: true});
+      var web2 = new WebService({ node: defaultNode, enableSocketRPC: true });
       web2.enableSocketRPC.should.equal(true);
 
-      var web3 = new WebService({node: defaultNode});
+      var web3 = new WebService({ node: defaultNode });
       web3.enableSocketRPC.should.equal(WebService.DEFAULT_SOCKET_RPC);
     });
     it('will set configuration options for max payload', function() {
-      var web = new WebService({node: defaultNode, jsonRequestLimit: '200kb'});
+      var web = new WebService({ node: defaultNode, jsonRequestLimit: '200kb' });
       web.jsonRequestLimit.should.equal('200kb');
     });
   });
@@ -58,7 +58,7 @@ describe('WebService', function() {
       httpsStub.createServer.reset();
     });
     it('should create an http server if no options are specified and node is not configured for https', function(done) {
-      var web = new WebService({node: defaultNode});
+      var web = new WebService({ node: defaultNode });
       web.deriveHttpsOptions = sinon.spy();
       web.start(function(err) {
         should.not.exist(err);
@@ -71,7 +71,7 @@ describe('WebService', function() {
       var node = new EventEmitter();
       node.https = true;
 
-      var web = new WebService({node: node});
+      var web = new WebService({ node: node });
       web.transformHttpsOptions = sinon.spy();
       web.start(function(err) {
         should.not.exist(err);
@@ -84,25 +84,25 @@ describe('WebService', function() {
       var jsonStub = sinon.stub();
       var TestWebService = proxyquire('../../lib/services/web', {
         http: {
-          createServer: sinon.stub()
+          createServer: sinon.stub(),
         },
         https: {
-          createServer: sinon.stub()
+          createServer: sinon.stub(),
         },
         fs: fsStub,
         express: sinon.stub().returns({
-          use: sinon.stub()
+          use: sinon.stub(),
         }),
         'body-parser': {
-          json: jsonStub
+          json: jsonStub,
         },
         'socket.io': {
           listen: sinon.stub().returns({
-            on: sinon.stub()
-          })
-        }
+            on: sinon.stub(),
+          }),
+        },
       });
-      var web = new TestWebService({node: node});
+      var web = new TestWebService({ node: node });
       web.start(function(err) {
         if (err) {
           return done(err);
@@ -116,9 +116,9 @@ describe('WebService', function() {
 
   describe('#stop', function() {
     it('should close the server if it exists', function(done) {
-      var web = new WebService({node: defaultNode});
+      var web = new WebService({ node: defaultNode });
       web.server = {
-        close: sinon.spy()
+        close: sinon.spy(),
       };
 
       web.stop(function(err) {
@@ -136,18 +136,18 @@ describe('WebService', function() {
         services: {
           one: {
             setupRoutes: sinon.spy(),
-            getRoutePrefix: sinon.stub().returns('one')
+            getRoutePrefix: sinon.stub().returns('one'),
           },
           two: {
             setupRoutes: sinon.spy(),
-            getRoutePrefix: sinon.stub().returns('two')
-          }
-        }
+            getRoutePrefix: sinon.stub().returns('two'),
+          },
+        },
       };
 
-      var web = new WebService({node: node});
+      var web = new WebService({ node: node });
       web.app = {
-        use: sinon.spy()
+        use: sinon.spy(),
       };
 
       web.setupAllRoutes();
@@ -164,10 +164,7 @@ describe('WebService', function() {
     it('should create the methodsMap correctly', function(done) {
       var Module1 = function() {};
       Module1.prototype.getAPIMethods = function() {
-        return [
-          ['one', this, this.one, 1],
-          ['two', this, this.two, 2]
-        ];
+        return [['one', this, this.one, 1], ['two', this, this.two, 2]];
       };
       Module1.prototype.one = function(param1, callback) {
         callback(null, param1);
@@ -180,10 +177,10 @@ describe('WebService', function() {
 
       var node = {
         on: sinon.spy(),
-        getAllAPIMethods: sinon.stub().returns(module1.getAPIMethods())
+        getAllAPIMethods: sinon.stub().returns(module1.getAPIMethods()),
       };
 
-      var web = new WebService({node: node});
+      var web = new WebService({ node: node });
       web.createMethodsMap();
 
       Object.keys(web.methodsMap).length.should.equal(2);
@@ -209,18 +206,18 @@ describe('WebService', function() {
         return [
           {
             name: 'event1',
-            extraEvents: ['event2']
-          }
+            extraEvents: ['event2'],
+          },
         ];
       };
 
       var module1 = new Module1();
       var node = {
         on: sinon.spy(),
-        getAllPublishEvents: sinon.stub().returns(module1.getPublishEvents())
+        getAllPublishEvents: sinon.stub().returns(module1.getPublishEvents()),
       };
 
-      var web = new WebService({node: node});
+      var web = new WebService({ node: node });
       var events = web.getEventNames();
 
       events.should.deep.equal(['event1', 'event2']);
@@ -232,39 +229,39 @@ describe('WebService', function() {
         return [
           {
             name: 'event1',
-            extraEvents: ['event1']
-          }
+            extraEvents: ['event1'],
+          },
         ];
       };
 
       var module1 = new Module1();
       var node = {
         on: sinon.spy(),
-        getAllPublishEvents: sinon.stub().returns(module1.getPublishEvents())
+        getAllPublishEvents: sinon.stub().returns(module1.getPublishEvents()),
       };
 
-      var web = new WebService({node: node});
+      var web = new WebService({ node: node });
       (function() {
         var events = web.getEventNames();
-      }).should.throw('Duplicate event event1');
+      }.should.throw('Duplicate event event1'));
     });
   });
 
   describe('#_getRemoteAddress', function() {
     it('will get remote address from cloudflare header', function() {
-      var web = new WebService({node: defaultNode});
+      var web = new WebService({ node: defaultNode });
       var socket = {};
       socket.conn = {};
       socket.client = {};
       socket.client.request = {};
       socket.client.request.headers = {
-        'cf-connecting-ip': '127.0.0.1'
+        'cf-connecting-ip': '127.0.0.1',
       };
       var remoteAddress = web._getRemoteAddress(socket);
       remoteAddress.should.equal('127.0.0.1');
     });
     it('will get remote address from connection', function() {
-      var web = new WebService({node: defaultNode});
+      var web = new WebService({ node: defaultNode });
       var socket = {};
       socket.conn = {};
       socket.conn.remoteAddress = '127.0.0.1';
@@ -293,8 +290,8 @@ describe('WebService', function() {
       return [
         {
           name: 'event1',
-          extraEvents: ['event2']
-        }
+          extraEvents: ['event2'],
+        },
       ];
     };
 
@@ -302,14 +299,14 @@ describe('WebService', function() {
     var node = {
       on: sinon.spy(),
       openBus: sinon.stub().returns(bus),
-      getAllPublishEvents: sinon.stub().returns(module1.getPublishEvents())
+      getAllPublishEvents: sinon.stub().returns(module1.getPublishEvents()),
     };
 
     var web;
     var socket;
 
     it('on message should call socketMessageHandler', function(done) {
-      web = new WebService({node: node});
+      web = new WebService({ node: node });
       web.eventNames = web.getEventNames();
       web.socketMessageHandler = function(param1) {
         param1.should.equal('data');
@@ -326,7 +323,7 @@ describe('WebService', function() {
     });
 
     it('on message should NOT call socketMessageHandler if not enabled', function(done) {
-      web = new WebService({node: node, enableSocketRPC: false});
+      web = new WebService({ node: node, enableSocketRPC: false });
       web.eventNames = web.getEventNames();
       web.socketMessageHandler = sinon.stub();
       socket = new EventEmitter();
@@ -382,28 +379,28 @@ describe('WebService', function() {
 
   describe('#socketMessageHandler', function() {
     var node = {
-      on: sinon.spy()
+      on: sinon.spy(),
     };
 
-    var web = new WebService({node: node});
+    var web = new WebService({ node: node });
     web.methodsMap = {
       one: {
         fn: function(param1, param2, callback) {
           var result = param1 + param2;
-          if(result > 0) {
+          if (result > 0) {
             return callback(null, result);
           } else {
             return callback(new Error('error'));
           }
         },
-        args: 2
-      }
+        args: 2,
+      },
     };
 
     it('should give a Method Not Found error if method does not exist', function(done) {
       var message = {
         method: 'two',
-        params: [1, 2]
+        params: [1, 2],
       };
       web.socketMessageHandler(message, function(response) {
         should.exist(response.error);
@@ -415,7 +412,7 @@ describe('WebService', function() {
     it('should call the method and return the result', function(done) {
       var message = {
         method: 'one',
-        params: [1, 2]
+        params: [1, 2],
       };
       web.socketMessageHandler(message, function(response) {
         should.not.exist(response.error);
@@ -427,7 +424,7 @@ describe('WebService', function() {
     it('should give an error if there is a param count mismatch', function(done) {
       var message = {
         method: 'one',
-        params: [1]
+        params: [1],
       };
       web.socketMessageHandler(message, function(response) {
         should.exist(response.error);
@@ -439,7 +436,7 @@ describe('WebService', function() {
     it('should give an error if the method gave an error', function(done) {
       var message = {
         method: 'one',
-        params: [-1, -2]
+        params: [-1, -2],
       };
       web.socketMessageHandler(message, function(response) {
         should.exist(response.error);
@@ -456,8 +453,8 @@ describe('WebService', function() {
         https: true,
         httpsOptions: {
           key: 'key',
-          cert: 'cert'
-        }
+          cert: 'cert',
+        },
       });
 
       web.transformHttpsOptions();
@@ -469,14 +466,13 @@ describe('WebService', function() {
         node: defaultNode,
         https: true,
         httpsOptions: {
-          key: 'key'
-        }
+          key: 'key',
+        },
       });
 
       (function() {
         web.transformHttpsOptions();
-      }).should.throw('Missing https options');
+      }.should.throw('Missing https options'));
     });
   });
-
 });

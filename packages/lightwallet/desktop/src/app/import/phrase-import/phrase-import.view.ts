@@ -23,33 +23,31 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 @Component({
   selector: 'view-phrase-import',
   templateUrl: './phrase-import.view.html',
-  styleUrls: ['./phrase-import.view.scss']
+  styleUrls: ['./phrase-import.view.scss'],
 })
 export class PhraseImportView {
-
   formData: FormGroup = this.formBuilder.group({
-    words: ['', [Validators.required, MnemonicValidator.validateMnemonicImport]]
+    words: ['', [Validators.required, MnemonicValidator.validateMnemonicImport]],
   });
 
   showPass: boolean;
 
-  private derivationPath = ENV.network == 'livenet' ?
-    DerivationPath.getDefault() :
-    DerivationPath.getDefaultTestnet();
+  private derivationPath = ENV.network == 'livenet' ? DerivationPath.getDefault() : DerivationPath.getDefaultTestnet();
 
-  constructor(private formBuilder: FormBuilder,
-              private profileService: ProfileService,
-              private mnemonicService: MnemonicService,
-              private store: Store<IRootAppState>,
-              private walletService: WalletService,
-              private addressService: AddressService,
-              private txFormatService: TxFormatService,
-              private router: Router,
-              private pushNotificationsService: PushNotificationsService,
-              private toastCtrl: ToastControllerService,
-              private loadingCtrl: Ng4LoadingSpinnerService,
-              private persistenceService2:PersistenceService2 ) {}
-
+  constructor(
+    private formBuilder: FormBuilder,
+    private profileService: ProfileService,
+    private mnemonicService: MnemonicService,
+    private store: Store<IRootAppState>,
+    private walletService: WalletService,
+    private addressService: AddressService,
+    private txFormatService: TxFormatService,
+    private router: Router,
+    private pushNotificationsService: PushNotificationsService,
+    private toastCtrl: ToastControllerService,
+    private loadingCtrl: Ng4LoadingSpinnerService,
+    private persistenceService2: PersistenceService2,
+  ) {}
 
   async importMnemonic() {
     this.loadingCtrl.show();
@@ -66,7 +64,7 @@ export class PhraseImportView {
       const opts: any = {
         account: pathData.account,
         networkName: pathData.networkName,
-        derivationStrategy: pathData.derivationStrategy
+        derivationStrategy: pathData.derivationStrategy,
       };
 
       let wallet;
@@ -85,15 +83,23 @@ export class PhraseImportView {
 
         this.store.dispatch(
           new AddWalletAction(
-            await createDisplayWallet(wallet, this.walletService, this.addressService, this.txFormatService, this.persistenceService2)
-          )
+            await createDisplayWallet(
+              wallet,
+              this.walletService,
+              this.addressService,
+              this.txFormatService,
+              this.persistenceService2,
+            ),
+          ),
         );
 
         // update state so we're allowed to access the dashboard, in case this is done via onboarding import
-        this.store.dispatch(new UpdateAppAction({
-          loading: false,
-          authorized: true
-        }));
+        this.store.dispatch(
+          new UpdateAppAction({
+            loading: false,
+            authorized: true,
+          }),
+        );
 
         this.loadingCtrl.hide();
         this.persistenceService2.setUserSettings(UserSettingsKey.recordPassphrase, true);
@@ -130,5 +136,4 @@ export class PhraseImportView {
       return !(words.split(/[\u3000\s]+/).length % 3);
     }
   }
-
 }

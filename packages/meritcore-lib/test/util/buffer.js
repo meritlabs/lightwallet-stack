@@ -9,7 +9,6 @@ var errors = meritcore.errors;
 var BufferUtil = meritcore.util.buffer;
 
 describe('buffer utils', function() {
-
   describe('equals', function() {
     it('recognizes these two equal buffers', function() {
       var bufferA = new Buffer([1, 2, 3]);
@@ -92,9 +91,9 @@ describe('buffer utils', function() {
       expect(BufferUtil.integerAsSingleByteBuffer(-1)[0]).to.equal(255);
     });
     it('does a round trip', function() {
-      expect(BufferUtil.integerAsSingleByteBuffer(
-        BufferUtil.integerFromSingleByteBuffer(new Buffer([255]))
-      )[0]).to.equal(255);
+      expect(
+        BufferUtil.integerAsSingleByteBuffer(BufferUtil.integerFromSingleByteBuffer(new Buffer([255])))[0],
+      ).to.equal(255);
     });
   });
 
@@ -120,9 +119,7 @@ describe('buffer utils', function() {
       expect(BufferUtil.integerAsBuffer(-1)[3]).to.equal(255);
     });
     it('does a round trip', function() {
-      expect(BufferUtil.integerFromBuffer(
-        BufferUtil.integerAsBuffer(10000)
-      )).to.equal(10000);
+      expect(BufferUtil.integerFromBuffer(BufferUtil.integerAsBuffer(10000))).to.equal(10000);
     });
   });
 

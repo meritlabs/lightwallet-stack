@@ -13,25 +13,25 @@ import { ToastControllerService, IMeritToastConfig } from '@merit/common/service
   templateUrl: 'send-create-contact.html',
 })
 export class SendCreateContactView {
-
   contact: MeritContact;
   amount: number;
   newAddress: string;
 
-  constructor(navParams: NavParams,
-              private contactsService: ContactsService,
-              private addressService: AddressService,
-              private toastController: ToastControllerService,
-              private viewCtrl: ViewController) {
+  constructor(
+    navParams: NavParams,
+    private contactsService: ContactsService,
+    private addressService: AddressService,
+    private toastController: ToastControllerService,
+    private viewCtrl: ViewController,
+  ) {
     this.contact = new MeritContact();
     this.contact.meritAddresses.push(navParams.get('address'));
   }
 
   save() {
-    return this.contactsService.add(this.contact, this.contact.meritAddresses[0].address, ENV.network)
-      .then(() => {
-        this.viewCtrl.dismiss(this.contact);
-      });
+    return this.contactsService.add(this.contact, this.contact.meritAddresses[0].address, ENV.network).then(() => {
+      this.viewCtrl.dismiss(this.contact);
+    });
   }
 
   cancel() {
@@ -54,7 +54,7 @@ export class SendCreateContactView {
     const meritAddress: IMeritAddress = {
       network: ENV.network,
       address: info.address,
-      alias: info.alias
+      alias: info.alias,
     };
 
     this.contact.meritAddresses.push(meritAddress);
@@ -62,11 +62,12 @@ export class SendCreateContactView {
   }
 
   removeAddress(meritAddress) {
-    this.contact.meritAddresses = this.contact.meritAddresses.filter(mAddress => mAddress.address != meritAddress.address);
+    this.contact.meritAddresses = this.contact.meritAddresses.filter(
+      mAddress => mAddress.address != meritAddress.address,
+    );
   }
 
   isSaveAvailable() {
     return this.contact.name.formatted && this.contact.meritAddresses.length;
   }
-
 }

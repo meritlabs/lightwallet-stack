@@ -41,13 +41,13 @@ var URI = function(data, knownParams) {
   this.knownParams = knownParams || [];
   this.address = this.network = this.amount = this.message = null;
 
-  if (typeof(data) === 'string') {
+  if (typeof data === 'string') {
     var params = URI.parse(data);
     if (params.amount) {
       params.amount = this._parseAmount(params.amount);
     }
     this._fromObject(params);
-  } else if (typeof(data) === 'object') {
+  } else if (typeof data === 'object') {
     this._fromObject(data);
   } else {
     throw new TypeError('Unrecognized data format.');
@@ -61,7 +61,7 @@ var URI = function(data, knownParams) {
  * @returns {URI} A new instance of a URI
  */
 URI.fromString = function fromString(str) {
-  if (typeof(str) !== 'string') {
+  if (typeof str !== 'string') {
     throw new TypeError('Expected a string');
   }
   return new URI(str);
@@ -116,7 +116,7 @@ URI.parse = function(uri) {
 
   // workaround to host insensitiveness
   var group = /[^:]*:\/?\/?([^?]*)/.exec(uri);
-  info.query.address = group && group[1] || undefined;
+  info.query.address = (group && group[1]) || undefined;
 
   return info.query;
 };
@@ -175,7 +175,7 @@ URI.prototype.toObject = URI.prototype.toJSON = function toObject() {
   var json = {};
   for (var i = 0; i < URI.Members.length; i++) {
     var m = URI.Members[i];
-    if (this.hasOwnProperty(m) && typeof(this[m]) !== 'undefined') {
+    if (this.hasOwnProperty(m) && typeof this[m] !== 'undefined') {
       json[m] = this[m].toString();
     }
   }
@@ -207,7 +207,7 @@ URI.prototype.toString = function() {
   return URL.format({
     protocol: 'merit:',
     host: this.address,
-    query: query
+    query: query,
   });
 };
 

@@ -4,14 +4,21 @@ import {
   IDisplayTransaction,
   ITransactionIO,
   IVisitedTransaction,
-  TransactionAction
+  TransactionAction,
 } from '@merit/common/models/transaction';
 import { ContactsService } from '@merit/common/services/contacts.service';
-import { MeritWalletClient } from "@merit/common/merit-wallet-client";
-import { FeeService } from "@merit/common/services/fee.service";
+import { MeritWalletClient } from '@merit/common/merit-wallet-client';
+import { FeeService } from '@merit/common/services/fee.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 
-export async function formatWalletHistory(walletHistory: IDisplayTransaction[], wallet: MeritWalletClient, easySends: EasySend[] = [], feeService: FeeService, contactsProvider?: ContactsService, persistenceService?: PersistenceService2): Promise<IDisplayTransaction[]> {
+export async function formatWalletHistory(
+  walletHistory: IDisplayTransaction[],
+  wallet: MeritWalletClient,
+  easySends: EasySend[] = [],
+  feeService: FeeService,
+  contactsProvider?: ContactsService,
+  persistenceService?: PersistenceService2,
+): Promise<IDisplayTransaction[]> {
   if (_.isEmpty(walletHistory)) return [];
 
   const easyReceiveFee = await feeService.getEasyReceiveFee();
@@ -32,142 +39,161 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
 
   let visitedTxs: IVisitedTransaction[];
   if (persistenceService) {
-    visitedTxs = await persistenceService.getVisitedTransactions() || [];
+    visitedTxs = (await persistenceService.getVisitedTransactions()) || [];
   }
 
-  walletHistory = await Promise.all(walletHistory.map(async (tx: IDisplayTransaction, i: number) => {
-    if (!_.isNil(tx) && !_.isNil(tx.action)) {
-      pendingString = tx.isPendingEasySend ? '(pending) ' : '';
+  walletHistory = await Promise.all(
+    walletHistory.map(async (tx: IDisplayTransaction, i: number) => {
+      if (!_.isNil(tx) && !_.isNil(tx.action)) {
+        pendingString = tx.isPendingEasySend ? '(pending) ' : '';
 
-      let received: boolean = false,
-        isEasySend: boolean;
+        let received: boolean = false,
+          isEasySend: boolean;
 
-      switch (tx.action) {
-        case TransactionAction.SENT:
-          tx.type = 'debit';
-          isEasySend = true;
-          break;
-
-        case TransactionAction.RECEIVED:
-          tx.type = 'credit';
-
-          if (tx.isInvite) {
-            if (i === 0) {
-              tx.isWalletUnlock = true;
-              tx.name = 'Wallet Unlocked';
-            }
-          } else {
+        switch (tx.action) {
+          case TransactionAction.SENT:
+            tx.type = 'debit';
             isEasySend = true;
-          }
+            break;
 
-          received = true;
-          break;
+          case TransactionAction.RECEIVED:
+            tx.type = 'credit';
 
-        case TransactionAction.MOVED:
-          tx.name = tx.actionStr = tx.isInvite ? 'Moved Invite' : 'Moved Merit';
-          break;
-      }
+            if (tx.isInvite) {
+              if (i === 0) {
+                tx.isWalletUnlock = true;
+                tx.name = 'Wallet Unlocked';
+              }
+            } else {
+              isEasySend = true;
+            }
 
-      const { alias: inputAlias, address: inputAddress } = tx.inputs.find((input: ITransactionIO) => input.isMine === !received) || <any>{};
-      const { alias: outputAlias, address: outputAddress } = tx.outputs.find((output: ITransactionIO) => output.isMine === received) || <any>{};
+            received = true;
+            break;
 
-      tx.input = inputAlias ? '@' + inputAlias : 'Anonymous';
-      tx.output = outputAlias ? '@' + outputAlias : 'Anonymous';
-
-      tx.name = tx.name || (received ? tx.input : tx.output);
-
-      tx.addressFrom = inputAlias || inputAddress;
-      tx.addressTo = outputAlias || outputAddress;
-
-      tx.from = {
-        alias: inputAlias,
-        address: inputAddress
-      };
-
-      tx.to = {
-        alias: outputAlias,
-        address: outputAddress
-      };
-
-      if (!tx.isCoinbase && !tx.isWalletUnlock && contactsProvider) {
-        const contactAddress = received ? inputAddress || inputAlias : outputAddress || outputAlias;
-
-        try {
-          tx.contact = contactsProvider.get(contactAddress);
-          tx.name = tx.contact ? tx.contact.name.formatted : tx.name;
-        } catch (e) {
+          case TransactionAction.MOVED:
+            tx.name = tx.actionStr = tx.isInvite ? 'Moved Invite' : 'Moved Merit';
+            break;
         }
-      }
 
-      tx.actionStr = pendingString + tx.actionStr;
+        const { alias: inputAlias, address: inputAddress } =
+          tx.inputs.find((input: ITransactionIO) => input.isMine === !received) || <any>{};
+        const { alias: outputAlias, address: outputAddress } =
+          tx.outputs.find((output: ITransactionIO) => output.isMine === received) || <any>{};
 
-      if (wallet && !tx.walletId) {
-        tx.walletId = wallet.id;
-        tx.wallet = wallet;
-      }
+        tx.input = inputAlias ? '@' + inputAlias : 'Anonymous';
+        tx.output = outputAlias ? '@' + outputAlias : 'Anonymous';
 
-      if (tx.isCoinbase) {
-        if (tx.isInvite) {
-          tx.name = 'Mined Invite';
-          tx.action = TransactionAction.INVITE;
-          tx.type = 'credit';
-        } else {
-          const output = tx.outputs.find(o => o.isMine);
+        tx.name = tx.name || (received ? tx.input : tx.output);
 
-          if (output && output.index !== 0) {
-            // Ambassador reward
-            tx.name = 'Growth Reward';
-            tx.action = TransactionAction.AMBASSADOR_REWARD;
-            tx.isGrowthReward = true;
+        tx.addressFrom = inputAlias || inputAddress;
+        tx.addressTo = outputAlias || outputAddress;
+
+        tx.from = {
+          alias: inputAlias,
+          address: inputAddress,
+        };
+
+        tx.to = {
+          alias: outputAlias,
+          address: outputAddress,
+        };
+
+        if (!tx.isCoinbase && !tx.isWalletUnlock && contactsProvider) {
+          const contactAddress = received ? inputAddress || inputAlias : outputAddress || outputAlias;
+
+          try {
+            tx.contact = contactsProvider.get(contactAddress);
+            tx.name = tx.contact ? tx.contact.name.formatted : tx.name;
+          } catch (e) {}
+        }
+
+        tx.actionStr = pendingString + tx.actionStr;
+
+        if (wallet && !tx.walletId) {
+          tx.walletId = wallet.id;
+          tx.wallet = wallet;
+        }
+
+        if (tx.isCoinbase) {
+          if (tx.isInvite) {
+            tx.name = 'Mined Invite';
+            tx.action = TransactionAction.INVITE;
+            tx.type = 'credit';
           } else {
-            tx.name = 'Mining Reward';
-            tx.action = TransactionAction.MINING_REWARD;
-            tx.isMiningReward = true;
+            const output = tx.outputs.find(o => o.isMine);
+
+            if (output && output.index !== 0) {
+              // Ambassador reward
+              tx.name = 'Growth Reward';
+              tx.action = TransactionAction.AMBASSADOR_REWARD;
+              tx.isGrowthReward = true;
+            } else {
+              tx.name = 'Mining Reward';
+              tx.action = TransactionAction.MINING_REWARD;
+              tx.isMiningReward = true;
+            }
           }
-        }
-      } else {
-        if (tx.outputs.some(o => o.amount == 0 && _.get(o, 'data', '').toLowerCase().indexOf('pool') > -1)) {
-          tx.name = 'Pool Reward';
-          tx.action = TransactionAction.POOL_REWARD;
-          tx.isPoolReward = true;
         } else {
-          if (tx.outputs.some(o => o.amount == 0 && _.get(o, 'data', '').toLowerCase().indexOf('market') > -1)) {
-            tx.name = 'Market Escrow';
-            tx.isMarketPayment = true;
+          if (
+            tx.outputs.some(
+              o =>
+                o.amount == 0 &&
+                _.get(o, 'data', '')
+                  .toLowerCase()
+                  .indexOf('pool') > -1,
+            )
+          ) {
+            tx.name = 'Pool Reward';
+            tx.action = TransactionAction.POOL_REWARD;
+            tx.isPoolReward = true;
+          } else {
+            if (
+              tx.outputs.some(
+                o =>
+                  o.amount == 0 &&
+                  _.get(o, 'data', '')
+                    .toLowerCase()
+                    .indexOf('market') > -1,
+              )
+            ) {
+              tx.name = 'Market Escrow';
+              tx.isMarketPayment = true;
+            }
           }
         }
       }
-    }
 
-    if (easySendsByAddress[tx.addressTo]) {
-      const easySend = easySendsByAddress[tx.addressTo];
-      tx.name = tx.isInvite ? 'MeritInvite' : 'MeritMoney';
-      tx.type = <any>tx.name.toLowerCase();
-      tx.easySend = easySend;
-      tx.easySendUrl = getEasySendURL(easySend);
-      tx.cancelled = easySend.cancelled;
-      if (tx.type === 'meritmoney') {
-        meritMoneyAddresses.push(tx.addressTo);
-        tx.fees += easyReceiveFee;
-        tx.amount -= easyReceiveFee;
+      if (easySendsByAddress[tx.addressTo]) {
+        const easySend = easySendsByAddress[tx.addressTo];
+        tx.name = tx.isInvite ? 'MeritInvite' : 'MeritMoney';
+        tx.type = <any>tx.name.toLowerCase();
+        tx.easySend = easySend;
+        tx.easySendUrl = getEasySendURL(easySend);
+        tx.cancelled = easySend.cancelled;
+        if (tx.type === 'meritmoney') {
+          meritMoneyAddresses.push(tx.addressTo);
+          tx.fees += easyReceiveFee;
+          tx.amount -= easyReceiveFee;
+        }
       }
-    }
 
-    tx.isNew = false;
+      tx.isNew = false;
 
-    if (persistenceService) {
-      if (!visitedTxs.find(visTx => visTx.txid === tx.txid)) {
-        tx.isNew = true;
-        // add new one in visited
-        visitedTxs.push({
-          txid: tx.txid,
-          counter: 1
-        });
+      if (persistenceService) {
+        if (!visitedTxs.find(visTx => visTx.txid === tx.txid)) {
+          tx.isNew = true;
+          // add new one in visited
+          visitedTxs.push({
+            txid: tx.txid,
+            counter: 1,
+          });
+        }
       }
-    }
 
-    return tx;
-  }));
+      return tx;
+    }),
+  );
 
   if (persistenceService) {
     //save to storage
@@ -177,7 +203,6 @@ export async function formatWalletHistory(walletHistory: IDisplayTransaction[], 
   // remove meritmoney invites so we  have only one tx for meritmoney
   return walletHistory
     .filter(t => {
-
       if (meritMoneyAddresses.indexOf(t.addressFrom) !== -1) {
         //filtering out txs from cancelled MeritMoney/MeritInvite
         return false;

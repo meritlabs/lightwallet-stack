@@ -38,7 +38,7 @@ var errors = require('./errors');
  */
 function Node(config) {
   /* jshint maxstatements: 20 */
-  if(!(this instanceof Node)) {
+  if (!(this instanceof Node)) {
     return new Node(config);
   }
   this.configPath = config.path;
@@ -93,7 +93,7 @@ Node.prototype.openBus = function(options) {
   if (!options) {
     options = {};
   }
-  return new Bus({node: this, remoteAddress: options.remoteAddress});
+  return new Bus({ node: this, remoteAddress: options.remoteAddress });
 };
 
 /**
@@ -102,7 +102,7 @@ Node.prototype.openBus = function(options) {
  */
 Node.prototype.getAllAPIMethods = function() {
   var methods = [];
-  for(var i in this.services) {
+  for (var i in this.services) {
     var mod = this.services[i];
     if (mod.getAPIMethods) {
       methods = methods.concat(mod.getAPIMethods());
@@ -132,7 +132,6 @@ Node.prototype.getAllPublishEvents = function() {
  * @returns {Array}
  */
 Node.prototype.getServiceOrder = function() {
-
   var services = this._unloadedServices;
 
   // organize data for sorting
@@ -148,8 +147,7 @@ Node.prototype.getServiceOrder = function() {
   var stack = [];
 
   function addToStack(names) {
-    for(var i = 0; i < names.length; i++) {
-
+    for (var i = 0; i < names.length; i++) {
       var name = names[i];
       var service = servicesByName[name];
       $.checkState(service, 'Required dependency "' + name + '" not available.');
@@ -158,11 +156,10 @@ Node.prototype.getServiceOrder = function() {
       addToStack(service.module.dependencies);
 
       // add to the stack if it hasn't been added
-      if(!stackNames[name]) {
+      if (!stackNames[name]) {
         stack.push(service);
         stackNames[name] = true;
       }
-
     }
   }
 
@@ -233,9 +230,7 @@ Node.prototype._startService = function(serviceInfo, callback) {
     }
 
     callback();
-
   });
-
 };
 
 Node.prototype._logTitle = function() {
@@ -244,7 +239,6 @@ Node.prototype._logTitle = function() {
     log.info('Using network:', this.getNetworkName());
   }
 };
-
 
 /**
  * Will start all running services in the order based on the dependency chain.
@@ -267,7 +261,7 @@ Node.prototype.start = function(callback) {
       }
       self.emit('ready');
       callback();
-    }
+    },
   );
 };
 
@@ -303,7 +297,7 @@ Node.prototype.stop = function(callback) {
         setImmediate(next);
       }
     },
-    callback
+    callback,
   );
 };
 

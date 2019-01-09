@@ -33,14 +33,16 @@ PublicKeyInput.prototype.getSignatures = function(transaction, privateKey, index
   sigtype = sigtype || Signature.SIGHASH_ALL;
   var publicKey = privateKey.toPublicKey();
   if (publicKey.toString() === this.output.script.getPublicKey().toString('hex')) {
-    return [new TransactionSignature({
-      publicKey: publicKey,
-      prevTxId: this.prevTxId,
-      outputIndex: this.outputIndex,
-      inputIndex: index,
-      signature: Sighash.sign(transaction, privateKey, sigtype, index, this.output.script),
-      sigtype: sigtype
-    })];
+    return [
+      new TransactionSignature({
+        publicKey: publicKey,
+        prevTxId: this.prevTxId,
+        outputIndex: this.outputIndex,
+        inputIndex: index,
+        signature: Sighash.sign(transaction, privateKey, sigtype, index, this.output.script),
+        sigtype: sigtype,
+      }),
+    ];
   }
   return [];
 };
@@ -56,10 +58,7 @@ PublicKeyInput.prototype.getSignatures = function(transaction, privateKey, index
  */
 PublicKeyInput.prototype.addSignature = function(transaction, signature) {
   $.checkState(this.isValidSignature(transaction, signature), 'Signature is invalid');
-  this.setScript(Script.buildPublicKeyIn(
-    signature.signature.toDER(),
-    signature.sigtype
-  ));
+  this.setScript(Script.buildPublicKeyIn(signature.signature.toDER(), signature.sigtype));
   return this;
 };
 

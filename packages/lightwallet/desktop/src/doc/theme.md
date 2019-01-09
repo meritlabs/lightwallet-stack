@@ -2,6 +2,6 @@
 
 ## Theme preferences:
 
-All available for quick edit preferences placed:  
+All available for quick edit preferences placed:
 
 `/styles/v1/common/_variables.sass`

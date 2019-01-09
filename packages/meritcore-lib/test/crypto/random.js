@@ -4,9 +4,7 @@ var meritcore = require('../..');
 var Random = meritcore.crypto.Random;
 
 describe('Random', function() {
-
   describe('@getRandomBuffer', function() {
-
     it('should return a buffer', function() {
       var bytes = Random.getRandomBuffer(8);
       bytes.length.should.equal(8);
@@ -30,7 +28,5 @@ describe('Random', function() {
         }
       }
     });
-
   });
-
 });

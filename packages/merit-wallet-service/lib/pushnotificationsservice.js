@@ -17,147 +17,154 @@ var Notification = Model.Notification;
 log.debug = log.verbose;
 
 var PUSHNOTIFICATIONS_TYPES = {
-  'NewCopayer': {
+  NewCopayer: {
     filename: 'new_copayer',
   },
-  'WalletComplete': {
+  WalletComplete: {
     filename: 'wallet_complete',
   },
-  'NewTxProposal': {
+  NewTxProposal: {
     filename: 'incoming_tx_proposal',
   },
-  'OutgoingTx': {
+  OutgoingTx: {
     filename: 'outgoing_tx',
   },
-  'OutgoingInviteTx': {
+  OutgoingInviteTx: {
     filename: 'outgoing_invite_tx',
   },
-  'IncomingTx': {
+  IncomingTx: {
     filename: 'incoming_tx',
   },
-  'IncomingInvite': {
-    filename: 'incoming_invite'
+  IncomingInvite: {
+    filename: 'incoming_invite',
   },
-  'WalletUnlocked': {
-    filename: 'wallet_unlocked'
+  WalletUnlocked: {
+    filename: 'wallet_unlocked',
   },
-  'IncomingInviteRequest': {
-    filename: 'incoming_invite_request'
+  IncomingInviteRequest: {
+    filename: 'incoming_invite_request',
   },
   MiningReward: {
-    filename: 'mining_reward'
+    filename: 'mining_reward',
   },
   GrowthReward: {
-    filename: 'growth_reward'
+    filename: 'growth_reward',
   },
-  'TxProposalFinallyRejected': {
+  TxProposalFinallyRejected: {
     filename: 'txp_finally_rejected',
   },
-  'TxConfirmation': {
+  TxConfirmation: {
     filename: 'tx_confirmation',
     notifyCreatorOnly: true,
   },
-  'NewIncomingReferralTx': {
+  NewIncomingReferralTx: {
     filename: 'incoming_referral',
     notifyCreatorOnly: true,
   },
-  'ReferralConfirmation': {
+  ReferralConfirmation: {
     filename: 'referral_confirmation',
     notifyCreatorOnly: true,
   },
-  'ReferralWasRejected': {
+  ReferralWasRejected: {
     filename: 'referral_rejected',
     notifyCreatorOnly: true,
   },
-  'NewIncomingVaultTx': {
+  NewIncomingVaultTx: {
     filename: 'incoming_vault',
     notifyCreatorOnly: true,
   },
-  'VaultConfirmation': {
+  VaultConfirmation: {
     filename: 'vault_confirmation',
     notifyCreatorOnly: true,
   },
-  'VaultWasRejected': {
+  VaultWasRejected: {
     filename: 'vault_rejected',
     notifyCreatorOnly: true,
   },
-  'IncomingPoolPayment': {
+  IncomingPoolPayment: {
     filename: 'pool_payment',
   },
   MinedInvite: {
     filename: 'mined_invite',
   },
-
 };
 
-function PushNotificationsService() {};
+function PushNotificationsService() {}
 
-PushNotificationsService.prototype.start = function (opts, cb) {
-  console.warn("**** Starting Push Notification Service");
+PushNotificationsService.prototype.start = function(opts, cb) {
+  console.warn('**** Starting Push Notification Service');
   var self = this;
   opts = opts || {};
   self.request = opts.request || defaultRequest;
 
   function _readDirectories(basePath, cb) {
-    fs.readdir(basePath, function (err, files) {
+    fs.readdir(basePath, function(err, files) {
       if (err) return cb(err);
 
-      const dirs = _.reduce(files, function (dirs, file) {
-        if (fs.lstatSync(path.join(basePath, file)).isDirectory()) {
-          dirs.push(file);
-        }
-        return dirs;
-      }, []);
+      const dirs = _.reduce(
+        files,
+        function(dirs, file) {
+          if (fs.lstatSync(path.join(basePath, file)).isDirectory()) {
+            dirs.push(file);
+          }
+          return dirs;
+        },
+        [],
+      );
 
       return cb(null, dirs);
     });
-  };
+  }
 
-  self.templatePath = path.normalize((opts.pushNotificationsOpts.templatePath || (__dirname + '/templates')) + '/');
+  self.templatePath = path.normalize((opts.pushNotificationsOpts.templatePath || __dirname + '/templates') + '/');
   self.defaultLanguage = opts.pushNotificationsOpts.defaultLanguage || 'en';
   self.defaultUnit = opts.pushNotificationsOpts.defaultUnit || 'mrt';
   self.subjectPrefix = opts.pushNotificationsOpts.subjectPrefix || '';
   self.pushServerUrl = opts.pushNotificationsOpts.pushServerUrl;
   self.authorizationKey = opts.pushNotificationsOpts.authorizationKey;
 
-  if (!self.authorizationKey) return cb(new Error('Missing authorizationKey attribute in configuration.'))
+  if (!self.authorizationKey) return cb(new Error('Missing authorizationKey attribute in configuration.'));
 
-  async.parallel([
-
-    function (done) {
-      _readDirectories(self.templatePath, function (err, res) {
-        self.availableLanguages = res;
-        done(err);
-      });
-    },
-    function (done) {
-      if (opts.storage) {
-        self.storage = opts.storage;
+  async.parallel(
+    [
+      function(done) {
+        _readDirectories(self.templatePath, function(err, res) {
+          self.availableLanguages = res;
+          done(err);
+        });
+      },
+      function(done) {
+        if (opts.storage) {
+          self.storage = opts.storage;
+          done();
+        } else {
+          self.storage = new Storage();
+          self.storage.connect(
+            opts.storageOpts,
+            done,
+          );
+        }
+      },
+      function(done) {
+        self.messageBroker = opts.messageBroker || new MessageBroker(opts.messageBrokerOpts);
+        self.messageBroker.onMessage(_.bind(self._sendPushNotifications, self));
         done();
-      } else {
-        self.storage = new Storage();
-        self.storage.connect(opts.storageOpts, done);
+      },
+    ],
+    function(err) {
+      if (err) {
+        log.error(err);
       }
+      return cb(err);
     },
-    function (done) {
-      self.messageBroker = opts.messageBroker || new MessageBroker(opts.messageBrokerOpts);
-      self.messageBroker.onMessage(_.bind(self._sendPushNotifications, self));
-      done();
-    },
-  ], function (err) {
-    if (err) {
-      log.error(err);
-    }
-    return cb(err);
-  });
-
+  );
 };
 
-PushNotificationsService.prototype._sendPushNotifications = function (notification, cb) {
+PushNotificationsService.prototype._sendPushNotifications = function(notification, cb) {
   const self = this;
-  cb = cb || function () {};
+  cb = cb || function() {};
 
-  self.storage.fetchAndLockNotificationForPushes(Notification.fromObj(notification), function (err, isLocked) {
+  self.storage.fetchAndLockNotificationForPushes(Notification.fromObj(notification), function(err, isLocked) {
     if (err) {
       log.warn('Notification ' + notification.id + ' could not be locked.', err);
       return cb();
@@ -167,7 +174,7 @@ PushNotificationsService.prototype._sendPushNotifications = function (notificati
       log.warn('Notification ' + notification.id + 'is already locked, skipping.');
       return cb();
     }
-    self.storage.fetchNotification(notification, function (err, notification) {
+    self.storage.fetchNotification(notification, function(err, notification) {
       if (err) {
         log.warn('Could not update notification state: ' + notification.id, err);
         return cb();
@@ -179,195 +186,219 @@ PushNotificationsService.prototype._sendPushNotifications = function (notificati
       log.debug('Notification received: ' + notification.type);
       log.debug(JSON.stringify(notification));
 
-      self._checkShouldSendNotif(notification, function (err, should) {
+      self._checkShouldSendNotif(notification, function(err, should) {
         if (err) return cb(err);
 
         log.debug('Should send notification: ', should);
         if (!should) return cb();
 
-        self._getRecipientsList(notification, notifType, function (err, recipientsList) {
+        self._getRecipientsList(notification, notifType, function(err, recipientsList) {
           if (err) return cb(err);
           if (!recipientsList) {
             log.warn('Recipient list is empty, skipping notifications.');
             return cb();
           }
 
-          async.waterfall([
+          async.waterfall(
+            [
+              function(next) {
+                self._readAndApplyTemplates(notification, notifType, recipientsList, next);
+              },
+              function(contents, next) {
+                async.map(
+                  recipientsList,
+                  function(recipient, next) {
+                    const content = contents[recipient.language];
 
-            function (next) {
-              self._readAndApplyTemplates(notification, notifType, recipientsList, next);
-            },
-            function (contents, next) {
-              async.map(recipientsList, function (recipient, next) {
-                const content = contents[recipient.language];
+                    self.storage.fetchPushNotificationSubs(recipient.copayerId, function(err, subs) {
+                      if (err) return next(err);
 
-                self.storage.fetchPushNotificationSubs(recipient.copayerId, function (err,
-                  subs) {
-                  if (err) return next(err);
+                      const notifications = _.map(subs, function(sub) {
+                        const pushNotification = {
+                          to: sub.token,
+                          priority: 'high',
+                          notification: {
+                            title: content.plain.subject,
+                            body: content.plain.body,
+                            sound: 'default',
+                            click_action: 'FCM_PLUGIN_ACTIVITY',
+                            icon: 'fcm_push_icon',
+                          },
+                          data: {
+                            id: notification.id,
+                            walletId: notification.walletId,
+                            copayerId: recipient.copayerId,
+                            type: notification.type,
+                            ...notification.data,
+                            timestamp: Date.now(),
+                          },
+                        };
 
-                  const notifications = _.map(subs, function (sub) {
-                    const pushNotification = {
-                      to: sub.token,
-                      priority: 'high',
-                      notification: {
-                        title: content.plain.subject,
-                        body: content.plain.body,
-                        sound: "default",
-                        click_action: "FCM_PLUGIN_ACTIVITY",
-                        icon: "fcm_push_icon",
-                      },
-                      data: {
-                        id: notification.id,
-                        walletId: notification.walletId,
-                        copayerId: recipient.copayerId,
-                        type: notification.type,
-                        ...notification.data,
-                        timestamp: Date.now()
+                        if (sub.platform === 'web') {
+                          pushNotification.notification.click_action = sub.packageName;
+                          pushNotification.notification.icon = '/assets/v1/icons/merit-512x512.png';
+                        } else if (sub.packageName) {
+                          pushNotification.restricted_package_name = sub.packageName;
+                        }
+
+                        return pushNotification;
+                      });
+                      return next(err, notifications);
+                    });
+                  },
+                  function(err, allNotifications) {
+                    if (err) return next(err);
+                    return next(null, _.flatten(allNotifications));
+                  },
+                );
+              },
+              function(notifications, next) {
+                async.each(
+                  notifications,
+                  function(notification, next) {
+                    self._makeRequest(notification, function(err, response) {
+                      if (err) log.error('Could not send push notification: ', err);
+                      if (response) {
+                        log.debug('Request status: ', response.statusCode);
+                        log.debug('Request message: ', response.statusMessage);
+                        log.debug('Request body: ', response.request.body);
                       }
-                    };
-
-                    if (sub.platform === 'web') {
-                      pushNotification.notification.click_action = sub.packageName;
-                      pushNotification.notification.icon =
-                        '/assets/v1/icons/merit-512x512.png';
-                    } else if (sub.packageName) {
-                      pushNotification.restricted_package_name = sub.packageName;
-                    }
-
-                    return pushNotification;
-                  });
-                  return next(err, notifications);
-                });
-              }, function (err, allNotifications) {
-                if (err) return next(err);
-                return next(null, _.flatten(allNotifications));
-              });
+                      next();
+                    });
+                  },
+                  function(err) {
+                    return next(err);
+                  },
+                );
+              },
+            ],
+            function(err) {
+              if (err) {
+                log.error('An error occurred generating notification', err);
+              }
+              return cb(err);
             },
-            function (notifications, next) {
-              async.each(notifications,
-                function (notification, next) {
-                  self._makeRequest(notification, function (err, response) {
-                    if (err) log.error("Could not send push notification: ", err);
-                    if (response) {
-                      log.debug('Request status: ', response.statusCode);
-                      log.debug('Request message: ', response.statusMessage);
-                      log.debug('Request body: ', response.request.body);
-                    }
-                    next();
-                  });
-                },
-                function (err) {
-                  return next(err);
-                }
-              );
-            },
-          ], function (err) {
-            if (err) {
-              log.error('An error occurred generating notification', err);
-            }
-            return cb(err);
-          });
+          );
         });
       });
     });
   });
 };
 
-PushNotificationsService.prototype._checkShouldSendNotif = function (notification, cb) {
+PushNotificationsService.prototype._checkShouldSendNotif = function(notification, cb) {
   var self = this;
 
   if (notification.type != 'NewTxProposal') return cb(null, true);
-  self.storage.fetchWallet(notification.walletId, function (err, wallet) {
+  self.storage.fetchWallet(notification.walletId, function(err, wallet) {
     return cb(err, wallet && wallet.m > 1);
   });
 };
 
-PushNotificationsService.prototype._getRecipientsList = function (notification, notificationType, cb) {
+PushNotificationsService.prototype._getRecipientsList = function(notification, notificationType, cb) {
   var self = this;
 
-  self.storage.fetchWallet(notification.walletId, function (err, wallet) {
+  self.storage.fetchWallet(notification.walletId, function(err, wallet) {
     if (err) return cb(err);
     if (!wallet) return cb();
 
-    self.storage.fetchPreferences(notification.walletId, null, function (err, preferences) {
-
+    self.storage.fetchPreferences(notification.walletId, null, function(err, preferences) {
       if (err) log.error(err);
       if (_.isEmpty(preferences)) preferences = [];
 
-      var recipientPreferences = _.compact(_.map(preferences, function (p) {
-        if (!_.includes(self.availableLanguages, p.language)) {
-          if (p.language)
-            log.warn('Language for notifications "' + p.language + '" not available.');
-          p.language = self.defaultLanguage;
-        }
+      var recipientPreferences = _.compact(
+        _.map(preferences, function(p) {
+          if (!_.includes(self.availableLanguages, p.language)) {
+            if (p.language) log.warn('Language for notifications "' + p.language + '" not available.');
+            p.language = self.defaultLanguage;
+          }
 
-        return {
-          copayerId: p.copayerId,
-          language: p.language,
-          unit: p.unit,
-        };
-      }));
+          return {
+            copayerId: p.copayerId,
+            language: p.language,
+            unit: p.unit,
+          };
+        }),
+      );
 
       recipientPreferences = _.keyBy(recipientPreferences, 'copayerId');
 
-      var recipientsList = _.compact(_.map(wallet.copayers, function (copayer) {
-        if ((copayer.id == notification.creatorId && notificationType.notifyCreatorOnly) ||
-          (copayer.id != notification.creatorId && !notificationType.notifyCreatorOnly)) {
-          var p = recipientPreferences[copayer.id] || {};
-          return {
-            copayerId: copayer.id,
-            language: p.language || self.defaultLanguage,
-            unit: p.unit || self.defaultUnit,
+      var recipientsList = _.compact(
+        _.map(wallet.copayers, function(copayer) {
+          if (
+            (copayer.id == notification.creatorId && notificationType.notifyCreatorOnly) ||
+            (copayer.id != notification.creatorId && !notificationType.notifyCreatorOnly)
+          ) {
+            var p = recipientPreferences[copayer.id] || {};
+            return {
+              copayerId: copayer.id,
+              language: p.language || self.defaultLanguage,
+              unit: p.unit || self.defaultUnit,
+            };
           }
-        }
-      }));
+        }),
+      );
 
       return cb(null, recipientsList);
     });
   });
 };
 
-PushNotificationsService.prototype._readAndApplyTemplates = function (notification, notifType, recipientsList, cb) {
+PushNotificationsService.prototype._readAndApplyTemplates = function(notification, notifType, recipientsList, cb) {
   var self = this;
 
   var util = require('util');
-  async.map(recipientsList, function (recipient, next) {
-    async.waterfall([
+  async.map(
+    recipientsList,
+    function(recipient, next) {
+      async.waterfall(
+        [
+          function(next) {
+            self._getDataForTemplate(notification, recipient, next);
+          },
+          function(data, next) {
+            async.map(
+              ['plain', 'html'],
+              function(type, next) {
+                self._loadTemplate(notifType, recipient, '.' + type, function(err, template) {
+                  if (err && type == 'html') return next();
+                  if (err) return next(err);
 
-      function (next) {
-        self._getDataForTemplate(notification, recipient, next);
-      },
-      function (data, next) {
-        async.map(['plain', 'html'], function (type, next) {
-          self._loadTemplate(notifType, recipient, '.' + type, function (err, template) {
-            if (err && type == 'html') return next();
-            if (err) return next(err);
-
-            self._applyTemplate(template, data, function (err, res) {
-              return next(err, [type, res]);
-            });
-          });
-        }, function (err, res) {
-          return next(err, _.fromPairs(_.filter(res, function (pair) {
-            return (!_.isEmpty(pair));
-          })));
-        });
-      },
-      function (result, next) {
-        next(null, result);
-      },
-    ], function (err, res) {
-      next(err, [recipient.language, res]);
-    });
-  }, function (err, res) {
-    return cb(err, _.fromPairs(res));
-  });
+                  self._applyTemplate(template, data, function(err, res) {
+                    return next(err, [type, res]);
+                  });
+                });
+              },
+              function(err, res) {
+                return next(
+                  err,
+                  _.fromPairs(
+                    _.filter(res, function(pair) {
+                      return !_.isEmpty(pair);
+                    }),
+                  ),
+                );
+              },
+            );
+          },
+          function(result, next) {
+            next(null, result);
+          },
+        ],
+        function(err, res) {
+          next(err, [recipient.language, res]);
+        },
+      );
+    },
+    function(err, res) {
+      return cb(err, _.fromPairs(res));
+    },
+  );
 };
 
-PushNotificationsService.prototype._getDataForTemplate = function (notification, recipient, cb) {
+PushNotificationsService.prototype._getDataForTemplate = function(notification, recipient, cb) {
   var self = this;
   var UNIT_LABELS = {
-    mrt: 'MRT'
+    mrt: 'MRT',
   };
 
   var data = _.cloneDeep(notification.data);
@@ -381,7 +412,7 @@ PushNotificationsService.prototype._getDataForTemplate = function (notification,
     }
   }
 
-  self.storage.fetchWallet(notification.walletId, function (err, wallet) {
+  self.storage.fetchWallet(notification.walletId, function(err, wallet) {
     if (err || !wallet) return cb(err);
 
     data.walletId = wallet.id;
@@ -390,7 +421,7 @@ PushNotificationsService.prototype._getDataForTemplate = function (notification,
     data.walletN = wallet.n;
 
     var copayer = _.find(wallet.copayers, {
-      id: notification.creatorId
+      id: notification.creatorId,
     });
 
     if (copayer) {
@@ -399,10 +430,10 @@ PushNotificationsService.prototype._getDataForTemplate = function (notification,
     }
 
     if (notification.type == 'TxProposalFinallyRejected' && data.rejectedBy) {
-      var rejectors = _.map(data.rejectedBy, function (copayerId) {
+      var rejectors = _.map(data.rejectedBy, function(copayerId) {
         return _.find(wallet.copayers, {
-          id: copayerId
-        }).name
+          id: copayerId,
+        }).name;
       });
       data.rejectorsNames = rejectors.join(', ');
     }
@@ -411,11 +442,11 @@ PushNotificationsService.prototype._getDataForTemplate = function (notification,
   });
 };
 
-PushNotificationsService.prototype._applyTemplate = function (template, data, cb) {
+PushNotificationsService.prototype._applyTemplate = function(template, data, cb) {
   if (!data) return cb(new Error('Could not apply template to empty data'));
 
   var error;
-  var result = _.mapValues(template, function (t) {
+  var result = _.mapValues(template, function(t) {
     try {
       return Mustache.render(t, data);
     } catch (e) {
@@ -428,20 +459,20 @@ PushNotificationsService.prototype._applyTemplate = function (template, data, cb
   return cb(null, result);
 };
 
-PushNotificationsService.prototype._loadTemplate = function (notifType, recipient, extension, cb) {
+PushNotificationsService.prototype._loadTemplate = function(notifType, recipient, extension, cb) {
   var self = this;
 
-  self._readTemplateFile(recipient.language, notifType.filename + extension, function (err, template) {
+  self._readTemplateFile(recipient.language, notifType.filename + extension, function(err, template) {
     if (err) return cb(err);
     return cb(null, self._compileTemplate(template, extension));
   });
 };
 
-PushNotificationsService.prototype._readTemplateFile = function (language, filename, cb) {
+PushNotificationsService.prototype._readTemplateFile = function(language, filename, cb) {
   var self = this;
 
   var fullFilename = path.join(self.templatePath, language, filename);
-  fs.readFile(fullFilename, 'utf8', function (err, template) {
+  fs.readFile(fullFilename, 'utf8', function(err, template) {
     if (err) {
       return cb(new Error('Could not read template file ' + fullFilename, err));
     }
@@ -449,7 +480,7 @@ PushNotificationsService.prototype._readTemplateFile = function (language, filen
   });
 };
 
-PushNotificationsService.prototype._compileTemplate = function (template, extension) {
+PushNotificationsService.prototype._compileTemplate = function(template, extension) {
   var lines = template.split('\n');
   if (extension == '.html') {
     lines.unshift('');
@@ -460,19 +491,22 @@ PushNotificationsService.prototype._compileTemplate = function (template, extens
   };
 };
 
-PushNotificationsService.prototype._makeRequest = function (opts, cb) {
+PushNotificationsService.prototype._makeRequest = function(opts, cb) {
   var self = this;
 
-  self.request({
-    url: self.pushServerUrl + '/send',
-    method: 'POST',
-    json: true,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'key=' + self.authorizationKey,
+  self.request(
+    {
+      url: self.pushServerUrl + '/send',
+      method: 'POST',
+      json: true,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'key=' + self.authorizationKey,
+      },
+      body: opts,
     },
-    body: opts,
-  }, cb);
+    cb,
+  );
 };
 
 module.exports = PushNotificationsService;

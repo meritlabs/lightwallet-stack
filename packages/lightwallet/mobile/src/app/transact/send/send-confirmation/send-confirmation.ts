@@ -11,26 +11,25 @@ import { WalletService } from '@merit/common/services/wallet.service';
 import { TouchIdService } from '@merit/mobile/services/touch-id.service';
 import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
 
-
 @IonicPage()
 @Component({
   selector: 'view-send-confirmation',
-  templateUrl: 'send-confirmation.html'
+  templateUrl: 'send-confirmation.html',
 })
 export class SendConfirmationView {
-
   txData: ISendTxData;
   viewData: any;
   unlockValue: number = 0;
 
-  constructor(private navParams: NavParams,
-              private navCtrl: NavController,
-              private toastCtrl: ToastControllerService,
-              private alertController: AlertController,
-              private loadingCtrl: LoadingController,
-              private rateService: RateService,
-              private logger: LoggerService,
-              private sendService: SendService
+  constructor(
+    private navParams: NavParams,
+    private navCtrl: NavController,
+    private toastCtrl: ToastControllerService,
+    private alertController: AlertController,
+    private loadingCtrl: LoadingController,
+    private rateService: RateService,
+    private logger: LoggerService,
+    private sendService: SendService,
   ) {
     this.txData = navParams.get('txData');
   }
@@ -44,7 +43,6 @@ export class SendConfirmationView {
   }
 
   async ngOnInit() {
-
     const viewData: any = {
       recipient: this.txData.recipient,
       amount: this.txData.amount,
@@ -57,7 +55,7 @@ export class SendConfirmationView {
       feeIncluded: this.txData.feeIncluded,
       methodName: this.txData.sendMethod.type == SendMethodType.Easy ? 'MeritMoney Link' : 'Classic Send',
       destination: this.txData.sendMethod.alias ? '@' + this.txData.sendMethod.alias : this.txData.sendMethod.value,
-      easySendDelivered: this.navParams.get('easySendDelivered')
+      easySendDelivered: this.navParams.get('easySendDelivered'),
     };
 
     viewData.walletRemainingBalance = this.txData.wallet.balance.totalAmount - viewData.totalAmount;
@@ -78,23 +76,28 @@ export class SendConfirmationView {
   }
 
   async send() {
-
     const loadingSpinner = this.loadingCtrl.create({
       content: 'Sending transaction...',
-      dismissOnPageChange: true
+      dismissOnPageChange: true,
     });
     loadingSpinner.present();
 
     try {
-
       await this.sendService.send(this.txData.wallet, this.txData);
 
       if (this.txData.sendMethod.type === SendMethodType.Easy) {
         let easySendDelivered;
 
-        if (this.txData.sendMethod.destination === SendMethodDestination.Email || this.txData.sendMethod.destination === SendMethodDestination.Sms) {
+        if (
+          this.txData.sendMethod.destination === SendMethodDestination.Email ||
+          this.txData.sendMethod.destination === SendMethodDestination.Sms
+        ) {
           try {
-            await this.txData.wallet.deliverGlobalSend(this.txData.easySend, { type: SendMethodType.Easy, destination: this.txData.sendMethod.destination, value: this.txData.sendMethod.value });
+            await this.txData.wallet.deliverGlobalSend(this.txData.easySend, {
+              type: SendMethodType.Easy,
+              destination: this.txData.sendMethod.destination,
+              value: this.txData.sendMethod.value,
+            });
             easySendDelivered = true;
           } catch (err) {
             this.logger.error('Unable to deliver GlobalSend', err);
@@ -118,10 +121,12 @@ export class SendConfirmationView {
 
   getContactInitials(contact) {
     if (!contact.name || !contact.name.formatted) return '';
-    let nameParts = contact.name.formatted.toUpperCase().replace(/\s\s+/g, ' ').split(' ');
+    let nameParts = contact.name.formatted
+      .toUpperCase()
+      .replace(/\s\s+/g, ' ')
+      .split(' ');
     let name = nameParts[0].charAt(0);
     if (nameParts[1]) name += ' ' + nameParts[1].charAt(0);
     return name;
   }
-
 }

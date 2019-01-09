@@ -20,18 +20,24 @@ describe('Utils', function() {
     it('should sign a message', function() {
       var sig = Utils.signMessage('hola', '09458c090a69a38368975fb68115df2f4b0ab7d1bc463fc60c67aa1730641d6c');
       should.exist(sig);
-      sig.should.equal('3045022100f2e3369dd4813d4d42aa2ed74b5cf8e364a8fa13d43ec541e4bc29525e0564c302205b37a7d1ca73f684f91256806cdad4b320b4ed3000bee2e388bcec106e0280e0');
+      sig.should.equal(
+        '3045022100f2e3369dd4813d4d42aa2ed74b5cf8e364a8fa13d43ec541e4bc29525e0564c302205b37a7d1ca73f684f91256806cdad4b320b4ed3000bee2e388bcec106e0280e0',
+      );
     });
     it('should fail to sign with wrong args', function() {
       (function() {
         Utils.signMessage('hola', '03bec86ad4a8a91fe7c11ec06af27246ec55094db3d86098b7d8b2f12afe47627f');
-      }).should.throw('Number');
+      }.should.throw('Number'));
     });
   });
 
   describe('#verifyMessage', function() {
     it('should fail to verify a malformed signature', function() {
-      var res = Utils.verifyMessage('hola', 'badsignature', '02555a2d45e309c00cc8c5090b6ec533c6880ab2d3bc970b3943def989b3373f16');
+      var res = Utils.verifyMessage(
+        'hola',
+        'badsignature',
+        '02555a2d45e309c00cc8c5090b6ec533c6880ab2d3bc970b3943def989b3373f16',
+      );
       should.exist(res);
       res.should.equal(false);
     });
@@ -41,12 +47,20 @@ describe('Utils', function() {
       res.should.equal(false);
     });
     it('should fail to verify with wrong pubkey', function() {
-      var res = Utils.verifyMessage('hola', '3045022100d6186930e4cd9984e3168e15535e2297988555838ad10126d6c20d4ac0e74eb502201095a6319ea0a0de1f1e5fb50f7bf10b8069de10e0083e23dbbf8de9b8e02785', '02555a2d45e309c00cc8c5090b6ec533c6880ab2d3bc970b3943def989b3373f16');
+      var res = Utils.verifyMessage(
+        'hola',
+        '3045022100d6186930e4cd9984e3168e15535e2297988555838ad10126d6c20d4ac0e74eb502201095a6319ea0a0de1f1e5fb50f7bf10b8069de10e0083e23dbbf8de9b8e02785',
+        '02555a2d45e309c00cc8c5090b6ec533c6880ab2d3bc970b3943def989b3373f16',
+      );
       should.exist(res);
       res.should.equal(false);
     });
     it('should verify', function() {
-      var res = Utils.verifyMessage('hola', '3045022100d6186930e4cd9984e3168e15535e2297988555838ad10126d6c20d4ac0e74eb502201095a6319ea0a0de1f1e5fb50f7bf10b8069de10e0083e23dbbf8de9b8e02785', '03bec86ad4a8a91fe7c11ec06af27246ec55094db3d86098b7d8b2f12afe47627f');
+      var res = Utils.verifyMessage(
+        'hola',
+        '3045022100d6186930e4cd9984e3168e15535e2297988555838ad10126d6c20d4ac0e74eb502201095a6319ea0a0de1f1e5fb50f7bf10b8069de10e0083e23dbbf8de9b8e02785',
+        '03bec86ad4a8a91fe7c11ec06af27246ec55094db3d86098b7d8b2f12afe47627f',
+      );
       should.exist(res);
       res.should.equal(true);
     });
@@ -54,115 +68,170 @@ describe('Utils', function() {
 
   describe('#formatAmount', function() {
     it('should successfully format short amount', function() {
-      var cases = [{
-        args: [1, 'bit'],
-        expected: '0',
-      }, {
-        args: [1, 'mrt'],
-        expected: '0.00',
-      }, {
-        args: [400050000, 'mrt'],
-        expected: '4.0005',
-      }, {
-        args: [400000000, 'mrt'],
-        expected: '4.00',
-      }, {
-        args: [49999, 'mrt'],
-        expected: '0.000499',
-      }, {
-        args: [100000000, 'mrt'],
-        expected: '1.00',
-      }, {
-        args: [0, 'bit'],
-        expected: '0',
-      }, {
-        args: [12345678, 'bit'],
-        expected: '123,456',
-      }, {
-        args: [12345678, 'mrt'],
-        expected: '0.123456',
-      }, {
-        args: [12345611, 'mrt'],
-        expected: '0.123456',
-      }, {
-        args: [1234, 'mrt'],
-        expected: '0.000012',
-      }, {
-        args: [1299, 'mrt'],
-        expected: '0.000012',
-      }, {
-        args: [1234567899999, 'mrt'],
-        expected: '12,345.678999',
-      }, {
-        args: [12345678, 'bit', {
-          thousandsSeparator: '.'
-        }],
-        expected: '123.456',
-      }, {
-        args: [12345678, 'mrt', {
-          decimalSeparator: ','
-        }],
-        expected: '0,123456',
-      }, {
-        args: [1234567899999, 'mrt', {
-          thousandsSeparator: ' ',
-          decimalSeparator: ','
-        }],
-        expected: '12 345,678999',
-      }, ];
+      var cases = [
+        {
+          args: [1, 'bit'],
+          expected: '0',
+        },
+        {
+          args: [1, 'mrt'],
+          expected: '0.00',
+        },
+        {
+          args: [400050000, 'mrt'],
+          expected: '4.0005',
+        },
+        {
+          args: [400000000, 'mrt'],
+          expected: '4.00',
+        },
+        {
+          args: [49999, 'mrt'],
+          expected: '0.000499',
+        },
+        {
+          args: [100000000, 'mrt'],
+          expected: '1.00',
+        },
+        {
+          args: [0, 'bit'],
+          expected: '0',
+        },
+        {
+          args: [12345678, 'bit'],
+          expected: '123,456',
+        },
+        {
+          args: [12345678, 'mrt'],
+          expected: '0.123456',
+        },
+        {
+          args: [12345611, 'mrt'],
+          expected: '0.123456',
+        },
+        {
+          args: [1234, 'mrt'],
+          expected: '0.000012',
+        },
+        {
+          args: [1299, 'mrt'],
+          expected: '0.000012',
+        },
+        {
+          args: [1234567899999, 'mrt'],
+          expected: '12,345.678999',
+        },
+        {
+          args: [
+            12345678,
+            'bit',
+            {
+              thousandsSeparator: '.',
+            },
+          ],
+          expected: '123.456',
+        },
+        {
+          args: [
+            12345678,
+            'mrt',
+            {
+              decimalSeparator: ',',
+            },
+          ],
+          expected: '0,123456',
+        },
+        {
+          args: [
+            1234567899999,
+            'mrt',
+            {
+              thousandsSeparator: ' ',
+              decimalSeparator: ',',
+            },
+          ],
+          expected: '12 345,678999',
+        },
+      ];
 
       _.each(cases, function(testCase) {
         Utils.formatAmount.apply(this, testCase.args).should.equal(testCase.expected);
       });
     });
     it('should successfully format full amount', function() {
-      var cases = [{
-        args: [1, 'bit'],
-        expected: '0.01',
-      }, {
-        args: [1, 'mrt'],
-        expected: '0.00000001',
-      }, {
-        args: [0, 'bit'],
-        expected: '0.00',
-      }, {
-        args: [12345678, 'bit'],
-        expected: '123,456.78',
-      }, {
-        args: [12345678, 'mrt'],
-        expected: '0.12345678',
-      }, {
-        args: [1234567, 'mrt'],
-        expected: '0.01234567',
-      }, {
-        args: [12345611, 'mrt'],
-        expected: '0.12345611',
-      }, {
-        args: [1234, 'mrt'],
-        expected: '0.00001234',
-      }, {
-        args: [1299, 'mrt'],
-        expected: '0.00001299',
-      }, {
-        args: [1234567899999, 'mrt'],
-        expected: '12,345.67899999',
-      }, {
-        args: [12345678, 'bit', {
-          thousandsSeparator: "'"
-        }],
-        expected: "123'456.78",
-      }, {
-        args: [12345678, 'mrt', {
-          decimalSeparator: ','
-        }],
-        expected: '0,12345678',
-      }, {
-        args: [1234567899999, 'mrt', {
-          thousandsSeparator: ' ',
-          decimalSeparator: ','
-        }],
-        expected: '12 345,67899999',
-      }, ];
+      var cases = [
+        {
+          args: [1, 'bit'],
+          expected: '0.01',
+        },
+        {
+          args: [1, 'mrt'],
+          expected: '0.00000001',
+        },
+        {
+          args: [0, 'bit'],
+          expected: '0.00',
+        },
+        {
+          args: [12345678, 'bit'],
+          expected: '123,456.78',
+        },
+        {
+          args: [12345678, 'mrt'],
+          expected: '0.12345678',
+        },
+        {
+          args: [1234567, 'mrt'],
+          expected: '0.01234567',
+        },
+        {
+          args: [12345611, 'mrt'],
+          expected: '0.12345611',
+        },
+        {
+          args: [1234, 'mrt'],
+          expected: '0.00001234',
+        },
+        {
+          args: [1299, 'mrt'],
+          expected: '0.00001299',
+        },
+        {
+          args: [1234567899999, 'mrt'],
+          expected: '12,345.67899999',
+        },
+        {
+          args: [
+            12345678,
+            'bit',
+            {
+              thousandsSeparator: "'",
+            },
+          ],
+          expected: "123'456.78",
+        },
+        {
+          args: [
+            12345678,
+            'mrt',
+            {
+              decimalSeparator: ',',
+            },
+          ],
+          expected: '0,12345678',
+        },
+        {
+          args: [
+            1234567899999,
+            'mrt',
+            {
+              thousandsSeparator: ' ',
+              decimalSeparator: ',',
+            },
+          ],
+          expected: '12 345,67899999',
+        },
+      ];
 
       _.each(cases, function(testCase) {
         testCase.args[2] = testCase.args[2] || {};
@@ -174,15 +243,18 @@ describe('Utils', function() {
 
   describe('#signMessage #verifyMessage round trip', function() {
     it('should sign and verify', function() {
-      var msg = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+      var msg =
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
       var sig = Utils.signMessage(msg, '09458c090a69a38368975fb68115df2f4b0ab7d1bc463fc60c67aa1730641d6c');
-      Utils.verifyMessage(msg, sig, '03bec86ad4a8a91fe7c11ec06af27246ec55094db3d86098b7d8b2f12afe47627f').should.equal(true);
+      Utils.verifyMessage(msg, sig, '03bec86ad4a8a91fe7c11ec06af27246ec55094db3d86098b7d8b2f12afe47627f').should.equal(
+        true,
+      );
     });
   });
 
   describe('#encryptMessage #decryptMessage round trip', function() {
     it('should encrypt and decrypt', function() {
-      var pwd = "ezDRS2NRchMJLf1IWtjL5A==";
+      var pwd = 'ezDRS2NRchMJLf1IWtjL5A==';
       var ct = Utils.encryptMessage('hello world', pwd);
       var msg = Utils.decryptMessage(ct, pwd);
       msg.should.equal('hello world');
@@ -202,7 +274,7 @@ describe('Utils', function() {
         amount: 1234,
         message: {
           one: 'one',
-          two: 'two'
+          two: 'two',
         },
       };
 
@@ -212,7 +284,7 @@ describe('Utils', function() {
         version: '1.0',
         message: {
           two: 'two',
-          one: 'one'
+          one: 'one',
         },
         amount: 1234,
       };
@@ -226,15 +298,13 @@ describe('Utils', function() {
 
   describe('#privateKeyToAESKey', function() {
     it('should be ok', function() {
-      var privKey = new Meritcore.PrivateKey('09458c090a69a38368975fb68115df2f4b0ab7d1bc463fc60c67aa1730641d6c').toString();
+      var privKey = new Meritcore.PrivateKey(
+        '09458c090a69a38368975fb68115df2f4b0ab7d1bc463fc60c67aa1730641d6c',
+      ).toString();
       Utils.privateKeyToAESKey(privKey).should.be.equal('2HvmUYBSD0gXLea6z0n7EQ==');
     });
     it('should fail if pk has invalid values', function() {
-      var values = [
-        null,
-        123,
-        '123',
-      ];
+      var values = [null, 123, '123'];
       _.each(values, function(value) {
         var valid = true;
         try {
@@ -249,10 +319,9 @@ describe('Utils', function() {
 
   describe('#verifyRequestPubKey', function() {
     it('should generate and check request pub key', function() {
-      var reqPubKey = (new Meritcore.PrivateKey).toPublicKey();
+      var reqPubKey = new Meritcore.PrivateKey().toPublicKey();
       var xPrivKey = new Meritcore.HDPrivateKey();
       var xPubKey = new Meritcore.HDPublicKey(xPrivKey);
-
 
       var sig = Utils.signRequestPubKey(reqPubKey.toString(), xPrivKey);
       var valid = Utils.verifyRequestPubKey(reqPubKey.toString(), sig, xPubKey);

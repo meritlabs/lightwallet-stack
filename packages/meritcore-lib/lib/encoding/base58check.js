@@ -6,8 +6,7 @@ var buffer = require('buffer');
 var sha256sha256 = require('../crypto/hash').sha256sha256;
 
 var Base58Check = function Base58Check(obj) {
-  if (!(this instanceof Base58Check))
-    return new Base58Check(obj);
+  if (!(this instanceof Base58Check)) return new Base58Check(obj);
   if (Buffer.isBuffer(obj)) {
     var buf = obj;
     this.fromBuffer(buf);
@@ -39,13 +38,11 @@ Base58Check.validChecksum = function validChecksum(data, checksum) {
 };
 
 Base58Check.decode = function(s) {
-  if (typeof s !== 'string')
-    throw new Error('Input must be a string');
+  if (typeof s !== 'string') throw new Error('Input must be a string');
 
   var buf = new Buffer(Base58.decode(s));
 
-  if (buf.length < 4)
-    throw new Error("Input string too short");
+  if (buf.length < 4) throw new Error('Input string too short');
 
   var data = buf.slice(0, -4);
   var csum = buf.slice(-4);
@@ -53,8 +50,7 @@ Base58Check.decode = function(s) {
   var hash = sha256sha256(data);
   var hash4 = hash.slice(0, 4);
 
-  if (csum.toString('hex') !== hash4.toString('hex'))
-    throw new Error("Checksum mismatch");
+  if (csum.toString('hex') !== hash4.toString('hex')) throw new Error('Checksum mismatch');
 
   return data;
 };
@@ -64,8 +60,7 @@ Base58Check.checksum = function(buffer) {
 };
 
 Base58Check.encode = function(buf) {
-  if (!Buffer.isBuffer(buf))
-    throw new Error('Input must be a buffer');
+  if (!Buffer.isBuffer(buf)) throw new Error('Input must be a buffer');
   var checkedBuf = new Buffer(buf.length + 4);
   var hash = Base58Check.checksum(buf);
   buf.copy(checkedBuf);

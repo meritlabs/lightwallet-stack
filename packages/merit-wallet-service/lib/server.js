@@ -102,11 +102,14 @@ WalletService.initialize = function(opts, cb) {
       return cb();
     } else {
       var newStorage = new Storage();
-      newStorage.connect(opts.storageOpts, function(err) {
-        if (err) return cb(err);
-        storage = newStorage;
-        return cb();
-      });
+      newStorage.connect(
+        opts.storageOpts,
+        function(err) {
+          if (err) return cb(err);
+          storage = newStorage;
+          return cb();
+        },
+      );
     }
   }
 
@@ -154,7 +157,7 @@ WalletService.initialize = function(opts, cb) {
       }
       initialized = true;
       return cb();
-    }
+    },
   );
 };
 
@@ -300,7 +303,7 @@ WalletService.prototype.login = function(opts, cb) {
       if (!session) return cb(new Error('Could not get current session for this copayer'));
 
       return cb(null, session.id);
-    }
+    },
   );
 };
 
@@ -390,7 +393,7 @@ WalletService.prototype.recreateWallet = function(opts, cb) {
     err => {
       const newWalletId = newWallet ? newWallet.id : null;
       return cb(err, newWalletId, parentAddress);
-    }
+    },
   );
 };
 
@@ -489,7 +492,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
                 creatorId: parentAddress.walletId,
               },
               null,
-              acb
+              acb,
             );
           });
         });
@@ -498,7 +501,7 @@ WalletService.prototype.createWallet = function(opts, cb) {
     function(err) {
       var newWalletId = newWallet ? newWallet.id : null;
       return cb(err, newWalletId);
-    }
+    },
   );
 };
 
@@ -630,7 +633,7 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
               },
               function(err) {
                 nextNetwork(err, !!walletId);
-              }
+              },
             );
           });
         },
@@ -640,9 +643,9 @@ WalletService.prototype.getWalletFromIdentifier = function(opts, cb) {
             return self.storage.fetchWallet(walletId, cb);
           }
           cb();
-        }
+        },
       );
-    }
+    },
   );
 };
 
@@ -725,7 +728,7 @@ WalletService.prototype.sendReferral = function(rawReferral, cb) {
               }
 
               return localMeritDaemon.sendReferral(rawReferral, cb);
-            }
+            },
           );
         });
       });
@@ -840,7 +843,7 @@ WalletService.prototype.getStatus = function(opts, cb) {
         }, 0);
 
         return cb(null, status);
-      }
+      },
     );
   });
 };
@@ -932,7 +935,7 @@ WalletService.prototype._notifyTxProposalAction = function(type, txp, extraArgs,
       amount: txp.getTotalAmount(),
       message: txp.message,
     },
-    extraArgs
+    extraArgs,
   );
 
   self._notify(type, data, {}, cb);
@@ -974,7 +977,7 @@ WalletService.prototype._addCopayerToWallet = function(wallet, opts, cb) {
                 copayerId: copayer.id,
                 copayerName: copayer.name,
               },
-              next
+              next,
             );
           },
           function(next) {
@@ -987,7 +990,7 @@ WalletService.prototype._addCopayerToWallet = function(wallet, opts, cb) {
                 {
                   isGlobal: true,
                 },
-                next
+                next,
               );
             } else {
               next();
@@ -1008,7 +1011,7 @@ WalletService.prototype._addCopayerToWallet = function(wallet, opts, cb) {
             copayerId: copayer.id,
             wallet: wallet,
           });
-        }
+        },
       );
     });
   });
@@ -1127,14 +1130,14 @@ WalletService.prototype.joinWallet = function(opts, cb) {
         // New client trying to join legacy wallet
         if (wallet.derivationStrategy == Constants.DERIVATION_STRATEGIES.BIP45) {
           return cb(
-            new ClientError('The wallet you are trying to join was created with an older version of the client app.')
+            new ClientError('The wallet you are trying to join was created with an older version of the client app.'),
           );
         }
       } else {
         // Legacy client trying to join new wallet
         if (wallet.derivationStrategy == Constants.DERIVATION_STRATEGIES.BIP44) {
           return cb(
-            new ClientError(Errors.codes.UPGRADE_NEEDED, 'To join this wallet you need to upgrade your client app.')
+            new ClientError(Errors.codes.UPGRADE_NEEDED, 'To join this wallet you need to upgrade your client app.'),
           );
         }
       }
@@ -1246,7 +1249,7 @@ WalletService.prototype._canCreateAddress = function(ignoreMaxGap, cb) {
       _.reject(addresses, {
         isChange: true,
       }),
-      Defaults.MAX_MAIN_ADDRESS_GAP
+      Defaults.MAX_MAIN_ADDRESS_GAP,
     );
     if (
       latestAddresses.length < Defaults.MAX_MAIN_ADDRESS_GAP ||
@@ -1280,7 +1283,7 @@ WalletService.prototype._canCreateAddress = function(ignoreMaxGap, cb) {
         self.storage.storeAddress(address, function(err) {
           return cb(err, true);
         });
-      }
+      },
     );
   });
 };
@@ -1310,7 +1313,7 @@ WalletService.prototype.createAddress = function(opts, cb) {
         },
         function() {
           return cb(null, address);
-        }
+        },
       );
     });
   }
@@ -1521,7 +1524,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
             });
 
             return next();
-          }
+          },
         );
       },
       function(next) {
@@ -1540,7 +1543,7 @@ WalletService.prototype._getUtxosForCurrentWallet = function(addresses, invites,
     ],
     function(err) {
       return cb(err, allUtxos);
-    }
+    },
   );
 };
 
@@ -1601,7 +1604,7 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
       totalPendingCoinbaseAmount: 0,
       totalConfirmedAmount: 0,
       lockedConfirmedAmount: 0,
-    }
+    },
   );
   balance.availableAmount = balance.totalAmount - balance.lockedAmount;
   balance.availableConfirmedAmount = balance.totalConfirmedAmount - balance.lockedConfirmedAmount;
@@ -1609,11 +1612,11 @@ WalletService.prototype._totalizeUtxos = function(utxos) {
   $.checkArgument(balance.availableAmount <= balance.totalAmount, 'Total amount must be greater than available');
   $.checkArgument(
     balance.lockedConfirmedAmount <= balance.lockedAmount,
-    'Total lockedAmount must be greater than lockedConfirmedAmount'
+    'Total lockedAmount must be greater than lockedConfirmedAmount',
   );
   $.checkArgument(
     balance.totalConfirmedAmount <= balance.totalAmount,
-    'Total totalAmount must be greater than totalConfirmedAmount'
+    'Total totalAmount must be greater than totalConfirmedAmount',
   );
   $.checkArgument(balance.lockedAmount <= balance.totalAmount, 'Total amount must be greater than lockedAmount');
 
@@ -1630,8 +1633,11 @@ WalletService.prototype._getBalanceFromAddresses = async function(addresses, inv
 
   try {
     var addressStrs = _.map(addresses, 'address');
-    let balance = await localMeritDaemon.getAddressBalance(
-      addressStrs, {invites: invites, detailed: true, mempool: true});
+    let balance = await localMeritDaemon.getAddressBalance(addressStrs, {
+      invites: invites,
+      detailed: true,
+      mempool: true,
+    });
 
     balance.lockedAmount = 0;
     balance.lockedConfirmedAmount = 0;
@@ -1639,10 +1645,9 @@ WalletService.prototype._getBalanceFromAddresses = async function(addresses, inv
     balance.availableConfirmedAmount = balance.totalConfirmedAmount;
 
     return cb(null, balance);
-  } catch(err) {
+  } catch (err) {
     return cb(err);
   }
-
 };
 
 WalletService.prototype._getBalanceOneStep = function(addresses, opts, cb) {
@@ -1673,7 +1678,7 @@ WalletService.prototype._getActiveAddresses = function(cb) {
         _.filter(allAddresses, function(address) {
           return address.createdOn > now - 24 * 3600;
         }),
-        'address'
+        'address',
       );
 
       var result = _.union(active, recent);
@@ -1682,7 +1687,7 @@ WalletService.prototype._getActiveAddresses = function(cb) {
       result = _.compact(
         _.map(result, function(r) {
           return index[r];
-        })
+        }),
       );
       return cb(null, result);
     });
@@ -1770,7 +1775,7 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
       })
     )
       return cb(
-        new ClientError('Invalid fee level. Valid values are ' + _.map(Defaults.FEE_LEVELS, 'name').join(', '))
+        new ClientError('Invalid fee level. Valid values are ' + _.map(Defaults.FEE_LEVELS, 'name').join(', ')),
       );
   }
 
@@ -1824,9 +1829,9 @@ WalletService.prototype.getSendMaxInfo = function(opts, cb) {
         });
 
         var baseTxpSize = txp.getEstimatedSize();
-        var baseTxpFee = baseTxpSize * txp.feePerKb / 1000;
+        var baseTxpFee = (baseTxpSize * txp.feePerKb) / 1000;
         var sizePerInput = txp.getEstimatedSizeForSingleInput();
-        var feePerInput = sizePerInput * txp.feePerKb / 1000;
+        var feePerInput = (sizePerInput * txp.feePerKb) / 1000;
 
         var partitionedByAmount = _.partition(inputs, function(input) {
           return input.micros > feePerInput;
@@ -1915,8 +1920,8 @@ WalletService.prototype.getFeeLevels = function(opts, cb) {
       _.flatten(
         _.map(definedPoints, function(p) {
           return _.range(p, p + Defaults.FEE_LEVELS_FALLBACK + 1);
-        })
-      )
+        }),
+      ),
     );
   }
 
@@ -2012,9 +2017,9 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
 
   var txpAmount = txp.getTotalAmount();
   var baseTxpSize = txp.getEstimatedSize();
-  var baseTxpFee = baseTxpSize * txp.feePerKb / 1000;
+  var baseTxpFee = (baseTxpSize * txp.feePerKb) / 1000;
   var sizePerInput = txp.getEstimatedSizeForSingleInput();
-  var feePerInput = sizePerInput * txp.feePerKb / 1000;
+  var feePerInput = (sizePerInput * txp.feePerKb) / 1000;
 
   function sanitizeUtxos(utxos) {
     var excludeIndex = _.reduce(
@@ -2023,7 +2028,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
         res[val] = val;
         return res;
       },
-      {}
+      {},
     );
 
     // We should ensure that utxos are not locked and are mature enough.
@@ -2062,7 +2067,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
           Utils.formatAmountInMrt(totalValueInUtxos) +
           ') is insufficient to cover for txp amount (' +
           Utils.formatAmountInMrt(txpAmount) +
-          ')'
+          ')',
       );
       return cb(Errors.INSUFFICIENT_FUNDS);
     }
@@ -2072,7 +2077,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
           Utils.formatAmountInMrt(netValueInUtxos) +
           ') is insufficient to cover for txp amount (' +
           Utils.formatAmountInMrt(txpAmount) +
-          ')'
+          ')',
       );
       return cb(Errors.INSUFFICIENT_FUNDS_FOR_FEE);
     }
@@ -2123,14 +2128,14 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
           Utils.formatRatio(feeVsAmountRatio) +
           ' (max: ' +
           Utils.formatRatio(Defaults.UTXO_SELECTION_MAX_FEE_VS_TX_AMOUNT_FACTOR) +
-          ')'
+          ')',
       );
       log.debug(
         'Tx amount/Input amount:' +
           Utils.formatRatio(amountVsUtxoRatio) +
           ' (min: ' +
           Utils.formatRatio(Defaults.UTXO_SELECTION_MIN_TX_AMOUNT_VS_UTXO_FACTOR) +
-          ')'
+          ')',
       );
 
       if (txpSize / 1000 > Defaults.MAX_TX_SIZE_IN_KB) {
@@ -2139,7 +2144,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
             Utils.formatSize(txpSize) +
             ') is too big (max: ' +
             Utils.formatSize(Defaults.MAX_TX_SIZE_IN_KB * 1000) +
-            ')'
+            ')',
         );
         error = Errors.TX_MAX_SIZE_EXCEEDED;
         return false;
@@ -2160,18 +2165,23 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
               Utils.formatRatio(Defaults.UTXO_SELECTION_MAX_FEE_VS_SINGLE_UTXO_FEE_FACTOR) +
               ')' +
               ' loses wrt single-input tx: ' +
-              Utils.formatAmountInMrt((selected.length - 1) * feePerInput)
+              Utils.formatAmountInMrt((selected.length - 1) * feePerInput),
           );
           if (feeVsSingleInputFeeRatio > Defaults.UTXO_SELECTION_MAX_FEE_VS_SINGLE_UTXO_FEE_FACTOR) {
             log.debug(
-              'Breaking because fee is too significant compared to tx amount and it is too expensive compared to using single input'
+              'Breaking because fee is too significant compared to tx amount and it is too expensive compared to using single input',
             );
             return false;
           }
         }
       }
 
-      log.debug('Cumulative total so far: ' + Utils.formatAmountInMrt(total) + ', Net total so far: ' + Utils.formatAmountInMrt(netTotal));
+      log.debug(
+        'Cumulative total so far: ' +
+          Utils.formatAmountInMrt(total) +
+          ', Net total so far: ' +
+          Utils.formatAmountInMrt(netTotal),
+      );
 
       if (netTotal >= txpAmount) {
         var changeAmount = Math.round(total - txpAmount - fee);
@@ -2182,7 +2192,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
           log.debug(
             'Change below dust threshold (' +
               Utils.formatAmountInMrt(dustThreshold) +
-              '). Incrementing fee to remove change.'
+              '). Incrementing fee to remove change.',
           );
           // Remove dust change by incrementing fee
 
@@ -2201,7 +2211,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
         'Could not reach Txp total (' +
           Utils.formatAmountInMrt(txpAmount) +
           '), still missing: ' +
-          Utils.formatAmountInMrt(txpAmount - netTotal)
+          Utils.formatAmountInMrt(txpAmount - netTotal),
       );
 
       selected = [];
@@ -2240,9 +2250,9 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
       availableAmount = balance.availableAmount;
     }
 
-    if(txp.isInvite) {
+    if (txp.isInvite) {
       // User needs to maintain one invite to keep an activated account.
-      if(totalAmount < (txp.getTotalAmount() + 1 )) return cb(Errors.INSUFFICIENT_INVITES);
+      if (totalAmount < txp.getTotalAmount() + 1) return cb(Errors.INSUFFICIENT_INVITES);
     }
     if (totalAmount < txp.getTotalAmount()) return cb(Errors.INSUFFICIENT_FUNDS);
     if (availableAmount < txp.getTotalAmount()) return cb(Errors.LOCKED_FUNDS);
@@ -2304,7 +2314,7 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
         if (selectionError || _.isEmpty(inputs)) return cb(selectionError || new Error('Could not select tx inputs'));
 
         txp.setInputs(_.shuffle(inputs));
-        txp.fee = txp.isInvite? 0 : fee;
+        txp.fee = txp.isInvite ? 0 : fee;
 
         var err = self._checkTx(txp);
 
@@ -2314,14 +2324,14 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
             'Successfully built transaction. Total fees: ' +
               Utils.formatAmountInMrt(txp.fee) +
               ', total change: ' +
-              Utils.formatAmountInMrt(change)
+              Utils.formatAmountInMrt(change),
           );
         } else {
           log.warn('Error building transaction', err);
         }
 
         return cb(err);
-      }
+      },
     );
   });
 };
@@ -2418,7 +2428,7 @@ WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) 
             })
           )
             return next(
-              new ClientError('Invalid fee level. Valid values are ' + _.map(Defaults.FEE_LEVELS, 'name').join(', '))
+              new ClientError('Invalid fee level. Valid values are ' + _.map(Defaults.FEE_LEVELS, 'name').join(', ')),
             );
         }
 
@@ -2459,7 +2469,7 @@ WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) 
             opts.inputs = info.inputs;
             opts.fee = info.fee;
             return next();
-          }
+          },
         );
       },
       function(next) {
@@ -2471,7 +2481,7 @@ WalletService.prototype._validateAndSanitizeTxOpts = function(wallet, opts, cb) 
         next();
       },
     ],
-    cb
+    cb,
   );
 };
 
@@ -2494,7 +2504,7 @@ WalletService.prototype._getFeePerKb = function(wallet, opts, cb) {
         return cb(new ClientError(msg));
       }
       return cb(null, level.feePerKb);
-    }
+    },
   );
 };
 
@@ -2645,7 +2655,7 @@ WalletService.prototype.createTx = function(opts, cb) {
           function(err) {
             if (err) return cb(err);
             return cb(null, txp);
-          }
+          },
         );
       });
     });
@@ -2732,7 +2742,7 @@ WalletService.prototype.publishTx = function(opts, cb) {
               });
             });
           });
-        }
+        },
       );
     });
   });
@@ -2772,7 +2782,7 @@ WalletService.prototype.getTx = function(opts, cb) {
         txp.note = note;
         return cb(null, txp);
       });
-    }
+    },
   );
 };
 
@@ -2810,7 +2820,7 @@ WalletService.prototype.getPendingTx = function(opts, cb) {
         txp.note = note;
         return cb(null, txp);
       });
-    }
+    },
   );
 };
 
@@ -2932,7 +2942,7 @@ WalletService.prototype.removePendingTx = function(opts, cb) {
         self.storage.removeTx(self.walletId, txp.id, function() {
           self._notifyTxProposalAction('TxProposalRemoved', txp, cb);
         });
-      }
+      },
     );
   });
 };
@@ -3033,7 +3043,7 @@ WalletService.prototype.signTx = function(opts, cb) {
                   {
                     copayerId: self.copayerId,
                   },
-                  next
+                  next,
                 );
               },
               function(next) {
@@ -3046,10 +3056,10 @@ WalletService.prototype.signTx = function(opts, cb) {
             ],
             function() {
               return cb(null, txp);
-            }
+            },
           );
         });
-      }
+      },
     );
   });
 };
@@ -3123,7 +3133,7 @@ WalletService.prototype.broadcastTx = function(opts, cb) {
                 {
                   byThirdParty: true,
                 },
-                cb
+                cb,
               );
             });
           } else {
@@ -3135,11 +3145,11 @@ WalletService.prototype.broadcastTx = function(opts, cb) {
               function(err) {
                 if (err) return cb(err);
                 return cb(null, txp);
-              }
+              },
             );
           }
         });
-      }
+      },
     );
   });
 };
@@ -3185,7 +3195,7 @@ WalletService.prototype.rejectTx = function(opts, cb) {
                 {
                   copayerId: self.copayerId,
                 },
-                next
+                next,
               );
             },
             function(next) {
@@ -3194,7 +3204,7 @@ WalletService.prototype.rejectTx = function(opts, cb) {
                   _.filter(txp.actions, {
                     type: 'reject',
                   }),
-                  'copayerId'
+                  'copayerId',
                 );
 
                 self._notifyTxProposalAction(
@@ -3203,7 +3213,7 @@ WalletService.prototype.rejectTx = function(opts, cb) {
                   {
                     rejectedBy: rejectedBy,
                   },
-                  next
+                  next,
                 );
               } else {
                 next();
@@ -3212,10 +3222,10 @@ WalletService.prototype.rejectTx = function(opts, cb) {
           ],
           function() {
             return cb(null, txp);
-          }
+          },
         );
       });
-    }
+    },
   );
 };
 
@@ -3246,7 +3256,7 @@ WalletService.prototype.getPendingTxs = function(opts, cb) {
             {
               byThirdParty: true,
             },
-            next
+            next,
           );
         });
       },
@@ -3255,9 +3265,9 @@ WalletService.prototype.getPendingTxs = function(opts, cb) {
           err,
           _.reject(txps, function(txp) {
             return txp.status == 'broadcasted';
-          })
+          }),
         );
-      }
+      },
     );
   });
 };
@@ -3307,11 +3317,11 @@ WalletService.prototype.getNotifications = function(opts, cb) {
             n.walletId = self.walletId;
             return n;
           }),
-          'id'
+          'id',
         );
 
         return cb(null, notifications);
-      }
+      },
     );
   });
 };
@@ -3587,7 +3597,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
       };
 
       if (_.isNumber(tx.size) && tx.size > 0) {
-        newTx.feePerKb = +(tx.fees * 1000 / tx.size).toFixed();
+        newTx.feePerKb = +((tx.fees * 1000) / tx.size).toFixed();
       }
 
       if (opts.includeExtendedInfo) {
@@ -3717,7 +3727,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           items: txs,
           fromCache: fromCache,
         });
-      }
+      },
     );
   }
 
@@ -3748,7 +3758,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
           }
         }
         return cb();
-      }
+      },
     );
   }
 
@@ -3788,7 +3798,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
                       minTs: minTs,
                       maxTs: maxTs,
                     },
-                    done
+                    done,
                   );
                 },
                 function(done) {
@@ -3797,7 +3807,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
                     {
                       minTs: minTs,
                     },
-                    done
+                    done,
                   );
                 },
               ],
@@ -3807,7 +3817,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
                   txps: res[0],
                   notes: res[1],
                 });
-              }
+              },
             );
           },
         ],
@@ -3829,7 +3839,7 @@ WalletService.prototype.getTxHistory = function(opts, cb) {
 
             return cb(null, finalTxs, !!res.txs.fromCache);
           });
-        }
+        },
       );
     });
   });
@@ -3874,7 +3884,7 @@ WalletService.prototype.scan = function(opts, cb) {
       function(err) {
         derivator.rewind(gap);
         return cb(err, _.dropRight(allAddresses, gap));
-      }
+      },
     );
   }
 
@@ -3923,7 +3933,7 @@ WalletService.prototype.scan = function(opts, cb) {
                   return cb(error);
                 });
               });
-            }
+            },
           );
         });
       });
@@ -4058,7 +4068,7 @@ WalletService.prototype.smsNotificationsSubscribe = function(opts, cb) {
       platform: opts.platform,
       settings: opts.settings,
     },
-    cb
+    cb,
   );
 };
 
@@ -4258,7 +4268,7 @@ WalletService.prototype.createVault = function(opts, cb) {
               if (err) return cb(err);
               return cb(null, toStore);
             });
-          }
+          },
         );
       });
     },
@@ -4370,7 +4380,7 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
           items: txs,
           fromCache: fromCache,
         });
-      }
+      },
     );
   }
 
@@ -4401,7 +4411,7 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
           }
         }
         return cb();
-      }
+      },
     );
   }
 
@@ -4438,7 +4448,7 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
                     minTs: minTs,
                     maxTs: maxTs,
                   },
-                  done
+                  done,
                 );
               },
               function(done) {
@@ -4447,7 +4457,7 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
                   {
                     minTs: minTs,
                   },
-                  done
+                  done,
                 );
               },
             ],
@@ -4457,7 +4467,7 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
                 txps: res[0],
                 notes: res[1],
               });
-            }
+            },
           );
         },
       ],
@@ -4480,7 +4490,7 @@ WalletService.prototype.getVaultTxHistory = function(opts, cb) {
 
           return cb(null, finalTxs, !!res.txs.fromCache);
         });
-      }
+      },
     );
   });
 };

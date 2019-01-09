@@ -18,22 +18,22 @@ describe('#start', function() {
     });
     it('will give true with "datadir" at root', function() {
       var checkConfigVersion2 = proxyquire('../../lib/scaffold/start', {}).checkConfigVersion2;
-      var v2 = checkConfigVersion2({datadir: '/home/user/.meritcore/data', services: []});
+      var v2 = checkConfigVersion2({ datadir: '/home/user/.meritcore/data', services: [] });
       v2.should.equal(true);
     });
     it('will give true with "address" service enabled', function() {
       var checkConfigVersion2 = proxyquire('../../lib/scaffold/start', {}).checkConfigVersion2;
-      var v2 = checkConfigVersion2({services: ['address']});
+      var v2 = checkConfigVersion2({ services: ['address'] });
       v2.should.equal(true);
     });
     it('will give true with "db" service enabled', function() {
       var checkConfigVersion2 = proxyquire('../../lib/scaffold/start', {}).checkConfigVersion2;
-      var v2 = checkConfigVersion2({services: ['db']});
+      var v2 = checkConfigVersion2({ services: ['db'] });
       v2.should.equal(true);
     });
     it('will give false without "datadir" at root and "address", "db" services disabled', function() {
       var checkConfigVersion2 = proxyquire('../../lib/scaffold/start', {}).checkConfigVersion2;
-      var v2 = checkConfigVersion2({services: []});
+      var v2 = checkConfigVersion2({ services: [] });
       v2.should.equal(false);
     });
   });
@@ -54,13 +54,13 @@ describe('#start', function() {
         services: ['internal'],
         servicesConfig: {
           internal: {
-            param: 'value'
-          }
-        }
+            param: 'value',
+          },
+        },
       };
       var services = setupServices(testRequire, cwd, config);
       services[0].name.should.equal('internal');
-      services[0].config.should.deep.equal({param: 'value'});
+      services[0].config.should.deep.equal({ param: 'value' });
       services[0].module.should.equal(InternalService);
     });
     it('will require a local module', function() {
@@ -76,12 +76,12 @@ describe('#start', function() {
           return LocalService;
         } else if (p === 'local/package.json') {
           return {
-            name: 'local'
+            name: 'local',
           };
         }
       };
       var config = {
-        services: ['local']
+        services: ['local'],
       };
       var services = setupServices(testRequire, cwd, config);
       services[0].name.should.equal('local');
@@ -99,14 +99,14 @@ describe('#start', function() {
         } else if (p === 'local/package.json') {
           return {
             name: 'local',
-            meritcoreNode: 'lib/meritcoreNode.js'
+            meritcoreNode: 'lib/meritcoreNode.js',
           };
         } else if (p === 'local/lib/meritcoreNode.js') {
           return LocalService;
         }
       };
       var config = {
-        services: ['local']
+        services: ['local'],
       };
       var services = setupServices(testRequire, cwd, config);
       services[0].name.should.equal('local');
@@ -118,29 +118,29 @@ describe('#start', function() {
         return internal;
       };
       var config = {
-        services: ['meritd']
+        services: ['meritd'],
       };
       (function() {
         setupServices(testRequire, cwd, config);
-      }).should.throw('Could not load service');
+      }.should.throw('Could not load service'));
     });
   });
   describe('#cleanShutdown', function() {
     it('will call node stop and process exit', function() {
       var log = {
         info: sinon.stub(),
-        error: sinon.stub()
+        error: sinon.stub(),
       };
       var cleanShutdown = proxyquire('../../lib/scaffold/start', {
         '../': {
-          log: log
-        }
+          log: log,
+        },
       }).cleanShutdown;
       var node = {
-        stop: sinon.stub().callsArg(0)
+        stop: sinon.stub().callsArg(0),
       };
       var _process = {
-        exit: sinon.stub()
+        exit: sinon.stub(),
       };
       cleanShutdown(_process, node);
       setImmediate(function() {
@@ -152,18 +152,18 @@ describe('#start', function() {
     it('will log error during shutdown and exit with status 1', function() {
       var log = {
         info: sinon.stub(),
-        error: sinon.stub()
+        error: sinon.stub(),
       };
       var cleanShutdown = proxyquire('../../lib/scaffold/start', {
         '../': {
-          log: log
-        }
+          log: log,
+        },
       }).cleanShutdown;
       var node = {
-        stop: sinon.stub().callsArgWith(0, new Error('test'))
+        stop: sinon.stub().callsArgWith(0, new Error('test')),
       };
       var _process = {
-        exit: sinon.stub()
+        exit: sinon.stub(),
       };
       cleanShutdown(_process, node);
       setImmediate(function() {
@@ -177,18 +177,18 @@ describe('#start', function() {
   describe('#registerExitHandlers', function() {
     var log = {
       info: sinon.stub(),
-      error: sinon.stub()
+      error: sinon.stub(),
     };
     var registerExitHandlers = proxyquire('../../lib/scaffold/start', {
       '../': {
-        log: log
-      }
+        log: log,
+      },
     }).registerExitHandlers;
     it('log, stop and exit with an `uncaughtException`', function(done) {
       var proc = new EventEmitter();
       proc.exit = sinon.stub();
       var node = {
-        stop: sinon.stub().callsArg(0)
+        stop: sinon.stub().callsArg(0),
       };
       registerExitHandlers(proc, node);
       proc.emit('uncaughtException', new Error('test'));
@@ -202,7 +202,7 @@ describe('#start', function() {
       var proc = new EventEmitter();
       proc.exit = sinon.stub();
       var node = {
-        stop: sinon.stub().callsArg(0)
+        stop: sinon.stub().callsArg(0),
       };
       registerExitHandlers(proc, node);
       proc.emit('SIGINT');
@@ -250,7 +250,7 @@ describe('#start', function() {
       });
 
       it('should replace the listener for SIGINT after the first SIGINT is handled', function() {
-        var  options = { sigint: true };
+        var options = { sigint: true };
         var node = {};
         exitHandler(options, process, node);
         cleanShutdown.callCount.should.equal(1);
@@ -259,16 +259,15 @@ describe('#start', function() {
       });
 
       it('should log all errors and stops the services nonetheless', function() {
-        var  options = { sigint: true };
+        var options = { sigint: true };
         var stop = sinon.stub();
         var node = {
-          stop: stop
+          stop: stop,
         };
         exitHandler(options, process, node, new Error('some error'));
         logStub.callCount.should.equal(2);
         stop.callCount.should.equal(1);
       });
-
     });
   });
 });

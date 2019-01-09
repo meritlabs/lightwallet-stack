@@ -9,24 +9,17 @@ import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
     RouterModule.forChild([
       {
         path: '',
-        component: PhraseImportView
-      }
-    ])
+        component: PhraseImportView,
+      },
+    ]),
   ],
-  exports: [
-    RouterModule
-  ]
+  exports: [RouterModule],
 })
 export class PhraseImportRoutingModule {}
 
 @NgModule({
   entryComponents: [PhraseImportView],
   declarations: [PhraseImportView],
-  imports: [
-    PhraseImportRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    Ng4LoadingSpinnerModule
-  ]
+  imports: [PhraseImportRoutingModule, FormsModule, ReactiveFormsModule, Ng4LoadingSpinnerModule],
 })
 export class PhraseImportModule {}

@@ -11,7 +11,7 @@ describe('Index', function() {
       var node = {};
       var index = new InsightAPI({
         rateLimiterOptions: options,
-        node: node
+        node: node,
       });
       index.rateLimiterOptions.should.equal(options);
     });
@@ -19,7 +19,7 @@ describe('Index', function() {
       var node = {};
       var index = new InsightAPI({
         disableRateLimiter: true,
-        node: node
+        node: node,
       });
       index.disableRateLimiter.should.equal(true);
     });
@@ -27,12 +27,12 @@ describe('Index', function() {
   describe('#_getRateLimiter', function() {
     it('will pass options to rate limiter', function() {
       var options = {
-        whitelist: ['127.0.0.1']
+        whitelist: ['127.0.0.1'],
       };
       var node = {};
       var index = new InsightAPI({
         rateLimiterOptions: options,
-        node: node
+        node: node,
       });
       var limiter = index._getRateLimiter();
       limiter.whitelist.should.eql(['127.0.0.1']);
@@ -41,15 +41,15 @@ describe('Index', function() {
   describe('#cache', function() {
     it('will set cache control header', function(done) {
       var node = {
-        log: sinon.stub()
+        log: sinon.stub(),
       };
       var index = new InsightAPI({
         enableCache: true,
-        node: node
+        node: node,
       });
       var req = {};
       var res = {
-        header: sinon.stub()
+        header: sinon.stub(),
       };
       var middle = index.cache(10);
       middle(req, res, function() {
@@ -61,15 +61,15 @@ describe('Index', function() {
     });
     it('will NOT set cache control header', function(done) {
       var node = {
-        log: sinon.stub()
+        log: sinon.stub(),
       };
       var index = new InsightAPI({
         enableCache: false,
-        node: node
+        node: node,
       });
       var req = {};
       var res = {
-        header: sinon.stub()
+        header: sinon.stub(),
       };
       var middle = index.cache(10);
       middle(req, res, function() {
@@ -81,16 +81,16 @@ describe('Index', function() {
   describe('#cacheShort', function() {
     it('will set SHORT cache control header', function(done) {
       var node = {
-        log: sinon.stub()
+        log: sinon.stub(),
       };
       var index = new InsightAPI({
         enableCache: true,
         cacheShortSeconds: 35,
-        node: node
+        node: node,
       });
       var req = {};
       var res = {
-        header: sinon.stub()
+        header: sinon.stub(),
       };
       var middle = index.cacheShort();
       middle(req, res, function() {
@@ -102,15 +102,15 @@ describe('Index', function() {
     });
     it('will set SHORT DEFAULT cache control header', function(done) {
       var node = {
-        log: sinon.stub()
+        log: sinon.stub(),
       };
       var index = new InsightAPI({
         enableCache: true,
-        node: node
+        node: node,
       });
       var req = {};
       var res = {
-        header: sinon.stub()
+        header: sinon.stub(),
       };
       var middle = index.cacheShort();
       middle(req, res, function() {
@@ -124,16 +124,16 @@ describe('Index', function() {
   describe('#cacheLong', function() {
     it('will set LONG cache control header', function(done) {
       var node = {
-        log: sinon.stub()
+        log: sinon.stub(),
       };
       var index = new InsightAPI({
         enableCache: true,
         cacheLongSeconds: 86400000,
-        node: node
+        node: node,
       });
       var req = {};
       var res = {
-        header: sinon.stub()
+        header: sinon.stub(),
       };
       var middle = index.cacheLong();
       middle(req, res, function() {
@@ -145,15 +145,15 @@ describe('Index', function() {
     });
     it('will set LONG DEFAULT cache control header', function(done) {
       var node = {
-        log: sinon.stub()
+        log: sinon.stub(),
       };
       var index = new InsightAPI({
         enableCache: true,
-        node: node
+        node: node,
       });
       var req = {};
       var res = {
-        header: sinon.stub()
+        header: sinon.stub(),
       };
       var middle = index.cacheLong();
       middle(req, res, function() {
@@ -168,12 +168,12 @@ describe('Index', function() {
     it('will use rate limiter by default', function() {
       var node = {};
       var index = new InsightAPI({
-        node: node
+        node: node,
       });
       var middlewareFunc = sinon.stub();
       var middleware = sinon.stub().returns(middlewareFunc);
       var limiter = {
-        middleware: middleware
+        middleware: middleware,
       };
       index._getRateLimiter = sinon.stub().returns(limiter);
       var use = sinon.stub();
@@ -181,7 +181,7 @@ describe('Index', function() {
         use: use,
         get: sinon.stub(),
         param: sinon.stub(),
-        post: sinon.stub()
+        post: sinon.stub(),
       };
       index.setupRoutes(app);
       use.callCount.should.be.above(0);
@@ -192,7 +192,7 @@ describe('Index', function() {
       var node = {};
       var index = new InsightAPI({
         node: node,
-        disableRateLimiter: true
+        disableRateLimiter: true,
       });
       index._getRateLimiter = sinon.stub();
       var use = sinon.stub();
@@ -200,7 +200,7 @@ describe('Index', function() {
         use: use,
         get: sinon.stub(),
         param: sinon.stub(),
-        post: sinon.stub()
+        post: sinon.stub(),
       };
       index.setupRoutes(app);
       index._getRateLimiter.callCount.should.equal(0);

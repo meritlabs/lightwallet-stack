@@ -35,7 +35,6 @@ var BufferUtil = meritcore.util.buffer;
 var blocks;
 
 describe('P2P Functionality', function() {
-
   before(function(done) {
     this.timeout(100000);
 
@@ -52,11 +51,11 @@ describe('P2P Functionality', function() {
       meritd = require('../').services.Merit({
         spawn: {
           datadir: datadir,
-          exec: path.resolve(__dirname, '../bin/meritd')
+          exec: path.resolve(__dirname, '../bin/meritd'),
         },
         node: {
-          network: meritcore.Networks.testnet
-        }
+          network: meritcore.Networks.testnet,
+        },
       });
 
       meritd.on('error', function(err) {
@@ -77,17 +76,17 @@ describe('P2P Functionality', function() {
           port: 30331,
           user: 'merit',
           pass: 'local321',
-          rejectUnauthorized: false
+          rejectUnauthorized: false,
         });
 
         peer = new Peer({
           host: '127.0.0.1',
           port: '18444',
-          network: regtestNetwork
+          network: regtestNetwork,
         });
 
         messages = new Messages({
-          network: regtestNetwork
+          network: regtestNetwork,
         });
 
         blocks = 500;
@@ -110,53 +109,59 @@ describe('P2P Functionality', function() {
             client.listUnspent(0, blocks, function(err, response) {
               var utxos = response.result;
 
-              async.mapSeries(utxos, function(utxo, next) {
-                async.series([
-                  function(finished) {
-                    // Load all of the transactions for later testing
-                    client.getTransaction(utxo.txid, function(err, txresponse) {
-                      if (err) {
-                        throw err;
-                      }
-                      // add to the list of transactions for testing later
-                      transactionData.push(txresponse.result.hex);
-                      finished();
-                    });
-                  },
-                  function(finished) {
-                    // Get the private key for each utxo
-                    client.dumpPrivKey(utxo.address, function(err, privresponse) {
-                      if (err) {
-                        throw err;
-                      }
-                      utxo.privateKeyWIF = privresponse.result;
-                      var tx = meritcore.Transaction();
-                      tx.from(utxo);
-                      tx.change(privateKey.toAddress());
-                      tx.to(destKey.toAddress(), utxo.amount * 1e8 - 1000);
-                      tx.sign(meritcore.PrivateKey.fromWIF(utxo.privateKeyWIF));
-                      txs.push(tx);
-                      finished();
-                    });
+              async.mapSeries(
+                utxos,
+                function(utxo, next) {
+                  async.series(
+                    [
+                      function(finished) {
+                        // Load all of the transactions for later testing
+                        client.getTransaction(utxo.txid, function(err, txresponse) {
+                          if (err) {
+                            throw err;
+                          }
+                          // add to the list of transactions for testing later
+                          transactionData.push(txresponse.result.hex);
+                          finished();
+                        });
+                      },
+                      function(finished) {
+                        // Get the private key for each utxo
+                        client.dumpPrivKey(utxo.address, function(err, privresponse) {
+                          if (err) {
+                            throw err;
+                          }
+                          utxo.privateKeyWIF = privresponse.result;
+                          var tx = meritcore.Transaction();
+                          tx.from(utxo);
+                          tx.change(privateKey.toAddress());
+                          tx.to(destKey.toAddress(), utxo.amount * 1e8 - 1000);
+                          tx.sign(meritcore.PrivateKey.fromWIF(utxo.privateKeyWIF));
+                          txs.push(tx);
+                          finished();
+                        });
+                      },
+                    ],
+                    next,
+                  );
+                },
+                function(err) {
+                  if (err) {
+                    throw err;
                   }
-                ], next);
-              }, function(err) {
-                if (err) {
-                  throw err;
-                }
-                peer.on('ready', function() {
-                  log.info('Peer ready');
-                  done();
-                });
-                log.info('Connecting to peer');
-                peer.connect();
-              });
+                  peer.on('ready', function() {
+                    log.info('Peer ready');
+                    done();
+                  });
+                  log.info('Connecting to peer');
+                  peer.connect();
+                },
+              );
             });
           });
         });
       });
     });
-
   });
 
   after(function(done) {
@@ -211,7 +216,7 @@ describe('P2P Functionality', function() {
         if (err) {
           throw err;
         }
-      });
+      },
+    );
   });
-
 });

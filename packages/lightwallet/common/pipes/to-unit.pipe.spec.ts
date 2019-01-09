@@ -9,28 +9,24 @@ import { EventsMock, StorageMock } from 'ionic-mocks-jest';
 @Component({
   template: `
     <div #test1>{{ 1e8 | toUnit }}</div>
-  `
+  `,
 })
 class TestComponent {
-  @ViewChild('test1') test1: ElementRef;
+  @ViewChild('test1')
+  test1: ElementRef;
 }
 
 describe('Pipes.ToUnit', () => {
-
-  let comp: TestComponent,
-    instance: ComponentFixture<TestComponent>;
+  let comp: TestComponent, instance: ComponentFixture<TestComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        ToUnitPipe,
-        TestComponent
-      ],
+      declarations: [ToUnitPipe, TestComponent],
       imports: [CommonProvidersModule.forRoot()],
       providers: [
         { provide: Storage, useFactory: () => StorageMock.instance() },
-        { provide: Events, useFactory: () => EventsMock.instance() }
-      ]
+        { provide: Events, useFactory: () => EventsMock.instance() },
+      ],
     }).compileComponents();
     instance = TestBed.createComponent(TestComponent);
     comp = instance.componentInstance;

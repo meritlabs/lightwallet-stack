@@ -1,21 +1,21 @@
 import * as request from 'superagent';
 import * as _ from 'lodash';
-import { Logger } from "./log";
+import { Logger } from './log';
 import * as preconditions from 'preconditions';
 import * as Meritcore from 'meritcore-lib';
 import * as MeritcorePayPro from 'merit-payment-protocol';
 const $ = preconditions.singleton();
 
-export module PayPro {
+export namespace PayPro {
   const logger = Logger.getInstance();
   logger.setLevel('debug');
   const TIMEOUT = 5000;
 
-  let _request = (opts:any): Promise<any> => {
+  let _request = (opts: any): Promise<any> => {
     return new Promise((resolve, reject) => {
       let fn = opts.method == 'POST' ? 'post' : 'get';
       if (!opts.url) {
-        return reject(new Error("No URL for PayPro request."));
+        return reject(new Error('No URL for PayPro request.'));
       }
       let reqUrl = opts.url;
 
@@ -25,35 +25,34 @@ export module PayPro {
       let headers = opts.headers || {};
       //req.body = req.body || req.data || '';
       _.each(headers, (v, k) => {
-        if (v) r.set(k,v);
+        if (v) r.set(k, v);
       });
 
       r.timeout(TIMEOUT);
 
-      return r.then((res) => {
+      return r.then(res => {
         if (!res) {
-          return reject(new Error("No reply from PayPro"));
+          return reject(new Error('No reply from PayPro'));
         }
 
         return resolve(res);
       });
     });
-
-  }
+  };
 
   export let get = (opts): Promise<any> => {
     $.checkArgument(opts && opts.url);
 
     opts.headers = opts.headers || {
-      'Accept': MeritcorePayPro.PAYMENT_REQUEST_CONTENT_TYPE,
+      Accept: MeritcorePayPro.PAYMENT_REQUEST_CONTENT_TYPE,
       'Content-Type': 'application/octet-stream',
     };
 
-    return _request(opts).then((res) => {
+    return _request(opts).then(res => {
       let request, verified, signature, serializedDetails;
       try {
         let body = MeritcorePayPro.PaymentRequest.decode(res.body);
-        request = (new MeritcorePayPro()).makePaymentRequest(body);
+        request = new MeritcorePayPro().makePaymentRequest(body);
         signature = request.get('signature');
         serializedDetails = request.get('serialized_payment_details');
         // Verify the signature
@@ -69,7 +68,9 @@ export module PayPro {
 
       let outputs = pd.get('outputs');
       if (outputs.length > 1)
-        return Promise.reject(new Error('Payment Protocol Error: Requests with more that one output are not supported'))
+        return Promise.reject(
+          new Error('Payment Protocol Error: Requests with more that one output are not supported'),
+        );
 
       let output = outputs[0];
 
@@ -117,7 +118,6 @@ export module PayPro {
     });
   };
 
-
   let _getPayProRefundOutputs = (addrStr, amount) => {
     amount = amount.toString(10);
 
@@ -139,7 +139,6 @@ export module PayPro {
     return [output];
   };
 
-
   let _createPayment = (merchant_data, rawTx, refundAddr, amountMicros) => {
     let pay = new MeritcorePayPro();
     pay = pay.makePayment();
@@ -153,8 +152,7 @@ export module PayPro {
     pay.set('transactions', [txBuf]);
 
     let refund_outputs = _getPayProRefundOutputs(refundAddr, amountMicros);
-    if (refund_outputs)
-      pay.set('refund_to', refund_outputs);
+    if (refund_outputs) pay.set('refund_to', refund_outputs);
 
     // Unused for now
     // options.memo = '';
@@ -182,24 +180,24 @@ export module PayPro {
 
       opts.method = 'POST';
       opts.headers = opts.headers || {
-        'Accept': MeritcorePayPro.PAYMENT_ACK_CONTENT_TYPE,
+        Accept: MeritcorePayPro.PAYMENT_ACK_CONTENT_TYPE,
         'Content-Type': MeritcorePayPro.PAYMENT_CONTENT_TYPE,
         // 'Content-Type': 'application/octet-stream',
       };
       opts.body = payment;
 
-      return _request(opts).then((rawData) => {
-        if (!rawData) return reject(new Error("No RawData from PayPro sending event."));
+      return _request(opts).then(rawData => {
+        if (!rawData) return reject(new Error('No RawData from PayPro sending event.'));
         let memo;
-          try {
-            let data = MeritcorePayPro.PaymentACK.decode(rawData);
-            let pp = new MeritcorePayPro();
-            let ack = pp.makePaymentACK(data);
-            memo = ack.get('memo');
-          } catch (e) {
-            logger.info("Error in PayPro Payment Ack: " + e);
-          };
-        return resolve({rawData, memo});
+        try {
+          let data = MeritcorePayPro.PaymentACK.decode(rawData);
+          let pp = new MeritcorePayPro();
+          let ack = pp.makePaymentACK(data);
+          memo = ack.get('memo');
+        } catch (e) {
+          logger.info('Error in PayPro Payment Ack: ' + e);
+        }
+        return resolve({ rawData, memo });
       });
     });
   };

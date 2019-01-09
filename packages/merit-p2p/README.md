@@ -1,5 +1,4 @@
-Meritcore P2P
-=======
+# Meritcore P2P
 
 Merit P2P prottocol library.
 
@@ -8,12 +7,13 @@ Merit P2P prottocol library.
 ```sh
 npm install merit-p2p
 ```
+
 In order to connect to the Merit network, you'll need to know the IP address of at least one node of the network, or use pool to discover peers using a DNS seed.
 
 ```javascript
 var Peer = require('merit-p2p').Peer;
 
-var peer = new Peer({host: '127.0.0.1'});
+var peer = new Peer({ host: '127.0.0.1' });
 
 peer.on('ready', function() {
   // peer info

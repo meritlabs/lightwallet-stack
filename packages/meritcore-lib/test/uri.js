@@ -31,8 +31,9 @@ describe('URI', function() {
     uri.amount.should.equal('123.22');
     expect(uri.otherParam).to.be.undefined();
 
-    uri = URI.parse('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=123.22' +
-                    '&other-param=something&req-extra=param');
+    uri = URI.parse(
+      'merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=123.22' + '&other-param=something&req-extra=param',
+    );
     uri.address.should.equal('1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj');
     uri.amount.should.equal('123.22');
     uri['other-param'].should.equal('something');
@@ -44,28 +45,27 @@ describe('URI', function() {
     URI.isValid('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj').should.equal(true);
     URI.isValid('merit:mkYY5NRvikVBY1EPtaq9fAFgquesdjqECw').should.equal(true);
 
-    URI.isValid('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=1.2')
-                .should.equal(true);
-    URI.isValid('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=1.2&other=param')
-                .should.equal(true);
-    URI.isValid('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=1.2&req-other=param',
-                ['req-other']).should.equal(true);
-    URI.isValid('merit:mmrqEBJxUCf42vdb3oozZtyz5mKr3Vb2Em?amount=0.1&' +
-                'r=https%3A%2F%2Ftest.bitpay.com%2Fi%2F6DKgf8cnJC388irbXk5hHu').should.equal(true);
+    URI.isValid('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=1.2').should.equal(true);
+    URI.isValid('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=1.2&other=param').should.equal(true);
+    URI.isValid('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=1.2&req-other=param', ['req-other']).should.equal(
+      true,
+    );
+    URI.isValid(
+      'merit:mmrqEBJxUCf42vdb3oozZtyz5mKr3Vb2Em?amount=0.1&' +
+        'r=https%3A%2F%2Ftest.bitpay.com%2Fi%2F6DKgf8cnJC388irbXk5hHu',
+    ).should.equal(true);
 
     URI.isValid('merit:').should.equal(false);
     URI.isValid('merit:badUri').should.equal(false);
     URI.isValid('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfk?amount=bad').should.equal(false);
-    URI.isValid('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfk?amount=1.2&req-other=param')
-                .should.equal(false);
-    URI.isValid('merit:?r=https%3A%2F%2Ftest.bitpay.com%2Fi%2F6DKgf8cnJC388irbXk5hHu')
-                .should.equal(false);
+    URI.isValid('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfk?amount=1.2&req-other=param').should.equal(false);
+    URI.isValid('merit:?r=https%3A%2F%2Ftest.bitpay.com%2Fi%2F6DKgf8cnJC388irbXk5hHu').should.equal(false);
   });
 
   it('fails on creation with no params', function() {
-    (function(){
+    (function() {
       return new URI();
-    }).should.throw(TypeError);
+    }.should.throw(TypeError));
   });
 
   it('do not need new keyword', function() {
@@ -106,12 +106,13 @@ describe('URI', function() {
     it('throws error when a required feature is not supported', function() {
       (function() {
         return new URI('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=1.2&other=param&req-required=param');
-      }).should.throw(Error);
+      }.should.throw(Error));
     });
 
     it('has no false negative when checking supported features', function() {
-      uri = new URI('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=1.2&other=param&' +
-                    'req-required=param', ['req-required']);
+      uri = new URI('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=1.2&other=param&' + 'req-required=param', [
+        'req-required',
+      ]);
       uri.address.should.be.instanceof(meritcore.Address);
       uri.amount.should.equal(120000000);
       uri.extras.other.should.equal('param');
@@ -125,13 +126,13 @@ describe('URI', function() {
     var uri;
 
     uri = new URI({
-      address: '1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj'
+      address: '1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj',
     });
     uri.address.should.be.instanceof(meritcore.Address);
     uri.network.should.equal(Networks.livenet);
 
     uri = new URI({
-      address: 'mkYY5NRvikVBY1EPtaq9fAFgquesdjqECw'
+      address: 'mkYY5NRvikVBY1EPtaq9fAFgquesdjqECw',
     });
     uri.address.should.be.instanceof(meritcore.Address);
     uri.network.should.equal(Networks.testnet);
@@ -139,7 +140,7 @@ describe('URI', function() {
     uri = new URI({
       address: '1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj',
       amount: 120000000,
-      other: 'param'
+      other: 'param',
     });
     uri.address.should.be.instanceof(meritcore.Address);
     uri.amount.should.equal(120000000);
@@ -149,16 +150,19 @@ describe('URI', function() {
     (function() {
       return new URI({
         address: '1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj',
-        'req-required': 'param'
+        'req-required': 'param',
       });
-    }).should.throw(Error);
+    }.should.throw(Error));
 
-    uri = new URI({
-      address: '1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj',
-      amount: 120000000,
-      other: 'param',
-      'req-required': 'param'
-    }, ['req-required']);
+    uri = new URI(
+      {
+        address: '1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj',
+        amount: 120000000,
+        other: 'param',
+        'req-required': 'param',
+      },
+      ['req-required'],
+    );
     uri.address.should.be.instanceof(meritcore.Address);
     uri.amount.should.equal(120000000);
     uri.extras.other.should.equal('param');
@@ -171,9 +175,11 @@ describe('URI', function() {
   });
 
   it('should input/output String', function() {
-    var str = 'merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?' +
-              'message=Donation%20for%20project%20xyz&label=myLabel&other=xD';
-    URI.fromString(str).toString().should.equal(str);
+    var str =
+      'merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?' + 'message=Donation%20for%20project%20xyz&label=myLabel&other=xD';
+    URI.fromString(str)
+      .toString()
+      .should.equal(str);
   });
 
   it('should input/output JSON', function() {
@@ -181,7 +187,7 @@ describe('URI', function() {
       address: '1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj',
       message: 'Donation for project xyz',
       label: 'myLabel',
-      other: 'xD'
+      other: 'xD',
     });
     JSON.stringify(URI.fromObject(JSON.parse(json))).should.equal(json);
   });
@@ -192,8 +198,9 @@ describe('URI', function() {
   });
 
   it('should support extra arguments', function() {
-    var uri = new URI('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?' +
-                      'message=Donation%20for%20project%20xyz&label=myLabel&other=xD');
+    var uri = new URI(
+      'merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?' + 'message=Donation%20for%20project%20xyz&label=myLabel&other=xD',
+    );
 
     should.exist(uri.message);
     uri.message.should.equal('Donation for project xyz');
@@ -208,19 +215,18 @@ describe('URI', function() {
   it('should generate a valid URI', function() {
     new URI({
       address: '1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj',
-    }).toString().should.equal(
-      'merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj'
-    );
+    })
+      .toString()
+      .should.equal('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj');
 
     new URI({
       address: '1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj',
       amount: 110001000,
       message: 'Hello World',
-      something: 'else'
-    }).toString().should.equal(
-      'merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=1.10001&message=Hello%20World&something=else'
-    );
-
+      something: 'else',
+    })
+      .toString()
+      .should.equal('merit:1DP69gMMvSuYhbnxsi4EJEFufUAbDrEQfj?amount=1.10001&message=Hello%20World&something=else');
   });
 
   it('should be case insensitive to protocol', function() {
@@ -231,8 +237,9 @@ describe('URI', function() {
   });
 
   it('writes correctly the "r" parameter on string serialization', function() {
-    var originalString = 'merit:mmrqEBJxUCf42vdb3oozZtyz5mKr3Vb2Em?amount=0.1&' +
-                         'r=https%3A%2F%2Ftest.bitpay.com%2Fi%2F6DKgf8cnJC388irbXk5hHu';
+    var originalString =
+      'merit:mmrqEBJxUCf42vdb3oozZtyz5mKr3Vb2Em?amount=0.1&' +
+      'r=https%3A%2F%2Ftest.bitpay.com%2Fi%2F6DKgf8cnJC388irbXk5hHu';
     var uri = new URI(originalString);
     uri.toString().should.equal(originalString);
   });
@@ -243,13 +250,13 @@ describe('URI', function() {
     instance.inspect().should.equal('<URI: ' + uri + '>');
   });
 
-  it('fails early when fromString isn\'t provided a string', function() {
+  it("fails early when fromString isn't provided a string", function() {
     expect(function() {
       return URI.fromString(1);
     }).to.throw();
   });
 
-  it('fails early when fromJSON isn\'t provided a valid JSON string', function() {
+  it("fails early when fromJSON isn't provided a valid JSON string", function() {
     expect(function() {
       return URI.fromJSON('¹');
     }).to.throw();

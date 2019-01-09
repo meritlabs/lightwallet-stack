@@ -13,11 +13,12 @@ export class SessionLogView {
   filteredLogs = [];
   logsString = '';
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              private logger: LoggerService,
-              private toastCtrl: ToastControllerService) {
-  }
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    private logger: LoggerService,
+    private toastCtrl: ToastControllerService,
+  ) {}
 
   ionViewDidLoad() {
     this.filterLogs();
@@ -32,8 +33,11 @@ export class SessionLogView {
 
     let logsString = '';
 
-    this.filteredLogs.forEach(log =>
-      logsString += `${(new Date(log.timestamp)).toString()}: ${this.getLogLevelName(log.level)} ${log.arguments.join('\n')}`
+    this.filteredLogs.forEach(
+      log =>
+        (logsString += `${new Date(log.timestamp).toString()}: ${this.getLogLevelName(log.level)} ${log.arguments.join(
+          '\n',
+        )}`),
     );
 
     this.logsString = logsString;

@@ -6,14 +6,7 @@ import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { ComponentsModule } from '@merit/mobile/components/components.module';
 
 @NgModule({
-  declarations: [
-    VaultDepositView,
-  ],
-  imports: [
-    IonicPageModule.forChild(VaultDepositView),
-    CommonPipesModule,
-    ComponentsModule,
-    DirectivesModule
-  ],
+  declarations: [VaultDepositView],
+  imports: [IonicPageModule.forChild(VaultDepositView), CommonPipesModule, ComponentsModule, DirectivesModule],
 })
 export class VaultDepositModule {}

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { DisplayWallet } from "@merit/common/models/display-wallet";
+import { DisplayWallet } from '@merit/common/models/display-wallet';
 
 @Component({
   selector: 'app-wallet-unlock-alert',
@@ -7,5 +7,6 @@ import { DisplayWallet } from "@merit/common/models/display-wallet";
   styleUrls: ['./wallet-unlock-alert.component.sass'],
 })
 export class WalletUnlockAlertComponent {
-  @Input() wallets: DisplayWallet[];
+  @Input()
+  wallets: DisplayWallet[];
 }

@@ -44,18 +44,21 @@ describe('Blockchain monitor', function() {
         wallet = w;
 
         var bcmonitor = new BlockchainMonitor();
-        bcmonitor.start({
-          lockOpts: {},
-          messageBroker: server.messageBroker,
-          storage: storage,
-          blockchainExplorers: {
-            'testnet': blockchainExplorer,
-            'livenet': blockchainExplorer
+        bcmonitor.start(
+          {
+            lockOpts: {},
+            messageBroker: server.messageBroker,
+            storage: storage,
+            blockchainExplorers: {
+              testnet: blockchainExplorer,
+              livenet: blockchainExplorer,
+            },
           },
-        }, function(err) {
-          should.not.exist(err);
-          done();
-        });
+          function(err) {
+            should.not.exist(err);
+            done();
+          },
+        );
       });
     });
   });
@@ -75,7 +78,7 @@ describe('Blockchain monitor', function() {
         server.getNotifications({}, function(err, notifications) {
           should.not.exist(err);
           var notification = _.find(notifications, {
-            type: 'IncomingTx'
+            type: 'IncomingTx',
           });
           should.exist(notification);
           notification.walletId.should.equal(wallet.id);
@@ -105,7 +108,7 @@ describe('Blockchain monitor', function() {
           server.getNotifications({}, function(err, notifications) {
             should.not.exist(err);
             var notification = _.filter(notifications, {
-              type: 'IncomingTx'
+              type: 'IncomingTx',
             });
             notification.length.should.equal(1);
             done();
@@ -125,34 +128,37 @@ describe('Blockchain monitor', function() {
       };
       incoming.vout[0][address.address] = 1500;
 
-      server.txConfirmationSubscribe({
-        txid: '123'
-      }, function(err) {
-        should.not.exist(err);
+      server.txConfirmationSubscribe(
+        {
+          txid: '123',
+        },
+        function(err) {
+          should.not.exist(err);
 
-        blockchainExplorer.getBlock = sinon.stub().callsArgWith(1, null, ['123', '456']);
-        socket.handlers['block']('block1');
-
-        setTimeout(function() {
           blockchainExplorer.getBlock = sinon.stub().callsArgWith(1, null, ['123', '456']);
-          socket.handlers['block']('block2');
+          socket.handlers['block']('block1');
 
           setTimeout(function() {
-            server.getNotifications({}, function(err, notifications) {
-              should.not.exist(err);
-              var notifications = _.filter(notifications, {
-                type: 'TxConfirmation'
+            blockchainExplorer.getBlock = sinon.stub().callsArgWith(1, null, ['123', '456']);
+            socket.handlers['block']('block2');
+
+            setTimeout(function() {
+              server.getNotifications({}, function(err, notifications) {
+                should.not.exist(err);
+                var notifications = _.filter(notifications, {
+                  type: 'TxConfirmation',
+                });
+                notifications.length.should.equal(1);
+                var n = notifications[0];
+                n.walletId.should.equal(wallet.id);
+                n.creatorId.should.equal(server.copayerId);
+                n.data.txid.should.equal('123');
+                done();
               });
-              notifications.length.should.equal(1);
-              var n = notifications[0];
-              n.walletId.should.equal(wallet.id);
-              n.creatorId.should.equal(server.copayerId);
-              n.data.txid.should.equal('123');
-              done();
-            });
+            }, 50);
           }, 50);
-        }, 50);
-      });
+        },
+      );
     });
   });
 });

@@ -1,7 +1,9 @@
 # Payment Protocol
+
 `PaymentProtocol` and associated functions and methods will serialize, deserialize, sign and verify payment protocol messages both in Node.js and web browsers. Both X.509 and Merit identity protocol are supported. For detailed technical information, please view [BIP70](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki).
 
 ## Installation
+
 Payment protocol is implemented as a separate module and you must add it to your dependencies:
 
 For node projects:
@@ -12,11 +14,12 @@ npm install merit-payment-protocol --save
 ```
 
 ## Make Payment Details
+
 Here the merchant's server will construct the payment details message:
 
 ```javascript
 var PaymentProtocol = require('merit-payment-protocol');
-var now = Date.now() / 1000 | 0;
+var now = (Date.now() / 1000) | 0;
 
 // construct the payment details
 var details = new PaymentProtocol().makePaymentDetails();
@@ -26,12 +29,13 @@ details.set('time', now);
 details.set('expires', now + 60 * 60 * 24);
 details.set('memo', 'A payment request from the merchant.');
 details.set('payment_url', 'https://localhost/-/pay');
-details.set('merchant_data', new Buffer({size: 7})); // identify the request
+details.set('merchant_data', new Buffer({ size: 7 })); // identify the request
 ```
 
 For more information about these fields please visit [BIP70](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki#paymentdetailspaymentrequest)
 
 ## Sign a Payment Request
+
 The merchant's server will then construct a payment request and send it to the customer:
 
 ```javascript
@@ -57,10 +61,10 @@ var rawbody = request.serialize();
 ```
 
 ## Verify a Payment Request
+
 The customers wallet would then verify the payment request as follows (after asking for the payment request message):
 
 ```javascript
-
 // Example HTTP Request Headers:
 // Method: GET
 // Accept: PaymentProtocol.PAYMENT_REQUEST_CONTENT_TYPE, PaymentProtocol.PAYMENT_ACK_CONTENT_TYPE
@@ -92,10 +96,10 @@ var merchant_data = details.get('merchant_data');
 ```
 
 ## Send a Payment
+
 After the request is verified a payment can be sent to the merchant from the customer's wallet:
 
 ```javascript
-
 // send the payment transaction
 var payment = new PaymentProtocol().makePayment();
 payment.set('merchant_data', merchant_data);
@@ -123,10 +127,10 @@ var rawbody = pay.serialize();
 ```
 
 ## Receive a Payment
+
 The merchant would then receive the payment as follows:
 
 ```javascript
-
 var body = PaymentProtocol.Payment.decode(rawbody);
 var payment = new PaymentProtocol().makePayment(body);
 var merchant_data = payment.get('merchant_data');
@@ -138,10 +142,10 @@ var memo = payment.get('memo');
 ```
 
 ## Send a Payment Acknowledgement
+
 After the payment has been broadcasted, a payment acknowledgement can be sent in response:
 
 ```javascript
-
 // make a payment acknowledgement
 var ack = new PaymentProtocol().makePaymentACK();
 ack.set('payment', payment.message);
@@ -155,6 +159,7 @@ var rawbody = ack.serialize();
 ```
 
 ## Receive an Acknowledgement
+
 The customer's wallet can then receive an acknowledgement of payment as follows:
 
 ```javascript

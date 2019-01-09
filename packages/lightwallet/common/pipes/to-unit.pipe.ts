@@ -6,8 +6,7 @@ import { TxFormatService } from '@merit/common/services/tx-format.service';
 export class ToUnitPipe implements PipeTransform {
   private unitCode: string;
 
-  constructor(private configProvider: ConfigService,
-              private txFormatProvider: TxFormatService) {
+  constructor(private configProvider: ConfigService, private txFormatProvider: TxFormatService) {
     this.unitCode = this.configProvider.get().wallet.settings.unitCode;
   }
 

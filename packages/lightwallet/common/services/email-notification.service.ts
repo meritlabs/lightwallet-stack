@@ -6,10 +6,11 @@ import { WalletService } from '@merit/common/services/wallet.service';
 
 @Injectable()
 export class EmailNotificationsService {
-
-  constructor(private configService: ConfigService,
-              private profileService: ProfileService,
-              private walletService: WalletService) {}
+  constructor(
+    private configService: ConfigService,
+    private profileService: ProfileService,
+    private walletService: WalletService,
+  ) {}
 
   async updateEmail(opts: any) {
     opts = opts || {};
@@ -21,12 +22,12 @@ export class EmailNotificationsService {
       emailFor: null, // Backward compatibility
       emailNotifications: {
         enabled: opts.enabled,
-        email: opts.enabled ? opts.email : null
-      }
+        email: opts.enabled ? opts.email : null,
+      },
     });
 
     return this.walletService.updateRemotePreferences(wallets);
-  };
+  }
 
   getEmailIfEnabled(config) {
     config = config || this.configService.get();
@@ -34,8 +35,7 @@ export class EmailNotificationsService {
     if (config.emailNotifications) {
       if (!config.emailNotifications.enabled) return;
 
-      if (config.emailNotifications.email)
-        return config.emailNotifications.email;
+      if (config.emailNotifications.email) return config.emailNotifications.email;
     }
 
     if (_.isEmpty(config.emailFor)) return;
@@ -57,9 +57,8 @@ export class EmailNotificationsService {
       let currentEmail = emailNotifications.emailAddress;
       return this.updateEmail({
         enabled: currentEmail ? true : false,
-        email: currentEmail
+        email: currentEmail,
       });
     }
   }
-
 }

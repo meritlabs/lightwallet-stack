@@ -36,10 +36,7 @@ var BlockHeader = function BlockHeader(arg) {
   this.cycle = info.cycle;
 
   if (info.hash) {
-    $.checkState(
-      this.hash === info.hash,
-      'Argument object hash property does not match block hash.'
-    );
+    $.checkState(this.hash === info.hash, 'Argument object hash property does not match block hash.');
   }
 
   return this;
@@ -88,7 +85,7 @@ BlockHeader._fromObject = function _fromObject(data) {
     bits: data.bits,
     nonce: data.nonce,
     edgeBits: data.edgeBits,
-    cycle: data.cycle
+    cycle: data.cycle,
   };
   return info;
 };
@@ -180,13 +177,13 @@ BlockHeader.prototype.toObject = BlockHeader.prototype.toJSON = function toObjec
     bits: this.bits,
     nonce: this.nonce,
     edgeBits: this.edgeBits,
-    cycle: this.cycle
+    cycle: this.cycle,
   };
 };
 
 BlockHeader.prototype.isDaedalus = function isDaedalus() {
   return !!(this.version & (1 << DAEDALUS_VERSION_BIT));
-}
+};
 
 /**
  * @returns {Buffer} - A Buffer of the BlockHeader
@@ -267,11 +264,13 @@ var idProperty = {
    */
   get: function() {
     if (!this._id) {
-      this._id = BufferReader(this._getHash()).readReverse().toString('hex');
+      this._id = BufferReader(this._getHash())
+        .readReverse()
+        .toString('hex');
     }
     return this._id;
   },
-  set: _.noop
+  set: _.noop,
 };
 Object.defineProperty(BlockHeader.prototype, 'id', idProperty);
 Object.defineProperty(BlockHeader.prototype, 'hash', idProperty);
@@ -310,7 +309,7 @@ BlockHeader.prototype.inspect = function inspect() {
 BlockHeader.Constants = {
   START_OF_HEADER: 8, // Start buffer position in raw block data
   MAX_TIME_OFFSET: 2 * 60 * 60, // The max a timestamp can be in the future
-  LARGEST_HASH: new BN('10000000000000000000000000000000000000000000000000000000000000000', 'hex')
+  LARGEST_HASH: new BN('10000000000000000000000000000000000000000000000000000000000000000', 'hex'),
 };
 
 module.exports = BlockHeader;

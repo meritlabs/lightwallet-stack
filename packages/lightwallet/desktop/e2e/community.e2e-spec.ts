@@ -80,7 +80,8 @@ describe('[Desktop] Community', () => {
     });
 
     it('should show "Copy to clipboard" when user hovers over invite code', async () => {
-      browser.actions()
+      browser
+        .actions()
         .mouseMove(inviteCodeEl)
         .perform();
 

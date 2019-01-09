@@ -4,9 +4,10 @@ var meritcore = module.exports;
 
 // module information
 meritcore.version = 'v' + require('./package.json').version;
-meritcore.versionGuard = function (version) {
+meritcore.versionGuard = function(version) {
   if (version !== undefined) {
-    var message = 'More than one instance of meritcore-lib found. ' +
+    var message =
+      'More than one instance of meritcore-lib found. ' +
       'Please make sure to require meritcore-lib and check that submodules do' +
       ' not also include their own meritcore-lib dependency.';
     throw new Error(message);

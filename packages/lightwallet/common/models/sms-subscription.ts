@@ -6,9 +6,7 @@ export interface ISmsNotificationStatus {
   settings?: ISmsNotificationSettings;
 }
 
-export type ISmsNotificationSettings = {
-  [k in keyof typeof SmsNotificationSetting]?: boolean;
-};
+export type ISmsNotificationSettings = { [k in keyof typeof SmsNotificationSetting]?: boolean };
 
 export enum SmsNotificationSetting {
   IncomingTx = 'IncomingTx',

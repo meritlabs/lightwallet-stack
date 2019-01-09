@@ -87,7 +87,7 @@ export class CoreView implements OnInit, AfterViewInit {
     {
       name: 'Market Beta',
       icon: '/assets/v1/icons/ui/aside-navigation/market.svg',
-      link: '/market/gate'
+      link: '/market/gate',
     },
     {
       name: 'Help & Support',
@@ -102,14 +102,12 @@ export class CoreView implements OnInit, AfterViewInit {
   recordPassphrase: boolean = true;
   lockedWallets$: Observable<DisplayWallet[]> = this.wallets$.pipe(
     map((wallets: DisplayWallet[]) => wallets.filter((wallet: DisplayWallet) => !wallet.confirmed)),
-    map((wallets: DisplayWallet[]) => (wallets && wallets.length ? wallets : null))
+    map((wallets: DisplayWallet[]) => (wallets && wallets.length ? wallets : null)),
   );
-  isWelcomeDialogEnabled$: Observable<boolean> = this.store
-    .select(selectGoalSettings)
-    .pipe(
-      filter((goalSettings: IGoalSettings) => !!goalSettings),
-      map((goalSettings: IGoalSettings) => goalSettings.isWelcomeDialogEnabled)
-    );
+  isWelcomeDialogEnabled$: Observable<boolean> = this.store.select(selectGoalSettings).pipe(
+    filter((goalSettings: IGoalSettings) => !!goalSettings),
+    map((goalSettings: IGoalSettings) => goalSettings.isWelcomeDialogEnabled),
+  );
   showShare$: Observable<boolean> = this.store.select(selectShareDialogState);
 
   constructor(
@@ -125,7 +123,7 @@ export class CoreView implements OnInit, AfterViewInit {
     private domSanitizer: DomSanitizer,
     private smsNotificationsService: SmsNotificationsService,
     private smsNotificationsPromptCtrl: SmsNotificationsPromptController,
-    private goalsService: GoalsService
+    private goalsService: GoalsService,
   ) {}
 
   async ngOnInit() {
@@ -145,7 +143,7 @@ export class CoreView implements OnInit, AfterViewInit {
 
     if (smsNotificationStatus.enabled) return;
 
-    if(this.recordPassphrase) {
+    if (this.recordPassphrase) {
       this.smsNotificationsPromptCtrl.create();
     }
   }
@@ -156,7 +154,7 @@ export class CoreView implements OnInit, AfterViewInit {
 
   getIconStyle(icon: string) {
     return this.domSanitizer.bypassSecurityTrustStyle(
-      `mask-image: url('${icon}'); -webkit-mask-image: url('${icon}');`
+      `mask-image: url('${icon}'); -webkit-mask-image: url('${icon}');`,
     );
   }
 
@@ -174,7 +172,7 @@ export class CoreView implements OnInit, AfterViewInit {
     const passwordPrompt = this.passwordPromptCtrl.create(
       message,
       [Validators.required],
-      [PasswordValidator.ValidateEasyReceivePassword(receipt, this.easyReceiveService)]
+      [PasswordValidator.ValidateEasyReceivePassword(receipt, this.easyReceiveService)],
     );
     passwordPrompt.onDidDismiss((password: any) => {
       if (password) {
@@ -188,7 +186,7 @@ export class CoreView implements OnInit, AfterViewInit {
     receipt: EasyReceipt,
     data: any,
     wallet?: MeritWalletClient,
-    inviteOnly?: boolean
+    inviteOnly?: boolean,
   ) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
 
@@ -234,7 +232,7 @@ export class CoreView implements OnInit, AfterViewInit {
     data: any,
     wallet?: MeritWalletClient,
     cancelling?: boolean,
-    inviteOnly?: boolean
+    inviteOnly?: boolean,
   ) {
     const amount = await this.easyReceiveService.getReceiverAmount(data.txs);
 
@@ -261,7 +259,7 @@ export class CoreView implements OnInit, AfterViewInit {
           text: "Don't Cancel",
           value: 'no',
         },
-      ]
+      ],
     );
 
     confirmDialog.onDidDismiss((val: string) => {
@@ -290,7 +288,7 @@ export class CoreView implements OnInit, AfterViewInit {
           skipShareCode: true,
           skipRewards: true,
           skipAlias: true,
-        })
+        }),
       );
     } catch (err) {
       console.error(err);
@@ -312,7 +310,7 @@ export class CoreView implements OnInit, AfterViewInit {
           skipShareCode: true,
           skipRewards: true,
           skipAlias: true,
-        })
+        }),
       );
     } catch (err) {
       console.error(err);
@@ -330,7 +328,7 @@ export class CoreView implements OnInit, AfterViewInit {
     this.confirmDialogCtrl.create(
       'Transaction expired',
       'The Merit from this link has not been lost! You can ask the sender to make a new transaction.',
-      [{ text: 'Ok' }]
+      [{ text: 'Ok' }],
     );
   }
 
@@ -348,7 +346,7 @@ export class CoreView implements OnInit, AfterViewInit {
     password?: string,
     processAll: boolean = true,
     wallet?: MeritWalletClient,
-    cancelling?: boolean
+    cancelling?: boolean,
   ): Promise<void> {
     password = password || '';
     const data = await this.easyReceiveService.validateEasyReceiptOnBlockchain(receipt, password);

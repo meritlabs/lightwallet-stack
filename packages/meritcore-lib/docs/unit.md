@@ -14,6 +14,7 @@ To understand the need of using the `Unit` class when dealing with unit conversi
 ```
 
 ## Supported units
+
 The supported units are MRT, mMRT, bits (micro MRTs, uMRT) and micros. The codes for each unit can be found as members of the Unit class.
 
 ```javascript
@@ -25,6 +26,7 @@ var microsCode = Unit.micros;
 ```
 
 ## Creating units
+
 There are two ways for creating a unit instance. You can instantiate the class using a value and a unit code; alternatively if the unit it's fixed you could you some of the static methods. Check some examples below:
 
 ```javascript
@@ -43,6 +45,7 @@ unit = Unit.fromMicros(amount);
 ```
 
 ## Conversion
+
 Once you have a unit instance, you can check its representation in all the available units. For your convenience the classes expose three ways to accomplish this. Using the `.to(unitCode)` method, using a fixed unit like `.toMicros()` or by using the accessors.
 
 ```javascript
@@ -66,6 +69,7 @@ value = Unit.fromMRT(amount).micros;
 ```
 
 ## Using a fiat currency
+
 The unit class also provides a convenient alternative to create an instance from a fiat amount and the corresponding MRT/fiat exchange rate. Any unit instance can be converted to a fiat amount by providing the current exchange rate. Check the example below:
 
 ```javascript

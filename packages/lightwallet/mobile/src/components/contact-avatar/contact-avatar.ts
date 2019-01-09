@@ -12,10 +12,9 @@ import { getContactInitials } from '@merit/common/utils/contacts';
       <span *ngIf="contactInitials" color="primary">{{ contactInitials }}</span>
     </ion-avatar>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactAvatarComponent {
-
   @Input()
   set contact(contact: MeritContact) {
     if (!contact) return;
@@ -32,6 +31,5 @@ export class ContactAvatarComponent {
   imageSrc: any;
   contactInitials: string;
 
-  constructor(private _sanitizer: DomSanitizer) {
-  }
+  constructor(private _sanitizer: DomSanitizer) {}
 }

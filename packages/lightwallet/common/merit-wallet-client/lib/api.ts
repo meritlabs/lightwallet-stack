@@ -50,7 +50,7 @@ export interface InitOptions {
 export enum AddressType {
   PubKey = 1,
   Script,
-  ParameterizedScript
+  ParameterizedScript,
 }
 
 export interface ISendReferralOptions {
@@ -71,7 +71,7 @@ export class API {
   public timeout: number;
   public logLevel: string;
   public privateKeyEncryptionOpts: any = {
-    iter: 10000
+    iter: 10000,
   };
   public credentials: Credentials; // TODO: Make public with getters/setters
   public notificationIncludeOwn: boolean;
@@ -149,7 +149,6 @@ export class API {
     this.log.info('Hello Merit Wallet Client!');
   }
 
-
   // Do we need an initialize now?  Constructor should be able to handle.
   initialize(notificationIncludeOwn?: boolean) {
     $.checkState(this.credentials);
@@ -171,33 +170,29 @@ export class API {
   async _fetchLatestNotifications(interval: number): Promise<any[]> {
     let opts: any = {
       lastNotificationId: this.lastNotificationId,
-      includeOwn: this.notificationIncludeOwn
+      includeOwn: this.notificationIncludeOwn,
     };
 
-    if (!this.lastNotificationId)
-      opts.timeSpan = interval + 1;
+    if (!this.lastNotificationId) opts.timeSpan = interval + 1;
 
     const notifications = await this.getNotifications(opts);
 
-    if (notifications && notifications.length > 0)
-      this.lastNotificationId = notifications[notifications.length - 1].id;
-
+    if (notifications && notifications.length > 0) this.lastNotificationId = notifications[notifications.length - 1].id;
 
     return notifications;
   }
 
   initNotifications(): Observable<any[]> {
-    return interval(this.noticitationPollingInterval * 1000)
-      .pipe(
-        switchMap(() => fromPromise(this._fetchLatestNotifications(this.noticitationPollingInterval))),
-        retryWhen(err =>
-          err.pipe(
-            map((err) => {
-              return !err || (err !== MWCErrors.NOT_FOUND && err !== MWCErrors.NOT_AUTHORIZED);
-            })
-          )
-        )
-      );
+    return interval(this.noticitationPollingInterval * 1000).pipe(
+      switchMap(() => fromPromise(this._fetchLatestNotifications(this.noticitationPollingInterval))),
+      retryWhen(err =>
+        err.pipe(
+          map(err => {
+            return !err || (err !== MWCErrors.NOT_FOUND && err !== MWCErrors.NOT_AUTHORIZED);
+          }),
+        ),
+      ),
+    );
   }
 
   /**
@@ -233,7 +228,7 @@ export class API {
   _processTxNotes(notes): void {
     if (!notes) return;
     let encryptingKey = this.credentials.sharedEncryptingKey;
-    notes.forEach((note) => {
+    notes.forEach(note => {
       note.encryptedBody = note.body;
       note.body = this._decryptMessage(note.body, encryptingKey);
       note.encryptedEditedByName = note.editedByName;
@@ -299,7 +294,7 @@ export class API {
         body = JSON.parse(body);
       } catch (e) {
         body = {
-          error: body
+          error: body,
         };
       }
     }
@@ -316,7 +311,7 @@ export class API {
     }
     this.log.error(ret);
     return ret;
-  }
+  };
 
   /**
    * Sign an HTTP request
@@ -328,11 +323,10 @@ export class API {
    * @param {Object} args - The arguments in case this is a POST/PUT request
    * @param {String} privKey - Private key to sign the request
    */
-  private _signRequest = function (method, url, args, privKey) {
+  private _signRequest = function(method, url, args, privKey) {
     let message = [method.toLowerCase(), url, JSON.stringify(args)].join('|');
     return Utils.signMessage(message, privKey);
-  }
-
+  };
 
   /**
    * Seed from random
@@ -348,7 +342,6 @@ export class API {
     this.credentials = Credentials.create(opts.network || 'livenet');
   }
 
-
   /**
    * Seed from random
    *
@@ -358,7 +351,6 @@ export class API {
    */
   validateKeyDerivation(opts: any): Promise<any> {
     return new Promise((resolve, reject) => {
-
       let _deviceValidated: boolean;
 
       opts = opts || {};
@@ -367,7 +359,8 @@ export class API {
 
       function testMessageSigning(xpriv, xpub) {
         let nonHardenedPath = 'm/0/0';
-        let message = 'Lorem ipsum dolor sit amet, ne amet urbanitas percipitur vim, libris disputando his ne, et facer suavitate qui. Ei quidam laoreet sea. Cu pro dico aliquip gubergren, in mundi postea usu. Ad labitur posidonium interesset duo, est et doctus molestie adipiscing.';
+        let message =
+          'Lorem ipsum dolor sit amet, ne amet urbanitas percipitur vim, libris disputando his ne, et facer suavitate qui. Ei quidam laoreet sea. Cu pro dico aliquip gubergren, in mundi postea usu. Ad labitur posidonium interesset duo, est et doctus molestie adipiscing.';
         let priv = xpriv.deriveChild(nonHardenedPath).privateKey;
         let signature = Utils.signMessage(message, priv);
         let pub = xpub.deriveChild(nonHardenedPath).publicKey;
@@ -378,12 +371,22 @@ export class API {
         let words = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
         let xpriv = mnemonicToHDPrivateKey(words, '', c.network).toHDPrivateKey();
 
-        if (xpriv.toString() != 'xprv9s21ZrQH143K2jHFB1HM4GNbVaBSSnjHDQP8uBtKKTvusxMirfmKEmaUS4fkwqeoLqVVT2ShayUSmnEZNV1AKqTSESqyAFCBW8nvEqKfvGy') return false;
+        if (
+          xpriv.toString() !=
+          'xprv9s21ZrQH143K2jHFB1HM4GNbVaBSSnjHDQP8uBtKKTvusxMirfmKEmaUS4fkwqeoLqVVT2ShayUSmnEZNV1AKqTSESqyAFCBW8nvEqKfvGy'
+        )
+          return false;
 
-        xpriv = xpriv.deriveChild('m/44\'/0\'/0\'');
-        if (xpriv.toString() != 'xprv9ynVfpDwjVTeyQALCLp4EVHwonHHoE37DoUkjsj6A5vxXK1Wh6YEQVPdgdGdtvqWttM4nqgxK8kgmmRD5yfKhWGbD75JGdsDb9yMtozdVc6') return false;
+        xpriv = xpriv.deriveChild("m/44'/0'/0'");
+        if (
+          xpriv.toString() !=
+          'xprv9ynVfpDwjVTeyQALCLp4EVHwonHHoE37DoUkjsj6A5vxXK1Wh6YEQVPdgdGdtvqWttM4nqgxK8kgmmRD5yfKhWGbD75JGdsDb9yMtozdVc6'
+        )
+          return false;
 
-        let xpub = Meritcore.HDPublicKey.fromString('xpub6Cmr5KkqZs1xBtEoJNM4bdEgMp7nCgkxb2QMYG8hiRTwQ7LfEdrUxHi7XrjNxkeuRrNSqHLXHAuwZvqoeASrp5jxjnpMa4d8PFpA9TRxVCd');
+        let xpub = Meritcore.HDPublicKey.fromString(
+          'xpub6Cmr5KkqZs1xBtEoJNM4bdEgMp7nCgkxb2QMYG8hiRTwQ7LfEdrUxHi7XrjNxkeuRrNSqHLXHAuwZvqoeASrp5jxjnpMa4d8PFpA9TRxVCd',
+        );
         return testMessageSigning(xpriv, xpub);
       }
 
@@ -391,12 +394,11 @@ export class API {
         let words;
         try {
           words = c.getMnemonic();
-        } catch (ex) {
-        }
+        } catch (ex) {}
 
         let xpriv;
         if (words && (!c.mnemonicHasPassphrase || opts.passphrase)) {
-          let m: string  = generateMnemonic();
+          let m: string = generateMnemonic();
           xpriv = mnemonicToHDPrivateKey(m, opts.passphrase, c.network).toString();
         }
         if (!xpriv) {
@@ -414,13 +416,13 @@ export class API {
         _deviceValidated = true;
       }
 
-      let liveOk = (c.canSign() && !c.isPrivKeyEncrypted()) ? testLiveKeys() : true;
+      let liveOk = c.canSign() && !c.isPrivKeyEncrypted() ? testLiveKeys() : true;
 
       this.keyDerivationOk = hardcodedOk && liveOk;
 
       return resolve(this.keyDerivationOk);
     });
-  };
+  }
 
   /**
    * Seed from random with mnemonic
@@ -435,8 +437,12 @@ export class API {
     $.checkArgument(arguments.length <= 1, 'DEPRECATED: only 1 argument accepted.');
     $.checkArgument(_.isUndefined(opts) || _.isObject(opts), 'DEPRECATED: argument should be an options object.');
 
-    this.credentials = Credentials.createWithMnemonic(opts.network || 'livenet', opts.passphrase, opts.language || 'en', opts.account || 0);
-
+    this.credentials = Credentials.createWithMnemonic(
+      opts.network || 'livenet',
+      opts.passphrase,
+      opts.language || 'en',
+      opts.account || 0,
+    );
   }
 
   getMnemonic(): any {
@@ -446,7 +452,6 @@ export class API {
   mnemonicHasPassphrase(): any {
     return this.credentials.mnemonicHasPassphrase;
   }
-
 
   clearMnemonic(): any {
     return this.credentials.clearMnemonic();
@@ -462,7 +467,10 @@ export class API {
   getRootAddress() {
     if (this.rootAddress) return this.rootAddress;
     const xpub = new Meritcore.HDPublicKey(this.credentials.xPubKey);
-    return this.rootAddress = Meritcore.Address.fromPublicKey(xpub.deriveChild('m/0/0').publicKey, this.credentials.network);
+    return (this.rootAddress = Meritcore.Address.fromPublicKey(
+      xpub.deriveChild('m/0/0').publicKey,
+      this.credentials.network,
+    ));
   }
 
   getRootAddressPubkey() {
@@ -484,7 +492,12 @@ export class API {
    * @param {String} opts.derivationStrategy - default 'BIP44'
    */
   seedFromExtendedPrivateKey(xPrivKey: any, opts: any = {}): void {
-    this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, opts);
+    this.credentials = Credentials.fromExtendedPrivateKey(
+      xPrivKey,
+      opts.account || 0,
+      opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44,
+      opts,
+    );
   }
 
   /**
@@ -499,7 +512,14 @@ export class API {
    * @param {String} opts.derivationStrategy - default 'BIP44'
    */
   seedFromMnemonic(words: Array<string>, opts: any = {}): any {
-    this.credentials = Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, opts);
+    this.credentials = Credentials.fromMnemonic(
+      opts.network || 'livenet',
+      words,
+      opts.passphrase,
+      opts.account || 0,
+      opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44,
+      opts,
+    );
   }
 
   /**
@@ -514,13 +534,19 @@ export class API {
    * @param {String} opts.derivationStrategy - default 'BIP44'
    */
   seedFromExtendedPublicKey(xPubKey: any, source: any, entropySourceHex: any, opts: any = {}): any {
-    this.credentials = Credentials.fromExtendedPublicKey(xPubKey, source, entropySourceHex, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
+    this.credentials = Credentials.fromExtendedPublicKey(
+      xPubKey,
+      source,
+      entropySourceHex,
+      opts.account || 0,
+      opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44,
+    );
   }
 
   static fromObj(obj) {
     let wallet = new this({
       baseUrl: obj.baseUrl || ENV.mwsUrl,
-      timeout: 100000
+      timeout: 100000,
     });
 
     wallet.import(obj.credentials);
@@ -542,7 +568,6 @@ export class API {
   }
 
   toObj() {
-
     return {
       credentials: this.export(),
       name: this.name,
@@ -567,9 +592,9 @@ export class API {
           coins: v.coins,
           masterPubKey: v.masterPubKey,
           status: v.status,
-          whitelist: v.whitelist
+          whitelist: v.whitelist,
         };
-      })
+      }),
     };
   }
 
@@ -615,17 +640,14 @@ export class API {
   }
 
   async _import(): Promise<any> {
-
     $.checkState(this.credentials);
 
     try {
       return await this.openWallet();
     } catch (e) {
-
       if (e.code != 'NOT_AUTHORIZED') {
         throw e;
       } else {
-
         const walletPrivKey = new Meritcore.PrivateKey(void 0, this.credentials.network);
         const pubkey = walletPrivKey.toPublicKey();
         this.credentials.addWalletPrivateKey(walletPrivKey.toString());
@@ -635,7 +657,7 @@ export class API {
           m: 1,
           n: 1,
           walletName: 'Personal Wallet',
-          copayerName: 'me'
+          copayerName: 'me',
         };
 
         //call 'recreate wallet' method to create wallet instance with exision
@@ -647,7 +669,7 @@ export class API {
           pubKey: pubkey.toString(),
           rootAddress: rootAddress.toString(),
           network: this.credentials.network,
-          singleAddress: true //daedalus wallets are single-addressed
+          singleAddress: true, //daedalus wallets are single-addressed
         };
 
         let res = await this._doPostRequest('/v1/recreate_wallet/', args);
@@ -655,9 +677,23 @@ export class API {
         if (res) {
           let walletId = res.walletId;
           let parentAddress = res.parentAddress;
-          this.credentials.addWalletInfo(walletId, defaultOpts.walletName, defaultOpts.m, defaultOpts.n, defaultOpts.copayerName, parentAddress);
+          this.credentials.addWalletInfo(
+            walletId,
+            defaultOpts.walletName,
+            defaultOpts.m,
+            defaultOpts.n,
+            defaultOpts.copayerName,
+            parentAddress,
+          );
 
-          return this.doJoinWallet(walletId, walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, defaultOpts.copayerName, {});
+          return this.doJoinWallet(
+            walletId,
+            walletPrivKey,
+            this.credentials.xPubKey,
+            this.credentials.requestPubKey,
+            defaultOpts.copayerName,
+            {},
+          );
         } else {
           throw new Error('failed to recreate wallet');
         }
@@ -682,10 +718,17 @@ export class API {
     this.log.debug('Importing from 12 Words');
 
     function derive(nonCompliantDerivation) {
-      return Credentials.fromMnemonic(opts.network || 'livenet', words, opts.passphrase, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44, {
-        nonCompliantDerivation: nonCompliantDerivation,
-        entropySourcePath: opts.entropySourcePath
-      });
+      return Credentials.fromMnemonic(
+        opts.network || 'livenet',
+        words,
+        opts.passphrase,
+        opts.account || 0,
+        opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44,
+        {
+          nonCompliantDerivation: nonCompliantDerivation,
+          entropySourcePath: opts.entropySourcePath,
+        },
+      );
     }
 
     try {
@@ -698,7 +741,6 @@ export class API {
     return this._import().catch(err => {
       if (err == MWCErrors.INVALID_BACKUP) return Promise.reject(err);
       if (err == MWCErrors.NOT_AUTHORIZED || err == MWCErrors.WALLET_DOES_NOT_EXIST) {
-
         let altCredentials = derive(true);
         if (altCredentials.xPubKey.toString() == this.credentials.xPubKey.toString()) return Promise.reject(err);
         this.credentials = altCredentials;
@@ -706,7 +748,6 @@ export class API {
       }
       return Promise.reject(err);
     });
-
   }
 
   /*
@@ -721,7 +762,11 @@ export class API {
     this.log.debug('Importing from Extended Private Key');
 
     try {
-      this.credentials = Credentials.fromExtendedPrivateKey(xPrivKey, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
+      this.credentials = Credentials.fromExtendedPrivateKey(
+        xPrivKey,
+        opts.account || 0,
+        opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44,
+      );
     } catch (e) {
       this.log.info('xPriv error:', e);
       return new Promise((resolve, reject) => {
@@ -748,7 +793,13 @@ export class API {
 
     this.log.debug('Importing from Extended Private Key');
     try {
-      this.credentials = Credentials.fromExtendedPublicKey(xPubKey, source, entropySourceHex, opts.account || 0, opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44);
+      this.credentials = Credentials.fromExtendedPublicKey(
+        xPubKey,
+        source,
+        entropySourceHex,
+        opts.account || 0,
+        opts.derivationStrategy || Constants.DERIVATION_STRATEGIES.BIP44,
+      );
     } catch (e) {
       this.log.info('xPriv error:', e);
       return new Promise((resolve, reject) => {
@@ -757,11 +808,10 @@ export class API {
     }
 
     return this._import();
-  };
+  }
 
   decryptBIP38PrivateKey(encryptedPrivateKeyBase58: any, passphrase: string, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-
       let bip38 = new Bip38();
 
       let privateKeyWif;
@@ -774,29 +824,30 @@ export class API {
       let privateKey = new Meritcore.PrivateKey(privateKeyWif, 'livenet');
       let address = privateKey.publicKey.toAddress().toString();
       let addrBuff = new Buffer(address, 'ascii');
-      let actualChecksum = Meritcore.crypto.Hash.sha256sha256(addrBuff).toString('hex').substring(0, 8);
-      let expectedChecksum = Meritcore.encoding.Base58Check.decode(encryptedPrivateKeyBase58).toString('hex').substring(6, 14);
+      let actualChecksum = Meritcore.crypto.Hash.sha256sha256(addrBuff)
+        .toString('hex')
+        .substring(0, 8);
+      let expectedChecksum = Meritcore.encoding.Base58Check.decode(encryptedPrivateKeyBase58)
+        .toString('hex')
+        .substring(6, 14);
 
-      if (actualChecksum != expectedChecksum)
-        return reject(new Error('Incorrect passphrase'));
+      if (actualChecksum != expectedChecksum) return reject(new Error('Incorrect passphrase'));
 
       return resolve(privateKeyWif);
     });
-  };
-
+  }
 
   getBalanceFromPrivateKey(_privateKey: string): Promise<any> {
     return new Promise((resolve, reject) => {
-
       let privateKey = new Meritcore.PrivateKey(_privateKey);
       let address = privateKey.publicKey.toAddress();
       return this.getUtxos({
-        addresses: address.toString()
-      }).then((utxos) => {
+        addresses: address.toString(),
+      }).then(utxos => {
         return resolve(_.sumBy(utxos, 'micros'));
       });
     });
-  };
+  }
 
   buildTxFromPrivateKey(_privateKey: any, destinationAddress: any, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -804,8 +855,8 @@ export class API {
       let address = privateKey.publicKey.toAddress();
 
       return this.getUtxos({
-        addresses: address.toString()
-      }).then((utxos) => {
+        addresses: address.toString(),
+      }).then(utxos => {
         if (!_.isArray(utxos) || utxos.length == 0) return reject(new Error('No utxos found'));
 
         let fee = opts.fee || DEFAULT_FEE;
@@ -824,7 +875,6 @@ export class API {
 
           // Make sure the tx can be serialized
           tx.serialize();
-
         } catch (ex) {
           this.log.error('Could not build transaction from private key', ex);
           return reject(MWCErrors.COULD_NOT_BUILD_TRANSACTION);
@@ -832,8 +882,7 @@ export class API {
         return resolve(tx);
       });
     });
-  };
-
+  }
 
   /**
    * Open a wallet and try to complete the public key ring.
@@ -845,55 +894,53 @@ export class API {
   openWallet(): Promise<any> {
     this.log.warn('Opening wallet');
     return new Promise((resolve, reject) => {
-
       $.checkState(this.credentials);
       if (this.credentials.isComplete() && this.credentials.hasWalletInfo()) {
         this.log.warn('WALLET OPEN');
         return resolve(true); // wallet is already open
       }
 
-      return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1').then((ret) => {
-        let wallet = ret.wallet;
+      return this._doGetRequest('/v1/wallets/?includeExtendedInfo=1')
+        .then(ret => {
+          let wallet = ret.wallet;
 
-        return this._processStatus(ret).then(() => {
-
-          if (!this.credentials.hasWalletInfo()) {
-            let me: any = _.find(wallet.copayers, {
-              id: this.credentials.copayerId
-            });
-            this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.parentAddress);
-          }
-
-          if (wallet.status != 'complete')
-            return resolve();
-
-          if (this.credentials.walletPrivKey) {
-            if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
-              return reject(MWCErrors.SERVER_COMPROMISED);
+          return this._processStatus(ret).then(() => {
+            if (!this.credentials.hasWalletInfo()) {
+              let me: any = _.find(wallet.copayers, {
+                id: this.credentials.copayerId,
+              });
+              this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, me.name, wallet.parentAddress);
             }
-          } else {
-            // this should only happen in AIR-GAPPED flows
-            this.log.warn('Could not verify copayers key (missing wallet Private Key)');
-          }
 
-          this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
+            if (wallet.status != 'complete') return resolve();
 
-          this.eventEmitter.emit('walletCompleted', wallet.id);
+            if (this.credentials.walletPrivKey) {
+              if (!Verifier.checkCopayers(this.credentials, wallet.copayers)) {
+                return reject(MWCErrors.SERVER_COMPROMISED);
+              }
+            } else {
+              // this should only happen in AIR-GAPPED flows
+              this.log.warn('Could not verify copayers key (missing wallet Private Key)');
+            }
 
-          return resolve(ret);
+            this.credentials.addPublicKeyRing(this._extractPublicKeyRing(wallet.copayers));
+
+            this.eventEmitter.emit('walletCompleted', wallet.id);
+
+            return resolve(ret);
+          });
+        })
+        .catch(err => {
+          return reject(err);
         });
-      }).catch(err => {
-        return reject(err);
-      });
     });
-  };
+  }
 
   _getHeaders() {
     return {
-      'x-client-version': 'MWC-' + Package.version
+      'x-client-version': 'MWC-' + Package.version,
     };
-  };
-
+  }
 
   /**
    * Do an HTTP request
@@ -903,9 +950,14 @@ export class API {
    * @param {String} url
    * @param {Object} args
    */
-  protected _doRequest(method: string, url: string, args: any, useSession: boolean, secondRun = false): Promise<{ body: any, header: any }> {
+  protected _doRequest(
+    method: string,
+    url: string,
+    args: any,
+    useSession: boolean,
+    secondRun = false,
+  ): Promise<{ body: any; header: any }> {
     return new Promise((resolve, reject) => {
-
       let headers = this._getHeaders();
 
       if (this.credentials) {
@@ -928,14 +980,13 @@ export class API {
 
       r.accept('json');
 
-      _.each(headers, function (v, k) {
+      _.each(headers, function(v, k) {
         if (v) r.set(k, v);
       });
 
       if (args) {
         if (method == 'post' || method == 'put') {
           r.send(args);
-
         } else {
           r.query(args);
         }
@@ -944,96 +995,100 @@ export class API {
       r.timeout(this.timeout);
       r.ok(res => res.status < 500); // dont reject on failed status
 
-      return Promise.resolve(r).then((res) => {
-
-        /**
-         * Universal MWC Logger.  It will log all output returned from MWS
-         * if the private static DEBUG_MODE is set to true above.
-         */
-        if (res.body && this.DEBUG_MODE) {
-          this.log.info('MWS Response: ');
-          this.log.info(util.inspect(res.body, {
-            depth: 10
-          }));
-        }
-
-        if (res.status !== 200) {
-          if (res.status === 404)
-            return reject(MWCErrors.NOT_FOUND);
-
-          if (res.code == MWCErrors.AUTHENTICATION_ERROR.code) {
-            if (this.onAuthenticationError) this.onAuthenticationError();
-            return reject(MWCErrors.AUTHENTICATION_ERROR);
+      return Promise.resolve(r)
+        .then(res => {
+          /**
+           * Universal MWC Logger.  It will log all output returned from MWS
+           * if the private static DEBUG_MODE is set to true above.
+           */
+          if (res.body && this.DEBUG_MODE) {
+            this.log.info('MWS Response: ');
+            this.log.info(
+              util.inspect(res.body, {
+                depth: 10,
+              }),
+            );
           }
 
-          if (!res.status) {
+          if (res.status !== 200) {
+            if (res.status === 404) return reject(MWCErrors.NOT_FOUND);
+
+            if (res.code == MWCErrors.AUTHENTICATION_ERROR.code) {
+              if (this.onAuthenticationError) this.onAuthenticationError();
+              return reject(MWCErrors.AUTHENTICATION_ERROR);
+            }
+
+            if (!res.status) {
+              return reject(MWCErrors.CONNECTION_ERROR);
+            }
+
+            this.log.error('HTTP Error:' + res.status);
+
+            if (!res.body) return reject(new Error(res.status.toString()));
+
+            return reject(this._parseError(res.body));
+          }
+
+          if (res.body === '{"error":"read ECONNRESET"}') {
+            return reject(MWCErrors.ECONNRESET_ERROR);
+          }
+
+          if (this.onConnectionRestored) {
+            this.onConnectionRestored();
+          }
+
+          return resolve(res);
+        })
+        .catch(err => {
+          if (!err.status) {
             return reject(MWCErrors.CONNECTION_ERROR);
+          } else if (err.status == 502 || err.status == 504) {
+            return reject(MWCErrors.SERVER_UNAVAILABLE);
           }
 
-          this.log.error('HTTP Error:' + res.status);
+          if (!err.response || !err.response.text) {
+            return reject(err);
+          }
 
-          if (!res.body) return reject(new Error(res.status.toString()));
+          let errObj; // not an instance of Error
+          try {
+            errObj = JSON.parse(err.response.text);
+          } catch (e) {
+            return reject(err);
+          }
 
-          return reject(this._parseError(res.body));
-        }
-
-        if (res.body === '{"error":"read ECONNRESET"}') {
-          return reject(MWCErrors.ECONNRESET_ERROR);
-        }
-
-        if (this.onConnectionRestored) {
-          this.onConnectionRestored();
-        }
-
-        return resolve(res);
-      }).catch((err) => {
-
-        if (!err.status) {
-          return reject(MWCErrors.CONNECTION_ERROR);
-        } else if (err.status == 502 || err.status == 504) {
-          return reject(MWCErrors.SERVER_UNAVAILABLE);
-        }
-
-        if (!err.response || !err.response.text) {
-          return reject(err);
-        }
-
-        let errObj; // not an instance of Error
-        try {
-          errObj = JSON.parse(err.response.text);
-        } catch (e) {
-          return reject(err);
-        }
-
-        if (errObj.code == MWCErrors.AUTHENTICATION_ERROR.code) {
-          if (!secondRun) { //trying to restore session one time
-            return this._doRequest('post', '/v1/login', {}, null, true).then(() => {
-              return this._doRequest(method, url, args, useSession, true);
-            }).catch(() => {
+          if (errObj.code == MWCErrors.AUTHENTICATION_ERROR.code) {
+            if (!secondRun) {
+              //trying to restore session one time
+              return this._doRequest('post', '/v1/login', {}, null, true)
+                .then(() => {
+                  return this._doRequest(method, url, args, useSession, true);
+                })
+                .catch(() => {
+                  if (this.onAuthenticationError) {
+                    return Promise.resolve(this.onAuthenticationError());
+                  }
+                });
+            } else {
               if (this.onAuthenticationError) {
                 return Promise.resolve(this.onAuthenticationError());
               }
-            });
-          } else {
-            if (this.onAuthenticationError) {
-              return Promise.resolve(this.onAuthenticationError());
             }
           }
-        }
 
-        if (errObj.code && MWCErrors[errObj.code]) return reject(MWCErrors[errObj.code]);
-        return reject(err);
-      });
+          if (errObj.code && MWCErrors[errObj.code]) return reject(MWCErrors[errObj.code]);
+          return reject(err);
+        });
     });
-  };
+  }
 
   private _login(): Promise<any> {
     return this._doPostRequest('/v1/login', {});
-  };
+  }
 
   private _logout(): Promise<any> {
     return this._doPostRequest('/v1/logout', {});
-  };
+  }
 
   /**
    * Do an HTTP request
@@ -1044,16 +1099,17 @@ export class API {
    * @param {Object} args
    */
   private _doRequestWithLogin(method: string, url: string, args: any): Promise<any> {
-
     let doLogin = (): Promise<any> => {
       return new Promise((resolve, reject) => {
-        return this._login().then((s) => {
-          if (!s) return reject(MWCErrors.NOT_AUTHORIZED);
-          this.session = s;
-          return resolve();
-        }).catch((err) => {
-          return reject(err);
-        });
+        return this._login()
+          .then(s => {
+            if (!s) return reject(MWCErrors.NOT_AUTHORIZED);
+            this.session = s;
+            return resolve();
+          })
+          .catch(err => {
+            return reject(err);
+          });
       });
     };
 
@@ -1066,13 +1122,14 @@ export class API {
       });
     };
 
-
-    return loginIfNeeded().then(() => {
-      return this._doRequest(method, url, args, true);
-    }).then((res) => {
-      return res.body;
-    });
-  };
+    return loginIfNeeded()
+      .then(() => {
+        return this._doRequest(method, url, args, true);
+      })
+      .then(res => {
+        return res.body;
+      });
+  }
 
   /**
    * Do a POST request
@@ -1084,15 +1141,14 @@ export class API {
    */
   _doPostRequest(url: string, args?: any): Promise<any> {
     args = args || {};
-    return this._doRequest('post', url, args, false)
-      .then(res => res.body);
-  };
+    return this._doRequest('post', url, args, false).then(res => res.body);
+  }
 
   _doPutRequest(url: string, args: any): Promise<any> {
-    return this._doRequest('put', url, args, false).then((res) => {
+    return this._doRequest('put', url, args, false).then(res => {
       return res.body;
     });
-  };
+  }
 
   /**
    * Do a GET request
@@ -1104,18 +1160,18 @@ export class API {
   _doGetRequest(url: string): Promise<any> {
     url += url.indexOf('?') > 0 ? '&' : '?';
     url += 'r=' + _.random(10000, 99999);
-    return this._doRequest('get', url, {}, false).then((res) => {
+    return this._doRequest('get', url, {}, false).then(res => {
       return res.body;
     });
-  };
+  }
 
   _doGetRequestWithLogin(url: string): Promise<any> {
     url += url.indexOf('?') > 0 ? '&' : '?';
     url += 'r=' + _.random(10000, 99999);
-    return this._doRequestWithLogin('get', url, {}).catch((err) => {
+    return this._doRequestWithLogin('get', url, {}).catch(err => {
       this.log.warn('Were not able to complete getRequest: ', err);
     });
-  };
+  }
 
   /**
    * Do a DELETE request
@@ -1125,12 +1181,12 @@ export class API {
    * @param {Callback} cb
    */
   private _doDeleteRequest(url: string): Promise<any> {
-    return this._doRequest('delete', url, {}, false).then((res) => {
+    return this._doRequest('delete', url, {}, false).then(res => {
       return res.body;
     });
-  };
+  }
 
-  private _buildSecret = function (walletId, walletPrivKey, network) {
+  private _buildSecret = function(walletId, walletPrivKey, network) {
     if (_.isString(walletPrivKey)) {
       walletPrivKey = Meritcore.PrivateKey.fromString(walletPrivKey);
     }
@@ -1150,9 +1206,8 @@ export class API {
         parts.push(str.substring(i == 0 ? 0 : indexes[i - 1], indexes[i]));
         i++;
       }
-      ;
       return parts;
-    };
+    }
 
     try {
       let secretSplit = split(secret, [22, 74]);
@@ -1166,12 +1221,12 @@ export class API {
       return {
         walletId: walletId,
         walletPrivKey: walletPrivKey,
-        network: networkChar == 'T' ? 'testnet' : 'livenet'
+        network: networkChar == 'T' ? 'testnet' : 'livenet',
       };
     } catch (ex) {
       throw new Error('Invalid secret');
     }
-  };
+  }
 
   buildTx(txp: any): any {
     return Utils.buildTx(txp);
@@ -1181,7 +1236,7 @@ export class API {
     let t = Utils.buildTx(txp);
 
     return t.uncheckedSerialize();
-  };
+  }
 
   signTxp(txp: any, derivedXPrivKey): any {
     //Derive proper key to sign, for each input
@@ -1190,7 +1245,7 @@ export class API {
 
     let xpriv = new Meritcore.HDPrivateKey(derivedXPrivKey);
 
-    _.each(txp.inputs, function (i) {
+    _.each(txp.inputs, function(i) {
       $.checkState(i.path, 'Input derivation path not available (signing transaction)');
       if (!derived[i.path]) {
         derived[i.path] = xpriv.deriveChild(i.path).privateKey;
@@ -1200,43 +1255,42 @@ export class API {
 
     let t = Utils.buildTx(txp);
 
-    let signatures = _.map(privs, function (priv, i) {
+    let signatures = _.map(privs, function(priv, i) {
       return t.getSignatures(priv);
     });
 
-    signatures = _.map(_.sortBy(_.flatten(signatures), 'inputIndex'), function (s) {
+    signatures = _.map(_.sortBy(_.flatten(signatures), 'inputIndex'), function(s) {
       return s.signature.toDER().toString('hex');
     });
 
     return signatures;
-  };
+  }
 
   private _signTxp(txp, password): any {
     let derived = this.credentials.getDerivedXPrivKey(password);
     return this.signTxp(txp, derived);
-  };
+  }
 
   _getCurrentSignatures(txp: any): any {
     let acceptedActions = _.filter(txp.actions, {
-      type: 'accept'
+      type: 'accept',
     });
 
-    return _.map(acceptedActions, function (x: any) {
+    return _.map(acceptedActions, function(x: any) {
       return {
         signatures: x.signatures,
-        xpub: x.xpub
+        xpub: x.xpub,
       };
     });
-  };
+  }
 
   _addSignaturesToMeritcoreTx(txp: any, t: any, signatures: any, xpub: any): any {
-    if (signatures.length != txp.inputs.length)
-      throw new Error('Number of signatures does not match number of inputs');
+    if (signatures.length != txp.inputs.length) throw new Error('Number of signatures does not match number of inputs');
 
     let i = 0,
       x = new Meritcore.HDPublicKey(xpub);
 
-    _.each(signatures, function (signatureHex) {
+    _.each(signatures, function(signatureHex) {
       let input = txp.inputs[i];
       try {
         let signature = Meritcore.crypto.Signature.fromString(signatureHex);
@@ -1245,29 +1299,24 @@ export class API {
           inputIndex: i,
           signature: signature,
           sigtype: Meritcore.crypto.Signature.SIGHASH_ALL,
-          publicKey: pub
+          publicKey: pub,
         };
         t.inputs[i].addSignature(t, s);
         i++;
-      } catch (e) {
-      }
-      ;
+      } catch (e) {}
     });
 
-    if (i != txp.inputs.length)
-      throw new Error('Wrong signatures');
-  };
-
+    if (i != txp.inputs.length) throw new Error('Wrong signatures');
+  }
 
   _applyAllSignatures(txp: any, t: any): any {
-
     $.checkState(txp.status == 'accepted');
 
     let sigs = this._getCurrentSignatures(txp);
-    _.each(sigs, function (x) {
+    _.each(sigs, function(x) {
       this._addSignaturesToMeritcoreTx(txp, t, x.signatures, x.xpub);
     });
-  };
+  }
 
   /**
    * Join
@@ -1282,9 +1331,15 @@ export class API {
    * @param {String} opts.customData
    * @param {Callback} cb
    */
-  public doJoinWallet(walletId: any, walletPrivKey: any, xPubKey: any, requestPubKey: any, copayerName: string, opts: any = {}): Promise<any> {
+  public doJoinWallet(
+    walletId: any,
+    walletPrivKey: any,
+    xPubKey: any,
+    requestPubKey: any,
+    copayerName: string,
+    opts: any = {},
+  ): Promise<any> {
     return new Promise((resolve, reject) => {
-
       // Adds encrypted walletPrivateKey to CustomData
       opts.customData = opts.customData || {};
       opts.customData.walletPrivKey = walletPrivKey.toString();
@@ -1296,33 +1351,34 @@ export class API {
         name: encCopayerName,
         xPubKey: xPubKey,
         requestPubKey: requestPubKey,
-        customData: encCustomData
+        customData: encCustomData,
       };
       if (opts.dryRun) args.dryRun = true;
 
-      if (_.isBoolean(opts.supportBIP44AndP2PKH))
-        args.supportBIP44AndP2PKH = opts.supportBIP44AndP2PKH;
+      if (_.isBoolean(opts.supportBIP44AndP2PKH)) args.supportBIP44AndP2PKH = opts.supportBIP44AndP2PKH;
 
       let hash = Utils.getCopayerHash(args.name, args.xPubKey, args.requestPubKey);
       args.copayerSignature = Utils.signMessage(hash, walletPrivKey);
 
       let url = '/v1/wallets/' + walletId + '/copayers';
-      return this._doPostRequest(url, args).then((body) => {
-        return this._processWallet(body.wallet).then(() => {
-          return resolve(body.wallet);
+      return this._doPostRequest(url, args)
+        .then(body => {
+          return this._processWallet(body.wallet).then(() => {
+            return resolve(body.wallet);
+          });
+        })
+        .catch(err => {
+          return reject(err);
         });
-      }).catch((err) => {
-        return reject(err);
-      });
     });
-  };
+  }
 
   /**
    * Return if wallet is complete
    */
   isComplete(): any {
     return this.credentials && this.credentials.isComplete();
-  };
+  }
 
   /**
    * Is private key currently encrypted?
@@ -1331,7 +1387,7 @@ export class API {
    */
   isPrivKeyEncrypted(): any {
     return this.credentials && this.credentials.isPrivKeyEncrypted();
-  };
+  }
 
   /**
    * Is private key external?
@@ -1340,7 +1396,7 @@ export class API {
    */
   isPrivKeyExternal(): any {
     return this.credentials && this.credentials.hasExternalSource();
-  };
+  }
 
   /**
    * Get external wallet source name
@@ -1349,7 +1405,7 @@ export class API {
    */
   getPrivKeyExternalSourceName(): any {
     return this.credentials ? this.credentials.getExternalSourceName() : null;
-  };
+  }
 
   /**
    * Returns unencrypted extended private key and mnemonics
@@ -1358,8 +1414,7 @@ export class API {
    */
   getKeys(password: string): any {
     return this.credentials.getKeys(password);
-  };
-
+  }
 
   /**
    * Checks is password is valid
@@ -1376,9 +1431,7 @@ export class API {
     } catch (e) {
       return false;
     }
-    ;
-  };
-
+  }
 
   /**
    * Can this credentials sign a transaction?
@@ -1388,11 +1441,10 @@ export class API {
    */
   canSign(): any {
     return this.credentials && this.credentials.canSign();
-  };
+  }
 
-
-  private _extractPublicKeyRing = function (copayers) {
-    return _.map(copayers, function (copayer: any) {
+  private _extractPublicKeyRing = function(copayers) {
+    return _.map(copayers, function(copayer: any) {
       let pkr: any = _.pick(copayer, ['xPubKey', 'requestPubKey']);
       pkr.copayerName = copayer.name;
       return pkr;
@@ -1408,7 +1460,7 @@ export class API {
    */
   encryptPrivateKey(password: string, opts?: any): any {
     this.credentials.encryptPrivateKey(password, opts || this.privateKeyEncryptionOpts);
-  };
+  }
 
   /**
    * disables encryption for private key.
@@ -1417,7 +1469,7 @@ export class API {
    */
   decryptPrivateKey(password: string): any {
     return this.credentials.decryptPrivateKey(password);
-  };
+  }
 
   /**
    * Get current fee levels for the specified network
@@ -1426,10 +1478,10 @@ export class API {
    * @returns {Callback} cb - Returns error or an object with status information
    */
   getFeeLevels(network: string = this.network): Promise<any> {
-    (!$.checkArgument(network || _.includes(['livenet', 'testnet'], network)));
+    !$.checkArgument(network || _.includes(['livenet', 'testnet'], network));
 
     return this._doGetRequest('/v1/feelevels/?network=' + (network || ENV.network));
-  };
+  }
 
   /**
    * Get fee for easy receive
@@ -1437,7 +1489,7 @@ export class API {
    */
   getEasyReceiveFee(): Promise<any> {
     return this._doGetRequest('/v1/easy_fee/');
-  };
+  }
 
   /**
    * Get service version
@@ -1446,15 +1498,15 @@ export class API {
    */
   getVersion(): any {
     this._doGetRequest('/v1/version/');
-  };
+  }
 
   _checkKeyDerivation(): any {
-    let isInvalid = (this.keyDerivationOk === false);
+    let isInvalid = this.keyDerivationOk === false;
     if (isInvalid) {
       this.log.error('Key derivation for this device is not working as expected');
     }
     return !isInvalid;
-  };
+  }
 
   /**
    *
@@ -1473,7 +1525,6 @@ export class API {
    */
   createWallet(walletName: string, copayerName: string, m: number, n: number, opts: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-
       if (!this._checkKeyDerivation()) return reject(new Error('Cannot create new wallet'));
 
       if (opts) $.shouldBeObject(opts);
@@ -1484,7 +1535,7 @@ export class API {
       if (!this.credentials) {
         this.log.info('Generating new keys');
         this.seedFromRandom({
-          network: network
+          network: network,
         });
       } else {
         this.log.info('Using existing keys');
@@ -1506,47 +1557,48 @@ export class API {
         addressType: Meritcore.Address.PayToPublicKeyHashType,
         signPrivKey: walletPrivKey,
         network: network,
-        alias: opts.alias
+        alias: opts.alias,
       };
 
       // Create wallet
-      return this.sendReferral(referralOpts).then(refid => {
+      return this.sendReferral(referralOpts)
+        .then(refid => {
+          let c = this.credentials;
+          let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
 
-        let c = this.credentials;
-        let encWalletName = Utils.encryptMessage(walletName, c.sharedEncryptingKey);
+          let args = {
+            name: encWalletName,
+            m: m,
+            n: n,
+            pubKey: pubkey.toString(),
+            network: network,
+            singleAddress: true, //daedalus wallets are single-addressed
+            id: opts.id,
+            parentAddress: opts.parentAddress,
+            referralId: refid,
+          };
 
-        let args = {
-          name: encWalletName,
-          m: m,
-          n: n,
-          pubKey: pubkey.toString(),
-          network: network,
-          singleAddress: true, //daedalus wallets are single-addressed
-          id: opts.id,
-          parentAddress: opts.parentAddress,
-          referralId: refid
-        };
+          return this._doPostRequest('/v1/wallets/', args).then(res => {
+            if (res) {
+              let walletId = res.walletId;
+              c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.parentAddress);
+              this.name = walletName;
 
-        return this._doPostRequest('/v1/wallets/', args).then(res => {
-          if (res) {
-            let walletId = res.walletId;
-            c.addWalletInfo(walletId, walletName, m, n, copayerName, opts.parentAddress);
-            this.name = walletName;
+              let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
 
-            let secret = this._buildSecret(c.walletId, c.walletPrivKey, c.network);
-
-            return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then(
-              wallet => {
-                return resolve(n > 1 ? secret : null);
-              }
-            );
-          } else {
-            return reject(Error(res));
-          }
-        });
-      }).catch(reject);
+              return this.doJoinWallet(walletId, walletPrivKey, c.xPubKey, c.requestPubKey, copayerName, {}).then(
+                wallet => {
+                  return resolve(n > 1 ? secret : null);
+                },
+              );
+            } else {
+              return reject(Error(res));
+            }
+          });
+        })
+        .catch(reject);
     });
-  };
+  }
 
   /**
    * Broadcast raw referral to network
@@ -1573,7 +1625,7 @@ export class API {
     if (!this.credentials) {
       this.log.info('Generating new keys');
       this.seedFromRandom({
-        network: opts.network
+        network: opts.network,
       });
     } else {
       this.log.info('Using existing keys');
@@ -1595,26 +1647,31 @@ export class API {
       parentAddress = parentReferral.address;
     }
 
-    const hash = Meritcore.crypto.Hash.sha256sha256(Buffer.concat([
-      Meritcore.Address.fromString(parentAddress, opts.network).toBufferLean(),
-      Meritcore.Address.fromString(opts.address, opts.network).toBufferLean()
-    ]));
+    const hash = Meritcore.crypto.Hash.sha256sha256(
+      Buffer.concat([
+        Meritcore.Address.fromString(parentAddress, opts.network).toBufferLean(),
+        Meritcore.Address.fromString(opts.address, opts.network).toBufferLean(),
+      ]),
+    );
 
     const signature = Meritcore.crypto.ECDSA.sign(hash, opts.signPrivKey, 'big').toString('hex');
 
     // The referral constructor requires that the parentAddress is in
     // full address form (ripe160); it should not be an alias here.
-    const referral = new Meritcore.Referral({
-      parentAddress,
-      address: opts.address,
-      addressType: opts.addressType,
-      pubkey: opts.pubkey,
-      signature: signature.toString('hex'),
-      alias: opts.alias
-    }, opts.network);
+    const referral = new Meritcore.Referral(
+      {
+        parentAddress,
+        address: opts.address,
+        addressType: opts.addressType,
+        pubkey: opts.pubkey,
+        signature: signature.toString('hex'),
+        alias: opts.alias,
+      },
+      opts.network,
+    );
 
     return this._doPostRequest('/v1/referral/', { referral: referral.serialize() });
-  };
+  }
 
   /**
    * Join an existing wallet
@@ -1627,22 +1684,28 @@ export class API {
    */
 
   async joinWallet(secret: string, copayerName: string, opts: any = {}): Promise<any> {
-    if (!this._checkKeyDerivation())
-      throw new Error('Cannot join wallet');
+    if (!this._checkKeyDerivation()) throw new Error('Cannot join wallet');
 
     let secretData = this.parseSecret(secret);
 
     if (!this.credentials) {
       this.seedFromRandom({
-        network: secretData.network
+        network: secretData.network,
       });
     }
 
     this.credentials.addWalletPrivateKey(secretData.walletPrivKey.toString());
 
-    const wallet = await this.doJoinWallet(secretData.walletId, secretData.walletPrivKey, this.credentials.xPubKey, this.credentials.requestPubKey, copayerName, {
-      dryRun: !!opts.dryRun
-    });
+    const wallet = await this.doJoinWallet(
+      secretData.walletId,
+      secretData.walletPrivKey,
+      this.credentials.xPubKey,
+      this.credentials.requestPubKey,
+      copayerName,
+      {
+        dryRun: !!opts.dryRun,
+      },
+    );
 
     if (!opts.dryRun) {
       this.credentials.addWalletInfo(wallet.id, wallet.name, wallet.m, wallet.n, copayerName, wallet.parentAddress);
@@ -1662,7 +1725,7 @@ export class API {
 
     // First: Try to get the wallet with current credentials
     await this.getStatus({
-      includeExtendedInfo: true
+      includeExtendedInfo: true,
     });
 
     let c = this.credentials;
@@ -1679,7 +1742,7 @@ export class API {
       network: c.network,
       id: walletId,
       supportBIP44AndP2PKH,
-      beacon: c.beacon
+      beacon: c.beacon,
     };
 
     const body = await this._doPostRequest('/v1/wallets/', args);
@@ -1693,13 +1756,15 @@ export class API {
 
     let i = 1;
 
-    return Promise.all(this.credentials.publicKeyRing.map((item: any) => {
-      let name = item.copayerName || ('copayer ' + i++);
-      return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
-        supportBIP44AndP2PKH
-      });
-    }));
-  };
+    return Promise.all(
+      this.credentials.publicKeyRing.map((item: any) => {
+        let name = item.copayerName || 'copayer ' + i++;
+        return this.doJoinWallet(walletId, walletPrivKey, item.xPubKey, item.requestPubKey, name, {
+          supportBIP44AndP2PKH,
+        });
+      }),
+    );
+  }
 
   private async _processWallet(wallet): Promise<any> {
     let encryptingKey = this.credentials.sharedEncryptingKey;
@@ -1728,7 +1793,7 @@ export class API {
         access.name = name;
       });
     });
-  };
+  }
 
   private async _processStatus(status) {
     this.id = status.wallet.id;
@@ -1736,17 +1801,19 @@ export class API {
 
     this.balance = status.balance || {};
     this.invitesBalance = status.invitesBalance || {};
-    this.confirmed = (status.invitesBalance && status.invitesBalance.totalAmount > 0);
+    this.confirmed = status.invitesBalance && status.invitesBalance.totalAmount > 0;
     if (this.confirmed) {
       this.availableInvites = Math.max(0, status.invitesBalance.availableConfirmedAmount - 1);
       this.pendingInvites = status.invitesBalance.availableAmount - status.invitesBalance.availableConfirmedAmount;
-      if (status.invitesBalance.availableConfirmedAmount == 0) this.pendingInvites =  Math.max(0,  this.pendingInvites - 1);
+      if (status.invitesBalance.availableConfirmedAmount == 0)
+        this.pendingInvites = Math.max(0, this.pendingInvites - 1);
       this.sendableInvites = Math.max(0, status.invitesBalance.availableAmount - 1);
     }
     //todo check if we use 'spendunconfirmed' options
-    this.balance.spendableAmount = status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
+    this.balance.spendableAmount =
+      status.balance.totalAmount - status.balance.lockedAmount - status.balance.totalPendingCoinbaseAmount;
 
-    const processCustomData = async (data) => {
+    const processCustomData = async data => {
       let copayers = data.wallet.copayers;
       if (!copayers) return;
 
@@ -1770,7 +1837,7 @@ export class API {
       }
 
       // Add it to result
-      return data.customData = customData;
+      return (data.customData = customData);
     };
 
     const validateAddress = async () => {
@@ -1785,7 +1852,7 @@ export class API {
       processCustomData(status),
       this._processWallet(status.wallet),
       this._processTxps(status.pendingTxps),
-      validateAddress()
+      validateAddress(),
     ]);
 
     return status;
@@ -1802,7 +1869,6 @@ export class API {
    */
   // TODO: Make this return a promise of []Notifications
   getNotifications(opts: any = {}): Promise<any> {
-
     $.checkState(this.credentials);
 
     let url = '/v1/notifications/';
@@ -1813,7 +1879,7 @@ export class API {
     }
 
     return this._doGetRequest(url);
-  };
+  }
 
   /**
    * Get status of the wallet
@@ -1836,7 +1902,7 @@ export class API {
     }
 
     return this._processStatus(result);
-  };
+  }
 
   getANV(addr: any): Promise<any> {
     $.checkState(this.credentials);
@@ -1870,7 +1936,7 @@ export class API {
     $.checkState(this.credentials);
 
     return this._doGetRequest('/v1/preferences/');
-  };
+  }
 
   /**
    * Save copayer preferences
@@ -1881,8 +1947,7 @@ export class API {
     $.checkState(this.credentials);
 
     return this._doPutRequest('/v1/preferences/', preferences);
-  };
-
+  }
 
   /**
    * fetchPayPro
@@ -1896,14 +1961,13 @@ export class API {
    */
   // TODO: Promisify (if we keep PayPro functionality.)
   fetchPayPro(opts: any): Promise<any> {
-    $.checkArgument(opts)
-      .checkArgument(opts.payProUrl);
+    $.checkArgument(opts).checkArgument(opts.payProUrl);
 
     return PayPro.get({
       url: opts.payProUrl,
-      http: this.payProHttp
+      http: this.payProHttp,
     });
-  };
+  }
 
   /**
    * Gets list of utxos
@@ -1917,24 +1981,26 @@ export class API {
     let url = '/v1/utxos/';
 
     if (opts.addresses) {
-      url += '?' + querystring.stringify({
-        addresses: [].concat(opts.addresses).join(','),
-        invites: opts.invites
-      });
+      url +=
+        '?' +
+        querystring.stringify({
+          addresses: [].concat(opts.addresses).join(','),
+          invites: opts.invites,
+        });
     }
     return this._doGetRequest(url);
-  };
+  }
 
   _getCreateTxProposalArgs(opts: any): any {
     let args = _.cloneDeep(opts);
     args.message = this._encryptMessage(opts.message, this.credentials.sharedEncryptingKey) || null;
     args.payProUrl = opts.payProUrl || null;
-    _.each(args.outputs, (o) => {
+    _.each(args.outputs, o => {
       o.message = this._encryptMessage(o.message, this.credentials.sharedEncryptingKey) || null;
     });
 
     return args;
-  };
+  }
 
   /**
    * Create a transaction proposal
@@ -1990,7 +2056,7 @@ export class API {
     }
 
     return txp;
-  };
+  }
 
   /**
    * Publish a transaction proposal
@@ -2006,7 +2072,7 @@ export class API {
 
     const hash = Utils.buildTx(opts.txp).uncheckedSerialize();
     const args = {
-      proposalSignature: Utils.signMessage(hash, this.credentials.requestPrivKey)
+      proposalSignature: Utils.signMessage(hash, this.credentials.requestPrivKey),
     };
 
     try {
@@ -2014,7 +2080,7 @@ export class API {
     } catch (err) {
       throw new Error('error in post /v1/txproposals/' + err);
     }
-  };
+  }
 
   /**
    * Send signed referral to beacon address and unlock in MWS
@@ -2022,10 +2088,14 @@ export class API {
    */
   async signAddressAndUnlock(opts: any = {}): Promise<any> {
     const refid: string = await this.sendReferral(opts);
-    await this._doPostRequest('/v1/addresses/unlock/', { address: opts.address, parentAddress: opts.parentAddress, refid });
+    await this._doPostRequest('/v1/addresses/unlock/', {
+      address: opts.address,
+      parentAddress: opts.parentAddress,
+      refid,
+    });
 
     return refid;
-  };
+  }
 
   /**
    * Sign and unlock address with root wallet address if it's not beaconed yet
@@ -2045,12 +2115,15 @@ export class API {
     const unlockOpts = {
       // privKey.toPublicKey().toAddress() and privKey.toAddress() gives two different strings, but daemon treats them
       // as same string ???
-      parentAddress: Meritcore.PrivateKey(this.credentials.walletPrivKey, this.credentials.network).toPublicKey().toAddress().toString(),
+      parentAddress: Meritcore.PrivateKey(this.credentials.walletPrivKey, this.credentials.network)
+        .toPublicKey()
+        .toAddress()
+        .toString(),
       address: address.address,
       pubkey: address.publicKeys[0],
       addressType: 1,
       signPrivKey,
-      network: address.network
+      network: address.network,
     };
 
     return this.signAddressAndUnlock(unlockOpts);
@@ -2065,8 +2138,7 @@ export class API {
   async createAddress(opts: any = {}): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    if (!this._checkKeyDerivation())
-      throw new Error('Cannot create new address for this wallet');
+    if (!this._checkKeyDerivation()) throw new Error('Cannot create new address for this wallet');
 
     opts.ignoreMaxGap = true;
 
@@ -2081,7 +2153,7 @@ export class API {
     }
 
     return address;
-  };
+  }
 
   /**
    * Adds access to the current copayer
@@ -2100,8 +2172,9 @@ export class API {
     let reqPrivKey = new Meritcore.PrivateKey(opts.generateNewKey ? null : this.credentials.requestPrivKey);
     let requestPubKey = reqPrivKey.toPublicKey().toString();
 
-    let xPriv = new Meritcore.HDPrivateKey(this.credentials.xPrivKey)
-      .deriveChild(this.credentials.getBaseAddressDerivationPath());
+    let xPriv = new Meritcore.HDPrivateKey(this.credentials.xPrivKey).deriveChild(
+      this.credentials.getBaseAddressDerivationPath(),
+    );
     let sig = Utils.signRequestPubKey(requestPubKey, xPriv);
     let copayerId = this.credentials.copayerId;
 
@@ -2112,18 +2185,17 @@ export class API {
       requestPubKey: requestPubKey,
       signature: sig,
       name: encCopayerName,
-      restrictions: opts.restrictions
+      restrictions: opts.restrictions,
     };
 
     return this._doPutRequest('/v1/copayers/' + copayerId + '/', opts);
-  };
+  }
 
   // Ensure that an address is in a valid format, and that it has been beaconed on the blockchain.
   validateAddress(address: string): Promise<any> {
     const url = `/v1/addresses/${address}/validate/`;
     return this._doGetRequest(url);
-  };
-
+  }
 
   /**
    * Get your main addresses
@@ -2155,7 +2227,7 @@ export class API {
     }
 
     return addresses;
-  };
+  }
 
   /**
    * Update wallet balance
@@ -2168,7 +2240,7 @@ export class API {
     if (opts.twoStep) url += '?twoStep=1';
 
     return this._doGetRequest(url).then(balance => balance.availableAmount);
-  };
+  }
 
   /**
    * Update wallet invites balance
@@ -2178,7 +2250,7 @@ export class API {
     let url = '/v1/invites/';
 
     return this._doGetRequest(url);
-  };
+  }
 
   /**
    * Get list of transactions proposals
@@ -2196,49 +2268,55 @@ export class API {
 
     await this._processTxps(txps);
 
-    await Promise.all(txps.map(async (txp) => {
-      if (!opts.doNotVerify) {
-        // TODO: Find a way to run this check in parallel.
-        const paypro = await this.getPayPro(txp);
+    await Promise.all(
+      txps.map(async txp => {
+        if (!opts.doNotVerify) {
+          // TODO: Find a way to run this check in parallel.
+          const paypro = await this.getPayPro(txp);
 
-        if (!Verifier.checkTxProposal(this.credentials, txp, { paypro })) {
-          throw MWCErrors.SERVER_COMPROMISED;
+          if (!Verifier.checkTxProposal(this.credentials, txp, { paypro })) {
+            throw MWCErrors.SERVER_COMPROMISED;
+          }
+
+          return paypro;
         }
-
-        return paypro;
-      }
-    }));
+      }),
+    );
 
     let result: any;
     if (opts.forAirGapped) {
       result = {
         txps: JSON.parse(JSON.stringify(txps)),
-        encryptedPkr: opts.doNotEncryptPkr ? null : Utils.encryptMessage(JSON.stringify(this.credentials.publicKeyRing), this.credentials.personalEncryptingKey),
+        encryptedPkr: opts.doNotEncryptPkr
+          ? null
+          : Utils.encryptMessage(
+              JSON.stringify(this.credentials.publicKeyRing),
+              this.credentials.personalEncryptingKey,
+            ),
         unencryptedPkr: opts.doNotEncryptPkr ? JSON.stringify(this.credentials.publicKeyRing) : null,
         m: this.credentials.m,
-        n: this.credentials.n
+        n: this.credentials.n,
       };
     } else {
       result = txps;
     }
     return result;
-  };
+  }
 
   //TODO: Refactor Paypro module to be Promisified.
   private async getPayPro(txp): Promise<any> {
-    if (!txp.payProUrl || this.doNotVerifyPayPro)
-      return;
+    if (!txp.payProUrl || this.doNotVerifyPayPro) return;
 
     const paypro = await PayPro.get({
       url: txp.payProUrl,
-      http: this.payProHttp
+      http: this.payProHttp,
     });
 
     if (!paypro) {
       throw new Error('Cannot check paypro transaction now.');
     }
     return paypro;
-  };
+  }
 
   /**
    * Sign a transaction proposal
@@ -2250,19 +2328,16 @@ export class API {
     $.checkArgument(txp.creatorId);
 
     if (!txp.signatures) {
-      if (!this.canSign())
-        throw MWCErrors.MISSING_PRIVATE_KEY;
+      if (!this.canSign()) throw MWCErrors.MISSING_PRIVATE_KEY;
 
-      if (this.isPrivKeyEncrypted() && !password)
-        throw MWCErrors.ENCRYPTED_PRIVATE_KEY;
+      if (this.isPrivKeyEncrypted() && !password) throw MWCErrors.ENCRYPTED_PRIVATE_KEY;
     }
 
     const paypro = await this.getPayPro(txp);
 
     let isLegit = Verifier.checkTxProposal(this.credentials, txp, { paypro });
 
-    if (!isLegit)
-      throw MWCErrors.SERVER_COMPROMISED;
+    if (!isLegit) throw MWCErrors.SERVER_COMPROMISED;
 
     let signatures = txp.signatures;
 
@@ -2272,7 +2347,7 @@ export class API {
 
     const url = '/v1/txproposals/' + txp.id + '/signatures/';
     const args = {
-      signatures
+      signatures,
     };
 
     txp = await this._doPostRequest(url, args);
@@ -2292,11 +2367,9 @@ export class API {
    */
   signTxProposalFromAirGapped(txp: any, encryptedPkr: string, m: number, n: number, password: string): Promise<any> {
     $.checkState(this.credentials);
-    if (!this.canSign())
-      throw MWCErrors.MISSING_PRIVATE_KEY;
+    if (!this.canSign()) throw MWCErrors.MISSING_PRIVATE_KEY;
 
-    if (this.isPrivKeyEncrypted() && !password)
-      throw MWCErrors.ENCRYPTED_PRIVATE_KEY;
+    if (this.isPrivKeyEncrypted() && !password) throw MWCErrors.ENCRYPTED_PRIVATE_KEY;
 
     let publicKeyRing;
     try {
@@ -2314,12 +2387,10 @@ export class API {
     this.credentials.addressType = txp.addressType;
     this.credentials.addPublicKeyRing(publicKeyRing);
 
-    if (!Verifier.checkTxProposalSignature(this.credentials, txp))
-      throw new Error('Fake transaction proposal');
+    if (!Verifier.checkTxProposalSignature(this.credentials, txp)) throw new Error('Fake transaction proposal');
 
     return this._signTxp(txp, password);
-  };
-
+  }
 
   /**
    * Reject a transaction proposal
@@ -2332,7 +2403,7 @@ export class API {
 
     const url = '/v1/txproposals/' + txp.id + '/rejections/';
     const args = {
-      reason: this._encryptMessage(reason, this.credentials.sharedEncryptingKey) || ''
+      reason: this._encryptMessage(reason, this.credentials.sharedEncryptingKey) || '',
     };
 
     txp = await this._doPostRequest(url, args);
@@ -2356,7 +2427,7 @@ export class API {
 
     const url = '/v1/broadcast_raw/';
     return this._doPostRequest(url, opts);
-  };
+  }
 
   private async _doBroadcast(txp: any): Promise<any> {
     const url = '/v1/txproposals/' + txp.id + '/broadcast/';
@@ -2364,7 +2435,7 @@ export class API {
     await this._processTxps(txp);
 
     return txp;
-  };
+  }
 
   /**
    * Broadcast a transaction proposal
@@ -2375,8 +2446,7 @@ export class API {
     this.log.warn('Inside broadCastTxProposal');
     $.checkState(this.credentials && this.credentials.isComplete());
 
-    if (_.isArray(txp))
-      txp = txp[0];
+    if (_.isArray(txp)) txp = txp[0];
 
     await this.signAddressAndUnlockWithRoot(txp.changeAddress);
     const paypro = await this.getPayPro(txp);
@@ -2395,13 +2465,13 @@ export class API {
         rawTx: t.serialize({
           disableSmallFees: true,
           disableLargeFees: true,
-          disableDustOutputs: true
-        })
+          disableDustOutputs: true,
+        }),
       });
     }
 
     return this._doBroadcast(txp);
-  };
+  }
 
   /**
    * Remove a transaction proposal
@@ -2410,7 +2480,7 @@ export class API {
   removeTxProposal(txp: any): Promise<any> {
     $.checkState(this.credentials && this.credentials.isComplete());
     return this._doDeleteRequest('/v1/txproposals/' + txp.id);
-  };
+  }
 
   /**
    * Get transaction history
@@ -2460,7 +2530,7 @@ export class API {
     await this._processTxps(txp);
 
     return txp;
-  };
+  }
 
   /**
    * Start an address scanning process.
@@ -2474,10 +2544,10 @@ export class API {
     opts = opts || {};
     $.checkState(this.credentials && this.credentials.isComplete());
     const args = {
-      includeCopayerBranches: opts.includeCopayerBranches
+      includeCopayerBranches: opts.includeCopayerBranches,
     };
     return this._doPostRequest('/v1/addresses/scan', args);
-  };
+  }
 
   /**
    * Get a note associated with the specified txid
@@ -2504,7 +2574,7 @@ export class API {
 
     const note = await this._doPutRequest('/v1/txnotes/' + opts.txid + '/', opts);
     return this._processTxNotes(note);
-  };
+  }
 
   /**
    * Get all notes edited after the specified date
@@ -2552,7 +2622,7 @@ export class API {
    * Get all rates
    * @returns {Promise<any>}
    */
-  getRates():Promise<any> {
+  getRates(): Promise<any> {
     return this._doGetRequest('/v1/rates');
   }
 
@@ -2566,7 +2636,7 @@ export class API {
   pushNotificationsSubscribe(opts: any): Promise<any> {
     const url = '/v1/pushnotifications/subscriptions/';
     return this._doPostRequest(url, opts);
-  };
+  }
 
   /**
    * Unsubscribe from push notifications.
@@ -2576,14 +2646,14 @@ export class API {
   pushNotificationsUnsubscribe(token: string): Promise<any> {
     const url = '/v1/pushnotifications/subscriptions/' + token;
     return this._doDeleteRequest(url);
-  };
+  }
 
   smsNotificationsSubscribe(phoneNumber: string, platform: string, settings: ISmsNotificationSettings) {
     return this._doPostRequest('/v1/sms-notifications', {
       phoneNumber,
       platform,
       walletId: this.id,
-      settings
+      settings,
     });
   }
 
@@ -2604,7 +2674,7 @@ export class API {
   txConfirmationSubscribe(opts: any): Promise<any> {
     const url = '/v1/txconfirmations/';
     return this._doPostRequest(url, opts);
-  };
+  }
 
   /**
    * Stop listening for a tx confirmation.
@@ -2613,7 +2683,7 @@ export class API {
   txConfirmationUnsubscribe(txid: string): Promise<any> {
     const url = '/v1/txconfirmations/' + txid;
     return this._doDeleteRequest(url);
-  };
+  }
 
   /**
    * Returns send max information.
@@ -2632,12 +2702,11 @@ export class API {
     if (opts.excludeUnconfirmedUtxos) args.push('excludeUnconfirmedUtxos=1');
     if (opts.returnInputs) args.push('returnInputs=1');
     let qs = '';
-    if (args.length > 0)
-      qs = '?' + args.join('&');
+    if (args.length > 0) qs = '?' + args.join('&');
     const url = '/v1/sendmaxinfo/' + qs;
 
     return this._doGetRequest(url);
-  };
+  }
 
   /**
    * Get wallet status based on a string identifier (one of: walletId, address, txid)
@@ -2654,8 +2723,7 @@ export class API {
 
     const result = await this._doGetRequest('/v1/wallets/' + opts.identifier + '?' + qs.join('&'));
 
-    if (!result || !result.wallet)
-      throw new Error('Could not get status by identifier.');
+    if (!result || !result.wallet) throw new Error('Could not get status by identifier.');
 
     if (result.wallet.status == 'pending') {
       const { walletId, walletPrivKey, network } = this.credentials;
@@ -2665,12 +2733,12 @@ export class API {
     await this._processStatus(result);
 
     return result;
-  };
+  }
 
   referralTxConfirmationSubscribe(opts): Promise<any> {
     const url = '/v1/referraltxconfirmations/';
     return this._doPostRequest(url, opts);
-  };
+  }
 
   referralTxConfirmationUnsubscribe(codeHash): Promise<any> {
     const url = '/v1/referraltxconfirmations/' + codeHash;
@@ -2688,7 +2756,7 @@ export class API {
 
     let url = '/v1/easyreceive/validate/' + scriptId;
     return this._doGetRequest(url);
-  };
+  }
 
   /**
    * Vaulting
@@ -2696,11 +2764,11 @@ export class API {
   getVaults() {
     $.checkState(this.credentials);
     return this._doGetRequest('/v1/vaults/');
-  };
+  }
 
   getVault(vaultId) {
     $.checkState(this.credentials);
-    return this._doGetRequest(`/v1/vaults/${ vaultId }`);
+    return this._doGetRequest(`/v1/vaults/${vaultId}`);
   }
 
   /**
@@ -2716,18 +2784,18 @@ export class API {
     $.checkState(this.credentials);
 
     return this._doPostRequest('/v1/vaults/', vault);
-  };
+  }
 
   renewVault(vault: any) {
     $.checkState(this.credentials);
     delete vault.walletClient;
     return this._doPostRequest(`/v1/vaults/${vault._id}`, vault);
-  };
+  }
 
   getVaultTxHistory(vaultId: string, network: string): Promise<Array<any>> {
     $.checkState(this.credentials);
     return this._doGetRequest(`/v1/vaults/${vaultId}/txhistory?network=${network}`);
-  };
+  }
 
   getDefaultFee() {
     return DEFAULT_FEE;
@@ -2735,12 +2803,19 @@ export class API {
 
   deliverGlobalSend(globalSend: EasySend, type: ISendMethod) {
     return this._doPostRequest('/v1/globalsend', {
-      globalSend: _.pick(globalSend, ['secret', 'senderPubKey', 'senderName', 'blockTimeout', 'parentAddress', 'inviteOnly']),
+      globalSend: _.pick(globalSend, [
+        'secret',
+        'senderPubKey',
+        'senderName',
+        'blockTimeout',
+        'parentAddress',
+        'inviteOnly',
+      ]),
       type: {
         method: type.destination,
         destination: type.value,
-        message: type.message
-      }
+        message: type.message,
+      },
     });
   }
 
@@ -2749,7 +2824,10 @@ export class API {
    */
   registerGlobalSend(easySend: EasySend) {
     $.checkState(this.credentials);
-    return this._doPostRequest(`/v1/globalsend/register`, {scriptAddress: easySend.scriptAddress, globalsend: this.encryptGlobalSend(easySend)});
+    return this._doPostRequest(`/v1/globalsend/register`, {
+      scriptAddress: easySend.scriptAddress,
+      globalsend: this.encryptGlobalSend(easySend),
+    });
   }
 
   /**
@@ -2770,7 +2848,7 @@ export class API {
       let globalSend = JSON.parse(this.decryptGlobalSend(g.globalsend));
       globalSend.cancelled = g.cancelled;
       return globalSend;
-    } );
+    });
   }
 
   async getCommunityRank() {
@@ -2780,12 +2858,12 @@ export class API {
 
   async getCommunityRanks(addresses) {
     $.checkState(this.credentials);
-    return this._doPostRequest(`/v1/community/ranks`, {addresses: addresses});
+    return this._doPostRequest(`/v1/community/ranks`, { addresses: addresses });
   }
 
   async getCommunityLeaderboard(limit: number) {
     $.checkState(this.credentials);
-    return this._doGetRequest(`/v1/community/leaderboard?limit=`+limit);
+    return this._doGetRequest(`/v1/community/leaderboard?limit=` + limit);
   }
 
   private encryptGlobalSend(easySend: EasySend) {
@@ -2795,7 +2873,4 @@ export class API {
   private decryptGlobalSend(data) {
     return this._decryptMessage(data, this.credentials.personalEncryptingKey);
   }
-
-
-
 }

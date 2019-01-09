@@ -37,9 +37,12 @@ TransactionSignature.prototype._fromObject = function(arg) {
   this.prevTxId = BufferUtil.isBuffer(arg.prevTxId) ? arg.prevTxId : new Buffer(arg.prevTxId, 'hex');
   this.outputIndex = arg.outputIndex;
   this.inputIndex = arg.inputIndex;
-  this.signature = (arg.signature instanceof Signature) ? arg.signature :
-                     BufferUtil.isBuffer(arg.signature) ? Signature.fromBuffer(arg.signature) :
-                     Signature.fromString(arg.signature);
+  this.signature =
+    arg.signature instanceof Signature
+      ? arg.signature
+      : BufferUtil.isBuffer(arg.signature)
+        ? Signature.fromBuffer(arg.signature)
+        : Signature.fromString(arg.signature);
   this.sigtype = arg.sigtype;
   return this;
 };
@@ -52,11 +55,14 @@ TransactionSignature.prototype._checkObjectArgs = function(arg) {
   $.checkState(_.isNumber(arg.outputIndex), 'outputIndex must be a number');
   $.checkArgument(arg.signature, 'signature');
   $.checkArgument(arg.prevTxId, 'prevTxId');
-  $.checkState(arg.signature instanceof Signature ||
-               BufferUtil.isBuffer(arg.signature) ||
-               JSUtil.isHexa(arg.signature), 'signature must be a buffer or hexa value');
-  $.checkState(BufferUtil.isBuffer(arg.prevTxId) ||
-               JSUtil.isHexa(arg.prevTxId), 'prevTxId must be a buffer or hexa value');
+  $.checkState(
+    arg.signature instanceof Signature || BufferUtil.isBuffer(arg.signature) || JSUtil.isHexa(arg.signature),
+    'signature must be a buffer or hexa value',
+  );
+  $.checkState(
+    BufferUtil.isBuffer(arg.prevTxId) || JSUtil.isHexa(arg.prevTxId),
+    'prevTxId must be a buffer or hexa value',
+  );
   $.checkArgument(arg.sigtype, 'sigtype');
   $.checkState(_.isNumber(arg.sigtype), 'sigtype must be a number');
 };
@@ -72,7 +78,7 @@ TransactionSignature.prototype.toObject = TransactionSignature.prototype.toJSON 
     outputIndex: this.outputIndex,
     inputIndex: this.inputIndex,
     signature: this.signature.toString(),
-    sigtype: this.sigtype
+    sigtype: this.sigtype,
   };
 };
 

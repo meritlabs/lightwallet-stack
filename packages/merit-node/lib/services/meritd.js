@@ -11,7 +11,7 @@ var async = require('async');
 var LRU = require('lru-cache');
 var MeritRPC = require('meritd-rpc');
 var $ = meritcore.util.preconditions;
-var _  = meritcore.deps._;
+var _ = meritcore.deps._;
 var Transaction = meritcore.Transaction;
 var Referral = meritcore.Referral;
 
@@ -93,7 +93,7 @@ Merit.DEFAULT_CONFIG_SETTINGS = {
   rpcallowip: '127.0.0.1',
   rpcuser: 'merit',
   rpcpassword: 'local321',
-  uacomment: 'meritcore'
+  uacomment: 'meritcore',
 };
 
 Merit.prototype._initDefaults = function(options) {
@@ -134,8 +134,6 @@ Merit.prototype._initCaches = function() {
   this.anvCache = LRU(50000);
   this.rewardsCache = LRU(50000);
 
-
-
   // caches valid indefinitely
   this.transactionCache = LRU(100000);
   this.rawTransactionCache = LRU(50000);
@@ -161,7 +159,7 @@ Merit.prototype._initClients = function() {
       return client;
     },
     enumerable: true,
-    configurable: false
+    configurable: false,
   });
 };
 
@@ -196,8 +194,8 @@ Merit.prototype.getAPIMethods = function() {
 
     // Merit Specific RPC
     ['getInputForEasySend', this, this.getInputForEasySend, 1],
-    ['getanv',                this, this.getANV, 1],
-    ['getrewards',     this, this.getRewards, 1],
+    ['getanv', this, this.getANV, 1],
+    ['getrewards', this, this.getRewards, 1],
     ['sendReferral', this, this.sendReferral, 1],
     ['getReferral', this, this.getReferral, 1],
     ['getAddressReferrals', this, this.getAddressReferrals, 1],
@@ -221,34 +219,32 @@ Merit.prototype.getPublishEvents = function() {
       name: 'meritd/rawtransaction',
       scope: this,
       subscribe: this.subscribe.bind(this, 'rawtransaction'),
-      unsubscribe: this.unsubscribe.bind(this, 'rawtransaction')
+      unsubscribe: this.unsubscribe.bind(this, 'rawtransaction'),
     },
     {
       name: 'meritd/hashblock',
       scope: this,
       subscribe: this.subscribe.bind(this, 'hashblock'),
-      unsubscribe: this.unsubscribe.bind(this, 'hashblock')
+      unsubscribe: this.unsubscribe.bind(this, 'hashblock'),
     },
     {
       name: 'meritd/addresstxid',
       scope: this,
       subscribe: this.subscribeAddress.bind(this),
-      unsubscribe: this.unsubscribeAddress.bind(this)
+      unsubscribe: this.unsubscribeAddress.bind(this),
     },
     {
       name: 'meritd/rawreferraltx',
 
-
-
       scope: this,
       subscribe: this.subscribe.bind(this, 'rawreferraltx'),
-      unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx')
+      unsubscribe: this.unsubscribe.bind(this, 'rawreferraltx'),
     },
     {
       name: 'meritd/hashreferraltx',
       scope: this,
       subscribe: this.subscribe.bind(this, 'hashreferraltx'),
-      unsubscribe: this.unsubscribe.bind(this, 'hashreferraltx')
+      unsubscribe: this.unsubscribe.bind(this, 'hashreferraltx'),
     },
   ];
 };
@@ -270,7 +266,7 @@ Merit.prototype.subscribeAddress = function(emitter, addresses) {
   var self = this;
 
   function addAddress(addressStr) {
-    if(self.subscriptions.address[addressStr]) {
+    if (self.subscriptions.address[addressStr]) {
       var emitters = self.subscriptions.address[addressStr];
       var index = emitters.indexOf(emitter);
       if (index === -1) {
@@ -281,7 +277,7 @@ Merit.prototype.subscribeAddress = function(emitter, addresses) {
     }
   }
 
-  for(var i = 0; i < addresses.length; i++) {
+  for (var i = 0; i < addresses.length; i++) {
     if (meritcore.Address.isValid(addresses[i], this.node.network)) {
       addAddress(addresses[i]);
     }
@@ -292,14 +288,14 @@ Merit.prototype.subscribeAddress = function(emitter, addresses) {
 
 Merit.prototype.unsubscribeAddress = function(emitter, addresses) {
   var self = this;
-  if(!addresses) {
+  if (!addresses) {
     return this.unsubscribeAddressAll(emitter);
   }
 
   function removeAddress(addressStr) {
     var emitters = self.subscriptions.address[addressStr];
     var index = emitters.indexOf(emitter);
-    if(index > -1) {
+    if (index > -1) {
       emitters.splice(index, 1);
       if (emitters.length === 0) {
         delete self.subscriptions.address[addressStr];
@@ -307,8 +303,8 @@ Merit.prototype.unsubscribeAddress = function(emitter, addresses) {
     }
   }
 
-  for(var i = 0; i < addresses.length; i++) {
-    if(this.subscriptions.address[addresses[i]]) {
+  for (var i = 0; i < addresses.length; i++) {
+    if (this.subscriptions.address[addresses[i]]) {
       removeAddress(addresses[i]);
     }
   }
@@ -322,10 +318,10 @@ Merit.prototype.unsubscribeAddress = function(emitter, addresses) {
  * @param {EventEmitter} emitter - An instance of an event emitter
  */
 Merit.prototype.unsubscribeAddressAll = function(emitter) {
-  for(var hashHex in this.subscriptions.address) {
+  for (var hashHex in this.subscriptions.address) {
     var emitters = this.subscriptions.address[hashHex];
     var index = emitters.indexOf(emitter);
-    if(index > -1) {
+    if (index > -1) {
       emitters.splice(index, 1);
     }
     if (emitters.length === 0) {
@@ -338,7 +334,7 @@ Merit.prototype.unsubscribeAddressAll = function(emitter) {
 Merit.prototype._getDefaultConfig = function() {
   var config = '';
   var defaults = Merit.DEFAULT_CONFIG_SETTINGS;
-  for(var key in defaults) {
+  for (var key in defaults) {
     config += key + '=' + defaults[key] + '\n';
   }
   return config;
@@ -348,7 +344,7 @@ Merit.prototype._parseMeritConf = function(configPath) {
   var options = {};
   var file = fs.readFileSync(configPath);
   var unparsed = file.toString().split('\n');
-  for(var i = 0; i < unparsed.length; i++) {
+  for (var i = 0; i < unparsed.length; i++) {
     var line = unparsed[i];
     if (!line.match(/^\#/) && line.match(/\=/)) {
       var option = line.split('=');
@@ -412,7 +408,6 @@ Merit.prototype._loadSpawnConfiguration = function(node) {
   var spawnConfig = this.spawn.config;
 
   this._checkConfigIndexes(spawnConfig, node);
-
 };
 
 Merit.prototype._checkConfigIndexes = function(spawnConfig, node) {
@@ -420,58 +415,60 @@ Merit.prototype._checkConfigIndexes = function(spawnConfig, node) {
     spawnConfig.txindex && spawnConfig.txindex === 1,
     '"txindex" option is required in order to use transaction query features of merit-node. ' +
       'Please add "txindex=1" to your configuration and reindex an existing database if ' +
-      'necessary with reindex=1'
+      'necessary with reindex=1',
   );
 
   $.checkState(
     spawnConfig.addressindex && spawnConfig.addressindex === 1,
     '"addressindex" option is required in order to use address query features of merit-node. ' +
       'Please add "addressindex=1" to your configuration and reindex an existing database if ' +
-      'necessary with reindex=1'
+      'necessary with reindex=1',
   );
 
   $.checkState(
     spawnConfig.spentindex && spawnConfig.spentindex === 1,
     '"spentindex" option is required in order to use spent info query features of merit-node. ' +
       'Please add "spentindex=1" to your configuration and reindex an existing database if ' +
-      'necessary with reindex=1'
+      'necessary with reindex=1',
   );
 
   $.checkState(
     spawnConfig.server && spawnConfig.server === 1,
     '"server" option is required to communicate to meritd from meritcore. ' +
-      'Please add "server=1" to your configuration and restart'
+      'Please add "server=1" to your configuration and restart',
   );
 
   $.checkState(
     spawnConfig.zmqpubrawtx,
     '"zmqpubrawtx" option is required to get event updates from meritd. ' +
-      'Please add "zmqpubrawtx=tcp://127.0.0.1:<port>" to your configuration and restart'
+      'Please add "zmqpubrawtx=tcp://127.0.0.1:<port>" to your configuration and restart',
   );
 
   $.checkState(
     spawnConfig.zmqpubhashblock,
     '"zmqpubhashblock" option is required to get event updates from meritd. ' +
-      'Please add "zmqpubhashblock=tcp://127.0.0.1:<port>" to your configuration and restart'
+      'Please add "zmqpubhashblock=tcp://127.0.0.1:<port>" to your configuration and restart',
   );
 
   $.checkState(
     spawnConfig.zmqpubrawreferraltx,
     '"zmqpubrawreferraltx" option is required to get event updates from meritd. ' +
-      'Please add "zmqpubrawreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart'
+      'Please add "zmqpubrawreferraltx=tcp://127.0.0.1:<port>" to your configuration and restart',
   );
 
   $.checkState(
-    (spawnConfig.zmqpubhashblock === spawnConfig.zmqpubrawtx &&
-     spawnConfig.zmqpubrawtx === spawnConfig.zmqpubrawreferraltx),
-    '"zmqpubrawtx", "zmqpubhashblock", "zmqpubrawreferraltx" are expected to the same host and port in merit.conf'
+    spawnConfig.zmqpubhashblock === spawnConfig.zmqpubrawtx &&
+      spawnConfig.zmqpubrawtx === spawnConfig.zmqpubrawreferraltx,
+    '"zmqpubrawtx", "zmqpubhashblock", "zmqpubrawreferraltx" are expected to the same host and port in merit.conf',
   );
 
   if (spawnConfig.reindex && spawnConfig.reindex === 1) {
-    log.warn('Reindex option is currently enabled. This means that meritd is undergoing a reindex. ' +
-             'The reindex flag will start the index from beginning every time the node is started, so it ' +
-             'should be removed after the reindex has been initiated. Once the reindex is complete, the rest ' +
-             'of merit-node services will start.');
+    log.warn(
+      'Reindex option is currently enabled. This means that meritd is undergoing a reindex. ' +
+        'The reindex flag will start the index from beginning every time the node is started, so it ' +
+        'should be removed after the reindex has been initiated. Once the reindex is complete, the rest ' +
+        'of merit-node services will start.',
+    );
     node._reindex = true;
   }
 };
@@ -496,7 +493,7 @@ Merit.prototype._tryAllClients = function(func, callback) {
     nodesIndex = (nodesIndex + 1) % self.nodes.length;
     func(client, done);
   };
-  async.retry({times: this.nodes.length, interval: this.tryAllInterval || 1000}, retry, callback);
+  async.retry({ times: this.nodes.length, interval: this.tryAllInterval || 1000 }, retry, callback);
 };
 
 Merit.prototype._wrapRPCError = function(errObj) {
@@ -535,7 +532,6 @@ Merit.prototype._initChain = function(callback) {
           callback();
         });
       });
-
     });
   });
 };
@@ -588,7 +584,6 @@ Merit.prototype._zmqBlockHandler = function(node, message) {
       this.subscriptions.hashblock[i].emit('meritd/hashblock', message.toString('hex'));
     }
   }
-
 };
 
 Merit.prototype._rapidProtectedUpdateTip = function(node, message) {
@@ -607,8 +602,7 @@ Merit.prototype._rapidProtectedUpdateTip = function(node, message) {
 };
 
 Merit.prototype._updateTip = function(node, message) {
-
-  console.log("\nUPDATE TIP\n", message);
+  console.log('\nUPDATE TIP\n', message);
 
   var self = this;
 
@@ -630,7 +624,7 @@ Merit.prototype._updateTip = function(node, message) {
       }
     });
 
-    if(!self.node.stopping) {
+    if (!self.node.stopping) {
       self.syncPercentage(function(err, percentage) {
         if (err) {
           self.emit('error', err);
@@ -675,12 +669,12 @@ Merit.prototype._notifyAddressTxidSubscribers = function(txid, transaction) {
   var addresses = this._getAddressesFromTransaction(transaction);
   for (var i = 0; i < addresses.length; i++) {
     var address = addresses[i];
-    if(this.subscriptions.address[address]) {
+    if (this.subscriptions.address[address]) {
       var emitters = this.subscriptions.address[address];
-      for(var j = 0; j < emitters.length; j++) {
+      for (var j = 0; j < emitters.length; j++) {
         emitters[j].emit('meritd/addresstxid', {
           address: address,
-          txid: txid
+          txid: txid,
         });
       }
     }
@@ -704,7 +698,6 @@ Merit.prototype._zmqTransactionHandler = function(node, message) {
     tx.fromString(message);
     var txid = meritcore.util.buffer.reverse(hash).toString('hex');
     self._notifyAddressTxidSubscribers(txid, tx);
-
   }
 };
 
@@ -791,7 +784,6 @@ Merit.prototype._checkSyncedAndSubscribeZmqEvents = function(node) {
       }, node._tipUpdateInterval || Merit.DEFAULT_TIP_UPDATE_INTERVAL);
     }
   });
-
 };
 
 Merit.prototype._subscribeZmqEvents = function(node) {
@@ -804,23 +796,23 @@ Merit.prototype._subscribeZmqEvents = function(node) {
   node.zmqSubSocket.on('message', function(topic, message) {
     const topicString = topic.toString('utf8');
     log.info(`message received in topic: ${topicString}`);
-    switch(topicString) {
-    case 'rawtx':
-      self._zmqTransactionHandler(node, message);
-      break;
-    case 'hashblock':
-      self._zmqBlockHandler(node, message);
-      break;
-    case 'rawreferraltx':
-      self._zmqRawReferralsHandler(node, message);
-      break;
-    case 'hashreferraltx':
-      self._zmqHashReferralsHandler(node, message);
-      break;
-    default:
-      log.error('Error in ZMQ message parsing: cannot determine topic.')
-      break;
-    };
+    switch (topicString) {
+      case 'rawtx':
+        self._zmqTransactionHandler(node, message);
+        break;
+      case 'hashblock':
+        self._zmqBlockHandler(node, message);
+        break;
+      case 'rawreferraltx':
+        self._zmqRawReferralsHandler(node, message);
+        break;
+      case 'hashreferraltx':
+        self._zmqHashReferralsHandler(node, message);
+        break;
+      default:
+        log.error('Error in ZMQ message parsing: cannot determine topic.');
+        break;
+    }
   });
 };
 
@@ -920,11 +912,11 @@ Merit.prototype._stopSpawnedMerit = function(callback) {
       try {
         log.warn('Stopping existing spawned Merit process with pid: ' + pid);
         self._process.kill(pid, 'SIGINT');
-      } catch(err) {
+      } catch (err) {
         if (err && err.code === 'ESRCH') {
           log.warn('Unclean Merit process shutdown, process not found with pid: ' + pid);
           return callback(null);
-        } else if(err) {
+        } else if (err) {
           return callback(err);
         }
       }
@@ -934,7 +926,7 @@ Merit.prototype._stopSpawnedMerit = function(callback) {
     });
   }
 
-  if(spawnOptions.exec) {
+  if (spawnOptions.exec) {
     stopProcess();
   } else {
     callback(null);
@@ -950,14 +942,11 @@ Merit.prototype._spawnChildProcess = function(callback) {
 
   try {
     self._loadSpawnConfiguration(node);
-  } catch(e) {
+  } catch (e) {
     return callback(e);
   }
 
-  var options = [
-    '--conf=' + this.spawn.configPath,
-    '--datadir=' + this.spawn.datadir,
-  ];
+  var options = ['--conf=' + this.spawn.configPath, '--datadir=' + this.spawn.datadir];
 
   if (self._getNetworkOption()) {
     options.push(self._getNetworkOption());
@@ -969,8 +958,8 @@ Merit.prototype._spawnChildProcess = function(callback) {
     }
 
     log.info('Starting Meritd process');
-    if(self.spawn.exec) {
-      self.spawn.process = spawn(self.spawn.exec, options, {stdio: 'inherit'});
+    if (self.spawn.exec) {
+      self.spawn.process = spawn(self.spawn.exec, options, { stdio: 'inherit' });
 
       self.spawn.process.on('error', function(err) {
         self.emit('error', err);
@@ -994,45 +983,45 @@ Merit.prototype._spawnChildProcess = function(callback) {
 
     var exitShutdown = false;
 
-    async.retry({times: 60, interval: self.startRetryInterval}, function(done) {
-      if (self.node.stopping) {
-        exitShutdown = true;
-        return done();
-      }
+    async.retry(
+      { times: 60, interval: self.startRetryInterval },
+      function(done) {
+        if (self.node.stopping) {
+          exitShutdown = true;
+          return done();
+        }
 
-      node.client = new MeritRPC({
-        protocol: 'http',
-        host: '127.0.0.1',
-        port: self.spawn.config.rpcport,
-        user: self.spawn.config.rpcuser,
-        pass: self.spawn.config.rpcpassword,
-        queue: self.spawn.config.rpcqueue,
-      });
+        node.client = new MeritRPC({
+          protocol: 'http',
+          host: '127.0.0.1',
+          port: self.spawn.config.rpcport,
+          user: self.spawn.config.rpcuser,
+          pass: self.spawn.config.rpcpassword,
+          queue: self.spawn.config.rpcqueue,
+        });
 
-      self._loadTipFromNode(node, done);
-
-    }, function(err) {
-      if (err) {
-        return callback(err);
-      }
-      if (exitShutdown) {
-        return callback(new Error('Stopping while trying to spawn meritd.'));
-      }
-
-      self._initZmqSubSocket(node, self.spawn.config.zmqpubrawtx);
-
-      self._checkReindex(node, function(err) {
+        self._loadTipFromNode(node, done);
+      },
+      function(err) {
         if (err) {
           return callback(err);
         }
-        self._checkSyncedAndSubscribeZmqEvents(node);
-        callback(null, node);
-      });
+        if (exitShutdown) {
+          return callback(new Error('Stopping while trying to spawn meritd.'));
+        }
 
-    });
+        self._initZmqSubSocket(node, self.spawn.config.zmqpubrawtx);
 
+        self._checkReindex(node, function(err) {
+          if (err) {
+            return callback(err);
+          }
+          self._checkSyncedAndSubscribeZmqEvents(node);
+          callback(null, node);
+        });
+      },
+    );
   });
-
 };
 
 Merit.prototype._connectProcess = function(config, callback) {
@@ -1040,37 +1029,40 @@ Merit.prototype._connectProcess = function(config, callback) {
   var node = {};
   var exitShutdown = false;
 
-  async.retry({times: 60, interval: self.startRetryInterval}, function(done) {
-    if (self.node.stopping) {
-      exitShutdown = true;
-      return done();
-    }
+  async.retry(
+    { times: 60, interval: self.startRetryInterval },
+    function(done) {
+      if (self.node.stopping) {
+        exitShutdown = true;
+        return done();
+      }
 
-    node.client = new MeritRPC({
-      protocol: config.rpcprotocol || 'http',
-      host: config.rpchost || '127.0.0.1',
-      port: config.rpcport,
-      user: config.rpcuser,
-      pass: config.rpcpassword,
-      rejectUnauthorized: _.isUndefined(config.rpcstrict) ? true : config.rpcstrict,
-      queue: config.rpcqueue,
-    });
+      node.client = new MeritRPC({
+        protocol: config.rpcprotocol || 'http',
+        host: config.rpchost || '127.0.0.1',
+        port: config.rpcport,
+        user: config.rpcuser,
+        pass: config.rpcpassword,
+        rejectUnauthorized: _.isUndefined(config.rpcstrict) ? true : config.rpcstrict,
+        queue: config.rpcqueue,
+      });
 
-    self._loadTipFromNode(node, done);
+      self._loadTipFromNode(node, done);
+    },
+    function(err) {
+      if (err) {
+        return callback(err);
+      }
+      if (exitShutdown) {
+        return callback(new Error('Stopping while trying to connect to meritd.'));
+      }
 
-  }, function(err) {
-    if (err) {
-      return callback(err);
-    }
-    if (exitShutdown) {
-      return callback(new Error('Stopping while trying to connect to meritd.'));
-    }
+      self._initZmqSubSocket(node, config.zmqpubrawtx);
+      self._subscribeZmqEvents(node);
 
-    self._initZmqSubSocket(node, config.zmqpubrawtx);
-    self._subscribeZmqEvents(node);
-
-    callback(null, node);
-  });
+      callback(null, node);
+    },
+  );
 };
 
 /**
@@ -1080,45 +1072,47 @@ Merit.prototype._connectProcess = function(config, callback) {
 Merit.prototype.start = function(callback) {
   var self = this;
 
-  async.series([
-    function(next) {
-      if (self.options.spawn) {
-        self._spawnChildProcess(function(err, node) {
-          if (err) {
-            return next(err);
-          }
-          self.nodes.push(node);
+  async.series(
+    [
+      function(next) {
+        if (self.options.spawn) {
+          self._spawnChildProcess(function(err, node) {
+            if (err) {
+              return next(err);
+            }
+            self.nodes.push(node);
+            next();
+          });
+        } else {
           next();
-        });
-      } else {
-        next();
+        }
+      },
+      function(next) {
+        if (self.options.connect) {
+          async.map(self.options.connect, self._connectProcess.bind(self), function(err, nodes) {
+            if (err) {
+              return callback(err);
+            }
+            for (var i = 0; i < nodes.length; i++) {
+              self.nodes.push(nodes[i]);
+            }
+            next();
+          });
+        } else {
+          next();
+        }
+      },
+    ],
+    function(err) {
+      if (err) {
+        return callback(err);
       }
+      if (self.nodes.length === 0) {
+        return callback(new Error('Merit configuration options "spawn" or "connect" are expected'));
+      }
+      self._initChain(callback);
     },
-    function(next) {
-      if (self.options.connect) {
-        async.map(self.options.connect, self._connectProcess.bind(self), function(err, nodes) {
-          if (err) {
-            return callback(err);
-          }
-          for(var i = 0; i < nodes.length; i++) {
-            self.nodes.push(nodes[i]);
-          }
-          next();
-        });
-      } else {
-        next();
-      }
-    }
-  ], function(err) {
-    if (err) {
-      return callback(err);
-    }
-    if (self.nodes.length === 0) {
-      return callback(new Error('Merit configuration options "spawn" or "connect" are expected'));
-    }
-    self._initChain(callback);
-  });
-
+  );
 };
 
 /**
@@ -1173,20 +1167,20 @@ Merit.prototype.getAddressBalance = function(addressArg, options, callback) {
   var self = this;
   var addresses = self._normalizeAddressArg(addressArg);
   var cacheKeySuffix = addresses.join('');
-  var cacheKey = options.invites ? 'i' + cacheKeySuffix: cacheKeySuffix;
+  var cacheKey = options.invites ? 'i' + cacheKeySuffix : cacheKeySuffix;
   var balance = self.balanceCache.get(cacheKey);
   if (balance) {
     return setImmediate(function() {
       callback(null, balance);
     });
   } else {
-    let req = {addresses, invites: options.invites, detailed: options.detailed};
+    let req = { addresses, invites: options.invites, detailed: options.detailed };
     this.client.getAddressBalance(req, function(err, response) {
       if (err) {
         return callback(self._wrapRPCError(err));
       }
-      self.balanceCache.set(cacheKey, {result: response.result});
-      callback(null, {result: response.result});
+      self.balanceCache.set(cacheKey, { result: response.result });
+      callback(null, { result: response.result });
     });
   }
 };
@@ -1235,7 +1229,7 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
         if (!spentOutputs[utxo.txid]) {
           return true;
         } else {
-          return (spentOutputs[utxo.txid].indexOf(utxo.outputIndex) === -1);
+          return spentOutputs[utxo.txid].indexOf(utxo.outputIndex) === -1;
         }
       });
     }
@@ -1273,7 +1267,6 @@ Merit.prototype.getAddressUnspentOutputs = function(addressArg, options, callbac
   } else {
     finish();
   }
-
 };
 
 Merit.prototype._getBalanceFromMempool = function(deltas) {
@@ -1326,7 +1319,7 @@ Merit.prototype.getAddressTxids = function(addressArg, options, callback) {
   var rangeQuery = false;
   try {
     rangeQuery = self._getHeightRangeQuery(options);
-  } catch(err) {
+  } catch (err) {
     return callback(err);
   }
   if (rangeQuery) {
@@ -1354,7 +1347,7 @@ Merit.prototype.getAddressTxids = function(addressArg, options, callback) {
       });
     } else {
       var txidOpts = {
-        addresses: addresses
+        addresses: addresses,
       };
       if (rangeQuery) {
         self._getHeightRangeQuery(options, txidOpts);
@@ -1374,7 +1367,7 @@ Merit.prototype.getAddressTxids = function(addressArg, options, callback) {
   }
 
   if (queryMempool) {
-    self.client.getAddressMempool({addresses: addresses}, function(err, response) {
+    self.client.getAddressMempool({ addresses: addresses }, function(err, response) {
       if (err) {
         return callback(self._wrapRPCError(err));
       }
@@ -1384,7 +1377,6 @@ Merit.prototype.getAddressTxids = function(addressArg, options, callback) {
   } else {
     finish();
   }
-
 };
 
 Merit.prototype._getConfirmationsDetail = function(transaction) {
@@ -1408,7 +1400,7 @@ Merit.prototype._getAddressDetailsForInput = function(input, inputIndex, result,
     if (!result.addresses[address]) {
       result.addresses[address] = {
         inputIndexes: [inputIndex],
-        outputIndexes: []
+        outputIndexes: [],
       };
     } else {
       result.addresses[address].inputIndexes.push(inputIndex);
@@ -1426,7 +1418,7 @@ Merit.prototype._getAddressDetailsForOutput = function(output, outputIndex, resu
     if (!result.addresses[address]) {
       result.addresses[address] = {
         inputIndexes: [],
-        outputIndexes: [outputIndex]
+        outputIndexes: [outputIndex],
       };
     } else {
       result.addresses[address].outputIndexes.push(outputIndex);
@@ -1438,7 +1430,7 @@ Merit.prototype._getAddressDetailsForOutput = function(output, outputIndex, resu
 Merit.prototype._getAddressDetailsForTransaction = function(transaction, addressStrings) {
   var result = {
     addresses: {},
-    micros: 0
+    micros: 0,
   };
 
   for (var inputIndex = 0; inputIndex < transaction.inputs.length; inputIndex++) {
@@ -1464,23 +1456,20 @@ Merit.prototype._getAddressDetailsForTransaction = function(transaction, address
 Merit.prototype._getAddressDetailedTransaction = function(txid, options, next) {
   var self = this;
 
-  self.getDetailedTransaction(
-    txid,
-    function(err, transaction) {
-      if (err) {
-        return next(err);
-      }
-      var addressDetails = self._getAddressDetailsForTransaction(transaction, options.addressStrings);
-
-      var details = {
-        addresses: addressDetails.addresses,
-        micros: addressDetails.micros,
-        confirmations: self._getConfirmationsDetail(transaction),
-        tx: transaction
-      };
-      next(null, details);
+  self.getDetailedTransaction(txid, function(err, transaction) {
+    if (err) {
+      return next(err);
     }
-  );
+    var addressDetails = self._getAddressDetailsForTransaction(transaction, options.addressStrings);
+
+    var details = {
+      addresses: addressDetails.addresses,
+      micros: addressDetails.micros,
+      confirmations: self._getConfirmationsDetail(transaction),
+      tx: transaction,
+    };
+    next(null, details);
+  });
 };
 
 Merit.prototype._getAddressStrings = function(addresses) {
@@ -1526,11 +1515,17 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
   var fromArg = parseInt(options.from || 0);
   var toArg = parseInt(options.to || self.maxTransactionHistory);
 
-  if ((toArg - fromArg) > self.maxTransactionHistory) {
-    return callback(new Error(
-      '"from" (' + options.from + ') and "to" (' + options.to + ') range should be less than or equal to ' +
-        self.maxTransactionHistory
-    ));
+  if (toArg - fromArg > self.maxTransactionHistory) {
+    return callback(
+      new Error(
+        '"from" (' +
+          options.from +
+          ') and "to" (' +
+          options.to +
+          ') range should be less than or equal to ' +
+          self.maxTransactionHistory,
+      ),
+    );
   }
 
   self.getAddressTxids(addresses, options, function(err, txids) {
@@ -1541,7 +1536,7 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
     var totalCount = txids.length;
     try {
       txids = self._paginateTxids(txids, fromArg, toArg);
-    } catch(e) {
+    } catch (e) {
       return callback(e);
     }
 
@@ -1549,10 +1544,14 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
       txids,
       self.transactionConcurrency,
       function(txid, next) {
-        self._getAddressDetailedTransaction(txid, {
-          queryMempool: queryMempool,
-          addressStrings: addressStrings
-        }, next);
+        self._getAddressDetailedTransaction(
+          txid,
+          {
+            queryMempool: queryMempool,
+            addressStrings: addressStrings,
+          },
+          next,
+        );
       },
       function(err, transactions) {
         if (err) {
@@ -1560,9 +1559,9 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
         }
         callback(null, {
           totalCount: totalCount,
-          items: transactions
+          items: transactions,
         });
-      }
+      },
     );
   });
 };
@@ -1573,25 +1572,24 @@ Merit.prototype.getAddressHistory = function(addressArg, options, callback) {
  * @param {Function} callback
  */
 Merit.prototype.getReferral = function(refid, callback) {
-    var self = this;
-    var referral = self.referralCache.get(refid);
-    if (referral) {
-        return setImmediate(function() {
-            callback(null, referral);
-        });
-    } else {
-        self._tryAllClients(function(client, done) {
-            client.getRawReferral(refid, function(err, response) {
-
-                if (err) {
-                    return done(self._wrapRPCError(err));
-                }
-                var referral = Referral(response.result, self.node.getNetworkName());
-                self.referralCache.set(refid, referral);
-                done(null, referral);
-            });
-        }, callback);
-    }
+  var self = this;
+  var referral = self.referralCache.get(refid);
+  if (referral) {
+    return setImmediate(function() {
+      callback(null, referral);
+    });
+  } else {
+    self._tryAllClients(function(client, done) {
+      client.getRawReferral(refid, function(err, response) {
+        if (err) {
+          return done(self._wrapRPCError(err));
+        }
+        var referral = Referral(response.result, self.node.getNetworkName());
+        self.referralCache.set(refid, referral);
+        done(null, referral);
+      });
+    }, callback);
+  }
 };
 
 /**
@@ -1601,68 +1599,69 @@ Merit.prototype.getReferral = function(refid, callback) {
  * @param {Function} callback
  */
 Merit.prototype.getAddressReferrals = function(addressArg, options, callback) {
-    var self = this;
+  var self = this;
 
-    var addresses = self._normalizeAddressArg(addressArg);
-    if (addresses.length > this.maxAddressesQuery) {
-        return callback(new TypeError('Maximum number of addresses (' + this.maxAddressesQuery + ') exceeded'));
-    }
+  var addresses = self._normalizeAddressArg(addressArg);
+  if (addresses.length > this.maxAddressesQuery) {
+    return callback(new TypeError('Maximum number of addresses (' + this.maxAddressesQuery + ') exceeded'));
+  }
 
-    var cacheKey = addresses.join('');
+  var cacheKey = addresses.join('');
 
-    function loadFromMempool(cb) {
-      return self.client.getaddressmempoolreferrals({addresses: addresses}, function (err, response) {
-          if (err) {
-            return cb(self._wrapRPCError(err));
-          }
+  function loadFromMempool(cb) {
+    return self.client.getaddressmempoolreferrals({ addresses: addresses }, function(err, response) {
+      if (err) {
+        return cb(self._wrapRPCError(err));
+      }
 
-          console.log('mempool', response.result);
-          return cb(null, response.result);
-      });
-    }
-
-    function loadFromBc(cb) {
-      return self.client.getaddressreferrals({addresses: addresses}, function (err, response) {
-        if (err) {
-          return cb(self._wrapRPCError(err));
-        }
-
-        return cb(null, response.result);
-      });
-    }
-
-    function finish(referrals) {
-        return callback(null, {
-            totalCount: referrals.length,
-            items: referrals
-        });
-    }
-
-    return loadFromMempool(function(err, mempoolReferrals) {
-        mempoolReferrals = mempoolReferrals || [];
-        var cachedReferrals = self.referralsCache.get(cacheKey);
-        if (cachedReferrals) {
-            var referrals = mempoolReferrals.concat(cachedReferrals);
-            console.log(cachedReferrals.length+' referrals read from  cache + '+mempoolReferrals.length+' from mempool');
-            finish(referrals);
-        } else {
-            loadFromBc(function(err, bcReferrals) {
-              var referrals = [];
-              if (!err) {
-                self.referralsCache.set(cacheKey, bcReferrals);
-                referrals = mempoolReferrals.concat(bcReferrals);
-                log.info(bcReferrals.length +' referrals read from  bc + ');
-                log.info(mempoolReferrals.length + ' from mempool');
-              } else {
-                log.info('error in loadFromBc: ', err);
-              }
-              referrals = _.uniqBy(referrals, 'refid');
-              finish(referrals);
-            });
-        }
+      console.log('mempool', response.result);
+      return cb(null, response.result);
     });
-};
+  }
 
+  function loadFromBc(cb) {
+    return self.client.getaddressreferrals({ addresses: addresses }, function(err, response) {
+      if (err) {
+        return cb(self._wrapRPCError(err));
+      }
+
+      return cb(null, response.result);
+    });
+  }
+
+  function finish(referrals) {
+    return callback(null, {
+      totalCount: referrals.length,
+      items: referrals,
+    });
+  }
+
+  return loadFromMempool(function(err, mempoolReferrals) {
+    mempoolReferrals = mempoolReferrals || [];
+    var cachedReferrals = self.referralsCache.get(cacheKey);
+    if (cachedReferrals) {
+      var referrals = mempoolReferrals.concat(cachedReferrals);
+      console.log(
+        cachedReferrals.length + ' referrals read from  cache + ' + mempoolReferrals.length + ' from mempool',
+      );
+      finish(referrals);
+    } else {
+      loadFromBc(function(err, bcReferrals) {
+        var referrals = [];
+        if (!err) {
+          self.referralsCache.set(cacheKey, bcReferrals);
+          referrals = mempoolReferrals.concat(bcReferrals);
+          log.info(bcReferrals.length + ' referrals read from  bc + ');
+          log.info(mempoolReferrals.length + ' from mempool');
+        } else {
+          log.info('error in loadFromBc: ', err);
+        }
+        referrals = _.uniqBy(referrals, 'refid');
+        finish(referrals);
+      });
+    }
+  });
+};
 
 /**
  * Will get the summary including txids and balance for an address or multiple addresses
@@ -1685,16 +1684,17 @@ Merit.prototype.getAddressSummary = function(addressArg, options, callback) {
       var fromArg = parseInt(options.from || 0);
       var toArg = parseInt(options.to || self.maxTxids);
 
-      if ((toArg - fromArg) > self.maxTxids) {
-        return callback(new Error(
-          '"from" (' + fromArg + ') and "to" (' + toArg + ') range should be less than or equal to ' +
-            self.maxTxids
-        ));
+      if (toArg - fromArg > self.maxTxids) {
+        return callback(
+          new Error(
+            '"from" (' + fromArg + ') and "to" (' + toArg + ') range should be less than or equal to ' + self.maxTxids,
+          ),
+        );
       }
       var paginatedTxids;
       try {
         paginatedTxids = self._paginateTxids(allTxids, fromArg, toArg);
-      } catch(e) {
+      } catch (e) {
         return callback(e);
       }
 
@@ -1707,49 +1707,52 @@ Merit.prototype.getAddressSummary = function(addressArg, options, callback) {
   }
 
   function querySummary() {
-    async.parallel([
-      function getTxList(done) {
-        self.getAddressTxids(addresses, {queryMempool: false}, function(err, txids) {
-          if (err) {
-            return done(err);
+    async.parallel(
+      [
+        function getTxList(done) {
+          self.getAddressTxids(addresses, { queryMempool: false }, function(err, txids) {
+            if (err) {
+              return done(err);
+            }
+            summaryTxids = txids;
+            summary.appearances = txids.length;
+            done();
+          });
+        },
+        function getBalance(done) {
+          self.getAddressBalance(addresses, options, function(err, data) {
+            if (err) {
+              return done(err);
+            }
+            summary.totalReceived = data.received;
+            summary.totalSpent = data.received - data.balance;
+            summary.balance = data.balance;
+            done();
+          });
+        },
+        function getMempool(done) {
+          if (!queryMempool) {
+            return done();
           }
-          summaryTxids = txids;
-          summary.appearances = txids.length;
-          done();
-        });
-      },
-      function getBalance(done) {
-        self.getAddressBalance(addresses, options, function(err, data) {
-          if (err) {
-            return done(err);
-          }
-          summary.totalReceived = data.received;
-          summary.totalSpent = data.received - data.balance;
-          summary.balance = data.balance;
-          done();
-        });
-      },
-      function getMempool(done) {
-        if (!queryMempool) {
-          return done();
+          self.client.getAddressMempool({ addresses: addresses }, function(err, response) {
+            if (err) {
+              return done(self._wrapRPCError(err));
+            }
+            mempoolTxids = self._getTxidsFromMempool(response.result);
+            summary.unconfirmedAppearances = mempoolTxids.length;
+            summary.unconfirmedBalance = self._getBalanceFromMempool(response.result);
+            done();
+          });
+        },
+      ],
+      function(err) {
+        if (err) {
+          return callback(err);
         }
-        self.client.getAddressMempool({'addresses': addresses}, function(err, response) {
-          if (err) {
-            return done(self._wrapRPCError(err));
-          }
-          mempoolTxids = self._getTxidsFromMempool(response.result);
-          summary.unconfirmedAppearances = mempoolTxids.length;
-          summary.unconfirmedBalance = self._getBalanceFromMempool(response.result);
-          done();
-        });
+        self.summaryCache.set(cacheKey, summary);
+        finishWithTxids();
       },
-    ], function(err) {
-      if (err) {
-        return callback(err);
-      }
-      self.summaryCache.set(cacheKey, summary);
-      finishWithTxids();
-    });
+    );
   }
 
   if (options.noTxList) {
@@ -1762,7 +1765,6 @@ Merit.prototype.getAddressSummary = function(addressArg, options, callback) {
   } else {
     querySummary();
   }
-
 };
 
 Merit.prototype._maybeGetBlockHash = function(blockArg, callback) {
@@ -1890,7 +1892,7 @@ Merit.prototype.getBlockOverview = function(blockArg, callback) {
             nonce: result.nonce,
             bits: result.bits,
             difficulty: result.difficulty,
-            txids: result.tx
+            txids: result.tx,
           };
           self.blockOverviewCache.set(blockhash, blockOverview);
           done(null, blockOverview);
@@ -1968,7 +1970,7 @@ Merit.prototype.getBlockHeader = function(blockArg, callback) {
           medianTime: result.mediantime,
           nonce: result.nonce,
           bits: result.bits,
-          difficulty: result.difficulty
+          difficulty: result.difficulty,
         };
         done(null, header);
       });
@@ -1977,7 +1979,6 @@ Merit.prototype.getBlockHeader = function(blockArg, callback) {
 
   self._maybeGetBlockHash(blockArg, queryHeader);
 };
-
 
 /**
  * Will estimate the fee per kilobyte.
@@ -2016,7 +2017,6 @@ Merit.prototype.sendTransaction = function(tx, options, callback) {
     }
     callback(null, response.result);
   });
-
 };
 
 /**
@@ -2119,7 +2119,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
   var self = this;
   var tx = self.transactionDetailedCache.get(txid);
 
-  function getMicros (input, isInvite) {
+  function getMicros(input, isInvite) {
     if (input.valueSat) {
       return input.valueSat;
     }
@@ -2135,7 +2135,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
   function addInputsToTx(tx, result) {
     tx.inputs = [];
     tx.inputMicros = 0;
-    for(var inputIndex = 0; inputIndex < result.vin.length; inputIndex++) {
+    for (var inputIndex = 0; inputIndex < result.vin.length; inputIndex++) {
       var input = result.vin[inputIndex];
       if (!tx.isCoinbase && input.valueSat) {
         tx.inputMicros += input.valueSat; // TODO: rename sat
@@ -2167,7 +2167,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
   function addOutputsToTx(tx, result) {
     tx.outputs = [];
     tx.outputMicros = 0;
-    for(var outputIndex = 0; outputIndex < result.vout.length; outputIndex++) {
+    for (var outputIndex = 0; outputIndex < result.vout.length; outputIndex++) {
       var out = result.vout[outputIndex];
       tx.outputMicros += !tx.isInvite ? out.valueSat : out.value; // TODO: rename sat
       var address = null;
@@ -2184,7 +2184,7 @@ Merit.prototype.getDetailedTransaction = function(txid, callback) {
         spentIndex: out.spentIndex,
         spentHeight: out.spentHeight,
         address,
-        alias
+        alias,
       });
     }
   }
@@ -2296,7 +2296,7 @@ Merit.prototype.getInfo = function(callback) {
       testnet: result.testnet,
       relayFee: result.relayfee,
       errors: result.errors,
-      network: self.node.getNetworkName()
+      network: self.node.getNetworkName(),
     };
     callback(null, info);
   });
@@ -2335,10 +2335,10 @@ Merit.prototype.validateAddress = function(address, callback) {
  * Checks if an easyScript is on the blockChain.
  * @param {String} easyScript - The full easyScript value.
  */
- Merit.prototype.getInputForEasySend = function(easyScript, callback) {
-   log.info('ValidateEasyScript RPC called: ', easyScript);
+Merit.prototype.getInputForEasySend = function(easyScript, callback) {
+  log.info('ValidateEasyScript RPC called: ', easyScript);
 
-   const self = this;
+  const self = this;
 
   if (typeof easyScript == 'string' || easyScript instanceof String) {
     self.client.getInputForEasySend(easyScript, function(err, response) {
@@ -2348,12 +2348,12 @@ Merit.prototype.validateAddress = function(address, callback) {
         callback(null, response);
       }
     });
-   } else {
-     var err = new errors.RPCError('EasyScript was missing or incorrect');
-     err.code = -8;
-     return callback(self._wrapRPCError(err));
-   }
- };
+  } else {
+    var err = new errors.RPCError('EasyScript was missing or incorrect');
+    err.code = -8;
+    return callback(self._wrapRPCError(err));
+  }
+};
 
 /**
  * Get ANV for array of keys
@@ -2380,7 +2380,7 @@ Merit.prototype.getANV = function(addressArg, callback) {
     self.anvCache.set(cacheKey, response.result);
     callback(null, response.result);
   });
-}
+};
 
 Merit.prototype.getCommunityInfo = function(addressArg, callback) {
   const address = this._normalizeAddressArg(addressArg);
@@ -2405,7 +2405,6 @@ Merit.prototype.getRewards = function(addressArg, callback) {
   var cacheKey = addresses.join('');
   var rewards = self.rewardsCache.get(cacheKey);
 
-
   if (rewards) {
     return setImmediate(function() {
       callback(null, rewards);
@@ -2420,7 +2419,7 @@ Merit.prototype.getRewards = function(addressArg, callback) {
     self.rewardsCache.set(cacheKey, response.result);
     callback(null, response.result);
   });
-}
+};
 
 /**
  * Send raw referral to nodes
@@ -2436,8 +2435,7 @@ Merit.prototype.sendReferral = function(referral, callback) {
     }
     callback(null, response.result);
   });
-
-}
+};
 
 /**
  * Called by Node to stop the service.
@@ -2472,34 +2470,35 @@ Merit.prototype.stop = function(callback) {
 
 const { promisify } = require('util');
 Merit.prototype.getMempoolReferrals = async function(addresses) {
-    const {err, result} = await promisify(this.client.getaddressmempoolreferrals.bind(this.client))({addresses: addresses});
-    if (err) throw err;
-    return result;
+  const { err, result } = await promisify(this.client.getaddressmempoolreferrals.bind(this.client))({
+    addresses: addresses,
+  });
+  if (err) throw err;
+  return result;
 };
 
 Merit.prototype.getBlockchainReferrals = async function(addresses) {
-    const {err, result} = await promisify(this.client.getaddressreferrals.bind(this.client))({addresses: addresses});
-    if (err) throw err;
-    return result;
+  const { err, result } = await promisify(this.client.getaddressreferrals.bind(this.client))({ addresses: addresses });
+  if (err) throw err;
+  return result;
 };
 
 Merit.prototype.getAddressMempool = async function(addresses) {
-    const {err, result} = await promisify(this.client.getAddressMempool.bind(this.client))({addresses: addresses});
-    if (err) throw err;
-    return result;
+  const { err, result } = await promisify(this.client.getAddressMempool.bind(this.client))({ addresses: addresses });
+  if (err) throw err;
+  return result;
 };
 
 Merit.prototype.getCommunityRank = async function(addresses) {
-    const {err, result} = await promisify(this.client.getaddressrank.bind(this.client))({addresses: addresses});
-    if (err) throw err;
-    return result;
+  const { err, result } = await promisify(this.client.getaddressrank.bind(this.client))({ addresses: addresses });
+  if (err) throw err;
+  return result;
 };
 
 Merit.prototype.getCommunityLeaderboard = async function(limit) {
-    const {err, result} = await promisify(this.client.getaddressleaderboard.bind(this.client))(limit);
-    if (err) throw err;
-    return result;
+  const { err, result } = await promisify(this.client.getaddressleaderboard.bind(this.client))(limit);
+  if (err) throw err;
+  return result;
 };
-
 
 module.exports = Merit;

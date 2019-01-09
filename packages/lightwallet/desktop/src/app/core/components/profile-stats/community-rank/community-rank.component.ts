@@ -20,13 +20,19 @@ export class CommunityRankComponent {
   private _wallets: any[];
   private _ranks: any;
 
-  @Output() close: EventEmitter<void> = new EventEmitter<void>();
+  @Output()
+  close: EventEmitter<void> = new EventEmitter<void>();
 
-  @Input() onMoreSecurityRewards: Function;
-  @Input() onMoreCommunity: Function;
-  @Input() active: boolean;
-  @Input() leaderboard: any[];
-  @Input() rankData: any;
+  @Input()
+  onMoreSecurityRewards: Function;
+  @Input()
+  onMoreCommunity: Function;
+  @Input()
+  active: boolean;
+  @Input()
+  leaderboard: any[];
+  @Input()
+  rankData: any;
   @Input()
   set ranks(val: any[]) {
     this._ranks = val;
@@ -55,7 +61,7 @@ export class CommunityRankComponent {
   private assignRanks() {
     if (!this._ranks || !this._wallets) return;
 
-    this._wallets.map((w) => {
+    this._wallets.map(w => {
       w.rank = this.ranks.find(r => r.address == w.referrerAddress);
     });
   }

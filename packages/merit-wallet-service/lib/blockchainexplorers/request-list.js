@@ -5,8 +5,7 @@ var $ = require('preconditions').singleton();
 var log = require('npmlog');
 log.debug = log.verbose;
 
-
-var DEFAULT_TIMEOUT= 60000; // 60 s
+var DEFAULT_TIMEOUT = 60000; // 60 s
 /**
  * Query a server, using one of the given options
  *
@@ -18,14 +17,13 @@ var requestList = function(args, cb) {
   $.checkArgument(args.hosts);
   request = args.request || require('request');
 
-  if (!_.isArray(args.hosts))
-    args.hosts = [args.hosts];
+  if (!_.isArray(args.hosts)) args.hosts = [args.hosts];
 
   args.timeout = args.timeout || DEFAULT_TIMEOUT;
 
   // This allows us to round-robin requests across hosts until we get one that is responsive.
   var urls = _.map(args.hosts, function(x) {
-    return (x + args.path);
+    return x + args.path;
   });
   var nextUrl, result, success;
 
@@ -55,7 +53,7 @@ var requestList = function(args, cb) {
     function(err) {
       if (err) return cb(err);
       return cb(result[0], result[1], result[2]);
-    }
+    },
   );
 };
 

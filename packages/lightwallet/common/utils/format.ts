@@ -26,6 +26,6 @@ export const formatAmount = (micros: number, unit: string, opts: any = {}): stri
   if (!u) throw new Error('Invalid unit');
 
   const precision: string = opts.fullPrecision ? 'full' : 'short',
-    amount: string = clipDecimals((micros / u.toMicros), u[precision].maxDecimals).toFixed(u[precision].maxDecimals);
+    amount: string = clipDecimals(micros / u.toMicros, u[precision].maxDecimals).toFixed(u[precision].maxDecimals);
   return addSeparators(amount, opts.thousandsSeparator || ',', opts.decimalSeparator || '.', u[precision].minDecimals);
 };

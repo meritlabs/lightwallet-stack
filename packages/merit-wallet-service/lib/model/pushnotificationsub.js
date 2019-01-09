@@ -1,6 +1,6 @@
 'use strict';
 
-function PushNotificationSub() {};
+function PushNotificationSub() {}
 
 PushNotificationSub.create = function(opts) {
   opts = opts || {};
@@ -27,6 +27,5 @@ PushNotificationSub.fromObj = function(obj) {
   x.platform = obj.platform;
   return x;
 };
-
 
 module.exports = PushNotificationSub;

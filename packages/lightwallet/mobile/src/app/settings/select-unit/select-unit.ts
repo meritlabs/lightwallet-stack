@@ -10,8 +10,7 @@ export class SelectUnitModal {
   currentUnit;
   availableUnits;
 
-  constructor(private navParams: NavParams,
-              private viewCtrl: ViewController) {
+  constructor(private navParams: NavParams, private viewCtrl: ViewController) {
     this.currentUnit = this.navParams.get('currentUnit');
     this.availableUnits = this.navParams.get('availableUnits');
   }

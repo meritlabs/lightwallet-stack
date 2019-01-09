@@ -9,16 +9,17 @@ import { ContactsService } from '@merit/common/services/contacts.service';
   templateUrl: 'send-select-bind-contact.html',
 })
 export class SendSelectBindContactView {
-
   public contacts: Array<MeritContact>;
   public foundContacts: Array<MeritContact> = [];
   public searchQuery: string = '';
-  public meritAddress: { address: string, network: string, alias: string };
+  public meritAddress: { address: string; network: string; alias: string };
 
-  constructor(private navParams: NavParams,
-              private viewCtrl: ViewController,
-              private contactsService: ContactsService,
-              private alertCtrl: AlertController) {
+  constructor(
+    private navParams: NavParams,
+    private viewCtrl: ViewController,
+    private contactsService: ContactsService,
+    private alertCtrl: AlertController,
+  ) {
     this.contacts = this.navParams.get('contacts');
     this.meritAddress = this.navParams.get('address');
   }
@@ -32,28 +33,36 @@ export class SendSelectBindContactView {
   }
 
   select(contact) {
-    this.alertCtrl.create({
-      title: `Bind this address to contact '${contact.name.formatted}'?`,
-      buttons: [
-        {
-          text: 'Cancel', role: 'cancel', handler: () => {
-        }
-        },
-        {
-          text: 'Bind', handler: () => {
-          this.contactsService.bindAddressToContact(contact, this.meritAddress.address, this.meritAddress.alias)
-            .then((contact) => {
-              this.viewCtrl.dismiss(contact);
-            });
-        }
-        }
-      ]
-    }).present();
+    this.alertCtrl
+      .create({
+        title: `Bind this address to contact '${contact.name.formatted}'?`,
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {},
+          },
+          {
+            text: 'Bind',
+            handler: () => {
+              this.contactsService
+                .bindAddressToContact(contact, this.meritAddress.address, this.meritAddress.alias)
+                .then(contact => {
+                  this.viewCtrl.dismiss(contact);
+                });
+            },
+          },
+        ],
+      })
+      .present();
   }
 
   getContactInitials(contact) {
     if (!contact.name || !contact.name.formatted) return '';
-    let nameParts = contact.name.formatted.toUpperCase().replace(/\s\s+/g, ' ').split(' ');
+    let nameParts = contact.name.formatted
+      .toUpperCase()
+      .replace(/\s\s+/g, ' ')
+      .split(' ');
     let name = nameParts[0].charAt(0);
     if (nameParts[1]) name += ' ' + nameParts[1].charAt(0);
     return name;
@@ -66,12 +75,15 @@ export class SendSelectBindContactView {
 
   parseSearch() {
     if (!this.searchQuery) {
-      return this.foundContacts = this.contacts;
+      return (this.foundContacts = this.contacts);
     }
 
-    this.foundContacts = this.contacts.filter((contact) => {
-      return (!!contact.name && !!contact.name.formatted && contact.name.formatted.toLowerCase().match(this.searchQuery.toLowerCase()));
+    this.foundContacts = this.contacts.filter(contact => {
+      return (
+        !!contact.name &&
+        !!contact.name.formatted &&
+        contact.name.formatted.toLowerCase().match(this.searchQuery.toLowerCase())
+      );
     });
   }
-
 }

@@ -1,5 +1,4 @@
-Merit Payment Protocol
-=======
+# Merit Payment Protocol
 
 A module for [Merit LWS](https://github.com/meritlabs/lightwallet-stack) that implements [Payment Protocol](https://github.com/bitcoin/bips/blob/master/bip-0070.mediawiki) and other related BIPs.
 

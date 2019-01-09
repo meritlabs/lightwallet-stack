@@ -7,14 +7,13 @@ export enum LogLevel {
   ERROR = 0,
   WARN,
   INFO,
-  DEBUG
+  DEBUG,
 }
 
 declare const process: any;
 
 @Injectable()
 export class LoggerService {
-
   private logs = [];
 
   getLogs(level = LogLevel.INFO) {
@@ -25,16 +24,14 @@ export class LoggerService {
     this.logs.push({ level: LogLevel.ERROR, timestamp: Date.now(), arguments: messages });
     if (!LOGGING_ENABLED) return;
     console.error.apply(console, messages);
-    if (TRACE_ENABLED)
-      console.trace();
+    if (TRACE_ENABLED) console.trace();
   }
 
   warn(...messages) {
     this.logs.unshift({ level: LogLevel.WARN, timestamp: Date.now(), arguments: messages });
     if (!LOGGING_ENABLED) return;
     console.warn.apply(console, messages);
-    if (TRACE_ENABLED)
-      console.trace();
+    if (TRACE_ENABLED) console.trace();
   }
 
   info(...messages) {
@@ -54,4 +51,3 @@ export class LoggerService {
     this.info(messages);
   }
 }
-

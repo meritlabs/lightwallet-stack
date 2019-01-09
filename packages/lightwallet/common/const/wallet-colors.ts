@@ -1,82 +1,82 @@
 export const WalletSettingsColors = [
   {
     name: 'Sunglo',
-    color: '#E57373'
+    color: '#E57373',
   },
   {
     name: 'Carissma',
-    color: '#E985A7'
+    color: '#E985A7',
   },
   {
     name: 'Light Wisteria',
-    color: '#ca85d6'
+    color: '#ca85d6',
   },
   {
     name: 'Lilac Bush',
-    color: '#A185D4'
+    color: '#A185D4',
   },
   {
     name: 'Merit blue',
-    color: '#00B0DD'
+    color: '#00B0DD',
   },
   {
     name: 'Moody Blue',
-    color: '#7987d1'
+    color: '#7987d1',
   },
   {
     name: 'Havelock Blue',
-    color: '#64aae3'
+    color: '#64aae3',
   },
   {
     name: 'Picton Blue',
-    color: '#53b9e8'
+    color: '#53b9e8',
   },
   {
     name: 'Viking',
-    color: '#4ccdde'
+    color: '#4ccdde',
   },
   {
     name: 'Ocean Green',
-    color: '#48ae6c'
+    color: '#48ae6c',
   },
   {
     name: 'Puerto Rico',
-    color: '#44baad'
+    color: '#44baad',
   },
   {
     name: 'Wild Willow',
-    color: '#99c666'
+    color: '#99c666',
   },
   {
     name: 'Turmeric',
-    color: '#bcc84c'
+    color: '#bcc84c',
   },
   {
     name: 'Buttercup',
-    color: '#f5a623'
+    color: '#f5a623',
   },
   {
     name: 'Supernova',
-    color: '#ffc30e'
+    color: '#ffc30e',
   },
   {
     name: 'Yellow Orange',
-    color: '#ffaf37'
+    color: '#ffaf37',
   },
   {
     name: 'Portage',
-    color: '#8997eb'
+    color: '#8997eb',
   },
   {
     name: 'Gray',
-    color: '#808080'
+    color: '#808080',
   },
   {
     name: 'Shuttle Gray',
-    color: '#5f6c82'
+    color: '#5f6c82',
   },
   {
     name: 'Tuna',
-    color: '#383d43'
-  }
+    color: '#383d43',
+  },
 ];

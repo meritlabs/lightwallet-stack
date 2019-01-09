@@ -5,14 +5,7 @@ import { CommonPipesModule } from '@merit/common/common-pipes.module';
 import { DirectivesModule } from '@merit/mobile/directives/directives.module';
 
 @NgModule({
-  declarations: [
-    UnlockView,
-  ],
-  imports: [
-    IonicPageModule.forChild(UnlockView),
-    CommonPipesModule,
-    DirectivesModule
-  ],
+  declarations: [UnlockView],
+  imports: [IonicPageModule.forChild(UnlockView), CommonPipesModule, DirectivesModule],
 })
-export class UnlockViewModule {
-}
+export class UnlockViewModule {}

@@ -49,7 +49,7 @@ export function loadConfigs(profileService: ProfileService, store: Store<IRootAp
       new UpdateAppAction({
         loading: false,
         authorized,
-      })
+      }),
     );
 
     await goalsService.loadGoals();

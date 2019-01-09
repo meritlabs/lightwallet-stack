@@ -31,8 +31,8 @@ function buildMenuTemplate() {
         { role: 'paste' },
         { role: 'pasteandmatchstyle' },
         { role: 'delete' },
-        { role: 'selectall' }
-      ]
+        { role: 'selectall' },
+      ],
     },
     {
       label: 'View',
@@ -43,26 +43,24 @@ function buildMenuTemplate() {
         { role: 'resetzoom' },
         { role: 'zoomin' },
         { role: 'zoomout' },
-        { type: 'separator' }
-      ]
+        { type: 'separator' },
+      ],
     },
     {
       role: 'window',
-      submenu: [
-        { role: 'minimize' },
-        { role: 'close' },
-        { role: 'toggledevtools' }
-      ]
+      submenu: [{ role: 'minimize' }, { role: 'close' }, { role: 'toggledevtools' }],
     },
     {
       role: 'help',
       submenu: [
         {
           label: 'Learn More',
-          click() { shell.openExternal('https://www.merit.me'); }
-        }
-      ]
-    }
+          click() {
+            shell.openExternal('https://www.merit.me');
+          },
+        },
+      ],
+    },
   ];
 
   if (process.platform === 'darwin') {
@@ -77,8 +75,8 @@ function buildMenuTemplate() {
         { role: 'hideothers' },
         { role: 'unhide' },
         { type: 'separator' },
-        { role: 'quit', label: `Quit ${appName}` }
-      ]
+        { role: 'quit', label: `Quit ${appName}` },
+      ],
     });
   }
 
@@ -93,10 +91,8 @@ function createWindow() {
 
     let after;
 
-    if (dir.includes('assets'))
-      after = path.resolve(__dirname, 'dist', 'assets', dir.split(/assets\/?/).pop(), base);
-    else
-      after = path.resolve(__dirname, 'dist', base);
+    if (dir.includes('assets')) after = path.resolve(__dirname, 'dist', 'assets', dir.split(/assets\/?/).pop(), base);
+    else after = path.resolve(__dirname, 'dist', base);
 
     cb(after);
   });
@@ -106,20 +102,20 @@ function createWindow() {
     height: 720,
     autoHideMenuBar: true,
     webPreferences: {
-      devTools: true
-    }
+      devTools: true,
+    },
   });
 
   const URL = url.format({
     pathname: path.resolve(__dirname, './dist/index.html'),
     protocol: 'file:',
-    slashes: true
+    slashes: true,
   });
 
   mainWindow.loadURL(URL);
   mainWindow.maximize();
 
-  mainWindow.on('closed', function () {
+  mainWindow.on('closed', function() {
     mainWindow = null;
   });
 
@@ -139,7 +135,7 @@ ipcMain.on('notificationClick', () => {
 app.on('ready', createWindow);
 
 // Quit when all windows are closed.
-app.on('window-all-closed', function () {
+app.on('window-all-closed', function() {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
@@ -147,7 +143,7 @@ app.on('window-all-closed', function () {
   }
 });
 
-app.on('activate', function () {
+app.on('activate', function() {
   log.verbose('App activated');
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.

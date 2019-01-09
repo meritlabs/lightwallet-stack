@@ -9,10 +9,11 @@ var level = new LevelStorage({
 });
 
 var mongo = new MongoStorage();
-mongo.connect({
+mongo.connect(
+  {
     mongoDb: {
       uri: 'mongodb://localhost:27017/bws',
-    }
+    },
   },
   function(err) {
     if (err) throw err;
@@ -24,13 +25,14 @@ mongo.connect({
       //   process.exit(0);
       // });
     });
-  });
-
+  },
+);
 
 function run(cb) {
   var pending = 0,
     ended = false;
-  level.db.readStream()
+  level.db
+    .readStream()
     .on('data', function(data) {
       pending++;
       migrate(data.key, data.value, function(err) {
@@ -45,13 +47,13 @@ function run(cb) {
       return cb(err);
     })
     .on('end', function() {
-      console.log('All old data read')
+      console.log('All old data read');
       ended = true;
       if (!pending) {
         return cb();
       }
     });
-};
+}
 
 function migrate(key, value, cb) {
   if (key.match(/^copayer!/)) {
@@ -72,4 +74,4 @@ function migrate(key, value, cb) {
   } else {
     return cb(new Error('Invalid key ' + key));
   }
-};
+}

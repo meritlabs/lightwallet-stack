@@ -10,15 +10,13 @@ import { Store } from '@ngrx/store';
 @Component({
   selector: 'app-mnemonic-phrase',
   templateUrl: './mnemonic-phrase.view.html',
-  styleUrls: ['./mnemonic-phrase.view.sass']
+  styleUrls: ['./mnemonic-phrase.view.sass'],
 })
 export class MnemonicPhraseView {
   mnemonic$: Observable<DisplayWallet> = this.route.parent.params.pipe(
     switchMap((params: any) => this.store.select(selectWalletById(params.id))),
-    map((wallet: DisplayWallet) => wallet.client.getMnemonic())
+    map((wallet: DisplayWallet) => wallet.client.getMnemonic()),
   );
 
-  constructor(private route: ActivatedRoute,
-              private store: Store<IRootAppState>) {
-  }
+  constructor(private route: ActivatedRoute, private store: Store<IRootAppState>) {}
 }

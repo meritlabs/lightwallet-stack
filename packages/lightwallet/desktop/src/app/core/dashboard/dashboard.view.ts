@@ -28,7 +28,7 @@ export class DashboardView {
     .pipe(map((transactions: IDisplayTransaction[]) => (isArray(transactions) ? transactions.slice(0, 5) : [])));
   transactionsLoading$: Observable<boolean> = this.store.select(selectTransactionsLoading);
 
-  constructor(private store: Store<IRootAppState>, private sanitizer: DomSanitizer) { }
+  constructor(private store: Store<IRootAppState>, private sanitizer: DomSanitizer) {}
 
   getHistoryStyle(length: number) {
     return this.sanitizer.bypassSecurityTrustStyle('height: ' + length * 110 + 'px');

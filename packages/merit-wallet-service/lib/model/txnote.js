@@ -1,7 +1,7 @@
 var _ = require('lodash');
 var Uuid = require('uuid');
 
-function TxNote() {};
+function TxNote() {}
 
 TxNote.create = function(opts) {
   opts = opts || {};

@@ -1,8 +1,8 @@
 'use strict';
 
-function ReferralTxConfirmationSub() {};
+function ReferralTxConfirmationSub() {}
 
-ReferralTxConfirmationSub.create = function (opts) {
+ReferralTxConfirmationSub.create = function(opts) {
   opts = opts || {};
 
   const rtx = new ReferralTxConfirmationSub();
@@ -18,7 +18,7 @@ ReferralTxConfirmationSub.create = function (opts) {
   return rtx;
 };
 
-ReferralTxConfirmationSub.fromObj = function (obj) {
+ReferralTxConfirmationSub.fromObj = function(obj) {
   const rtx = new ReferralTxConfirmationSub();
 
   rtx.version = obj.version;

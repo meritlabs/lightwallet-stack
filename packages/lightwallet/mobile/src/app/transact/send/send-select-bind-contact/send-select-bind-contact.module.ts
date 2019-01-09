@@ -4,13 +4,7 @@ import { SendSelectBindContactView } from './send-select-bind-contact';
 import { ComponentsModule } from '../../../../components/components.module';
 
 @NgModule({
-  declarations: [
-    SendSelectBindContactView,
-  ],
-  imports: [
-    IonicPageModule.forChild(SendSelectBindContactView),
-    ComponentsModule
-  ],
+  declarations: [SendSelectBindContactView],
+  imports: [IonicPageModule.forChild(SendSelectBindContactView), ComponentsModule],
 })
-export class SendSelectBindContactModule {
-}
+export class SendSelectBindContactModule {}

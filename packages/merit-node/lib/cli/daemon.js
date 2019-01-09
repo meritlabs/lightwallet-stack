@@ -25,7 +25,7 @@ function main(servicesPath, additionalServices) {
   var configInfo = findConfig(program.config || process.cwd());
   if (!configInfo) {
     configInfo = defaultConfig({
-      additionalServices: additionalServices
+      additionalServices: additionalServices,
     });
   }
   if (servicesPath) {

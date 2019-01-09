@@ -10,10 +10,9 @@ var rimraf = require('rimraf');
 var findConfig = require('../../lib/scaffold/find-config');
 
 describe('#findConfig', function() {
-
   var testDir = path.resolve(__dirname, '../temporary-test-data');
   var expectedConfig = {
-    name: 'My Node'
+    name: 'My Node',
   };
 
   before(function(done) {
@@ -22,20 +21,15 @@ describe('#findConfig', function() {
       if (err) {
         throw err;
       }
-      fs.writeFile(
-        testDir + '/p2/merit-node.json',
-        JSON.stringify(expectedConfig),
-        function() {
-          mkdirp(testDir + '/e0', function(err) {
-            if (err) {
-              throw err;
-            }
-            done();
-          });
-        }
-      );
+      fs.writeFile(testDir + '/p2/merit-node.json', JSON.stringify(expectedConfig), function() {
+        mkdirp(testDir + '/e0', function(err) {
+          if (err) {
+            throw err;
+          }
+          done();
+        });
+      });
     });
-
   });
 
   after(function(done) {
@@ -48,9 +42,7 @@ describe('#findConfig', function() {
     });
   });
 
-
   describe('will find a configuration file', function() {
-
     it('in the current directory', function() {
       var config = findConfig(path.resolve(testDir, 'p2'));
       config.path.should.equal(path.resolve(testDir, 'p2'));
@@ -58,17 +50,16 @@ describe('#findConfig', function() {
     });
 
     it('in a parent directory', function() {
-      var config = findConfig(path.resolve(testDir,  'p2/p1'));
+      var config = findConfig(path.resolve(testDir, 'p2/p1'));
       config.path.should.equal(path.resolve(testDir, 'p2'));
       config.config.should.deep.equal(expectedConfig);
     });
 
     it('recursively find in parent directories', function() {
-      var config = findConfig(path.resolve(testDir,  'p2/p1/p0'));
+      var config = findConfig(path.resolve(testDir, 'p2/p1/p0'));
       config.path.should.equal(path.resolve(testDir, 'p2'));
       config.config.should.deep.equal(expectedConfig);
     });
-
   });
 
   // skip this one as we have merit-node.json in project root
@@ -76,5 +67,4 @@ describe('#findConfig', function() {
   //   var config = findConfig(path.resolve(testDir,  'e0'));
   //   config.should.equal(false);
   // });
-
 });

@@ -9,20 +9,19 @@ var meritcore = require('../..');
 var UnspentOutput = meritcore.Transaction.UnspentOutput;
 
 describe('UnspentOutput', function() {
-
   var sampleData1 = {
-    'address': 'mszYqVnqKoQx4jcTdJXxwKAissE3Jbrrc1',
-    'txId': 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
-    'outputIndex': 0,
-    'script': 'OP_DUP OP_HASH160 20 0x88d9931ea73d60eaf7e5671efc0552b912911f2a OP_EQUALVERIFY OP_CHECKSIG',
-    'micros': 1020000
+    address: 'mszYqVnqKoQx4jcTdJXxwKAissE3Jbrrc1',
+    txId: 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
+    outputIndex: 0,
+    script: 'OP_DUP OP_HASH160 20 0x88d9931ea73d60eaf7e5671efc0552b912911f2a OP_EQUALVERIFY OP_CHECKSIG',
+    micros: 1020000,
   };
   var sampleData2 = {
-    'txid': 'e42447187db5a29d6db161661e4bc66d61c3e499690fe5ea47f87b79ca573986',
-    'vout': 1,
-    'address': 'mgBCJAsvzgT2qNNeXsoECg2uPKrUsZ76up',
-    'scriptPubKey': '76a914073b7eae2823efa349e3b9155b8a735526463a0f88ac',
-    'amount': 0.01080000
+    txid: 'e42447187db5a29d6db161661e4bc66d61c3e499690fe5ea47f87b79ca573986',
+    vout: 1,
+    address: 'mgBCJAsvzgT2qNNeXsoECg2uPKrUsZ76up',
+    scriptPubKey: '76a914073b7eae2823efa349e3b9155b8a735526463a0f88ac',
+    amount: 0.0108,
   };
 
   it('roundtrip from raw data', function() {
@@ -48,22 +47,23 @@ describe('UnspentOutput', function() {
   });
 
   it('displays nicely on the console', function() {
-    var expected = '<UnspentOutput: a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458:0' +
-                   ', micros: 1020000, address: mszYqVnqKoQx4jcTdJXxwKAissE3Jbrrc1>';
+    var expected =
+      '<UnspentOutput: a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458:0' +
+      ', micros: 1020000, address: mszYqVnqKoQx4jcTdJXxwKAissE3Jbrrc1>';
     expect(new UnspentOutput(sampleData1).inspect()).to.equal(expected);
   });
 
   describe('checking the constructor parameters', function() {
     var notDefined = {
-      'txId': 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
-      'outputIndex': 0,
-      'script': 'OP_DUP OP_HASH160 20 0x88d9931ea73d60eaf7e5671efc0552b912911f2a OP_EQUALVERIFY OP_CHECKSIG',
+      txId: 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
+      outputIndex: 0,
+      script: 'OP_DUP OP_HASH160 20 0x88d9931ea73d60eaf7e5671efc0552b912911f2a OP_EQUALVERIFY OP_CHECKSIG',
     };
     var zero = {
-      'txId': 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
-      'outputIndex': 0,
-      'script': 'OP_DUP OP_HASH160 20 0x88d9931ea73d60eaf7e5671efc0552b912911f2a OP_EQUALVERIFY OP_CHECKSIG',
-      'amount': 0
+      txId: 'a477af6b2667c29670467e4e0728b685ee07b240235771862318e29ddbe58458',
+      outputIndex: 0,
+      script: 'OP_DUP OP_HASH160 20 0x88d9931ea73d60eaf7e5671efc0552b912911f2a OP_EQUALVERIFY OP_CHECKSIG',
+      amount: 0,
     };
     it('fails when no amount is defined', function() {
       expect(function() {

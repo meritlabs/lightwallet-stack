@@ -5,7 +5,7 @@ import { ENV } from '@app/env';
 
 export enum MWCErrors {
   AUTHENTICATION = 'MWC_AUTH_ERROR',
-  CONNECTION = 'MWC_CONNECTION_ERROR'
+  CONNECTION = 'MWC_CONNECTION_ERROR',
 }
 
 @Injectable()
@@ -14,8 +14,7 @@ export class MWCService {
   buildTx: Function = this.MWC.buildTx;
   parseSecret: Function = this.MWC.parseSecret;
 
-  constructor(private events: Events) {
-  }
+  constructor(private events: Events) {}
 
   public getMeritcore() {
     return this.MWC.Meritcore;
@@ -33,7 +32,7 @@ export class MWCService {
     return this.MWC.Utils;
   }
 
-  public getClient(walletData?, opts?: { bwsurl?: string; verbose?: boolean; }): MeritWalletClient {
+  public getClient(walletData?, opts?: { bwsurl?: string; verbose?: boolean }): MeritWalletClient {
     if (!walletData && !opts && this.MWC) return this.MWC;
 
     opts = opts || {};

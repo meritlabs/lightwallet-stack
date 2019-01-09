@@ -19,17 +19,17 @@ describe('Logger', function() {
 
   it('will instatiate with formatting option', function() {
     var logger = new Logger({
-      formatting: false
+      formatting: false,
     });
     logger.formatting.should.equal(false);
     var logger2 = new Logger({
-      formatting: true
+      formatting: true,
     });
     logger2.formatting.should.equal(true);
   });
 
   it('will log with formatting', function() {
-    var logger = new Logger({formatting: true});
+    var logger = new Logger({ formatting: true });
 
     sandbox.stub(console, 'info');
     logger.info('Test info log');
@@ -53,7 +53,7 @@ describe('Logger', function() {
   });
 
   it('will log without formatting', function() {
-    var logger = new Logger({formatting: false});
+    var logger = new Logger({ formatting: false });
 
     sandbox.stub(console, 'info');
     logger.info('Test info log');
@@ -79,5 +79,4 @@ describe('Logger', function() {
     should.equal(console.warn.args[0][0].match(/^\[/), null);
     console.warn.restore();
   });
-
 });

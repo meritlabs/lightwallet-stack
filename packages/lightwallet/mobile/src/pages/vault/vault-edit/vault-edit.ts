@@ -1,13 +1,19 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, ModalController, LoadingController } from 'ionic-angular';
-import { IWhitelistWallet } from "@merit/mobile/pages/vault/select-whitelist/select-whitelist";
-import { VaultsService } from "@merit/common/services/vaults.service";
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  AlertController,
+  ModalController,
+  LoadingController,
+} from 'ionic-angular';
+import { IWhitelistWallet } from '@merit/mobile/pages/vault/select-whitelist/select-whitelist';
+import { VaultsService } from '@merit/common/services/vaults.service';
 import { MERIT_MODAL_OPTS } from '@merit/common/utils/constants';
 import { ToastControllerService, IMeritToastConfig } from '@merit/common/services/toast-controller.service';
 import { MeritWalletClient } from '@merit/common/merit-wallet-client';
 import { ENV } from '@app/env';
 import { mnemonicToHDPrivateKey } from '@merit/common/utils/mnemonic';
-
 
 @IonicPage()
 @Component({
@@ -15,7 +21,6 @@ import { mnemonicToHDPrivateKey } from '@merit/common/utils/mnemonic';
   templateUrl: 'vault-edit.html',
 })
 export class VaultEditView {
-
   public vault;
 
   public vaultName: string;
@@ -34,7 +39,7 @@ export class VaultEditView {
     private vaultsService: VaultsService,
     private modalCtrl: ModalController,
     private loadingCtrl: LoadingController,
-    private toastCtrl: ToastControllerService
+    private toastCtrl: ToastControllerService,
   ) {
     this.vault = this.navParams.get('vault');
     this.vaultName = this.vault.name;
@@ -48,34 +53,40 @@ export class VaultEditView {
     });
     this.whitelist = this.wallets.filter(w => w.selected);
 
-    this.previous  = {
+    this.previous = {
       name: this.vault.name,
       whitelist: this.vault.whitelist.reduce((str, addr) => {
-        return str + addr.toString()
-      }, '')
-    }
+        return str + addr.toString();
+      }, ''),
+    };
   }
 
-
   async edit(highlightInvalidInput = false, previousValue = '') {
-
     if (this.whitelistChanged) {
-
-      this.alertCtrl.create({
-        title: 'Renew Vault?',
-        message: 'Changing the whitelist will cancel all pending transactions and charge a fee. Enter master key (phrase) to continue',
-        cssClass: highlightInvalidInput ? 'invalid-input-prompt' : '',
-        inputs: [{
-          value: previousValue,
-          name: 'phrase',
-          placeholder: 'Master Phrase'
-        }],
-        buttons: [
-          { text: 'Cancel', role: 'cancel', handler: () => {} },
-          { text: 'Yes', handler: (value) => { this.renew(value.phrase); }}
-        ]
-      }).present();
-
+      this.alertCtrl
+        .create({
+          title: 'Renew Vault?',
+          message:
+            'Changing the whitelist will cancel all pending transactions and charge a fee. Enter master key (phrase) to continue',
+          cssClass: highlightInvalidInput ? 'invalid-input-prompt' : '',
+          inputs: [
+            {
+              value: previousValue,
+              name: 'phrase',
+              placeholder: 'Master Phrase',
+            },
+          ],
+          buttons: [
+            { text: 'Cancel', role: 'cancel', handler: () => {} },
+            {
+              text: 'Yes',
+              handler: value => {
+                this.renew(value.phrase);
+              },
+            },
+          ],
+        })
+        .present();
     } else {
       if (this.vaultName != this.previous.name) await this.editName();
       this.navCtrl.pop();
@@ -83,11 +94,13 @@ export class VaultEditView {
   }
 
   private async renew(phrase) {
-
     let xMasterKey;
     try {
-      const words = phrase.replace(/\s\s+/g, ' ').trim().toLowerCase();
-      xMasterKey  = mnemonicToHDPrivateKey(words, '', ENV.network);
+      const words = phrase
+        .replace(/\s\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+      xMasterKey = mnemonicToHDPrivateKey(words, '', ENV.network);
     } catch (ex) {
       console.warn(ex);
       return this.edit(true, phrase);
@@ -103,10 +116,9 @@ export class VaultEditView {
     } catch (e) {
       console.warn(e);
       this.toastCtrl.error(e.message || 'Failed to renew vault');
-    } finally  {
+    } finally {
       loader.dismiss();
     }
-
   }
 
   private async editName() {
@@ -114,12 +126,15 @@ export class VaultEditView {
     this.vault.name = this.vaultName;
   }
 
-
   selectWhitelist() {
-    let modal = this.modalCtrl.create('SelectWhitelistModal', {
-      selectedWallet: this.wallet,
-      availableWallets: this.wallets
-    }, MERIT_MODAL_OPTS);
+    let modal = this.modalCtrl.create(
+      'SelectWhitelistModal',
+      {
+        selectedWallet: this.wallet,
+        availableWallets: this.wallets,
+      },
+      MERIT_MODAL_OPTS,
+    );
     modal.onDidDismiss(() => {
       this.whitelist = this.wallets.filter(w => w.selected);
       this.checkWhitelistChange();
@@ -129,18 +144,12 @@ export class VaultEditView {
 
   private checkWhitelistChange() {
     const newWl = this.whitelist.reduce((str, w) => {
-      return str + w.rootAddress.toString()
+      return str + w.rootAddress.toString();
     }, '');
-    this.whitelistChanged = (this.previous.whitelist != newWl);
+    this.whitelistChanged = this.previous.whitelist != newWl;
   }
 
   get isEditAvailable() {
-    return (
-      this.vaultName
-      && this.whitelist.length
-      && ((this.vaultName != this.previous.name) || this.whitelistChanged)
-    )
+    return this.vaultName && this.whitelist.length && (this.vaultName != this.previous.name || this.whitelistChanged);
   }
-
-
 }

@@ -22,7 +22,7 @@ export class WelcomeToSetupTrackerComponent {
     private formBuilder: FormBuilder,
     private store: Store<IRootAppState>,
     private router: Router,
-    private goalsService: GoalsService
+    private goalsService: GoalsService,
   ) {}
 
   closeAndSave() {

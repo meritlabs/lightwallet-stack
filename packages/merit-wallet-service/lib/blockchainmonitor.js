@@ -18,7 +18,7 @@ var WalletService = require('./server');
 
 function BlockchainMonitor() {}
 
-BlockchainMonitor.prototype.start = function (opts, cb) {
+BlockchainMonitor.prototype.start = function(opts, cb) {
   console.warn('**** Starting Blockchain Monitor');
   opts = opts || {};
 
@@ -30,9 +30,9 @@ BlockchainMonitor.prototype.start = function (opts, cb) {
 
   async.parallel(
     [
-      function (done) {
+      function(done) {
         self.explorers = {};
-        _.map(['testnet'], function (network) {
+        _.map(['testnet'], function(network) {
           var explorer;
           if (opts.blockchainExplorers) {
             explorer = opts.blockchainExplorers[network];
@@ -54,25 +54,28 @@ BlockchainMonitor.prototype.start = function (opts, cb) {
         });
         done();
       },
-      function (done) {
+      function(done) {
         if (opts.storage) {
           self.storage = opts.storage;
           done();
         } else {
           self.storage = new Storage();
-          self.storage.connect(opts.storageOpts, done);
+          self.storage.connect(
+            opts.storageOpts,
+            done,
+          );
         }
       },
-      function (done) {
+      function(done) {
         self.messageBroker = opts.messageBroker || new MessageBroker(opts.messageBrokerOpts);
         done();
       },
-      function (done) {
+      function(done) {
         self.lock = opts.lock || new Lock(opts.lockOpts);
         done();
       },
     ],
-    function (err) {
+    function(err) {
       if (err) {
         log.error(err);
       }
@@ -81,16 +84,16 @@ BlockchainMonitor.prototype.start = function (opts, cb) {
   );
 };
 
-BlockchainMonitor.prototype._initExplorer = function (network, explorer) {
+BlockchainMonitor.prototype._initExplorer = function(network, explorer) {
   var self = this;
 
   var socket = explorer.initSocket();
 
-  socket.on('connect', function () {
+  socket.on('connect', function() {
     log.info('Connected to ' + explorer.getConnectionInfo());
     socket.emit('subscribe', 'inv');
   });
-  socket.on('connect_error', function () {
+  socket.on('connect_error', function() {
     log.error('Error connecting to ' + explorer.getConnectionInfo());
   });
 
@@ -99,7 +102,7 @@ BlockchainMonitor.prototype._initExplorer = function (network, explorer) {
   socket.on('referral', _.bind(self._handleIncomingReferral, self));
 };
 
-BlockchainMonitor.prototype._handleIncomingTx = function (network, data) {
+BlockchainMonitor.prototype._handleIncomingTx = function(network, data) {
   const self = this;
 
   const identity = {
@@ -107,20 +110,20 @@ BlockchainMonitor.prototype._handleIncomingTx = function (network, data) {
     txid: data.txid,
     blockHash: null,
   };
-  self._uniqueMessageProcessing(identity, function () {
+  self._uniqueMessageProcessing(identity, function() {
     self._handleThirdPartyBroadcasts(data);
     self._handleIncomingPayments(data, network);
   });
 };
 
-BlockchainMonitor.prototype._handleNewBlock = function (network, hash) {
+BlockchainMonitor.prototype._handleNewBlock = function(network, hash) {
   const self = this;
   const identity = {
     type: 'NEW_BLOCK',
     blockHash: hash,
     txid: null,
   };
-  self._uniqueMessageProcessing(identity, function () {
+  self._uniqueMessageProcessing(identity, function() {
     self._notifyNewBlock(network, hash);
 
     const explorer = self.explorers[network];
@@ -160,7 +163,7 @@ BlockchainMonitor.prototype._handleMinedInvites = function(network, invites) {
     return;
   }
 
-  invites.forEach((inviteTxId) => {
+  invites.forEach(inviteTxId => {
     explorer.getTransaction(inviteTxId, (err, tx) => {
       if (err || !tx) {
         console.log('Unable to fetch invite transaction: ', inviteTxId);
@@ -173,7 +176,7 @@ BlockchainMonitor.prototype._handleMinedInvites = function(network, invites) {
   });
 };
 
-BlockchainMonitor.prototype._handleIncomingReferral = function (data) {
+BlockchainMonitor.prototype._handleIncomingReferral = function(data) {
   const self = this;
 
   if (!data) return;
@@ -183,8 +186,8 @@ BlockchainMonitor.prototype._handleIncomingReferral = function (data) {
     txid: data.hash,
     blockHash: null,
   };
-  self._uniqueMessageProcessing(identity, function () {
-    self.storage.fetchReferralByCodeHash(data.address, function (err, referral) {
+  self._uniqueMessageProcessing(identity, function() {
+    self.storage.fetchReferralByCodeHash(data.address, function(err, referral) {
       if (err) {
         log.error('Could not fetch referral from the db');
         return;
@@ -195,7 +198,7 @@ BlockchainMonitor.prototype._handleIncomingReferral = function (data) {
         return;
       }
 
-      self.storage.storeReferral(data, function (err) {
+      self.storage.storeReferral(data, function(err) {
         if (err) log.error('Could not store referral');
 
         const args = data;
@@ -210,10 +213,10 @@ BlockchainMonitor.prototype._handleIncomingReferral = function (data) {
   });
 };
 
-BlockchainMonitor.prototype._uniqueMessageProcessing = function (identity, cb) {
+BlockchainMonitor.prototype._uniqueMessageProcessing = function(identity, cb) {
   const self = this;
 
-  self.storage.checkKnownMessages(identity, function (err, found) {
+  self.storage.checkKnownMessages(identity, function(err, found) {
     if (err) {
       log.warn('Could not check message', identity, err);
       return;
@@ -229,11 +232,11 @@ BlockchainMonitor.prototype._uniqueMessageProcessing = function (identity, cb) {
   });
 };
 
-BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function (data, processIt) {
+BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function(data, processIt) {
   var self = this;
   if (!data || !data.txid) return;
 
-  self.storage.fetchTxByHash(data.txid, function (err, txp) {
+  self.storage.fetchTxByHash(data.txid, function(err, txp) {
     if (err) {
       log.error('Could not fetch tx from the db');
       return;
@@ -263,8 +266,8 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function (data, proces
 
     txp.setBroadcasted();
 
-    self.storage.softResetTxHistoryCache(walletId, function () {
-      self.storage.storeTx(self.walletId, txp, function (err) {
+    self.storage.softResetTxHistoryCache(walletId, function() {
+      self.storage.storeTx(self.walletId, txp, function(err) {
         if (err) log.error('Could not save TX');
 
         var args = {
@@ -284,7 +287,7 @@ BlockchainMonitor.prototype._handleThirdPartyBroadcasts = function (data, proces
   });
 };
 
-BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
+BlockchainMonitor.prototype._handleIncomingPayments = function(data, network) {
   const self = this;
 
   if (!data || !data.vout) return;
@@ -292,7 +295,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
   // Let's format the object to be easier to process below.
   const outs = _.reduce(
     data.vout,
-    function (acc, out, index) {
+    function(acc, out, index) {
       if (out.isChangeOutput) {
         return acc;
       }
@@ -303,10 +306,10 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
       return acc.concat({
         address,
         amount,
-        index
+        index,
       });
     },
-    []
+    [],
   );
 
   // Let's roll up any vouts that go to the same address.
@@ -316,7 +319,7 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
 
   _.forEach(outs, out => {
     const oIndex = _.findIndex(filteredOutputs, {
-      address: out.address
+      address: out.address,
     });
 
     if (filteredOutputs[oIndex]) {
@@ -334,130 +337,130 @@ BlockchainMonitor.prototype._handleIncomingPayments = function (data, network) {
 
   async.eachSeries(
     filteredOutputs,
-    function (out, next) {
-
+    function(out, next) {
       let address, isAddressConfirmed;
 
-      async.series([
+      async.series(
+        [
+          // 1. Fetch the address from storage
+          cb => {
+            self.storage.fetchAddress(out.address, (err, addr) => {
+              if (err || !addr) {
+                log.error('Could not fetch addresses from the db');
+                return cb(err || 'Address not found');
+              }
 
-        // 1. Fetch the address from storage
-        (cb) => {
-          self.storage.fetchAddress(out.address, (err, addr) => {
-            if (err || !addr) {
-              log.error('Could not fetch addresses from the db');
-              return cb(err || 'Address not found');
-            }
+              if (addr.isChange) {
+                log.info('Address is not registered for notifications, skipping');
+                return cb('Address not registered for notifications');
+              }
 
-            if (addr.isChange) {
-              log.info('Address is not registered for notifications, skipping');
-              return cb('Address not registered for notifications');
-            }
+              address = addr;
+              cb();
+            });
+          },
 
-            address = addr;
-            cb();
-          });
-        },
-
-        // 2. Check if the address is confirmed IF NEEDED
-        (cb) => {
-
-          // we only need to know if the address is confirmed if we're handling invites
-          if (!data.isInvite) {
-            return cb();
-          }
-
-          explorer.getUtxos([out.address], true, (err, utxos) => {
-            utxos = utxos || [];
-
-            // Check if the recipient address is unlocked; by checking if it has
-            // received any invites in the past.
-            isAddressConfirmed = utxos.some(u => u.isInvite && u.txid !== data.txid);
-
-            cb();
-          });
-        },
-
-        // 3. Set the appropriate notification type
-        (cb) => {
-          const walletId = address.walletId;
-
-          let notificationType = '';
-
-          if (data.isCoinbase) {
-            if (data.isInvite) {
-              notificationType = 'MinedInvite';
-            } else if (out.index === 0) {
-              notificationType = 'MiningReward';
-            } else {
-              notificationType = 'GrowthReward';
-            }
-          } else if (data.isInvite) {
-            if (isAddressConfirmed) {
-              notificationType = 'IncomingInvite';
-            } else {
-              notificationType = 'WalletUnlocked';
-            }
-          } else {
-            notificationType = 'IncomingTx';
-          }
-
-          log.info(
-            `${notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${
-              out.address
-              } ]`,
-          );
-
-          const fromTs = Date.now() - 24 * 3600 * 1000;
-          self.storage.fetchNotifications(walletId, null, fromTs, function (err, notifications) {
-            if (err) return cb(err);
-
-            const alreadyNotified = _.some(notifications, n =>
-              n.type === notificationType && n.data && n.data.txid === data.txid
-            );
-
-            if (alreadyNotified) {
-              log.info(`The incoming tx ${data.txid} was already notified`);
+          // 2. Check if the address is confirmed IF NEEDED
+          cb => {
+            // we only need to know if the address is confirmed if we're handling invites
+            if (!data.isInvite) {
               return cb();
             }
 
-            const notification = Notification.create({
-              type: notificationType,
-              data: {
-                txid: data.txid,
-                address: out.address,
-                amount: out.amount,
-                isInvite: data.isInvite,
-              },
-              walletId: walletId,
-            });
+            explorer.getUtxos([out.address], true, (err, utxos) => {
+              utxos = utxos || [];
 
-            self.storage.softResetTxHistoryCache(walletId, function () {
-              self._updateActiveAddress(address, function () {
-                self._storeAndBroadcastNotification(notification, cb);
+              // Check if the recipient address is unlocked; by checking if it has
+              // received any invites in the past.
+              isAddressConfirmed = utxos.some(u => u.isInvite && u.txid !== data.txid);
+
+              cb();
+            });
+          },
+
+          // 3. Set the appropriate notification type
+          cb => {
+            const walletId = address.walletId;
+
+            let notificationType = '';
+
+            if (data.isCoinbase) {
+              if (data.isInvite) {
+                notificationType = 'MinedInvite';
+              } else if (out.index === 0) {
+                notificationType = 'MiningReward';
+              } else {
+                notificationType = 'GrowthReward';
+              }
+            } else if (data.isInvite) {
+              if (isAddressConfirmed) {
+                notificationType = 'IncomingInvite';
+              } else {
+                notificationType = 'WalletUnlocked';
+              }
+            } else {
+              notificationType = 'IncomingTx';
+            }
+
+            log.info(
+              `${notificationType} for wallet ${walletId} [ ${out.amount} ${!data.isInvite ? 'micros' : 'invites'} -> ${
+                out.address
+              } ]`,
+            );
+
+            const fromTs = Date.now() - 24 * 3600 * 1000;
+            self.storage.fetchNotifications(walletId, null, fromTs, function(err, notifications) {
+              if (err) return cb(err);
+
+              const alreadyNotified = _.some(
+                notifications,
+                n => n.type === notificationType && n.data && n.data.txid === data.txid,
+              );
+
+              if (alreadyNotified) {
+                log.info(`The incoming tx ${data.txid} was already notified`);
+                return cb();
+              }
+
+              const notification = Notification.create({
+                type: notificationType,
+                data: {
+                  txid: data.txid,
+                  address: out.address,
+                  amount: out.amount,
+                  isInvite: data.isInvite,
+                },
+                walletId: walletId,
+              });
+
+              self.storage.softResetTxHistoryCache(walletId, function() {
+                self._updateActiveAddress(address, function() {
+                  self._storeAndBroadcastNotification(notification, cb);
+                });
               });
             });
-          });
+          },
+        ],
+        err => {
+          if (err) {
+            // If an error occurs in our async.series,
+            // let's send it up the chain to async.seriesEach
+            next(err);
+          } else {
+            next(null);
+          }
         },
-
-      ], (err) => {
-        if (err) {
-          // If an error occurs in our async.series,
-          // let's send it up the chain to async.seriesEach
-          next(err);
-        } else {
-          next(null);
-        }
-      });
+      );
     },
-    err => {}
+    err => {},
   );
 };
 
-BlockchainMonitor.prototype._updateActiveAddress = function (address, cb) {
+BlockchainMonitor.prototype._updateActiveAddress = function(address, cb) {
   var self = this;
 
   var addrs = [address.address];
-  self.storage.storeActiveAddresses(address.walletId, addrs, function (err) {
+  self.storage.storeActiveAddresses(address.walletId, addrs, function(err) {
     if (err) {
       log.warn('Could not update wallet cache', err);
     }
@@ -465,7 +468,7 @@ BlockchainMonitor.prototype._updateActiveAddress = function (address, cb) {
   });
 };
 
-BlockchainMonitor.prototype._notifyNewBlock = function (network, hash) {
+BlockchainMonitor.prototype._notifyNewBlock = function(network, hash) {
   var self = this;
 
   log.info('New ' + network + ' block: ' + hash);
@@ -478,8 +481,8 @@ BlockchainMonitor.prototype._notifyNewBlock = function (network, hash) {
     },
   });
 
-  self.storage.softResetAllTxHistoryCache(function () {
-    self._storeAndBroadcastNotification(notification, function (err) {
+  self.storage.softResetAllTxHistoryCache(function() {
+    self._storeAndBroadcastNotification(notification, function(err) {
       return;
     });
   });
@@ -488,9 +491,9 @@ BlockchainMonitor.prototype._notifyNewBlock = function (network, hash) {
 // handle txs that were confirmed (i.e. added to a block)
 // set these subscriptions as inactive
 // and send TxConfirmation notification
-BlockchainMonitor.prototype._handleTxConfirmations = function (network, txids) {
+BlockchainMonitor.prototype._handleTxConfirmations = function(network, txids) {
   const processTriggeredSubs = (subs, cb) => {
-    async.each(subs, function (sub, cb) {
+    async.each(subs, function(sub, cb) {
       log.info('New tx confirmation ' + sub.txid);
       sub.isActive = false;
 
@@ -516,15 +519,15 @@ BlockchainMonitor.prototype._handleTxConfirmations = function (network, txids) {
     });
   };
 
-  this.storage.fetchActiveTxConfirmationSubs(null, function (err, subs) {
+  this.storage.fetchActiveTxConfirmationSubs(null, function(err, subs) {
     if (err) return;
     if (_.isEmpty(subs)) return;
     const indexedSubs = _.keyBy(subs, 'txid');
     const triggered = [];
-    _.each(txids, function (txid) {
+    _.each(txids, function(txid) {
       if (indexedSubs[txid]) triggered.push(indexedSubs[txid]);
     });
-    processTriggeredSubs(triggered, function (err) {
+    processTriggeredSubs(triggered, function(err) {
       if (err) {
         log.error('Could not process tx confirmations', err);
       }
@@ -535,7 +538,7 @@ BlockchainMonitor.prototype._handleTxConfirmations = function (network, txids) {
 
 // TODO: update this method and methods to set subscriptions
 // to use hash or address of referral instead codeHash
-BlockchainMonitor.prototype._handleReferralConfirmations = function (network, referrals) {
+BlockchainMonitor.prototype._handleReferralConfirmations = function(network, referrals) {
   if (_.isEmpty(referrals)) {
     return;
   }
@@ -549,12 +552,13 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function (network, re
     const indexedSubs = _.keyBy(subs, 'address');
     const triggered = _.reduce(
       referrals,
-      function (acc, reftx) {
+      function(acc, reftx) {
         if (!indexedSubs[reftx]) return acc;
 
         acc.push(indexedSubs[reftx]);
         return acc;
-      }, [],
+      },
+      [],
     );
 
     async.each(triggered, (sub, cb) => {
@@ -582,7 +586,7 @@ BlockchainMonitor.prototype._handleReferralConfirmations = function (network, re
   });
 };
 
-BlockchainMonitor.prototype._handleVaultConfirmations = function (network, txids) {
+BlockchainMonitor.prototype._handleVaultConfirmations = function(network, txids) {
   async.each(txids, (txId, cb) => {
     log.info(`Checking if TX with id ${txId} is vault TX`);
 
@@ -610,7 +614,7 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function (network, txids
           data: result,
         });
 
-        this._storeAndBroadcastNotification(notification, function () {
+        this._storeAndBroadcastNotification(notification, function() {
           log.info(`Vault confirmation with code ${txId} successfully sent`);
         });
       });
@@ -620,7 +624,7 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function (network, txids
   });
 };
 
-BlockchainMonitor.prototype._storeAndBroadcastNotification = function (notification, cb) {
+BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {
   if (!(this.pushNotificationServiceEnabled || this.emailNotificationServiceEnabled || this.smsNotificationsEnabled)) {
     return cb();
   }

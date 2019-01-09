@@ -3,7 +3,7 @@
 var _ = require('lodash');
 var Uuid = require('uuid');
 
-function Email() {};
+function Email() {}
 
 Email.create = function(opts) {
   opts = opts || {};
@@ -68,6 +68,5 @@ Email.prototype.setSent = function() {
 Email.prototype.setFail = function() {
   this._logAttempt('fail');
 };
-
 
 module.exports = Email;

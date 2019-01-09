@@ -39,7 +39,7 @@ var InsightAPI = function(options) {
   this.currencyRefresh = options.currencyRefresh || CurrencyController.DEFAULT_CURRENCY_DELAY;
 
   this.subscriptions = {
-    inv: []
+    inv: [],
   };
 
   if (!_.isUndefined(options.enableCache)) {
@@ -107,7 +107,7 @@ InsightAPI.prototype.createLogInfoStream = function() {
   }
   inherits(Log, Writable);
 
-  Log.prototype._write = function (chunk, enc, callback) {
+  Log.prototype._write = function(chunk, enc, callback) {
     self.node.log.info(chunk.slice(0, chunk.length - 1)); // remove new line and pass to logger
     callback();
   };
@@ -140,25 +140,27 @@ InsightAPI.prototype.setupRoutes = function(app) {
   }
 
   //Setup logging
-  morgan.token('remote-forward-addr', function(req){
+  morgan.token('remote-forward-addr', function(req) {
     return self.getRemoteAddress(req);
   });
   var logFormat = ':remote-forward-addr ":method :url" :status :res[content-length] :response-time ":user-agent" ';
   var logStream = this.createLogInfoStream();
-  app.use(morgan(logFormat, {stream: logStream}));
+  app.use(morgan(logFormat, { stream: logStream }));
 
   //Enable compression
   app.use(compression());
 
   //Enable urlencoded data
-  app.use(bodyParser.urlencoded({extended: true}));
+  app.use(bodyParser.urlencoded({ extended: true }));
 
   //Enable CORS
   app.use(function(req, res, next) {
-
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Content-Length, Cache-Control, cf-connecting-ip');
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept, Content-Length, Cache-Control, cf-connecting-ip',
+    );
 
     var method = req.method && req.method.toUpperCase && req.method.toUpperCase();
 
@@ -174,7 +176,7 @@ InsightAPI.prototype.setupRoutes = function(app) {
   var blockOptions = {
     node: this.node,
     blockSummaryCacheSize: this.blockSummaryCacheSize,
-    blockCacheSize: this.blockCacheSize
+    blockCacheSize: this.blockCacheSize,
   };
   var blocks = new BlockController(blockOptions);
   app.get('/blocks', this.cacheShort(), blocks.list.bind(blocks));
@@ -202,18 +204,58 @@ InsightAPI.prototype.setupRoutes = function(app) {
   var addresses = new AddressController(this.node);
   app.get('/addr/:addr', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.show.bind(addresses));
   app.get('/addr/:addr/utxo', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.utxo.bind(addresses));
-  app.get('/addrs/:addrs/utxo', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.multiutxo.bind(addresses));
+  app.get(
+    '/addrs/:addrs/utxo',
+    this.cacheShort(),
+    addresses.checkAddrs.bind(addresses),
+    addresses.multiutxo.bind(addresses),
+  );
   app.post('/addrs/utxo', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.multiutxo.bind(addresses));
-  app.get('/addrs/:addrs/txs', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.multitxs.bind(addresses));
+  app.get(
+    '/addrs/:addrs/txs',
+    this.cacheShort(),
+    addresses.checkAddrs.bind(addresses),
+    addresses.multitxs.bind(addresses),
+  );
   app.post('/addrs/txs', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.multitxs.bind(addresses));
-  app.post('/addrs/referrals', this.cacheShort(), addresses.checkAddrs.bind(addresses), addresses.referrals.bind(addresses));
+  app.post(
+    '/addrs/referrals',
+    this.cacheShort(),
+    addresses.checkAddrs.bind(addresses),
+    addresses.referrals.bind(addresses),
+  );
 
   // Address property routes
-  app.get('/addr/:addr/balance', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.balance.bind(addresses));
-  app.get('/addr/:addr/totalReceived', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.totalReceived.bind(addresses));
-  app.get('/addr/:addr/totalSent', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.totalSent.bind(addresses));
-  app.get('/addr/:addr/unconfirmedBalance', this.cacheShort(), addresses.checkAddr.bind(addresses), addresses.unconfirmedBalance.bind(addresses));
-  app.get('/addr/:addr/validate', this.cacheShort(), addresses.checkAddrOrAlias.bind(addresses), addresses.validateAddress.bind(addresses));
+  app.get(
+    '/addr/:addr/balance',
+    this.cacheShort(),
+    addresses.checkAddr.bind(addresses),
+    addresses.balance.bind(addresses),
+  );
+  app.get(
+    '/addr/:addr/totalReceived',
+    this.cacheShort(),
+    addresses.checkAddr.bind(addresses),
+    addresses.totalReceived.bind(addresses),
+  );
+  app.get(
+    '/addr/:addr/totalSent',
+    this.cacheShort(),
+    addresses.checkAddr.bind(addresses),
+    addresses.totalSent.bind(addresses),
+  );
+  app.get(
+    '/addr/:addr/unconfirmedBalance',
+    this.cacheShort(),
+    addresses.checkAddr.bind(addresses),
+    addresses.unconfirmedBalance.bind(addresses),
+  );
+  app.get(
+    '/addr/:addr/validate',
+    this.cacheShort(),
+    addresses.checkAddrOrAlias.bind(addresses),
+    addresses.validateAddress.bind(addresses),
+  );
 
   // Referral routes
   var referrals = new ReferralsController(this.node);
@@ -239,7 +281,7 @@ InsightAPI.prototype.setupRoutes = function(app) {
   // Currency
   var currency = new CurrencyController({
     node: this.node,
-    currencyRefresh: this.currencyRefresh
+    currencyRefresh: this.currencyRefresh,
   });
   app.get('/currency', currency.index.bind(currency));
 
@@ -255,10 +297,9 @@ InsightAPI.prototype.setupRoutes = function(app) {
     res.status(404).jsonp({
       status: 404,
       url: req.originalUrl,
-      error: 'Not found'
+      error: 'Not found',
     });
   });
-
 };
 
 InsightAPI.prototype.getPublishEvents = function() {
@@ -268,8 +309,8 @@ InsightAPI.prototype.getPublishEvents = function() {
       scope: this,
       subscribe: this.subscribe.bind(this),
       unsubscribe: this.unsubscribe.bind(this),
-      extraEvents: ['tx', 'block', 'referral']
-    }
+      extraEvents: ['tx', 'block', 'referral'],
+    },
   ];
 };
 
@@ -302,7 +343,7 @@ InsightAPI.prototype.subscribe = function(emitter) {
 
   var emitters = this.subscriptions.inv;
   var index = emitters.indexOf(emitter);
-  if(index === -1) {
+  if (index === -1) {
     emitters.push(emitter);
   }
 };
@@ -312,7 +353,7 @@ InsightAPI.prototype.unsubscribe = function(emitter) {
 
   var emitters = this.subscriptions.inv;
   var index = emitters.indexOf(emitter);
-  if(index > -1) {
+  if (index > -1) {
     emitters.splice(index, 1);
   }
 };

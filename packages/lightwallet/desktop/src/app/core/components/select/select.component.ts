@@ -3,14 +3,17 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   selector: 'app-select',
   templateUrl: './select.component.html',
-  styleUrls: ['./select.component.sass']
+  styleUrls: ['./select.component.sass'],
 })
 export class SelectComponent {
-
-  @Output() selectionEvent = new EventEmitter<string>();
-  @Input() selected: any;
-  @Input() input: any;
-  @Input() cssClass: any;
+  @Output()
+  selectionEvent = new EventEmitter<string>();
+  @Input()
+  selected: any;
+  @Input()
+  input: any;
+  @Input()
+  cssClass: any;
   show: boolean = false;
 
   select(item) {
