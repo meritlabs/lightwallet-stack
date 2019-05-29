@@ -25,4 +25,4 @@ Please, check out our [Contribution guide](https://github.com/meritlabs/lightwal
 **Code released under [the MIT license](https://github.com/meritlabs/lightwallet-stack/blob/master/LICENSE).**
 
 Copyright (C) 2013 - 2017 BitPay, Inc.
-Copyright (C) 2017 - 2018 The Merit Foundation.
+Copyright (c) 2017-2019 the Merit Foundation.
