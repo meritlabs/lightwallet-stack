@@ -123,27 +123,27 @@ Merit.prototype._initDefaults = function(options) {
 
 Merit.prototype._initCaches = function() {
   // caches valid until there is a new block
-  this.utxosCache = LRU(50000);
-  this.txidsCache = LRU(50000);
-  this.referralsCache = LRU(50000);
-  this.referralCache = LRU(100000);
-  this.balanceCache = LRU(50000);
-  this.summaryCache = LRU(50000);
-  this.blockOverviewCache = LRU(144);
-  this.transactionDetailedCache = LRU(100000);
-  this.anvCache = LRU(50000);
-  this.rewardsCache = LRU(50000);
+  this.utxosCache = new LRU(50000);
+  this.txidsCache = new LRU(50000);
+  this.referralsCache = new LRU(50000);
+  this.referralCache = new LRU(100000);
+  this.balanceCache = new LRU(50000);
+  this.summaryCache = new LRU(50000);
+  this.blockOverviewCache = new LRU(144);
+  this.transactionDetailedCache = new LRU(100000);
+  this.anvCache = new LRU(50000);
+  this.rewardsCache = new LRU(50000);
 
   // caches valid indefinitely
-  this.transactionCache = LRU(100000);
-  this.rawTransactionCache = LRU(50000);
-  this.blockCache = LRU(144);
-  this.rawBlockCache = LRU(72);
-  this.blockHeaderCache = LRU(288);
-  this.zmqKnownTransactions = LRU(5000);
-  this.zmqKnownBlocks = LRU(50);
-  this.zmqKnownRawReferrals = LRU(5000);
-  this.zmqKnownHashReferrals = LRU(5000);
+  this.transactionCache = new LRU(100000);
+  this.rawTransactionCache = new LRU(50000);
+  this.blockCache = new LRU(144);
+  this.rawBlockCache = new LRU(72);
+  this.blockHeaderCache = new LRU(288);
+  this.zmqKnownTransactions = new LRU(5000);
+  this.zmqKnownBlocks = new LRU(50);
+  this.zmqKnownRawReferrals = new LRU(5000);
+  this.zmqKnownHashReferrals = new LRU(5000);
   this.lastTip = 0;
   this.lastTipTimeout = false;
 };

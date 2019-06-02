@@ -134,12 +134,12 @@ Storage.prototype.connect = function(opts, cb) {
   var config = opts.mongoDb || {};
   mongodb.MongoClient.connect(
     config.uri,
-    function(err, db) {
+    function(err, client) {
       if (err) {
         log.error('Unable to connect to the mongoDB. Check the credentials.');
         return cb(err);
       }
-      self.db = db;
+      self.db = client.db(config.database);
       self._createIndexes();
       console.log('Connection established to mongoDB');
       return cb();
