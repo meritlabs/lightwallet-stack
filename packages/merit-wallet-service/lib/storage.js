@@ -1782,8 +1782,8 @@ Storage.prototype.getGlobalSends = function(walletAddress, cb) {
 
 Storage.prototype.checkKnownMessages = function(data, cb) {
   this.db.collection(collections.KNOWN_MESSAGES).findOneAndUpdate(
-    data,
-    data,
+    { type: data.type, txid: data.txid },
+    { $set: data },
     {
       readPreference: mongodb.ReadPreference.PRIMARY,
       w: 'majority',
