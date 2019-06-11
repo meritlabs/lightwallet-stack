@@ -25,6 +25,7 @@ var config = {
   storageOpts: {
     mongoDb: {
       uri: 'mongodb://localhost:27017/bws',
+      database: 'bws',
     },
   },
   lockOpts: {
@@ -60,7 +61,7 @@ var config = {
     defaultUnit: 'mrt',
     subjectPrefix: '',
     pushServerUrl: 'https://fcm.googleapis.com/fcm',
-    authorizationKey: process.env.FCM_AUTH_KEY,
+    authorizationKey: process.env.FCM_AUTH_KEY || "A",
   },
   // fiatRateServiceOpts: {
   //   defaultProvider: 'BitPay',

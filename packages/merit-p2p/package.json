@@ -66,14 +66,14 @@
     "meritcore-lib": "^0.9.9",
     "bloom-filter": "^0.2.0",
     "buffers": "bitpay/node-buffers#v0.1.2-bitpay",
-    "socks5-client": "^0.3.6"
+    "socks5-client": "^1.2.6"
   },
   "devDependencies": {
     "merit-build": "^0.99.0",
-    "brfs": "^1.2.0",
-    "chai": "~1.10.0",
-    "gulp": "^3.9.1",
-    "sinon": "^1.12.2"
+    "brfs": "^2.0.2",
+    "chai": "~4.2.0",
+    "gulp": "^4.0.2",
+    "sinon": "^7.3.2"
   },
   "license": "MIT"
 }

@@ -110,6 +110,62 @@ use-lerna-production:
 start-stack: symlink-merit-node start-merit-node
 
 
+# Upgrade libs
+.PHONY: upgrade-meritcore-lib
+upgrade-meritcore-lib:
+	cd ./packages/meritcore-lib && ncu -u
+
+.PHONY: upgrade-merit-rpc
+upgrade-merit-rpc:
+	cd ./packages/merit-rpc && ncu -u
+
+.PHONY: upgrade-insight-api
+upgrade-insight-api:
+	cd ./packages/insight-api && ncu -u
+
+.PHONY: upgrade-insight-ui
+upgrade-insight-ui:
+	cd ./packages/insight-ui && ncu -u
+
+.PHONY: upgrade-merit-wallet-service
+upgrade-merit-wallet-service:
+	cd ./packages/merit-wallet-service && ncu -u
+
+.PHONY: upgrade-merit-p2p
+upgrade-merit-p2p:
+	cd ./packages/merit-p2p && ncu -u
+
+.PHONY: upgrade-merit-node
+upgrade-merit-node:
+	cd ./packages/merit-node && ncu -u
+
+.PHONY: upgrade-merit-payment-protocol
+upgrade-merit-payment-protocol:
+	cd ./packages/merit-payment-protocol && ncu -u
+
+.PHONY: upgrade-lightwallet
+upgrade-lightwallet:
+	cd ./packages/lightwallet/desktop && ncu -u
+	cd ./packages/lightwallet/mobile && ncu -u
+	cd ./packages/lightwallet && ncu -u
+
+.PHONY: upgrade-root
+upgrade-root:
+	ncu -u
+
+.PHONY: upgrade-stack
+upgrade-stack: upgrade-meritcore-lib \
+	upgrade-merit-rpc \
+	upgrade-insight-api \
+	upgrade-insight-ui \
+	upgrade-merit-wallet-service \
+	upgrade-merit-p2p \
+	upgrade-merit-node \
+	upgrade-merit-payment-protocol \
+	upgrade-lightwallet \
+	upgrade-root
+
+
 # Clean
 ## Preperation Order is based on dependencies ##
 .PHONY: clean-meritcore-lib

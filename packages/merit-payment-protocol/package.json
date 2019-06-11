@@ -50,17 +50,17 @@
   },
   "browser": "lib/browser.js",
   "dependencies": {
-    "asn1.js": "=4.5.2",
+    "asn1.js": "=5.0.1",
     "meritcore-lib": "^0.9.9",
-    "jsrsasign": "=5.0.10",
-    "protobufjs": "=5.0.1"
+    "jsrsasign": "=8.0.12",
+    "protobufjs": "=6.8.8"
   },
   "devDependencies": {
     "merit-build": "^0.99.0",
-    "brfs": "^1.2.0",
-    "chai": "~1.10.0",
-    "gulp": "^3.8.10",
-    "sinon": "^1.17.3"
+    "brfs": "^2.0.2",
+    "chai": "~4.2.0",
+    "gulp": "^4.0.2",
+    "sinon": "^7.3.2"
   },
   "license": "MIT"
 }
