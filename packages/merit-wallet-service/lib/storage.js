@@ -675,7 +675,10 @@ Storage.prototype.fetchAndLockNotificationForPushes = function(notification, cb)
       returnOriginal: false,
     },
     function(err, result) {
-      cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
+      if (err) return cb(err);
+      return cb(
+        null,
+        result && result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
     },
   );
 };
@@ -700,7 +703,10 @@ Storage.prototype.fetchAndLockNotificationForEmails = function(notification, cb)
       returnOriginal: false,
     },
     function(err, result) {
-      cb(err, result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
+      if (err) return cb(err);
+      return cb(
+        null,
+        result && result.lastErrorObject && result.lastErrorObject.updatedExisting && result.value && result.ok);
     },
   );
 };
