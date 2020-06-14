@@ -140,7 +140,7 @@
     "mocha": "^1.18.2",
     "nock": "^9.2.5",
     "node-sass": "^4.9.3",
-    "protobufjs": "5.0.1",
+    "protobufjs": "6.9.0",
     "protractor": "^5.3.1",
     "sinon": "^1.10.3",
     "supertest": "^3.0.0",
