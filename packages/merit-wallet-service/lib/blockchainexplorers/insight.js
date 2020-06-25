@@ -21,7 +21,7 @@ function Insight(opts) {
 var _parseErr = function(err, res) {
   // The 'err' can be misleading because it's not really the error returned from insight.
   // Instead, it is an error in communicating with insight.
-  const errMessage = res.body;
+  const errMessage = res != null && res.body != null ? res.body : 'Unexpected error connecting Insight';
   if (err) {
     log.warn('Network error connecting to blockchain explorer: ', err);
     return { localMessage: 'Error connecting to the blockchain explorer.', ...errMessage };
