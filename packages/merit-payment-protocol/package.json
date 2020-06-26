@@ -52,7 +52,7 @@
   "dependencies": {
     "asn1.js": "=5.0.1",
     "meritcore-lib": "^0.9.9",
-    "jsrsasign": "=8.0.12",
+    "jsrsasign": "=8.0.20",
     "protobufjs": "=6.8.8"
   },
   "devDependencies": {
