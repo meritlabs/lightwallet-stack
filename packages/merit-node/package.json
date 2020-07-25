@@ -65,7 +65,7 @@
     "semver": "^6.1.1",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
-    "zmq": "^2.15.3"
+    "zeromq": "5.2.0"
   },
   "optionalDependencies": {
     "bufferutil": "~4.0.1",

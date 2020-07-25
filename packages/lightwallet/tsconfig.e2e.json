@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.mobile.json",
   "compilerOptions": {
+    "skipLibCheck": true,
     "outDir": "./out-tsc/e2e",
     "module": "commonjs",
     "target": "es5",

@@ -1,9 +1,11 @@
 {
-  "lerna": "3.4.0",
+  "lerna": "3.22.1",
+  "npmClient": "yarn",
+  "useWorkspaces": false,
   "packages": [
     "packages/*",
     "packages/lightwallet/desktop",
     "packages/lightwallet/mobile"
   ],
-  "version": "0.0.0"
+  "version": "independent"
 }
