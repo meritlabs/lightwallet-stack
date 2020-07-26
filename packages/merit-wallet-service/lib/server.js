@@ -1391,7 +1391,9 @@ WalletService.prototype.verifyMessageSignature = function(opts, cb) {
 WalletService.prototype._getBlockchainExplorer = function(network) {
   var opts = {};
 
-  if (this.blockchainExplorer) return this.blockchainExplorer;
+  if (this.blockchainExplorer) {
+    return this.blockchainExplorer;
+  }
   if (this.blockchainExplorerOpts && this.blockchainExplorerOpts[network]) {
     opts = this.blockchainExplorerOpts[network];
   }

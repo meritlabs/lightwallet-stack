@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.mobile.json",
   "compilerOptions": {
+    "skipLibCheck": true,
     "allowSyntheticDefaultImports": false,
     "module": "commonjs",
     "paths": {
