@@ -25,12 +25,13 @@ var requestList = function(args, cb) {
   var urls = _.map(args.hosts, function(x) {
     return x + args.path;
   });
-  var nextUrl, result, success;
+  var nextUrl, result;
+  var success = false;
 
   async.whilst(
-    function() {
+    function(next) {
       nextUrl = urls.shift();
-      return nextUrl && !success;
+      return next(null, nextUrl && !success);
     },
     function(a_cb) {
       args.uri = nextUrl;

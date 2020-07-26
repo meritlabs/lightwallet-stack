@@ -50,7 +50,7 @@
     "meritd"
   ],
   "dependencies": {
-    "async": "^3.0.1",
+    "async": "~3.0.1",
     "meritd-rpc": "^0.7.0",
     "meritcore-lib": "^0.9.9",
     "body-parser": "^1.19.0",
