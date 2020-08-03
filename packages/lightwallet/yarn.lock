@@ -387,10 +387,10 @@
     jest-diff "^25.2.1"
     pretty-format "^25.2.1"
 
-"@types/lodash@4.14.71":
-  version "4.14.71"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.71.tgz#0dc383f78981216ac76e2f2c3afd998e0450e4c1"
-  integrity sha512-x9E8HYuhmcQJPjhTd+t0oRXiQCJXoRPSzCOgYKggxtvNb/kGw8RrbdZzCXrQ6i/i4o0TettxyouY7UdbqkS4AQ==
+"@types/lodash@4.14.158":
+  version "4.14.158"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.158.tgz#b38ea8b6fe799acd076d7a8d7ab71c26ef77f785"
+  integrity sha512-InCEXJNTv/59yO4VSfuvNrZHt7eeNtWQEgnieIA+mIC+MOWM9arOWG2eQ8Vhk6NbOre6/BidiXhkZYeDY9U35w==
 
 "@types/nock@^9.1.3":
   version "9.3.1"
