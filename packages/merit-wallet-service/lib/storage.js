@@ -663,7 +663,7 @@ Storage.prototype.fetchAndLockNotificationForPushes = function(notification, cb)
       walletId: notification.walletId,
       lockedForPushNotifications: false,
     },
-    notification,
+    { '$set': notification},
     {
       readPreference: mongodb.ReadPreference.PRIMARY,
       w: 'majority',
@@ -691,7 +691,7 @@ Storage.prototype.fetchAndLockNotificationForEmails = function(notification, cb)
       walletId: notification.walletId,
       lockedForEmailNotifications: false,
     },
-    notification,
+    { '$set': notification},
     {
       readPreference: mongodb.ReadPreference.PRIMARY,
       w: 'majority',
