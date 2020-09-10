@@ -34,6 +34,8 @@ function SmsNotificationService(opts) {
 
 SmsNotificationService.prototype.sendSMS = function(notification, cb) {
   cb = cb || (() => {});
+  return cb(); // IGNORE THE SERVICE COMPLETELY FOR NOW
+
   if (notificationsToSend.indexOf(notification.type) === -1) return cb();
 
   this.storage.fetchSmsNotificationSub(notification.walletId, (err, recipient) => {
