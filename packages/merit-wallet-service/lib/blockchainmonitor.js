@@ -217,6 +217,11 @@ BlockchainMonitor.prototype._uniqueMessageProcessing = function(identity, cb) {
   const self = this;
 
   self.storage.checkKnownMessages(identity, function(err, found) {
+    if (err && err.code == 11000) { //Duplicate entry code
+      log.info('Message is already processed');
+      return;
+    }
+
     if (err) {
       log.warn('Could not check message', identity, err);
       return;
