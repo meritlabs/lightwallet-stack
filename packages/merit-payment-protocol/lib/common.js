@@ -3,7 +3,7 @@
 var meritcore = require('meritcore-lib');
 var protobufjs = require('protobufjs/dist/protobuf');
 var RootCerts = require('./rootcerts');
-var rfc5280 = require('asn1.js/rfc/5280');
+var rfc5280 = require('asn1.js-rfc5280');
 
 var PublicKey = meritcore.PublicKey;
 var PrivateKey = meritcore.PrivateKey;

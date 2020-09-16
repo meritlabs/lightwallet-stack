@@ -22,7 +22,7 @@ export class PinLockView {
   readonly MAX_ATTEMPTS = 10;
   readonly BLOCK_FOR_MINUTES = 10;
 
-  timerId: number;
+  timerId: NodeJS.Timer;
 
   showCancelButton: boolean;
   mode: string;

@@ -131,7 +131,7 @@ export class API {
   public pendingInvites: number = 0; // invites that are currently pending confirmation
   public sendableInvites: number = 0; // invites I can send right now
 
-  private noticitationPollingInterval = 60;
+  private noticitationPollingInterval = 300;
 
   /** is disabled when wallet is temporary decrypted */
   public credentialsSaveAllowed: boolean = true;
@@ -142,7 +142,7 @@ export class API {
     this.baseUrl = opts.baseUrl || ENV.mwsUrl;
     this.payProHttp = null; // Only for testing
     this.doNotVerifyPayPro = opts.doNotVerifyPayPro;
-    this.timeout = opts.timeout || 50000;
+    this.timeout = opts.timeout || 300000;
     this.logLevel = opts.logLevel || 'debug';
     this.log = Logger.getInstance();
     this.log.setLevel(this.logLevel);
@@ -546,7 +546,7 @@ export class API {
   static fromObj(obj) {
     let wallet = new this({
       baseUrl: obj.baseUrl || ENV.mwsUrl,
-      timeout: 100000,
+      timeout: 300000,
     });
 
     wallet.import(obj.credentials);

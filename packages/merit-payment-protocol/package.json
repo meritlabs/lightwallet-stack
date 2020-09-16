@@ -50,10 +50,11 @@
   },
   "browser": "lib/browser.js",
   "dependencies": {
-    "asn1.js": "=5.0.1",
+    "asn1.js": "=5.4.1",
+    "asn1.js-rfc5280": "3.0.0",
     "meritcore-lib": "^0.9.9",
     "jsrsasign": "=8.0.12",
-    "protobufjs": "=6.8.8"
+    "protobufjs": "5.0.1"
   },
   "devDependencies": {
     "merit-build": "^0.99.0",
