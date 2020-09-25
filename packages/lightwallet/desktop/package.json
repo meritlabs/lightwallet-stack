@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "webpack-dev-server --port=8888",
+    "serve": "webpack-dev-server --port=8888",
     "build": "webpack",
     "build:prod": "webpack --env.production",
     "postinstall": "rm -rf ./node_modules/rxjs",
@@ -32,6 +32,7 @@
     "@ngtools/webpack": "1.10.1",
     "angular2-virtual-scroll": "0.3.2",
     "autoprefixer": "^7.2.3",
+    "buffer-compare": "^1.1.1",
     "circular-dependency-plugin": "^4.2.1",
     "copy-webpack-plugin": "~4.4.1",
     "electron": "^1.8.4",

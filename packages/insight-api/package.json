@@ -71,7 +71,7 @@
   "meritNode": "lib",
   "dependencies": {
     "async": "~3.0.1",
-    "meritcore-lib": "^0.9.9",
+    "meritcore-lib": "=0.9.10",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "lodash": "^4.17.19",
@@ -81,7 +81,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.1.4",
+    "mocha": "6.1.4",
     "proxyquire": "^2.1.0",
     "should": "^13.2.3",
     "sinon": "^7.3.2"

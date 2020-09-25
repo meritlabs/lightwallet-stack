@@ -52,7 +52,7 @@
   "dependencies": {
     "asn1.js": "=5.4.1",
     "asn1.js-rfc5280": "3.0.0",
-    "meritcore-lib": "^0.9.9",
+    "meritcore-lib": "=0.9.10",
     "jsrsasign": "=8.0.12",
     "protobufjs": "5.0.1"
   },
