@@ -179,7 +179,9 @@ Storage.prototype.storeWallet = function(wallet, cb) {
       w: 1,
       upsert: true,
     },
-    cb,
+    function() {
+      cb();
+    },
   );
 };
 
@@ -848,13 +850,15 @@ Storage.prototype.storeAddressAndWallet = function(wallet, addresses, cb) {
           walletId: true,
         },
         function(err, result) {
-          if (err || !result) return next(true);
-          if (result.walletId != wallet.id) {
+          if (err || !result) {
+            return next(null, true);
+          } else if (result.walletId != wallet.id) {
             log.warn('Address ' + address.address + ' exists in more than one wallet.');
-            return next(true);
+            return next(null, true);
+          } else {
+            // Ignore if address was already in wallet
+            return next(null, false);
           }
-          // Ignore if address was already in wallet
-          return next(false);
         },
       );
     },

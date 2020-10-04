@@ -202,8 +202,8 @@ describe('P2P Functionality', function() {
       }
     });
     async.whilst(
-      function() {
-        return txs.length > 0;
+      function(cb) {
+        return cb(null, txs.length > 0);
       },
       function(callback) {
         var tx = txs.pop();

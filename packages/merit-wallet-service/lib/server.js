@@ -1264,8 +1264,8 @@ WalletService.prototype._canCreateAddress = function(ignoreMaxGap, cb) {
     var activityFound = false;
     var i = latestAddresses.length;
     async.whilst(
-      function() {
-        return i > 0 && !activityFound;
+      function(cb) {
+        return cb(null, i > 0 && !activityFound);
       },
       function(next) {
         bc.getAddressActivity(latestAddresses[--i].address, function(err, res) {
@@ -2272,8 +2272,8 @@ WalletService.prototype._selectTxInputs = function(txp, utxosToExclude, cb) {
     var i = 0;
     var lastGroupLength;
     async.whilst(
-      function() {
-        return i < groups.length && _.isEmpty(inputs);
+      function(cb) {
+        return cb(null, i < groups.length && _.isEmpty(inputs));
       },
       function(next) {
         var group = groups[i++];
@@ -3870,8 +3870,8 @@ WalletService.prototype.scan = function(opts, cb) {
     var gap = Defaults.SCAN_ADDRESS_GAP;
 
     async.whilst(
-      function() {
-        return inactiveCounter < gap;
+      function(cb) {
+        return cb(null, inactiveCounter < gap);
       },
       function(next) {
         var address = derivator.derive();
