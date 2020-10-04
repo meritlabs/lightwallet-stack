@@ -84,7 +84,7 @@ export class NotificationSettingsController {
 
     const smsNotificationSettings = [];
 
-    Object.keys(SmsNotificationSetting).forEach((key: keyof SmsNotificationSetting) => {
+    Object.keys(SmsNotificationSetting).forEach((key) => {
       this.formData.addControl(
         SmsNotificationSetting[key],
         new FormControl(status && status.settings && status.settings[key]),

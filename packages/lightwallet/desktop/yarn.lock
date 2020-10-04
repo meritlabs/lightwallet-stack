@@ -279,10 +279,10 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-angular2-virtual-scroll@^0.3.2:
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/angular2-virtual-scroll/-/angular2-virtual-scroll-0.3.4.tgz#4654775c59dfa2f9b3f81ca872866575e88227d2"
-  integrity sha512-WzW1kA7UCMZkYiE+/Ul9bQeGkOkAwTe4ulmMNGv/UzeBAIe/oaZXeHNCO5tc5KwGv8cf+PwFuA7zFLkNLUdZPA==
+angular2-virtual-scroll@0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/angular2-virtual-scroll/-/angular2-virtual-scroll-0.3.2.tgz#0bd8312f9d3cf69f326ebd7dbb72a007cdf21ccd"
+  integrity sha512-eyPb6FnaA8d4lBh3v31F3YLLblr9Nn8zv25uKVmxPkA2/te6QDg0sPMqy6o8GouwW+U9LKzcUJZZBHa0ICY/rg==
   dependencies:
     "@tweenjs/tween.js" "^17.1.0"
 
@@ -945,6 +945,11 @@ buffer-alloc@^1.2.0:
   dependencies:
     buffer-alloc-unsafe "^1.1.0"
     buffer-fill "^1.0.0"
+
+buffer-compare@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/buffer-compare/-/buffer-compare-1.1.1.tgz#5be7be853af89198d1f4ddc090d1d66a48aef596"
+  integrity sha1-W+e+hTr4kZjR9N3AkNHWakiu9ZY=
 
 buffer-crc32@~0.2.3:
   version "0.2.13"
@@ -6864,10 +6869,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@2.4.2:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.2.tgz#f8395f85d459276067c988aa41837a8f82870844"
-  integrity sha1-+DlfhdRZJ2BnyYiqQYN6j4KHCEQ=
+typescript@4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.2.tgz#7ea7c88777c723c681e33bf7988be5d008d05ac2"
+  integrity sha512-e4ERvRV2wb+rRZ/IQeb3jm2VxBsirQLpQhdxplZ2MEzGvDkkMmPglecnNDfSUBivMjP93vRbngYYDQqQ/78bcQ==
 
 typescript@~2.6.2:
   version "2.6.2"

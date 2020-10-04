@@ -40,7 +40,7 @@ export class MWCService {
     const mwc = MeritWalletClient.getInstance({
       baseUrl: opts.bwsurl || ENV.mwsUrl,
       verbose: opts.verbose || false,
-      timeout: 100000,
+      timeout: 200000,
       transports: ['polling'],
     });
 

@@ -3,7 +3,7 @@
 var crypto = require('crypto');
 var RootCerts = require('./rootcerts');
 var PaymentProtocol = require('./common');
-var rfc5280 = require('asn1.js/rfc/5280');
+var rfc5280 = require('asn1.js-rfc5280');
 
 PaymentProtocol.prototype.x509Sign = function(key, returnTrust) {
   var pki_type = this.get('pki_type');
