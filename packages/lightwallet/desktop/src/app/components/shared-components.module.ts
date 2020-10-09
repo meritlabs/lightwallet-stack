@@ -19,8 +19,6 @@ import { MeritIconComponent } from '@merit/desktop/app/components/merit-icon/mer
 import { MessageBoxComponent } from '@merit/desktop/app/components/message-box/message-box.component';
 import { PasswordPromptComponent } from '@merit/desktop/app/components/password-prompt/password-prompt.component';
 import { PasswordPromptController } from '@merit/desktop/app/components/password-prompt/password-prompt.controller';
-import { SmsNotificationsPromptComponent } from '@merit/desktop/app/components/sms-notifications-prompt/sms-notifications-prompt.component';
-import { SmsNotificationsPromptController } from '@merit/desktop/app/components/sms-notifications-prompt/sms-notifications-prompt.controller';
 import { ToastControllerService } from '@merit/desktop/app/components/toast-notification/toast-controller.service';
 import { ToastNotificationComponent } from '@merit/desktop/app/components/toast-notification/toast-notification.component';
 import { UICheckboxComponent } from '@merit/desktop/app/components/ui-checkbox/ui-checkbox.component';
@@ -50,7 +48,6 @@ export function getComponents() {
     GlobalsendLinkPopupComponent,
     UICheckboxComponent,
     WalletUnlockAlertComponent,
-    SmsNotificationsPromptComponent,
     UpdateDialogComponent,
   ];
 }
@@ -61,7 +58,6 @@ export function getComponents() {
     PasswordPromptComponent,
     ConfirmDialogComponent,
     GlobalsendLinkPopupComponent,
-    SmsNotificationsPromptComponent,
     UpdateDialogComponent,
   ],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, ClipModule, CommonDirectivesModule, MomentModule],
@@ -78,7 +74,6 @@ export class SharedComponentsModule {
         PasswordPromptController,
         ConfirmDialogControllerService,
         GlobalsendLinkPopupController,
-        SmsNotificationsPromptController,
         UpdateDialogController,
       ],
     };
