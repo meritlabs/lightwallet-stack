@@ -13,7 +13,6 @@ var Locker = require('locker-server');
 var BlockchainMonitor = require('../lib/blockchainmonitor');
 var PushNotificationService = require('../lib/pushnotificationsservice');
 var EmailService = require('../lib/emailservice');
-var SmsService = require('../lib/sms-notification-service');
 var ExpressApp = require('../lib/expressapp');
 var child_process = require('child_process');
 var spawn = child_process.spawn;
@@ -174,14 +173,6 @@ Service.prototype.start = function(done) {
         } else {
           setImmediate(next);
         }
-      },
-      function(next) {
-        if (config.smsOpts.enabled) {
-          // Start SMS Notifications service
-          new SmsService(config);
-        }
-
-        next();
       },
       function(next) {
         self._startWalletService(config, next);

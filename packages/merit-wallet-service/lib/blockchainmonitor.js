@@ -26,7 +26,6 @@ BlockchainMonitor.prototype.start = function(opts, cb) {
 
   self.pushNotificationServiceEnabled = !!opts.pushNotificationsOpts;
   self.emailNotificationServiceEnabled = !!opts.emailOpts;
-  self.smsNotificationsEnabled = !!opts.smsOpts.enabled;
 
   async.parallel(
     [
@@ -630,7 +629,7 @@ BlockchainMonitor.prototype._handleVaultConfirmations = function(network, txids)
 };
 
 BlockchainMonitor.prototype._storeAndBroadcastNotification = function(notification, cb) {
-  if (!(this.pushNotificationServiceEnabled || this.emailNotificationServiceEnabled || this.smsNotificationsEnabled)) {
+  if (!(this.pushNotificationServiceEnabled || this.emailNotificationServiceEnabled)) {
     return cb();
   }
 

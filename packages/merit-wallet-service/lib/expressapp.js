@@ -728,33 +728,6 @@ ExpressApp.prototype.start = function(opts, cb) {
     });
   });
 
-  router.post('/v1/sms-notifications', (req, res) => {
-    getServerWithAuth(req, res, server => {
-      server.smsNotificationsSubscribe(req.body, (err, response) => {
-        if (err) return returnError(err, res, req);
-        res.json(response);
-      });
-    });
-  });
-
-  router.delete('/v1/sms-notifications', (req, res) => {
-    getServerWithAuth(req, res, server => {
-      server.smsNotificationsUnsubscribe((err, response) => {
-        if (err) return returnError(err, res, req);
-        res.json(response);
-      });
-    });
-  });
-
-  router.get('/v1/sms-notifications', (req, res) => {
-    getServerWithAuth(req, res, server => {
-      server.getSmsNotificationSubscription((err, response) => {
-        if (err) return returnError(err, res, req);
-        res.json(response);
-      });
-    });
-  });
-
   router.post('/v1/txconfirmations/', function(req, res) {
     getServerWithAuth(req, res, function(server) {
       server.txConfirmationSubscribe(req.body, function(err, response) {
