@@ -9,7 +9,6 @@ import { AlertController, IonicPage, ModalController, NavController, NavParams, 
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
 import { PersistenceService2, UserSettingsKey } from '@merit/common/services/persistence2.service';
-import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 
 @IonicPage({
   segment: 'transact',
@@ -39,8 +38,7 @@ export class TransactView {
     private easyReceiveService: EasyReceiveService,
     private alertCtrl: AlertController,
     private modalCtrl: ModalController,
-    private persistenceService2: PersistenceService2,
-    private smsNotificationsService: SmsNotificationsService,
+    private persistenceService2: PersistenceService2
   ) {}
 
   async ngOnInit() {
@@ -75,20 +73,6 @@ export class TransactView {
     }
 
     await this.unlockRequestService.loadRequestsData();
-
-    const smsPromptSetting = await this.persistenceService2.getUserSettings(UserSettingsKey.SmsNotificationsPrompt);
-
-    if (smsPromptSetting == true) return;
-
-    const smsNotificationStatus = await this.smsNotificationsService.getSmsSubscriptionStatus();
-
-    if (smsNotificationStatus.enabled) return;
-
-    const modal = this.modalCtrl.create('SmsNotificationsModal');
-    modal.present();
-    modal.onDidDismiss(() => {
-      this.persistenceService2.setUserSettings(UserSettingsKey.SmsNotificationsPrompt, true);
-    });
   }
 
   async ngOnDestroy() {

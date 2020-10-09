@@ -8,7 +8,6 @@ import { PushNotificationsService } from '@merit/common/services/push-notificati
 import { EmailValidator } from '@merit/common/validators/email.validator';
 import { IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
-import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { NotificationSettingsController } from '@merit/common/utils/notification-settings';
 
@@ -24,7 +23,6 @@ export class NotificationsView {
     this.persistenceService,
     this.pushNotificationsService,
     this.emailNotificationsService,
-    this.smsNotificationsService,
     this.formBuilder,
     this.toastCtrl,
     this.platformService.isIOS ? 'ios' : 'android',
@@ -40,7 +38,6 @@ export class NotificationsView {
     private pushNotificationsService: PushNotificationsService,
     private emailNotificationsService: EmailNotificationsService,
     private loadingCtrl: LoadingController,
-    private smsNotificationsService: SmsNotificationsService,
     private persistenceService: PersistenceService2,
     private toastCtrl: ToastControllerService,
   ) {}
