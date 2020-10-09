@@ -2,7 +2,6 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { EmailNotificationsService } from '@merit/common/services/email-notification.service';
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
-import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 import { ToastControllerService } from '@merit/common/services/toast-controller.service';
 import { isEmpty } from 'lodash';
 import { Observable } from 'rxjs/Observable';
@@ -11,21 +10,8 @@ import { merge } from 'rxjs/observable/merge';
 import { debounceTime, filter, switchMap, tap } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
-import { SmsNotificationSetting } from '@merit/common/models/sms-subscription';
 
 export type SavingStatus = 'saving' | 'saved' | 'none';
-export type SmsNotificationSettingsText = { [k in keyof typeof SmsNotificationSetting]: string };
-
-const smsNotificationSettingsText: SmsNotificationSettingsText = {
-  IncomingInvite: 'Incoming invites',
-  IncomingInviteRequest: 'Incoming invite requests',
-  IncomingTx: 'Incoming transactions',
-  MiningReward: 'Mining rewards',
-  GrowthReward: 'Growth rewards',
-  WalletUnlocked: 'Wallet unlocked',
-  IncomingPoolPayment: 'Incoming pool payment',
-  MarketPayment: 'Market escrow',
-};
 
 export class NotificationSettingsController {
   formData: FormGroup = this.formBuilder.group({
@@ -71,7 +57,6 @@ export class NotificationSettingsController {
     private persistenceService: PersistenceService2,
     private pushNotificationsService: PushNotificationsService,
     private emailNotificationsService: EmailNotificationsService,
-    private smsNotificationsService: SmsNotificationsService,
     private formBuilder: FormBuilder,
     private toastCtrl: ToastControllerService,
     private platform: 'ios' | 'android' | 'desktop',
@@ -80,32 +65,9 @@ export class NotificationSettingsController {
   async init() {
     const settings = await this.persistenceService.getNotificationSettings();
 
-    const status = await this.smsNotificationsService.getSmsSubscriptionStatus();
-
-    const smsNotificationSettings = [];
-
-    Object.keys(SmsNotificationSetting).forEach((key) => {
-      this.formData.addControl(
-        SmsNotificationSetting[key],
-        new FormControl(status && status.settings && status.settings[key]),
-      );
-
-      smsNotificationSettings.push({
-        name: SmsNotificationSetting[key],
-        label: smsNotificationSettingsText[key],
-      });
-    });
-
     if (!isEmpty(settings)) {
       this.formData.patchValue(settings, { emitEvent: false });
     }
-
-    if (status) {
-      this.smsNotifications.setValue(status.enabled, { emitValue: false });
-      this.phoneNumber.setValue(status.phoneNumber || '', { emitValue: false });
-    }
-
-    this.smsNotificationSettings = smsNotificationSettings;
 
     this.subs.push(
       this.formData.valueChanges
@@ -153,41 +115,6 @@ export class NotificationSettingsController {
               this.toastCtrl.success('You are now subscribed to Email notifications!');
             }
             this.updateStorage();
-          }),
-        )
-        .subscribe(),
-    );
-
-    const smsObservables = [
-      this.formData.get('smsNotifications').valueChanges,
-      this.formData.get('phoneNumber').valueChanges,
-    ];
-
-    this.smsNotificationSettings.forEach(({ name }) => smsObservables.push(this.formData.get(name).valueChanges));
-
-    this.subs.push(
-      merge
-        .apply(merge, smsObservables)
-        .pipe(
-          tap(() => this.smsStatus.next('none')),
-          filter(() => this.smsNotifications.value == false || this.phoneNumber.valid),
-          tap(() => this.smsStatus.next('saving')),
-          debounceTime(750),
-          switchMap(() =>
-            fromPromise(
-              this.smsNotificationsService.setSmsSubscription(
-                this.smsNotificationsEnabled,
-                this.formData.get('phoneNumber').value,
-                this.platform,
-                this.getSmsNotificationSettings(),
-              ),
-            ),
-          ),
-          tap(() => {
-            this.smsStatus.next('saved');
-            if (this.smsNotificationsEnabled && this.phoneNumber.valid) {
-              this.toastCtrl.success('You are now subscribed to SMS notifications!');
-            }
           }),
         )
         .subscribe(),

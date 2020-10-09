@@ -8,7 +8,6 @@ import { EmailNotificationsService } from '@merit/common/services/email-notifica
 import { PersistenceService2 } from '@merit/common/services/persistence2.service';
 import { ProfileService } from '@merit/common/services/profile.service';
 import { PushNotificationsService } from '@merit/common/services/push-notification.service';
-import { SmsNotificationsService } from '@merit/common/services/sms-notifications.service';
 import { NotificationSettingsController } from '@merit/common/utils/notification-settings';
 import { isWalletEncrypted } from '@merit/common/utils/wallet';
 import { ConfirmDialogControllerService } from '@merit/desktop/app/components/confirm-dialog/confirm-dialog-controller.service';
@@ -38,7 +37,6 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     this.persistenceService,
     this.pushNotificationsService,
     this.emailNotificationsService,
-    this.smsNotificationsService,
     this.formBuilder,
     this.toastCtrl,
     'desktop',
@@ -55,7 +53,6 @@ export class SettingsPreferencesView implements OnInit, OnDestroy {
     private passwordPromptCtrl: PasswordPromptController,
     private profileService: ProfileService,
     private store: Store<IRootAppState>,
-    private smsNotificationsService: SmsNotificationsService,
   ) {
     if (typeof WEBPACK_CONFIG !== 'undefined') {
       this.commitHash = WEBPACK_CONFIG.COMMIT_HASH;
