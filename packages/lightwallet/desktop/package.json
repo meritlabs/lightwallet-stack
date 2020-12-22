@@ -22,7 +22,7 @@
   "dependencies": {
     "electron-log": "^2.2.15",
     "electron-updater": "^3.0.3",
-    "node-notifier": "^5.2.1"
+    "node-notifier": "^8.0.1"
   },
   "devDependencies": {
     "@angular-devkit/core": "0.3.2",
