@@ -3,7 +3,9 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ProgressPlugin = require('webpack/lib/ProgressPlugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+// const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+// const ExtractTextPlugin = OptimizeCssAssetsPlugin;
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const rxPaths = require('rxjs/_esm5/path-mapping');
@@ -20,16 +22,18 @@ const {
   EnvironmentPlugin,
   HashedModuleIdsPlugin,
 } = require('webpack');
-const {
-  NamedLazyChunksWebpackPlugin,
-  SuppressExtractedTextChunksWebpackPlugin,
-  CleanCssWebpackPlugin,
-  BundleBudgetPlugin,
-  BaseHrefWebpackPlugin,
-  PostcssCliResources,
-} = require('@angular/cli/plugins/webpack');
-const { CommonsChunkPlugin, ModuleConcatenationPlugin } = require('webpack').optimize;
-const { LicenseWebpackPlugin } = require('license-webpack-plugin');
+// const {
+//   NamedLazyChunksWebpackPlugin,
+//   SuppressExtractedTextChunksWebpackPlugin,
+//   CleanCssWebpackPlugin,
+//   BundleBudgetPlugin,
+//   BaseHrefWebpackPlugin,
+//   PostcssCliResources,
+// } = require('@angular/cli/plugins/webpack');
+// const { AngularNamedLazyChunksWebpackPlugin } = require('angular-named-lazy-chunks-webpack-plugin');
+const { BaseHrefWebpackPlugin } = require('base-href-webpack-plugin');
+const { SplitChunksPlugin, ModuleConcatenationPlugin } = require('webpack').optimize;
+const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
 const { PurifyPlugin } = require('@angular-devkit/build-optimizer');
 const { AngularCompilerPlugin } = require('@ngtools/webpack');
 const {
@@ -361,7 +365,7 @@ function getProdRules() {
     {
       include: [path.join(process.cwd(), 'src/styles.sass')],
       test: /\.scss$|\.sass$/,
-      loaders: ExtractTextPlugin.extract({
+      loaders: {
         use: [
           {
             loader: 'raw-loader',
@@ -384,7 +388,7 @@ function getProdRules() {
           },
         ],
         publicPath: '',
-      }),
+      },
     },
     {
       test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
@@ -446,54 +450,37 @@ module.exports = (_, config) => {
         },
       }),
       new NoEmitOnErrorsPlugin(),
-      new CopyWebpackPlugin(
+      new CopyWebpackPlugin({
+        patterns:
         [
           {
             context: 'src',
             to: '',
-            from: {
-              glob: 'assets/**/*',
-              dot: true,
-            },
+            from: 'assets/**/*',
           },
           {
             context: 'src',
             to: '',
-            from: {
-              glob: 'favicon.ico',
-              dot: true,
-            },
+            from: 'favicon.ico',
           },
           {
             context: 'src',
             to: '',
-            from: {
-              glob: 'firebase-messaging-sw.js',
-              dot: true,
-            },
+            from: 'firebase-messaging-sw.js',
           },
           {
             context: 'src',
             to: '',
-            from: {
-              glob: 'manifest.json',
-              dot: true,
-            },
+            from: 'manifest.json',
           },
-        ],
+        ]},
         {
           ignore: ['.gitkeep', '**/.DS_Store', '**/Thumbs.db'],
           debug: 'warning',
         },
       ),
       new ProgressPlugin(),
-      // new CircularDependencyPlugin({
-      //   exclude: /(\\|\/)node_modules(\\|\/)/,
-      //   failOnError: false,
-      //   onDetected: false,
-      //   cwd: projectRoot
-      // }),
-      new NamedLazyChunksWebpackPlugin(),
+      // new AngularNamedLazyChunksWebpackPlugin({}),
       new HtmlWebpackPlugin({
         template: './src/index.html',
         filename: './index.html',
@@ -527,11 +514,11 @@ module.exports = (_, config) => {
         },
       }),
       new BaseHrefWebpackPlugin({}),
-      new CommonsChunkPlugin({
+      new SplitChunksPlugin({
         name: ['inline'],
         minChunks: null,
       }),
-      new CommonsChunkPlugin({
+      new SplitChunksPlugin({
         name: ['vendor'],
         minChunks: module => {
           return (
@@ -543,12 +530,11 @@ module.exports = (_, config) => {
         },
         chunks: ['main'],
       }),
-      new CommonsChunkPlugin({
+      new SplitChunksPlugin({
         name: ['main'],
         minChunks: 2,
         async: 'common',
       }),
-      new NamedModulesPlugin({}),
       new AngularCompilerPlugin({
         mainPath: 'main.ts',
         platform: 0,
@@ -579,21 +565,21 @@ module.exports = (_, config) => {
 
   if (isProduction(config)) {
     newConfig.plugins.push(
-      new ExtractTextPlugin({
-        filename: '[name].[contenthash:20].bundle.css',
-      }),
-      new SuppressExtractedTextChunksWebpackPlugin(),
-      new CleanCssWebpackPlugin(),
+      // new ExtractTextPlugin({
+      //   filename: '[name].[contenthash:20].bundle.css',
+      // }),
+      // new SuppressExtractedTextChunksWebpackPlugin(),
+      // new CleanCssWebpackPlugin(),
       new EnvironmentPlugin({
         NODE_ENV: 'production',
       }),
-      new HashedModuleIdsPlugin({
-        hashFunction: 'md5',
-        hashDigest: 'base64',
-        hashDigestLength: 4,
-      }),
+      // new HashedModuleIdsPlugin({
+      //   hashFunction: 'md5',
+      //   hashDigest: 'base64',
+      //   hashDigestLength: 4,
+      // }),
       new ModuleConcatenationPlugin({}),
-      new BundleBudgetPlugin({}),
+      // new BundleBudgetPlugin({}),
       new LicenseWebpackPlugin({
         licenseFilenames: ['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'license', 'license.md', 'license.txt'],
         perChunkOutput: false,
