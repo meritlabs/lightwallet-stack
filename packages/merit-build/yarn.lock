@@ -2307,7 +2307,7 @@ gulp-jshint@^2.1.0:
     rcloader "^0.2.2"
     through2 "^2.0.0"
 
-gulp-mocha@^6.0.0:
+gulp-mocha@6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/gulp-mocha/-/gulp-mocha-6.0.0.tgz#80f32bc705ce30747f355ddb8ccd96a1c73bef13"
   integrity sha512-FfBldW5ttnDpKf4Sg6/BLOOKCCbr5mbixDGK1t02/8oSrTCwNhgN/mdszG3cuQuYNzuouUdw4EH/mlYtgUscPg==
@@ -3038,10 +3038,10 @@ karma-detect-browsers@^2.3.3:
   dependencies:
     which "^1.2.4"
 
-karma-mocha@^1.3.0:
+karma-mocha@1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/karma-mocha/-/karma-mocha-1.3.0.tgz#eeaac7ffc0e201eb63c467440d2b69c7cf3778bf"
-  integrity sha1-7qrH/8DiAetjxGdEDStpx883eL8=
+  integrity sha512-twRO+KCXIFOBs7o6i7oIpTJhVvjKZbIsUM96A+k2QaeXOzbVQXCkjVzXqNeQoczW4ruasPZYi0iWMTkfTrQVCw==
   dependencies:
     minimist "1.2.0"
 
@@ -3558,7 +3558,7 @@ mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@^0.5.4:
   dependencies:
     minimist "^1.2.5"
 
-mocha@^5.2.0:
+mocha@5.2.0, mocha@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/mocha/-/mocha-5.2.0.tgz#6d8ae508f59167f940f2b5b3c4a612ae50c90ae6"
   integrity sha512-2IUgKDhc3J7Uug+FxMXuqIyYzH7gJjXECKe/w43IGgQHTSj3InJi+yAA7T24L9bQMRKiUEHxEX37G5JpVUGLcQ==
@@ -4165,9 +4165,9 @@ qs@6.7.0:
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
 
 qs@~6.5.2:
-  version "6.5.2"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
-  integrity sha512-N5ZAX4/LxJmF+7wN74pUD6qAh9/wnvdQcjq9TZjevvXzSUo7bfmw91saqMjzGS2xq91/odN2dW/WOl7qQHNDGA==
+  version "6.5.3"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.3.tgz#3aeeffc91967ef6e35c0e488ef46fb296ab76aad"
+  integrity sha512-qxXIEh4pCGfHICj1mAJQ2/2XVZkjCDTcEgfoSQxc/fYivUZxTkk7L3bDBJSoNrEzXI17oUO5Dp07ktqE5KzczA==
 
 querystring-es3@~0.2.0:
   version "0.2.1"
